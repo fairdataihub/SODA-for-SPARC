@@ -5,15 +5,24 @@ that are needed for the curation of data from the SPARC project.
 The set of folders is fixed by the project and the user will be
 prompted to assign files to each. 
 
-Program flow:
+Program Flow:
 1) user is prompted to provide a location.json file, so can load partial info if exists
-2) if no locations.json file exists, create one in a location selected by the user
-3) code determines what info is still needed and prompts user for provide its location
-4) empty fields are None 
+2) if no locations.json file exists, creates a dictionary to store location info
+3) code prompts user to provide info on numbers of subjects, samples, sessions, and datatypes
+Info:
+4) currently there is no support for subjects/samples that have a different number of sessions/datatypes
+5) code determines what info is still needed and prompts user for provide its location
+6) for Subjects and Samples, user is prompted for top level dir and lower levels are 
+   stored in a list that can be parsed as needed to get number of subjects/sessions/datatypes
+
+
+Originally prompted user for locations of required CSV files. Now not needed
+since other code does this.
 
 author: Karl G. Helmer
 institution: Athinoula A. Martinos Center for Biomedical Imaging
 date started: 20190624
+version 1: 20190823
 
 call:
 >python collect_files.py 
@@ -22,8 +31,9 @@ change log:
 '''
 import tkinter as tk
 from tkinter import filedialog, simpledialog
+import os, json
 
-import json
+
 
 class CollectFiles(object):
 
@@ -34,22 +44,15 @@ class CollectFiles(object):
 
         # these are messages paired with the contents of the folders list
         self.messages = {'subjects':'The naming convention for subject folders is: subj-#.', \
-                    'samples':'The naming convention for subject folders is: subj-#.', \
+                    'samples':'The naming convention for subject folders is: sam-#.', \
                     'protocol':'Be sure to upload your protocol onto protocols.io.' , \
                     'docs':'The docs folder stores supporting documents.', \
                     'code':'The code folder stores the code used to process or analyze the data. (optional)', \
                     'derivatives':'The derivatives folder stores derived data from the experiment. (optional)', \
                     'sourcedata':'The sourcedata folder stores data prior to manipulation or processing. (optional)'}
 
-
         # this is the list of example types from the curation team
         self.datatypes = ['anat', 'ephys', 'microscopy', 'ma-seq', 'derivatives']
-
-        # used to get info from the user re the numeration of their data
-        self.numSubjects = 0   # sub-# folders go in the subject folder
-        self.numSessions = 0   # NB: if only one session, then no session folder
-        self.numDatatypes = 0  # use standardized names from the datatypes list; potentially let users create own?
-        self.numSamples = 0    # sam-# folders go in the samples folder
 
         self.manifest = 'manifest.csv'  # required for each folder with supplementary info 
 
@@ -112,7 +115,7 @@ class CollectFiles(object):
 #        return locationsDict
 #
 #
-#    # for testing only - creates a sample locations.csv file to be used in testing
+#    # for testing only - creates a sample "full-version" locations.csv file to be used in testing
 #    def write_locations_file(self):
 #        locationsTestDict = {'topfiles': {'subjectscsv':'/home/karl/Work/SPARC/data/subjects.csv', \
 #                                          'samplescsv':'', \
@@ -127,23 +130,24 @@ class CollectFiles(object):
 #                                         'sourcedata':[]}
 #                       }
 #
-#        with open ("/home/karl/Work/SPARC/SODA/locations.json", "wb") as fp:
+#        with open ("/home/karl/Work/SPARC/SODA/SODA/dev_code/locations.json", "wb") as fp:
 #            pickle.dump(locationsTestDict,fp)
 
 
 
     def create_locations_template(self):
         locationsDict = {'counts': {'numSubjects':0, 'numSessions':0, 'numDatatypes':0, 'numSamples':0}, \
-                         'folders': {'subjectsf':[], 'samplesf':[], 'protocol':[], 'docs':[], 'code':'', \
+                         'folders': {'subjectsf':[], 'samplesf':[], 'protocol':[], 'docs':[], 'code':[], \
                                     'derivatives':[], 'sourcedata':[]}
                        }
 
         return locationsDict
 
 
-    # for testing only - creates a sample locations.csv file to be used in testing
+
+    # for testing only - creates a sample "reduced" locations.csv file to be used in testing
     def write_locations_file(self):
-        locationsTestDict = {'counts': {'numSubjects':2, 'numSessions':1, 'numDatatypes':5, 'numSamples':0}, \
+        locationsTestDict = {'counts': {'numSubjects':2, 'numSessions':0, 'numDatatypes':2, 'numSamples':0}, \
                              'folders': {'subjectsf':['/home/karl/Work/SPARC/data/subj1', '/home/karl/Work/SPARC/data/subj2'], \
                                          'samplesf':[], 'protocol':[], 'docs':[], \
                                          'code':[], \
@@ -151,7 +155,7 @@ class CollectFiles(object):
                                          'sourcedata':[]}
                        }
 
-        with open ("/home/karl/Work/SPARC/SODA/locations.json", "w") as fp:
+        with open ("locations.json", "w") as fp: # this will create the file in the run directory
             json.dump(locationsTestDict,fp)
 
 
@@ -175,96 +179,107 @@ class CollectFiles(object):
 
 
 
-    def get_keys_dict(self,locationsDict):
-        emptyKeys = []
+    def get_empty_locs(self,locationsDict):
+        emptyLocs = []
         for k,v in locationsDict.items():
-            print(v)
+            #print(k)
             if isinstance(v, dict):
-                self.get_keys_dict(v)
+                self.get_empty_locs(v)
             else:
                 #print("{0} : {1}".format(k,v))  #now have k and v so print with format
                 if isinstance(v, list): # if the value is a list, check into the list
                     if len(v) == 0:
                         #print("{0} : {1}".format(k,v))
-                        emptyKeys.append(k)
+                        #print("{0}".format(k))
+                        emptyLocs.append(k)
                 elif v == '':
                     #print("{0} : {1}".format(k,v))
-                    emptyKeys.append(k)
+                    emptyLocs.append(k)
 
-        return emptyKeys
-
-
-
-    def collect_numSubjects(self):
-        self.numSubjects = tk.simpledialog.askinteger('Input', 'How many subjects are in this study?', \
-                           parent = application_window, minvalue=0)
-        if self.numSubjects is not None:
-            print("The number of subjects is ",self.numSubjects)
-        else:
-            print("Please enter the number of subjects in the study.")
+        return emptyLocs
 
 
 
-    def collect_numSessions(self):   #this should be for each subject
-        self.numSessions = tk.simpledialog.askinteger('Input', 'How many sessions does this subject have?', \
-                           parent = application_window, minvalue=0)
-        if self.numSubjects is not None:
-            print("The number of subjects is ",self.numSessions)
-        else:
-            print("Please enter the number of sessions for this subject.")
+    def get_empty_counts(self,countsDict): #restrict to "counts" key
+        emptyCounts = []
+        for k,v in countsDict.items():
+            if v == 0: 
+                emptyCounts.append(k)
+
+        return emptyCounts
 
 
 
-    def collect_numDatatypes(self):   #this should be for each subject
-        self.numDatatypes = tk.simpledialog.askinteger('Input', 'How many datatypes are in this study?', \
-                           parent = application_window, minvalue=0)
-        if self.numDatatyspe is not None:
-            print("The number of subjects is ",self.numDatatypes)
-        else:
-            print("Please enter the number of datatypes in the study.")
-
-
-
-    def collect_numSamples(self):   #this is instead of subjects?
-        self.numSamples = tk.simpledialog.askinteger('Input', 'How many samples are in this study?', \
-                           parent = application_window, minvalue=0)
-        if self.numSamples is not None:
-            print("The number of subjects is ",self.numSamples)
-        else:
-            print("Please enter the number of samples in the study.")
-
-
-
-    def get_top_level_files(self):   #move to while True / try
-        topLevelPaths = []
-        for tlf in self.topLevelFiles:
-            fileList = tk.filedialog.askopenfilenames(parent=self.tkObject,title='Choose '+tlf)
-            fileList = tkObject.tk.splitlist(fileList)
-            if len(fileList) == 1:
-                for z in fileList:   #returns a tuple; we want a list so
-                    topLevelPaths.append(z)
+    def get_folder_path(self, boxTitle):
+        # generic function used to get and return a file path using a file dialog 
+        locFilePath = None   #assume that there isn't one
+        success = 0
+        while True:
+            lfp = tk.filedialog.askdirectory(parent=self.tkObject,title=boxTitle)
+            lfp = self.tkObject.tk.splitlist(lfp)
+            lenLFP = len(lfp)
+            if lenLFP == 1:
+                for z in lfp:   #returns a tuple; we want a string so
+                    locFilePath = z
+                    print(locFilePath)
                     success = 1
-            elif len(fileList) == 0:
-                topLevelPaths.append('NA')
-                success = 2
-            else:
-                print("Please choose a single file!")
+                break
+            elif lenLFP > 1:
+                print('Please specify a *single* folder path.')
                 success = 0
-        return success
+                continue
+            elif lenLFP == 0: # user selects cancel in dialog box; box won't close if you don't select a valid folder, but still click 'open'
+                locFilePath = None
+                success = 0 
+                break
+
+        return locFilePath, success
+
+
+
+#    def get_top_level_files(self):  #no longer need this since BP code gets csv files already
+#        topLevelPaths = []
+#        while True:
+#            for tlf in self.topLevelFiles:
+#                fileList = tk.filedialog.askopenfilenames(parent=self.tkObject,title='Choose '+tlf)
+#                fileList = tkObject.tk.splitlist(fileList)
+#                if len(fileList) == 1:
+#                    for z in fileList:   #returns a tuple; we want a list so
+#                        topLevelPaths.append(z)
+#                        success = 1
+#                    break
+#                elif len(fileList) == 0:
+#                    topLevelPaths.append('NA')
+#                    success = 2
+#                    break
+#                else:
+#                    print("Please choose a single file!")
+#                    success = 0
+#                    break
+#        return success
                 
 
-        
+
+
 def main():
 
-    # deal with different number of sessions per subject? If one value, the all the same. Else list?
-    prompts = {'num_subjects':'Please enter the number of subjects: ', 'num_samples':'Please enter the number of samples: ', \
-                    'num_sessions':'Please enter the number of sessions for each subject: ', \
-                    'num_datatypes':'Please enter the number of datatypes: '}
+    # prompts used for folder selection 
+    prompts = {'subjects':'Please select the subjects folder.', 'protocol':'Please select the protocols folder.', \
+               'docs':'Please select the docs folder.', 'code':'Please select the code folder.', \
+               'derivatives':'Please select the derivatives folder.', 'sourcedata':'Please select the sourcedata folder.', \
+               'num_subjects':'Please enter the number of subjects for each subject: ', \
+               'num_sessions':'Please enter the number of sessions for each subject: ', \
+               'num_samples':'Please enter the number of samples for each subject: ', \
+               'samples':'Please select the samples folder.', 'num_datatypes':'Please enter the number of datatypes: '}
 
+    # define types
+    locFilePath = ''
+    loc = ''
+    subjDirList = []
+    sampleDirList = []
 
     # create the object
     f = CollectFiles()
-    locFilePath = ''
 
     # for testing only: create a locations.json file
     #f.write_locations_file()
@@ -277,7 +292,7 @@ def main():
             break
         elif ans == 'n' or ans == 'N':
             print("...initializing locations file template")
-            locationsDict = f.create_locations_template()
+            locationsDict = f.create_locations_template() # creates variable, doesn't write file
             break
         else:
             print("Please answer y/n!")
@@ -291,26 +306,115 @@ def main():
         if success:
             print("Existing locations file successfully loaded.")
         else:
-            print("Unable to open selected file as locations.json")
+            print("Unable to open selected file")
             print("...initializing locations file template")
             locationsDict = f.create_locations_template()  #create dict structure if I can't open chosen file
-    else:
+    elif not locationsDict:  # user said "y", but then cancelled without specifying a filename
         print("No locations.json file selected.")
         print("...initializing locations file template")
         locationsDict = f.create_locations_template()  #create dict structure if there isn't a file chosen
 
-    # now determine which fields are missing values and ask about those
-    emptyKeys = f.get_keys_dict(locationsDict)
-    print(emptyKeys)
+    # now determine which locations are missing 
+    emptyLocs = f.get_empty_locs(locationsDict)
+    
+    # determine which counts are missing
+    countsValue = locationsDict["counts"]
+    emptyCounts = f.get_empty_counts(countsValue)
+
+    # gather all of the necessary counts; can use this below to check that all the directories exist
+    for c in emptyCounts:
+        if c == 'numSubjects':
+            locationsDict['counts']['numSubjects'] = f.get_non_negative_int(prompts['num_subjects'])
+        elif c == 'numSessions':
+            locationsDict['counts']['numSessions'] = f.get_non_negative_int(prompts['num_sessions'])
+        elif c == 'numDatatypes':
+            locationsDict['counts']['numDatatypes'] = f.get_non_negative_int(prompts['num_datatypes'])
+        elif c == 'numSamples':
+            locationsDict['counts']['numSamples'] = f.get_non_negative_int(prompts['num_samples'])
+        else:
+            pass
+
+    #note that if any of the counts = 0 at this point, we assume that the answer is really 0, rather than "not filled in yet"
+
+    # get the subject folder, then us os.walk to find the sub-folders
+    if not locationsDict['folders']['subjectsf'] and locationsDict['counts']['numSubjects']:
+        loc, success = f.get_folder_path(prompts['subjects'])
+        if success:
+            locationsDict['folders']['subjectsf'] = loc
+        else:
+            print ('Subject folder not specified!')
+
+    if locationsDict['folders']['subjectsf']:
+        for root, dirs, files in os.walk(locationsDict['folders']['subjectsf'], topdown=True):
+            subjDirList.append(root)
+        #print(dirList)  #this is a list of all of the sub-directories, with all sessions and datatype folders if needed  
 
 
-#    else:
-        # get values used in setup, this allows us to set up the directory tree
-#        numSubjects = f.get_non_negative_int(prompts['num_subjects'])
-#        numSamples = f.get_non_negative_int(prompts['num_samples'])
-#        numDatatypes = f.get_non_negative_int(prompts['num_datatypes'])
-#        numSessions = f.get_non_negative_int(prompts['num_sessions'])
+    # get the samples folder, then us os.walk to find the sub-folders
+    if not locationsDict['folders']['samplesf'] and locationsDict['counts']['numSamples']:
+        loc, success = f.get_folder_path(prompts['samples'])
+        if success:
+            locationsDict['folders']['samplesf'] = loc
+        else:
+            print ('Samples folder not specified!')
 
+    if locationsDict['folders']['samplesf']:
+        for root, dirs, files in os.walk(locationsDict['folders']['samplesf'], topdown=True):
+            sampleDirList.append(root)
+        #print(dirList)  #this is a list of all of the sub-directories, with all sessions and datatype folders if needed  
+
+
+    # get the protocol directory
+    if not locationsDict['folders']['protocol']:
+        #print(prompts['protocol'])
+        loc, success = f.get_folder_path(prompts['protocol'])
+        if success:
+            locationsDict['folders']['protocol'].append(loc)
+        else:
+            print('Protocol folder not specified!')
+
+
+    # get the docs directory
+    if not locationsDict['folders']['docs']:
+        #print(prompts['docs'])
+        loc, success = f.get_folder_path(prompts['docs'])
+        if success:
+            locationsDict['folders']['docs'].append(loc)
+        else:
+            print('Docs folder not specified!')
+
+
+    # get the code directory
+    if not locationsDict['folders']['code']:
+        #print(prompts['code'])
+        loc, success = f.get_folder_path(prompts['code'])
+        if success:
+            locationsDict['folders']['code'].append(loc)
+        else:
+            print('Code folder not specified!')
+
+
+    # get the derivatives directory
+    if not locationsDict['folders']['derivatives']:
+        #print(prompts['derivatives'])
+        loc, success = f.get_folder_path(prompts['derivatives'])
+        if success:
+            locationsDict['folders']['derivatives'].append(loc)
+        else:
+            print('Derivativess folder not specified!')
+
+
+    # get the sourcedata directory
+    if not locationsDict['folders']['sourcedata']:
+        #print(prompts['sourcedata'])
+        loc, success = f.get_folder_path(prompts['sourcedata'])
+        if success:
+            locationsDict['folders']['sourcedata'].append(loc)
+        else:
+            print('Sourcedata folder not specified!')
+
+
+    print(locationsDict)
     
     
 if __name__ == "__main__":
