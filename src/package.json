@@ -1,0 +1,73 @@
+{
+  "name": "SODA",
+  "productName": "SODA",
+  "version": "1.0.0",
+  "description": "Keep Calm and Curate",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "eslint src --color"
+  },
+  "keywords": [],
+  "author": "SODA Team",
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "make_targets": {
+        "win32": [
+          "squirrel"
+        ],
+        "darwin": [
+          "zip"
+        ],
+        "linux": [
+          "deb",
+          "rpm"
+        ]
+      },
+      "electronPackagerConfig": {
+        "packageManager": "npm"
+      },
+      "electronWinstallerConfig": {
+        "name": "SODA"
+      },
+      "electronInstallerDebian": {},
+      "electronInstallerRedhat": {},
+      "github_repository": {
+        "owner": "",
+        "name": ""
+      },
+      "windowsStoreConfig": {
+        "packageName": "",
+        "name": "SODA"
+      }
+    }
+  },
+  "dependencies": {
+    "electron-compile": "^6.4.4",
+    "electron-context-menu": "^0.13.0",
+    "electron-photon": "^1.1.6",
+    "electron-settings": "^3.2.0",
+    "electron-shortcut-normalizer": "^1.0.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "system-sleep": "^1.3.6",
+    "zerorpc": "git+https://github.com/fyears/zerorpc-node.git"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "electron-forge": "^5.2.4",
+    "electron-packager": "^14.0.1",
+    "electron-prebuilt-compile": "4.0.0",
+    "electron-rebuild": "^1.8.6",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.17.3",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.13.0"
+  }
+}

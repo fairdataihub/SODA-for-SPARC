@@ -1,0 +1,154 @@
+<template class="task-template">
+  <section id="crash-hang-section" class="section js-section u-category-windows">
+    <header class="section-header">
+      <div class="section-wrapper">
+        <h1>
+          Manage and Submit Datasets
+        </h1>
+        <h3>This interface will assist you in managing and submitting your datasets on Blackfynn. It will also guide you for annotating your datasets using the Blackfynn model properties.</h3>
+      </div>
+    </header>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button">Login to your Blackfynn account
+          <div class="demo-meta u-avoid-clicks"> Easy login interface </div>
+        </button>
+        <div class="demo-box">
+          <p> Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients"> Blackfynn Help </a> 
+          for generating an API and setting up your Blackfynn account on your computer for the first time. </p>
+
+          <h5> Add new account </h5>
+          <div> <font color="black"> Api key name: </font> </div>
+          <div class="demo-controls">
+            <input id="bf-key-name" class="demo-response"> </input>
+          </div>
+          <div> <font color="black"> Api key: </font> </div>
+          <div class="demo-controls">
+            <input id="bf-key" class="demo-response"> </input>
+          </div>
+          <div> <font color="black"> Api secret: </font> </div>
+          <div class="demo-controls">
+            <input id="bf-secret" class="demo-response"> </input>
+          </div>
+          <h5> </h5>
+          <div class="demo-controls">
+            <button class="demo-button" id="add-bf-account"> Add account </button>
+            <textarea class="demo-response" id="add-account-progress" readonly></textarea>
+          </div>
+
+          <h5> Select account </h5>
+          <div class="demo-controls">
+            <select class="my_dropdown" id=bfaccountlist>
+            </select>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Visualize existing datasets
+          <div class="demo-meta u-avoid-clicks"> List of existing datasets on the selected account </div>
+        </button>
+
+        <div class="demo-box">
+          <h5> Dataset list </h5>
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bfdatasetlist">
+              <option> Select dataset </option>
+            </select>
+          </div>
+
+          <h5> </h5>
+          <div class="demo-controls">
+            <button class="demo-button" id="refresh-dataset-list"> Refresh list </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Create new dataset folder
+          <div class="demo-meta u-avoid-clicks"> Add an empty dataset folder on the selected Blackfynn account </div>
+        </button>
+        <div class="demo-box">
+          <p> </p>
+
+          <h5> Enter name </h5>
+          <div class="demo-controls">
+            <input id="bf-new-dataset-name" class="demo-response"> </input>
+          </div>
+
+          <h5> </h5>
+          <div class="demo-controls">
+            <button class="demo-button" id="create-bf-new-dataset"> Create </button>
+            <textarea class="demo-response" id="add-new-dataset-progress" readonly></textarea>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Submit new dataset
+          <div class="demo-meta u-avoid-clicks"> Upload a local dataset to your Blackfynn account </div>
+        </button>
+        <div class="demo-box">
+          <p> </p>
+
+          <h5> Select dataset to submit </h5>
+          <div class="demo-controls">
+            <button class="demo-button" id="select-submit-dataset">Select Dataset Folder </button>
+            <textarea class="demo-response" id="selected-submit-dataset"></textarea>
+          </div>
+
+          <div>
+          <h5> Submit </h5> 
+          <button class="demo-button" id="submit-dataset"> Submit dataset </button>
+          </div>
+
+          <div>
+          <h5> Progress </h5> 
+          <textarea id='progresssubmit' class='outputprint' rows="25" readonly></textarea>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Share a dataset with the Curation Team
+          <div class="demo-meta u-avoid-clicks"> Give access to your dataset to the Curation Team for review </div>
+        </button>
+        <div class="demo-box">
+          <p> </p>
+
+          <h5> Coming soon... </h5>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Annotate dataset
+          <div class="demo-meta u-avoid-clicks"> Inform the model properties for your dataset </div>
+        </button>
+        <div class="demo-box">
+          <p> </p>
+
+          <h5> Coming soon... </h5>
+
+        </div>
+      </div>
+    </div>
+
+  </section>
+</template>

@@ -1,0 +1,15 @@
+/* Table path to organize data ------------------ */
+
+td
+{
+  width:100px;
+  text-align:center;
+}
+input[type="button"]
+{
+  margin-top:10px;
+}
+.save
+{
+  display:none;
+}

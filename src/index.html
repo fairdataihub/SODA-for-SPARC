@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+
+    <title>SODA - Keep Calm and Curate </title>
+
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/nativize.css">
+    <link rel="stylesheet" href="assets/css/global.css">
+    <link rel="stylesheet" href="assets/css/nav.css">
+    <link rel="stylesheet" href="assets/css/section.css">
+    <link rel="stylesheet" href="assets/css/demo.css">
+    <link rel="stylesheet" href="assets/css/tablepath.css">
+
+    <link rel="import" href="sections/windows/windows.html">
+    <link rel="import" href="sections/windows/crash-hang.html">
+    <link rel="import" href="sections/menus/menus.html">
+    <link rel="import" href="sections/native-ui/dialogs.html">
+
+  </head>
+
+<body>
+
+  <nav class="nav js-nav">
+
+    <header class="nav-header">
+      <img class = "nav-center-logo-image" src="assets/img/logo-soda1024.png">
+      <h1 class="nav-title"><br />
+      Easily Curate 
+      and Submit <br />
+      SPARC Datasets </h1>
+    </header>
+
+    <div class="nav-item u-category-windows">
+      <button type="button" id="button-windows" data-section="windows" class="nav-button">Curate Dataset <em></em></button>
+      <button type="button" id="button-crash-hang" data-section="crash-hang" class="nav-button"> Manage and Submit Datasets </button>
+      <button type="button" id="button-menus" data-section="menus" class="nav-button"> Help </button>
+    </div>
+
+  </nav>
+
+  <main class="content js-content"></main>
+
+  <script> // Required js script are imported here
+    require('./assets/imports') // Imports html files into app
+    require('./assets/ex-links') // Opens url into external chrome tab instead of in the app
+    require('./assets/nav') // Side navigation menu control
+    require('./assets/demo-btns') 
+    require('./assets/normalize-shortcuts') // For normalizing shortcuts accross OS
+  </script>
+    
+</body>
+
+  <script>
+    require('./renderer.js') // js script for talking with Python back-end
+  </script>
+
+</html>

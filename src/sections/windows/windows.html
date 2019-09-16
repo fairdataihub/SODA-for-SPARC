@@ -1,0 +1,286 @@
+<template class="task-template">
+  <section id="windows-section" class="section js-section u-category-windows">
+    <header class="section-header">
+      <div class="section-wrapper">
+        <h1>
+          Curate dataset
+        </h1>
+        <h3>This interface will walk you step by step through the data curation process. </h3>
+      </div>
+    </header>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="new-window-demo-toggle" class="js-container-target demo-toggle-button">Organize dataset
+          <div class="demo-meta u-avoid-clicks"> Implement the SPARC dataset folder structure 
+          </div>
+        </button>
+        <div class="demo-box">
+
+          <form id = 'dataset_organize_form'>
+            <div>
+              <input id="preorganized-dataset" name="organizing-dataset" type="radio" class="with-style" value="preexisting"/>
+              <label for="preorganized-dataset" class=labelradio>Dataset already organized</label> 
+            </div>
+            <div>
+              <input id="organize-dataset" name="organizing-dataset" type="radio" class="with-style" value="local" />
+              <label for="organize-dataset" class=labelradio>Organize my dataset</label> 
+            </div>
+          </form>
+
+          <div id="divPreorganizedDataset" class="datasetsaveoption">
+            <h5> </h5> 
+            <div class="demo-controls">
+            <button class="demo-button" id="select-dataset">Select Dataset Folder </button>
+            <textarea class="demo-response" id="selected-dataset"></textarea>
+            </div>
+          </div>
+
+          <div id="divOrganizeDataset" class="datasetsaveoption">
+            <h5> Select folders and files to be added in each SPARC folder </h5> 
+            <h5> code </h5>
+            <div class="demo-controls">
+              <button class="demo-button" id="select-code">Add </button>
+              <textarea class="demo-response" id="selected-code"></textarea>
+            </div>
+            <div class="demo-controls">
+              <div id="wrapper">
+                <table align='center' cellspacing=2 cellpadding=5 id="code_table" border=1>
+                <tr>
+                <th>Path</th>
+                <th>Action</th>
+                </tr>
+
+                <tr id="row1">
+                <td id="name_row1"> some path 1</td>
+                <td>
+                <input type="button" id="edit_button1" value="Edit" class="edit" onclick="edit_row('1')">
+                <input type="button" id="save_button1" value="Save" display="none" class="save" onclick="save_row('1')">
+                <input type="button" value="Delete" class="delete" onclick="delete_row('1')">
+                </td>
+                </tr>
+
+                <tr id="row2">
+                <td id="name_row2">some path 2</td>
+                <td>
+                <input type="button" id="edit_button2" value="Edit" class="edit" onclick="edit_row('2')">
+                <input type="button" id="save_button2" value="Save" class="save" onclick="save_row('2')">
+                <input type="button" value="Delete" class="delete" onclick="delete_row('2')">
+                </td>
+                </tr>
+
+                <tr>
+                <td><input type="text" id="new_name"></td>
+                <td><input type="button" class="add" onclick="add_row();" value="Add Row"></td>
+                </tr>
+
+                </table>
+              </div>
+            </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="manage-window-demo-toggle" class="js-container-target demo-toggle-button">Convert file format
+          <div class="demo-meta u-avoid-clicks"> Use SPARC standard file formats </div>
+        </button>
+        <div class="demo-box">
+          <p>Coming soon...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="using-window-events-demo-toggle" class="js-container-target demo-toggle-button">Generate metadata
+          <div class="demo-meta u-avoid-clicks"> Include manifest, submission, dataset_description, subjects and/or samples files</div>
+        </button>
+        <div class="demo-box">
+          <h5>Manifest file</h5>
+          
+          <div class="demo-controls">
+            <input id="generate-manifest" name="manifest" type="checkbox" class="with-style"/>
+            <label for="generate-manifest" class=labelradio> Generate manifest files </label>
+          </div>
+         
+          <h5>Submission file</h5>
+
+          <form id='submission_file_form'>
+            <div>
+              <input id="existing-submission" name="submission_file_option" type="radio" class="with-style" value="existing" />
+              <label for="existing-submission" class=labelradio>Select existing</label>
+            </div>
+            <div>
+              <input id="new-submission" name="submission_file_option" type="radio" class="with-style" value="new" />
+              <label for="new-submission" class=labelradio> Generate new from template</label>
+            </div>
+            <div>
+              <input id="no-submission" name="submission_file_option" type="radio" class="with-style" value="none" checked/>
+              <label for="no-submission" class=labelradio> None </label>
+            </div>
+          </form>
+
+          <div id="divExistingSubmission" class="datasetsaveoption">
+            <h5> </h5> 
+            <div class="demo-controls">
+            <button class="demo-button" id="select-submission">Select submission file </button>
+            <textarea class="demo-response" id="selected-submission"></textarea>
+            </div>
+          </div>
+
+          <h5>Dataset description file</h5>
+
+          <form id='description_file_form'>
+            <div>
+              <input id="existing-description" name="descripion_file_option" type="radio" class="with-style" value="existing" />
+              <label for="existing-description" class=labelradio>Select existing</label>
+            </div>
+            <div>
+              <input id="new-description" name="descripion_file_option" type="radio" class="with-style" value="new" />
+              <label for="new-description" class=labelradio> Generate new from template</label>
+            </div>
+            <div>
+              <input id="no-description" name="descripion_file_option" type="radio" class="with-style" value="none" checked/>
+              <label for="no-description" class=labelradio> None </label>
+            </div>
+          </form>
+
+          <div id="divExistingDescription" class="datasetsaveoption">
+            <h5> </h5> 
+            <div class="demo-controls">
+            <button class="demo-button" id="select-description">Select description file </button>
+            <textarea class="demo-response" id="selected-description"></textarea>
+            </div>
+          </div>
+
+          <h5>Subjects file</h5>
+
+          <form id='subjects_file_form'>
+            <div>
+              <input id="existing-subjects" name="subjects_file_option" type="radio" class="with-style" value="existing" />
+              <label for="existing-subjects" class=labelradio>Select existing</label>
+            </div>
+            <div>
+              <input id="new-subjects" name="subjects_file_option" type="radio" class="with-style" value="new" />
+              <label for="new-subjects" class=labelradio> Generate new from template</label>
+            </div>
+            <div>
+              <input id="no-subjects" name="subjects_file_option" type="radio" class="with-style" value="none" checked/>
+              <label for="no-subjects" class=labelradio> None </label>
+            </div>
+          </form>
+
+          <div id="divExistingSubjects" class="datasetsaveoption">
+            <h5> </h5> 
+            <div class="demo-controls">
+            <button class="demo-button" id="select-subjects">Select subjects file </button>
+            <textarea class="demo-response" id="selected-subjects"></textarea>
+            </div>
+          </div>
+
+
+          <h5>Samples file</h5>
+
+          <form id='samples_file_form'>
+            <div>
+              <input id="existing-samples" name="samples_file_option" type="radio" class="with-style" value="existing" />
+              <label for="existing-samples" class=labelradio>Select existing </label>
+            </div>
+            <div>
+              <input id="new-samples" name="samples_file_option" type="radio" class="with-style" value="new" />
+              <label for="new-samples" class=labelradio> Generate new from template </label>
+            </div>
+            <div>
+              <input id="no-samples" name="samples_file_option" type="radio" class="with-style" value="none" checked/>
+              <label for="no-samples" class=labelradio> None </label>
+            </div>
+          </form>
+
+          <div id="divExistingSamples" class="datasetsaveoption">
+            <h5> </h5> 
+            <div class="demo-controls">
+            <button class="demo-button" id="select-samples">Select samples file </button>
+            <textarea class="demo-response" id="selected-samples"></textarea>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button class="js-container-target demo-toggle-button">Validate dataset
+          <div class="demo-meta u-avoid-clicks"> Verify dataset using validator developed by the Curation Team </div>
+        </button>
+        <div class="demo-box">
+          <p> Coming soon...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button class="js-container-target demo-toggle-button">Curate dataset
+          <div class="demo-meta u-avoid-clicks"> Apply changes and create new dataset locally or directly on Blackfynn </div>
+        </button>
+
+        <div class="demo-box">
+
+        <h5> New dataset</h5>
+          <form id = 'dataset_curate_form'>
+            <div>
+              <input id="existing-dataset" name="new-dataset" type="radio" class="with-style" value="existing"/>
+              <label for="existing-dataset" class=labelradio>Modify current dataset</label> 
+            </div>
+            <div>
+              <input id="create-newdataset" name="new-dataset" type="radio" class="with-style" value="local" />
+              <label for="create-newdataset" class=labelradio>Create new dataset locally</label> 
+            </div>
+            <div>
+              <input id="cloud-dataset" name="new-dataset" type="radio" class="with-style" value="cloud" />
+              <label for="cloud-dataset" class=labelradio>Create new dataset directly on Blackfynn</label> 
+            </div>
+          </form>
+
+          <div id="divCreateNew" class="datasetsaveoption">
+            <h5> Selection New Dataset Destination Folder </h5> 
+            <div class="demo-controls">
+            <button class="demo-button" id="select-new-dataset"> Select Destination </button>
+            <textarea class="demo-response" id="selected-new-dataset"></textarea>
+            </div>
+          </div>
+
+          <div id="divCreateCloud" class="datasetsaveoption">
+          <h5> Coming soon...</h5> 
+          </div>
+
+          <div id="curatebutton" class="datasetsaveoption">
+          <h5> Apply changes </h5> 
+          <button class="demo-button" id="curate-dataset"> Curate </button>
+          </div>
+          <div id="progressprint" class="datasetsaveoption">
+          <h5> Progress </h5> 
+          <textarea id='progressinfo' class='outputprint' rows="25" readonly></textarea>
+          </div>
+
+        </div>
+        
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      require('./renderer-process/windows/new-dataset-action')
+      require('./renderer-process/windows/organize-dataset-action')
+    </script>
+
+    <script type="text/javascript" src="./renderer-process/windows/table_script.js">
+    </script>
+
+  </section>
+</template>
