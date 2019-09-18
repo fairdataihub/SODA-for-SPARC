@@ -239,3 +239,26 @@ textarea.outputprint{
 select.my_dropdown {
     width:80%;
 }
+
+table.pathtable {
+  margin: auto;
+  width: 100%;
+  max-width:100%;
+  min-width:100%;
+  font:inherit;
+  word-break: break-word;
+  border-collapse: collapse;
+  border: 1px solid #fff; /*for older IE*/
+  border-style: hidden
+  }
+
+table.pathtable tr td:first-child {
+  width: 75%;
+  max-width:75%;
+  min-width:75%;
+}
+
+input[type="button"].save
+{
+  display:none;
+}

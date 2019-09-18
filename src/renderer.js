@@ -16,6 +16,10 @@ client.invoke("echo", "server ready", (error, res) => {
 })
 
 // Inputs from user interface //
+const saveFileOrganizationBtn = document.getElementById('save-file-organization')
+const table=document.getElementById("code_table")
+let pathsavefileorganization = document.querySelector('#selected-save-file-organization')
+
 let pathdataset = document.querySelector('#selected-dataset')
 let createnewstatus = document.querySelector('#create-newdataset')
 let pathnewdataset = document.querySelector('#selected-new-dataset')
@@ -74,6 +78,19 @@ const redcolor = '#ff1a1a'
 
 // Add existing bf account(s) to dropdown list
 updateBfAccountList()
+
+
+// Action when user click on Save file organization button
+// pathsavefileorganization
+// curateDatasetBtn.addEventListener('click', () => {
+//   client.invoke("apiSaveFileOrganization", table, pathsavefileorganization.value, (error, res) => {
+//       if(error) {
+//         console.log('ERROR')
+//       } else {
+//         console.log('Done')
+//       }
+//   })   
+// })
 
 // Action when user click on Curate Dataset
 curateDatasetBtn.addEventListener('click', () => {

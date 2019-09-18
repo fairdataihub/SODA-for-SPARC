@@ -13,10 +13,30 @@ ipcMain.on('open-file-dialog-dataset', (event) => {
 // SPARC folder
 ipcMain.on('open-file-dialog-code', (event) => {
   dialog.showOpenDialog({
-    properties: ['openDirectory', 'openFile']
+    properties: ['openFile', 'multiSelections']
   }, (files) => {
     if (files) {
       event.sender.send('selected-code', files);
+    }
+  })
+})
+
+ipcMain.on('open-folder-dialog-code', (event) => {
+  dialog.showOpenDialog({
+    properties: ['openDirectory', 'multiSelections']
+  }, (files) => {
+    if (files) {
+      event.sender.send('selected-code', files);
+    }
+  })
+})
+
+ipcMain.on('open-folder-dialog-saveorganization', (event) => {
+  dialog.showOpenDialog({
+    properties: ['openDirectory']
+  }, (files) => {
+    if (files) {
+      event.sender.send('selected-saveorganizationfolder', files);
     }
   })
 })

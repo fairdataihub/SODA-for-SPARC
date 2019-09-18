@@ -9,6 +9,12 @@ from os.path import isdir, isfile
 class SodaApi(object):
 
     ### Curate dataset
+    def apiSaveFileOrganization(table, pathsavefileorganization):
+        try: 
+            a = 1
+        except Exception as e:
+            raise e
+
     def apiCurateDataset(self, pathdataset, createnewstatus, pathnewdataset,
         manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
         subjectsstatus, pathsubjects, samplesstatus, pathsamples):

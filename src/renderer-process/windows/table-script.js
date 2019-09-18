@@ -3,8 +3,7 @@
 function edit_row(no)
 {
  document.getElementById("edit_button"+no).style.display="none";
- document.getElementById("save_button"+no).style.display="block";
-	
+ document.getElementById("save_button"+no).style.display="inline";
  var name=document.getElementById("name_row"+no);
 	
  var name_data=name.innerHTML;
@@ -19,7 +18,7 @@ function save_row(no)
 
  document.getElementById("name_row"+no).innerHTML=name_val;
 
- document.getElementById("edit_button"+no).style.display="block";
+ document.getElementById("edit_button"+no).style.display="inline";
  document.getElementById("save_button"+no).style.display="none";
 }
 

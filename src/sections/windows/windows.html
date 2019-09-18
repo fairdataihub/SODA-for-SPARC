@@ -24,7 +24,7 @@
             </div>
             <div>
               <input id="organize-dataset" name="organizing-dataset" type="radio" class="with-style" value="local" />
-              <label for="organize-dataset" class=labelradio>Organize my dataset</label> 
+              <label for="organize-dataset" class=labelradio> Organize my dataset </label> 
             </div>
           </form>
 
@@ -37,36 +37,22 @@
           </div>
 
           <div id="divOrganizeDataset" class="datasetsaveoption">
+
+            <h5> Upload previously saved file structure </h5>
+            <button class="demo-button" id="upload-file-organization"> Upload </button>
+
             <h5> Select folders and files to be added in each SPARC folder </h5> 
+
             <h5> code </h5>
             <div class="demo-controls">
-              <button class="demo-button" id="select-code">Add </button>
-              <textarea class="demo-response" id="selected-code"></textarea>
+              <button class="demo-button" id="select-code">Add files </button>
+              <button class="demo-button" id="select-code-directory">Add folders</button>
             </div>
             <div class="demo-controls">
-              <div id="wrapper">
-                <table align='center' cellspacing=2 cellpadding=5 id="code_table" border=1>
+                <table id="code_table" class = pathtable>
                 <tr>
                 <th>Path</th>
                 <th>Action</th>
-                </tr>
-
-                <tr id="row1">
-                <td id="name_row1"> some path 1</td>
-                <td>
-                <input type="button" id="edit_button1" value="Edit" class="edit" onclick="edit_row('1')">
-                <input type="button" id="save_button1" value="Save" display="none" class="save" onclick="save_row('1')">
-                <input type="button" value="Delete" class="delete" onclick="delete_row('1')">
-                </td>
-                </tr>
-
-                <tr id="row2">
-                <td id="name_row2">some path 2</td>
-                <td>
-                <input type="button" id="edit_button2" value="Edit" class="edit" onclick="edit_row('2')">
-                <input type="button" id="save_button2" value="Save" class="save" onclick="save_row('2')">
-                <input type="button" value="Delete" class="delete" onclick="delete_row('2')">
-                </td>
                 </tr>
 
                 <tr>
@@ -75,9 +61,16 @@
                 </tr>
 
                 </table>
-              </div>
             </div>
-            </div>
+            <h5> Save file organization to continue later </h5>
+            <div class="demo-controls">
+	            <button class="demo-button" id="select-save-file-organization"> Select location </button>
+	            <textarea class="demo-response" id="selected-save-file-organization"></textarea>
+	        </div>    
+	        <div class="demo-controls">
+	            <button class="demo-button" id="save-file-organization"> Save </button>
+	        </div>    
+           </div>
           </div>
 
         </div>
@@ -279,7 +272,7 @@
       require('./renderer-process/windows/organize-dataset-action')
     </script>
 
-    <script type="text/javascript" src="./renderer-process/windows/table_script.js">
+    <script type="text/javascript" src="./renderer-process/windows/table-script.js">
     </script>
 
   </section>
