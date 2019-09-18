@@ -12,10 +12,10 @@
     <link rel="stylesheet" href="assets/css/section.css">
     <link rel="stylesheet" href="assets/css/demo.css">
 
-    <link rel="import" href="sections/windows/windows.html">
-    <link rel="import" href="sections/windows/crash-hang.html">
-    <link rel="import" href="sections/menus/menus.html">
-    <link rel="import" href="sections/native-ui/dialogs.html">
+    <link rel="import" href="sections/curate/curate.html">
+    <link rel="import" href="sections/manage_submit/manage_submit.html">
+    <link rel="import" href="sections/help/help.html">
+    <link rel="import" href="main-process/native-ui/dialogs/dialogs.html">
 
   </head>
 
@@ -26,15 +26,15 @@
     <header class="nav-header">
       <img class = "nav-center-logo-image" src="assets/img/logo-soda1024.png">
       <h1 class="nav-title"><br />
-      Easily Curate 
+      Easily Curate
       and Submit <br />
       SPARC Datasets </h1>
     </header>
 
     <div class="nav-item u-category-windows">
-      <button type="button" id="button-windows" data-section="windows" class="nav-button">Curate Dataset <em></em></button>
-      <button type="button" id="button-crash-hang" data-section="crash-hang" class="nav-button"> Manage and Submit Datasets </button>
-      <button type="button" id="button-menus" data-section="menus" class="nav-button"> Help </button>
+      <button type="button" id="button-curate" data-section="curate" class="nav-button">Curate Dataset <em></em></button>
+      <button type="button" id="button-manage_submit" data-section="manage_submit" class="nav-button"> Manage and Submit Datasets </button>
+      <button type="button" id="button-help" data-section="help" class="nav-button"> Help </button>
     </div>
 
   </nav>
@@ -45,10 +45,10 @@
     require('./assets/imports') // Imports html files into app
     require('./assets/ex-links') // Opens url into external chrome tab instead of in the app
     require('./assets/nav') // Side navigation menu control
-    require('./assets/demo-btns') 
+    require('./assets/demo-btns')
     require('./assets/normalize-shortcuts') // For normalizing shortcuts accross OS
   </script>
-    
+
 </body>
 
   <script>

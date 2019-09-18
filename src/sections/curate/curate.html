@@ -1,5 +1,5 @@
 <template class="task-template">
-  <section id="windows-section" class="section js-section u-category-windows">
+  <section id="curate-section" class="section js-section u-category-windows">
     <header class="section-header">
       <div class="section-wrapper">
         <h1>
@@ -12,7 +12,7 @@
     <div class="demo">
       <div class="demo-wrapper">
         <button id="new-window-demo-toggle" class="js-container-target demo-toggle-button">Organize dataset
-          <div class="demo-meta u-avoid-clicks"> Implement the SPARC dataset folder structure 
+          <div class="demo-meta u-avoid-clicks"> Implement the SPARC dataset folder structure
           </div>
         </button>
         <div class="demo-box">
@@ -20,16 +20,16 @@
           <form id = 'dataset_organize_form'>
             <div>
               <input id="preorganized-dataset" name="organizing-dataset" type="radio" class="with-style" value="preexisting"/>
-              <label for="preorganized-dataset" class=labelradio>Dataset already organized</label> 
+              <label for="preorganized-dataset" class=labelradio>Dataset already organized</label>
             </div>
             <div>
               <input id="organize-dataset" name="organizing-dataset" type="radio" class="with-style" value="local" />
-              <label for="organize-dataset" class=labelradio> Organize my dataset </label> 
+              <label for="organize-dataset" class=labelradio> Organize my dataset </label>
             </div>
           </form>
 
           <div id="divPreorganizedDataset" class="datasetsaveoption">
-            <h5> </h5> 
+            <h5> </h5>
             <div class="demo-controls">
             <button class="demo-button" id="select-dataset">Select Dataset Folder </button>
             <textarea class="demo-response" id="selected-dataset"></textarea>
@@ -41,7 +41,7 @@
             <h5> Upload previously saved file structure </h5>
             <button class="demo-button" id="upload-file-organization"> Upload </button>
 
-            <h5> Select folders and files to be added in each SPARC folder </h5> 
+            <h5> Select folders and files to be added in each SPARC folder </h5>
 
             <h5> code </h5>
             <div class="demo-controls">
@@ -66,10 +66,10 @@
             <div class="demo-controls">
 	            <button class="demo-button" id="select-save-file-organization"> Select location </button>
 	            <textarea class="demo-response" id="selected-save-file-organization"></textarea>
-	        </div>    
+	        </div>
 	        <div class="demo-controls">
 	            <button class="demo-button" id="save-file-organization"> Save </button>
-	        </div>    
+	        </div>
            </div>
           </div>
 
@@ -95,12 +95,12 @@
         </button>
         <div class="demo-box">
           <h5>Manifest file</h5>
-          
+
           <div class="demo-controls">
             <input id="generate-manifest" name="manifest" type="checkbox" class="with-style"/>
             <label for="generate-manifest" class=labelradio> Generate manifest files </label>
           </div>
-         
+
           <h5>Submission file</h5>
 
           <form id='submission_file_form'>
@@ -119,7 +119,7 @@
           </form>
 
           <div id="divExistingSubmission" class="datasetsaveoption">
-            <h5> </h5> 
+            <h5> </h5>
             <div class="demo-controls">
             <button class="demo-button" id="select-submission">Select submission file </button>
             <textarea class="demo-response" id="selected-submission"></textarea>
@@ -144,7 +144,7 @@
           </form>
 
           <div id="divExistingDescription" class="datasetsaveoption">
-            <h5> </h5> 
+            <h5> </h5>
             <div class="demo-controls">
             <button class="demo-button" id="select-description">Select description file </button>
             <textarea class="demo-response" id="selected-description"></textarea>
@@ -169,7 +169,7 @@
           </form>
 
           <div id="divExistingSubjects" class="datasetsaveoption">
-            <h5> </h5> 
+            <h5> </h5>
             <div class="demo-controls">
             <button class="demo-button" id="select-subjects">Select subjects file </button>
             <textarea class="demo-response" id="selected-subjects"></textarea>
@@ -195,7 +195,7 @@
           </form>
 
           <div id="divExistingSamples" class="datasetsaveoption">
-            <h5> </h5> 
+            <h5> </h5>
             <div class="demo-controls">
             <button class="demo-button" id="select-samples">Select samples file </button>
             <textarea class="demo-response" id="selected-samples"></textarea>
@@ -229,20 +229,20 @@
           <form id = 'dataset_curate_form'>
             <div>
               <input id="existing-dataset" name="new-dataset" type="radio" class="with-style" value="existing"/>
-              <label for="existing-dataset" class=labelradio>Modify current dataset</label> 
+              <label for="existing-dataset" class=labelradio>Modify current dataset</label>
             </div>
             <div>
               <input id="create-newdataset" name="new-dataset" type="radio" class="with-style" value="local" />
-              <label for="create-newdataset" class=labelradio>Create new dataset locally</label> 
+              <label for="create-newdataset" class=labelradio>Create new dataset locally</label>
             </div>
             <div>
               <input id="cloud-dataset" name="new-dataset" type="radio" class="with-style" value="cloud" />
-              <label for="cloud-dataset" class=labelradio>Create new dataset directly on Blackfynn</label> 
+              <label for="cloud-dataset" class=labelradio>Create new dataset directly on Blackfynn</label>
             </div>
           </form>
 
           <div id="divCreateNew" class="datasetsaveoption">
-            <h5> Selection New Dataset Destination Folder </h5> 
+            <h5> Selection New Dataset Destination Folder </h5>
             <div class="demo-controls">
             <button class="demo-button" id="select-new-dataset"> Select Destination </button>
             <textarea class="demo-response" id="selected-new-dataset"></textarea>
@@ -250,29 +250,29 @@
           </div>
 
           <div id="divCreateCloud" class="datasetsaveoption">
-          <h5> Coming soon...</h5> 
+          <h5> Coming soon...</h5>
           </div>
 
           <div id="curatebutton" class="datasetsaveoption">
-          <h5> Apply changes </h5> 
+          <h5> Apply changes </h5>
           <button class="demo-button" id="curate-dataset"> Curate </button>
           </div>
           <div id="progressprint" class="datasetsaveoption">
-          <h5> Progress </h5> 
+          <h5> Progress </h5>
           <textarea id='progressinfo' class='outputprint' rows="25" readonly></textarea>
           </div>
 
         </div>
-        
+
       </div>
     </div>
 
     <script type="text/javascript">
-      require('./renderer-process/windows/new-dataset-action')
-      require('./renderer-process/windows/organize-dataset-action')
+      require('./renderer-process/curate/new-dataset-action')
+      require('./renderer-process/curate/organize-dataset-action')
     </script>
 
-    <script type="text/javascript" src="./renderer-process/windows/table-script.js">
+    <script type="text/javascript" src="./renderer-process/curate/table-script.js">
     </script>
 
   </section>
