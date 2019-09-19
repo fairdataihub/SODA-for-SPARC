@@ -42,18 +42,18 @@ let existingsamplesstatus = document.querySelector('#existing-samples')
 let newsamplesstatus = document.querySelector('#new-samples')
 let pathsamplesexisting = document.querySelector('#selected-samples')
 
-var submissionstatus 
+var submissionstatus
 var pathsubmission
-var descriptionstatus 
+var descriptionstatus
 var pathdescription
-var subjectsstatus 
+var subjectsstatus
 var pathsubjects
 var samplesstatus
 var pathsamples
 
 const curateDatasetBtn = document.getElementById('curate-dataset')
 let progressinfo = document.querySelector('#progressinfo')
- 
+
 let keyname = document.querySelector('#bf-key-name')
 let key = document.querySelector('#bf-key')
 let secret = document.querySelector('#bf-secret')
@@ -89,7 +89,7 @@ updateBfAccountList()
 //       } else {
 //         console.log('Done')
 //       }
-//   })   
+//   })
 // })
 
 // Action when user click on Curate Dataset
@@ -141,7 +141,7 @@ curateDatasetBtn.addEventListener('click', () => {
   progressinfo.value = ''
   var completionstatus = 'Solving'
 
-  client.invoke("apiCurateDataset", pathdataset.value, createnewstatus.checked, pathnewdataset.value, 
+  client.invoke("apiCurateDataset", pathdataset.value, createnewstatus.checked, pathnewdataset.value,
     manifeststatus.checked, submissionstatus, pathsubmission,  descriptionstatus, pathdescription,
     subjectsstatus, pathsubjects, samplesstatus, pathsamples,
     (error, res) => {
@@ -177,14 +177,14 @@ curateDatasetBtn.addEventListener('click', () => {
       enableform(curationform)
     }
   }
-  
+
 })
 
 
 // Add bf account
 bfAddAccountBtn.addEventListener('click', () => {
   bfaddaccountinfo.style.color = blackcolor
-  bfAddAccountBtn.disabled = true 
+  bfAddAccountBtn.disabled = true
   bfaddaccountinfo.value = ''
   client.invoke("apiBfAddAccount", keyname.value, key.value, secret.value, (error, res) => {
     if(error) {
@@ -195,7 +195,7 @@ bfAddAccountBtn.addEventListener('click', () => {
     } else {
         bfaddaccountinfo.value = res
         removeOptions(bfaccountlist)
-        updateBfAccountList()   
+        updateBfAccountList()
     }
     bfAddAccountBtn.disabled = false
   })
@@ -217,7 +217,7 @@ bfRefreshDatasetBtn.addEventListener('click', () => {
 // Add new dataset folder (empty) on bf
 bfCreateNewDatasetBtn.addEventListener('click', () => {
   bfcreatenewdatasetinfo.style.color = blackcolor
-  bfCreateNewDatasetBtn.disabled = true 
+  bfCreateNewDatasetBtn.disabled = true
   bfcreatenewdatasetinfo.value = 'Adding'
   var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
   client.invoke("apiBfNewDatasetFolder", bfnewdatasetname.value, selectedbfaccount, (error, res) => {
@@ -239,7 +239,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
 // Submit local dataset to selected bf dataset
 bfSubmitDatasetBtn.addEventListener('click', () => {
   bfsubmitdatasetinfo.style.color = blackcolor
-  bfSubmitDatasetBtn.disabled = true 
+  bfSubmitDatasetBtn.disabled = true
   bfsubmitdatasetinfo.value = 'Submitting'
   var completionstatus = 'Solving'
   var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
@@ -265,7 +265,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
           var printstatus = res[2]
           if (printstatus === 'Uploading') {
             bfsubmitdatasetinfo.value = res[0].split(',').join('\n')
-          } 
+          }
         }
       })
       if (completionstatus === 'Done'){
