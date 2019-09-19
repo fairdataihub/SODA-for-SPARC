@@ -18,7 +18,9 @@
           <p> Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients"> Blackfynn Help </a>
           for generating an API and setting up your Blackfynn account on your computer for the first time. </p>
 
-          <h5> Add new account </h5>
+          <h5> Add new account
+            <tooltip data-tooltip="Authenticate yourself using your account credentials" data-tooltip-position="left">( i )</tooltip>
+          </h5>
           <div> <font color="black"> Api key name: </font> </div>
           <div class="demo-controls">
             <input id="bf-key-name" class="demo-response"> </input>
@@ -37,7 +39,9 @@
             <textarea class="demo-response" id="add-account-progress" readonly></textarea>
           </div>
 
-          <h5> Select account </h5>
+          <h5> Select account
+            <tooltip data-tooltip="Select one of the existing accounts" data-tooltip-position="left">( i )</tooltip>
+          </h5>
           <div class="demo-controls">
             <select class="my_dropdown" id=bfaccountlist>
             </select>
@@ -54,7 +58,9 @@
         </button>
 
         <div class="demo-box">
-          <h5> Dataset list </h5>
+          <h5> Dataset list
+            <tooltip data-tooltip="List of datasets existing on your Blackfynn account" data-tooltip-position="left">( i )</tooltip>
+          </h5>
           <div class="demo-controls">
             <select class="my_dropdown" id="bfdatasetlist">
               <option> Select dataset </option>
@@ -79,7 +85,9 @@
         <div class="demo-box">
           <p> </p>
 
-          <h5> Enter name </h5>
+          <h5> Enter name
+            <tooltip data-tooltip="Enter the name of the Dataset you want to create" data-tooltip-position="left">( i )</tooltip>
+          </h5>
           <div class="demo-controls">
             <input id="bf-new-dataset-name" class="demo-response"> </input>
           </div>
@@ -102,7 +110,9 @@
         <div class="demo-box">
           <p> </p>
 
-          <h5> Select dataset to submit </h5>
+          <h5> Select dataset to submit
+            <tooltip data-tooltip="Select the folder that you want to submit to your Blackfynn account" data-tooltip-position="left">( i )</tooltip>
+          </h5>
           <div class="demo-controls">
             <button class="demo-button" id="select-submit-dataset">Select Dataset Folder </button>
             <textarea class="demo-response" id="selected-submit-dataset"></textarea>
