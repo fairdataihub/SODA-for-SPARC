@@ -37,12 +37,12 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
     curatestatus = ''
     curateprintstatus = ' '
 
-    if not isdir(pathdataset): 
+    if not isdir(pathdataset):
         curatestatus = 'Done'
         raise Exception('Error: Please select a valid dataset folder')
 
     if createnewstatus:
-        if not isdir(pathnewdataset): 
+        if not isdir(pathnewdataset):
             curatestatus = 'Done'
             raise Exception('Error: Please select a valid folder for new dataset')
 
@@ -50,23 +50,39 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
         if not isfile(pathsubmission):
             curatestatus = 'Done'
             raise Exception('Error: Select valid path for submission file')
+        # Adding check for correct file name
+        if pathsubmission.split('\\')[-1].split('.')[0] != 'submission':
+            curatestatus = 'Done'
+            raise Exception('Error: Select valid name for submission file')
 
     if datasetdescriptionstatus:
         if not isfile(pathdescription):
             curatestatus = 'Done'
             raise Exception('Error: Select valid path for dataset description file')
+        # Adding check for correct file name
+        if pathdescription.split('\\')[-1].split('.')[0] != 'dataset_description':
+            curatestatus = 'Done'
+            raise Exception('Error: Select valid name for dataset_description file')
 
     if subjectsstatus:
         if not isfile(pathsubjects):
             curatestatus = 'Done'
             raise Exception('Error: Select valid path for subjects file')
+        # Adding check for correct file name
+        if pathsubjects.split('\\')[-1].split('.')[0] != 'subjects':
+            curatestatus = 'Done'
+            raise Exception('Error: Select valid name for subjects file')
 
     if samplesstatus:
         if not isfile(pathsamples):
             curatestatus = 'Done'
             raise Exception('Error: Select valid path for samples file')
+        # Adding check for correct file name
+        if pathsamples.split('\\')[-1].split('.')[0] != 'samples':
+            curatestatus = 'Done'
+            raise Exception('Error: Select valid name for samples file')
 
-    try: 
+    try:
         curateprogress = 'Started'
         curateprintstatus = 'Curating'
         if createnewstatus:
@@ -84,7 +100,7 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
 
         if submissionstatus:
             copyfile(pathsubmission, pathdataset)
-            curateprogress = curateprogress + ', ,' + 'Submission file created'
+            curateprogress = curateprogress + ', ,' + 'Submission file created' + pathnewdataset
         else:
             curateprogress = curateprogress + ', ,' + 'Submission file not requested'
 
@@ -122,10 +138,10 @@ def curatedatasetprogress():
 
 def createmanifest(datasetpath):
     # Get the names of all the subfolder in the dataset
-    folders = [folder for folder in listdir(datasetpath) if 
+    folders = [folder for folder in listdir(datasetpath) if
                isdir(join(datasetpath, folder))]
-    
-    # In each subfolder, generate a manifest file 
+
+    # In each subfolder, generate a manifest file
     for folder in folders:
         # Initialize dataframe where manifest info will be stored
         df = DataFrame(columns=['filename', 'timestamp', 'description',
@@ -136,7 +152,7 @@ def createmanifest(datasetpath):
         allfiles = listdir(folderpath)
         if 'manifest.xlsx' in allfiles:
             allfiles.remove('manifest.xlsx')
-         
+
         # Populate manifest dataframe
         filename = []
         timestamp = []
@@ -145,7 +161,7 @@ def createmanifest(datasetpath):
             filepath = join(folderpath, file)
             filename.append(splitext(file)[0])
             lastmodtime = getmtime(filepath)
-            timestamp.append(strftime('%Y-%m-%d %H:%M:%S', 
+            timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
                                       localtime(lastmodtime)))
             if isdir(filepath):
                 filetype.append('folder')
@@ -158,7 +174,7 @@ def createmanifest(datasetpath):
         df['filename'] = filename
         df['timestamp'] = timestamp
         df['file type'] = filetype
-        
+
         # Save manifest as Excel sheet
         manifestfile = join(folderpath, 'manifest.xlsx')
         df.to_excel(manifestfile, index=None, header=True)
@@ -191,27 +207,27 @@ def copyfile(src, dst):
 #createdataset(r'C:\Users\Bhavesh\Desktop\test_dataset', r'C:\Users\Bhavesh\Desktop\new_dataset')
 
 # Generate master manifest.xlsx file in the main dataset folder
-    
-# Save project information required for submission.xlsx 
-# in an Excel file
-    
 
-# Save investigator profile required for dataset_description.xlsx 
-# in an Excel file   
-    
+# Save project information required for submission.xlsx
+# in an Excel file
+
+
+# Save investigator profile required for dataset_description.xlsx
+# in an Excel file
+
 
 # Generate new submission.xlsx based on existing one
-    
 
-# Generate new dataset_description.xlsx based on existing one  
-    
+
+# Generate new dataset_description.xlsx based on existing one
+
 
 # Convert Excel to csv
-    
+
 
 # Convert Excel to json
-    
-   
+
+
 ### FEATURE #4: SODA Blackfynn interface
 # Log in to Blackfynn
 def bfaddaccount(keyname, key, secret):
@@ -338,8 +354,8 @@ def bfsubmitdataset(accountname, bfdataset, pathdataset):
         #if not isdir(pathdataset):
         submitdatastatus = 'Done'
         raise Exception('Error: Please select a valid local dataset folder')
-    
-    try: 
+
+    try:
         def calluploadfolder():
             global submitdataprogress
             global submitdatastatus
@@ -365,7 +381,7 @@ def upload_structured_file(myds, mypath, myfolder):
 
     mypath = join(mypath)
     for f in listdir(mypath):
-        if isfile(join(mypath, f)):  
+        if isfile(join(mypath, f)):
             submitdataprogress = submitdataprogress + ', ,' + "Uploading " + f + " in " + myfolder
             filepath = join(mypath, f)
             myds.upload(filepath)
