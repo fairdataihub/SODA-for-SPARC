@@ -15,15 +15,6 @@ client.invoke("echo", "server ready", (error, res) => {
   }
 })
 
-const tt = require('electron-tooltip')
-tt({
-  width: 250,
-  style: {
-    backgroundColor: '#404040',
-    borderRadius: '4px'
-  }
-})
-
 // Inputs from user interface //
 const saveFileOrganizationBtn = document.getElementById('save-file-organization')
 const table=document.getElementById("code_table")
