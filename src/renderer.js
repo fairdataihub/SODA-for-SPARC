@@ -81,18 +81,6 @@ updateBfAccountList()
 
 
 // Action when user click on Save file organization button
-<<<<<<< Updated upstream
-// pathsavefileorganization
-// curateDatasetBtn.addEventListener('click', () => {
-//   client.invoke("apiSaveFileOrganization", table, pathsavefileorganization.value, (error, res) => {
-//       if(error) {
-//         console.log('ERROR')
-//       } else {
-//         console.log('Done')
-//       }
-//   })
-// })
-=======
 saveFileOrganizationBtn.addEventListener('click', () => {
   client.invoke("apiSaveFileOrganization", table, pathsavefileorganization.value, (error, res) => {
       if(error) {
@@ -103,7 +91,6 @@ saveFileOrganizationBtn.addEventListener('click', () => {
       }
   })
 })
->>>>>>> Stashed changes
 
 // Action when user click on Curate Dataset
 curateDatasetBtn.addEventListener('click', () => {
@@ -356,4 +343,3 @@ function refreshBfDatasetList(){
     })
   }
 }
-

@@ -10,7 +10,6 @@ from time import strftime, localtime
 from shutil import copy2
 from blackfynn import Blackfynn
 from configparser import ConfigParser
-from bs4 import BeautifulSoup
 import threading
 
 ### Global variables
@@ -27,8 +26,8 @@ submitprintstatus = ' '
 ### FEATURE #1: SPARC dataset organizer
 # Organize dataset
 def savefileorganization(table, pathsavefileorganization):
-    # tablepd = pd.read_html(table)[0] 
-    # tablepd.to_excel("test.xlsx") 
+    # tablepd = pd.read_html(table)[0]
+    # tablepd.to_excel("test.xlsx")
     try:
         # soup = BeautifulSoup(table, 'lxml')
         # f = open("dict.txt","w")
@@ -36,7 +35,7 @@ def savefileorganization(table, pathsavefileorganization):
         # f.close()
         return table
     except Exception as e:
-        raise e 
+        raise e
 
 ### FEATURE #2: SPARC metadata generator
 
@@ -199,9 +198,19 @@ def createmanifest(datasetpath):
 def createdataset(frompath, topath):
     datasetfoldername = basename(normpath(frompath))
     topath = join(topath, datasetfoldername)
+    topath = return_new_path(topath)
     copytree(frompath, topath)
     return topath
 
+def return_new_path(topath):
+    """
+    This function checks if the folder already exists and in such cases, appends the name with (2) or (3) etc. upto 20
+    """
+    print(topath)
+    if exists(topath):
+        for i in range(2, 21):
+            if not exists(topath + ' (' + str(i) + ')'):
+                return topath + ' (' + str(i) + ')'
 
 def copytree(src, dst, symlinks=False, ignore=None):
     if not exists(dst):
