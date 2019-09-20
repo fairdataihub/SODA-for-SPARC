@@ -1,6 +1,7 @@
 from __future__ import print_function
 from pysoda import createmanifest, createdataset, copyfile, bfaddaccount, bfaccountlist, bfdatasetaccount, \
-    bfsubmitdataset, submitdatasetprogress, curatedataset, curatedatasetprogress, bfnewdatasetfolder
+    bfsubmitdataset, submitdatasetprogress, curatedataset, curatedatasetprogress, bfnewdatasetfolder, \
+    savefileorganization
 import sys
 import zerorpc
 from os.path import isdir, isfile
@@ -9,9 +10,9 @@ from os.path import isdir, isfile
 class SodaApi(object):
 
     ### Curate dataset
-    def apiSaveFileOrganization(table, pathsavefileorganization):
+    def apiSaveFileOrganization(self, table, pathsavefileorganization):
         try: 
-            a = 1
+            return savefileorganization(table, pathsavefileorganization)
         except Exception as e:
             raise e
 

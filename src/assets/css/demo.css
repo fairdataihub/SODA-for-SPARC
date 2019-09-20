@@ -137,6 +137,9 @@ tooltip {
   color: black;
 }
 
+.demo-box p {
+  padding: 5px;
+}
 
 /* Demo Controls ----------------------------- */
 
@@ -272,4 +275,10 @@ table.pathtable tr td:first-child {
 input[type="button"].save
 {
   display:none;
+}
+
+input[type='text'].inputpath
+{
+  margin-right: 10px;
+  width: 40%;
 }

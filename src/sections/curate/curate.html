@@ -44,13 +44,14 @@
               <tooltip data-tooltip="Upload previously saved file structure" data-tooltip-position="left">( i )</tooltip>
             </h5>
             <button class="demo-button" id="upload-file-organization"> Upload </button>
+            <hr>
 
             <h5> Select folders and files to be added in each SPARC folder
               <tooltip data-tooltip="Select folders and files to be added in each SPARC folder" data-tooltip-position="left">( i )</tooltip>
             </h5>
             <div class="demo-controls">
-            	SPARC folder:
-              	<select class="my_dropdown" id="SPARCfolderlist">
+            	<p> Select SPARC folder: <p>
+              <div>	<select id="SPARCfolderlist">
 	              <option> code </option>
 	              <option> derivatives </option>
 	              <option> docs </option>
@@ -58,12 +59,17 @@
 	              <option> samples </option>
 	              <option> sourcedata </option>
 	              <option> subjects </option>
-	        	</select>
+	        	</select> </div>
             </div>
-            <h5>  </h5>
             <div class="demo-controls">
+                <p> Browse and select files/folders: </p>
               	<button class="demo-button" id="select-code">Add files </button>
               	<button class="demo-button" id="select-code-directory">Add folders</button>
+            </div>
+            <div class="demo-controls">
+                <p> Enter file/folder path manually: </p>
+                <input type="text" id="new_name" class=inputpath>
+                <input type="button" class="add" onclick="add_row();" value="Add path">
             </div>
             <h5>  </h5>
             <div class="demo-controls">
@@ -73,22 +79,14 @@
                 	<th>code</th>
                 </tr>
 
-                <tr>
-	                <td><input type="text" id="new_name"></td>
-	                <td><input type="button" class="add" onclick="add_row();" value="Add path"></td>
-                </tr>
-
                 <tr id='derivatives'>
                 	<th>derivatives</th>
                 </tr>
 
-                <tr>
-	                <td><input type="text" id="new_name"></td>
-	                <td><input type="button" class="add" onclick="add_row();" value="Add path"></td>
-                </tr>
-
                 </table>
             </div>
+            
+            <hr>
             <h5> Preview file organization
               <tooltip data-tooltip="Preview file organization" data-tooltip-position="left">( i )</tooltip>
             </h5>
@@ -98,13 +96,14 @@
             <h5> Save file organization to continue later
               <tooltip data-tooltip="Save file organization to continue later" data-tooltip-position="left">( i )</tooltip>
             </h5>
+
             <div class="demo-controls">
 	            <button class="demo-button" id="select-save-file-organization"> Select location </button>
 	            <textarea class="demo-response" id="selected-save-file-organization"></textarea>
-	        </div>
-	        <div class="demo-controls">
-	            <button class="demo-button" id="save-file-organization"> Save </button>
-	        </div>
+  	        </div>
+  	        <div class="demo-controls">
+  	            <button class="demo-button" id="save-file-organization"> Save </button>
+  	        </div>
            </div>
           </div>
 
