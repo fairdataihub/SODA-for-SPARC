@@ -4,11 +4,13 @@
 
 from os import listdir, stat, makedirs, mkdir
 from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser
+import pandas as pd
 from pandas import DataFrame
 from time import strftime, localtime
 from shutil import copy2
 from blackfynn import Blackfynn
 from configparser import ConfigParser
+from bs4 import BeautifulSoup
 import threading
 
 ### Global variables
@@ -22,7 +24,21 @@ submitdataprogress = ' '
 submitdatastatus = ' '
 submitprintstatus = ' '
 
-### FEATURE #1: SPARC metadata generator
+### FEATURE #1: SPARC dataset organizer
+# Organize dataset
+def savefileorganization(table, pathsavefileorganization):
+    # tablepd = pd.read_html(table)[0] 
+    # tablepd.to_excel("test.xlsx") 
+    try:
+        # soup = BeautifulSoup(table, 'lxml')
+        # f = open("dict.txt","w")
+        # f.write(soup)
+        # f.close()
+        return table
+    except Exception as e:
+        raise e 
+
+### FEATURE #2: SPARC metadata generator
 
 # Generate manifest.xlsx file in each subfolder of the dataset
 # Automaticall fill out filename, timestamp (last modified), and file type info
