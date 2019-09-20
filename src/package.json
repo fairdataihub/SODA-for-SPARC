@@ -64,6 +64,7 @@
     "electron-packager": "^14.0.1",
     "electron-prebuilt-compile": "4.0.0",
     "electron-rebuild": "^1.8.6",
+    "electron-tooltip": "^1.1.5",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.1.0",
     "eslint-plugin-import": "^2.17.3",

@@ -19,6 +19,17 @@
   padding: 0 2rem;
 }
 
+/* Tooltip for help */
+tooltip {
+  /* width: 25%; */
+  float: right;
+  font-size: 1em;
+  font-style: italic;
+  font-weight: bold;
+  color: black;
+  backgroundColor: #404040;
+  borderRadius: 4px
+}
 
 /* Toggle Button ----------------------------- */
 
