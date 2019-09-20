@@ -53,32 +53,6 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Visualize existing datasets
-          <div class="demo-meta u-avoid-clicks"> List of existing datasets on the selected account </div>
-        </button>
-
-        <div class="demo-box">
-          <h5> Dataset list
-            <tooltip data-tooltip="List of datasets existing on your Blackfynn account" data-tooltip-position="left">( i )</tooltip>
-          </h5>
-          <div class="demo-controls">
-            <select class="my_dropdown" id="bfdatasetlist">
-              <option> Select dataset </option>
-            </select>
-          </div>
-
-          <h5> </h5>
-          <div class="demo-controls">
-            <button class="demo-button" id="refresh-dataset-list"> Refresh list </button>
-          </div>
-
-        </div>
-
-      </div>
-    </div>
-
-    <div class="demo">
-      <div class="demo-wrapper">
         <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Create new dataset folder
           <div class="demo-meta u-avoid-clicks"> Add an empty dataset folder on the selected Blackfynn account </div>
         </button>
@@ -110,12 +84,26 @@
         <div class="demo-box">
           <p> </p>
 
-          <h5> Select dataset to submit
+          <h5> Select local dataset to submit
             <tooltip data-tooltip="Select the folder that you want to submit to your Blackfynn account" data-tooltip-position="left">( i )</tooltip>
           </h5>
           <div class="demo-controls">
             <button class="demo-button" id="select-submit-dataset">Select Dataset Folder </button>
             <textarea class="demo-response" id="selected-submit-dataset"></textarea>
+          </div>
+
+          <h5> Select Blackfynn Dataset for uploading
+            <tooltip data-tooltip="List of datasets existing on your Blackfynn account" data-tooltip-position="left">( i )</tooltip>
+          </h5>
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bfdatasetlist">
+              <option> Select dataset </option>
+            </select>
+          </div>
+
+          <h5> </h5>
+          <div class="demo-controls">
+            <button class="demo-button" id="refresh-dataset-list"> Refresh list </button>
           </div>
 
           <div>
