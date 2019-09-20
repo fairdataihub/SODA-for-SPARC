@@ -42,26 +42,51 @@
             <button class="demo-button" id="upload-file-organization"> Upload </button>
 
             <h5> Select folders and files to be added in each SPARC folder </h5>
-
-            <h5> code </h5>
             <div class="demo-controls">
-              <button class="demo-button" id="select-code">Add files </button>
-              <button class="demo-button" id="select-code-directory">Add folders</button>
+            	SPARC folder:
+              	<select class="my_dropdown" id="SPARCfolderlist">
+	              <option> code </option>
+	              <option> derivatives </option>
+	              <option> docs </option>
+	              <option> protocol </option>
+	              <option> samples </option>
+	              <option> sourcedata </option>
+	              <option> subjects </option>
+	        	</select>
             </div>
+            <h5>  </h5>
+            <div class="demo-controls">
+              	<button class="demo-button" id="select-code">Add files </button>
+              	<button class="demo-button" id="select-code-directory">Add folders</button>
+            </div>
+            <h5>  </h5>
             <div class="demo-controls">
                 <table id="code_table" class = pathtable>
-                <tr>
-                <th>Path</th>
-                <th>Action</th>
+                
+                <tr id="code">
+                	<th>code</th>
                 </tr>
 
                 <tr>
-                <td><input type="text" id="new_name"></td>
-                <td><input type="button" class="add" onclick="add_row();" value="Add Row"></td>
+	                <td><input type="text" id="new_name"></td>
+	                <td><input type="button" class="add" onclick="add_row();" value="Add path"></td>
+                </tr>
+
+                <tr id='derivatives'>
+                	<th>derivatives</th>
+                </tr>
+
+                <tr>
+	                <td><input type="text" id="new_name"></td>
+	                <td><input type="button" class="add" onclick="add_row();" value="Add path"></td>
                 </tr>
 
                 </table>
             </div>
+            <h5> Preview file organization </h5>
+	        <div class="demo-controls">
+	            <button class="demo-button" id="preview-file-organization"> Preview </button>
+	        </div>
             <h5> Save file organization to continue later </h5>
             <div class="demo-controls">
 	            <button class="demo-button" id="select-save-file-organization"> Select location </button>
@@ -83,7 +108,7 @@
           <div class="demo-meta u-avoid-clicks"> Use SPARC standard file formats </div>
         </button>
         <div class="demo-box">
-          <p>Coming soon...</p>
+          <p> Coming soon...</p>
         </div>
       </div>
     </div>
@@ -114,7 +139,7 @@
             </div>
             <div>
               <input id="no-submission" name="submission_file_option" type="radio" class="with-style" value="none" checked/>
-              <label for="no-submission" class=labelradio> None </label>
+              <label for="no-submissi'']8iuon" class=labelradio> None </label>
             </div>
           </form>
 
