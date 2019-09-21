@@ -11,6 +11,7 @@ from shutil import copy2
 from blackfynn import Blackfynn
 from configparser import ConfigParser
 import threading
+from glob import glob
 
 ### Global variables
 curateprogress = ' '
@@ -96,6 +97,33 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
         if pathsamples.split('\\')[-1].split('.')[0] != 'samples':
             curatestatus = 'Done'
             raise Exception('Error: Select valid name for samples file')
+
+    #get list of file in pathnewdataset
+    # see if any of submission, dataset_description, subjects, samples exist
+    # Show error 'File xxx already exists at target location: either delete or select "None" in the SODA interface'
+    if not createnewstatus:
+        c = 0
+        error = ''
+        for i in glob(pathdataset + '\*'):
+            if i == pathdataset + '\submission.xlsx' and submissionstatus:
+                error = error + 'submission file already present\n'
+                c += 1
+            if i == pathdataset + '\dataset_description.xlsx' and datasetdescriptionstatus:
+                error = error + 'dataset_description file already present\n'
+                c += 1
+            if i == pathdataset + '\samples.xlsx' and samplesstatus:
+                error = error + 'samples file already present\n'
+                c += 1
+            if i == pathdataset + '\subjects.xlsx' and subjectsstatus:
+                error = error + 'subjects file already present\n'
+                c += 1
+
+        if c > 0:
+            error = error + 'Aborting ..\n\n'
+            error = error + 'Either delete or select "None" in the SODA interface'
+            curatestatus = 'Done'
+            raise Exception(error)
+            return
 
     try:
         curateprogress = 'Started'
@@ -204,11 +232,10 @@ def createdataset(frompath, topath):
 
 def return_new_path(topath):
     """
-    This function checks if the folder already exists and in such cases, appends the name with (2) or (3) etc. upto 20
+    This function checks if the folder already exists and in such cases, appends the name with (2) or (3) etc.
     """
-    print(topath)
     if exists(topath):
-        for i in range(2, 21):
+        for i in range(2, 20001):
             if not exists(topath + ' (' + str(i) + ')'):
                 return topath + ' (' + str(i) + ')'
 
