@@ -119,8 +119,8 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
                 c += 1
 
         if c > 0:
-            error = error + 'Aborting ..\n\n'
-            error = error + 'Either delete or select "None" in the SODA interface'
+            error = error + 'Either delete or select "None" in the SODA interface\n\n'
+            error = error + 'Terminating ..'
             curatestatus = 'Done'
             raise Exception(error)
             return
