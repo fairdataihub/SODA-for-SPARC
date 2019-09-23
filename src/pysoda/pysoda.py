@@ -120,7 +120,7 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
     if not createnewstatus:
         c = 0
         error = ''
-        for i in glob(pathdataset + '\*'):
+        for i in glob(join(pathdataset, '*')):
             if i == join(pathdataset, 'submission.xlsx') and submissionstatus:
                 error = error + 'submission file already present\n'
                 c += 1
@@ -254,6 +254,8 @@ def return_new_path(topath):
         for i in range(2, 20001):
             if not exists(topath + ' (' + str(i) + ')'):
                 return topath + ' (' + str(i) + ')'
+    else:
+        return topath
 
 def copytree(src, dst, symlinks=False, ignore=None):
     if not exists(dst):
