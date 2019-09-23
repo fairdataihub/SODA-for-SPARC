@@ -72,7 +72,7 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
             error = error + 'Error: Select valid path for submission file\n'
             c += 1
         # Adding check for correct file name
-        if pathsubmission.split('\\')[-1].split('.')[0] != 'submission':
+        if splitext(basename(pathsubmission))[0] != 'submission':
             curatestatus = 'Done'
             error = error + 'Error: Select valid name for submission file\n'
             c += 1
@@ -83,7 +83,7 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
             error = error + 'Error: Select valid path for dataset description file\n'
             c += 1
         # Adding check for correct file name
-        if pathdescription.split('\\')[-1].split('.')[0] != 'dataset_description':
+        if splitext(basename(pathdescription))[0] != 'dataset_description':
             curatestatus = 'Done'
             error = error + 'Error: Select valid name for dataset_description file\n'
             c += 1
@@ -94,7 +94,7 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
             error = error + 'Error: Select valid path for subjects file\n'
             c += 1
         # Adding check for correct file name
-        if pathsubjects.split('\\')[-1].split('.')[0] != 'subjects':
+        if splitext(basename(pathsubjects))[0] != 'subjects':
             curatestatus = 'Done'
             error = error + 'Error: Select valid name for subjects file\n'
             c += 1
@@ -105,7 +105,7 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
             error = error + 'Error: Select valid path for samples file\n'
             c += 1
         # Adding check for correct file name
-        if pathsamples.split('\\')[-1].split('.')[0] != 'samples':
+        if splitext(basename(pathsamples))[0] != 'samples':
             curatestatus = 'Done'
             error = error + 'Error: Select valid name for samples file\n'
             c += 1
@@ -121,16 +121,16 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
         c = 0
         error = ''
         for i in glob(pathdataset + '\*'):
-            if i == pathdataset + '\submission.xlsx' and submissionstatus:
+            if i == join(pathdataset, 'submission.xlsx') and submissionstatus:
                 error = error + 'submission file already present\n'
                 c += 1
-            if i == pathdataset + '\dataset_description.xlsx' and datasetdescriptionstatus:
+            if i == join(pathdataset, 'dataset_description.xlsx') and datasetdescriptionstatus:
                 error = error + 'dataset_description file already present\n'
                 c += 1
-            if i == pathdataset + '\samples.xlsx' and samplesstatus:
+            if i == join(pathdataset, 'samples.xlsx') and samplesstatus:
                 error = error + 'samples file already present\n'
                 c += 1
-            if i == pathdataset + '\subjects.xlsx' and subjectsstatus:
+            if i == join(pathdataset, 'subjects.xlsx') and subjectsstatus:
                 error = error + 'subjects file already present\n'
                 c += 1
 
