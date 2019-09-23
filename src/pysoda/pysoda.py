@@ -52,52 +52,68 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
     curateprogress = ' '
     curatestatus = ''
     curateprintstatus = ' '
+    error = ''
+    c = 0
 
     if not isdir(pathdataset):
         curatestatus = 'Done'
-        raise Exception('Error: Please select a valid dataset folder')
+        error = error + 'Error: Please select a valid dataset folder\n'
+        c += 1
 
     if createnewstatus:
         if not isdir(pathnewdataset):
             curatestatus = 'Done'
-            raise Exception('Error: Please select a valid folder for new dataset')
+            error = error + 'Error: Please select a valid folder for new dataset\n'
+            c += 1
 
     if submissionstatus:
         if not isfile(pathsubmission):
             curatestatus = 'Done'
-            raise Exception('Error: Select valid path for submission file')
+            error = error + 'Error: Select valid path for submission file\n'
+            c += 1
         # Adding check for correct file name
         if pathsubmission.split('\\')[-1].split('.')[0] != 'submission':
             curatestatus = 'Done'
-            raise Exception('Error: Select valid name for submission file')
+            error = error + 'Error: Select valid name for submission file\n'
+            c += 1
 
     if datasetdescriptionstatus:
         if not isfile(pathdescription):
             curatestatus = 'Done'
-            raise Exception('Error: Select valid path for dataset description file')
+            error = error + 'Error: Select valid path for dataset description file\n'
+            c += 1
         # Adding check for correct file name
         if pathdescription.split('\\')[-1].split('.')[0] != 'dataset_description':
             curatestatus = 'Done'
-            raise Exception('Error: Select valid name for dataset_description file')
+            error = error + 'Error: Select valid name for dataset_description file\n'
+            c += 1
 
     if subjectsstatus:
         if not isfile(pathsubjects):
             curatestatus = 'Done'
-            raise Exception('Error: Select valid path for subjects file')
+            error = error + 'Error: Select valid path for subjects file\n'
+            c += 1
         # Adding check for correct file name
         if pathsubjects.split('\\')[-1].split('.')[0] != 'subjects':
             curatestatus = 'Done'
-            raise Exception('Error: Select valid name for subjects file')
+            error = error + 'Error: Select valid name for subjects file\n'
+            c += 1
 
     if samplesstatus:
         if not isfile(pathsamples):
             curatestatus = 'Done'
-            raise Exception('Error: Select valid path for samples file')
+            error = error + 'Error: Select valid path for samples file\n'
+            c += 1
         # Adding check for correct file name
         if pathsamples.split('\\')[-1].split('.')[0] != 'samples':
             curatestatus = 'Done'
-            raise Exception('Error: Select valid name for samples file')
+            error = error + 'Error: Select valid name for samples file\n'
+            c += 1
 
+    if c > 0:
+        error = error+'\nTerminating ..'
+        raise Exception(error)
+        return
     #get list of file in pathnewdataset
     # see if any of submission, dataset_description, subjects, samples exist
     # Show error 'File xxx already exists at target location: either delete or select "None" in the SODA interface'
@@ -283,6 +299,7 @@ def copyfile(src, dst):
 ### FEATURE #4: SODA Blackfynn interface
 # Log in to Blackfynn
 def bfaddaccount(keyname, key, secret):
+    error, c = '', 0
     keyname = keyname.strip()
     if (not keyname) or (not key) or (not secret):
         raise Exception('Error: Please enter valid keyname, key, and/or secret')
@@ -361,25 +378,32 @@ def bfdatasetaccount(accountname):
 
 # Add new empty dataset folder
 def bfnewdatasetfolder(datasetname, accountname):
+    error, c = '', 0
     datasetname = datasetname.strip()
     if (not datasetname):
-        raise Exception('Error: Please enter valid dataset folder name')
+        error = error + 'Error: Please enter valid dataset folder name'
+        c += 1
 
     if (datasetname.isspace()):
-        raise Exception('Error: Please enter valid dataset folder name')
+        error = error + 'Error: Please enter valid dataset folder name'
+        c += 1
 
     try:
         bf = Blackfynn(accountname)
     except Exception as e:
-        raise Exception('Error: Please select a valid Blackfynn account')
+        error = error + 'Error: Please select a valid Blackfynn account'
+        c += 1
 
     dataset_list = []
     for ds in bf.datasets():
         dataset_list.append(ds.name)
     if datasetname in dataset_list:
-        raise Exception('Error: Dataset folder name already exists')
+        error = error + 'Error: Dataset folder name already exists'
+        c += 1
     else:
         bf.create_dataset(datasetname)
+    if c>0:
+        raise Exception(error)
 
 # Submit dataset to selected account
 def bfsubmitdataset(accountname, bfdataset, pathdataset):
@@ -389,23 +413,29 @@ def bfsubmitdataset(accountname, bfdataset, pathdataset):
     submitdataprogress = ' '
     submitdatastatus = ' '
     submitprintstatus = ' '
+    error, c = '', 0
 
     try:
         bf = Blackfynn(accountname)
     except Exception as e:
         submitdatastatus = 'Done'
-        raise Exception('Error: Please select a valid Blackfynn account')
+        error = error + 'Error: Please select a valid Blackfynn account'
+        c += 1
 
     try:
         myds = bf.get_dataset(bfdataset)
     except Exception as e:
         submitdatastatus = 'Done'
-        raise Exception('Error: Please select a valid Blackfynn dataset')
+        error = error + 'Error: Please select a valid Blackfynn dataset'
+        c += 1
 
     if not isdir(pathdataset):
         #if not isdir(pathdataset):
         submitdatastatus = 'Done'
-        raise Exception('Error: Please select a valid local dataset folder')
+        error = error + 'Error: Please select a valid local dataset folder'
+        c += 1
+    if c>0:
+        raise Exception(error)
 
     try:
         def calluploadfolder():
