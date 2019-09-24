@@ -11,7 +11,6 @@ from shutil import copy2
 from blackfynn import Blackfynn
 from configparser import ConfigParser
 import threading
-from glob import glob
 
 ### Global variables
 curateprogress = ' '
@@ -120,17 +119,17 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
     if not createnewstatus:
         c = 0
         error = ''
-        for i in glob(join(pathdataset, '*')):
-            if i == join(pathdataset, 'submission.xlsx') and submissionstatus:
+        for i in listdir(pathdataset):
+            if i == 'submission.xlsx' and submissionstatus:
                 error = error + 'submission file already present\n'
                 c += 1
-            if i == join(pathdataset, 'dataset_description.xlsx') and datasetdescriptionstatus:
+            if i == 'dataset_description.xlsx' and datasetdescriptionstatus:
                 error = error + 'dataset_description file already present\n'
                 c += 1
-            if i == join(pathdataset, 'samples.xlsx') and samplesstatus:
+            if i == 'samples.xlsx' and samplesstatus:
                 error = error + 'samples file already present\n'
                 c += 1
-            if i == join(pathdataset, 'subjects.xlsx') and subjectsstatus:
+            if i == 'subjects.xlsx' and subjectsstatus:
                 error = error + 'subjects file already present\n'
                 c += 1
 
@@ -242,7 +241,8 @@ def createmanifest(datasetpath):
 def createdataset(frompath, topath):
     datasetfoldername = basename(normpath(frompath))
     topath = join(topath, datasetfoldername)
-    topath = return_new_path(topath)
+    if exists(topath):
+        topath = return_new_path(topath)
     copytree(frompath, topath)
     return topath
 

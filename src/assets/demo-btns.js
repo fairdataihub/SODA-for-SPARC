@@ -24,6 +24,3 @@ const buttonId = settings.get('activeDemoButtonId')
 if (buttonId) {
   document.getElementById(buttonId).click()
 }
-
-const tt = require('electron-tooltip')
-tt({ })

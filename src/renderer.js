@@ -1,6 +1,8 @@
 const zerorpc = require("zerorpc")
 const fs = require("fs")
 const path = require('path')
+const tt = require('electron-tooltip')
+tt({ })
 
 // Connect to python server
 let client = new zerorpc.Client()
@@ -78,7 +80,6 @@ const redcolor = '#ff1a1a'
 
 // Add existing bf account(s) to dropdown list
 updateBfAccountList()
-
 
 // Action when user click on Save file organization button
 saveFileOrganizationBtn.addEventListener('click', () => {
