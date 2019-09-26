@@ -1,7 +1,7 @@
 from __future__ import print_function
 from pysoda import createmanifest, createdataset, copyfile, bfaddaccount, bfaccountlist, bfdatasetaccount, \
     bfsubmitdataset, submitdatasetprogress, curatedataset, curatedatasetprogress, bfnewdatasetfolder, \
-    savefileorganization
+    savefileorganization, uploadfileorganization, curatedataset2
 import sys
 import zerorpc
 from os.path import isdir, isfile
@@ -16,6 +16,12 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
+    def apiUploadFileOrganization(self, pathsavefileorganization, foldernames):
+        try: 
+            return uploadfileorganization(pathsavefileorganization, foldernames)
+        except Exception as e:
+            raise e
+
     def apiCurateDataset(self, pathdataset, createnewstatus, pathnewdataset,
         manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
         subjectsstatus, pathsubjects, samplesstatus, pathsamples):
@@ -23,6 +29,18 @@ class SodaApi(object):
             curatedataset(pathdataset, createnewstatus, pathnewdataset,
                 manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
                 subjectsstatus, pathsubjects, samplesstatus, pathsamples)
+        except Exception as e:
+            raise e
+
+    def apiCurateDataset2(self, pathdataset, createnewstatus, pathnewdataset,
+        manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
+        subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonvar, modifyexistingstatus, 
+        bfdirectlystatus, alreadyorganizedstatus, organizedatasetstatus):
+        try: 
+            curatedataset2(pathdataset, createnewstatus, pathnewdataset,
+                manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
+                subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonvar, modifyexistingstatus, 
+                bfdirectlystatus, alreadyorganizedstatus, organizedatasetstatus)
         except Exception as e:
             raise e
 

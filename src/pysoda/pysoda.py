@@ -12,6 +12,10 @@ from blackfynn import Blackfynn
 from configparser import ConfigParser
 import threading
 from glob import glob
+import json
+from pandas.io.html import read_html
+import numpy as np
+import collections
 
 ### Global variables
 curateprogress = ' '
@@ -27,14 +31,47 @@ submitprintstatus = ' '
 ### FEATURE #1: SPARC dataset organizer
 # Organize dataset
 def savefileorganization(table, pathsavefileorganization):
-    # tablepd = pd.read_html(table)[0]
-    # tablepd.to_excel("test.xlsx")
     try:
-        # soup = BeautifulSoup(table, 'lxml')
         # f = open("dict.txt","w")
-        # f.write(soup)
+        # f.write(str(table))
         # f.close()
-        return table
+
+        mydict = table
+        dictkeys = list(mydict.keys())
+        df = pd.DataFrame(columns=[dictkeys[0]])
+        df[dictkeys[0]] = mydict[dictkeys[0]]
+        for i in range(1,len(dictkeys)):
+            dfnew = pd.DataFrame(columns=[dictkeys[i]])
+            dfnew[dictkeys[i]] = mydict[dictkeys[i]]
+            df = pd.concat([df, dfnew], axis=1)     
+        df = df.replace(np.nan, '', regex=True)
+        csvsavepath = join(pathsavefileorganization)
+        df.to_csv(csvsavepath, index = None, header=True)
+        return 'Saved!'
+    except Exception as e:
+        raise e
+
+compare = lambda x, y: collections.Counter(x) == collections.Counter(y)
+
+def uploadfileorganization(pathuploadfileorganization, foldernames):
+    try:
+        foldernames.append("main") 
+        csvsavepath = join(pathuploadfileorganization)
+        df = pd.read_csv(csvsavepath)
+        dfnan = df.isnull()
+        mydict = {}
+        dictkeys = df.columns
+        if not compare(dictkeys, foldernames):
+            raise Exception("Error: Please select a valid file")
+        rowcount = len(df.index)
+        for i in range(len(dictkeys)):
+            pathvect = []
+            for j in range(rowcount):
+                pathval = df.at[j, dictkeys[i]]
+                if not dfnan.at[j, dictkeys[i]]:
+                    pathvect.append(pathval)
+            mydict[dictkeys[i]] = pathvect
+        return mydict
     except Exception as e:
         raise e
 
@@ -143,7 +180,7 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
 
         if submissionstatus:
             copyfile(pathsubmission, pathdataset)
-            curateprogress = curateprogress + ', ,' + 'Submission file created' + pathnewdataset
+            curateprogress = curateprogress + ', ,' + 'Submission file created' 
         else:
             curateprogress = curateprogress + ', ,' + 'Submission file not requested'
 
@@ -172,6 +209,182 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
         curatestatus = 'Done'
         raise e
 
+def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
+        manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
+        subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonvar, modifyexistingstatus, bfdirectlystatus, 
+        alreadyorganizedstatus, organizedatasetstatus):
+
+    global curateprogress
+    global curatestatus
+    global curateprintstatus
+    curateprogress = ' '
+    curatestatus = ''
+    curateprintstatus = ' '
+
+    if alreadyorganizedstatus:
+        if not isdir(pathdataset):
+            curatestatus = 'Done'
+            raise Exception('Error: Please select a valid dataset folder')
+
+    if createnewstatus:
+        if not isdir(pathnewdataset):
+            curatestatus = 'Done'
+            raise Exception('Error: Please select a valid folder for new dataset')
+
+    if submissionstatus:
+        if not isfile(pathsubmission):
+            curatestatus = 'Done'
+            raise Exception('Error: Select valid path for submission file')
+        # Adding check for correct file name
+        if pathsubmission.split('\\')[-1].split('.')[0] != 'submission':
+            curatestatus = 'Done'
+            raise Exception('Error: Select valid name for submission file')
+
+    if datasetdescriptionstatus:
+        if not isfile(pathdescription):
+            curatestatus = 'Done'
+            raise Exception('Error: Select valid path for dataset description file')
+        # Adding check for correct file name
+        if pathdescription.split('\\')[-1].split('.')[0] != 'dataset_description':
+            curatestatus = 'Done'
+            raise Exception('Error: Select valid name for dataset_description file')
+
+    if subjectsstatus:
+        if not isfile(pathsubjects):
+            curatestatus = 'Done'
+            raise Exception('Error: Select valid path for subjects file')
+        # Adding check for correct file name
+        if pathsubjects.split('\\')[-1].split('.')[0] != 'subjects':
+            curatestatus = 'Done'
+            raise Exception('Error: Select valid name for subjects file')
+
+    if samplesstatus:
+        if not isfile(pathsamples):
+            curatestatus = 'Done'
+            raise Exception('Error: Select valid path for samples file')
+        # Adding check for correct file name
+        if pathsamples.split('\\')[-1].split('.')[0] != 'samples':
+            curatestatus = 'Done'
+            raise Exception('Error: Select valid name for samples file')
+
+    #get list of file in pathnewdataset
+    # see if any of submission, dataset_description, subjects, samples exist
+    # Show error 'File xxx already exists at target location: either delete or select "None" in the SODA interface'
+    if modifyexistingstatus:
+        c = 0
+        error = ''
+        for i in glob(pathdataset + '\*'):
+            if i == pathdataset + '\submission.xlsx' and submissionstatus:
+                error = error + 'submission file already present\n'
+                c += 1
+            if i == pathdataset + '\dataset_description.xlsx' and datasetdescriptionstatus:
+                error = error + 'dataset_description file already present\n'
+                c += 1
+            if i == pathdataset + '\samples.xlsx' and samplesstatus:
+                error = error + 'samples file already present\n'
+                c += 1
+            if i == pathdataset + '\subjects.xlsx' and subjectsstatus:
+                error = error + 'subjects file already present\n'
+                c += 1
+
+        if c > 0:
+            error = error + 'Aborting ..\n\n'
+            error = error + 'Either delete or select "None" in the SODA interface'
+            curatestatus = 'Done'
+            raise Exception(error)
+        else:
+            try:
+                curateprogress = 'Started'
+                curateprintstatus = 'Curating'
+                if createnewstatus:
+                    topath = createdataset(pathdataset, pathnewdataset)
+                    curateprogress = curateprogress + ', ,' + 'New dataset created'
+                    pathdataset = topath
+                else:
+                    curateprogress = curateprogress + ', ,' + "New dataset not requested"
+
+                if manifeststatus:
+                    createmanifest(pathdataset)
+                    curateprogress = curateprogress + ', ,' + 'Manifest created'
+                else:
+                    curateprogress = curateprogress + ', ,' + 'Manifest not requested'
+
+                if submissionstatus:
+                    copyfile(pathsubmission, pathdataset)
+                    curateprogress = curateprogress + ', ,' + 'Submission file created' 
+                else:
+                    curateprogress = curateprogress + ', ,' + 'Submission file not requested'
+
+                if datasetdescriptionstatus:
+                    copyfile(pathdescription, pathdataset)
+                    curateprogress = curateprogress + ', ,' + 'Dataset description file created'
+                else:
+                    curateprogress = curateprogress + ', ,' + 'Dataset description file not requested'
+
+                if subjectsstatus:
+                    copyfile(pathsubjects, pathdataset)
+                    curateprogress = curateprogress + ', ,' + 'Subjects file created'
+                else:
+                    curateprogress = curateprogress + ', ,' + 'Subjects file not requested'
+
+                if samplesstatus:
+                    copyfile(pathsamples, pathdataset)
+                    curateprogress = curateprogress + ', ,' + 'Samples file created'
+                else:
+                    curateprogress = curateprogress + ', ,' + 'Samples file not requested'
+
+                curateprogress = curateprogress + ', ,' + 'Success: COMPLETED!'
+                curatestatus = 'Done'
+
+            except Exception as e:
+                curatestatus = 'Done'
+                raise e
+
+
+    elif createnewstatus:
+        try:
+            topath = createdataset(pathdataset, pathnewdataset)
+            curateprogress = curateprogress + ', ,' + 'New dataset created'
+            pathdataset = topath
+
+            if manifeststatus:
+                createmanifest(pathdataset)
+                curateprogress = curateprogress + ', ,' + 'Manifest created'
+            else:
+                curateprogress = curateprogress + ', ,' + 'Manifest not requested'
+
+            if submissionstatus:
+                copyfile(pathsubmission, pathdataset)
+                curateprogress = curateprogress + ', ,' + 'Submission file created' 
+            else:
+                curateprogress = curateprogress + ', ,' + 'Submission file not requested'
+
+            if datasetdescriptionstatus:
+                copyfile(pathdescription, pathdataset)
+                curateprogress = curateprogress + ', ,' + 'Dataset description file created'
+            else:
+                curateprogress = curateprogress + ', ,' + 'Dataset description file not requested'
+
+            if subjectsstatus:
+                copyfile(pathsubjects, pathdataset)
+                curateprogress = curateprogress + ', ,' + 'Subjects file created'
+            else:
+                curateprogress = curateprogress + ', ,' + 'Subjects file not requested'
+
+            if samplesstatus:
+                copyfile(pathsamples, pathdataset)
+                curateprogress = curateprogress + ', ,' + 'Samples file created'
+            else:
+                curateprogress = curateprogress + ', ,' + 'Samples file not requested'
+
+            curateprogress = curateprogress + ', ,' + 'Success: COMPLETED!'
+            curatestatus = 'Done'
+
+        except Exception as e:
+                    curatestatus = 'Done'
+                    raise e
+
+    
 
 def curatedatasetprogress():
     global curateprogress

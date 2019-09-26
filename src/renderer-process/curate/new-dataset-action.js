@@ -127,11 +127,13 @@ document.querySelector('#no-samples').addEventListener('click', () => {
 function showPreorganizedDataset(){
   document.getElementById('divPreorganizedDataset').style.display ='block';
   document.getElementById('divOrganizeDataset').style.display ='none';
+  document.getElementById('divClearTable').style.display ='block';
 }
 
 function showOrganizeDataset(){
   document.getElementById('divPreorganizedDataset').style.display ='none';
   document.getElementById('divOrganizeDataset').style.display ='block';
+  document.getElementById('divClearTable').style.display ='block';
 }
 
 document.querySelector('#preorganized-dataset').addEventListener('click', () => {

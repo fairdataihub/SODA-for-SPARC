@@ -267,9 +267,15 @@ table.pathtable {
   }
 
 table.pathtable tr td:first-child {
-  width: 75%;
-  max-width:75%;
-  min-width:75%;
+  width: 40%;
+  max-width:40%;
+  min-width:40%;
+}
+
+table.pathtable tr td:nth-child(2) {
+  width: 40%;
+  max-width:40%;
+  min-width:40%;
 }
 
 input[type="button"].save

@@ -1,14 +1,5 @@
 const {ipcRenderer} = require('electron')
 
-const selectDatasetBtn = document.getElementById('select-dataset')
-selectDatasetBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-file-dialog-dataset')
-})
-ipcRenderer.on('selected-dataset', (event, path) => {
-  document.getElementById('selected-dataset').value = path
-})
-
-
 // Metadata
 const selectSubmissionBtn = document.getElementById('select-submission')
 selectSubmissionBtn.addEventListener('click', (event) => {

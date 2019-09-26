@@ -31,12 +31,15 @@ ipcMain.on('open-folder-dialog-code', (event) => {
   })
 })
 
-ipcMain.on('open-folder-dialog-saveorganization', (event) => {
+ipcMain.on('open-file-dialog-uploadorganization', (event) => {
   dialog.showOpenDialog({
-    properties: ['openDirectory']
+    properties: ['openFile'],
+    filters: [
+    { name: 'CSV', extensions: ['csv'] },
+  ]
   }, (files) => {
     if (files) {
-      event.sender.send('selected-saveorganizationfolder', files);
+      event.sender.send('selected-uploadorganization', files);
     }
   })
 })

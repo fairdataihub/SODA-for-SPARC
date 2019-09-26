@@ -1,8 +1,12 @@
+//////////////////////////////////
+// Import required modules
+//////////////////////////////////
 const zerorpc = require("zerorpc")
 const fs = require("fs")
 const path = require('path')
+const {ipcRenderer} = require('electron')
 
-// Connect to python server
+// Connect to python server and check
 let client = new zerorpc.Client()
 
 client.connect("tcp://127.0.0.1:4242")
@@ -15,13 +19,28 @@ client.invoke("echo", "server ready", (error, res) => {
   }
 })
 
-// Inputs from user interface //
-const saveFileOrganizationBtn = document.getElementById('save-file-organization')
-const table = document.getElementById("code_table")
-let pathsavefileorganization = document.querySelector('#selected-save-file-organization')
+//////////////////////////////////
+// Inputs from html elements fronm user interface //
+//////////////////////////////////
 
+// Organize dataset
+const selectDatasetBtn = document.getElementById('select-dataset')
 let pathdataset = document.querySelector('#selected-dataset')
+const tableOrganized = document.getElementById("table-organized")
+var tableOrganizedcount = 0
+const tableNotOrganized = document.getElementById("code_table")
+var tableNotOrganizedcount = 0
+let alreadyorganizedstatus = document.querySelector('#preorganized-dataset')
+let organizedatasetstatus = document.querySelector('#organize-dataset')
+const clearTableBtn = document.getElementById('clear-table')
+
+// Curate dataset
+const selectSaveFileOrganizationBtn = document.getElementById('select-save-file-organization')
+const selectUploadFileOrganizationBtn = document.getElementById('select-upload-file-organization')
+
 let createnewstatus = document.querySelector('#create-newdataset')
+let modifyexistingstatus = document.querySelector('#existing-dataset')
+let bfdirectlystatus = document.querySelector('#cloud-dataset')
 let pathnewdataset = document.querySelector('#selected-new-dataset')
 let manifeststatus = document.querySelector('#generate-manifest')
 let curationform = document.querySelector('#dataset_curate_form')
@@ -51,9 +70,13 @@ var pathsubjects
 var samplesstatus
 var pathsamples
 
+
 const curateDatasetBtn = document.getElementById('curate-dataset')
+const curateDatasetBtn2 = document.getElementById('curate-dataset2')
 let progressinfo = document.querySelector('#progressinfo')
 
+
+// Manage and submit
 let keyname = document.querySelector('#bf-key-name')
 let key = document.querySelector('#bf-key')
 let secret = document.querySelector('#bf-secret')
@@ -72,23 +95,111 @@ const bfSubmitDatasetBtn = document.getElementById('submit-dataset')
 let bfsubmitdatasetinfo = document.querySelector('#progresssubmit')
 let pathsubmitdataset = document.querySelector('#selected-submit-dataset')
 
+//////////////////////////////////
+// Constant parameters
+//////////////////////////////////
 const blackcolor = '#000000'
 const redcolor = '#ff1a1a'
-// Operations calling to pysoda.py functions //
+const sparcFolderNames = ["code", "derivatives", "docs", "protocol", "samples", "sourcedata", "subjects"]
+//////////////////////////////////
+// Defaults action (at start on the program)
+//////////////////////////////////
+
 
 // Add existing bf account(s) to dropdown list
 updateBfAccountList()
 
 
+//////////////////////////////////
+// Operations on JavaScript end only
+//////////////////////////////////
+
+
+// Select organized dataset folder and populate table
+selectDatasetBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-file-dialog-dataset')
+})
+ipcRenderer.on('selected-dataset', (event, path) => {
+  pathdataset.innerHTML = ""
+  var folderChecking = checkFolderStruture(path[0])
+  if (folderChecking == true) {
+    pathdataset.innerHTML = path
+    var jsonfolder = organizedFolderToJson(path[0])
+    console.log(jsonfolder)
+    jsonToTableOrganized(tableOrganized, jsonfolder)
+  } else {
+    pathdataset.innerHTML = "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>"
+  }
+})
+
+//Select files/folders to be added to table for organizing
+const selectCodeBtn = document.getElementById('select-code')
+selectCodeBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-file-dialog-code')
+})
+
+const selectCodeDirectoryBtn = document.getElementById('select-code-directory')
+selectCodeDirectoryBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-folder-dialog-code')
+})
+
+ipcRenderer.on('selected-code', (event, path) => {
+    insertFileToTable(tableNotOrganized, path)
+    console.log(tableNotOrganized)
+})
+
+//Clear table
+clearTableBtn.addEventListener('click', () => {
+  if (alreadyorganizedstatus.checked){
+    clearTable(tableOrganized)
+  } else if (organizedatasetstatus.checked) {
+    clearTable(tableNotOrganized)
+  }
+})
+
+//////////////////////////////////
+// Operations calling to pysoda.py functions //
+//////////////////////////////////
+
 // Action when user click on Save file organization button
-saveFileOrganizationBtn.addEventListener('click', () => {
-  client.invoke("apiSaveFileOrganization", table, pathsavefileorganization.value, (error, res) => {
-      if(error) {
-        console.log(error)
-      } else {
-        console.log(res)
-        console.log(table.rows[0].cells[0].innerHTML)
-      }
+selectSaveFileOrganizationBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('save-file-dialog-saveorganization')
+})
+ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
+  var jsonformat = tableToJson(tableNotOrganized)
+  document.getElementById("save-file-organization-status").innerHTML = "";
+  // Call python to save
+  if (path != null){
+    client.invoke("apiSaveFileOrganization", jsonformat, path, (error, res) => {
+        if(error) {
+          console.log(error)
+          var emessage = userError(error)
+          document.getElementById("save-file-organization-status").innerHTML = emessage
+        } else {
+          console.log(res)
+          document.getElementById("save-file-organization-status").innerHTML = "Saved!";
+        }
+    })
+  }
+})
+
+// Action when user click on upload file organization button
+selectUploadFileOrganizationBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-file-dialog-uploadorganization')
+})
+ipcRenderer.on('selected-uploadorganization', (event, path) => {
+  console.log(path)
+  document.getElementById("upload-file-organization-status").innerHTML = "";
+  client.invoke("apiUploadFileOrganization", path[0], sparcFolderNames, (error, res) => {
+        if(error) {
+          console.log(error)
+          var emessage = userError(error)
+          document.getElementById("upload-file-organization-status").innerHTML = emessage
+        } else {
+          console.log(res)
+          jsonToTable(tableNotOrganized, res)
+          document.getElementById("upload-file-organization-status").innerHTML = "Uploaded!";
+        }
   })
 })
 
@@ -179,6 +290,139 @@ curateDatasetBtn.addEventListener('click', () => {
   }
 
 })
+
+// // // // // // // // // // 
+// Action when user click on Curate Dataset #2
+// // // // // // // // // // 
+
+curateDatasetBtn2.addEventListener('click', () => {
+
+  progressinfo.style.color = blackcolor
+  curateDatasetBtn.disabled = true
+  disableform(curationform)
+
+  var jsonvar = {
+  }
+
+  if (alreadyorganizedstatus.checked) {
+    console.log(alreadyorganizedstatus.checked)
+    console.log(pathdataset.value)
+    if (fs.existsSync(pathdataset.value)) {
+      jsonvar = organizedFolderToJson(pathdataset.value)
+    } else {
+      progressinfo.style.color = redcolor
+      progressinfo.value = 'Error: Select a valid dataset folder'
+      console.error('Error')
+    }
+  } else if (organizedatasetstatus.checked) {
+    jsonvar = tableToJson(tableNotOrganized)   
+  }
+
+  console.log('log')
+  console.log(jsonvar)
+
+  var metadatafiles = []
+
+  if (existingsubmissionstatus.checked === true){
+    submissionstatus = true
+    pathsubmission = pathsubmissionexisting.value
+    metadatafiles.push(pathsubmission)
+  } else if (newsubmissionstatus.checked === true){
+    submissionstatus = true
+    pathsubmission = path.join(__dirname, 'file_templates', 'submission.xlsx')
+    metadatafiles.push(pathsubmission)
+  } else {
+    submissionstatus = false
+  }
+  
+  if (existingdescriptionstatus.checked === true){
+    descriptionstatus = true
+    pathdescription = pathdescriptionexisting.value
+    metadatafiles.push(pathdescription)
+  } else if (newdescriptionstatus.checked === true){
+    descriptionstatus = true
+    pathdescription = path.join(__dirname, 'file_templates', 'dataset_description.xlsx')
+    metadatafiles.push(pathdescription)
+  } else {
+    descriptionstatus = false
+  }
+
+  if (existingsubjectsstatus.checked === true){
+    subjectsstatus = true
+    pathsubjects = pathsubjectsexisting.value
+    metadatafiles.push(pathsubjects)
+  } else if (newsubjectsstatus.checked === true){
+    subjectsstatus = true
+    pathsubjects = path.join(__dirname, 'file_templates', 'subjects.xlsx')
+    metadatafiles.push(pathsubjects)
+  } else {
+    subjectsstatus = false
+  }
+
+  if (existingsamplesstatus.checked === true){
+    samplesstatus = true
+    pathsamples = pathsamplesexisting.value
+    metadatafiles.push(pathsamples)
+  } else if (newsamplesstatus.checked === true){
+    samplesstatus = true
+    pathsamples = path.join(__dirname, 'file_templates', 'samples.xlsx')
+    metadatafiles.push(pathsamples)
+  } else {
+   samplesstatus = false
+  }
+
+  jsonvar['metadata'] = metadatafiles
+
+  console.log(jsonvar)
+
+  progressinfo.value = ''
+  var completionstatus = 'Solving'
+
+  client.invoke("apiCurateDataset2", pathdataset.value, createnewstatus.checked, pathnewdataset.value,
+    manifeststatus.checked, submissionstatus, pathsubmission,  descriptionstatus, pathdescription,
+    subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonvar, modifyexistingstatus.checked, 
+    bfdirectlystatus.checked, alreadyorganizedstatus.checked, organizedatasetstatus.checked,
+    (error, res) => {
+    if(error) {
+      console.log('ERROR')
+      var emessage = userError(error)
+      progressinfo.style.color = redcolor
+      progressinfo.value = emessage
+      console.log(error)
+      enableform(curationform)
+    } else {
+      console.log('Done', res)
+    }
+  })
+
+  var timerprogress = setInterval(progressfunction, 1000)
+  function progressfunction(){
+    client.invoke("apiCurateDatasetProgress", (error, res) => {
+      if(error) {
+        console.error(error)
+      } else {
+        completionstatus = res[1]
+        var printstatus = res[2]
+        if (printstatus === 'Curating') {
+          progressinfo.value = res[0].split(',').join('\n')
+        }
+      }
+    })
+    console.log('Completion', completionstatus)
+    if (completionstatus === 'Done'){
+      clearInterval(timerprogress)
+      curateDatasetBtn.disabled = false
+      enableform(curationform)
+    }
+  }
+
+
+})
+
+
+
+// // // // // // // // // // 
+// // // // // // // // // // 
 
 
 // Add bf account
@@ -343,3 +587,165 @@ function refreshBfDatasetList(){
     })
   }
 }
+
+// // // // // // // // // // 
+// Functions: Organize dataset
+// // // // // // // // // // 
+
+// Organized
+function checkFolderStruture(pathDatasetFolder){
+  var files = fs.readdirSync(pathDatasetFolder)
+  var folders = []
+  for (var i = 0; i<files.length; i++) {
+    var filename = files[i]
+    var filepath = path.join(pathDatasetFolder, filename)
+    if (fs.lstatSync(filepath).isDirectory()){
+      folders.push(filename)
+    }
+  }
+  console.log(folders)
+  console.log(sparcFolderNames)
+  if (folders.length != sparcFolderNames.length)
+        return false
+  var foldersorted = folders.sort()
+  var sparcFolderSorted = sparcFolderNames.sort()
+  for (var i = 0; i < foldersorted.length; i++) {
+    if (foldersorted[i] != sparcFolderSorted[i]) { 
+      return false
+    }  
+  }
+  return true
+}
+
+function organizedFolderToJson(pathdatasetval){
+  var jsonvar = {}
+  var mainfolderfiles = []
+  var files = fs.readdirSync(pathdatasetval)
+  for (var i = 0; i<files.length; i++) {
+    var filename = files[i]
+    var filepath = path.join(pathdatasetval, filename)
+    if (fs.lstatSync(filepath).isDirectory()){
+      var filesinfolder = fs.readdirSync(filepath)
+      var folderfiles = []
+      for (var j = 0; j<filesinfolder.length; j++) {
+        var filenameinfolder = filesinfolder[j]
+        folderfiles.push(path.join(filepath, filenameinfolder))
+      }  
+      jsonvar[filename] = folderfiles
+    } else {
+      mainfolderfiles.push(filepath)
+    }
+  }
+  jsonvar['main'] = mainfolderfiles
+  return jsonvar
+}
+
+function jsonToTableOrganized(table, jsonvar){
+  var keyvect = Object.keys(jsonvar)
+  for (var j = 0; j < keyvect.length; j++) {
+    let SPARCfolder = keyvect[j]
+    var SPARCfolderid = SPARCfolder + '_org'
+    var rowcount = document.getElementById(SPARCfolderid).rowIndex
+    var pathlist = jsonvar[SPARCfolder]
+    for (var i = 0; i < pathlist.length; i++){ 
+      tableOrganizedcount = tableOrganizedcount + 1
+      var rownum = rowcount + i + 1
+      var table_len = tableOrganizedcount
+      var row = table.insertRow(rownum).outerHTML="<tr id='row-org"+table_len+"'><td id='name_row_org"+table_len+"'>"+ pathlist[i] +"</td> <td id='description_row_org"+table_len+"'>"+ "" +"</td> <td><input type='button' id='edit_button_org"+table_len+"' value='Edit' class='edit' onclick='edit_row_org("+table_len+")'> <input type='button' id='save_button_org"+table_len+"' value='Save' class='save' onclick='save_row_org("+table_len+")'></td></tr>";
+    }
+  }
+  console.log("table after")
+  console.log(table)
+  return table
+}
+
+
+// Not organized
+function insertFileToTable(table, path){
+  var i
+  let SPARCfolder = document.querySelector('#SPARCfolderlist').value
+  var rowcount = document.getElementById(SPARCfolder).rowIndex
+  console.log(SPARCfolder)
+  console.log(rowcount)
+  for (i = 0; i < path.length; i++) { 
+    tableNotOrganizedcount = tableNotOrganizedcount + 1
+    var table_len=tableNotOrganizedcount
+    var rownum = rowcount + i + 1
+    var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ path[i] +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
+  }
+  console.log("table after")
+  console.log(table)
+  return table
+}
+
+function tableToJson(table){
+  var jsonvar = {
+  }
+  var pathlist = new Array()
+  var keyval = "code"
+  var tableheaders = sparcFolderNames.slice()
+  tableheaders.push("main")
+  for (var i = 1, row; row = table.rows[i]; i++) {
+    var pathname = row.cells[0].innerHTML
+    if (tableheaders.includes(pathname)) {
+      jsonvar[keyval] = pathlist
+      keyval = pathname
+      var pathlist = new Array()
+    } else {
+      pathlist.push(row.cells[0].innerHTML)
+    }
+  }
+  jsonvar[keyval] = pathlist
+  return jsonvar
+}
+
+
+function jsonToTable(table, jsonvar){
+  var keyvect = Object.keys(jsonvar)
+  for (var j = 0; j < keyvect.length; j++) {
+    let SPARCfolder = keyvect[j]
+    var SPARCfolderid = SPARCfolder
+    var rowcount = document.getElementById(SPARCfolderid).rowIndex
+    var pathlist = jsonvar[SPARCfolder]
+    for (var i = 0; i < pathlist.length; i++){ 
+      var rownum = rowcount + i + 1
+      tableNotOrganizedcount = tableNotOrganizedcount + 1
+      var table_len = tableNotOrganizedcount
+      var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ pathlist[i] +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
+    }
+  }
+  console.log("table after")
+  console.log(table)
+  return table
+}
+
+//Both
+function clearTable(table){
+  var keyvect = sparcFolderNames.slice()
+  keyvect.push("main")
+  console.log(table.rows.length)
+  console.log(keyvect.length)
+  while (table.rows.length > keyvect.length){
+    console.log(table.rows.length)
+    console.log(keyvect.length)
+    var keyrow = []
+    for (var j = 0; j < keyvect.length; j++) {
+      var SPARCfolderid = keyvect[j]
+      if (table == tableOrganized){
+        SPARCfolderid = SPARCfolderid + "_org"
+      }
+      var rowcount = document.getElementById(SPARCfolderid).rowIndex
+      keyrow.push(rowcount)
+    }
+    console.log(keyrow)
+    for (var i = 0; i < table.rows.length; i++) {
+      if (keyrow.includes(i) === false){
+        table.deleteRow(i)
+        break
+      }
+    }
+  }
+
+  return table
+}
+
