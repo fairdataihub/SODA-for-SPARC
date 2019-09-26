@@ -60,9 +60,9 @@ function hideAllSectionsAndDeselectButtons () {
   })
 }
 
-function displayAbout () {
-  document.querySelector('#about-modal').classList.add('is-shown')
-}
+// function displayAbout () {
+//   document.querySelector('#about-modal').classList.add('is-shown')
+// }
 
 // Default to the view that was active the last time the app was open
 const sectionId = settings.get('activeSectionButtonId')

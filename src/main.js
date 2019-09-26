@@ -45,7 +45,7 @@ const createPyProc = () => {
   } else {
     pyProc = require('child_process').spawn('python', [script, port])
   }
- 
+
   if (pyProc != null) {
     //console.log(pyProc)
     console.log('child process success on port ' + port)
@@ -71,9 +71,9 @@ let mainWindow = null
 
 const createWindow = () => {
   mainWindow = new BrowserWindow({
-    width: 1080, 
+    width: 1080,
     height: 680,
-    //minWidth: 1080, 
+    //minWidth: 1080,
     //minHeight: 680,
     center: true,
     icon: __dirname + '/assets/app-icon/png/soda_icon.png',

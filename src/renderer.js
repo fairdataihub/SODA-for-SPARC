@@ -5,6 +5,8 @@ const zerorpc = require("zerorpc")
 const fs = require("fs")
 const path = require('path')
 const {ipcRenderer} = require('electron')
+const tt = require('electron-tooltip')
+tt({ })
 
 // Connect to python server and check
 let client = new zerorpc.Client()
@@ -108,7 +110,6 @@ const sparcFolderNames = ["code", "derivatives", "docs", "protocol", "samples", 
 
 // Add existing bf account(s) to dropdown list
 updateBfAccountList()
-
 
 //////////////////////////////////
 // Operations on JavaScript end only
