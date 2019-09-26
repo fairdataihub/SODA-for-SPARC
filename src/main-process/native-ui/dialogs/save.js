@@ -11,3 +11,15 @@ ipcMain.on('save-dialog', (event) => {
     event.sender.send('saved-file', filename)
   })
 })
+
+ipcMain.on('save-file-dialog-saveorganization', (event) => {
+  const options = {
+    title: 'Save File Organization',
+    filters: [
+      { name: 'CSV', extensions: ['csv'] }
+    ]
+  }
+  dialog.showSaveDialog(options, (filename) => {
+    event.sender.send('selected-saveorganizationfile', filename)
+  })
+})
