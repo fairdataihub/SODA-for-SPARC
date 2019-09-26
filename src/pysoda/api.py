@@ -10,9 +10,9 @@ from os.path import isdir, isfile
 class SodaApi(object):
 
     ### Curate dataset
-    def apiSaveFileOrganization(self, table, pathsavefileorganization):
+    def apiSaveFileOrganization(self, jsonpath, jsondescription, pathsavefileorganization):
         try: 
-            return savefileorganization(table, pathsavefileorganization)
+            return savefileorganization(jsonpath, jsondescription, pathsavefileorganization)
         except Exception as e:
             raise e
 

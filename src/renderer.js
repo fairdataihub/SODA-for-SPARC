@@ -168,10 +168,15 @@ selectSaveFileOrganizationBtn.addEventListener('click', (event) => {
 })
 ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
   var jsonformat = tableToJson(tableNotOrganized)
+  var jsonvect = tableToJsonWithDescription(tableNotOrganized)
+  var jsonpath = jsonvect[0]
+  var jsondescription = jsonvect[1]
+  console.log(jsonpath)
+  console.log(jsondescription)
   document.getElementById("save-file-organization-status").innerHTML = "";
   // Call python to save
   if (path != null){
-    client.invoke("apiSaveFileOrganization", jsonformat, path, (error, res) => {
+    client.invoke("apiSaveFileOrganization", jsonpath, jsondescription, path, (error, res) => {
         if(error) {
           console.log(error)
           var emessage = userError(error)
@@ -191,14 +196,22 @@ selectUploadFileOrganizationBtn.addEventListener('click', (event) => {
 ipcRenderer.on('selected-uploadorganization', (event, path) => {
   console.log(path)
   document.getElementById("upload-file-organization-status").innerHTML = "";
-  client.invoke("apiUploadFileOrganization", path[0], sparcFolderNames, (error, res) => {
+  var headernames = sparcFolderNames.slice()
+  headernames.push("main")
+  var lennames =  headernames.length
+  for (var i = 0; i < lennames; i++) {
+  	console.log(headernames[i])
+  	headernames.push(headernames[i] + "_description")
+  }
+  console.log(headernames)
+  client.invoke("apiUploadFileOrganization", path[0], headernames, (error, res) => {
         if(error) {
           console.log(error)
           var emessage = userError(error)
           document.getElementById("upload-file-organization-status").innerHTML = emessage
         } else {
           console.log(res)
-          jsonToTable(tableNotOrganized, res)
+          jsonToTableWithDescription(tableNotOrganized, res)
           document.getElementById("upload-file-organization-status").innerHTML = "Uploaded!";
         }
   })
@@ -680,8 +693,7 @@ function insertFileToTable(table, path){
 }
 
 function tableToJson(table){
-  var jsonvar = {
-  }
+  var jsonvar = {}
   var pathlist = new Array()
   var keyval = "code"
   var tableheaders = sparcFolderNames.slice()
@@ -700,6 +712,37 @@ function tableToJson(table){
   return jsonvar
 }
 
+function tableToJsonWithDescription(table){
+  var jsonvar = {}
+  var jsonvardescription= {}
+
+  var pathlist = new Array()
+  var descriptionlist = new Array()
+
+  var keyval = "code"
+  var tableheaders = sparcFolderNames.slice()
+  tableheaders.push("main")
+  for (var i = 1, row; row = table.rows[i]; i++) {
+    var pathname = row.cells[0].innerHTML
+    var descriptionname = row.cells[1].innerHTML
+    if (tableheaders.includes(pathname)) {
+      jsonvar[keyval] = pathlist
+      jsonvardescription[keyval + "_description"] = descriptionlist
+      keyval = pathname
+      var pathlist = new Array()
+      var descriptionlist = new Array()
+    } else {
+      pathlist.push(row.cells[0].innerHTML)
+      descriptionlist.push(row.cells[1].innerHTML)
+    }
+  }
+  jsonvar[keyval] = pathlist
+  jsonvardescription[keyval+ "_description"] = descriptionlist
+  console.log(jsonvar)
+
+  return [jsonvar, jsonvardescription]
+}
+
 
 function jsonToTable(table, jsonvar){
   var keyvect = Object.keys(jsonvar)
@@ -713,6 +756,30 @@ function jsonToTable(table, jsonvar){
       tableNotOrganizedcount = tableNotOrganizedcount + 1
       var table_len = tableNotOrganizedcount
       var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ pathlist[i] +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
+    }
+  }
+  console.log("table after")
+  console.log(table)
+  return table
+}
+
+function jsonToTableWithDescription(table, jsonvar){
+  var keyvect = Object.keys(jsonvar)
+  var tableheaders = sparcFolderNames.slice()
+  tableheaders.push("main")
+  for (var j = 0; j < tableheaders.length; j++) {
+    let SPARCfolder = tableheaders[j]
+    var SPARCfolderid = SPARCfolder
+    var rowcount = document.getElementById(SPARCfolderid).rowIndex
+    var pathlist = jsonvar[SPARCfolder]
+    var descriptionlist = jsonvar[SPARCfolder + "_description"]
+    for (var i = 0; i < pathlist.length; i++){ 
+      if (pathlist[i] !== "" ) {
+	      var rownum = rowcount + i + 1
+	      tableNotOrganizedcount = tableNotOrganizedcount + 1
+	      var table_len = tableNotOrganizedcount
+	      var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ pathlist[i] +"</td><td id='description_row"+table_len+"'>"+ descriptionlist[i] +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
+       }
     }
   }
   console.log("table after")

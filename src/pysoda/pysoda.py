@@ -30,14 +30,17 @@ submitprintstatus = ' '
 
 ### FEATURE #1: SPARC dataset organizer
 # Organize dataset
-def savefileorganization(table, pathsavefileorganization):
+def savefileorganization(jsonpath, jsondescription, pathsavefileorganization):
     try:
         # f = open("dict.txt","w")
         # f.write(str(table))
         # f.close()
 
-        mydict = table
+        mydict = jsonpath
+        mydict2 = jsondescription
+        mydict.update(mydict2)
         dictkeys = list(mydict.keys())
+        dictkeys.sort()
         df = pd.DataFrame(columns=[dictkeys[0]])
         df[dictkeys[0]] = mydict[dictkeys[0]]
         for i in range(1,len(dictkeys)):
@@ -53,15 +56,14 @@ def savefileorganization(table, pathsavefileorganization):
 
 compare = lambda x, y: collections.Counter(x) == collections.Counter(y)
 
-def uploadfileorganization(pathuploadfileorganization, foldernames):
+def uploadfileorganization(pathuploadfileorganization, headernames):
     try:
-        foldernames.append("main") 
         csvsavepath = join(pathuploadfileorganization)
         df = pd.read_csv(csvsavepath)
         dfnan = df.isnull()
         mydict = {}
         dictkeys = df.columns
-        if not compare(dictkeys, foldernames):
+        if not compare(dictkeys, headernames):
             raise Exception("Error: Please select a valid file")
         rowcount = len(df.index)
         for i in range(len(dictkeys)):
@@ -70,6 +72,8 @@ def uploadfileorganization(pathuploadfileorganization, foldernames):
                 pathval = df.at[j, dictkeys[i]]
                 if not dfnan.at[j, dictkeys[i]]:
                     pathvect.append(pathval)
+                else: 
+                    pathvect.append("")
             mydict[dictkeys[i]] = pathvect
         return mydict
     except Exception as e:
