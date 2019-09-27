@@ -3,7 +3,7 @@
 # python module for Software for Organizing Data Automatically (SODA)
 
 from os import listdir, stat, makedirs, mkdir
-from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser
+from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname
 import pandas as pd
 from pandas import DataFrame
 from time import strftime, localtime
@@ -16,6 +16,8 @@ import json
 from pandas.io.html import read_html
 import numpy as np
 import collections
+import subprocess
+import shutil
 
 ### Global variables
 curateprogress = ' '
@@ -46,7 +48,7 @@ def savefileorganization(jsonpath, jsondescription, pathsavefileorganization):
         for i in range(1,len(dictkeys)):
             dfnew = pd.DataFrame(columns=[dictkeys[i]])
             dfnew[dictkeys[i]] = mydict[dictkeys[i]]
-            df = pd.concat([df, dfnew], axis=1)     
+            df = pd.concat([df, dfnew], axis=1)
         df = df.replace(np.nan, '', regex=True)
         csvsavepath = join(pathsavefileorganization)
         df.to_csv(csvsavepath, index = None, header=True)
@@ -72,12 +74,54 @@ def uploadfileorganization(pathuploadfileorganization, headernames):
                 pathval = df.at[j, dictkeys[i]]
                 if not dfnan.at[j, dictkeys[i]]:
                     pathvect.append(pathval)
-                else: 
+                else:
                     pathvect.append("")
             mydict[dictkeys[i]] = pathvect
         return mydict
     except Exception as e:
         raise e
+
+def previewfileorganization(jsonpath):
+    mydict = jsonpath
+    paths = []
+    for i in mydict.keys():
+        if mydict[i] != []:
+            paths.append(mydict[i])
+
+    userpath = expanduser("~")
+    preview_path = join(userpath, "SODA", "Preview")
+    try:
+        makedirs(preview_path)
+    except:
+        raise Exception("Preview Folder already present, either delete or move the old folder - " + str(dirname(preview_path)))
+    for p in paths:
+        glob_path = p[0]
+        preview_folder_structure(p[0], preview_path, glob_path)
+    subprocess.Popen(r'explorer /select,' + str(preview_path))
+    return preview_path
+
+def preview_folder_structure(file_path, preview_path, glob_path):
+    for source_file in listdir(file_path):
+        suff = file_path.replace(glob_path, '')[1:]
+        if not exists(join(preview_path, split(glob_path)[-1])):
+            makedirs(join(preview_path, split(glob_path)[-1]))
+        dest_file = join(preview_path, split(glob_path)[-1], suff, source_file)
+        if isfile(join(file_path, source_file)):
+            open(dest_file, 'a').close()
+        else:
+            try:
+                makedirs(dest_file)
+            except Exception as e:
+                raise Exception(e)
+            source_file = join(file_path, source_file)
+            preview_folder_structure(join(file_path, source_file), preview_path, glob_path)
+    return
+
+def deletePreviewFileOrganization():
+    userpath = expanduser("~")
+    preview_path = join(userpath, "SODA")
+    shutil.rmtree(preview_path)
+    return
 
 ### FEATURE #2: SPARC metadata generator
 
@@ -200,7 +244,7 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
 
         if submissionstatus:
             copyfile(pathsubmission, pathdataset)
-            curateprogress = curateprogress + ', ,' + 'Submission file created' 
+            curateprogress = curateprogress + ', ,' + 'Submission file created'
         else:
             curateprogress = curateprogress + ', ,' + 'Submission file not requested'
 
@@ -327,7 +371,7 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
 
                 if submissionstatus:
                     copyfile(pathsubmission, pathdataset)
-                    curateprogress = curateprogress + ', ,' + 'Submission file created' 
+                    curateprogress = curateprogress + ', ,' + 'Submission file created'
                 else:
                     curateprogress = curateprogress + ', ,' + 'Submission file not requested'
 
@@ -371,7 +415,7 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
 
             if submissionstatus:
                 copyfile(pathsubmission, pathdataset)
-                curateprogress = curateprogress + ', ,' + 'Submission file created' 
+                curateprogress = curateprogress + ', ,' + 'Submission file created'
             else:
                 curateprogress = curateprogress + ', ,' + 'Submission file not requested'
 
@@ -400,7 +444,7 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
                     curatestatus = 'Done'
                     raise e
 
-    
+
 
 def curatedatasetprogress():
     global curateprogress
