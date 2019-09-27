@@ -130,7 +130,6 @@ ipcRenderer.on('selected-dataset', (event, path) => {
   if (folderChecking == true) {
     pathdataset.innerHTML = path
     var jsonfolder = organizedFolderToJson(path[0])
-    console.log(jsonfolder)
     jsonToTableOrganized(tableOrganized, jsonfolder)
   } else {
     pathdataset.innerHTML = "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>"
@@ -362,7 +361,7 @@ curateDatasetBtn2.addEventListener('click', () => {
       return
     }
   } else if (organizedatasetstatus.checked) {
-    var jsonvect = tableToJsonWithDescription(tableNotOrganized)   
+    var jsonvect = tableToJsonWithDescription(tableNotOrganized)
     console.log(jsonvect[0])
   } else {
   	progressinfo.style.color = redcolor
@@ -421,7 +420,7 @@ curateDatasetBtn2.addEventListener('click', () => {
    samplesstatus = false
   }
 
-  jsonvar['metadata'] = metadatafiles
+  // jsonvar['metadata'] = metadatafiles
 
   // Initiate curation by calling python
   progressinfo.value = ''
@@ -429,10 +428,10 @@ curateDatasetBtn2.addEventListener('click', () => {
   console.log(pathdataset.innherHTML)
   var pathdatasetvalue = String(pathdataset.innerHTML)
   console.log(pathdatasetvalue)
-  
+
   client.invoke("apiCurateDataset2", pathdatasetvalue, createnewstatus.checked, pathnewdataset.value,
     manifeststatus.checked, submissionstatus, pathsubmission,  descriptionstatus, pathdescription,
-    subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus.checked, 
+    subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus.checked,
     bfdirectlystatus.checked, alreadyorganizedstatus.checked, organizedatasetstatus.checked,
     (error, res) => {
     if(error) {
@@ -726,7 +725,7 @@ function tableToJsonWithDescriptionOrganized(table){
     if (tableheaders.includes(pathname)) {
       jsonvar[keyval] = pathlist
       jsonvardescription[keyval + "_description"] = descriptionlist
-      keyval = pathname 
+      keyval = pathname
       var pathlist = new Array()
       var descriptionlist = new Array()
     } else {
@@ -736,7 +735,6 @@ function tableToJsonWithDescriptionOrganized(table){
   }
   jsonvar[keyval] = pathlist
   jsonvardescription[keyval+ "_description"] = descriptionlist
-  console.log(jsonvar)
 
   return [jsonvar, jsonvardescription]
 }
@@ -801,7 +799,7 @@ function tableToJson(table){
 //       keyval = pathname
 //       if (table === tableOrganized){
 // 	  	keyval = keyval + "_org"
-// 	  } 
+// 	  }
 //       var pathlist = new Array()
 //       var descriptionlist = new Array()
 //     } else {
@@ -882,7 +880,7 @@ function tableToJsonWithDescription(table){
       keyval = pathname
       if (table === tableOrganized){
       keyval = keyval + "_org"
-    } 
+    }
       var pathlist = new Array()
       var descriptionlist = new Array()
     } else {
@@ -892,7 +890,6 @@ function tableToJsonWithDescription(table){
   }
   jsonvar[keyval] = pathlist
   jsonvardescription[keyval+ "_description"] = descriptionlist
-  console.log(jsonvar)
 
   return [jsonvar, jsonvardescription]
 }
