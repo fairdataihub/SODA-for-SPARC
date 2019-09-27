@@ -1,7 +1,7 @@
 from __future__ import print_function
 from pysoda import createmanifest, createdataset, copyfile, bfaddaccount, bfaccountlist, bfdatasetaccount, \
     bfsubmitdataset, submitdatasetprogress, curatedataset, curatedatasetprogress, bfnewdatasetfolder, \
-    savefileorganization, uploadfileorganization, curatedataset2
+    savefileorganization, uploadfileorganization, curatedataset2, previewfileorganization
 import sys
 import zerorpc
 from os.path import isdir, isfile
@@ -11,21 +11,27 @@ class SodaApi(object):
 
     ### Curate dataset
     def apiSaveFileOrganization(self, jsonpath, jsondescription, pathsavefileorganization):
-        try: 
+        try:
             return savefileorganization(jsonpath, jsondescription, pathsavefileorganization)
         except Exception as e:
             raise e
 
     def apiUploadFileOrganization(self, pathsavefileorganization, foldernames):
-        try: 
+        try:
             return uploadfileorganization(pathsavefileorganization, foldernames)
+        except Exception as e:
+            raise e
+
+    def apiPreviewFileOrganization(self, jsonpath):
+        try:
+            return previewfileorganization(jsonpath)
         except Exception as e:
             raise e
 
     def apiCurateDataset(self, pathdataset, createnewstatus, pathnewdataset,
         manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
         subjectsstatus, pathsubjects, samplesstatus, pathsamples):
-        try: 
+        try:
             curatedataset(pathdataset, createnewstatus, pathnewdataset,
                 manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
                 subjectsstatus, pathsubjects, samplesstatus, pathsamples)
@@ -34,12 +40,12 @@ class SodaApi(object):
 
     def apiCurateDataset2(self, pathdataset, createnewstatus, pathnewdataset,
         manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
-        subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonvar, modifyexistingstatus, 
+        subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonvar, modifyexistingstatus,
         bfdirectlystatus, alreadyorganizedstatus, organizedatasetstatus):
-        try: 
+        try:
             curatedataset2(pathdataset, createnewstatus, pathnewdataset,
                 manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
-                subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonvar, modifyexistingstatus, 
+                subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonvar, modifyexistingstatus,
                 bfdirectlystatus, alreadyorganizedstatus, organizedatasetstatus)
         except Exception as e:
             raise e
@@ -51,7 +57,7 @@ class SodaApi(object):
             raise e
 
 
-    ### Bf 
+    ### Bf
     def apiBfAddAccount(self, keyname, key, secret):
         try:
             return bfaddaccount(keyname, key, secret)
@@ -114,5 +120,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-

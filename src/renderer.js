@@ -38,6 +38,7 @@ const clearTableBtn = document.getElementById('clear-table')
 
 // Curate dataset
 const selectSaveFileOrganizationBtn = document.getElementById('select-save-file-organization')
+const selectPreviewBtn = document.getElementById('preview-file-organization')
 const selectUploadFileOrganizationBtn = document.getElementById('select-upload-file-organization')
 
 let createnewstatus = document.querySelector('#create-newdataset')
@@ -189,6 +190,7 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
   }
 })
 
+
 // Action when user click on upload file organization button
 selectUploadFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-uploadorganization')
@@ -214,6 +216,22 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
           jsonToTableWithDescription(tableNotOrganized, res)
           document.getElementById("upload-file-organization-status").innerHTML = "Uploaded!";
         }
+  })
+})
+
+// Action when user click on Preview file organization button
+selectPreviewBtn.addEventListener('click', () => {
+  var jsonvect = tableToJsonWithDescription(tableNotOrganized)
+  var jsonpath = jsonvect[0]
+  console.log(jsonpath)
+  client.invoke("apiPreviewFileOrganization", jsonpath, (error, res) => {
+      if(error) {
+        console.log(error)
+        var emessage = userError(error)
+        document.getElementById("save-file-organization-status").innerHTML = emessage
+      } else {
+        console.log(res)
+      }
   })
 })
 
@@ -305,9 +323,9 @@ curateDatasetBtn.addEventListener('click', () => {
 
 })
 
-// // // // // // // // // // 
+// // // // // // // // // //
 // Action when user click on Curate Dataset #2
-// // // // // // // // // // 
+// // // // // // // // // //
 
 curateDatasetBtn2.addEventListener('click', () => {
 
@@ -329,7 +347,7 @@ curateDatasetBtn2.addEventListener('click', () => {
       console.error('Error')
     }
   } else if (organizedatasetstatus.checked) {
-    jsonvar = tableToJson(tableNotOrganized)   
+    jsonvar = tableToJson(tableNotOrganized)
   }
 
   console.log('log')
@@ -348,7 +366,7 @@ curateDatasetBtn2.addEventListener('click', () => {
   } else {
     submissionstatus = false
   }
-  
+
   if (existingdescriptionstatus.checked === true){
     descriptionstatus = true
     pathdescription = pathdescriptionexisting.value
@@ -394,7 +412,7 @@ curateDatasetBtn2.addEventListener('click', () => {
 
   client.invoke("apiCurateDataset2", pathdataset.value, createnewstatus.checked, pathnewdataset.value,
     manifeststatus.checked, submissionstatus, pathsubmission,  descriptionstatus, pathdescription,
-    subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonvar, modifyexistingstatus.checked, 
+    subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonvar, modifyexistingstatus.checked,
     bfdirectlystatus.checked, alreadyorganizedstatus.checked, organizedatasetstatus.checked,
     (error, res) => {
     if(error) {
@@ -435,8 +453,8 @@ curateDatasetBtn2.addEventListener('click', () => {
 
 
 
-// // // // // // // // // // 
-// // // // // // // // // // 
+// // // // // // // // // //
+// // // // // // // // // //
 
 
 // Add bf account
@@ -602,9 +620,9 @@ function refreshBfDatasetList(){
   }
 }
 
-// // // // // // // // // // 
+// // // // // // // // // //
 // Functions: Organize dataset
-// // // // // // // // // // 
+// // // // // // // // // //
 
 // Organized
 function checkFolderStruture(pathDatasetFolder){
@@ -624,9 +642,9 @@ function checkFolderStruture(pathDatasetFolder){
   var foldersorted = folders.sort()
   var sparcFolderSorted = sparcFolderNames.sort()
   for (var i = 0; i < foldersorted.length; i++) {
-    if (foldersorted[i] != sparcFolderSorted[i]) { 
+    if (foldersorted[i] != sparcFolderSorted[i]) {
       return false
-    }  
+    }
   }
   return true
 }
@@ -644,7 +662,7 @@ function organizedFolderToJson(pathdatasetval){
       for (var j = 0; j<filesinfolder.length; j++) {
         var filenameinfolder = filesinfolder[j]
         folderfiles.push(path.join(filepath, filenameinfolder))
-      }  
+      }
       jsonvar[filename] = folderfiles
     } else {
       mainfolderfiles.push(filepath)
@@ -661,7 +679,7 @@ function jsonToTableOrganized(table, jsonvar){
     var SPARCfolderid = SPARCfolder + '_org'
     var rowcount = document.getElementById(SPARCfolderid).rowIndex
     var pathlist = jsonvar[SPARCfolder]
-    for (var i = 0; i < pathlist.length; i++){ 
+    for (var i = 0; i < pathlist.length; i++){
       tableOrganizedcount = tableOrganizedcount + 1
       var rownum = rowcount + i + 1
       var table_len = tableOrganizedcount
@@ -681,7 +699,7 @@ function insertFileToTable(table, path){
   var rowcount = document.getElementById(SPARCfolder).rowIndex
   console.log(SPARCfolder)
   console.log(rowcount)
-  for (i = 0; i < path.length; i++) { 
+  for (i = 0; i < path.length; i++) {
     tableNotOrganizedcount = tableNotOrganizedcount + 1
     var table_len=tableNotOrganizedcount
     var rownum = rowcount + i + 1
@@ -751,7 +769,7 @@ function jsonToTable(table, jsonvar){
     var SPARCfolderid = SPARCfolder
     var rowcount = document.getElementById(SPARCfolderid).rowIndex
     var pathlist = jsonvar[SPARCfolder]
-    for (var i = 0; i < pathlist.length; i++){ 
+    for (var i = 0; i < pathlist.length; i++){
       var rownum = rowcount + i + 1
       tableNotOrganizedcount = tableNotOrganizedcount + 1
       var table_len = tableNotOrganizedcount
@@ -773,7 +791,7 @@ function jsonToTableWithDescription(table, jsonvar){
     var rowcount = document.getElementById(SPARCfolderid).rowIndex
     var pathlist = jsonvar[SPARCfolder]
     var descriptionlist = jsonvar[SPARCfolder + "_description"]
-    for (var i = 0; i < pathlist.length; i++){ 
+    for (var i = 0; i < pathlist.length; i++){
       if (pathlist[i] !== "" ) {
 	      var rownum = rowcount + i + 1
 	      tableNotOrganizedcount = tableNotOrganizedcount + 1
@@ -816,4 +834,3 @@ function clearTable(table){
 
   return table
 }
-
