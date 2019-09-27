@@ -128,12 +128,14 @@ function showPreorganizedDataset(){
   document.getElementById('divPreorganizedDataset').style.display ='block';
   document.getElementById('divOrganizeDataset').style.display ='none';
   document.getElementById('divClearTable').style.display ='block';
+  document.getElementById('div-existing-dataset').style.display ='block';
 }
 
 function showOrganizeDataset(){
   document.getElementById('divPreorganizedDataset').style.display ='none';
   document.getElementById('divOrganizeDataset').style.display ='block';
   document.getElementById('divClearTable').style.display ='block';
+  document.getElementById('div-existing-dataset').style.display ='none';
 }
 
 document.querySelector('#preorganized-dataset').addEventListener('click', () => {
