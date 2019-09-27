@@ -175,8 +175,6 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
   var jsonvect = tableToJsonWithDescription(tableNotOrganized)
   var jsonpath = jsonvect[0]
   var jsondescription = jsonvect[1]
-  console.log(jsonpath)
-  console.log(jsondescription)
   document.getElementById("save-file-organization-status").innerHTML = "";
   // Call python to save
   if (path != null){
@@ -199,16 +197,13 @@ selectUploadFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-uploadorganization')
 })
 ipcRenderer.on('selected-uploadorganization', (event, path) => {
-  console.log(path)
   document.getElementById("upload-file-organization-status").innerHTML = "";
   var headernames = sparcFolderNames.slice()
   headernames.push("main")
   var lennames =  headernames.length
   for (var i = 0; i < lennames; i++) {
-  	console.log(headernames[i])
   	headernames.push(headernames[i] + "_description")
   }
-  console.log(headernames)
   client.invoke("apiUploadFileOrganization", path[0], headernames, (error, res) => {
         if(error) {
           console.log(error)
@@ -227,7 +222,6 @@ selectPreviewBtn.addEventListener('click', () => {
   document.getElementById("preview-organization-status").innerHTML = ""
   var jsonvect = tableToJsonWithDescription(tableNotOrganized)
   var jsonpath = jsonvect[0]
-  console.log(jsonpath)
   client.invoke("apiPreviewFileOrganization", jsonpath, (error, res) => {
       if(error) {
         console.log(error)
@@ -242,7 +236,7 @@ selectPreviewBtn.addEventListener('click', () => {
 
 // Action when user click on Preview file organization button
 deletePreviewBtn.addEventListener('click', () => {
-  // document.getElementById("delete-preview-organization-status").innerHTML = ""
+  document.getElementById("preview-organization-status").innerHTML = ""
   client.invoke("apiDeletePreviewFileOrganization", (error, res) => {
       if(error) {
         console.log(error)
@@ -356,11 +350,8 @@ curateDatasetBtn2.addEventListener('click', () => {
 
   // Convert table content into json file for transferring to Python
   if (alreadyorganizedstatus.checked) {
-    console.log(alreadyorganizedstatus.checked)
-    console.log(pathdataset.innerHTML)
-    if (fs.existsSync(pathdataset.innerHTML)) {
-      var jsonvect = tableToJsonWithDescription(tableOrganized)
-      console.log(jsonvect[0])
+    if (fs.existsSync(pathdataset.value)) {
+      jsonvar = organizedFolderToJson(pathdataset.value)
     } else {
       progressinfo.style.color = redcolor
       progressinfo.value = 'Error: Select a valid dataset folder'
@@ -378,7 +369,6 @@ curateDatasetBtn2.addEventListener('click', () => {
   var jsonpath = jsonvect[0]
   var jsondescription = jsonvect[1]
 
-  // Get info of requested metadata
   var metadatafiles = []
   if (existingsubmissionstatus.checked === true){
     submissionstatus = true
@@ -428,7 +418,7 @@ curateDatasetBtn2.addEventListener('click', () => {
    samplesstatus = false
   }
 
-  //jsonvar['metadata'] = metadatafiles
+  jsonvar['metadata'] = metadatafiles
 
   // Initiate curation by calling python
   progressinfo.value = ''
@@ -662,8 +652,6 @@ function checkFolderStruture(pathDatasetFolder){
       folders.push(filename)
     }
   }
-  console.log(folders)
-  console.log(sparcFolderNames)
   if (folders.length != sparcFolderNames.length)
         return false
   var foldersorted = folders.sort()
@@ -724,8 +712,6 @@ function insertFileToTable(table, path){
   var i
   let SPARCfolder = document.querySelector('#SPARCfolderlist').value
   var rowcount = document.getElementById(SPARCfolder).rowIndex
-  console.log(SPARCfolder)
-  console.log(rowcount)
   for (i = 0; i < path.length; i++) {
     tableNotOrganizedcount = tableNotOrganizedcount + 1
     var table_len=tableNotOrganizedcount
@@ -789,7 +775,6 @@ function tableToJsonWithDescription(table){
   }
   jsonvar[keyval] = pathlist
   jsonvardescription[keyval+ "_description"] = descriptionlist
-  console.log(jsonvar)
 
   return [jsonvar, jsonvardescription]
 }
