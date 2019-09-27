@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # python module for Software for Organizing Data Automatically (SODA)
-
+import os ## Since some functions are not available on all OS
 from os import listdir, stat, makedirs, mkdir
 from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname
 import pandas as pd
@@ -82,38 +82,77 @@ def uploadfileorganization(pathuploadfileorganization, headernames):
 
 def previewfileorganization(jsonpath):
     mydict = jsonpath
-    paths = []
-    for i in mydict.keys():
-        if mydict[i] != []:
-            paths.append(mydict[i])
-
     userpath = expanduser("~")
     preview_path = join(userpath, "SODA", "Preview")
     try:
         makedirs(preview_path)
     except:
         raise Exception("Preview Folder already present, either delete or move the old folder - " + str(dirname(preview_path)))
-    for p in paths:
-        glob_path = p[0]
-        preview_folder_structure(p[0], preview_path, glob_path)
-    subprocess.Popen(r'explorer /select,' + str(preview_path))
+
+    folderrequired = []
+    for i in mydict.keys():
+        if mydict[i] != []:
+            folderrequired.append(i)
+            if i != 'main':
+                makedirs(join(preview_path, i))
+
+    for i in folderrequired:
+        paths = mydict[i]
+        if (i == 'main'):
+            preview_folder_structure2(paths, join(preview_path))
+        else:
+            preview_folder_structure2(paths, join(preview_path, i))
+    try:
+        subprocess.Popen(r'explorer /select,' + str(preview_path))
+    except:
+        os.system('xdg-open "%s"' % preview_path)
     return preview_path
 
-def preview_folder_structure(file_path, preview_path, glob_path):
-    for source_file in listdir(file_path):
-        suff = file_path.replace(glob_path, '')[1:]
-        if not exists(join(preview_path, split(glob_path)[-1])):
-            makedirs(join(preview_path, split(glob_path)[-1]))
-        dest_file = join(preview_path, split(glob_path)[-1], suff, source_file)
-        if isfile(join(file_path, source_file)):
-            open(dest_file, 'a').close()
+def preview_folder_structure2(paths, folder_path):
+    for p in paths:
+        if isfile(p):
+            file = basename(p)
+            open(join(folder_path, file), 'a').close()
         else:
-            try:
-                makedirs(dest_file)
-            except Exception as e:
-                raise Exception(e)
-            source_file = join(file_path, source_file)
-            preview_folder_structure(join(file_path, source_file), preview_path, glob_path)
+            all_files = listdir(p)
+            all_files_path = []
+            for f in all_files:
+                all_files_path.append(join(p, f))
+
+            # print(folder_path)
+            pname = basename(p)
+            # print(join(folder_path, p))
+            new_folder_path = join(folder_path, pname)
+            # print(pname)
+            # print(new_folder_path)
+            makedirs(new_folder_path)
+            preview_folder_structure2(all_files_path, new_folder_path)
+    return
+
+# dicttest = {}
+# dicttest['code'] = [r'C:\Users\HSrivastava\Desktop\Evaluation-form.pdf', r'C:\Users\HSrivastava\Desktop\Output']
+# previewfileorganization(dicttest)
+
+def preview_folder_structure(file_path, preview_path, glob_path):
+    suff = file_path.replace(glob_path, '')[1:]
+    if isdir(file_path):
+        for source_file in listdir(file_path):
+            if not exists(join(preview_path, split(glob_path)[-1])):
+                makedirs(join(preview_path, split(glob_path)[-1]))
+            dest_file = join(preview_path, split(glob_path)[-1], suff, source_file)
+            if isfile(join(file_path, source_file)):
+                open(dest_file, 'a').close()
+            else:
+                try:
+                    makedirs(dest_file)
+                except Exception as e:
+                    raise Exception(e)
+                source_file = join(file_path, source_file)
+                preview_folder_structure(join(file_path, source_file), preview_path, glob_path)
+    else:
+        dest_file = join(preview_path, file_path)
+        # raise Exception(dest_file)
+        open(dest_file, 'a').close()
     return
 
 def deletePreviewFileOrganization():
