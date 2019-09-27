@@ -182,7 +182,7 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
         if(error) {
           console.log(error)
           var emessage = userError(error)
-          document.getElementById("save-file-organization-status").innerHTML = emessage
+          document.getElementById("save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
         } else {
           console.log(res)
           document.getElementById("save-file-organization-status").innerHTML = "Saved!";
@@ -208,7 +208,7 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
         if(error) {
           console.log(error)
           var emessage = userError(error)
-          document.getElementById("upload-file-organization-status").innerHTML = emessage
+          document.getElementById("upload-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
         } else {
           console.log(res)
           jsonToTableWithDescription(tableNotOrganized, res)
@@ -298,7 +298,7 @@ curateDatasetBtn.addEventListener('click', () => {
   progressinfo.value = ''
   var completionstatus = 'Solving'
 
-  client.invoke("apiCurateDataset", pathdataset.value, createnewstatus.checked, pathnewdataset.value,
+  client.invoke("apiCurateDataset", pathdataset.innerHTML, createnewstatus.checked, pathnewdataset.value,
     manifeststatus.checked, submissionstatus, pathsubmission,  descriptionstatus, pathdescription,
     subjectsstatus, pathsubjects, samplesstatus, pathsamples,
     (error, res) => {
@@ -343,13 +343,12 @@ curateDatasetBtn.addEventListener('click', () => {
 
 curateDatasetBtn2.addEventListener('click', () => {
 
+  // Disable curate button to prevent multiple clicks
   progressinfo.style.color = blackcolor
   curateDatasetBtn.disabled = true
   disableform(curationform)
 
-  var jsonvar = {
-  }
-
+  // Convert table content into json file for transferring to Python
   if (alreadyorganizedstatus.checked) {
     if (fs.existsSync(pathdataset.value)) {
       jsonvar = organizedFolderToJson(pathdataset.value)
@@ -357,15 +356,20 @@ curateDatasetBtn2.addEventListener('click', () => {
       progressinfo.style.color = redcolor
       progressinfo.value = 'Error: Select a valid dataset folder'
       console.error('Error')
+      return
     }
   } else if (organizedatasetstatus.checked) {
-    jsonvar = tableToJson(tableNotOrganized)
+    var jsonvect = tableToJsonWithDescription(tableNotOrganized)   
+    console.log(jsonvect[0])
+  } else {
+  	progressinfo.style.color = redcolor
+  	progressinfo.value = 'Error: Please select an option under "Organize dataset" '
+  	return
   }
-
-  console.log('log')
+  var jsonpath = jsonvect[0]
+  var jsondescription = jsonvect[1]
 
   var metadatafiles = []
-
   if (existingsubmissionstatus.checked === true){
     submissionstatus = true
     pathsubmission = pathsubmissionexisting.value
@@ -416,12 +420,16 @@ curateDatasetBtn2.addEventListener('click', () => {
 
   jsonvar['metadata'] = metadatafiles
 
+  // Initiate curation by calling python
   progressinfo.value = ''
   var completionstatus = 'Solving'
-
-  client.invoke("apiCurateDataset2", pathdataset.value, createnewstatus.checked, pathnewdataset.value,
+  console.log(pathdataset.innherHTML)
+  var pathdatasetvalue = String(pathdataset.innerHTML)
+  console.log(pathdatasetvalue)
+  
+  client.invoke("apiCurateDataset2", pathdatasetvalue, createnewstatus.checked, pathnewdataset.value,
     manifeststatus.checked, submissionstatus, pathsubmission,  descriptionstatus, pathdescription,
-    subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonvar, modifyexistingstatus.checked,
+    subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus.checked, 
     bfdirectlystatus.checked, alreadyorganizedstatus.checked, organizedatasetstatus.checked,
     (error, res) => {
     if(error) {
@@ -743,6 +751,9 @@ function tableToJsonWithDescription(table){
   var descriptionlist = new Array()
 
   var keyval = "code"
+  if (table === tableOrganized){
+  	keyval = keyval + "_org"
+  }
   var tableheaders = sparcFolderNames.slice()
   tableheaders.push("main")
   for (var i = 1, row; row = table.rows[i]; i++) {
@@ -752,6 +763,9 @@ function tableToJsonWithDescription(table){
       jsonvar[keyval] = pathlist
       jsonvardescription[keyval + "_description"] = descriptionlist
       keyval = pathname
+      if (table === tableOrganized){
+	  	keyval = keyval + "_org"
+	  } 
       var pathlist = new Array()
       var descriptionlist = new Array()
     } else {

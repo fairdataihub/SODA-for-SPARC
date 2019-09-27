@@ -314,7 +314,7 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
 
 def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
         manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
-        subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonvar, modifyexistingstatus, bfdirectlystatus,
+        subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus, bfdirectlystatus, 
         alreadyorganizedstatus, organizedatasetstatus):
 
     global curateprogress
@@ -391,7 +391,7 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
                 c += 1
 
         if c > 0:
-            error = error + 'Aborting ..\n\n'
+            error = error + ''
             error = error + 'Either delete or select "None" in the SODA interface'
             curatestatus = 'Done'
             raise Exception(error)
@@ -399,15 +399,11 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
             try:
                 curateprogress = 'Started'
                 curateprintstatus = 'Curating'
-                if createnewstatus:
-                    topath = createdataset(pathdataset, pathnewdataset)
-                    curateprogress = curateprogress + ', ,' + 'New dataset created'
-                    pathdataset = topath
-                else:
-                    curateprogress = curateprogress + ', ,' + "New dataset not requested"
+               
+                curateprogress = curateprogress + ', ,' + "New dataset not requested"
 
                 if manifeststatus:
-                    createmanifest(pathdataset)
+                    createmanifestwithdescription(jsonpath, jsondescription)
                     curateprogress = curateprogress + ', ,' + 'Manifest created'
                 else:
                     curateprogress = curateprogress + ', ,' + 'Manifest not requested'
@@ -538,6 +534,50 @@ def createmanifest(datasetpath):
         manifestfile = join(folderpath, 'manifest.xlsx')
         df.to_excel(manifestfile, index=None, header=True)
 
+def createmanifestwithdescription(datasetpath, jsonpath, jsondescription):
+
+    # Get the names of all the subfolder in the dataset
+    folders = list(jsonpath.keys())
+    folders.remove('main')
+    # In each subfolder, generate a manifest file
+    for folder in folders:
+        if (jsonpath(folder) != ""):
+
+            # Initialize dataframe where manifest info will be stored
+            df = DataFrame(columns=['filename', 'timestamp', 'description',
+                                    'file type', 'Additional Metadata…'])
+            # Get list of files/folders in the the folde#
+            # Remove manifest file from the list if already exists
+            folderpath = join(datasetpath, folder)
+            allfiles = listdir(folderpath)
+            if 'manifest.xlsx' in allfiles:
+                allfiles.remove('manifest.xlsx')
+
+            # Populate manifest dataframe
+            filename = []
+            timestamp = []
+            filetype = []
+            for file in allfiles:
+                filepath = join(folderpath, file)
+                filename.append(splitext(file)[0])
+                lastmodtime = getmtime(filepath)
+                timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
+                                          localtime(lastmodtime)))
+                if isdir(filepath):
+                    filetype.append('folder')
+                else:
+                    fileextension = splitext(file)[1]
+                    if not fileextension:  #if empty (happens for Readme files)
+                        fileextension = 'None'
+                    filetype.append(fileextension)
+
+            df['filename'] = filename
+            df['timestamp'] = timestamp
+            df['file type'] = filetype
+
+            # Save manifest as Excel sheet
+            manifestfile = join(folderpath, 'manifest.xlsx')
+            df.to_excel(manifestfile, index=None, header=True)
 
 def createdataset(frompath, topath):
     datasetfoldername = basename(normpath(frompath))
