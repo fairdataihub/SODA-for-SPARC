@@ -2,6 +2,7 @@
 
 # python module for Software for Organizing Data Automatically (SODA)
 import os ## Since some functions are not available on all OS
+import platform
 from os import listdir, stat, makedirs, mkdir
 from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname
 import pandas as pd
@@ -102,14 +103,20 @@ def previewfileorganization(jsonpath):
             preview_folder_structure(paths, join(preview_path))
         else:
             preview_folder_structure(paths, join(preview_path, i))
-    try: # Creating files on Windows
-        subprocess.Popen(r'explorer /select,' + str(preview_path))
-    except:
-        try: # Creating files on Unix
-            os.system('xdg-open "%s"' % preview_path)
-        except: # Creating files on Mac OS
-            os.system('open "%s"' % preview_path)
+    open_file(preview_path)
     return preview_path
+
+def open_file(file_path):
+    """
+    Opening folder on all platforms
+    https://stackoverflow.com/questions/6631299/python-opening-a-folder-in-explorer-nautilus-mac-thingie
+    """
+    if platform.system() == "Windows":
+        subprocess.Popen(r'explorer /select,' + str(file_path))
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", file_path])
+    else:
+        subprocess.Popen(["xdg-open", file_path])
 
 def preview_folder_structure(paths, folder_path):
     for p in paths:
