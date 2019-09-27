@@ -6,7 +6,9 @@ const fs = require("fs")
 const path = require('path')
 const {ipcRenderer} = require('electron')
 const tt = require('electron-tooltip')
+
 tt({ })
+
 
 // Connect to python server and check
 let client = new zerorpc.Client()
@@ -39,6 +41,7 @@ const clearTableBtn = document.getElementById('clear-table')
 // Curate dataset
 const selectSaveFileOrganizationBtn = document.getElementById('select-save-file-organization')
 const selectPreviewBtn = document.getElementById('preview-file-organization')
+const deletePreviewBtn = document.getElementById('delete-preview-organization-status')
 const selectUploadFileOrganizationBtn = document.getElementById('select-upload-file-organization')
 
 let createnewstatus = document.querySelector('#create-newdataset')
@@ -221,6 +224,7 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
 
 // Action when user click on Preview file organization button
 selectPreviewBtn.addEventListener('click', () => {
+  document.getElementById("preview-organization-status").innerHTML = ""
   var jsonvect = tableToJsonWithDescription(tableNotOrganized)
   var jsonpath = jsonvect[0]
   console.log(jsonpath)
@@ -228,9 +232,25 @@ selectPreviewBtn.addEventListener('click', () => {
       if(error) {
         console.log(error)
         var emessage = userError(error)
-        document.getElementById("save-file-organization-status").innerHTML = emessage
+        document.getElementById("preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
         console.log(res)
+        console.log("Done")
+      }
+  })
+})
+
+// Action when user click on Preview file organization button
+deletePreviewBtn.addEventListener('click', () => {
+  // document.getElementById("delete-preview-organization-status").innerHTML = ""
+  client.invoke("apiDeletePreviewFileOrganization", (error, res) => {
+      if(error) {
+        console.log(error)
+        var emessage = userError(error)
+        document.getElementById("preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
+      } else {
+        console.log(res)
+        console.log("Done")
       }
   })
 })

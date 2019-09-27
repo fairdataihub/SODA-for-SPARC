@@ -1,7 +1,7 @@
 from __future__ import print_function
 from pysoda import createmanifest, createdataset, copyfile, bfaddaccount, bfaccountlist, bfdatasetaccount, \
     bfsubmitdataset, submitdatasetprogress, curatedataset, curatedatasetprogress, bfnewdatasetfolder, \
-    savefileorganization, uploadfileorganization, curatedataset2, previewfileorganization
+    savefileorganization, uploadfileorganization, curatedataset2, previewfileorganization, deletePreviewFileOrganization
 import sys
 import zerorpc
 from os.path import isdir, isfile
@@ -25,6 +25,12 @@ class SodaApi(object):
     def apiPreviewFileOrganization(self, jsonpath):
         try:
             return previewfileorganization(jsonpath)
+        except Exception as e:
+            raise e
+
+    def apiDeletePreviewFileOrganization(self):
+        try:
+            return deletePreviewFileOrganization()
         except Exception as e:
             raise e
 

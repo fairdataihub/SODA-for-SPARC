@@ -16,6 +16,8 @@ import json
 from pandas.io.html import read_html
 import numpy as np
 import collections
+import subprocess
+import shutil
 
 ### Global variables
 curateprogress = ' '
@@ -91,11 +93,12 @@ def previewfileorganization(jsonpath):
     try:
         makedirs(preview_path)
     except:
-        raise Exception("Preview Folder already present, either delete or move the old foler - " + str(dirname(preview_path)))
+        raise Exception("Preview Folder already present, either delete or move the old folder - " + str(dirname(preview_path)))
     for p in paths:
         glob_path = p[0]
         preview_folder_structure(p[0], preview_path, glob_path)
-    return paths
+    subprocess.Popen(r'explorer /select,' + str(preview_path))
+    return preview_path
 
 def preview_folder_structure(file_path, preview_path, glob_path):
     for source_file in listdir(file_path):
@@ -112,6 +115,12 @@ def preview_folder_structure(file_path, preview_path, glob_path):
                 raise Exception(e)
             source_file = join(file_path, source_file)
             preview_folder_structure(join(file_path, source_file), preview_path, glob_path)
+    return
+
+def deletePreviewFileOrganization():
+    userpath = expanduser("~")
+    preview_path = join(userpath, "SODA")
+    shutil.rmtree(preview_path)
     return
 
 ### FEATURE #2: SPARC metadata generator
