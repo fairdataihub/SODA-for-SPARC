@@ -359,7 +359,7 @@ curateDatasetBtn2.addEventListener('click', () => {
     console.log(alreadyorganizedstatus.checked)
     console.log(pathdataset.innerHTML)
     if (fs.existsSync(pathdataset.innerHTML)) {
-      var jsonvect = tableToJsonWithDescription(tableOrganized)
+      var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
       console.log(jsonvect[0])
     } else {
       progressinfo.style.color = redcolor
@@ -718,6 +718,37 @@ function jsonToTableOrganized(table, jsonvar){
   return table
 }
 
+function tableToJsonWithDescriptionOrganized(table){
+  var jsonvar = {}
+  var jsonvardescription= {}
+
+  var pathlist = new Array()
+  var descriptionlist = new Array()
+
+  var keyval = "code"
+
+  var tableheaders = sparcFolderNames.slice()
+  tableheaders.push("main")
+  for (var i = 1, row; row = table.rows[i]; i++) {
+    var pathname = row.cells[0].innerHTML
+    var descriptionname = row.cells[1].innerHTML
+    if (tableheaders.includes(pathname)) {
+      jsonvar[keyval] = pathlist
+      jsonvardescription[keyval + "_description"] = descriptionlist
+      keyval = pathname 
+      var pathlist = new Array()
+      var descriptionlist = new Array()
+    } else {
+      pathlist.push(row.cells[0].innerHTML)
+      descriptionlist.push(row.cells[1].innerHTML)
+    }
+  }
+  jsonvar[keyval] = pathlist
+  jsonvardescription[keyval+ "_description"] = descriptionlist
+  console.log(jsonvar)
+
+  return [jsonvar, jsonvardescription]
+}
 
 // Not organized
 function insertFileToTable(table, path){
@@ -755,43 +786,6 @@ function tableToJson(table){
   }
   jsonvar[keyval] = pathlist
   return jsonvar
-}
-
-function tableToJsonWithDescription(table){
-  var jsonvar = {}
-  var jsonvardescription= {}
-
-  var pathlist = new Array()
-  var descriptionlist = new Array()
-
-  var keyval = "code"
-  if (table === tableOrganized){
-  	keyval = keyval + "_org"
-  }
-  var tableheaders = sparcFolderNames.slice()
-  tableheaders.push("main")
-  for (var i = 1, row; row = table.rows[i]; i++) {
-    var pathname = row.cells[0].innerHTML
-    var descriptionname = row.cells[1].innerHTML
-    if (tableheaders.includes(pathname)) {
-      jsonvar[keyval] = pathlist
-      jsonvardescription[keyval + "_description"] = descriptionlist
-      keyval = pathname
-      if (table === tableOrganized){
-	  	keyval = keyval + "_org"
-	  } 
-      var pathlist = new Array()
-      var descriptionlist = new Array()
-    } else {
-      pathlist.push(row.cells[0].innerHTML)
-      descriptionlist.push(row.cells[1].innerHTML)
-    }
-  }
-  jsonvar[keyval] = pathlist
-  jsonvardescription[keyval+ "_description"] = descriptionlist
-  console.log(jsonvar)
-
-  return [jsonvar, jsonvardescription]
 }
 
 
@@ -836,6 +830,43 @@ function jsonToTableWithDescription(table, jsonvar){
   console.log("table after")
   console.log(table)
   return table
+}
+
+function tableToJsonWithDescription(table){
+  var jsonvar = {}
+  var jsonvardescription= {}
+
+  var pathlist = new Array()
+  var descriptionlist = new Array()
+
+  var keyval = "code"
+  if (table === tableOrganized){
+    keyval = keyval + "_org"
+  }
+  var tableheaders = sparcFolderNames.slice()
+  tableheaders.push("main")
+  for (var i = 1, row; row = table.rows[i]; i++) {
+    var pathname = row.cells[0].innerHTML
+    var descriptionname = row.cells[1].innerHTML
+    if (tableheaders.includes(pathname)) {
+      jsonvar[keyval] = pathlist
+      jsonvardescription[keyval + "_description"] = descriptionlist
+      keyval = pathname
+      if (table === tableOrganized){
+      keyval = keyval + "_org"
+    } 
+      var pathlist = new Array()
+      var descriptionlist = new Array()
+    } else {
+      pathlist.push(row.cells[0].innerHTML)
+      descriptionlist.push(row.cells[1].innerHTML)
+    }
+  }
+  jsonvar[keyval] = pathlist
+  jsonvardescription[keyval+ "_description"] = descriptionlist
+  console.log(jsonvar)
+
+  return [jsonvar, jsonvardescription]
 }
 
 //Both

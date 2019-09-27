@@ -5,7 +5,6 @@
 from os import listdir, stat, makedirs, mkdir
 from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname
 import pandas as pd
-from pandas import DataFrame
 from time import strftime, localtime
 from shutil import copy2
 from blackfynn import Blackfynn
@@ -364,7 +363,7 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
                 curateprogress = curateprogress + ', ,' + "New dataset not requested"
 
                 if manifeststatus:
-                    createmanifestwithdescription(jsonpath, jsondescription)
+                    createmanifestwithdescription(pathdataset, jsonpath, jsondescription)
                     curateprogress = curateprogress + ', ,' + 'Manifest created'
                 else:
                     curateprogress = curateprogress + ', ,' + 'Manifest not requested'
@@ -460,7 +459,7 @@ def createmanifest(datasetpath):
     # In each subfolder, generate a manifest file
     for folder in folders:
         # Initialize dataframe where manifest info will be stored
-        df = DataFrame(columns=['filename', 'timestamp', 'description',
+        df = pd.DataFrame(columns=['filename', 'timestamp', 'description',
                                 'file type', 'Additional Metadata…'])
         # Get list of files/folders in the the folde#
         # Remove manifest file from the list if already exists
@@ -499,31 +498,38 @@ def createmanifestwithdescription(datasetpath, jsonpath, jsondescription):
 
     # Get the names of all the subfolder in the dataset
     folders = list(jsonpath.keys())
-    folders.remove('main')
+    if 'main' in folders:
+        folders.remove('main')
     # In each subfolder, generate a manifest file
     for folder in folders:
-        if (jsonpath(folder) != ""):
+        if (jsonpath[folder] != ""):
 
             # Initialize dataframe where manifest info will be stored
-            df = DataFrame(columns=['filename', 'timestamp', 'description',
+            df = pd.DataFrame(columns=['filename', 'timestamp', 'description',
                                     'file type', 'Additional Metadata…'])
             # Get list of files/folders in the the folde#
             # Remove manifest file from the list if already exists
             folderpath = join(datasetpath, folder)
-            allfiles = listdir(folderpath)
-            if 'manifest.xlsx' in allfiles:
-                allfiles.remove('manifest.xlsx')
+            allfiles = jsonpath[folder]
+            alldescription = jsondescription[folder + '_description']
+            manifestexists = join(folderpath, 'manifest.xlsx')
+            if manifestexists in allfiles:
+                allfiles.remove(manifestexists)
 
             # Populate manifest dataframe
             filename = []
             timestamp = []
             filetype = []
-            for file in allfiles:
-                filepath = join(folderpath, file)
+            filedescription = []
+            countpath = -1
+            for filepath in allfiles:
+                countpath += 1
+                file = basename(filepath)
                 filename.append(splitext(file)[0])
                 lastmodtime = getmtime(filepath)
                 timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
                                           localtime(lastmodtime)))
+                filedescription.append(alldescription[countpath])
                 if isdir(filepath):
                     filetype.append('folder')
                 else:
@@ -535,10 +541,22 @@ def createmanifestwithdescription(datasetpath, jsonpath, jsondescription):
             df['filename'] = filename
             df['timestamp'] = timestamp
             df['file type'] = filetype
+            df['description'] = filedescription
+
+            print(df)
 
             # Save manifest as Excel sheet
             manifestfile = join(folderpath, 'manifest.xlsx')
+            print(manifestfile)
             df.to_excel(manifestfile, index=None, header=True)
+
+# datasetpath = r"C:\Users\Bhavesh\Desktop\datasets\example-dataset"
+# dictpath = {}
+# dictpath['code'] = [r'C:\Users\Bhavesh\Desktop\datasets\new-example-dataset\example-dataset\code\some-python-code.py']
+# dictdescription = {}
+# dictdescription['code_description'] = ['some-python-code test']
+# createmanifestwithdescription(datasetpath, dictpath, dictdescription)
+
 
 def createdataset(frompath, topath):
     datasetfoldername = basename(normpath(frompath))
