@@ -131,7 +131,6 @@ ipcRenderer.on('selected-dataset', (event, path) => {
   if (folderChecking == true) {
     pathdataset.innerHTML = path
     var jsonfolder = organizedFolderToJson(path[0])
-    console.log(jsonfolder)
     jsonToTableOrganized(tableOrganized, jsonfolder)
   } else {
     pathdataset.innerHTML = "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>"
@@ -363,7 +362,7 @@ curateDatasetBtn2.addEventListener('click', () => {
       return
     }
   } else if (organizedatasetstatus.checked) {
-    var jsonvect = tableToJsonWithDescription(tableNotOrganized)   
+    var jsonvect = tableToJsonWithDescription(tableNotOrganized)
     console.log(jsonvect[0])
   } else {
   	progressinfo.style.color = redcolor
@@ -421,8 +420,6 @@ curateDatasetBtn2.addEventListener('click', () => {
   } else {
    samplesstatus = false
   }
-
-  //jsonvar['metadata'] = metadatafiles
 
   // Initiate curation by calling python
   progressinfo.value = ''
@@ -727,7 +724,7 @@ function tableToJsonWithDescriptionOrganized(table){
     if (tableheaders.includes(pathname)) {
       jsonvar[keyval] = pathlist
       jsonvardescription[keyval + "_description"] = descriptionlist
-      keyval = pathname 
+      keyval = pathname
       var pathlist = new Array()
       var descriptionlist = new Array()
     } else {
@@ -737,7 +734,6 @@ function tableToJsonWithDescriptionOrganized(table){
   }
   jsonvar[keyval] = pathlist
   jsonvardescription[keyval+ "_description"] = descriptionlist
-  console.log(jsonvar)
 
   return [jsonvar, jsonvardescription]
 }
@@ -802,7 +798,7 @@ function tableToJson(table){
 //       keyval = pathname
 //       if (table === tableOrganized){
 // 	  	keyval = keyval + "_org"
-// 	  } 
+// 	  }
 //       var pathlist = new Array()
 //       var descriptionlist = new Array()
 //     } else {
@@ -883,7 +879,7 @@ function tableToJsonWithDescription(table){
       keyval = pathname
       if (table === tableOrganized){
       keyval = keyval + "_org"
-    } 
+    }
       var pathlist = new Array()
       var descriptionlist = new Array()
     } else {
@@ -893,7 +889,6 @@ function tableToJsonWithDescription(table){
   }
   jsonvar[keyval] = pathlist
   jsonvardescription[keyval+ "_description"] = descriptionlist
-  console.log(jsonvar)
 
   return [jsonvar, jsonvardescription]
 }

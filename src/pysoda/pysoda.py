@@ -2,6 +2,7 @@
 
 # python module for Software for Organizing Data Automatically (SODA)
 import os ## Since some functions are not available on all OS
+import platform
 from os import listdir, stat, makedirs, mkdir
 from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname
 import pandas as pd
@@ -87,7 +88,7 @@ def previewfileorganization(jsonpath):
     try:
         makedirs(preview_path)
     except:
-        raise Exception("Preview Folder already present, either delete or move the old folder - " + str(dirname(preview_path)))
+        raise Exception("Preview Folder already present, click on 'Delete Preview Folder' option to get rid of the older vesion")
 
     folderrequired = []
     for i in mydict.keys():
@@ -99,16 +100,25 @@ def previewfileorganization(jsonpath):
     for i in folderrequired:
         paths = mydict[i]
         if (i == 'main'):
-            preview_folder_structure2(paths, join(preview_path))
+            preview_folder_structure(paths, join(preview_path))
         else:
-            preview_folder_structure2(paths, join(preview_path, i))
-    try:
-        subprocess.Popen(r'explorer /select,' + str(preview_path))
-    except:
-        os.system('xdg-open "%s"' % preview_path)
+            preview_folder_structure(paths, join(preview_path, i))
+    open_file(preview_path)
     return preview_path
 
-def preview_folder_structure2(paths, folder_path):
+def open_file(file_path):
+    """
+    Opening folder on all platforms
+    https://stackoverflow.com/questions/6631299/python-opening-a-folder-in-explorer-nautilus-mac-thingie
+    """
+    if platform.system() == "Windows":
+        subprocess.Popen(r'explorer /select,' + str(file_path))
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", file_path])
+    else:
+        subprocess.Popen(["xdg-open", file_path])
+
+def preview_folder_structure(paths, folder_path):
     for p in paths:
         if isfile(p):
             file = basename(p)
@@ -126,34 +136,34 @@ def preview_folder_structure2(paths, folder_path):
             # print(pname)
             # print(new_folder_path)
             makedirs(new_folder_path)
-            preview_folder_structure2(all_files_path, new_folder_path)
+            preview_folder_structure(all_files_path, new_folder_path)
     return
 
 # dicttest = {}
 # dicttest['code'] = [r'C:\Users\HSrivastava\Desktop\Evaluation-form.pdf', r'C:\Users\HSrivastava\Desktop\Output']
 # previewfileorganization(dicttest)
 
-def preview_folder_structure(file_path, preview_path, glob_path):
-    suff = file_path.replace(glob_path, '')[1:]
-    if isdir(file_path):
-        for source_file in listdir(file_path):
-            if not exists(join(preview_path, split(glob_path)[-1])):
-                makedirs(join(preview_path, split(glob_path)[-1]))
-            dest_file = join(preview_path, split(glob_path)[-1], suff, source_file)
-            if isfile(join(file_path, source_file)):
-                open(dest_file, 'a').close()
-            else:
-                try:
-                    makedirs(dest_file)
-                except Exception as e:
-                    raise Exception(e)
-                source_file = join(file_path, source_file)
-                preview_folder_structure(join(file_path, source_file), preview_path, glob_path)
-    else:
-        dest_file = join(preview_path, file_path)
-        # raise Exception(dest_file)
-        open(dest_file, 'a').close()
-    return
+# def preview_folder_structure(file_path, preview_path, glob_path):
+#     suff = file_path.replace(glob_path, '')[1:]
+#     if isdir(file_path):
+#         for source_file in listdir(file_path):
+#             if not exists(join(preview_path, split(glob_path)[-1])):
+#                 makedirs(join(preview_path, split(glob_path)[-1]))
+#             dest_file = join(preview_path, split(glob_path)[-1], suff, source_file)
+#             if isfile(join(file_path, source_file)):
+#                 open(dest_file, 'a').close()
+#             else:
+#                 try:
+#                     makedirs(dest_file)
+#                 except Exception as e:
+#                     raise Exception(e)
+#                 source_file = join(file_path, source_file)
+#                 preview_folder_structure(join(file_path, source_file), preview_path, glob_path)
+#     else:
+#         dest_file = join(preview_path, file_path)
+#         # raise Exception(dest_file)
+#         open(dest_file, 'a').close()
+#     return
 
 def deletePreviewFileOrganization():
     userpath = expanduser("~")
@@ -398,7 +408,7 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
             try:
                 curateprogress = 'Started'
                 curateprintstatus = 'Curating'
-               
+
                 curateprogress = curateprogress + ', ,' + "New dataset not requested"
 
                 if manifeststatus:
