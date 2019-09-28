@@ -323,8 +323,8 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
 
 def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
         manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
-        subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus, bfdirectlystatus,
-        alreadyorganizedstatus, organizedatasetstatus):
+        subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus, bfdirectlystatus, 
+        alreadyorganizedstatus, organizedatasetstatus, newdatasetname):
 
     global curateprogress
     global curatestatus
@@ -451,12 +451,24 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
 
     elif createnewstatus:
         try:
-            topath = createdataset(pathdataset, pathnewdataset)
+            pathnewdatasetfolder = join(pathnewdataset, newdatasetname)
+        except Exception as e:
+            curatestatus = 'Done'
+            raise e
+        try:  
+            
+            pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
+            curateprogress = 'Started'
+            curateprintstatus = 'Curating'
+
+            pathdataset = pathnewdatasetfolder
+            mkdir(pathdataset)
+
+            createdataset2(jsonpath, pathdataset)
             curateprogress = curateprogress + ', ,' + 'New dataset created'
-            pathdataset = topath
 
             if manifeststatus:
-                createmanifest(pathdataset)
+                createmanifestwithdescription(pathdataset, jsonpath, jsondescription)
                 curateprogress = curateprogress + ', ,' + 'Manifest created'
             else:
                 curateprogress = curateprogress + ', ,' + 'Manifest not requested'
@@ -489,8 +501,8 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
             curatestatus = 'Done'
 
         except Exception as e:
-                    curatestatus = 'Done'
-                    raise e
+            curatestatus = 'Done'
+            raise e
 
 
 
@@ -551,7 +563,7 @@ def createmanifestwithdescription(datasetpath, jsonpath, jsondescription):
         folders.remove('main')
     # In each subfolder, generate a manifest file
     for folder in folders:
-        if (jsonpath[folder] != ""):
+        if (jsonpath[folder] != []):
 
             # Initialize dataframe where manifest info will be stored
             df = pd.DataFrame(columns=['filename', 'timestamp', 'description',
@@ -614,6 +626,33 @@ def createdataset(frompath, topath):
         topath = return_new_path(topath)
     copytree(frompath, topath)
     return topath
+
+def createdataset2(jsonpath, pathdataset):
+    mydict = jsonpath
+    userpath = expanduser("~")
+    preview_path = pathdataset
+
+    folderrequired = []
+    for i in mydict.keys():
+        if mydict[i] != []:
+            folderrequired.append(i)
+            if i != 'main':
+                makedirs(join(preview_path, i))
+
+    for i in folderrequired:
+        for path in mydict[i]:
+            if (i == 'main'):
+                create_new_file(path, join(pathdataset))
+            else:
+                create_new_file(path, join(pathdataset, i))
+
+def create_new_file(path, folder_path):
+    if isfile(path):
+        copyfile(path, folder_path)
+    elif isdir(path):
+        foldername = basename(path)
+        copytree(path, join(folder_path, foldername))
+
 
 def return_new_path(topath):
     """

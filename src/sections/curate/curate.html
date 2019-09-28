@@ -3,15 +3,15 @@
     <header class="section-header">
       <div class="section-wrapper">
         <h1>
-          Curate dataset
+          Prepare dataset
         </h1>
-        <h3>This interface will walk you step by step through the data curation process. </h3>
+        <h3>This interface will walk you trhough the steps for performing an initial curation of your dataset before review by the Curation Team. </h3>
       </div>
     </header>
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="new-window-demo-toggle" class="js-container-target demo-toggle-button">Organize dataset
+        <button id="new-window-demo-toggle" class="js-container-target demo-toggle-button">Organize
           <div class="demo-meta u-avoid-clicks"> Implement the SPARC dataset folder structure
           </div>
         </button>
@@ -341,8 +341,8 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button class="js-container-target demo-toggle-button">Curate dataset
-          <div class="demo-meta u-avoid-clicks"> Apply changes and create new dataset locally or directly on Blackfynn </div>
+        <button class="js-container-target demo-toggle-button"> Generate dataset
+          <div class="demo-meta u-avoid-clicks"> Apply changes and create dataset locally or directly on Blackfynn </div>
         </button>
 
         <div class="demo-box">
@@ -367,11 +367,18 @@
           </form>
 
           <div id="divCreateNew" class="datasetsaveoption">
-            <h5> Selection New Dataset Destination Folder </h5>
+            
+            <h5> Select destination folder for new dataset </h5>
             <div class="demo-controls">
-            <button class="demo-button" id="select-new-dataset"> Select Destination </button>
-            <textarea class="demo-response" id="selected-new-dataset"></textarea>
+              <button class="demo-button" id="select-new-dataset"> Select Destination </button>
+              <textarea class="demo-response" id="selected-new-dataset"></textarea>
             </div>
+
+            <h5> Enter a name for the new dataset  </h5>
+              <div class="demo-controls">
+              <textarea class="demo-response" id="new-dataset-name"></textarea>
+            </div>
+
           </div>
 
           <div id="divCreateCloud" class="datasetsaveoption">
@@ -380,8 +387,8 @@
 
           <div id="curatebutton" class="datasetsaveoption">
           <h5> Apply changes </h5>
-          <button class="demo-button" id="curate-dataset"> Curate </button>
-          <button class="demo-button" id="curate-dataset2"> Curate2 </button>
+          <!-- <button class="demo-button" id="curate-dataset"> Curate </button> -->
+          <button class="demo-button" id="curate-dataset2"> Generate </button>
           </div>
           <div id="progressprint" class="datasetsaveoption">
           <h5> Progress </h5>
