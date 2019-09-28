@@ -48,6 +48,7 @@ let createnewstatus = document.querySelector('#create-newdataset')
 let modifyexistingstatus = document.querySelector('#existing-dataset')
 let bfdirectlystatus = document.querySelector('#cloud-dataset')
 let pathnewdataset = document.querySelector('#selected-new-dataset')
+let newdatasetname = document.querySelector('#new-dataset-name')
 let manifeststatus = document.querySelector('#generate-manifest')
 let curationform = document.querySelector('#dataset_curate_form')
 
@@ -77,7 +78,7 @@ var samplesstatus
 var pathsamples
 
 
-const curateDatasetBtn = document.getElementById('curate-dataset')
+//const curateDatasetBtn = document.getElementById('curate-dataset')
 const curateDatasetBtn2 = document.getElementById('curate-dataset2')
 let progressinfo = document.querySelector('#progressinfo')
 
@@ -250,92 +251,92 @@ deletePreviewBtn.addEventListener('click', () => {
 })
 
 // Action when user click on Curate Dataset
-curateDatasetBtn.addEventListener('click', () => {
-  progressinfo.style.color = blackcolor
-  curateDatasetBtn.disabled = true
-  disableform(curationform)
+// curateDatasetBtn.addEventListener('click', () => {
+//   progressinfo.style.color = blackcolor
+//   curateDatasetBtn.disabled = true
+//   disableform(curationform)
 
-  if (existingsubmissionstatus.checked === true){
-    submissionstatus = true
-    pathsubmission = pathsubmissionexisting.value
-  } else if (newsubmissionstatus.checked === true){
-    submissionstatus = true
-    pathsubmission = path.join(__dirname, 'file_templates', 'submission.xlsx')
-  } else {
-    submissionstatus = false
-  }
+//   if (existingsubmissionstatus.checked === true){
+//     submissionstatus = true
+//     pathsubmission = pathsubmissionexisting.value
+//   } else if (newsubmissionstatus.checked === true){
+//     submissionstatus = true
+//     pathsubmission = path.join(__dirname, 'file_templates', 'submission.xlsx')
+//   } else {
+//     submissionstatus = false
+//   }
 
-  if (existingdescriptionstatus.checked === true){
-    descriptionstatus = true
-    pathdescription = pathdescriptionexisting.value
-  } else if (newdescriptionstatus.checked === true){
-    descriptionstatus = true
-    pathdescription = path.join(__dirname, 'file_templates', 'dataset_description.xlsx')
-  } else {
-    descriptionstatus = false
-  }
+//   if (existingdescriptionstatus.checked === true){
+//     descriptionstatus = true
+//     pathdescription = pathdescriptionexisting.value
+//   } else if (newdescriptionstatus.checked === true){
+//     descriptionstatus = true
+//     pathdescription = path.join(__dirname, 'file_templates', 'dataset_description.xlsx')
+//   } else {
+//     descriptionstatus = false
+//   }
 
-  if (existingsubjectsstatus.checked === true){
-    subjectsstatus = true
-    pathsubjects = pathsubjectsexisting.value
-  } else if (newsubjectsstatus.checked === true){
-    subjectsstatus = true
-    pathsubjects = path.join(__dirname, 'file_templates', 'subjects.xlsx')
-  } else {
-    subjectsstatus = false
-  }
+//   if (existingsubjectsstatus.checked === true){
+//     subjectsstatus = true
+//     pathsubjects = pathsubjectsexisting.value
+//   } else if (newsubjectsstatus.checked === true){
+//     subjectsstatus = true
+//     pathsubjects = path.join(__dirname, 'file_templates', 'subjects.xlsx')
+//   } else {
+//     subjectsstatus = false
+//   }
 
-  if (existingsamplesstatus.checked === true){
-    samplesstatus = true
-    pathsamples = pathsamplesexisting.value
-  } else if (newsamplesstatus.checked === true){
-    samplesstatus = true
-    pathsamples = path.join(__dirname, 'file_templates', 'samples.xlsx')
-  } else {
-   samplesstatus = false
-  }
+//   if (existingsamplesstatus.checked === true){
+//     samplesstatus = true
+//     pathsamples = pathsamplesexisting.value
+//   } else if (newsamplesstatus.checked === true){
+//     samplesstatus = true
+//     pathsamples = path.join(__dirname, 'file_templates', 'samples.xlsx')
+//   } else {
+//    samplesstatus = false
+//   }
 
-  progressinfo.value = ''
-  var completionstatus = 'Solving'
+//   progressinfo.value = ''
+//   var completionstatus = 'Solving'
 
-  client.invoke("apiCurateDataset", pathdataset.innerHTML, createnewstatus.checked, pathnewdataset.value,
-    manifeststatus.checked, submissionstatus, pathsubmission,  descriptionstatus, pathdescription,
-    subjectsstatus, pathsubjects, samplesstatus, pathsamples,
-    (error, res) => {
-    if(error) {
-      console.log('ERROR')
-      var emessage = userError(error)
-      progressinfo.style.color = redcolor
-      progressinfo.value = emessage
-      console.log(error)
-      enableform(curationform)
-    } else {
-      console.log('Done', res)
-    }
-  })
+//   client.invoke("apiCurateDataset", pathdataset.innerHTML, createnewstatus.checked, pathnewdataset.value,
+//     manifeststatus.checked, submissionstatus, pathsubmission,  descriptionstatus, pathdescription,
+//     subjectsstatus, pathsubjects, samplesstatus, pathsamples,
+//     (error, res) => {
+//     if(error) {
+//       console.log('ERROR')
+//       var emessage = userError(error)
+//       progressinfo.style.color = redcolor
+//       progressinfo.value = emessage
+//       console.log(error)
+//       enableform(curationform)
+//     } else {
+//       console.log('Done', res)
+//     }
+//   })
 
-  var timerprogress = setInterval(progressfunction, 1000)
-  function progressfunction(){
-    client.invoke("apiCurateDatasetProgress", (error, res) => {
-      if(error) {
-        console.error(error)
-      } else {
-        completionstatus = res[1]
-        var printstatus = res[2]
-        if (printstatus === 'Curating') {
-          progressinfo.value = res[0].split(',').join('\n')
-        }
-      }
-    })
-    console.log('Completion', completionstatus)
-    if (completionstatus === 'Done'){
-      clearInterval(timerprogress)
-      curateDatasetBtn.disabled = false
-      enableform(curationform)
-    }
-  }
+//   var timerprogress = setInterval(progressfunction, 1000)
+//   function progressfunction(){
+//     client.invoke("apiCurateDatasetProgress", (error, res) => {
+//       if(error) {
+//         console.error(error)
+//       } else {
+//         completionstatus = res[1]
+//         var printstatus = res[2]
+//         if (printstatus === 'Curating') {
+//           progressinfo.value = res[0].split(',').join('\n')
+//         }
+//       }
+//     })
+//     console.log('Completion', completionstatus)
+//     if (completionstatus === 'Done'){
+//       clearInterval(timerprogress)
+//       curateDatasetBtn.disabled = false
+//       enableform(curationform)
+//     }
+//   }
 
-})
+// })
 
 // // // // // // // // // //
 // Action when user click on Curate Dataset #2
@@ -345,7 +346,7 @@ curateDatasetBtn2.addEventListener('click', () => {
 
   // Disable curate button to prevent multiple clicks
   progressinfo.style.color = blackcolor
-  curateDatasetBtn.disabled = true
+  curateDatasetBtn2.disabled = true
   disableform(curationform)
 
   // Convert table content into json file for transferring to Python
@@ -421,19 +422,19 @@ curateDatasetBtn2.addEventListener('click', () => {
    samplesstatus = false
   }
 
-  jsonvar['metadata'] = metadatafiles
+  //jsonvar['metadata'] = metadatafiles
 
   // Initiate curation by calling python
   progressinfo.value = ''
   var completionstatus = 'Solving'
   console.log(pathdataset.innherHTML)
   var pathdatasetvalue = String(pathdataset.innerHTML)
-  console.log(pathdatasetvalue)
+  console.log(jsonpath)
   
   client.invoke("apiCurateDataset2", pathdatasetvalue, createnewstatus.checked, pathnewdataset.value,
     manifeststatus.checked, submissionstatus, pathsubmission,  descriptionstatus, pathdescription,
     subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus.checked, 
-    bfdirectlystatus.checked, alreadyorganizedstatus.checked, organizedatasetstatus.checked,
+    bfdirectlystatus.checked, alreadyorganizedstatus.checked, organizedatasetstatus.checked, newdatasetname.value,
     (error, res) => {
     if(error) {
       console.log('ERROR')
@@ -463,7 +464,7 @@ curateDatasetBtn2.addEventListener('click', () => {
     console.log('Completion', completionstatus)
     if (completionstatus === 'Done'){
       clearInterval(timerprogress)
-      curateDatasetBtn.disabled = false
+      curateDatasetBtn2.disabled = false
       enableform(curationform)
     }
   }

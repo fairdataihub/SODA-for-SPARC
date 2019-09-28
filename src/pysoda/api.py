@@ -47,12 +47,12 @@ class SodaApi(object):
     def apiCurateDataset2(self, pathdataset, createnewstatus, pathnewdataset,
         manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
         subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus,
-        bfdirectlystatus, alreadyorganizedstatus, organizedatasetstatus):
+        bfdirectlystatus, alreadyorganizedstatus, organizedatasetstatus, newdatasetname):
         try:
             curatedataset2(pathdataset, createnewstatus, pathnewdataset,
                 manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
                 subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus,
-                bfdirectlystatus, alreadyorganizedstatus, organizedatasetstatus)
+                bfdirectlystatus, alreadyorganizedstatus, organizedatasetstatus, newdatasetname)
         except Exception as e:
             raise e
 
