@@ -43,6 +43,3 @@ function save_row(no){
 function delete_row(no){
  document.getElementById("row"+no+"").outerHTML="";
 }
-
-
-

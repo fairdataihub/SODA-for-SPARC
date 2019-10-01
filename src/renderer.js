@@ -108,6 +108,9 @@ let pathsubmitdataset = document.querySelector('#selected-submit-dataset')
 const blackcolor = '#000000'
 const redcolor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivatives", "docs", "protocol", "samples", "sourcedata", "subjects"]
+var headernames = sparcFolderNames.slice()
+headernames.push("main")
+
 //////////////////////////////////
 // Defaults action (at start on the program)
 //////////////////////////////////
@@ -126,6 +129,7 @@ selectDatasetBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-dataset')
 })
 ipcRenderer.on('selected-dataset', (event, path) => {
+  clearTable(tableOrganized)
   pathdataset.innerHTML = ""
   var folderChecking = checkFolderStruture(path[0])
   if (folderChecking == true) {
@@ -161,6 +165,64 @@ clearTableBtn.addEventListener('click', () => {
     clearTable(tableNotOrganized)
   }
 })
+
+// Drag and drop
+var holder_code = document.getElementById('code')
+holder_code.addEventListener("drop", (event)=> {
+   event.preventDefault()
+   var myID = holder_code.id
+   dropAddToTable(event, myID)
+})
+
+var holder_derivatives = document.getElementById('derivatives')
+holder_derivatives.addEventListener("drop", (event)=> {
+   event.preventDefault()
+   var myID = holder_derivatives.id
+   dropAddToTable(event, myID)
+})
+
+var holder_docs = document.getElementById('docs')
+holder_docs.addEventListener("drop", (event)=> {
+   event.preventDefault()
+   var myID = holder_docs.id
+   dropAddToTable(event, myID)
+})
+
+var holder_protocol = document.getElementById('protocol')
+holder_protocol.addEventListener("drop", (event)=> {
+   event.preventDefault()
+   var myID = holder_protocol.id
+   dropAddToTable(event, myID)
+})
+
+var holder_samples = document.getElementById('samples')
+holder_samples.addEventListener("drop", (event)=> {
+   event.preventDefault()
+   var myID = holder_samples.id
+   dropAddToTable(event, myID)
+})
+
+var holder_sourcedata = document.getElementById('sourcedata')
+holder_sourcedata.addEventListener("drop", (event)=> {
+   event.preventDefault()
+   var myID = holder_sourcedata.id
+   dropAddToTable(event, myID)
+})
+
+var holder_subjects = document.getElementById('subjects')
+holder_subjects.addEventListener("drop", (event)=> {
+   event.preventDefault()
+   var myID = holder_subjects.id
+   dropAddToTable(event, myID)
+})
+
+var holder_main = document.getElementById('main')
+holder_main.addEventListener("drop", (event)=> {
+   event.preventDefault()
+   var myID = holder_main.id
+   dropAddToTable(event, myID)
+})
+
 
 //////////////////////////////////
 // Operations calling to pysoda.py functions //
@@ -198,8 +260,6 @@ selectUploadFileOrganizationBtn.addEventListener('click', (event) => {
 })
 ipcRenderer.on('selected-uploadorganization', (event, path) => {
   document.getElementById("upload-file-organization-status").innerHTML = "";
-  var headernames = sparcFolderNames.slice()
-  headernames.push("main")
   var lennames =  headernames.length
   for (var i = 0; i < lennames; i++) {
   	headernames.push(headernames[i] + "_description")
@@ -234,7 +294,7 @@ selectPreviewBtn.addEventListener('click', () => {
   })
 })
 
-// Action when user click on Preview file organization button
+// Action when user click on Delete Preview file organization button
 deletePreviewBtn.addEventListener('click', () => {
   document.getElementById("preview-organization-status").innerHTML = ""
   client.invoke("apiDeletePreviewFileOrganization", (error, res) => {
@@ -336,6 +396,7 @@ deletePreviewBtn.addEventListener('click', () => {
 //   }
 
 // })
+
 
 // // // // // // // // // //
 // Action when user click on Curate Dataset #2
@@ -653,12 +714,13 @@ function checkFolderStruture(pathDatasetFolder){
       folders.push(filename)
     }
   }
-  if (folders.length != sparcFolderNames.length)
-        return false
+  //if (folders.length != sparcFolderNames.length)
+  //      return false
   var foldersorted = folders.sort()
-  var sparcFolderSorted = sparcFolderNames.sort()
+  // var sparcFolderSorted = sparcFolderNames.sort()
   for (var i = 0; i < foldersorted.length; i++) {
-    if (foldersorted[i] != sparcFolderSorted[i]) {
+    //if (foldersorted[i] != sparcFolderSorted[i]) {
+    if (!sparcFolderNames.includes(foldersorted[i])) {
       return false
     }
   }
@@ -852,8 +914,6 @@ function jsonToTableWithDescription(table, jsonvar){
        }
     }
   }
-  console.log("table after")
-  console.log(table)
   return table
 }
 
@@ -891,6 +951,19 @@ function tableToJsonWithDescription(table){
   jsonvardescription[keyval+ "_description"] = descriptionlist
 
   return [jsonvar, jsonvardescription]
+}
+
+function dropAddToTable(e, myID){
+	var rowcount = document.getElementById(myID).rowIndex
+	var i = 0
+	for (let f of e.dataTransfer.files) {
+        console.log('File(s) you dragged here: ', f.path, myID)
+        var rownum = rowcount + i + 1
+	    tableNotOrganizedcount = tableNotOrganizedcount + 1
+	    var table_len = tableNotOrganizedcount
+	    var row = tableNotOrganized.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ f.path +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
+     	i = i + 1
+    }
 }
 
 //Both
