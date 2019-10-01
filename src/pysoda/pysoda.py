@@ -247,6 +247,8 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
         error = error+'\nTerminating ..'
         raise Exception(error)
         return
+
+
     #get list of file in pathnewdataset
     # see if any of submission, dataset_description, subjects, samples exist
     # Show error 'File xxx already exists at target location: either delete or select "None" in the SODA interface'
@@ -378,7 +380,23 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
         if pathsamples.split('\\')[-1].split('.')[0] != 'samples':
             curatestatus = 'Done'
             raise Exception('Error: Select valid name for samples file')
+     
+    # check if path in jsonpath are valid
+    c = 0
+    error = ''
+    for folders in jsonpath.keys():
+        if jsonpath[folders] != []: 
+            for path in jsonpath[folders]:
+                if not exists(path):
+                    c += 1
+                    error = error + path + ' does not exist \n'
 
+    if c > 0:
+        error = error + '\n'
+        error = error + 'Please remove invalid paths'
+        curatestatus = 'Done'
+        raise Exception(error)   
+        
     #get list of file in pathnewdataset
     # see if any of submission, dataset_description, subjects, samples exist
     # Show error 'File xxx already exists at target location: either delete or select "None" in the SODA interface'
