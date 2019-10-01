@@ -19,7 +19,8 @@
           for generating an API and setting up your Blackfynn account on your computer for the first time. </p>
 
           <h5> Add new account
-            <tooltip data-tooltip="Authenticate yourself using your account credentials" data-tooltip-position="left">( ? )</tooltip>
+            <tooltip data-tooltip="Authenticate yourself by using API key and secret <br>
+            (see https://help.blackfynn.com/en/articles/1488536-creating-an-api-key-for-the-blackfynn-clients)." data-tooltip-position="left">( ? )</tooltip>
           </h5>
           <div> <font color="black"> Api key name: </font> </div>
           <div class="demo-controls">
@@ -40,7 +41,8 @@
           </div>
 
           <h5> Select account
-            <tooltip data-tooltip="Select one of the existing accounts that you added earlier" data-tooltip-position="left">( ? )</tooltip>
+            <tooltip data-tooltip="Added account(s) will be displayed in this drop-down list. <br>
+            Select one one before continuing." data-tooltip-position="left">( ? )</tooltip>
           </h5>
           <div class="demo-controls">
             <select class="my_dropdown" id=bfaccountlist>
@@ -85,7 +87,7 @@
           <p> </p>
 
           <h5> Select local dataset to submit
-            <tooltip data-tooltip="Select the folder that you want to submit to your Blackfynn account (sorted by Last modified date)" data-tooltip-position="left">( ? )</tooltip>
+            <tooltip data-tooltip="Select the local folder that you want to submit to your Blackfynn account" data-tooltip-position="left">( ? )</tooltip>
           </h5>
           <div class="demo-controls">
             <button class="demo-button" id="select-submit-dataset">Select Dataset Folder </button>
@@ -93,7 +95,7 @@
           </div>
 
           <h5> Select Blackfynn Dataset for uploading
-            <tooltip data-tooltip="List of datasets existing on your Blackfynn account" data-tooltip-position="left">( ? )</tooltip>
+            <tooltip data-tooltip="Select the target dataset on your Blackfynn (sorted by date of creation)." data-tooltip-position="left">( ? )</tooltip>
           </h5>
           <div class="demo-controls">
             <select class="my_dropdown" id="bfdatasetlist">
@@ -107,7 +109,10 @@
           </div>
 
           <div>
-          <h5> Submit </h5>
+          <h5> Submit 
+          <tooltip data-tooltip="Click to push all the files/folders from the selected local folder into the selected Blackfynn folder. <br>
+          Local folder structure will be preserved." data-tooltip-position="left">( ? )</tooltip>
+          </h5>
           <button class="demo-button" id="submit-dataset"> Submit dataset </button>
           </div>
 
@@ -128,7 +133,7 @@
         <div class="demo-box">
           <p> </p>
 
-          <h5> Coming soon... Tentative date: December 2020 </h5>
+          <p> Coming soon... Tentative date: December 2020 </p>
 
         </div>
       </div>
@@ -142,7 +147,7 @@
         <div class="demo-box">
           <p> </p>
 
-          <h5> Coming soon... Tentative date: April 2020</h5>
+          <p> Coming soon... Tentative date: April 2020</p>
 
         </div>
       </div>
