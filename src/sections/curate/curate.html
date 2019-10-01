@@ -95,7 +95,9 @@
             <hr>
 
             <h5> Select folders and files to be added in each SPARC folder
-              <tooltip data-tooltip="Select SPARC folder from the drop-down and add folders / files to each section" data-tooltip-position="left">( ? )</tooltip>
+              <tooltip data-tooltip="Select SPARC folder from the drop-down them add files / folders using the corresponding buttons. <br> 
+              Alternatively, you could drag-and-drop files / folders on the table headers to import the them. <br><br>
+              The 'main' folder designates the dataset folder." data-tooltip-position="left">( ? )</tooltip>
             </h5>
             <div class="demo-controls">
             	<p> Select SPARC folder: <p>
@@ -175,7 +177,8 @@
               <p id='delete-preview-organization-status'> <p>
           </div>
             <h5> Save file organization to continue later
-              <tooltip data-tooltip="Save the table you created as a template (CSV) for using it later" data-tooltip-position="left">( ? )</tooltip>
+              <tooltip data-tooltip="Save the table you created as a template (CSV format) for continuing later <br>
+              You can optionally add file/folder paths and descriptions directly in the teamplate before importing back with the upload button" data-tooltip-position="left">( ? )</tooltip>
             </h5>
 
             <div class="demo-controls">
@@ -212,11 +215,7 @@
           <div class="demo-meta u-avoid-clicks"> Include manifest, submission, dataset_description, subjects and/or samples files</div>
         </button>
         <div class="demo-box">
-          <h5>Generating new files or Selecting from Existing
-          <tooltip data-html="true" data-tooltip="Select existing: chose from already existing files <br><br>
-                                                  Generate new from template: creates a new file <br><br>
-                                                  None: Do nothing" data-tooltip-position="left">( ? )</tooltip>
-          </h5>
+
           <h5>Manifest file</h5>
 
           <div class="demo-controls">
@@ -224,7 +223,9 @@
             <label for="generate-manifest" class=labelradio> Generate manifest files </label>
           </div>
 
-          <h5>Submission file</h5>
+          <h5>Submission file <tooltip data-html="true" data-tooltip="Select existing: chose an already existing submission file <br><br>
+                                                  Generate new from template: creates a new empty submission file <br><br>
+                                                  None: Do nothing" data-tooltip-position="left">( ? )</tooltip></h5>
 
           <form id='submission_file_form'>
             <div>
@@ -352,17 +353,18 @@
             <div id = "div-existing-dataset">
               <input id="existing-dataset" name="new-dataset" type="radio" class="with-style" value="existing"/>
               <label id = "label-existing-dataset" for="existing-dataset" class=labelradio>Modify current dataset</label>
-              <tooltip data-tooltip="This will add all changes to the current dataset folder" data-tooltip-position="left">( ? )</tooltip>
+              <tooltip data-tooltip="This will add all changes to the current dataset folder. <br>
+              This option will only be available when 'Dataset already organized' option is selected." data-tooltip-position="left">( ? )</tooltip>
             </div>
             <div>
               <input id="create-newdataset" name="new-dataset" type="radio" class="with-style" value="local" />
               <label for="create-newdataset" class=labelradio>Create new dataset locally</label>
-              <tooltip data-tooltip="This will create a new folder with all required files" data-tooltip-position="left">( ? )</tooltip>
+              <tooltip data-tooltip="This option will create the dataset at the desired location locally with all requested files" data-tooltip-position="left">( ? )</tooltip>
             </div>
             <div>
               <input id="cloud-dataset" name="new-dataset" type="radio" class="with-style" value="cloud" />
               <label for="cloud-dataset" class=labelradio>Create new dataset directly on Blackfynn</label>
-              <!-- <tooltip data-tooltip="This will create a new folder with all required files" data-tooltip-position="left">( i )</tooltip> -->
+              <tooltip data-tooltip="This option will create the dataset with all requested files directly on your Blackfynn account" data-tooltip-position="left">( ? )</tooltip>
             </div>
           </form>
 
@@ -382,7 +384,7 @@
           </div>
 
           <div id="divCreateCloud" class="datasetsaveoption">
-          <h5> Coming soon... Tentative date: December 2020</h5>
+          <p> Coming soon... Tentative date: December 2020</p>
           </div>
 
           <div id="curatebutton" class="datasetsaveoption">
