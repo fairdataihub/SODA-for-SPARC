@@ -34,10 +34,6 @@ submitprintstatus = ' '
 # Organize dataset
 def savefileorganization(jsonpath, jsondescription, pathsavefileorganization):
     try:
-        # f = open("dict.txt","w")
-        # f.write(str(table))
-        # f.close()
-
         mydict = jsonpath
         mydict2 = jsondescription
         mydict.update(mydict2)
@@ -57,7 +53,6 @@ def savefileorganization(jsonpath, jsondescription, pathsavefileorganization):
         raise e
 
 compare = lambda x, y: collections.Counter(x) == collections.Counter(y)
-
 def uploadfileorganization(pathuploadfileorganization, headernames):
     try:
         csvsavepath = join(pathuploadfileorganization)
@@ -139,32 +134,6 @@ def preview_folder_structure(paths, folder_path):
             preview_folder_structure(all_files_path, new_folder_path)
     return
 
-# dicttest = {}
-# dicttest['code'] = [r'C:\Users\HSrivastava\Desktop\Evaluation-form.pdf', r'C:\Users\HSrivastava\Desktop\Output']
-# previewfileorganization(dicttest)
-
-# def preview_folder_structure(file_path, preview_path, glob_path):
-#     suff = file_path.replace(glob_path, '')[1:]
-#     if isdir(file_path):
-#         for source_file in listdir(file_path):
-#             if not exists(join(preview_path, split(glob_path)[-1])):
-#                 makedirs(join(preview_path, split(glob_path)[-1]))
-#             dest_file = join(preview_path, split(glob_path)[-1], suff, source_file)
-#             if isfile(join(file_path, source_file)):
-#                 open(dest_file, 'a').close()
-#             else:
-#                 try:
-#                     makedirs(dest_file)
-#                 except Exception as e:
-#                     raise Exception(e)
-#                 source_file = join(file_path, source_file)
-#                 preview_folder_structure(join(file_path, source_file), preview_path, glob_path)
-#     else:
-#         dest_file = join(preview_path, file_path)
-#         # raise Exception(dest_file)
-#         open(dest_file, 'a').close()
-#     return
-
 def deletePreviewFileOrganization():
     userpath = expanduser("~")
     preview_path = join(userpath, "SODA")
@@ -173,11 +142,10 @@ def deletePreviewFileOrganization():
 
 ### FEATURE #2: SPARC metadata generator
 
-# Generate manifest.xlsx file in each subfolder of the dataset
-# Automaticall fill out filename, timestamp (last modified), and file type info
-def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
+def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
         manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
-        subjectsstatus, pathsubjects, samplesstatus, pathsamples):
+        subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus, bfdirectlystatus, 
+        alreadyorganizedstatus, organizedatasetstatus, newdatasetname):
 
     global curateprogress
     global curatestatus
@@ -188,17 +156,16 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
     error = ''
     c = 0
 
-    if not isdir(pathdataset):
-        curatestatus = 'Done'
-        error = error + 'Error: Please select a valid dataset folder\n'
-        c += 1
+    if alreadyorganizedstatus:
+        if not isdir(pathdataset):
+            curatestatus = 'Done'
+            raise Exception('Error: Please select a valid dataset folder')
 
     if createnewstatus:
         if not isdir(pathnewdataset):
             curatestatus = 'Done'
-            error = error + 'Error: Please select a valid folder for new dataset\n'
-            c += 1
-
+            raise Exception('Error: Please select a valid folder for new dataset')
+ 
     if submissionstatus:
         if not isfile(pathsubmission):
             curatestatus = 'Done'
@@ -207,7 +174,7 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
         # Adding check for correct file name
         if splitext(basename(pathsubmission))[0] != 'submission':
             curatestatus = 'Done'
-            error = error + 'Error: Select valid name for submission file\n'
+            error = error + 'Error: Select valid name for submission file\n' 
             c += 1
 
     if datasetdescriptionstatus:
@@ -242,145 +209,9 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
             curatestatus = 'Done'
             error = error + 'Error: Select valid name for samples file\n'
             c += 1
-
     if c > 0:
-        error = error+'\nTerminating ..'
         raise Exception(error)
-        return
 
-
-    #get list of file in pathnewdataset
-    # see if any of submission, dataset_description, subjects, samples exist
-    # Show error 'File xxx already exists at target location: either delete or select "None" in the SODA interface'
-    if not createnewstatus:
-        c = 0
-        error = ''
-        for i in listdir(pathdataset):
-            if i == 'submission.xlsx' and submissionstatus:
-                error = error + 'submission file already present\n'
-                c += 1
-            if i == 'dataset_description.xlsx' and datasetdescriptionstatus:
-                error = error + 'dataset_description file already present\n'
-                c += 1
-            if i == 'samples.xlsx' and samplesstatus:
-                error = error + 'samples file already present\n'
-                c += 1
-            if i == 'subjects.xlsx' and subjectsstatus:
-                error = error + 'subjects file already present\n'
-                c += 1
-
-        if c > 0:
-            error = error + 'Either delete or select "None" in the SODA interface\n\n'
-            error = error + 'Terminating ..'
-            curatestatus = 'Done'
-            raise Exception(error)
-            return
-
-    try:
-        curateprogress = 'Started'
-        curateprintstatus = 'Curating'
-        if createnewstatus:
-            topath = createdataset(pathdataset, pathnewdataset)
-            curateprogress = curateprogress + ', ,' + 'New dataset created'
-            pathdataset = topath
-        else:
-            curateprogress = curateprogress + ', ,' + "New dataset not requested"
-
-        if manifeststatus:
-            createmanifest(pathdataset)
-            curateprogress = curateprogress + ', ,' + 'Manifest created'
-        else:
-            curateprogress = curateprogress + ', ,' + 'Manifest not requested'
-
-        if submissionstatus:
-            copyfile(pathsubmission, pathdataset)
-            curateprogress = curateprogress + ', ,' + 'Submission file created'
-        else:
-            curateprogress = curateprogress + ', ,' + 'Submission file not requested'
-
-        if datasetdescriptionstatus:
-            copyfile(pathdescription, pathdataset)
-            curateprogress = curateprogress + ', ,' + 'Dataset description file created'
-        else:
-            curateprogress = curateprogress + ', ,' + 'Dataset description file not requested'
-
-        if subjectsstatus:
-            copyfile(pathsubjects, pathdataset)
-            curateprogress = curateprogress + ', ,' + 'Subjects file created'
-        else:
-            curateprogress = curateprogress + ', ,' + 'Subjects file not requested'
-
-        if samplesstatus:
-            copyfile(pathsamples, pathdataset)
-            curateprogress = curateprogress + ', ,' + 'Samples file created'
-        else:
-            curateprogress = curateprogress + ', ,' + 'Samples file not requested'
-
-        curateprogress = curateprogress + ', ,' + 'Success: COMPLETED!'
-        curatestatus = 'Done'
-
-    except Exception as e:
-        curatestatus = 'Done'
-        raise e
-
-def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
-        manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
-        subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus, bfdirectlystatus, 
-        alreadyorganizedstatus, organizedatasetstatus, newdatasetname):
-
-    global curateprogress
-    global curatestatus
-    global curateprintstatus
-    curateprogress = ' '
-    curatestatus = ''
-    curateprintstatus = ' '
-
-    if alreadyorganizedstatus:
-        if not isdir(pathdataset):
-            curatestatus = 'Done'
-            raise Exception('Error: Please select a valid dataset folder')
-
-    if createnewstatus:
-        if not isdir(pathnewdataset):
-            curatestatus = 'Done'
-            raise Exception('Error: Please select a valid folder for new dataset')
-
-    if submissionstatus:
-        if not isfile(pathsubmission):
-            curatestatus = 'Done'
-            raise Exception('Error: Select valid path for submission file')
-        # Adding check for correct file name
-        if pathsubmission.split('\\')[-1].split('.')[0] != 'submission':
-            curatestatus = 'Done'
-            raise Exception('Error: Select valid name for submission file')
-
-    if datasetdescriptionstatus:
-        if not isfile(pathdescription):
-            curatestatus = 'Done'
-            raise Exception('Error: Select valid path for dataset description file')
-        # Adding check for correct file name
-        if pathdescription.split('\\')[-1].split('.')[0] != 'dataset_description':
-            curatestatus = 'Done'
-            raise Exception('Error: Select valid name for dataset_description file')
-
-    if subjectsstatus:
-        if not isfile(pathsubjects):
-            curatestatus = 'Done'
-            raise Exception('Error: Select valid path for subjects file')
-        # Adding check for correct file name
-        if pathsubjects.split('\\')[-1].split('.')[0] != 'subjects':
-            curatestatus = 'Done'
-            raise Exception('Error: Select valid name for subjects file')
-
-    if samplesstatus:
-        if not isfile(pathsamples):
-            curatestatus = 'Done'
-            raise Exception('Error: Select valid path for samples file')
-        # Adding check for correct file name
-        if pathsamples.split('\\')[-1].split('.')[0] != 'samples':
-            curatestatus = 'Done'
-            raise Exception('Error: Select valid name for samples file')
-     
     # check if path in jsonpath are valid
     c = 0
     error = ''
@@ -401,27 +232,44 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
     # see if any of submission, dataset_description, subjects, samples exist
     # Show error 'File xxx already exists at target location: either delete or select "None" in the SODA interface'
     if modifyexistingstatus:
+        # c = 0
+        # error = ''
+        # for i in glob(pathdataset + '\*'):
+        #     if i == pathdataset + '\submission.xlsx' and submissionstatus:
+        #         error = error + 'submission file already present\n'
+        #         c += 1
+        #     if i == pathdataset + '\dataset_description.xlsx' and datasetdescriptionstatus:
+        #         error = error + 'dataset_description file already present\n'
+        #         c += 1
+        #     if i == pathdataset + '\samples.xlsx' and samplesstatus:
+        #         error = error + 'samples file already present\n'
+        #         c += 1
+        #     if i == pathdataset + '\subjects.xlsx' and subjectsstatus:
+        #         error = error + 'subjects file already present\n'
+        #         c += 1
+
         c = 0
         error = ''
-        for i in glob(pathdataset + '\*'):
-            if i == pathdataset + '\submission.xlsx' and submissionstatus:
-                error = error + 'submission file already present\n'
-                c += 1
-            if i == pathdataset + '\dataset_description.xlsx' and datasetdescriptionstatus:
-                error = error + 'dataset_description file already present\n'
-                c += 1
-            if i == pathdataset + '\samples.xlsx' and samplesstatus:
-                error = error + 'samples file already present\n'
-                c += 1
-            if i == pathdataset + '\subjects.xlsx' and subjectsstatus:
-                error = error + 'subjects file already present\n'
-                c += 1
+        namefiles = [f for f in listdir(pathdataset) if isfile(join(pathdataset, f))]
+        if 'submission.xlsx' in namefiles and submissionstatus:
+            error = error + 'submission file already present\n'
+            c += 1
+        if 'dataset_description.xlsx' in namefiles and datasetdescriptionstatus:
+            error = error + 'dataset_description file already present\n'
+            c += 1
+        if  'samples.xlsx' in namefiles and samplesstatus:
+            error = error + 'samples file already present\n'
+            c += 1
+        if  'subjects.xlsx' in namefiles and subjectsstatus:
+            error = error + 'subjects file already present\n'
+            c += 1
 
         if c > 0:
             error = error + ''
             error = error + 'Either delete or select "None" in the SODA interface'
             curatestatus = 'Done'
             raise Exception(error)
+
         else:
             try:
                 curateprogress = 'Started'
@@ -530,48 +378,6 @@ def curatedatasetprogress():
     global curateprintstatus
     return (curateprogress, curatestatus, curateprintstatus)
 
-def createmanifest(datasetpath):
-    # Get the names of all the subfolder in the dataset
-    folders = [folder for folder in listdir(datasetpath) if
-               isdir(join(datasetpath, folder))]
-
-    # In each subfolder, generate a manifest file
-    for folder in folders:
-        # Initialize dataframe where manifest info will be stored
-        df = pd.DataFrame(columns=['filename', 'timestamp', 'description',
-                                'file type', 'Additional Metadata…'])
-        # Get list of files/folders in the the folde#
-        # Remove manifest file from the list if already exists
-        folderpath = join(datasetpath, folder)
-        allfiles = listdir(folderpath)
-        if 'manifest.xlsx' in allfiles:
-            allfiles.remove('manifest.xlsx')
-
-        # Populate manifest dataframe
-        filename = []
-        timestamp = []
-        filetype = []
-        for file in allfiles:
-            filepath = join(folderpath, file)
-            filename.append(splitext(file)[0])
-            lastmodtime = getmtime(filepath)
-            timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
-                                      localtime(lastmodtime)))
-            if isdir(filepath):
-                filetype.append('folder')
-            else:
-                fileextension = splitext(file)[1]
-                if not fileextension:  #if empty (happens for Readme files)
-                    fileextension = 'None'
-                filetype.append(fileextension)
-
-        df['filename'] = filename
-        df['timestamp'] = timestamp
-        df['file type'] = filetype
-
-        # Save manifest as Excel sheet
-        manifestfile = join(folderpath, 'manifest.xlsx')
-        df.to_excel(manifestfile, index=None, header=True)
 
 def createmanifestwithdescription(datasetpath, jsonpath, jsondescription):
 
@@ -592,8 +398,16 @@ def createmanifestwithdescription(datasetpath, jsonpath, jsondescription):
             allfiles = jsonpath[folder]
             alldescription = jsondescription[folder + '_description']
             manifestexists = join(folderpath, 'manifest.xlsx')
-            if manifestexists in allfiles:
-                allfiles.remove(manifestexists)
+
+            countpath = -1
+            for pathname in allfiles:
+                countpath += 1
+                if basename(pathname) == 'manifest.xlsx':
+                    allfiles.pop(countpath)
+                    alldescription.pop(countpath)
+
+            # if manifestexists in allfiles:
+            #     allfiles.remove(manifestexists)
 
             # Populate manifest dataframe
             filename = []
@@ -622,28 +436,18 @@ def createmanifestwithdescription(datasetpath, jsonpath, jsondescription):
             df['file type'] = filetype
             df['description'] = filedescription
 
-            print(df)
 
             # Save manifest as Excel sheet
             manifestfile = join(folderpath, 'manifest.xlsx')
-            print(manifestfile)
             df.to_excel(manifestfile, index=None, header=True)
 
-# datasetpath = r"C:\Users\Bhavesh\Desktop\datasets\example-dataset"
-# dictpath = {}
-# dictpath['code'] = [r'C:\Users\Bhavesh\Desktop\datasets\new-example-dataset\example-dataset\code\some-python-code.py']
-# dictdescription = {}
-# dictdescription['code_description'] = ['some-python-code test']
-# createmanifestwithdescription(datasetpath, dictpath, dictdescription)
+# jpath = {}
+# jpath['code'] = [ r'/Users/bpatel/Desktop/manifest.xlsx', r'/Users/bpatel/Desktop/save2.csv', r'/Users/bpatel/Desktop/save.csv']
+# jdes = {}
+# jdes['code_description'] = ['', 'save2des', 'savedes']
+# deskpath = r'/Users/bpatel/Desktop/new-datasets'
+# createmanifestwithdescription(deskpath, jpath, jdes)
 
-
-def createdataset(frompath, topath):
-    datasetfoldername = basename(normpath(frompath))
-    topath = join(topath, datasetfoldername)
-    if exists(topath):
-        topath = return_new_path(topath)
-    copytree(frompath, topath)
-    return topath
 
 def createdataset2(jsonpath, pathdataset):
     mydict = jsonpath
@@ -697,31 +501,6 @@ def copytree(src, dst, symlinks=False, ignore=None):
 
 def copyfile(src, dst):
     copy2(src, dst)
-
-
-
-#createdataset(r'C:\Users\Bhavesh\Desktop\test_dataset', r'C:\Users\Bhavesh\Desktop\new_dataset')
-
-# Generate master manifest.xlsx file in the main dataset folder
-
-# Save project information required for submission.xlsx
-# in an Excel file
-
-
-# Save investigator profile required for dataset_description.xlsx
-# in an Excel file
-
-
-# Generate new submission.xlsx based on existing one
-
-
-# Generate new dataset_description.xlsx based on existing one
-
-
-# Convert Excel to csv
-
-
-# Convert Excel to json
 
 
 ### FEATURE #4: SODA Blackfynn interface
@@ -786,7 +565,6 @@ def bfaccountlist():
                     bfn = Blackfynn(n)
                     accountlist.append(n)
                 except:
-                    print('removing', n)
                     config.remove_section(n)
             with open(configpath, 'w') as configfile:
                 config.write(configfile)
