@@ -108,8 +108,7 @@ let pathsubmitdataset = document.querySelector('#selected-submit-dataset')
 const blackcolor = '#000000'
 const redcolor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivatives", "docs", "protocol", "samples", "sourcedata", "subjects"]
-var headernames = sparcFolderNames.slice()
-headernames.push("main")
+
 
 //////////////////////////////////
 // Defaults action (at start on the program)
@@ -260,6 +259,8 @@ selectUploadFileOrganizationBtn.addEventListener('click', (event) => {
 })
 ipcRenderer.on('selected-uploadorganization', (event, path) => {
   document.getElementById("upload-file-organization-status").innerHTML = "";
+  var headernames = sparcFolderNames.slice()
+  headernames.push("main")
   var lennames =  headernames.length
   for (var i = 0; i < lennames; i++) {
   	headernames.push(headernames[i] + "_description")
@@ -308,95 +309,6 @@ deletePreviewBtn.addEventListener('click', () => {
       }
   })
 })
-
-// Action when user click on Curate Dataset
-// curateDatasetBtn.addEventListener('click', () => {
-//   progressinfo.style.color = blackcolor
-//   curateDatasetBtn.disabled = true
-//   disableform(curationform)
-
-//   if (existingsubmissionstatus.checked === true){
-//     submissionstatus = true
-//     pathsubmission = pathsubmissionexisting.value
-//   } else if (newsubmissionstatus.checked === true){
-//     submissionstatus = true
-//     pathsubmission = path.join(__dirname, 'file_templates', 'submission.xlsx')
-//   } else {
-//     submissionstatus = false
-//   }
-
-//   if (existingdescriptionstatus.checked === true){
-//     descriptionstatus = true
-//     pathdescription = pathdescriptionexisting.value
-//   } else if (newdescriptionstatus.checked === true){
-//     descriptionstatus = true
-//     pathdescription = path.join(__dirname, 'file_templates', 'dataset_description.xlsx')
-//   } else {
-//     descriptionstatus = false
-//   }
-
-//   if (existingsubjectsstatus.checked === true){
-//     subjectsstatus = true
-//     pathsubjects = pathsubjectsexisting.value
-//   } else if (newsubjectsstatus.checked === true){
-//     subjectsstatus = true
-//     pathsubjects = path.join(__dirname, 'file_templates', 'subjects.xlsx')
-//   } else {
-//     subjectsstatus = false
-//   }
-
-//   if (existingsamplesstatus.checked === true){
-//     samplesstatus = true
-//     pathsamples = pathsamplesexisting.value
-//   } else if (newsamplesstatus.checked === true){
-//     samplesstatus = true
-//     pathsamples = path.join(__dirname, 'file_templates', 'samples.xlsx')
-//   } else {
-//    samplesstatus = false
-//   }
-
-//   progressinfo.value = ''
-//   var completionstatus = 'Solving'
-
-//   client.invoke("apiCurateDataset", pathdataset.innerHTML, createnewstatus.checked, pathnewdataset.value,
-//     manifeststatus.checked, submissionstatus, pathsubmission,  descriptionstatus, pathdescription,
-//     subjectsstatus, pathsubjects, samplesstatus, pathsamples,
-//     (error, res) => {
-//     if(error) {
-//       console.log('ERROR')
-//       var emessage = userError(error)
-//       progressinfo.style.color = redcolor
-//       progressinfo.value = emessage
-//       console.log(error)
-//       enableform(curationform)
-//     } else {
-//       console.log('Done', res)
-//     }
-//   })
-
-//   var timerprogress = setInterval(progressfunction, 1000)
-//   function progressfunction(){
-//     client.invoke("apiCurateDatasetProgress", (error, res) => {
-//       if(error) {
-//         console.error(error)
-//       } else {
-//         completionstatus = res[1]
-//         var printstatus = res[2]
-//         if (printstatus === 'Curating') {
-//           progressinfo.value = res[0].split(',').join('\n')
-//         }
-//       }
-//     })
-//     console.log('Completion', completionstatus)
-//     if (completionstatus === 'Done'){
-//       clearInterval(timerprogress)
-//       curateDatasetBtn.disabled = false
-//       enableform(curationform)
-//     }
-//   }
-
-// })
-
 
 // // // // // // // // // //
 // Action when user click on Curate Dataset #2
@@ -534,7 +446,6 @@ curateDatasetBtn2.addEventListener('click', () => {
 
 // // // // // // // // // //
 // // // // // // // // // //
-
 
 // Add bf account
 bfAddAccountBtn.addEventListener('click', () => {
@@ -835,46 +746,6 @@ function tableToJson(table){
   jsonvar[keyval] = pathlist
   return jsonvar
 }
-
-// <<<<<<< Bhavesh
-// =======
-// function tableToJsonWithDescription(table){
-//   var jsonvar = {}
-//   var jsonvardescription= {}
-
-//   var pathlist = new Array()
-//   var descriptionlist = new Array()
-
-//   var keyval = "code"
-//   if (table === tableOrganized){
-//   	keyval = keyval + "_org"
-//   }
-//   var tableheaders = sparcFolderNames.slice()
-//   tableheaders.push("main")
-//   for (var i = 1, row; row = table.rows[i]; i++) {
-//     var pathname = row.cells[0].innerHTML
-//     var descriptionname = row.cells[1].innerHTML
-//     if (tableheaders.includes(pathname)) {
-//       jsonvar[keyval] = pathlist
-//       jsonvardescription[keyval + "_description"] = descriptionlist
-//       keyval = pathname
-//       if (table === tableOrganized){
-// 	  	keyval = keyval + "_org"
-// 	  }
-//       var pathlist = new Array()
-//       var descriptionlist = new Array()
-//     } else {
-//       pathlist.push(row.cells[0].innerHTML)
-//       descriptionlist.push(row.cells[1].innerHTML)
-//     }
-//   }
-//   jsonvar[keyval] = pathlist
-//   jsonvardescription[keyval+ "_description"] = descriptionlist
-
-//   return [jsonvar, jsonvardescription]
-// }
-
-// >>>>>>> master
 
 function jsonToTable(table, jsonvar){
   var keyvect = Object.keys(jsonvar)
