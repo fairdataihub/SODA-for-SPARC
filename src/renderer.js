@@ -288,8 +288,10 @@ selectPreviewBtn.addEventListener('click', () => {
         var emessage = userError(error)
         document.getElementById("preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
+        document.getElementById("preview-organization-status").innerHTML = "Loading Preview folder...";
         console.log(res)
         console.log("Done")
+        document.getElementById("preview-organization-status").innerHTML = "Preview folder available in a new window";
       }
   })
 })
@@ -305,6 +307,7 @@ deletePreviewBtn.addEventListener('click', () => {
       } else {
         console.log(res)
         console.log("Done")
+        document.getElementById("preview-organization-status").innerHTML = "Preview folder deleted!";
       }
   })
 })
@@ -845,6 +848,5 @@ function clearTable(table){
       }
     }
   }
-
   return table
 }

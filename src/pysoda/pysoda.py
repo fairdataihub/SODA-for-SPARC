@@ -666,6 +666,7 @@ def bfdatasetaccount(accountname):
         dataset_list = ['Select dataset']
         for ds in bf.datasets():
             dataset_list.append(ds.name)
+        dataset_list.sort() # Returning the list of datasets in alphabetical order
         return dataset_list
     except Exception as e:
         raise e
