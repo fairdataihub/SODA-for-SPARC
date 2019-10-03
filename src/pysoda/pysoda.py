@@ -33,6 +33,17 @@ submitprintstatus = ' '
 ### FEATURE #1: SPARC dataset organizer
 # Organize dataset
 def savefileorganization(jsonpath, jsondescription, pathsavefileorganization):
+    """
+    Associated with 'Save' button in 'Organize my dataset' section
+    Saves the paths specified along with the description in a CSV file as a template for future use
+
+    Input:
+        jsonpath: paths of all files in the json object
+        jsondescription: description associated with each file in json object
+        pathsavefileorganization: destination path of saved template
+    Action:
+        Saves all the paths specified in a CSV file
+    """
     try:
         mydict = jsonpath
         mydict2 = jsondescription
@@ -52,8 +63,19 @@ def savefileorganization(jsonpath, jsondescription, pathsavefileorganization):
     except Exception as e:
         raise e
 
+
 compare = lambda x, y: collections.Counter(x) == collections.Counter(y)
 def uploadfileorganization(pathuploadfileorganization, headernames):
+    """
+    Associated with 'Upload' button
+    Converts uploaded file template to a dictionary for viewing on UI
+
+    Input:
+        pathuploadfileorganization: path of saved template
+        headernames: Folder names according to SPARC format
+    Returns:
+        mydict: Returns all folders and corresponding paths as a dictionary
+    """
     try:
         csvsavepath = join(pathuploadfileorganization)
         df = pd.read_csv(csvsavepath)
@@ -76,7 +98,20 @@ def uploadfileorganization(pathuploadfileorganization, headernames):
     except Exception as e:
         raise e
 
+
 def previewfileorganization(jsonpath):
+    """
+    Associated with 'Preview' button on UI
+    Creates a folder for preview and adds empty files but with same name as origin
+    Opens the dialog box to showcase the files / folders added
+
+    Input:
+        jsonpath: json object containing all paths
+    Action:
+        Opens the dialog box at preview_path
+    Returns:
+        preview_path: path where the preview files are located
+    """
     mydict = jsonpath
     userpath = expanduser("~")
     preview_path = join(userpath, "SODA", "Preview")
@@ -101,10 +136,16 @@ def previewfileorganization(jsonpath):
     open_file(preview_path)
     return preview_path
 
+
 def open_file(file_path):
     """
     Opening folder on all platforms
     https://stackoverflow.com/questions/6631299/python-opening-a-folder-in-explorer-nautilus-mac-thingie
+
+    Input:
+        file_path: path of the folder
+    Action:
+        Opens dialog box for the given path
     """
     if platform.system() == "Windows":
         subprocess.Popen(r'explorer /select,' + str(file_path))
@@ -113,7 +154,17 @@ def open_file(file_path):
     else:
         subprocess.Popen(["xdg-open", file_path])
 
+
 def preview_folder_structure(paths, folder_path):
+    """
+    Creates folders and empty files from original 'paths' to the destination 'folder_path'
+
+    Input:
+        paths: Paths of all the files that need to be copied
+        folder_path: Destination to which the files / folders need to be copied
+    Action:
+        Creates folders and empty files at the given 'folder_path'
+    """
     for p in paths:
         if isfile(p):
             file = basename(p)
@@ -124,37 +175,40 @@ def preview_folder_structure(paths, folder_path):
             for f in all_files:
                 all_files_path.append(join(p, f))
 
-            # print(folder_path)
             pname = basename(p)
-            # print(join(folder_path, p))
             new_folder_path = join(folder_path, pname)
-            # print(pname)
-            # print(new_folder_path)
             makedirs(new_folder_path)
             preview_folder_structure(all_files_path, new_folder_path)
     return
 
+
 def deletePreviewFileOrganization():
+    """
+    Associated with 'Delete Preview Folder' button
+    Deletes the 'Preview' folder from the disk
+    """
     userpath = expanduser("~")
     preview_path = join(userpath, "SODA")
     shutil.rmtree(preview_path)
     return
 
+
 ### FEATURE #2: SPARC metadata generator
-
-def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
+def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
         manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
-        subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus, bfdirectlystatus, 
+        subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus, bfdirectlystatus,
         alreadyorganizedstatus, organizedatasetstatus, newdatasetname):
-
+    """
+    Associated with 'Generate' button in the 'Generate dataset' section
+    Checks validity of files / paths / folders and then generates the files and folders as requested along with progress status
+    """
     global curateprogress
     global curatestatus
     global curateprintstatus
     curateprogress = ' '
     curatestatus = ''
     curateprintstatus = ' '
-    error = ''
-    c = 0
+    error, c = '', 0
 
     if alreadyorganizedstatus:
         if not isdir(pathdataset):
@@ -165,16 +219,16 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
         if not isdir(pathnewdataset):
             curatestatus = 'Done'
             raise Exception('Error: Please select a valid folder for new dataset')
- 
+
     if submissionstatus:
         if not isfile(pathsubmission):
             curatestatus = 'Done'
             error = error + 'Error: Select valid path for submission file\n'
             c += 1
         # Adding check for correct file name
-        if splitext(basename(pathsubmission))[0] != 'submission':
+        elif splitext(basename(pathsubmission))[0] != 'submission':
             curatestatus = 'Done'
-            error = error + 'Error: Select valid name for submission file\n' 
+            error = error + 'Error: Select valid name for submission file\n'
             c += 1
 
     if datasetdescriptionstatus:
@@ -183,7 +237,7 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
             error = error + 'Error: Select valid path for dataset description file\n'
             c += 1
         # Adding check for correct file name
-        if splitext(basename(pathdescription))[0] != 'dataset_description':
+        elif splitext(basename(pathdescription))[0] != 'dataset_description':
             curatestatus = 'Done'
             error = error + 'Error: Select valid name for dataset_description file\n'
             c += 1
@@ -194,7 +248,7 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
             error = error + 'Error: Select valid path for subjects file\n'
             c += 1
         # Adding check for correct file name
-        if splitext(basename(pathsubjects))[0] != 'subjects':
+        elif splitext(basename(pathsubjects))[0] != 'subjects':
             curatestatus = 'Done'
             error = error + 'Error: Select valid name for subjects file\n'
             c += 1
@@ -205,7 +259,7 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
             error = error + 'Error: Select valid path for samples file\n'
             c += 1
         # Adding check for correct file name
-        if splitext(basename(pathsamples))[0] != 'samples':
+        elif splitext(basename(pathsamples))[0] != 'samples':
             curatestatus = 'Done'
             error = error + 'Error: Select valid name for samples file\n'
             c += 1
@@ -213,43 +267,24 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
         raise Exception(error)
 
     # check if path in jsonpath are valid
-    c = 0
-    error = ''
+    error, c = '', 0
     for folders in jsonpath.keys():
-        if jsonpath[folders] != []: 
+        if jsonpath[folders] != []:
             for path in jsonpath[folders]:
                 if not exists(path):
                     c += 1
                     error = error + path + ' does not exist \n'
 
     if c > 0:
-        error = error + '\n'
-        error = error + 'Please remove invalid paths'
+        error = error + '\nPlease remove invalid paths'
         curatestatus = 'Done'
-        raise Exception(error)   
-        
+        raise Exception(error)
+
     #get list of file in pathnewdataset
     # see if any of submission, dataset_description, subjects, samples exist
     # Show error 'File xxx already exists at target location: either delete or select "None" in the SODA interface'
     if modifyexistingstatus:
-        # c = 0
-        # error = ''
-        # for i in glob(pathdataset + '\*'):
-        #     if i == pathdataset + '\submission.xlsx' and submissionstatus:
-        #         error = error + 'submission file already present\n'
-        #         c += 1
-        #     if i == pathdataset + '\dataset_description.xlsx' and datasetdescriptionstatus:
-        #         error = error + 'dataset_description file already present\n'
-        #         c += 1
-        #     if i == pathdataset + '\samples.xlsx' and samplesstatus:
-        #         error = error + 'samples file already present\n'
-        #         c += 1
-        #     if i == pathdataset + '\subjects.xlsx' and subjectsstatus:
-        #         error = error + 'subjects file already present\n'
-        #         c += 1
-
-        c = 0
-        error = ''
+        error, c = '', 0
         namefiles = [f for f in listdir(pathdataset) if isfile(join(pathdataset, f))]
         if 'submission.xlsx' in namefiles and submissionstatus:
             error = error + 'submission file already present\n'
@@ -265,11 +300,11 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
             c += 1
 
         if c > 0:
-            error = error + ''
-            error = error + 'Either delete or select "None" in the SODA interface'
+            error = error + '\nEither delete or select "None" in the SODA interface'
             curatestatus = 'Done'
             raise Exception(error)
 
+        # In case of no errors, code-bloack below will execute which will start the data preparation process
         else:
             try:
                 curateprogress = 'Started'
@@ -314,15 +349,13 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
                 curatestatus = 'Done'
                 raise e
 
-
     elif createnewstatus:
         try:
             pathnewdatasetfolder = join(pathnewdataset, newdatasetname)
         except Exception as e:
             curatestatus = 'Done'
             raise e
-        try:  
-            
+        try:
             pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
             curateprogress = 'Started'
             curateprintstatus = 'Curating'
@@ -371,8 +404,10 @@ def curatedataset2(pathdataset, createnewstatus, pathnewdataset, \
             raise e
 
 
-
 def curatedatasetprogress():
+    """
+    Creates global variables to help keep track of the progress
+    """
     global curateprogress
     global curatestatus
     global curateprintstatus
@@ -380,7 +415,16 @@ def curatedatasetprogress():
 
 
 def createmanifestwithdescription(datasetpath, jsonpath, jsondescription):
+    """
+    Creates manifest files with the description specified
 
+    Input:
+        datasetpath: original path of the dataset
+        jsonpath: all paths in json format
+        jsondescription: Description associated with each path
+    Action:
+        Creates manifest files in Excel format
+    """
     # Get the names of all the subfolder in the dataset
     folders = list(jsonpath.keys())
     if 'main' in folders:
@@ -406,14 +450,8 @@ def createmanifestwithdescription(datasetpath, jsonpath, jsondescription):
                     allfiles.pop(countpath)
                     alldescription.pop(countpath)
 
-            # if manifestexists in allfiles:
-            #     allfiles.remove(manifestexists)
-
             # Populate manifest dataframe
-            filename = []
-            timestamp = []
-            filetype = []
-            filedescription = []
+            filename, timestamp, filetype, filedescription = [], [], [], []
             countpath = -1
             for filepath in allfiles:
                 countpath += 1
@@ -436,25 +474,27 @@ def createmanifestwithdescription(datasetpath, jsonpath, jsondescription):
             df['file type'] = filetype
             df['description'] = filedescription
 
-
             # Save manifest as Excel sheet
             manifestfile = join(folderpath, 'manifest.xlsx')
             df.to_excel(manifestfile, index=None, header=True)
 
-# jpath = {}
-# jpath['code'] = [ r'/Users/bpatel/Desktop/manifest.xlsx', r'/Users/bpatel/Desktop/save2.csv', r'/Users/bpatel/Desktop/save.csv']
-# jdes = {}
-# jdes['code_description'] = ['', 'save2des', 'savedes']
-# deskpath = r'/Users/bpatel/Desktop/new-datasets'
-# createmanifestwithdescription(deskpath, jpath, jdes)
-
 
 def createdataset2(jsonpath, pathdataset):
+    """
+    Associated with 'Create new dataset locally' button
+    Creates folders and files from paths specified in json object TO the destination path specified
+
+    Input:
+        jsonpath: JSON object of all paths from origin
+        pathdataset: destination path for creating a new dataset as specified
+    Action:
+        Creates the folders and files specified
+    """
     mydict = jsonpath
     userpath = expanduser("~")
     preview_path = pathdataset
-
     folderrequired = []
+
     for i in mydict.keys():
         if mydict[i] != []:
             folderrequired.append(i)
@@ -468,7 +508,11 @@ def createdataset2(jsonpath, pathdataset):
             else:
                 create_new_file(path, join(pathdataset, i))
 
+
 def create_new_file(path, folder_path):
+    """
+    Helper function to copy all files from source ('path') to destination ('folder_path') in the same folder structure
+    """
     if isfile(path):
         copyfile(path, folder_path)
     elif isdir(path):
@@ -479,15 +523,32 @@ def create_new_file(path, folder_path):
 def return_new_path(topath):
     """
     This function checks if the folder already exists and in such cases, appends the name with (2) or (3) etc.
+
+    Input:
+        topath: path where the folder is supposed to be copied
+    Returns:
+        topath: new folder name based on the availability in destination folder
     """
     if exists(topath):
-        for i in range(2, 20001):
+        i = 2
+        while True:
             if not exists(topath + ' (' + str(i) + ')'):
                 return topath + ' (' + str(i) + ')'
+            i += 1
     else:
         return topath
 
+
 def copytree(src, dst, symlinks=False, ignore=None):
+    """
+    Preserves the original folder structure by creating corresponding folders in destination path
+
+    Input:
+        src: Path of the source folder
+        dst: Path of the destination folder
+    Action:
+        Creates folders in the original folder structure
+    """
     if not exists(dst):
         makedirs(dst)
     for item in listdir(src):
@@ -499,13 +560,28 @@ def copytree(src, dst, symlinks=False, ignore=None):
             if not exists(d) or stat(s).st_mtime - stat(d).st_mtime > 1:
                 copy2(s, d)
 
+
 def copyfile(src, dst):
+    """
+    Wrapper function to copy files from source path ('src') to destination ('dst')
+    """
     copy2(src, dst)
 
 
 ### FEATURE #4: SODA Blackfynn interface
 # Log in to Blackfynn
 def bfaddaccount(keyname, key, secret):
+    """
+    Associated with 'Add account' button in 'Login to your Blackfynn account' section
+    Adds an account on the local machine linked to the credentials specified
+
+    Input:
+        keyname: Name of the Account to be associated with the given credentials
+        key: API key
+        secret: API Secret
+    Action:
+        Adds account to the Blackfynn configuration file (local machine)
+    """
     error, c = '', 0
     keyname = keyname.strip()
     if (not keyname) or (not key) or (not secret):
@@ -545,14 +621,22 @@ def bfaddaccount(keyname, key, secret):
         bfdeleteaccount(keyname)
         raise Exception('Authentication Error: please check that key name, key, and secret are entered properly')
 
+
 def bfdeleteaccount(keyname):
+    """
+    Deletes account information from the system
+    """
     config = ConfigParser()
     config.read(configpath)
     config.remove_section(keyname)
     with open(configpath, 'w') as configfile:
         config.write(configfile)
 
+
 def bfaccountlist():
+    """
+    Returns list of accounts stored in the system
+    """
     accountlist = ['Select']
     if exists(configpath):
         config = ConfigParser()
@@ -571,8 +655,12 @@ def bfaccountlist():
 
     return accountlist
 
+
 # Visualize existing dataset in the selected account
 def bfdatasetaccount(accountname):
+    """
+    Returns list of datasets associated with the specified Account Name ('accountname')
+    """
     try:
         bf = Blackfynn(accountname)
         dataset_list = ['Select dataset']
@@ -582,8 +670,18 @@ def bfdatasetaccount(accountname):
     except Exception as e:
         raise e
 
+
 # Add new empty dataset folder
 def bfnewdatasetfolder(datasetname, accountname):
+    """
+    Associated with 'Create' button in 'Create new dataset folder'
+
+    Input:
+        datasetname: Name of the dataset to be created
+        accountname: Account in which the dataset needs to be created
+    Action:
+        Creates dataset for the account specified
+    """
     error, c = '', 0
     datasetname = datasetname.strip()
     if (not datasetname):
@@ -611,8 +709,20 @@ def bfnewdatasetfolder(datasetname, accountname):
     if c>0:
         raise Exception(error)
 
+
 # Submit dataset to selected account
 def bfsubmitdataset(accountname, bfdataset, pathdataset):
+    """
+    Associated with 'Submit dataset' button in 'Submit new dataset' section
+    Uploads the specified folder to the specified dataset on Blackfynn account
+
+    Input:
+        accountname: Account in which the dataset needs to be created
+        bfdataset: Name of the dataset on Blackfynn
+        pathdataset: Path of dataset on local machine
+    Action:
+        Uploads dataset on Blackfynn account
+    """
     global submitdataprogress
     global submitdatastatus
     global submitprintstatus
@@ -664,6 +774,16 @@ def bfsubmitdataset(accountname, bfdataset, pathdataset):
 
 
 def upload_structured_file(myds, mypath, myfolder):
+    """
+    Helper function to upload given folder to Blackfynn dataset in the original folder structure
+
+    Input:
+        myds: Dataset name on Blackfynn
+        mypath: Path of the organized dataset on local machine
+        myfolder: Current folder inside the path
+    Action:
+        Uploads the folder to Blackfynn
+    """
     global submitdataprogress
     global submitdatastatus
 
@@ -680,10 +800,15 @@ def upload_structured_file(myds, mypath, myfolder):
             myfolderpath = join(mypath, f)
             upload_structured_file(mybffolder, myfolderpath, f)
 
+
 def submitdatasetprogress():
+    """
+    Creates global variables to help keep track of the dataset submission progress
+    """
     global submitdataprogress
     global submitdatastatus
     global submitprintstatus
     return (submitdataprogress, submitdatastatus, submitprintstatus)
+
 
 # Share dataset with Curation Team

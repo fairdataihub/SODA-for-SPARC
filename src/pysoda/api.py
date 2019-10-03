@@ -1,7 +1,7 @@
 from __future__ import print_function
 from pysoda import copyfile, bfaddaccount, bfaccountlist, bfdatasetaccount, \
     bfsubmitdataset, submitdatasetprogress, curatedatasetprogress, bfnewdatasetfolder, \
-    savefileorganization, uploadfileorganization, curatedataset2, previewfileorganization, deletePreviewFileOrganization
+    savefileorganization, uploadfileorganization, curatedataset, previewfileorganization, deletePreviewFileOrganization
 import sys
 import zerorpc
 from os.path import isdir, isfile
@@ -34,12 +34,12 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def apiCurateDataset2(self, pathdataset, createnewstatus, pathnewdataset,
+    def apiCurateDataset(self, pathdataset, createnewstatus, pathnewdataset,
         manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
         subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus,
         bfdirectlystatus, alreadyorganizedstatus, organizedatasetstatus, newdatasetname):
         try:
-            curatedataset2(pathdataset, createnewstatus, pathnewdataset,
+            curatedataset(pathdataset, createnewstatus, pathnewdataset,
                 manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
                 subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus,
                 bfdirectlystatus, alreadyorganizedstatus, organizedatasetstatus, newdatasetname)

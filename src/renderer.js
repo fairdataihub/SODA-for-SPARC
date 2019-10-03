@@ -78,8 +78,7 @@ var samplesstatus
 var pathsamples
 
 
-//const curateDatasetBtn = document.getElementById('curate-dataset')
-const curateDatasetBtn2 = document.getElementById('curate-dataset2')
+const curateDatasetBtn = document.getElementById('curate-dataset')
 let progressinfo = document.querySelector('#progressinfo')
 
 
@@ -314,20 +313,17 @@ deletePreviewBtn.addEventListener('click', () => {
 // Action when user click on Curate Dataset #2
 // // // // // // // // // //
 
-curateDatasetBtn2.addEventListener('click', () => {
+curateDatasetBtn.addEventListener('click', () => {
 
   // Disable curate button to prevent multiple clicks
   progressinfo.style.color = blackcolor
-  curateDatasetBtn2.disabled = true
+  curateDatasetBtn.disabled = true
   disableform(curationform)
 
   // Convert table content into json file for transferring to Python
   if (alreadyorganizedstatus.checked) {
-    console.log(alreadyorganizedstatus.checked)
-    console.log(pathdataset.innerHTML)
     if (fs.existsSync(pathdataset.innerHTML)) {
       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
-      console.log(jsonvect[0])
     } else {
       progressinfo.style.color = redcolor
       progressinfo.value = 'Error: Select a valid dataset folder'
@@ -336,7 +332,6 @@ curateDatasetBtn2.addEventListener('click', () => {
     }
   } else if (organizedatasetstatus.checked) {
     var jsonvect = tableToJsonWithDescription(tableNotOrganized)
-    console.log(jsonvect[0])
   } else {
   	progressinfo.style.color = redcolor
   	progressinfo.value = 'Error: Please select an option under "Organize dataset" '
@@ -397,13 +392,11 @@ curateDatasetBtn2.addEventListener('click', () => {
   // Initiate curation by calling python
   progressinfo.value = ''
   var completionstatus = 'Solving'
-  console.log(pathdataset.innherHTML)
   var pathdatasetvalue = String(pathdataset.innerHTML)
-  console.log(jsonpath)
-  
-  client.invoke("apiCurateDataset2", pathdatasetvalue, createnewstatus.checked, pathnewdataset.value,
+
+  client.invoke("apiCurateDataset", pathdatasetvalue, createnewstatus.checked, pathnewdataset.value,
     manifeststatus.checked, submissionstatus, pathsubmission,  descriptionstatus, pathdescription,
-    subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus.checked, 
+    subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus.checked,
     bfdirectlystatus.checked, alreadyorganizedstatus.checked, organizedatasetstatus.checked, newdatasetname.value,
     (error, res) => {
     if(error) {
@@ -434,7 +427,7 @@ curateDatasetBtn2.addEventListener('click', () => {
     console.log('Completion', completionstatus)
     if (completionstatus === 'Done'){
       clearInterval(timerprogress)
-      curateDatasetBtn2.disabled = false
+      curateDatasetBtn.disabled = false
       enableform(curationform)
     }
   }
@@ -675,8 +668,6 @@ function jsonToTableOrganized(table, jsonvar){
       var row = table.insertRow(rownum).outerHTML="<tr id='row-org"+table_len+"'><td id='name_row_org"+table_len+"'>"+ pathlist[i] +"</td> <td id='description_row_org"+table_len+"'>"+ "" +"</td> <td><input type='button' id='edit_button_org"+table_len+"' value='Edit' class='edit' onclick='edit_row_org("+table_len+")'> <input type='button' id='save_button_org"+table_len+"' value='Save' class='save' onclick='save_row_org("+table_len+")'></td></tr>";
     }
   }
-  console.log("table after")
-  console.log(table)
   return table
 }
 
@@ -722,8 +713,6 @@ function insertFileToTable(table, path){
     var rownum = rowcount + i + 1
     var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ path[i] +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
   }
-  console.log("table after")
-  console.log(table)
   return table
 }
 
@@ -761,8 +750,6 @@ function jsonToTable(table, jsonvar){
       var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ pathlist[i] +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
     }
   }
-  console.log("table after")
-  console.log(table)
   return table
 }
 
