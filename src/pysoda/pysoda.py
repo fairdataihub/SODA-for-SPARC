@@ -11,7 +11,6 @@ from shutil import copy2
 from blackfynn import Blackfynn
 from configparser import ConfigParser
 import threading
-from glob import glob
 import json
 from pandas.io.html import read_html
 import numpy as np
