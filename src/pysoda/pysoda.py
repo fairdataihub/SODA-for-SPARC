@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # python module for Software for Organizing Data Automatically (SODA)
-import os ## Since some functions are not available on all OS
+import os ## Some functions are not available on all OS
 import platform
 from os import listdir, stat, makedirs, mkdir
 from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname
@@ -746,7 +746,6 @@ def bfsubmitdataset(accountname, bfdataset, pathdataset):
         c += 1
 
     if not isdir(pathdataset):
-        #if not isdir(pathdataset):
         submitdatastatus = 'Done'
         error = error + 'Error: Please select a valid local dataset folder'
         c += 1

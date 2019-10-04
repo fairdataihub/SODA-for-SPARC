@@ -643,6 +643,9 @@ function organizedFolderToJson(pathdatasetval){
     var filepath = path.join(pathdatasetval, filename)
     if (fs.lstatSync(filepath).isDirectory()){
       var filesinfolder = fs.readdirSync(filepath)
+      console.log(filesinfolder)
+      filesinfolder = filesinfolder.filter(item => !(/(^|\/)\.[^\/\.]/g).test(item));
+      console.log(filesinfolder)
       var folderfiles = []
       for (var j = 0; j<filesinfolder.length; j++) {
         var filenameinfolder = filesinfolder[j]
@@ -650,7 +653,9 @@ function organizedFolderToJson(pathdatasetval){
       }
       jsonvar[filename] = folderfiles
     } else {
-      mainfolderfiles.push(filepath)
+      if(! /^\..*/.test(filename)) {
+        mainfolderfiles.push(filepath)
+      }
     }
   }
   jsonvar['main'] = mainfolderfiles
