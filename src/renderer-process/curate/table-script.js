@@ -7,7 +7,7 @@ function edit_row_org(no){
 	var description_data=description.innerHTML
 
 	description.innerHTML="<input type='text' id='description_text_org"+no+"' value='"+description_data+"'>"
- 
+
 }
 
 function save_row_org(no){
@@ -19,6 +19,10 @@ function save_row_org(no){
 	document.getElementById("save_button_org"+no).style.display="none"
 }
 
+function delete_row_org(no){
+ document.getElementById("row-org"+no+"").outerHTML="";
+}
+
 // Not Organized
 function edit_row(no){
 	document.getElementById("edit_button"+no).style.display="none"
@@ -28,7 +32,7 @@ function edit_row(no){
 	var description_data=description.innerHTML
 
 	description.innerHTML="<input type='text' id='description_text"+no+"' value='"+description_data+"'>"
- 
+
 }
 
 function save_row(no){

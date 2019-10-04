@@ -188,7 +188,10 @@ def deletePreviewFileOrganization():
     """
     userpath = expanduser("~")
     preview_path = join(userpath, "SODA")
-    shutil.rmtree(preview_path)
+    if isdir(preview_path):
+        shutil.rmtree(preview_path)
+    else:
+        raise Exception("Preview folder not present or already deleted !")
     return
 
 
