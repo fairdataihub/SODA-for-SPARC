@@ -231,8 +231,13 @@ selectSaveFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('save-file-dialog-saveorganization')
 })
 ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
-  var jsonformat = tableToJson(tableNotOrganized)
-  var jsonvect = tableToJsonWithDescription(tableNotOrganized)
+  if (alreadyorganizedstatus.checked == true){
+    var jsonformat = tableToJson(tableOrganized)
+    var jsonvect = tableToJsonWithDescription(tableOrganized)
+  } else {
+    var jsonformat = tableToJson(tableNotOrganized)
+    var jsonvect = tableToJsonWithDescription(tableNotOrganized)
+  }
   var jsonpath = jsonvect[0]
   var jsondescription = jsonvect[1]
   document.getElementById("save-file-organization-status").innerHTML = "";
@@ -854,4 +859,8 @@ function clearTable(table){
     }
   }
   return table
+}
+
+function saveTable(table){
+
 }

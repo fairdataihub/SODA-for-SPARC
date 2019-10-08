@@ -127,6 +127,8 @@ document.querySelector('#no-samples').addEventListener('click', () => {
 function showPreorganizedDataset(){
   document.getElementById('divPreorganizedDataset').style.display ='block';
   document.getElementById('divOrganizeDataset').style.display ='none';
+  document.getElementById('save-file-organization-status').innerHTML = '';
+  document.getElementById('divSaveTable').style.display ='block';
   document.getElementById('divClearTable').style.display ='block';
   document.getElementById('div-existing-dataset').style.display ='block';
 }
@@ -134,6 +136,8 @@ function showPreorganizedDataset(){
 function showOrganizeDataset(){
   document.getElementById('divPreorganizedDataset').style.display ='none';
   document.getElementById('divOrganizeDataset').style.display ='block';
+  document.getElementById('save-file-organization-status').innerHTML = '';
+  document.getElementById('divSaveTable').style.display ='block';
   document.getElementById('divClearTable').style.display ='block';
   document.getElementById('div-existing-dataset').style.display ='none';
 }
