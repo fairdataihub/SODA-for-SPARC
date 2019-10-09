@@ -860,7 +860,3 @@ function clearTable(table){
   }
   return table
 }
-
-function saveTable(table){
-
-}
