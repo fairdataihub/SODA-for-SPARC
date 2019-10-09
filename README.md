@@ -9,8 +9,13 @@ Software for Organizing Data Automatically (SODA) is a computer program intended
 
 SODA is distributed as an easy to install application for Windows, Mac and Linux platforms. The front-end (Graphical User Interface or GUI) of SODA is built with Electron, an open-source framework developed and maintained by GitHub that conveniently combines HTML, CSS, and Javascript, while the back-end is developed in Python (v3.6). SODA is distributed as an easy to install application for [Windows](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/ESz_2R4PCPJOiOJGSHPGsPABsRzz423tcCbCxCWiVKFW9Q?e=BUDuDg), [Mac](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EWMhxDuXFCZGksl5rgv9hMsBZvRZC4YEGDfqxF7wqyehiQ?e=m7jxv1) and [Linux](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EVMndexbB_9BroB6dk-f1TcBn_aQzPRKWHi8SDmzYBiwcQ?e=WE5UiS) platforms. All source codes and files are shared with an open source license (MIT) to permit user modification without restrictions.
 
-# Installation
+## Installation
 #### *Pre-requisites: [Anaconda 3](https://www.anaconda.com/distribution/), [Python 2](https://www.python.org/downloads/)*
+
+#### Download source code from the GitHub repository
+```bash
+git clone https://github.com/bvhpatel/SODA.git
+```
 
 ### Installing C++ development libraries - https://www.npmjs.com/package/node-gyp
 
@@ -35,11 +40,10 @@ SODA is distributed as an easy to install application for Windows, Mac and Linux
 *   `"./node_modules/.bin/"electron-rebuild .`
 *   `npm start`
 
-# Packaging
-1) Package Python code with Pyinstaller
+## Packaging
+#### Package Python code with Pyinstaller
 - open anaconda prompt and go to main folder of the code
-- run:<br>
-`python -m PyInstaller pysoda/api.py --distpath pysodadist`
+- `python -m PyInstaller pysoda/api.py --distpath pysodadist`
 
 Optional
 - Edit spec file as needed (e.g. exclude PyQt5, tkinter)
@@ -47,7 +51,7 @@ Optional
 - .exe is generated in the dist folder
 - for electron packaging, build and pysoda folder (with the .py files) could be deleted or ignored
 
-2) Package electron app
+#### Package electron app
 
 *If error run
 npm install electron-packager --save-dev
@@ -68,7 +72,7 @@ and try again*
 "./node_modules/.bin/"electron-packager . --overwrite --icon=assets/app-icon/png/soda_icon.png
 ```
 
-# Distribution (Creating an Installer)
+## Distribution (Creating an Installer)
 - Windows:<br>
 
 - MAC:<br>
@@ -79,7 +83,7 @@ Creating Debian Installer – https://github.com/electron-userland/electron-inst
 - Linux:<br>
 Creating DMG Installer - https://github.com/LinusU/node-appdmg<br>
 `$ npm install -g appdmg`<br>
-`$ appdmg path/to/spec.json path/to/output.dmg`<br>
+`$ appdmg path/to/spec.json path/to/output.dmg`<br><br>
 Specification of JSON file –
 ```json
 {
