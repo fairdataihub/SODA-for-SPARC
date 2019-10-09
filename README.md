@@ -12,10 +12,10 @@ SODA is distributed as an easy to install application for Windows, Mac and Linux
 # Installation
 #### *Pre-requisites: [Anaconda 3](https://www.anaconda.com/distribution/), [Python 2](https://www.python.org/downloads/)*
 
-### Installing C++ development libraries
+### Installing C++ development libraries - https://www.npmjs.com/package/node-gyp
 
 #### Mac
-*   Install vxcode
+*   Install [Xcode](https://developer.apple.com/xcode/download/)
 *   `brew install gcc`
 
 #### windows
@@ -23,19 +23,19 @@ SODA is distributed as an easy to install application for Windows, Mac and Linux
 *   In the installer, select “Desktop development with C++” and check “VC++ 2015.3 v14.00”
 
 #### Linux
-*   Install gcc compiler on Ubuntu (https://linuxize.com/post/how-to-install-gcc-compiler-on-ubuntu-18-04/)
+*   Install [GCC](https://linuxize.com/post/how-to-install-gcc-compiler-on-ubuntu-18-04/) compiler on Ubuntu
 
 ### Setting up the development environment
-*   Create conda environment from YAML file
+*   Create conda environment from YAML file - [Managing conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
 *   Activate the conda environment
 *   Delete node_modules and package-lock.json (if present)
-*   sudo npm install -g node-gyp
-*   npm config set python \path\to\python2.exe
-*   npm install
+*   `sudo npm install -g node-gyp`
+*   `npm config set python \path\to\python2.exe`
+*   `npm install`
 *   `"./node_modules/.bin/"electron-rebuild .`
-*   npm start
+*   `npm start`
 
-### Packaging Instructions
+# Packaging
 1) Package Python code with Pyinstaller
 - open anaconda prompt and go to main folder of the code
 - run:<br>
@@ -68,7 +68,7 @@ and try again*
 "./node_modules/.bin/"electron-packager . --overwrite --icon=assets/app-icon/png/soda_icon.png
 ```
 
-### Distribution Instructions (Creating an Installer)
+# Distribution (Creating an Installer)
 - Windows:<br>
 
 - MAC:<br>
@@ -80,7 +80,7 @@ Creating Debian Installer – https://github.com/electron-userland/electron-inst
 Creating DMG Installer - https://github.com/LinusU/node-appdmg<br>
 `$ npm install -g appdmg`<br>
 `$ appdmg path/to/spec.json path/to/output.dmg`<br>
-Specification of JSON file – 
+Specification of JSON file –
 ```json
 {
   "title": "SODA",
