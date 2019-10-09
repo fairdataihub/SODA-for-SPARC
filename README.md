@@ -10,28 +10,29 @@ Software for Organizing Data Automatically (SODA) is a computer program intended
 SODA is distributed as an easy to install application for Windows, Mac and Linux platforms. The front-end (Graphical User Interface or GUI) of SODA is built with Electron, an open-source framework developed and maintained by GitHub that conveniently combines HTML, CSS, and Javascript, while the back-end is developed in Python (v3.6). SODA is distributed as an easy to install application for [Windows](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/ESz_2R4PCPJOiOJGSHPGsPABsRzz423tcCbCxCWiVKFW9Q?e=BUDuDg), [Mac](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EWMhxDuXFCZGksl5rgv9hMsBZvRZC4YEGDfqxF7wqyehiQ?e=m7jxv1) and [Linux](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EVMndexbB_9BroB6dk-f1TcBn_aQzPRKWHi8SDmzYBiwcQ?e=WE5UiS) platforms. One can use the packaged software and follow the instructions given in [User Manual](docs/SODA_User_manual.pdf). All source codes and files are shared with an open source license (MIT) to permit user modification without restrictions.
 
 ## Installation
-#### *Pre-requisites: [Anaconda 3](https://www.anaconda.com/distribution/), [Python 2](https://www.python.org/downloads/)*
+#### *Pre-requisites: [Anaconda (Python 3 version)](https://www.anaconda.com/distribution/), [Python 2](https://www.python.org/downloads/)*
 
-#### Download source code from the GitHub repository
+### Download source code from the GitHub repository
 ```bash
 git clone https://github.com/bvhpatel/SODA.git
 ```
 
 ### Installing C++ development libraries - https://www.npmjs.com/package/node-gyp
 
-#### Mac
+#### *Mac*
 *   Install [Xcode](https://developer.apple.com/xcode/download/)
 *   `brew install gcc`
 
-#### windows
-*   Download visual studio 2017, run the executable file
+#### *Windows*
+*   Download [Visual Studio 2017](https://visualstudio.microsoft.com/pl/thank-you-downloading-visual-studio/?sku=Community), run the executable file
 *   In the installer, select “Desktop development with C++” and check “VC++ 2015.3 v14.00”
 
-#### Linux
+#### *Linux*
 *   Install [GCC](https://linuxize.com/post/how-to-install-gcc-compiler-on-ubuntu-18-04/) compiler on Ubuntu
 
 ### Setting up the development environment
-*   Create conda environment from YAML file - [Managing conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
+*   Create conda environment from YAML file - [Managing conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)<br>
+(If “pip returned an error”, then activate the half-completed conda environment and manually install libraries using --user argument in pip (eg.- “pip install zerorpc –user”)
 *   Activate the conda environment
 *   Delete node_modules and package-lock.json (if present)
 *   `sudo npm install -g node-gyp`
