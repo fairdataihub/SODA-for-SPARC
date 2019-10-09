@@ -54,13 +54,19 @@ npm install electron-packager --save-dev
 and try again*
 
 - Windows:<br>
-`"./node_modules/.bin/"electron-packager . --overwrite --icon=assets/app-icon/win/soda_icon.ico`
+```bash
+"./node_modules/.bin/"electron-packager . --overwrite --icon=assets/app-icon/win/soda_icon.ico
+```
 
 - MAC:<br>
-`"./node_modules/.bin/"electron-packager . --overwrite --icon=assets/app-icon/mac/soda_icon.icns`
+```bash
+"./node_modules/.bin/"electron-packager . --overwrite --icon=assets/app-icon/mac/soda_icon.icns
+```
 
 - Linux:<br>
-`"./node_modules/.bin/"electron-packager . --overwrite --icon=assets/app-icon/png/soda_icon.png`
+```bash
+"./node_modules/.bin/"electron-packager . --overwrite --icon=assets/app-icon/png/soda_icon.png
+```
 
 ### Distribution Instructions (Creating an Installer)
 - Windows:<br>
@@ -74,11 +80,11 @@ Creating Debian Installer – https://github.com/electron-userland/electron-inst
 Creating DMG Installer - https://github.com/LinusU/node-appdmg<br>
 `$ npm install -g appdmg`<br>
 `$ appdmg path/to/spec.json path/to/output.dmg`<br>
-Specification of JSON file – view the above link
+Specification of JSON file – 
 ```json
 {
   "title": "SODA",
-  "icon": "test-app.icns",
+  "icon": "/path/to/mac-icon.icns",
   "contents": [
     { "x": 448, "y": 344, "type": "link", "path": "/Applications" },
     { "x": 192, "y": 344, "type": "file", "path": "SODA.app" }
