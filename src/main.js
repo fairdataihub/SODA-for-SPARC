@@ -70,33 +70,29 @@ let mainWindow = null
 
 
 const createWindow = () => {
-  // set timeout to render the window not until the Angular
-  // compiler is ready to show the project
-  setTimeout(() => {
-    mainWindow = new BrowserWindow({
-      // width: 1080,
-      // height: 680,
-      minWidth: 1080,
-      minHeight: 680,
-      center: true,
-      icon: __dirname + '/assets/app-icon/png/soda_icon.png',
-      webPreferences: {
-        nodeIntegration: true
-      }
-    })
+  mainWindow = new BrowserWindow({
+    // width: 1080,
+    // height: 680,
+    minWidth: 1080,
+    minHeight: 680,
+    center: true,
+    icon: __dirname + '/assets/app-icon/png/soda_icon.png',
+    webPreferences: {
+      nodeIntegration: true
+    }
+  })
 
-    mainWindow.loadURL(require('url').format({
-      pathname: path.join(__dirname, 'index.html'),
-      protocol: 'file:',
-      slashes: true
-    }))
-    // mainWindow.webContents.openDevTools()
-    mainWindow.setMenu(null)
+  mainWindow.loadURL(require('url').format({
+    pathname: path.join(__dirname, 'index.html'),
+    protocol: 'file:',
+    slashes: true
+  }))
+  // mainWindow.webContents.openDevTools()
+  mainWindow.setMenu(null)
 
-    mainWindow.on('closed', () => {
-      mainWindow = null
-    })
-  }, 1000);
+  mainWindow.on('closed', () => {
+    mainWindow = null
+  })
 }
 
 app.on('ready', createWindow)

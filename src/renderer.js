@@ -720,13 +720,28 @@ function insertFileToTable(table, path){
   var i
   let SPARCfolder = document.querySelector('#SPARCfolderlist').value
   var rowcount = document.getElementById(SPARCfolder).rowIndex
+  var jsonvar = tableToJson(table)
+  var path_error = ''
+  var count = 0
   for (i = 0; i < path.length; i++) {
-    tableNotOrganizedcount = tableNotOrganizedcount + 1
-    var table_len=tableNotOrganizedcount
-    var rownum = rowcount + i + 1
-    var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ path[i] +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
+      console.log(JSON.stringify(jsonvar[SPARCfolder]))
+      console.log(path[i])
+      if (path[i] in jsonvar[SPARCfolder]) {
+        path_error = path_error + path[i] + "\n"
+        count += 1
+      }
   }
-  return table
+  if (count > 0) {
+    console.log(path_error)
+  } else {
+    for (i = 0; i < path.length; i++) {
+      tableNotOrganizedcount = tableNotOrganizedcount + 1
+      var table_len=tableNotOrganizedcount
+      var rownum = rowcount + i + 1
+      var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ path[i] +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
+    }
+    return table
+  }
 }
 
 function tableToJson(table){
