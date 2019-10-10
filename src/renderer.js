@@ -472,6 +472,12 @@ bfAddAccountBtn.addEventListener('click', () => {
 // Select bf account from dropdownlist and show existing dataset
 bfaccountlist.addEventListener('change', () => {
   refreshBfDatasetList()
+  var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
+  if (selectedbfaccount == 'Select') {
+    document.getElementById("select-account-status").innerHTML = "";
+  } else{
+    showAccountDetails()
+  }
 })
 
 
@@ -611,6 +617,16 @@ function refreshBfDatasetList(){
   }
 }
 
+function showAccountDetails(){
+  client.invoke("apiBfAccountDetails", bfaccountlist.options[bfaccountlist.selectedIndex].text, (error, res) => {
+    if(error) {
+      console.error(error)
+    } else {
+      document.getElementById("select-account-status").innerHTML = res;
+    }
+  })
+}
+
 // // // // // // // // // //
 // Functions: Organize dataset
 // // // // // // // // // //
@@ -721,18 +737,17 @@ function insertFileToTable(table, path){
   let SPARCfolder = document.querySelector('#SPARCfolderlist').value
   var rowcount = document.getElementById(SPARCfolder).rowIndex
   var jsonvar = tableToJson(table)
-  console.log(typeof jsonvar[SPARCfolder], jsonvar[SPARCfolder])
-  var path_error = ''
+  var emessage = ''
   var count = 0
   for (i = 0; i < path.length; i++) {
       if ( jsonvar[SPARCfolder].indexOf(path[i]) > -1 ) {
-        console.log('error', path[i])
-        path_error = path_error + path[i] + "\n"
+        emessage = emessage + path[i] + ' already exists in ' + SPARCfolder + "\n"
         count += 1
       }
   }
   if (count > 0) {
-    console.log(path_error)
+    console.log(emessage)
+    ipcRenderer.send('open-error-file-exist', emessage)
   } else {
     for (i = 0; i < path.length; i++) {
       tableNotOrganizedcount = tableNotOrganizedcount + 1
@@ -842,14 +857,28 @@ function tableToJsonWithDescription(table){
 function dropAddToTable(e, myID){
 	var rowcount = document.getElementById(myID).rowIndex
 	var i = 0
-	for (let f of e.dataTransfer.files) {
-        console.log('File(s) you dragged here: ', f.path, myID)
-        var rownum = rowcount + i + 1
-	    tableNotOrganizedcount = tableNotOrganizedcount + 1
-	    var table_len = tableNotOrganizedcount
-	    var row = tableNotOrganized.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ f.path +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
-     	i = i + 1
-    }
+  var jsonvar = tableToJson(tableNotOrganized)
+  var emessage = ''
+  var count = 0
+  for (let f of e.dataTransfer.files) {
+      if ( jsonvar[myID].indexOf(f.path) > -1 ) {
+        emessage = emessage + f.path + ' already exists in ' + myID + "\n"
+        count += 1
+      }
+  }
+  if (count > 0) {
+    console.log(emessage)
+    ipcRenderer.send('open-error-file-exist', emessage)
+  } else {
+  	for (let f of e.dataTransfer.files) {
+          console.log('File(s) you dragged here: ', f.path, myID)
+          var rownum = rowcount + i + 1
+  	    tableNotOrganizedcount = tableNotOrganizedcount + 1
+  	    var table_len = tableNotOrganizedcount
+  	    var row = tableNotOrganized.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ f.path +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
+       	i = i + 1
+      }
+  }
 }
 
 //Both

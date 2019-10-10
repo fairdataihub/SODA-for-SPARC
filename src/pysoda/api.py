@@ -1,5 +1,5 @@
 from __future__ import print_function
-from pysoda import copyfile, bfaddaccount, bfaccountlist, bfdatasetaccount, \
+from pysoda import copyfile, bfaddaccount, bfaccountlist, bfdatasetaccount, bfaccountdetails, \
     bfsubmitdataset, submitdatasetprogress, curatedatasetprogress, bfnewdatasetfolder, \
     savefileorganization, uploadfileorganization, curatedataset, previewfileorganization, deletePreviewFileOrganization
 import sys
@@ -69,6 +69,12 @@ class SodaApi(object):
     def apiBfDatasetAccount(self, accountname):
         try:
             return bfdatasetaccount(accountname)
+        except Exception as e:
+            raise e
+
+    def apiBfAccountDetails(self, accountname):
+        try:
+            return bfaccountdetails(accountname)
         except Exception as e:
             raise e
 

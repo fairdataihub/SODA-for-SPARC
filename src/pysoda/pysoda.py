@@ -673,6 +673,19 @@ def bfdatasetaccount(accountname):
     except Exception as e:
         raise e
 
+# Visualize existing dataset in the selected account
+def bfaccountdetails(accountname):
+    """
+    Returns list of datasets associated with the specified Account Name ('accountname')
+    """
+    try:
+        bf = Blackfynn(accountname)
+        acc_details = "User email: " + bf.profile.email + "<br>"
+        acc_details = acc_details + "Organization: " + bf.context.name
+        return acc_details
+    except Exception as e:
+        raise e
+
 
 # Add new empty dataset folder
 def bfnewdatasetfolder(datasetname, accountname):
