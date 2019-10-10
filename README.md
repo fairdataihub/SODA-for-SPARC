@@ -8,7 +8,7 @@ Software for Organizing Data Automatically (SODA) is a computer program intended
 *   Validate dataset with the same validator used by the Curation Team
 *   Upload organized dataset directly on Blackfynn to avoid duplicating files locally
 
-SODA is distributed as an easy to install application for Windows, Mac and Linux platforms. The front-end (Graphical User Interface or GUI) of SODA is built with [Electron](https://electronjs.org/), an open-source framework developed and maintained by GitHub that conveniently combines HTML, CSS, and Javascript, while the back-end is developed in Python (v3.6). All source codes and files are shared with an open source license (MIT) to permit user modification without restrictions.
+SODA is distributed as an easy to install application for Windows, Mac and Linux platforms. The front-end (Graphical User Interface or GUI) of SODA is built with [Electron](https://electronjs.org/), an open-source framework developed and maintained by GitHub that conveniently combines HTML, CSS, and Javascript, while the back-end is developed in Python (v3.6). All source codes and files are shared with an open source license ([MIT](LICENSE)) to permit user modification without restrictions.
 
 SODA is distributed as an easy to install application for:
 - [Windows](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/ESz_2R4PCPJOiOJGSHPGsPABsRzz423tcCbCxCWiVKFW9Q?e=BUDuDg) (Developed & tested on Windows 10)
