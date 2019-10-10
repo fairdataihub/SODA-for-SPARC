@@ -721,12 +721,12 @@ function insertFileToTable(table, path){
   let SPARCfolder = document.querySelector('#SPARCfolderlist').value
   var rowcount = document.getElementById(SPARCfolder).rowIndex
   var jsonvar = tableToJson(table)
+  console.log(typeof jsonvar[SPARCfolder], jsonvar[SPARCfolder])
   var path_error = ''
   var count = 0
   for (i = 0; i < path.length; i++) {
-      console.log(JSON.stringify(jsonvar[SPARCfolder]))
-      console.log(path[i])
-      if (path[i] in jsonvar[SPARCfolder]) {
+      if ( jsonvar[SPARCfolder].indexOf(path[i]) > -1 ) {
+        console.log('error', path[i])
         path_error = path_error + path[i] + "\n"
         count += 1
       }
