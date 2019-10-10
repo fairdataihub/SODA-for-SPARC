@@ -1,5 +1,5 @@
 # SODA
-![](<img src="/src/assets/app-icon/png/soda_icon.png" width="200">)
+# <img src="/src/assets/app-icon/png/soda_icon.png" width="60px" align="center" alt="SODA icon"> SODA
 
 Software for Organizing Data Automatically (SODA) is a computer program intended to facilitate the data organization process through interactive tools and automation. If at any point during your data organization process you think: "Ah, if only this step could be simplified", it actually could be with SODA! Especially, SODA would allow user to:
 
