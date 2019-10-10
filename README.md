@@ -26,7 +26,7 @@ Either download the zip folder from the GitHub repository
 git clone https://github.com/bvhpatel/SODA.git
 ```
 
-### Installing C++ development libraries *   https://www.npmjs.com/package/node-gyp
+### Installing C++ development libraries - https://www.npmjs.com/package/node-gyp
 
 #### *Windows*
 *   Download [Visual Studio 2017](https://visualstudio.microsoft.com/pl/thank-you-downloading-visual-studio/?sku=Community), run the executable file
@@ -36,13 +36,13 @@ git clone https://github.com/bvhpatel/SODA.git
 *   Install [Xcode](https://developer.apple.com/xcode/download/)
 *   Run `brew install gcc`
 
-*Refer here for installing brew if your MAC doesn't already have it - https://docs.brew.sh/Installation*
+*Refer here for installing 'brew' if your Mac doesn't already have it - https://docs.brew.sh/Installation*
 
 #### *Linux*
 *   Install [GCC](https://linuxize.com/post/how-to-install-gcc-compiler-on-ubuntu-18-04/) on Ubuntu
 
 ### Setting up the development environment
-*   Create conda environment from YAML file *   [Managing conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)<br>
+*   Create conda environment from YAML file - [Managing conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)<br>
 (If “pip returned an error”, then activate the half-completed conda environment and manually install libraries using --user argument in pip (eg.*   “pip install zerorpc –user”)
 *   Activate the conda environment (If you're on Windows, use 'Anaconda Prompt') and navigate to the 'src' folder
 *   Delete 'node_modules' folder and package-lock.json (if present)
@@ -57,7 +57,7 @@ $ npm start
 *   This should launch the application. You can now edit the code files in 'src' folder and run `npm start` to see / test your changes
 
 ## Packaging
-#### Package Python code with [Pyinstaller](https://www.pyinstaller.org/)
+#### Package Python code with [PyInstaller](https://www.pyinstaller.org/)
 *   Run anaconda prompt, activate the conda environment (if you haven't done that already) and go to 'src' folder
 *   Run `python -m PyInstaller pysoda/api.py --distpath pysodadist`
 
@@ -91,10 +91,10 @@ and try again*
 The previous packaging step would generate folder for the program which contains an executable to run the application. If you desire to generate installers, we suggest the following method:
 *   Windows:<br>
 Download [Inno Setup](http://www.jrsoftware.org/isdl.php)<br>
-Open Inno Setup and create Installer from the UI. If you're having troubles, refer to this video tutorial *   https://www.youtube.com/watch?v=wW3NUAUZhnY
+Open Inno Setup and create Installer from the UI. If you're having troubles, refer to this video tutorial - https://www.youtube.com/watch?v=wW3NUAUZhnY
 
 *   MAC:<br>
-Creating DMG Installer *   https://github.com/LinusU/node-appdmg<br>
+Creating DMG Installer - https://github.com/LinusU/node-appdmg<br>
 `$ npm install -g appdmg`<br>
 `$ appdmg path/to/spec.json path/to/output.dmg`<br>
 *   Linux:<br>
