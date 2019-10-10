@@ -34,10 +34,10 @@ git clone https://github.com/bvhpatel/SODA.git
 
 #### *Mac*
 *   Install [Xcode](https://developer.apple.com/xcode/download/)
-*   `brew install gcc`
+*   Run `brew install gcc`
 
-#### *Ubuntu*
-*   Install [GCC](https://linuxize.com/post/how-to-install-gcc-compiler-on-ubuntu-18-04/)
+#### *Linux*
+*   Install [GCC](https://linuxize.com/post/how-to-install-gcc-compiler-on-ubuntu-18-04/) on Ubuntu
 
 ### Setting up the development environment
 *   Create conda environment from YAML file *   [Managing conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)<br>
@@ -55,14 +55,13 @@ $ npm start
 *   This should launch the application. You can now edit the code files in 'src' folder and run `npm start` to see / test your changes
 
 ## Packaging
-#### Package Python code with Pyinstaller
+#### Package Python code with [Pyinstaller](https://www.pyinstaller.org/)
 *   Run anaconda prompt, activate the conda environment (if you haven't done that already) and go to 'src' folder
 *   Run `python -m PyInstaller pysoda/api.py --distpath pysodadist`
 
 Optional
 *   Edit spec file as needed (e.g. exclude PyQt5, tkinter)
 *   Generate exe : `python -m PyInstaller --noconsole api.spec`
-*   .exe is generated in the dist folder
 *   for electron packaging, build and pysoda folder (with the .py files) could be deleted or ignored
 
 #### Package electron app
@@ -87,20 +86,19 @@ npm install electron-packager --save-dev
 and try again*
 
 ## Distribution (Creating an Installer)
-The previous packaging step would generate folder for the program. If you desire to generate installers, we suggest the following method:
+The previous packaging step would generate folder for the program which contains an executable to run the application. If you desire to generate installers, we suggest the following method:
 *   Windows:<br>
 Download [Inno Setup](http://www.jrsoftware.org/isdl.php)<br>
 Open Inno Setup and create Installer from the UI. If you're having troubles, refer to this video tutorial *   https://www.youtube.com/watch?v=wW3NUAUZhnY
 
 *   MAC:<br>
+Creating DMG Installer *   https://github.com/LinusU/node-appdmg<br>
+`$ npm install -g appdmg`<br>
+`$ appdmg path/to/spec.json path/to/output.dmg`<br>
+*   Linux:<br>
 Creating Debian Installer – https://github.com/electron-userland/electron-installer-debian<br>
 `$ npm install -g electron-installer-debian`<br>
 `$ electron-installer-debian --src path/to/SODA-linux-x64/ --dest installers/ --arch amd64`<br>
-
-*   Linux:<br>
-Creating DMG Installer *   https://github.com/LinusU/node-appdmg<br>
-`$ npm install -g appdmg`<br>
-`$ appdmg path/to/spec.json path/to/output.dmg`<br><br>
 Specification of JSON file –
 ```json
 {
