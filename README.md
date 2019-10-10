@@ -35,6 +35,7 @@ git clone https://github.com/bvhpatel/SODA.git
 #### *Mac*
 *   Install [Xcode](https://developer.apple.com/xcode/download/)
 *   Run `brew install gcc`
+
 *Refer here for installing brew if your MAC doesn't already have it - https://docs.brew.sh/Installation*
 
 #### *Linux*
