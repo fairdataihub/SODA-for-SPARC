@@ -13,7 +13,7 @@ SODA is distributed as an easy to install application for Windows, Mac and Linux
 SODA is distributed as an easy to install application for:
 *   [Windows](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/ESz_2R4PCPJOiOJGSHPGsPABsRzz423tcCbCxCWiVKFW9Q?e=BUDuDg) (Developed & tested on Windows 10)
 *   [Mac](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EWMhxDuXFCZGksl5rgv9hMsBZvRZC4YEGDfqxF7wqyehiQ?e=m7jxv1) (Developed & tested on Mac OS High Sierra and Mojave)
-*   [Linux](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EVMndexbB_9BroB6dk-f1TcBn_aQzPRKWHi8SDmzYBiwcQ?e=WE5UiS) (Developed & tested on Ubuntu and RedHat)<br>
+*   [Linux](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EVMndexbB_9BroB6dk-f1TcBn_aQzPRKWHi8SDmzYBiwcQ?e=WE5UiS) (Developed & tested on Ubuntu)<br>
 Please follow the instructions given in [User Manual](docs/SODA_User_manual.pdf) to download, install and use SODA. The software should ideally also work on older version of OS but no testing has been done on those platforms.
 
 ## Using the Source Code
@@ -35,6 +35,7 @@ git clone https://github.com/bvhpatel/SODA.git
 #### *Mac*
 *   Install [Xcode](https://developer.apple.com/xcode/download/)
 *   Run `brew install gcc`
+*Refer here for installing brew if your MAC doesn't already have it - https://docs.brew.sh/Installation*
 
 #### *Linux*
 *   Install [GCC](https://linuxize.com/post/how-to-install-gcc-compiler-on-ubuntu-18-04/) on Ubuntu
