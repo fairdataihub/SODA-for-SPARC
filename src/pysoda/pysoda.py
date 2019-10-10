@@ -751,19 +751,19 @@ def bfsubmitdataset(accountname, bfdataset, pathdataset):
         bf = Blackfynn(accountname)
     except Exception as e:
         submitdatastatus = 'Done'
-        error = error + 'Error: Please select a valid Blackfynn account'
+        error = error + 'Error: Please select a valid Blackfynn account' + '\n'
         c += 1
 
     try:
         myds = bf.get_dataset(bfdataset)
     except Exception as e:
         submitdatastatus = 'Done'
-        error = error + 'Error: Please select a valid Blackfynn dataset'
+        error = error + 'Error: Please select a valid Blackfynn dataset' + '\n'
         c += 1
 
     if not isdir(pathdataset):
         submitdatastatus = 'Done'
-        error = error + 'Error: Please select a valid local dataset folder'
+        error = error + 'Error: Please select a valid local dataset folder' + '\n'
         c += 1
     if c>0:
         raise Exception(error)

@@ -1,6 +1,6 @@
 # <img src="/src/assets/app-icon/png/soda_icon.png" width="60px" align="center" alt="SODA icon"> SODA
 
-Software for Organizing Data Automatically (SODA) is a computer program intended to facilitate the data organization process through interactive tools and automation. If at any point during your data organization process you think: "Ah, if only this step could be simplified", it actually could be with SODA! Especially, SODA would allow user to:
+Software for Organizing Data Automatically (SODA) is a computer program intended to facilitate the data organization process for [SPARC](https://commonfund.nih.gov/sparc) investigators through interactive tools and automation. If at any point during your data organization process you think: "Ah, if only this step could be simplified", it actually could be with SODA! Especially, SODA would allow users to:
 
 *   Conveniently organize datasets following the SPARC folder structure
 *   Convert file format to SPARC defined standards
@@ -8,12 +8,20 @@ Software for Organizing Data Automatically (SODA) is a computer program intended
 *   Validate dataset with the same validator used by the Curation Team
 *   Upload organized dataset directly on Blackfynn to avoid duplicating files locally
 
-SODA is distributed as an easy to install application for Windows, Mac and Linux platforms. The front-end (Graphical User Interface or GUI) of SODA is built with Electron, an open-source framework developed and maintained by GitHub that conveniently combines HTML, CSS, and Javascript, while the back-end is developed in Python (v3.6). SODA is distributed as an easy to install application for [Windows](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/ESz_2R4PCPJOiOJGSHPGsPABsRzz423tcCbCxCWiVKFW9Q?e=BUDuDg), [Mac](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EWMhxDuXFCZGksl5rgv9hMsBZvRZC4YEGDfqxF7wqyehiQ?e=m7jxv1) and [Linux](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EVMndexbB_9BroB6dk-f1TcBn_aQzPRKWHi8SDmzYBiwcQ?e=WE5UiS) platforms. One can use the packaged software and follow the instructions given in [User Manual](docs/SODA_User_manual.pdf). All source codes and files are shared with an open source license (MIT) to permit user modification without restrictions.
+SODA is distributed as an easy to install application for Windows, Mac and Linux platforms. The front-end (Graphical User Interface or GUI) of SODA is built with [Electron](https://electronjs.org/), an open-source framework developed and maintained by GitHub that conveniently combines HTML, CSS, and Javascript, while the back-end is developed in Python (v3.6). All source codes and files are shared with an open source license (MIT) to permit user modification without restrictions.
 
-## Using the source code
+SODA is distributed as an easy to install application for:
+- [Windows](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/ESz_2R4PCPJOiOJGSHPGsPABsRzz423tcCbCxCWiVKFW9Q?e=BUDuDg) (Developed & tested on Windows 10)
+- [Mac](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EWMhxDuXFCZGksl5rgv9hMsBZvRZC4YEGDfqxF7wqyehiQ?e=m7jxv1) (Developed & tested on Mac OS High Sierra and Mojave)
+- [Linux](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EVMndexbB_9BroB6dk-f1TcBn_aQzPRKWHi8SDmzYBiwcQ?e=WE5UiS) (Developed & tested on Ubuntu and RedHat)<br>
+Please follow the instructions given in [User Manual](docs/SODA_User_manual.pdf) to download, install and use SODA. The software should ideally also work on older version of OS but no testing has been done on those platforms.
+
+## Using the Source Code
+If you want to modify SODA to suit your needs better or compile it for an OS not mentioned above, please follow the instructions below
 #### *Pre-requisites: [Anaconda (Python 3 version)](https://www.anaconda.com/distribution/), [Python 2](https://www.python.org/downloads/)*
 
 ### Download source code from the GitHub repository
+Either download the zip folder from the GitHub repository
 ```bash
 git clone https://github.com/bvhpatel/SODA.git
 ```

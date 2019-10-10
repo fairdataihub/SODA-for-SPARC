@@ -335,6 +335,8 @@ curateDatasetBtn.addEventListener('click', () => {
     } else {
       progressinfo.style.color = redcolor
       progressinfo.value = 'Error: Select a valid dataset folder'
+      curateDatasetBtn.disabled = false
+      enableform(curationform)
       console.error('Error')
       return
     }
@@ -343,6 +345,8 @@ curateDatasetBtn.addEventListener('click', () => {
   } else {
   	progressinfo.style.color = redcolor
   	progressinfo.value = 'Error: Please select an option under "Organize dataset" '
+    curateDatasetBtn.disabled = false
+    enableform(curationform)
   	return
   }
   var jsonpath = jsonvect[0]
