@@ -1,0 +1,17 @@
+name: env-electron-python
+channels:
+- defaults
+- conda-forge
+dependencies:
+- python = 3.6
+- PyInstaller 
+- nodejs
+- libgcc
+- git
+- openpyxl
+- pandas
+- pip
+- pip:
+  - zerorpc
+  - blackfynn
+  - configparser
