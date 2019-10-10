@@ -46,11 +46,11 @@ git clone https://github.com/bvhpatel/SODA.git
 *   Delete 'node_modules' folder and package-lock.json (if present)
 *   Run following commands:
 ```bash
-sudo npm install -g node-gyp
-npm config set python \path\to\python2.exe
-npm install
-"./node_modules/.bin/"electron-rebuild .
-npm start
+$ sudo npm install -g node-gyp
+$ npm config set python \path\to\python2.exe
+$ npm install
+$ "./node_modules/.bin/"electron-rebuild .
+$ npm start
 ```
 *   This should launch the application. You can now edit the code files in 'src' folder and run `npm start` to see / test your changes
 
