@@ -70,6 +70,7 @@ let mainWindow = null
 
 
 const createWindow = () => {
+  // setTimeout(() => {
   mainWindow = new BrowserWindow({
     // width: 1080
     // height: 680,
@@ -93,6 +94,7 @@ const createWindow = () => {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
+  // }, 1000);
 }
 
 app.on('ready', createWindow)
