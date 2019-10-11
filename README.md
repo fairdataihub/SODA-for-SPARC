@@ -23,7 +23,7 @@ If you want to modify SODA to suit your needs better or compile it for an OS not
 #### *Pre-requisites: [Anaconda (Python 3 version)](https://www.anaconda.com/distribution/), [Python 2](https://www.python.org/downloads/)*
 
 ### Download source code from the GitHub repository
-Either download the zip folder from the GitHub repository
+Either download the zip folder from the GitHub repository or run the following command from your bash shell
 ```bash
 git clone https://github.com/bvhpatel/SODA.git
 ```
