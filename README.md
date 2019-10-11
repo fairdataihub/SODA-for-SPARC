@@ -100,11 +100,7 @@ Open Inno Setup and create Installer from the UI. If you're having troubles, ref
 Creating DMG Installer – https://github.com/LinusU/node-appdmg<br>
 `$ npm install -g appdmg`<br>
 `$ appdmg path/to/spec.json path/to/output.dmg`<br>
-*   Linux:<br>
-Creating Debian Installer – https://github.com/electron-userland/electron-installer-debian<br>
-`$ npm install -g electron-installer-debian`<br>
-`$ electron-installer-debian --src path/to/SODA-linux-x64/ --dest installers/ --arch amd64`<br>
-Specification of JSON file –
+Specification of JSON file (spec.json) –
 ```json
 {
   "title": "SODA",
@@ -115,3 +111,8 @@ Specification of JSON file –
   ]
 }
 ```
+
+*   Linux:<br>
+Creating Debian Installer – https://github.com/electron-userland/electron-installer-debian<br>
+`$ npm install -g electron-installer-debian`<br>
+`$ electron-installer-debian --src path/to/SODA-linux-x64/ --dest installers/ --arch amd64`<br>

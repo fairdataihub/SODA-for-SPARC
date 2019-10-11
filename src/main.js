@@ -72,10 +72,10 @@ let mainWindow = null
 const createWindow = () => {
   // setTimeout(() => {
   mainWindow = new BrowserWindow({
-    // width: 1080
-    // height: 680,
-    minWidth: 1080,
-    minHeight: 680,
+    width: 1080,
+    height: 680,
+    // minWidth: 1080,
+    // minHeight: 680,
     center: true,
     icon: __dirname + '/assets/app-icon/png/soda_icon.png',
     webPreferences: {
