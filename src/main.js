@@ -70,12 +70,12 @@ let mainWindow = null
 
 
 const createWindow = () => {
-  // setTimeout(() => {
+  setTimeout(() => {
   mainWindow = new BrowserWindow({
-    width: 1080,
-    height: 680,
-    // minWidth: 1080,
-    // minHeight: 680,
+    // width: 1080,
+    // height: 680,
+    minWidth: 1080,
+    minHeight: 680,
     center: true,
     icon: __dirname + '/assets/app-icon/png/soda_icon.png',
     webPreferences: {
@@ -94,7 +94,7 @@ const createWindow = () => {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-  // }, 1000);
+  }, 1000);
 }
 
 app.on('ready', createWindow)

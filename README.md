@@ -45,7 +45,7 @@ git clone https://github.com/bvhpatel/SODA.git
 
 ### Setting up the development environment
 *   Create conda environment from YAML file – [Managing conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)<br>
-(If “pip returned an error”, then activate the half-completed conda environment and manually install libraries using --user argument in pip (eg.*   “pip install zerorpc –user”)
+(If “pip returned an error”, then activate the half-completed conda environment and manually install libraries using --user argument in pip (eg.- “pip install zerorpc –user”)
 *   Activate the conda environment (If you're on Windows, use 'Anaconda Prompt') and navigate to the 'src' folder
 *   Delete 'node_modules' folder and package-lock.json (if present)
 *   Run the following commands:
@@ -105,6 +105,7 @@ Specification of JSON file (spec.json) –
 {
   "title": "SODA",
   "icon": "/path/to/mac-icon.icns",
+  "background-color": "#DFDFDF",
   "contents": [
     { "x": 448, "y": 344, "type": "link", "path": "/Applications" },
     { "x": 192, "y": 344, "type": "file", "path": "SODA.app" }
