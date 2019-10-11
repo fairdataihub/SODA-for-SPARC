@@ -36,19 +36,19 @@ git clone https://github.com/bvhpatel/SODA.git
 
 #### *Mac*
 *   Install [Xcode](https://developer.apple.com/xcode/download/)
-*   Run `brew install gcc`
+*   Run: `brew install gcc`
 
 *Refer here for installing 'brew' if your Mac doesn't already have it – https://docs.brew.sh/Installation*
 
 #### *Linux*
-*   Install [GCC](https://linuxize.com/post/how-to-install-gcc-compiler-on-ubuntu-18-04/) on Ubuntu
+*   [Install GCC](https://linuxize.com/post/how-to-install-gcc-compiler-on-ubuntu-18-04/) on Ubuntu
 
 ### Setting up the development environment
 *   Create conda environment from YAML file – [Managing conda environment](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)<br>
 (If “pip returned an error”, then activate the half-completed conda environment and manually install libraries using --user argument in pip (eg.*   “pip install zerorpc –user”)
 *   Activate the conda environment (If you're on Windows, use 'Anaconda Prompt') and navigate to the 'src' folder
 *   Delete 'node_modules' folder and package-lock.json (if present)
-*   Run following commands:
+*   Run the following commands:
 ```bash
 $ sudo npm install -g node-gyp
 $ npm config set python \path\to\python2.exe
@@ -60,12 +60,13 @@ $ npm start
 
 ## Packaging
 #### Package Python code with [PyInstaller](https://www.pyinstaller.org/)
-*   Run anaconda prompt, activate the conda environment (if you haven't done that already) and go to 'src' folder
-*   Run `python -m PyInstaller pysoda/api.py --distpath pysodadist`
+*   Run anaconda prompt, activate the conda environment (if you haven't done that already)
+*   Navigate to 'src' folder
+*   Run: `python -m PyInstaller pysoda/api.py --distpath pysodadist`
 
 Optional
 *   Edit spec file as needed (e.g. exclude PyQt5, tkinter)
-*   Generate exe : `python -m PyInstaller --noconsole api.spec`
+*   To generate exe, Run: `python -m PyInstaller --noconsole api.spec`
 *   for electron packaging, build and pysoda folder (with the .py files) could be deleted or ignored
 
 #### Package electron app
