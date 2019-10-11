@@ -94,7 +94,7 @@ const createWindow = () => {
   mainWindow.on('closed', () => {
     mainWindow = null
   })
-  }, 1000);
+}, 5000);
 }
 
 app.on('ready', createWindow)
