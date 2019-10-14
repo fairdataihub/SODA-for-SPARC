@@ -664,11 +664,12 @@ def bfdatasetaccount(accountname):
     Returns list of datasets associated with the specified Account Name ('accountname')
     """
     try:
+        dataset_list = []
         bf = Blackfynn(accountname)
-        dataset_list = ['Select dataset']
         for ds in bf.datasets():
             dataset_list.append(ds.name)
-        dataset_list.sort() # Returning the list of datasets in alphabetical order
+        dataset_list.sort(key=lambda v: v.upper()) # Returning the list of datasets in alphabetical order
+        dataset_list.insert(0, ['Select dataset'])
         return dataset_list
     except Exception as e:
         raise e
