@@ -101,6 +101,13 @@ const bfSubmitDatasetBtn = document.getElementById('submit-dataset')
 let bfsubmitdatasetinfo = document.querySelector('#progresssubmit')
 let pathsubmitdataset = document.querySelector('#selected-submit-dataset')
 
+let bfDatasetlistPermission = document.querySelector('#bfdatasetlist_permission')
+let currentDatasetPermission = document.querySelector('#dataset_permission_current')
+let bfListUsers = document.querySelector('#bf_list_users')
+let bfListRoles = document.querySelector('#bf_list_roles')
+const bfAddPermissionBtn = document.getElementById('add_permission')
+let datasetPermissionStatus = document.querySelector('#dataset_permission_status')
+
 //////////////////////////////////
 // Constant parameters
 //////////////////////////////////
@@ -318,7 +325,7 @@ deletePreviewBtn.addEventListener('click', () => {
 })
 
 // // // // // // // // // //
-// Action when user click on Curate Dataset #2
+// Action when user click on Curate Dataset
 // // // // // // // // // //
 
 curateDatasetBtn.addEventListener('click', () => {
@@ -448,7 +455,6 @@ curateDatasetBtn.addEventListener('click', () => {
 })
 
 
-
 // // // // // // // // // //
 // // // // // // // // // //
 
@@ -475,19 +481,18 @@ bfAddAccountBtn.addEventListener('click', () => {
 
 // Select bf account from dropdownlist and show existing dataset
 bfaccountlist.addEventListener('change', () => {
-  refreshBfDatasetList()
-  var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
-  if (selectedbfaccount == 'Select') {
-    document.getElementById("select-account-status").innerHTML = "";
-  } else{
-    showAccountDetails()
-  }
+  refreshBfDatasetList(bfdatasetlist)
+  refreshBfDatasetList(bfDatasetlistPermission)
+  currentDatasetPermission.innerHTML = ''
+  refreshBfUsersList(bfListUsers)
 })
 
 
 // Refresh list of bf dataset list (in case user create it online)
 bfRefreshDatasetBtn.addEventListener('click', () => {
-  refreshBfDatasetList()
+  refreshBfDatasetList(bfdatasetlist)
+  refreshBfDatasetList(bfDatasetlistPermission)
+  currentDatasetPermission.innerHTML = ''
   console.log("refreshed")
 })
 
@@ -498,7 +503,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
   bfcreatenewdatasetinfo.value = 'Adding'
   var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
   client.invoke("apiBfNewDatasetFolder", bfnewdatasetname.value, selectedbfaccount, (error, res) => {
-    if(error) {
+    if (error) {
       console.log('ERROR')
       var emessage = userError(error)
       bfcreatenewdatasetinfo.style.color = redcolor
@@ -506,7 +511,9 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
       bfCreateNewDatasetBtn.disabled = false
     } else {
         bfcreatenewdatasetinfo.value = 'Success: created folder' + ' ' + bfnewdatasetname.value
-        refreshBfDatasetList()
+        refreshBfDatasetList(bfdatasetlist)
+        refreshBfDatasetList(bfDatasetlistPermission)
+        currentDatasetPermission.innerHTML = ''
         bfCreateNewDatasetBtn.disabled = false
     }
   })
@@ -522,7 +529,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
   var selectedbfdataset = bfdatasetlist.options[bfdatasetlist.selectedIndex].text
   client.invoke("apiBfSubmitDataset", selectedbfaccount, selectedbfdataset, pathsubmitdataset.value, (error, res) => {
-    if(error) {
+    if (error) {
       console.log('ERROR')
       var emessage = userError(error)
       bfsubmitdatasetinfo.style.color = redcolor
@@ -553,7 +560,45 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
 })
 
 
-// Functions
+/**
+ * This event tracks change of the selected dataset in the dropdown list
+ * under the "Manage dataset permission" feature
+ */
+bfDatasetlistPermission.addEventListener('change', () => {
+  showCurrentPermission()
+})
+
+
+/**
+ * This event listener add permission to the selected dataset
+ * when user clicks on the "Add permission"  button
+ */
+bfAddPermissionBtn.addEventListener('click', () => {
+  datasetPermissionStatus.innerHTML = ''
+  var selectedBfAccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
+  var selectedBfDataset = bfDatasetlistPermission.options[bfdatasetlist_permission.selectedIndex].text
+  var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text
+  var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text
+  
+  client.invoke("api_bf_add_permission", selectedBfAccount, selectedBfDataset, selectedUser, selectedRole,
+    (error, res) => {
+    if(error) {
+      console.log(error)
+      var emessage = userError(error)
+      datasetPermissionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+    } else {
+      console.log('Done', res)
+      datasetPermissionStatus.innerHTML = res
+      showCurrentPermission()
+    }
+  })
+})
+
+
+// // // // // // // // // //
+// Functions: Organize dataset
+// // // // // // // // // //
+
 function userError(error)
 {
   var myerror = error.message
@@ -597,13 +642,13 @@ function enableform(formId) {
      f[i].disabled=false
 }
 
-function refreshBfDatasetList(){
-  removeOptions(bfdatasetlist)
+function refreshBfDatasetList(bfdstlist){
+  removeOptions(bfdstlist)
   var accountselected = bfaccountlist.options[bfaccountlist.selectedIndex].text
   if (accountselected === "Select"){
     var optionselect = document.createElement("option")
     optionselect.textContent = 'Select dataset'
-    bfdatasetlist.appendChild(optionselect)
+    bfdstlist.appendChild(optionselect)
   } else {
     client.invoke("apiBfDatasetAccount", bfaccountlist.options[bfaccountlist.selectedIndex].text, (error, res) => {
       if(error) {
@@ -614,8 +659,58 @@ function refreshBfDatasetList(){
           var option = document.createElement("option")
           option.textContent = myitemselect
           option.value = myitemselect
-          bfdatasetlist.appendChild(option)
+          bfdstlist.appendChild(option)
         }
+      }
+    })
+  }
+}
+
+/**
+ * refreshBfUsersList is a function that refreshes the dropdown list
+ * with names of users when an Blackfynn account is selected
+ */
+function refreshBfUsersList(UsersList){
+  removeOptions(UsersList)
+  var accountSelected = bfaccountlist.options[bfaccountlist.selectedIndex].text
+  var optionUser = document.createElement("option")
+  optionUser.textContent = 'Select user'
+  UsersList.appendChild(optionUser)
+  if (accountSelected !== "Select") {
+    client.invoke("api_bf_get_users", bfaccountlist.options[bfaccountlist.selectedIndex].text, (error, res) => {
+      if (error){
+        console.error(error)
+      } else{
+        for ( var myItem in res){
+          var myUser = res[myItem]
+          var optionUser = document.createElement("option")
+          optionUser.textContent = myUser
+          optionUser.value = myUser
+          UsersList.appendChild(optionUser)
+        }
+      }
+    })
+  }
+}
+
+function showCurrentPermission(){
+  currentDatasetPermission.innerHTML = ''
+  var selectedBfAccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
+  var selectedBfDataset = bfDatasetlistPermission.options[bfdatasetlist_permission.selectedIndex].text
+  if (selectedBfDataset === 'Select dataset'){
+    currentDatasetPermission.innerHTML = ''
+  } else {
+    client.invoke("api_bf_get_permission", selectedBfAccount, selectedBfDataset,
+    (error, res) => {
+      if(error) {
+        console.log(error)
+      } else {
+        console.log('Done', res)
+        var permissionList = ''
+        for (var i in res){
+          permissionList = permissionList + res[i] + '<br>'
+        }
+        currentDatasetPermission.innerHTML = permissionList
       }
     })
   }

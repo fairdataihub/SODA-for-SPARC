@@ -827,5 +827,134 @@ def submitdatasetprogress():
     global submitprintstatus
     return (submitdataprogress, submitdatastatus, submitprintstatus)
 
-
 # Share dataset with Curation Team
+def bf_get_users(selected_bfaccount):
+    """
+    Function to get list of users belonging to the organization of 
+    the given Blackfynn account
+
+    Input:
+      selected_bfaccount (string): name of selected Blackfynn acccount  
+    Output:
+        list_users : list of users (first name -- last name) associated with the organization of the
+        selected Blackfynn account
+    """
+    try:
+        bf = Blackfynn(selected_bfaccount)
+        organization_name = bf.context.name
+        organization_id = bf.context.id
+        list_users = bf._api._get('/organizations/' + str(organization_id) + '/members')
+        list_users_first_last = []
+        for i in range(len(list_users)):
+                first_last = list_users[i]['firstName'] + ' ' + list_users[i]['lastName']
+                list_users_first_last.append(first_last)
+        list_users_first_last.sort() # Returning the list of users in alphabetical order
+        return list_users_first_last
+    except Exception as e:
+        raise e
+
+def bf_get_permission(selected_bfaccount, selected_bfdataset):
+    
+    """
+    Function to get permission for a selected dataset 
+
+    Input:
+        selected_bfaccount (string): name of selected Blackfynn acccount  
+        selected_bfdataset (string): name of selected Blackfynn dataset
+    Output:
+        list_permission (list): list of permission (first name -- last name -- role) associated with the 
+        selected dataset
+    """
+    error = ''
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = error + 'Error: Please select a valid Blackfynn account' 
+        raise Exception(error)
+
+    c = 0
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = error + 'Error: Please select a valid Blackfynn dataset' + '<br>'
+        c += 1
+
+    if c > 0:
+        raise Exception(error)
+    else:
+        selected_dataset_id = myds.id
+        list_dataset_permission = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/users')
+        list_dataset_permission_first_last_role = []
+        for i in range(len(list_dataset_permission)):
+            first_name = list_dataset_permission[i]['firstName']
+            last_name = list_dataset_permission[i]['lastName']
+            role = list_dataset_permission[i]['role']
+            list_dataset_permission_first_last_role.append(first_name + ' ' + last_name + ' , role: ' + role)
+        return list_dataset_permission_first_last_role
+
+
+
+def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, selected_role):
+    
+    """
+    Function to add permission to a selected dataset
+
+    Input:
+        selected_bfaccount (string): name of selected Blackfynn acccount  
+        selected_bfdataset (string): name of selected Blackfynn dataset
+        selected_user (string): name (first name -- last name) of selected Blackfynn user
+        selected_role (string): desired role ('manager', 'viewer', 'editor', 'remove current permission')
+    Output:
+        success or error message (string)
+    """
+
+    error = ''
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = error + 'Error: Please select a valid Blackfynn account' 
+        raise Exception(error)
+
+    c = 0
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = error + 'Error: Please select a valid Blackfynn dataset' + '<br>'
+        c += 1
+
+    try:
+        organization_name = bf.context.name
+        organization_id = bf.context.id
+        list_users = bf._api._get('/organizations/' + str(organization_id) + '/members')
+        dict_users = {}
+        list_users_firstlast = []
+        for i in range(len(list_users)):
+                list_users_firstlast.append(list_users[i]['firstName'] + ' ' + list_users[i]['lastName'] )
+                dict_users[list_users_firstlast[i]] = list_users[i]['id']
+        if selected_user not in list_users_firstlast:
+            error = error + 'Error: Please select a valid Blackfynn user' + '<br>'
+            c += 1
+        # add check for role
+    except Exception as e:
+        raise e
+
+    if selected_role not in ['manager', 'viewer', 'editor']:
+        error = error + 'Error: Please select a valid role' + '<br>'
+        c += 1
+   
+    if c > 0:
+        raise Exception(error)
+    else:
+        if (selected_role == 'remove current permission'):
+            return "Permission removed for " + selected_user
+        else:
+            selected_dataset_id = myds.id
+            selected_user_id = dict_users[selected_user]
+            bf._api.datasets._put('/' + str(selected_dataset_id) + '/collaborators/users'.format(dataset_id = selected_dataset_id),
+                          json={'id': selected_user_id, 'role': selected_role})
+            return "Permission " + "'" + selected_role + "' " +  " added for " + selected_user
+
