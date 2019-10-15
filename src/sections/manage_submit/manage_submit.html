@@ -109,7 +109,7 @@
           </div>
 
           <h5> Select Blackfynn Dataset for uploading
-            <tooltip data-tooltip="Select the target dataset on your Blackfynn (sorted by date of creation)." data-tooltip-position="left">( ? )</tooltip>
+            <tooltip data-tooltip="Select the target dataset on your Blackfynn (sorted by alphabetically)." data-tooltip-position="left">( ? )</tooltip>
           </h5>
           <div class="demo-controls">
             <select class="my_dropdown" id="bfdatasetlist">
@@ -142,11 +142,11 @@
     <div class="demo">
       <div class="demo-wrapper">
         <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Manage dataset permission
-          <div class="demo-meta u-avoid-clicks"> Give access to your dataset to other members of your organization for collaborating or the Curation Team for review </div>
+          <div class="demo-meta u-avoid-clicks"> Give access to your dataset to other members of your organization for collaborating or to the Curation Team for review </div>
         </button>
         <div class="demo-box">
           <h5> Select Blackfynn Dataset 
-              <tooltip data-tooltip="Select the Blackfynn dataset you wish to see/edit permission (sorted by date of creation)." data-tooltip-position="left">( ? )</tooltip>
+              <tooltip data-tooltip="Select the Blackfynn dataset you wish to see/edit permission (sorted alphabetically)." data-tooltip-position="left">( ? )</tooltip>
           </h5>
           <div class="demo-controls">
             <select class="my_dropdown" id="bfdatasetlist_permission">
@@ -154,16 +154,18 @@
             </select>
           </div>
           <h5> Current permission 
-              <tooltip data-tooltip="Name of user (First name, Last name) and their current permission (viewer, manager, editor) will be shown here for the selected dataset" data-tooltip-position="left">( ? )</tooltip>
+              <tooltip data-tooltip="Name of user (First name, Last name) and their current permission ('viewer', 'manager', or 'editor') will be shown here for the selected dataset" data-tooltip-position="left">( ? )</tooltip>
           </h5>
           <div class="demo-controls">
             <p id = "dataset_permission_current"> </p>
           </div>
 
           <h5> Add/edit permission 
-              <tooltip data-tooltip="Select name of user (First name, Last name) and the role you want to give for the selected dataset and click on  'Add permission' 
+              <tooltip data-tooltip="Select name of user and the role you want to give for the selected dataset and click on  'Add permission' 
               <br>
               To share your dataset with the Curation Team for review select 'SPARC Data Curation Team' under user and 'manager' under role
+              <br>
+              To remove a permission select name of user and 'remove current permission'
               " data-tooltip-position="left">( ? )</tooltip>
           </h5>
           <div class="demo-controls">

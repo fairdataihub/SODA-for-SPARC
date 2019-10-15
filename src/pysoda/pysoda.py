@@ -938,23 +938,26 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
         if selected_user not in list_users_firstlast:
             error = error + 'Error: Please select a valid Blackfynn user' + '<br>'
             c += 1
-        # add check for role
     except Exception as e:
         raise e
 
-    if selected_role not in ['manager', 'viewer', 'editor']:
+    if selected_role not in ['manager', 'viewer', 'editor', 'remove current permission']:
         error = error + 'Error: Please select a valid role' + '<br>'
         c += 1
    
     if c > 0:
         raise Exception(error)
     else:
-        if (selected_role == 'remove current permission'):
-            return "Permission removed for " + selected_user
-        else:
+        try:
             selected_dataset_id = myds.id
             selected_user_id = dict_users[selected_user]
-            bf._api.datasets._put('/' + str(selected_dataset_id) + '/collaborators/users'.format(dataset_id = selected_dataset_id),
-                          json={'id': selected_user_id, 'role': selected_role})
-            return "Permission " + "'" + selected_role + "' " +  " added for " + selected_user
-
+            if (selected_role == 'remove current permission'):
+                bf._api.datasets._del('/' + str(selected_dataset_id) + '/collaborators/users'.format(dataset_id = selected_dataset_id),
+                              json={'id': selected_user_id})
+                return "Permission removed for " + selected_user
+            else:
+                bf._api.datasets._put('/' + str(selected_dataset_id) + '/collaborators/users'.format(dataset_id = selected_dataset_id),
+                              json={'id': selected_user_id, 'role': selected_role})
+                return "Permission " + "'" + selected_role + "' " +  " added for " + selected_user
+        except Exception as e:
+                raise e
