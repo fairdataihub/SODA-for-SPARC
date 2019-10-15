@@ -664,12 +664,26 @@ def bfdatasetaccount(accountname):
     Returns list of datasets associated with the specified Account Name ('accountname')
     """
     try:
+        dataset_list = []
         bf = Blackfynn(accountname)
-        dataset_list = ['Select dataset']
         for ds in bf.datasets():
             dataset_list.append(ds.name)
-        dataset_list.sort() # Returning the list of datasets in alphabetical order
+        dataset_list.sort(key=lambda v: v.upper()) # Returning the list of datasets in alphabetical order
+        dataset_list.insert(0, ['Select dataset'])
         return dataset_list
+    except Exception as e:
+        raise e
+
+# Visualize existing dataset in the selected account
+def bfaccountdetails(accountname):
+    """
+    Returns list of datasets associated with the specified Account Name ('accountname')
+    """
+    try:
+        bf = Blackfynn(accountname)
+        acc_details = "User email: " + bf.profile.email + "<br>"
+        acc_details = acc_details + "Organization: " + bf.context.name
+        return acc_details
     except Exception as e:
         raise e
 
@@ -687,30 +701,31 @@ def bfnewdatasetfolder(datasetname, accountname):
     """
     error, c = '', 0
     datasetname = datasetname.strip()
+
     if (not datasetname):
-        error = error + 'Error: Please enter valid dataset folder name'
+        error = error + 'Error: Please enter valid dataset folder name' + '\n'
         c += 1
 
     if (datasetname.isspace()):
-        error = error + 'Error: Please enter valid dataset folder name'
+        error = error + 'Error: Please enter valid dataset folder name' + '\n'
         c += 1
 
     try:
         bf = Blackfynn(accountname)
     except Exception as e:
-        error = error + 'Error: Please select a valid Blackfynn account'
+        error = error + 'Error: Please select a valid Blackfynn account' + '\n'
         c += 1
+
+    if c>0:
+        raise Exception(error)
 
     dataset_list = []
     for ds in bf.datasets():
         dataset_list.append(ds.name)
     if datasetname in dataset_list:
-        error = error + 'Error: Dataset folder name already exists'
-        c += 1
+        raise Exception('Error: Dataset folder name already exists')
     else:
         bf.create_dataset(datasetname)
-    if c>0:
-        raise Exception(error)
 
 
 # Submit dataset to selected account
@@ -745,12 +760,12 @@ def bfsubmitdataset(accountname, bfdataset, pathdataset):
         myds = bf.get_dataset(bfdataset)
     except Exception as e:
         submitdatastatus = 'Done'
-        error = error + 'Error: Please select a valid Blackfynn dataset'
+        error = error + 'Error: Please select a valid Blackfynn dataset' + '\n'
         c += 1
 
     if not isdir(pathdataset):
         submitdatastatus = 'Done'
-        error = error + 'Error: Please select a valid local dataset folder'
+        error = error + 'Error: Please select a valid local dataset folder' + '\n'
         c += 1
     if c>0:
         raise Exception(error)

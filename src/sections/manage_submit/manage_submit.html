@@ -14,40 +14,54 @@
         <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button">Login to your Blackfynn account
           <div class="demo-meta u-avoid-clicks"> Easy login interface </div>
         </button>
+
         <div class="demo-box">
           <p> Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients"> Blackfynn Help </a>
           for generating an API and setting up your Blackfynn account on your computer for the first time. </p>
 
-          <h5> Add new account
-            <tooltip data-tooltip="Authenticate yourself by using API key and secret <br>
-            (see https://help.blackfynn.com/en/articles/1488536-creating-an-api-key-for-the-blackfynn-clients)." data-tooltip-position="left">( ? )</tooltip>
-          </h5>
-          <div> <font color="black"> Api key name: </font> </div>
-          <div class="demo-controls">
-            <input id="bf-key-name" class="demo-response"> </input>
-          </div>
-          <div> <font color="black"> Api key: </font> </div>
-          <div class="demo-controls">
-            <input id="bf-key" class="demo-response"> </input>
-          </div>
-          <div> <font color="black"> Api secret: </font> </div>
-          <div class="demo-controls">
-            <input id="bf-secret" class="demo-response"> </input>
-          </div>
-          <h5> </h5>
-          <div class="demo-controls">
-            <button class="demo-button" id="add-bf-account"> Add account </button>
-            <textarea class="demo-response" id="add-account-progress" readonly></textarea>
+          <form id = 'blackfynnAccount'>
+            <div>
+              <input id="addAccount" name="blackfynn-account" type="radio" class="with-style" value="preexisting"/>
+              <label for="addAccount" class=labelradio> Add new account </label>
+                <tooltip data-tooltip="Authenticate yourself by using API key and secret" data-tooltip-position="left">( ? )</tooltip>
+            </div>
+            <div>
+              <input id="selectAccount" name="blackfynn-account" type="radio" class="with-style" value="local" />
+              <label for="selectAccount" class=labelradio> Select account </label>
+                <tooltip data-tooltip="Added account(s) will be displayed in this drop-down list. <br>
+                Select one one before continuing." data-tooltip-position="left">( ? )</tooltip>
+            </div>
+          </form>
+
+          <div id="divAddAccount" class="datasetsaveoption">
+            <h5> Add new account </h5>
+            <div> <font color="black"> Api key name: </font> </div>
+            <div class="demo-controls">
+              <input id="bf-key-name" class="demo-response"> </input>
+            </div>
+            <div> <font color="black"> Api key: </font> </div>
+            <div class="demo-controls">
+              <input id="bf-key" class="demo-response"> </input>
+            </div>
+            <div> <font color="black"> Api secret: </font> </div>
+            <div class="demo-controls">
+              <input id="bf-secret" class="demo-response"> </input>
+            </div>
+            <h5> </h5>
+            <div class="demo-controls">
+              <button class="demo-button" id="add-bf-account"> Add account </button>
+              <textarea class="demo-response" id="add-account-progress" readonly></textarea>
+            </div>
           </div>
 
-          <h5> Select account
-            <tooltip data-tooltip="Added account(s) will be displayed in this drop-down list. <br>
-            Select one one before continuing." data-tooltip-position="left">( ? )</tooltip>
-          </h5>
-          <div class="demo-controls">
-            <select class="my_dropdown" id=bfaccountlist>
-            </select>
-          </div>
+            <div id="divSelectAccount" class="datasetsaveoption">
+              <h5> Select account </h5>
+              <div class="demo-controls">
+                <select class="my_dropdown" id=bfaccountlist>
+                </select>
+              </div>
+              <p id='select-account-status'> <p>
+            </div>
 
         </div>
       </div>
@@ -109,7 +123,7 @@
           </div>
 
           <div>
-          <h5> Submit 
+          <h5> Submit
           <tooltip data-tooltip="Click to push all the files/folders from the selected local folder into the selected Blackfynn folder. <br>
           Local folder structure will be preserved." data-tooltip-position="left">( ? )</tooltip>
           </h5>
@@ -195,6 +209,7 @@
     <script type="text/javascript">
       require('./renderer-process/native-ui/dialogs/open-file')
       require('./renderer-process/native-ui/dialogs/save')
+      require('./renderer-process/manage_submit/blackfynn_account')
     </script>
 
   </section>

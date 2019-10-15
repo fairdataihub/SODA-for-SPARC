@@ -342,6 +342,8 @@ curateDatasetBtn.addEventListener('click', () => {
     } else {
       progressinfo.style.color = redcolor
       progressinfo.value = 'Error: Select a valid dataset folder'
+      curateDatasetBtn.disabled = false
+      enableform(curationform)
       console.error('Error')
       return
     }
@@ -350,6 +352,8 @@ curateDatasetBtn.addEventListener('click', () => {
   } else {
   	progressinfo.style.color = redcolor
   	progressinfo.value = 'Error: Please select an option under "Organize dataset" '
+    curateDatasetBtn.disabled = false
+    enableform(curationform)
   	return
   }
   var jsonpath = jsonvect[0]
@@ -662,7 +666,6 @@ function refreshBfDatasetList(bfdstlist){
   }
 }
 
-
 /**
  * refreshBfUsersList is a function that refreshes the dropdown list
  * with names of users when an Blackfynn account is selected
@@ -713,6 +716,15 @@ function showCurrentPermission(){
   }
 }
 
+function showAccountDetails(){
+  client.invoke("apiBfAccountDetails", bfaccountlist.options[bfaccountlist.selectedIndex].text, (error, res) => {
+    if(error) {
+      console.error(error)
+    } else {
+      document.getElementById("select-account-status").innerHTML = res;
+    }
+  })
+}
 
 // // // // // // // // // //
 // Functions: Organize dataset
@@ -824,18 +836,17 @@ function insertFileToTable(table, path){
   let SPARCfolder = document.querySelector('#SPARCfolderlist').value
   var rowcount = document.getElementById(SPARCfolder).rowIndex
   var jsonvar = tableToJson(table)
-  var path_error = ''
+  var emessage = ''
   var count = 0
   for (i = 0; i < path.length; i++) {
-      console.log(JSON.stringify(jsonvar[SPARCfolder]))
-      console.log(path[i])
-      if (path[i] in jsonvar[SPARCfolder]) {
-        path_error = path_error + path[i] + "\n"
+      if ( jsonvar[SPARCfolder].indexOf(path[i]) > -1 ) {
+        emessage = emessage + path[i] + ' already exists in ' + SPARCfolder + "\n"
         count += 1
       }
   }
   if (count > 0) {
-    console.log(path_error)
+    console.log(emessage)
+    ipcRenderer.send('open-error-file-exist', emessage)
   } else {
     for (i = 0; i < path.length; i++) {
       tableNotOrganizedcount = tableNotOrganizedcount + 1
@@ -945,14 +956,28 @@ function tableToJsonWithDescription(table){
 function dropAddToTable(e, myID){
 	var rowcount = document.getElementById(myID).rowIndex
 	var i = 0
-	for (let f of e.dataTransfer.files) {
-        console.log('File(s) you dragged here: ', f.path, myID)
-        var rownum = rowcount + i + 1
-	    tableNotOrganizedcount = tableNotOrganizedcount + 1
-	    var table_len = tableNotOrganizedcount
-	    var row = tableNotOrganized.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ f.path +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
-     	i = i + 1
-    }
+  var jsonvar = tableToJson(tableNotOrganized)
+  var emessage = ''
+  var count = 0
+  for (let f of e.dataTransfer.files) {
+      if ( jsonvar[myID].indexOf(f.path) > -1 ) {
+        emessage = emessage + f.path + ' already exists in ' + myID + "\n"
+        count += 1
+      }
+  }
+  if (count > 0) {
+    console.log(emessage)
+    ipcRenderer.send('open-error-file-exist', emessage)
+  } else {
+  	for (let f of e.dataTransfer.files) {
+          console.log('File(s) you dragged here: ', f.path, myID)
+          var rownum = rowcount + i + 1
+  	    tableNotOrganizedcount = tableNotOrganizedcount + 1
+  	    var table_len = tableNotOrganizedcount
+  	    var row = tableNotOrganized.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ f.path +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
+       	i = i + 1
+      }
+  }
 }
 
 //Both
