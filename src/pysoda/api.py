@@ -1,7 +1,8 @@
 from __future__ import print_function
 from pysoda import copyfile, bfaddaccount, bfaccountlist, bfdatasetaccount, \
     bfsubmitdataset, submitdatasetprogress, curatedatasetprogress, bfnewdatasetfolder, \
-    savefileorganization, uploadfileorganization, curatedataset, previewfileorganization, deletePreviewFileOrganization
+    savefileorganization, uploadfileorganization, curatedataset, previewfileorganization, deletePreviewFileOrganization, \
+    bf_add_permission, bf_get_users, bf_get_permission
 import sys
 import zerorpc
 from os.path import isdir, isfile
@@ -87,6 +88,24 @@ class SodaApi(object):
     def apiSubmitDatasetProgress(self):
         try:
             return submitdatasetprogress()
+        except Exception as e:
+            raise e
+
+    def api_bf_get_users(self, selected_bfaccount):
+        try:
+            return bf_get_users(selected_bfaccount)
+        except Exception as e:
+            raise e
+
+    def api_bf_get_permission(self, selected_bfaccount, selected_bfdataset):
+        try:
+            return bf_get_permission(selected_bfaccount, selected_bfdataset)
+        except Exception as e:
+            raise e
+
+    def api_bf_add_permission(self, selected_bfaccount, selected_bfdataset, selected_user, selected_role):
+        try:
+            return bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, selected_role)
         except Exception as e:
             raise e
 

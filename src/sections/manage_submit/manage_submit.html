@@ -127,14 +127,53 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Share a dataset with the Curation Team
-          <div class="demo-meta u-avoid-clicks"> Give access to your dataset to the Curation Team for review </div>
+        <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Manage dataset permission
+          <div class="demo-meta u-avoid-clicks"> Give access to your dataset to other members of your organization for collaborating or the Curation Team for review </div>
         </button>
         <div class="demo-box">
-          <p> </p>
+          <h5> Select Blackfynn Dataset 
+              <tooltip data-tooltip="Select the Blackfynn dataset you wish to see/edit permission (sorted by date of creation)." data-tooltip-position="left">( ? )</tooltip>
+          </h5>
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bfdatasetlist_permission">
+              <option> Select dataset </option>
+            </select>
+          </div>
+          <h5> Current permission 
+              <tooltip data-tooltip="Name of user (First name, Last name) and their current permission (viewer, manager, editor) will be shown here for the selected dataset" data-tooltip-position="left">( ? )</tooltip>
+          </h5>
+          <div class="demo-controls">
+            <p id = "dataset_permission_current"> </p>
+          </div>
 
-          <p> Coming soon... Tentative date: December 2020 </p>
+          <h5> Add/edit permission 
+              <tooltip data-tooltip="Select name of user (First name, Last name) and the role you want to give for the selected dataset and click on  'Add permission' 
+              <br>
+              To share your dataset with the Curation Team for review select 'SPARC Data Curation Team' under user and 'manager' under role
+              " data-tooltip-position="left">( ? )</tooltip>
+          </h5>
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bf_list_users">
+              <option> Select user </option>
+            </select>
+          </div>
 
+          <h5>  </h5>
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bf_list_roles">
+              <option> Select role </option>
+              <option> viewer </option>
+              <option> manager </option>
+              <option> editor </option>
+              <option> remove current permission </option>
+            </select>
+          </div>
+
+          <h5>  </h5>
+          <div class="demo-controls">
+            <button class="demo-button" id="add_permission"> Add permission </button>
+            <p id = "dataset_permission_status"> </p>
+          </div>
         </div>
       </div>
     </div>
