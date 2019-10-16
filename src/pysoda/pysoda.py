@@ -783,12 +783,12 @@ def bfsubmitdataset(accountname, bfdataset, pathdataset):
         myds = bf.get_dataset(bfdataset)
     except Exception as e:
         submitdatastatus = 'Done'
-        error = error + 'Error: Please select a valid Blackfynn dataset' + '\n'
+        error = error + 'Error: Please select a valid Blackfynn dataset' + '<br>'
         c += 1
 
     if not isdir(pathdataset):
         submitdatastatus = 'Done'
-        error = error + 'Error: Please select a valid local dataset folder' + '\n'
+        error = error + 'Error: Please select a valid local dataset folder' + '<br>'
         c += 1
     if c>0:
         raise Exception(error)
@@ -854,9 +854,11 @@ def submitdatasetprogress():
     global total_file_size
     return (submitdataprogress, submitdatastatus, submitprintstatus, uploaded_file_size, total_file_size)
 
-##############################################
 
 def folder_size(path):
+    """
+    Returns total size of a folder
+    """
     total_size = 0
     start_path = '.'  # To get size of current directory
     for path, dirs, files in walk(path):
@@ -864,115 +866,6 @@ def folder_size(path):
             fp = join(path, f)
             total_size += getsize(fp)
     return total_size
-
-
-# Submit dataset to selected account
-def bfsubmitdataset2(accountname, bfdataset, pathdataset):
-    """
-    Associated with 'Submit dataset' button in 'Submit new dataset' section
-    Uploads the specified folder to the specified dataset on Blackfynn account
-
-    Input:
-        accountname: Account in which the dataset needs to be created
-        bfdataset: Name of the dataset on Blackfynn
-        pathdataset: Path of dataset on local machine
-    Action:
-        Uploads dataset on Blackfynn account
-    """
-    global submitdataprogress
-    global submitdatastatus
-    global total_file_size
-    global uploaded_file_size
-    total_file_size = folder_size(pathdataset)
-    submitdataprogress = ' '
-    submitdatastatus = ' '
-    uploaded_file_size = 0
-    error, c = '', 0
-
-    try:
-        bf = Blackfynn(accountname)
-    except Exception as e:
-        submitdatastatus = 'Done'
-        error = error + 'Error: Please select a valid Blackfynn account'
-        raise Exception(error)
-
-    try:
-        myds = bf.get_dataset(bfdataset)
-    except Exception as e:
-        submitdatastatus = 'Done'
-        error = error + 'Error: Please select a valid Blackfynn dataset' + '<br>'
-        c += 1
-
-    if not isdir(pathdataset):
-        submitdatastatus = 'Done'
-        error = error + 'Error: Please select a valid local dataset folder' + '<br>'
-        c += 1
-    if c>0:
-        raise Exception(error)
-
-    try:
-        def calluploadfolder():
-            submitdataprogress = "Started uploading to dataset %s \n" %(bfdataset)
-            myds = bf.get_dataset(bfdataset)
-            myfolder = myds.name
-            mypath = pathdataset
-            upload_structured_file2(myds, mypath, myfolder)
-            submitdataprogress = submitdataprogress + ', ,' + "Success: dataset and associated files have been uploaded"
-            submitdatastatus = 'Done'
-
-        t = threading.Thread(target=calluploadfolder)
-        t.start()
-    except Exception as e:
-        submitdatastatus = 'Done'
-        raise e
-
-
-def upload_structured_file2(myds, mypath, myfolder):
-    """
-    Helper function to upload given folder to Blackfynn dataset in the original folder structure
-
-    Input:
-        myds: Dataset name on Blackfynn
-        mypath: Path of the organized dataset on local machine
-        myfolder: Current folder inside the path
-    Action:
-        Uploads the folder to Blackfynn
-    """
-    global submitdataprogress
-    global uploaded_file_size
-    global submitdatastatus
-
-    mypath = join(mypath)
-    for f in listdir(mypath):
-        if isfile(join(mypath, f)):
-            submitdataprogress = submitdataprogress + ', ,' + "Uploading " + f + " in " + myfolder
-            filepath = join(mypath, f)
-            myds.upload(filepath)
-            # uploaded_file_size += int(path.getsize(filepath).strip('L'))
-            uploaded_file_size += getsize(filepath)
-            submitdataprogress = submitdataprogress + ',' + " uploaded"
-        else:
-            submitdataprogress = submitdataprogress + ', ,' +"Creating folder " + f
-            mybffolder = myds.create_collection(f)
-            myfolderpath = join(mypath, f)
-            upload_structured_file(mybffolder, myfolderpath, f)
-    # submitdataprogress = submitdataprogress + ', ,' + "Success: dataset and associated files have been uploaded"
-    # submitdatastatus = 'Done'
-
-def submitdatasetprogress2():
-    """
-    Creates global variables to help keep track of the dataset submission progress
-    """
-    global submitdataprogress
-    global submitdatastatus
-    global uploaded_file_size
-    global total_file_size
-    return (submitdataprogress, submitdatastatus, uploaded_file_size, total_file_size)
-
-
-##############################################
-
-
 
 
 # Share dataset with Curation Team

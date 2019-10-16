@@ -23,13 +23,17 @@
             <div>
               <input id="addAccount" name="blackfynn-account" type="radio" class="with-style" value="preexisting"/>
               <label for="addAccount" class=labelradio> Add new account </label>
-                <tooltip data-tooltip="Authenticate yourself by using API key and secret" data-tooltip-position="left">( ? )</tooltip>
+                <div class="tooltipnew">( ? )
+                  <span class="tooltiptext">Authenticate yourself by using API key and secret</span>
+                </div>
             </div>
             <div>
               <input id="selectAccount" name="blackfynn-account" type="radio" class="with-style" value="local" />
               <label for="selectAccount" class=labelradio> Select account </label>
-                <tooltip data-tooltip="Added account(s) will be displayed in this drop-down list. <br>
-                Select one one before continuing." data-tooltip-position="left">( ? )</tooltip>
+                <div class="tooltipnew">( ? )
+                  <span class="tooltiptext">Added account(s) will be displayed in this drop-down list. <br>
+                  Select one one before continuing</span>
+                </div>
             </div>
           </form>
 
@@ -76,7 +80,9 @@
           <p> </p>
 
           <h5> Enter name
-            <tooltip data-tooltip="Enter the name of the Dataset you want to create" data-tooltip-position="left">( ? )</tooltip>
+            <div class="tooltipnew">( ? )
+              <span class="tooltiptext">Enter the name of the Dataset you want to create</span>
+            </div>
           </h5>
           <div class="demo-controls">
             <input id="bf-new-dataset-name" class="demo-response"> </input>
@@ -101,7 +107,9 @@
           <p> </p>
 
           <h5> Select local dataset to submit
-            <tooltip data-tooltip="Select the local folder that you want to submit to your Blackfynn account" data-tooltip-position="left">( ? )</tooltip>
+            <div class="tooltipnew">( ? )
+              <span class="tooltiptext">Select the local folder that you want to submit to your Blackfynn account</span>
+            </div>
           </h5>
           <div class="demo-controls">
             <button class="demo-button" id="select-submit-dataset">Select Dataset Folder </button>
@@ -109,7 +117,9 @@
           </div>
 
           <h5> Select Blackfynn Dataset for uploading
-            <tooltip data-tooltip="Select the target dataset on your Blackfynn (sorted by alphabetically)." data-tooltip-position="left">( ? )</tooltip>
+            <div class="tooltipnew">( ? )
+              <span class="tooltiptext">Select the target dataset on your Blackfynn (sorted by alphabetically)</span>
+            </div>
           </h5>
           <div class="demo-controls">
             <select class="my_dropdown" id="bfdatasetlist">
@@ -124,8 +134,10 @@
 
           <div>
           <h5> Submit
-          <tooltip data-tooltip="Click to push all the files/folders from the selected local folder into the selected Blackfynn folder. <br>
-          Local folder structure will be preserved." data-tooltip-position="left">( ? )</tooltip>
+            <div class="tooltipnew">( ? )
+              <span class="tooltiptext">Click on 'Submit dataset' to push all the files/folders from the selected local folder into the selected Blackfynn folder. <br>
+              Local folder structure will be preserved</span>
+            </div>
           </h5>
           <button class="demo-button" id="submit-dataset"> Submit dataset </button>
           <p id='progress-bar-error-status'> <p>
@@ -150,7 +162,9 @@
         </button>
         <div class="demo-box">
           <h5> Select Blackfynn Dataset
-              <tooltip data-tooltip="Select the Blackfynn dataset you wish to see/edit permission (sorted alphabetically)." data-tooltip-position="left">( ? )</tooltip>
+            <div class="tooltipnew">( ? )
+              <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permission (sorted alphabetically)</span>
+            </div>
           </h5>
           <div class="demo-controls">
             <select class="my_dropdown" id="bfdatasetlist_permission">
@@ -158,19 +172,22 @@
             </select>
           </div>
           <h5> Current permission
-              <tooltip data-tooltip="Name of user (First name, Last name) and their current permission ('viewer', 'manager', or 'editor') will be shown here for the selected dataset" data-tooltip-position="left">( ? )</tooltip>
+            <div class="tooltipnew">( ? )
+              <span class="tooltiptext">Name of user (First name, Last name) and their current permission ('viewer', 'manager', or 'editor') will be shown here for the selected dataset</span>
+            </div>
           </h5>
           <div class="demo-controls">
             <p id = "dataset_permission_current"> </p>
           </div>
 
           <h5> Add/edit permission
-              <tooltip data-tooltip="Select name of user and the role you want to give for the selected dataset and click on  'Add permission'
+            <div class="tooltipnew">( ? )
+              <span class="tooltiptext">Select name of user and the role you want to give for the selected dataset and click on  'Add permission'
               <br>
               To share your dataset with the Curation Team for review select 'SPARC Data Curation Team' under user and 'manager' under role
               <br>
-              To remove a permission select name of user and 'remove current permission'
-              " data-tooltip-position="left">( ? )</tooltip>
+              To remove a permission select name of user and 'remove current permission'</span>
+            </div>
           </h5>
           <div class="demo-controls">
             <select class="my_dropdown" id="bf_list_users">

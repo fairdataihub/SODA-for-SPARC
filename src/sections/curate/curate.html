@@ -386,18 +386,24 @@
             <div id = "div-existing-dataset">
               <input id="existing-dataset" name="new-dataset" type="radio" class="with-style" value="existing"/>
               <label id = "label-existing-dataset" for="existing-dataset" class=labelradio>Modify current dataset</label>
-              <tooltip data-tooltip="This will add all changes to the current dataset folder. <br>
-              This option will only be available when 'Dataset already organized' option is selected." data-tooltip-position="left">( ? )</tooltip>
+                <div class="tooltipnew">( ? )
+                  <span class="tooltiptext">This will add all changes to the current dataset folder. <br>
+                  This option will only be available when 'Dataset already organized' option is selected</span>
+                </div>
             </div>
             <div>
               <input id="create-newdataset" name="new-dataset" type="radio" class="with-style" value="local" />
               <label for="create-newdataset" class=labelradio>Create new dataset locally</label>
-              <tooltip data-tooltip="This option will create the dataset at the desired location locally with all requested files" data-tooltip-position="left">( ? )</tooltip>
+                <div class="tooltipnew">( ? )
+                  <span class="tooltiptext">This option will create the dataset at the desired location locally with all requested files</span>
+                </div>
             </div>
             <div>
               <input id="cloud-dataset" name="new-dataset" type="radio" class="with-style" value="cloud" />
               <label for="cloud-dataset" class=labelradio>Create new dataset directly on Blackfynn</label>
-              <tooltip data-tooltip="This option will create the dataset with all requested files directly on your Blackfynn account" data-tooltip-position="left">( ? )</tooltip>
+                <div class="tooltipnew">( ? )
+                  <span class="tooltiptext">This option will create the dataset with all requested files directly on your Blackfynn account</span>
+                </div>
             </div>
           </form>
 
