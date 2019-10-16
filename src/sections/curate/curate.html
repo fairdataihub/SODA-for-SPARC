@@ -19,21 +19,34 @@
 
           <form id = 'dataset_organize_form'>
             <div>
-              <input id="preorganized-dataset" name="organizing-dataset" type="radio" class="with-style" value="preexisting"/>
-              <label for="preorganized-dataset" class=labelradio>Dataset already organized</label>
+              <input id="preorganized-dataset" name="organizing-dataset" type="radio" class="with-style" value="preorganized"/>
+              <label for="preorganized-dataset" class=labelradio> Dataset already organized </label>
                 <tooltip data-tooltip="Select this option when you already have the SPARC folder structure in place" data-tooltip-position="left">( ? )</tooltip>
             </div>
             <div>
-              <input id="organize-dataset" name="organizing-dataset" type="radio" class="with-style" value="local" />
+              <input id="organize-dataset" name="organizing-dataset" type="radio" class="with-style" value="not-organized" />
               <label for="organize-dataset" class=labelradio> Organize my dataset </label>
                 <tooltip data-tooltip="Select this option to conveniently organize your dataset following the SPARC folder structure" data-tooltip-position="left">( ? )</tooltip>
             </div>
+            <div>
+              <input id="smart-organize-dataset" name="organizing-dataset" type="radio" class="with-style" value="smart-organize"/>
+              <label for="smart-organize-dataset" class=labelradio> Smart organize </label>
+                <tooltip data-tooltip="Select to automatically organize your dataset based on a previously saved organized structure. <br>
+                This applies if you are following a strict dataset organization structure (different than SPARC) and only the high-level folder changes from dataset to dataset." data-tooltip-position="left">( ? )</tooltip>
+            </div>
           </form>
+
+
+          <div id="div-smart-organize-dataset" class="datasetsaveoption">
+            <div class="demo-controls">
+              <p> Coming soon... Tentative date: December 2019 </p>
+            </div>
+          </div>
 
           <div id="divPreorganizedDataset" class="datasetsaveoption">
             <h5> </h5>
             <div class="demo-controls">
-            <button class="demo-button" id="select-dataset">Select Dataset Folder </button>
+            <button class="demo-button" id="select-dataset"> Select Dataset Folder </button>
             <p id="selected-dataset"></p>
             </div>
             <h5> </h5>
@@ -404,8 +417,7 @@
     </div>
 
     <script type="text/javascript">
-      require('./renderer-process/curate/new-dataset-action')
-      require('./renderer-process/curate/organize-dataset-action')
+      require('./renderer-process/curate/radio-buttons-display')
     </script>
 
     <script type="text/javascript" src="./renderer-process/curate/table-script.js">

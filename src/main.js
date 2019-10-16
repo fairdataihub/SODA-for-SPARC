@@ -1,6 +1,4 @@
-const electron = require('electron')
-const app = electron.app
-const BrowserWindow = electron.BrowserWindow
+const {app, BrowserWindow} = require('electron')
 const path = require('path')
 const glob = require('glob')
 const contextMenu = require('electron-context-menu');
@@ -58,7 +56,7 @@ const exitPyProc = () => {
   pyPort = null
 }
 
-app.on('ready', createPyProc)
+//app.on('ready', createPyProc)
 app.on('will-quit', exitPyProc)
 
 
@@ -68,48 +66,77 @@ app.on('will-quit', exitPyProc)
 
 let mainWindow = null
 
+function initialize () {
+  makeSingleInstance()
 
-const createWindow = () => {
-  // setTimeout(() => {
-  mainWindow = new BrowserWindow({
-    // width: 1080,
-    // height: 680,
-    minWidth: 1080,
-    minHeight: 680,
-    center: true,
-    icon: __dirname + '/assets/app-icon/png/soda_icon.png',
-    webPreferences: {
-      nodeIntegration: true
+  loadDemos()
+
+  function createWindow () {
+    const windowOptions = {
+      minWidth: 1080,
+      minHeight: 680,
+      center: true,
+      //title: app.getName(),
+      icon: __dirname + '/assets/app-icon/png/soda_icon.png',
+      webPreferences: {
+        nodeIntegration: true
+      }
+    }
+
+    //if (process.platform === 'linux') {
+    //  windowOptions.icon = path.join(__dirname, '/assets/app-icon/png/soda_icon.png')
+    //}
+
+    mainWindow = new BrowserWindow(windowOptions)
+    mainWindow.loadURL(path.join('file://', __dirname, '/index.html'))
+
+    mainWindow.on('closed', () => {
+      mainWindow = null
+    })
+  }
+
+  app.on('ready', () => {
+    createWindow()
+    createPyProc()
+  })
+
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit()
     }
   })
 
-  mainWindow.loadURL(require('url').format({
-    pathname: path.join(__dirname, 'index.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
-  //mainWindow.webContents.openDevTools()
-  mainWindow.setMenu(null)
-
-  mainWindow.on('closed', () => {
-    mainWindow = null
+  app.on('activate', () => {
+    if (mainWindow === null) {
+      createWindow()
+    }
   })
-  // }, 1000);
 }
 
-app.on('ready', createWindow)
+// Make this app a single instance app.
+//
+// The main window will be restored and focused instead of a second window
+// opened when a person attempts to launch a second instance.
+//
+// Returns true if the current version of the app should quit instead of
+// launching.
+const gotTheLock = app.requestSingleInstanceLock()
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+function makeSingleInstance () {
+  if (process.mas) return
+
+  if (!gotTheLock) {
     app.quit()
-  }
-})
+  } else {
 
-app.on('activate', () => {
-  if (mainWindow === null) {
-    createWindow()
-  }
-})
+    app.on('second-instance', () => {
+      if (mainWindow) {
+        if (mainWindow.isMinimized()) mainWindow.restore()
+        mainWindow.focus()
+      }
+    })
+  }  
+}
 
 // Right click context menu
 contextMenu({
@@ -125,4 +152,4 @@ function loadDemos () {
   files.forEach((file) => { require(file) })
 }
 
-loadDemos ()
+initialize()

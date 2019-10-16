@@ -127,6 +127,7 @@ document.querySelector('#no-samples').addEventListener('click', () => {
 function showPreorganizedDataset(){
   document.getElementById('divPreorganizedDataset').style.display ='block';
   document.getElementById('divOrganizeDataset').style.display ='none';
+  document.getElementById('div-smart-organize-dataset').style.display ='none';
   document.getElementById('save-file-organization-status').innerHTML = '';
   document.getElementById('divSaveTable').style.display ='block';
   document.getElementById('divClearTable').style.display ='block';
@@ -136,9 +137,20 @@ function showPreorganizedDataset(){
 function showOrganizeDataset(){
   document.getElementById('divPreorganizedDataset').style.display ='none';
   document.getElementById('divOrganizeDataset').style.display ='block';
+  document.getElementById('div-smart-organize-dataset').style.display ='none';
   document.getElementById('save-file-organization-status').innerHTML = '';
   document.getElementById('divSaveTable').style.display ='block';
   document.getElementById('divClearTable').style.display ='block';
+  document.getElementById('div-existing-dataset').style.display ='none';
+}
+
+function showSmartOrganizeDataset(){
+  document.getElementById('divPreorganizedDataset').style.display ='none';
+  document.getElementById('divOrganizeDataset').style.display ='none';
+  document.getElementById('div-smart-organize-dataset').style.display ='block';
+  document.getElementById('save-file-organization-status').innerHTML = '';
+  document.getElementById('divSaveTable').style.display ='none';
+  document.getElementById('divClearTable').style.display ='none';
   document.getElementById('div-existing-dataset').style.display ='none';
 }
 
@@ -147,4 +159,8 @@ document.querySelector('#preorganized-dataset').addEventListener('click', () => 
 })
 document.querySelector('#organize-dataset').addEventListener('click', () => {
     showOrganizeDataset()
+})
+
+document.querySelector('#smart-organize-dataset').addEventListener('click', () => {
+    showSmartOrganizeDataset()
 })

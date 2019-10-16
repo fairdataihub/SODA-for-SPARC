@@ -485,6 +485,16 @@ bfaccountlist.addEventListener('change', () => {
   refreshBfDatasetList(bfDatasetlistPermission)
   currentDatasetPermission.innerHTML = ''
   refreshBfUsersList(bfListUsers)
+  var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
+
+  if (selectedbfaccount == 'Select') {
+
+    document.getElementById("select-account-status").innerHTML = "";
+
+  } else{
+
+    showAccountDetails()
+  }
 })
 
 
@@ -793,7 +803,7 @@ function jsonToTableOrganized(table, jsonvar){
       tableOrganizedcount = tableOrganizedcount + 1
       var rownum = rowcount + i + 1
       var table_len = tableOrganizedcount
-      var row = table.insertRow(rownum).outerHTML="<tr id='row-org"+table_len+"'><td id='name_row_org"+table_len+"'>"+ pathlist[i] +"</td> <td id='description_row_org"+table_len+"'>"+ "" +"</td> <td><input type='button' id='edit_button_org"+table_len+"' value='Edit' class='edit' onclick='edit_row_org("+table_len+")'> <input type='button' id='save_button_org"+table_len+"' value='Save' class='save' onclick='save_row_org("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row_org("+table_len+")'> </td></tr>";
+      var row = table.insertRow(rownum).outerHTML="<tr id='row-org"+table_len+"'><td id='name_row_org"+table_len+"'>"+ pathlist[i] +"</td> <td id='description_row_org"+table_len+"'>"+ "" +"</td> <td><input type='button' id='edit_button_org"+table_len+"' value='Edit description' class='edit' onclick='edit_row_org("+table_len+")'> <input type='button' id='save_button_org"+table_len+"' value='Save description' class='save' onclick='save_row_org("+table_len+")'> <input type='button' value='Delete row' class='delete' onclick='delete_row_org("+table_len+")'> </td></tr>";
     }
   }
   return table
@@ -852,7 +862,7 @@ function insertFileToTable(table, path){
       tableNotOrganizedcount = tableNotOrganizedcount + 1
       var table_len=tableNotOrganizedcount
       var rownum = rowcount + i + 1
-      var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ path[i] +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
+      var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ path[i] +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit description' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save description' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete row' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
     }
     return table
   }
@@ -878,23 +888,6 @@ function tableToJson(table){
   return jsonvar
 }
 
-function jsonToTable(table, jsonvar){
-  var keyvect = Object.keys(jsonvar)
-  for (var j = 0; j < keyvect.length; j++) {
-    let SPARCfolder = keyvect[j]
-    var SPARCfolderid = SPARCfolder
-    var rowcount = document.getElementById(SPARCfolderid).rowIndex
-    var pathlist = jsonvar[SPARCfolder]
-    for (var i = 0; i < pathlist.length; i++){
-      var rownum = rowcount + i + 1
-      tableNotOrganizedcount = tableNotOrganizedcount + 1
-      var table_len = tableNotOrganizedcount
-      var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ pathlist[i] +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
-    }
-  }
-  return table
-}
-
 function jsonToTableWithDescription(table, jsonvar){
   var keyvect = Object.keys(jsonvar)
   var tableheaders = sparcFolderNames.slice()
@@ -910,7 +903,7 @@ function jsonToTableWithDescription(table, jsonvar){
 	      var rownum = rowcount + i + 1
 	      tableNotOrganizedcount = tableNotOrganizedcount + 1
 	      var table_len = tableNotOrganizedcount
-	      var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ pathlist[i] +"</td><td id='description_row"+table_len+"'>"+ descriptionlist[i] +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
+	      var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ pathlist[i] +"</td><td id='description_row"+table_len+"'>"+ descriptionlist[i] +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit description' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save description' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete row' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
        }
     }
   }
@@ -974,7 +967,7 @@ function dropAddToTable(e, myID){
           var rownum = rowcount + i + 1
   	    tableNotOrganizedcount = tableNotOrganizedcount + 1
   	    var table_len = tableNotOrganizedcount
-  	    var row = tableNotOrganized.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ f.path +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
+  	    var row = tableNotOrganized.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ f.path +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit description' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save description' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete row' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
        	i = i + 1
       }
   }

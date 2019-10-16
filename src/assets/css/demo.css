@@ -278,6 +278,10 @@ table.pathtable tr td:nth-child(2) {
   min-width:40%;
 }
 
+table.pathtable td {
+  text-align:center;
+}
+
 input[type="button"].save
 {
   display:none;
