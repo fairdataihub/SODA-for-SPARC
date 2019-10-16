@@ -17,6 +17,7 @@ import numpy as np
 import collections
 import subprocess
 import shutil
+import re 
 
 ### Global variables
 curateprogress = ' '
@@ -218,10 +219,15 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
             raise Exception('Error: Please select a valid dataset folder')
 
     if createnewstatus:
+        pathnewdataset = pathnewdataset.strip()
+        newdatasetname = newdatasetname.strip()
         if not isdir(pathnewdataset):
             curatestatus = 'Done'
             raise Exception('Error: Please select a valid folder for new dataset')
-
+        if (check_forbidden_characters(newdatasetname) or not newdatasetname):
+            curatestatus = 'Done'
+            raise Exception('Error: Please enter a valid name for new dataset folder')    
+            
     if submissionstatus:
         if not isfile(pathsubmission):
             curatestatus = 'Done'
@@ -359,13 +365,13 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
             raise e
         try:
             pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
-            curateprogress = 'Started'
+            curateprogress = 'Started' 
             curateprintstatus = 'Curating'
 
             pathdataset = pathnewdatasetfolder
             mkdir(pathdataset)
 
-            createdataset2(jsonpath, pathdataset)
+            createdataset(jsonpath, pathdataset)
             curateprogress = curateprogress + ', ,' + 'New dataset created'
 
             if manifeststatus:
@@ -481,7 +487,7 @@ def createmanifestwithdescription(datasetpath, jsonpath, jsondescription):
             df.to_excel(manifestfile, index=None, header=True)
 
 
-def createdataset2(jsonpath, pathdataset):
+def createdataset(jsonpath, pathdataset):
     """
     Associated with 'Create new dataset locally' button
     Creates folders and files from paths specified in json object TO the destination path specified
@@ -569,6 +575,19 @@ def copyfile(src, dst):
     """
     copy2(src, dst)
 
+
+def check_forbidden_characters(my_string): 
+    """
+    Check for forbidden characters in file/folder name
+    Output:
+        False: no forbidden character
+        True: presence of forbidden character(s)
+    """
+    regex = re.compile('[@!#$%^&*()<>?/\|}{~:]')     
+    if(regex.search(my_string) == None): 
+        return False
+    else: 
+        return True
 
 ### FEATURE #4: SODA Blackfynn interface
 # Log in to Blackfynn
