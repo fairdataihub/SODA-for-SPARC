@@ -205,6 +205,7 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
     Associated with 'Generate' button in the 'Generate dataset' section
     Checks validity of files / paths / folders and then generates the files and folders as requested along with progress status
     """
+
     global curateprogress
     global curatestatus
     global curateprintstatus
@@ -637,7 +638,7 @@ def bfaddaccount(keyname, key, secret):
         bf = Blackfynn(keyname)
         with open(configpath, 'w') as configfile:
             config.write(configfile)
-        return 'Sucesss: added account ' + str(bf)
+        return 'Success: added account ' + str(bf)
     except:
         bfdeleteaccount(keyname)
         raise Exception('Authentication Error: please check that key name, key, and secret are entered properly')

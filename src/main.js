@@ -56,7 +56,7 @@ const exitPyProc = () => {
   pyPort = null
 }
 
-//app.on('ready', createPyProc)
+app.on('ready', createPyProc)
 app.on('will-quit', exitPyProc)
 
 
@@ -75,6 +75,8 @@ function initialize () {
     const windowOptions = {
       minWidth: 1080,
       minHeight: 680,
+      width: 1080,
+      height: 680,
       center: true,
       //title: app.getName(),
       icon: __dirname + '/assets/app-icon/png/soda_icon.png',
@@ -97,20 +99,19 @@ function initialize () {
 
   app.on('ready', () => {
     createWindow()
-    createPyProc()
   })
 
   app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
+    // if (process.platform !== 'darwin') {
       app.quit()
-    }
+    // }
   })
 
-  app.on('activate', () => {
-    if (mainWindow === null) {
-      createWindow()
-    }
-  })
+  // app.on('activate', () => {
+  //   if (mainWindow === null) {
+  //     createWindow()
+  //   }
+  // })
 }
 
 // Make this app a single instance app.
