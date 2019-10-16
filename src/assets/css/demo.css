@@ -19,18 +19,6 @@
   padding: 0 2rem;
 }
 
-/* Tooltip for help */
-tooltip {
-  /* width: 25%; */
-  float: right;
-  font-size: 1em;
-  font-style: italic;
-  font-weight: bold;
-  color: black;
-  backgroundColor: #404040;
-  borderRadius: 4px
-}
-
 /* Toggle Button ----------------------------- */
 
 .demo-toggle-button {
@@ -291,4 +279,43 @@ input[type='text'].inputpath
 {
   margin-right: 10px;
   width: 40%;
+}
+
+
+.tooltipnew {
+  position: relative;
+  display: inline-block;
+  float: right;
+  font-size: 1em;
+  font-style: italic;
+  font-weight: bold;
+  color: black;
+}
+
+.tooltipnew .tooltiptext {
+  visibility: hidden;
+  width: 600px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: -5px;
+  right: 110%;
+}
+
+.tooltipnew .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent transparent black;
+}
+.tooltipnew:hover .tooltiptext {
+  visibility: visible;
 }

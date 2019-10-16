@@ -5,10 +5,6 @@ const zerorpc = require("zerorpc")
 const fs = require("fs")
 const path = require('path')
 const {ipcRenderer} = require('electron')
-const tt = require('electron-tooltip')
-
-tt({ })
-
 
 // Connect to python server and check
 let client = new zerorpc.Client()
