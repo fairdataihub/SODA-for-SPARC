@@ -96,6 +96,7 @@ let bfcreatenewdatasetinfo = document.querySelector('#add-new-dataset-progress')
 const bfSubmitDatasetBtn = document.getElementById('submit-dataset')
 let bfsubmitdatasetinfo = document.querySelector('#progresssubmit')
 let pathsubmitdataset = document.querySelector('#selected-submit-dataset')
+var progressBar = document.getElementById("progress-bar")
 
 let bfDatasetlistPermission = document.querySelector('#bfdatasetlist_permission')
 let currentDatasetPermission = document.querySelector('#dataset_permission_current')
@@ -526,45 +527,101 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
 })
 
 
-// Submit local dataset to selected bf dataset
+// // Submit local dataset to selected bf dataset
+// bfSubmitDatasetBtn.addEventListener('click', () => {
+//   bfsubmitdatasetinfo.style.color = blackcolor
+//   bfSubmitDatasetBtn.disabled = true
+//   bfsubmitdatasetinfo.value = 'Submitting'
+//   var completionstatus = 'Solving'
+//   var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
+//   var selectedbfdataset = bfdatasetlist.options[bfdatasetlist.selectedIndex].text
+//   client.invoke("apiBfSubmitDataset", selectedbfaccount, selectedbfdataset, pathsubmitdataset.value, (error, res) => {
+//     if (error) {
+//       console.log('ERROR')
+//       var emessage = userError(error)
+//       bfsubmitdatasetinfo.style.color = redcolor
+//       bfsubmitdatasetinfo.value = emessage
+//     } else {
+//       console.log('Done', res)
+//     }
+//   })
+//
+//   var timerprogress = setInterval(progressfunction, 500)
+//     function progressfunction(){
+//       client.invoke("apiSubmitDatasetProgress", (error, res) => {
+//         if(error) {
+//           console.error(error)
+//         } else {
+//           completionstatus = res[1]
+//           var printstatus = res[2]
+//           if (printstatus === 'Uploading') {
+//             bfsubmitdatasetinfo.value = res[0].split(',').join('\n')
+//           }
+//         }
+//       })
+//       if (completionstatus === 'Done'){
+//         clearInterval(timerprogress)
+//         bfSubmitDatasetBtn.disabled = false
+//       }
+//     }
+// })
+
+
 bfSubmitDatasetBtn.addEventListener('click', () => {
-  bfsubmitdatasetinfo.style.color = blackcolor
+  document.getElementById("progress-bar-error-status").innerHTML = ""
+  document.getElementById("progress-bar-status").innerHTML = ""
+  var err = false
+  // bfsubmitdatasetinfo.style.color = blackcolor
   bfSubmitDatasetBtn.disabled = true
-  bfsubmitdatasetinfo.value = 'Submitting'
+  // bfsubmitdatasetinfo.value = 'Submitting'
   var completionstatus = 'Solving'
   var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
   var selectedbfdataset = bfdatasetlist.options[bfdatasetlist.selectedIndex].text
   client.invoke("apiBfSubmitDataset", selectedbfaccount, selectedbfdataset, pathsubmitdataset.value, (error, res) => {
-    if (error) {
+    if(error) {
       console.log('ERROR')
       var emessage = userError(error)
-      bfsubmitdatasetinfo.style.color = redcolor
-      bfsubmitdatasetinfo.value = emessage
+      document.getElementById("progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      progressBar.style.width = 0 + "%";
+      err = true
+      // bfsubmitdatasetinfo.style.color = redcolor
+      // bfsubmitdatasetinfo.value = emessage
     } else {
       console.log('Done', res)
     }
   })
 
-  var timerprogress = setInterval(progressfunction, 500)
+
+  var timerprogress = setInterval(progressfunction, 250)
     function progressfunction(){
       client.invoke("apiSubmitDatasetProgress", (error, res) => {
         if(error) {
           console.error(error)
         } else {
+          // (submitdataprogress, submitdatastatus, submitprintstatus, uploaded_file_size, total_file_size)
+          var dataProgress = res[0]
           completionstatus = res[1]
-          var printstatus = res[2]
-          if (printstatus === 'Uploading') {
-            bfsubmitdatasetinfo.value = res[0].split(',').join('\n')
+          var uploaded_file_size = res[3]
+          var total_file_size = res[4]
+          var value = (uploaded_file_size / total_file_size) * 100
+          console.log(uploaded_file_size, total_file_size, value)
+          progressBar.style.width = value + "%";
+          if (completionstatus != 'Done') {
+            document.getElementById("progress-bar-status").innerHTML = dataProgress.split(',').pop()
+            // bfsubmitdatasetinfo.value = dataProgress.split(',').join('\n')
           }
         }
       })
       if (completionstatus === 'Done'){
+        if (!err){
+          progressBar.style.width = 100 + "%";
+          document.getElementById("progress-bar-status").innerHTML = "Upload completed !"
+        }
         clearInterval(timerprogress)
         bfSubmitDatasetBtn.disabled = false
       }
     }
 })
-
 
 /**
  * This event tracks change of the selected dataset in the dropdown list
@@ -585,7 +642,7 @@ bfAddPermissionBtn.addEventListener('click', () => {
   var selectedBfDataset = bfDatasetlistPermission.options[bfdatasetlist_permission.selectedIndex].text
   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text
-  
+
   client.invoke("api_bf_add_permission", selectedBfAccount, selectedBfDataset, selectedUser, selectedRole,
     (error, res) => {
     if(error) {

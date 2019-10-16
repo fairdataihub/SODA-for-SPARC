@@ -3,8 +3,8 @@
 # python module for Software for Organizing Data Automatically (SODA)
 import os ## Some functions are not available on all OS
 import platform
-from os import listdir, stat, makedirs, mkdir
-from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname
+from os import listdir, stat, makedirs, mkdir, walk
+from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname, getsize
 import pandas as pd
 from time import strftime, localtime
 from shutil import copy2
@@ -743,9 +743,13 @@ def bfsubmitdataset(accountname, bfdataset, pathdataset):
     """
     global submitdataprogress
     global submitdatastatus
+    global total_file_size
+    global uploaded_file_size
     global submitprintstatus
+    total_file_size = folder_size(pathdataset)
     submitdataprogress = ' '
     submitdatastatus = ' '
+    uploaded_file_size = 0
     submitprintstatus = ' '
     error, c = '', 0
 
@@ -754,7 +758,7 @@ def bfsubmitdataset(accountname, bfdataset, pathdataset):
     except Exception as e:
         submitdatastatus = 'Done'
         error = error + 'Error: Please select a valid Blackfynn account'
-        c += 1
+        raise(error)
 
     try:
         myds = bf.get_dataset(bfdataset)
@@ -803,6 +807,7 @@ def upload_structured_file(myds, mypath, myfolder):
     """
     global submitdataprogress
     global submitdatastatus
+    global uploaded_file_size
 
     mypath = join(mypath)
     for f in listdir(mypath):
@@ -810,6 +815,7 @@ def upload_structured_file(myds, mypath, myfolder):
             submitdataprogress = submitdataprogress + ', ,' + "Uploading " + f + " in " + myfolder
             filepath = join(mypath, f)
             myds.upload(filepath)
+            uploaded_file_size += getsize(filepath)
             submitdataprogress = submitdataprogress + ',' + " uploaded"
         else:
             submitdataprogress = submitdataprogress + ', ,' +"Creating folder " + f
@@ -825,16 +831,139 @@ def submitdatasetprogress():
     global submitdataprogress
     global submitdatastatus
     global submitprintstatus
-    return (submitdataprogress, submitdatastatus, submitprintstatus)
+    global uploaded_file_size
+    global total_file_size
+    return (submitdataprogress, submitdatastatus, submitprintstatus, uploaded_file_size, total_file_size)
+
+##############################################
+
+def folder_size(path):
+    total_size = 0
+    start_path = '.'  # To get size of current directory
+    for path, dirs, files in walk(path):
+        for f in files:
+            fp = join(path, f)
+            total_size += getsize(fp)
+    return total_size
+
+
+# Submit dataset to selected account
+def bfsubmitdataset2(accountname, bfdataset, pathdataset):
+    """
+    Associated with 'Submit dataset' button in 'Submit new dataset' section
+    Uploads the specified folder to the specified dataset on Blackfynn account
+
+    Input:
+        accountname: Account in which the dataset needs to be created
+        bfdataset: Name of the dataset on Blackfynn
+        pathdataset: Path of dataset on local machine
+    Action:
+        Uploads dataset on Blackfynn account
+    """
+    global submitdataprogress
+    global submitdatastatus
+    global total_file_size
+    global uploaded_file_size
+    total_file_size = folder_size(pathdataset)
+    submitdataprogress = ' '
+    submitdatastatus = ' '
+    uploaded_file_size = 0
+    error, c = '', 0
+
+    try:
+        bf = Blackfynn(accountname)
+    except Exception as e:
+        submitdatastatus = 'Done'
+        error = error + 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(bfdataset)
+    except Exception as e:
+        submitdatastatus = 'Done'
+        error = error + 'Error: Please select a valid Blackfynn dataset' + '<br>'
+        c += 1
+
+    if not isdir(pathdataset):
+        submitdatastatus = 'Done'
+        error = error + 'Error: Please select a valid local dataset folder' + '<br>'
+        c += 1
+    if c>0:
+        raise Exception(error)
+
+    try:
+        def calluploadfolder():
+            submitdataprogress = "Started uploading to dataset %s \n" %(bfdataset)
+            myds = bf.get_dataset(bfdataset)
+            myfolder = myds.name
+            mypath = pathdataset
+            upload_structured_file2(myds, mypath, myfolder)
+            submitdataprogress = submitdataprogress + ', ,' + "Success: dataset and associated files have been uploaded"
+            submitdatastatus = 'Done'
+
+        t = threading.Thread(target=calluploadfolder)
+        t.start()
+    except Exception as e:
+        submitdatastatus = 'Done'
+        raise e
+
+
+def upload_structured_file2(myds, mypath, myfolder):
+    """
+    Helper function to upload given folder to Blackfynn dataset in the original folder structure
+
+    Input:
+        myds: Dataset name on Blackfynn
+        mypath: Path of the organized dataset on local machine
+        myfolder: Current folder inside the path
+    Action:
+        Uploads the folder to Blackfynn
+    """
+    global submitdataprogress
+    global uploaded_file_size
+    global submitdatastatus
+
+    mypath = join(mypath)
+    for f in listdir(mypath):
+        if isfile(join(mypath, f)):
+            submitdataprogress = submitdataprogress + ', ,' + "Uploading " + f + " in " + myfolder
+            filepath = join(mypath, f)
+            myds.upload(filepath)
+            # uploaded_file_size += int(path.getsize(filepath).strip('L'))
+            uploaded_file_size += getsize(filepath)
+            submitdataprogress = submitdataprogress + ',' + " uploaded"
+        else:
+            submitdataprogress = submitdataprogress + ', ,' +"Creating folder " + f
+            mybffolder = myds.create_collection(f)
+            myfolderpath = join(mypath, f)
+            upload_structured_file(mybffolder, myfolderpath, f)
+    # submitdataprogress = submitdataprogress + ', ,' + "Success: dataset and associated files have been uploaded"
+    # submitdatastatus = 'Done'
+
+def submitdatasetprogress2():
+    """
+    Creates global variables to help keep track of the dataset submission progress
+    """
+    global submitdataprogress
+    global submitdatastatus
+    global uploaded_file_size
+    global total_file_size
+    return (submitdataprogress, submitdatastatus, uploaded_file_size, total_file_size)
+
+
+##############################################
+
+
+
 
 # Share dataset with Curation Team
 def bf_get_users(selected_bfaccount):
     """
-    Function to get list of users belonging to the organization of 
+    Function to get list of users belonging to the organization of
     the given Blackfynn account
 
     Input:
-      selected_bfaccount (string): name of selected Blackfynn acccount  
+      selected_bfaccount (string): name of selected Blackfynn acccount
     Output:
         list_users : list of users (first name -- last name) associated with the organization of the
         selected Blackfynn account
@@ -854,15 +983,15 @@ def bf_get_users(selected_bfaccount):
         raise e
 
 def bf_get_permission(selected_bfaccount, selected_bfdataset):
-    
+
     """
-    Function to get permission for a selected dataset 
+    Function to get permission for a selected dataset
 
     Input:
-        selected_bfaccount (string): name of selected Blackfynn acccount  
+        selected_bfaccount (string): name of selected Blackfynn acccount
         selected_bfdataset (string): name of selected Blackfynn dataset
     Output:
-        list_permission (list): list of permission (first name -- last name -- role) associated with the 
+        list_permission (list): list of permission (first name -- last name -- role) associated with the
         selected dataset
     """
     error = ''
@@ -870,7 +999,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
     try:
         bf = Blackfynn(selected_bfaccount)
     except Exception as e:
-        error = error + 'Error: Please select a valid Blackfynn account' 
+        error = error + 'Error: Please select a valid Blackfynn account'
         raise Exception(error)
 
     c = 0
@@ -897,12 +1026,12 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
 
 
 def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, selected_role):
-    
+
     """
     Function to add permission to a selected dataset
 
     Input:
-        selected_bfaccount (string): name of selected Blackfynn acccount  
+        selected_bfaccount (string): name of selected Blackfynn acccount
         selected_bfdataset (string): name of selected Blackfynn dataset
         selected_user (string): name (first name -- last name) of selected Blackfynn user
         selected_role (string): desired role ('manager', 'viewer', 'editor', 'remove current permission')
@@ -915,7 +1044,7 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
     try:
         bf = Blackfynn(selected_bfaccount)
     except Exception as e:
-        error = error + 'Error: Please select a valid Blackfynn account' 
+        error = error + 'Error: Please select a valid Blackfynn account'
         raise Exception(error)
 
     c = 0
@@ -944,7 +1073,7 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
     if selected_role not in ['manager', 'viewer', 'editor', 'remove current permission']:
         error = error + 'Error: Please select a valid role' + '<br>'
         c += 1
-   
+
     if c > 0:
         raise Exception(error)
     else:

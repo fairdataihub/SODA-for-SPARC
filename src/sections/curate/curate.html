@@ -28,13 +28,17 @@
             <div>
               <input id="organize-dataset" name="organizing-dataset" type="radio" class="with-style" value="not-organized" />
               <label for="organize-dataset" class=labelradio> Organize my dataset </label>
-                <tooltip data-tooltip="Select this option to conveniently organize your dataset following the SPARC folder structure" data-tooltip-position="left">( ? )</tooltip>
+                <div class="tooltipnew">( ? )
+                  <span class="tooltiptext">Select this option to conveniently organize your dataset following the SPARC folder structure</span>
+                </div>
             </div>
             <div>
               <input id="smart-organize-dataset" name="organizing-dataset" type="radio" class="with-style" value="smart-organize"/>
               <label for="smart-organize-dataset" class=labelradio> Smart organize </label>
-                <tooltip data-tooltip="Select to automatically organize your dataset based on a previously saved organized structure. <br>
-                This applies if you are following a strict dataset organization structure (different than SPARC) and only the high-level folder changes from dataset to dataset." data-tooltip-position="left">( ? )</tooltip>
+                <div class="tooltipnew">( ? )
+                  <span class="tooltiptext">Select to automatically organize your dataset based on a previously saved organized structure. <br>
+                  This applies if you are following a strict dataset organization structure (different than SPARC) and only the high-level folder changes from dataset to dataset</span>
+                </div>
             </div>
           </form>
 
@@ -101,7 +105,9 @@
           <div id="divOrganizeDataset" class="datasetsaveoption">
 
             <h5> Upload previously saved file structure
-              <tooltip data-tooltip="Import template of the file structure you saved earlier" data-tooltip-position="left">( ? )</tooltip>
+              <div class="tooltipnew">( ? )
+                <span class="tooltiptext">Import template of the file structure you saved earlier</span>
+              </div>
             </h5>
             <div class="demo-controls">
               <button class="demo-button" id="select-upload-file-organization"> Upload </button>
@@ -110,9 +116,11 @@
             <hr>
 
             <h5> Select folders and files to be added in each SPARC folder
-              <tooltip data-tooltip="Select SPARC folder from the drop-down them add files / folders using the corresponding buttons. <br>
-              Alternatively, you could drag-and-drop files / folders on the table headers to import the them. <br><br>
-              The 'main' folder designates the dataset folder." data-tooltip-position="left">( ? )</tooltip>
+              <div class="tooltipnew">( ? )
+                <span class="tooltiptext">Select SPARC folder from the drop-down them add files / folders using the corresponding buttons. <br>
+                Alternatively, you could drag-and-drop files / folders on the table headers to import the them. <br><br>
+                The 'main' folder designates the dataset folder</span>
+              </div>
             </h5>
             <div class="demo-controls">
             	<p> Select SPARC folder: <p>
@@ -181,7 +189,9 @@
 
             <hr>
             <h5> Preview file organization
-              <tooltip data-html="true" data-tooltip="Get a preview of the dataset you organized<br>Remember to click on 'Delete Preview Folder' once you're done !" data-tooltip-position="left">( ? )</tooltip>
+              <div class="tooltipnew">( ? )
+                <span class="tooltiptext">Get a preview of the dataset you organized<br>Remember to click on 'Delete Preview Folder' once you're done !</span>
+              </div>
             </h5>
 	        <div class="demo-controls">
 	            <button class="demo-button" id="preview-file-organization"> Preview </button>
@@ -196,8 +206,10 @@
 
           <div id="divSaveTable" class="datasetsaveoption">
             <h5> Save file organization to continue later
-              <tooltip data-tooltip="Save the table you created as a template (CSV format) for continuing later <br>
-              You can optionally add file/folder paths and descriptions directly in the teamplate before importing back with the upload button" data-tooltip-position="left">( ? )</tooltip>
+              <div class="tooltipnew">( ? )
+                <span class="tooltiptext">Save the table you created as a template (CSV format) for continuing later <br>
+                You can optionally add file/folder paths and descriptions directly in the teamplate before importing back with the upload button</span>
+              </div>
             </h5>
             <div class="demo-controls">
 	            <button class="demo-button" id="select-save-file-organization"> Save </button>
@@ -240,9 +252,13 @@
             <label for="generate-manifest" class=labelradio> Generate manifest files </label>
           </div>
 
-          <h5>Submission file <tooltip data-html="true" data-tooltip="Select existing: chose an already existing submission file <br><br>
-                                                  Generate new from template: creates a new empty submission file <br><br>
-                                                  None: Do nothing" data-tooltip-position="left">( ? )</tooltip></h5>
+          <h5>Submission file
+            <div class="tooltipnew">( ? )
+              <span class="tooltiptext">Select existing: chose an already existing submission file <br><br>
+                                                    Generate new from template: creates a new empty submission file <br><br>
+                                                    None: Do nothing</span>
+            </div>
+          </h5>
 
           <form id='submission_file_form'>
             <div>

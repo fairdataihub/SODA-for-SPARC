@@ -128,12 +128,16 @@
           Local folder structure will be preserved." data-tooltip-position="left">( ? )</tooltip>
           </h5>
           <button class="demo-button" id="submit-dataset"> Submit dataset </button>
+          <p id='progress-bar-error-status'> <p>
+          <h5> Progress </h5>
+          <div id='meter'><div id='progress-bar'></div> </div>
+          <p id='progress-bar-status'> <p>
           </div>
 
-          <div>
+          <!-- <div>
           <h5> Progress </h5>
           <textarea id='progresssubmit' class='outputprint' rows="25" readonly></textarea>
-          </div>
+          </div> -->
 
         </div>
       </div>
@@ -145,7 +149,7 @@
           <div class="demo-meta u-avoid-clicks"> Give access to your dataset to other members of your organization for collaborating or to the Curation Team for review </div>
         </button>
         <div class="demo-box">
-          <h5> Select Blackfynn Dataset 
+          <h5> Select Blackfynn Dataset
               <tooltip data-tooltip="Select the Blackfynn dataset you wish to see/edit permission (sorted alphabetically)." data-tooltip-position="left">( ? )</tooltip>
           </h5>
           <div class="demo-controls">
@@ -153,15 +157,15 @@
               <option> Select dataset </option>
             </select>
           </div>
-          <h5> Current permission 
+          <h5> Current permission
               <tooltip data-tooltip="Name of user (First name, Last name) and their current permission ('viewer', 'manager', or 'editor') will be shown here for the selected dataset" data-tooltip-position="left">( ? )</tooltip>
           </h5>
           <div class="demo-controls">
             <p id = "dataset_permission_current"> </p>
           </div>
 
-          <h5> Add/edit permission 
-              <tooltip data-tooltip="Select name of user and the role you want to give for the selected dataset and click on  'Add permission' 
+          <h5> Add/edit permission
+              <tooltip data-tooltip="Select name of user and the role you want to give for the selected dataset and click on  'Add permission'
               <br>
               To share your dataset with the Curation Team for review select 'SPARC Data Curation Team' under user and 'manager' under role
               <br>
@@ -170,7 +174,7 @@
           </h5>
           <div class="demo-controls">
             <select class="my_dropdown" id="bf_list_users">
-            
+
               <option> Select user </option>
             </select>
           </div>
