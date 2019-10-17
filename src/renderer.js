@@ -574,7 +574,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   // bfsubmitdatasetinfo.style.color = blackcolor
   bfSubmitDatasetBtn.disabled = true
   // bfsubmitdatasetinfo.value = 'Submitting'
-  var completionstatus = 'Solving'
+  var completionStatus = 'Solving'
   var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
   var selectedbfdataset = bfdatasetlist.options[bfdatasetlist.selectedIndex].text
   client.invoke("apiBfSubmitDataset", selectedbfaccount, selectedbfdataset, pathsubmitdataset.value, (error, res) => {
@@ -600,19 +600,19 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
         } else {
           // (submitdataprogress, submitdatastatus, submitprintstatus, uploaded_file_size, total_file_size)
           var dataProgress = res[0]
-          completionstatus = res[1]
-          var uploaded_file_size = res[3]
-          var total_file_size = res[4]
-          var value = (uploaded_file_size / total_file_size) * 100
-          console.log(uploaded_file_size, total_file_size, value)
+          completionStatus = res[1]
+          var uploadedFileSize = res[3]
+          var totalFileSize = res[4]
+          var value = (uploadedFileSize / totalFileSize) * 100
+          console.log(uploadedFileSize, totalFileSize, value)
           progressBar.style.width = value + "%";
-          if (completionstatus != 'Done') {
+          if (completionStatus != 'Done') {
             document.getElementById("progress-bar-status").innerHTML = dataProgress.split(',').pop()
             // bfsubmitdatasetinfo.value = dataProgress.split(',').join('\n')
           }
         }
       })
-      if (completionstatus === 'Done'){
+      if (completionStatus === 'Done'){
         if (!err){
           progressBar.style.width = 100 + "%";
           document.getElementById("progress-bar-status").innerHTML = "Upload completed !"
