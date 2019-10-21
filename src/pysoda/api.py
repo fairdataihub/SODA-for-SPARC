@@ -1,7 +1,7 @@
 from __future__ import print_function
-from pysoda import copyfile, bfaddaccount, bfaccountlist, bfdatasetaccount, bfaccountdetails, \
-    bfsubmitdataset, submitdatasetprogress, curatedatasetprogress, bfnewdatasetfolder, \
-    savefileorganization, uploadfileorganization, curatedataset, previewfileorganization, deletePreviewFileOrganization, \
+from pysoda import copyfile, bf_add_account, bf_account_list, bf_dataset_account, bf_account_details, \
+    bf_submit_dataset, submit_dataset_progress, curate_dataset_progress, bf_new_dataset_folder, \
+    save_file_organization, upload_file_organization, curate_dataset, preview_file_organization, delete_preview_file_organization, \
     bf_add_permission, bf_get_users, bf_get_permission
 import sys
 import zerorpc
@@ -11,89 +11,89 @@ from os.path import isdir, isfile
 class SodaApi(object):
 
     ### Curate dataset
-    def apiSaveFileOrganization(self, jsonpath, jsondescription, pathsavefileorganization):
+    def api_save_file_organization(self, jsonpath, jsondescription, pathsavefileorganization):
         try:
-            return savefileorganization(jsonpath, jsondescription, pathsavefileorganization)
+            return save_file_organization(jsonpath, jsondescription, pathsavefileorganization)
         except Exception as e:
             raise e
 
-    def apiUploadFileOrganization(self, pathsavefileorganization, foldernames):
+    def api_upload_file_organization(self, pathsavefileorganization, foldernames):
         try:
-            return uploadfileorganization(pathsavefileorganization, foldernames)
+            return upload_file_organization(pathsavefileorganization, foldernames)
         except Exception as e:
             raise e
 
-    def apiPreviewFileOrganization(self, jsonpath):
+    def api_preview_file_organization(self, jsonpath):
         try:
-            return previewfileorganization(jsonpath)
+            return preview_file_organization(jsonpath)
         except Exception as e:
             raise e
 
-    def apiDeletePreviewFileOrganization(self):
+    def api_delete_preview_file_organization(self):
         try:
-            return deletePreviewFileOrganization()
+            return delete_preview_file_organization()
         except Exception as e:
             raise e
 
-    def apiCurateDataset(self, pathdataset, createnewstatus, pathnewdataset,
+    def api_curate_dataset(self, pathdataset, createnewstatus, pathnewdataset,
         manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
         subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus,
         bfdirectlystatus, alreadyorganizedstatus, organizedatasetstatus, newdatasetname):
         try:
-            curatedataset(pathdataset, createnewstatus, pathnewdataset,
+            curate_dataset(pathdataset, createnewstatus, pathnewdataset,
                 manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
                 subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus,
                 bfdirectlystatus, alreadyorganizedstatus, organizedatasetstatus, newdatasetname)
         except Exception as e:
             raise e
 
-    def apiCurateDatasetProgress(self):
+    def api_curate_dataset_progress(self):
         try:
-            return curatedatasetprogress()
+            return curate_dataset_progress()
         except Exception as e:
             raise e
 
 
     ### Bf
-    def apiBfAddAccount(self, keyname, key, secret):
+    def api_bf_add_account(self, keyname, key, secret):
         try:
-            return bfaddaccount(keyname, key, secret)
+            return bf_add_account(keyname, key, secret)
         except Exception as e:
             raise e
 
-    def apiBfAccountList(self):
+    def api_bf_account_list(self):
         try:
-            return bfaccountlist()
+            return bf_account_list()
         except Exception as e:
             raise e
 
-    def apiBfDatasetAccount(self, accountname):
+    def api_bf_dataset_account(self, accountname):
         try:
-            return bfdatasetaccount(accountname)
+            return bf_dataset_account(accountname)
         except Exception as e:
             raise e
 
-    def apiBfAccountDetails(self, accountname):
+    def api_bf_account_details(self, accountname):
         try:
-            return bfaccountdetails(accountname)
+            return bf_account_details(accountname)
         except Exception as e:
             raise e
 
-    def apiBfNewDatasetFolder(self, datasetname, accountname):
+    def api_bf_new_dataset_folder(self, datasetname, accountname):
         try:
-            return bfnewdatasetfolder(datasetname, accountname)
+            return bf_new_dataset_folder(datasetname, accountname)
         except Exception as e:
             raise e
 
-    def apiBfSubmitDataset(self, accountname, bfdataset, pathdataset):
+    def api_bf_submit_dataset(self, accountname, bfdataset, pathdataset):
         try:
-            return bfsubmitdataset(accountname, bfdataset, pathdataset)
+            return bf_submit_dataset(accountname, bfdataset, pathdataset)
         except Exception as e:
             raise e
 
-    def apiSubmitDatasetProgress(self):
+    def api_submit_dataset_progress(self):
         try:
-            return submitdatasetprogress()
+            return submit_dataset_progress()
         except Exception as e:
             raise e
 

@@ -24,21 +24,21 @@ client.invoke("echo", "server ready", (error, res) => {
 //////////////////////////////////
 
 // Organize dataset
-const selectDatasetBtn = document.getElementById('select-dataset')
-let pathdataset = document.querySelector('#selected-dataset')
+const selectDatasetBtn = document.getElementById('button-select-dataset')
+let pathdataset = document.querySelector('#para-selected-dataset')
 const tableOrganized = document.getElementById("table-organized")
 var tableOrganizedcount = 0
 const tableNotOrganized = document.getElementById("code_table")
 var tableNotOrganizedcount = 0
 let alreadyorganizedstatus = document.querySelector('#preorganized-dataset')
 let organizedatasetstatus = document.querySelector('#organize-dataset')
-const clearTableBtn = document.getElementById('clear-table')
+const clearTableBtn = document.getElementById('button-clear-table')
 
 // Curate dataset
-const selectSaveFileOrganizationBtn = document.getElementById('select-save-file-organization')
-const selectPreviewBtn = document.getElementById('preview-file-organization')
-const deletePreviewBtn = document.getElementById('delete-preview-organization-status')
-const selectUploadFileOrganizationBtn = document.getElementById('select-upload-file-organization')
+const selectSaveFileOrganizationBtn = document.getElementById('button-select-save-file-organization')
+const selectPreviewBtn = document.getElementById('button-preview-file-organization')
+const deletePreviewBtn = document.getElementById('button-delete-preview-organization-status')
+const selectUploadFileOrganizationBtn = document.getElementById('button-select-upload-file-organization')
 
 let createnewstatus = document.querySelector('#create-newdataset')
 let modifyexistingstatus = document.querySelector('#existing-dataset')
@@ -46,7 +46,7 @@ let bfdirectlystatus = document.querySelector('#cloud-dataset')
 let pathnewdataset = document.querySelector('#selected-new-dataset')
 let newdatasetname = document.querySelector('#new-dataset-name')
 let manifeststatus = document.querySelector('#generate-manifest')
-let curationform = document.querySelector('#dataset_curate_form')
+let curationform = document.querySelector('#dataset-curate-form')
 
 let existingsubmissionstatus = document.querySelector('#existing-submission')
 let newsubmissionstatus = document.querySelector('#new-submission')
@@ -74,7 +74,7 @@ var samplesstatus
 var pathsamples
 
 
-const curateDatasetBtn = document.getElementById('curate-dataset')
+const curateDatasetBtn = document.getElementById('button-curate-dataset')
 let progressinfo = document.querySelector('#progressinfo')
 
 
@@ -89,21 +89,21 @@ let bfaccountlist = document.querySelector('#bfaccountlist')
 var myitem
 let bfdatasetlist = document.querySelector('#bfdatasetlist')
 
-const bfRefreshDatasetBtn = document.getElementById('refresh-dataset-list')
+const bfRefreshDatasetBtn = document.getElementById('button-refresh-dataset-list')
 let bfnewdatasetname = document.querySelector('#bf-new-dataset-name')
-const bfCreateNewDatasetBtn = document.getElementById('create-bf-new-dataset')
+const bfCreateNewDatasetBtn = document.getElementById('button-create-bf-new-dataset')
 let bfcreatenewdatasetinfo = document.querySelector('#add-new-dataset-progress')
-const bfSubmitDatasetBtn = document.getElementById('submit-dataset')
+const bfSubmitDatasetBtn = document.getElementById('button-submit-dataset')
 let bfsubmitdatasetinfo = document.querySelector('#progresssubmit')
 let pathsubmitdataset = document.querySelector('#selected-submit-dataset')
-var progressBar = document.getElementById("progress-bar")
+var progressBar = document.getElementById("div-progress-bar")
 
 let bfDatasetlistPermission = document.querySelector('#bfdatasetlist_permission')
-let currentDatasetPermission = document.querySelector('#dataset_permission_current')
+let currentDatasetPermission = document.querySelector('#para-dataset-permission-current')
 let bfListUsers = document.querySelector('#bf_list_users')
 let bfListRoles = document.querySelector('#bf_list_roles')
-const bfAddPermissionBtn = document.getElementById('add_permission')
-let datasetPermissionStatus = document.querySelector('#dataset_permission_status')
+const bfAddPermissionBtn = document.getElementById('button-add-permission')
+let datasetPermissionStatus = document.querySelector('#para-dataset-permission-status')
 
 //////////////////////////////////
 // Constant parameters
@@ -144,12 +144,12 @@ ipcRenderer.on('selected-dataset', (event, path) => {
 })
 
 //Select files/folders to be added to table for organizing
-const selectCodeBtn = document.getElementById('select-code')
+const selectCodeBtn = document.getElementById('button-select-code')
 selectCodeBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-code')
 })
 
-const selectCodeDirectoryBtn = document.getElementById('select-code-directory')
+const selectCodeDirectoryBtn = document.getElementById('button-select-code-directory')
 selectCodeDirectoryBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-folder-dialog-code')
 })
@@ -244,17 +244,17 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
   }
   var jsonpath = jsonvect[0]
   var jsondescription = jsonvect[1]
-  document.getElementById("save-file-organization-status").innerHTML = "";
+  document.getElementById("para-save-file-organization-status").innerHTML = "";
   // Call python to save
   if (path != null){
-    client.invoke("apiSaveFileOrganization", jsonpath, jsondescription, path, (error, res) => {
+    client.invoke("api_save_file_organization", jsonpath, jsondescription, path, (error, res) => {
         if(error) {
           console.log(error)
           var emessage = userError(error)
-          document.getElementById("save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+          document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
         } else {
           console.log(res)
-          document.getElementById("save-file-organization-status").innerHTML = "Saved!";
+          document.getElementById("para-save-file-organization-status").innerHTML = "Saved!";
         }
     })
   }
@@ -266,57 +266,57 @@ selectUploadFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-uploadorganization')
 })
 ipcRenderer.on('selected-uploadorganization', (event, path) => {
-  document.getElementById("upload-file-organization-status").innerHTML = "";
+  document.getElementById("para-upload-file-organization-status").innerHTML = "";
   var headernames = sparcFolderNames.slice()
   headernames.push("main")
   var lennames =  headernames.length
   for (var i = 0; i < lennames; i++) {
   	headernames.push(headernames[i] + "_description")
   }
-  client.invoke("apiUploadFileOrganization", path[0], headernames, (error, res) => {
+  client.invoke("api_upload_file_organization", path[0], headernames, (error, res) => {
         if(error) {
           console.log(error)
           var emessage = userError(error)
-          document.getElementById("upload-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+          document.getElementById("para-upload-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
         } else {
           console.log(res)
           jsonToTableWithDescription(tableNotOrganized, res)
-          document.getElementById("upload-file-organization-status").innerHTML = "Uploaded!";
+          document.getElementById("para-upload-file-organization-status").innerHTML = "Uploaded!";
         }
   })
 })
 
 // Action when user click on Preview file organization button
 selectPreviewBtn.addEventListener('click', () => {
-  document.getElementById("preview-organization-status").innerHTML = ""
+  document.getElementById("para-preview-organization-status").innerHTML = ""
   var jsonvect = tableToJsonWithDescription(tableNotOrganized)
   var jsonpath = jsonvect[0]
-  client.invoke("apiPreviewFileOrganization", jsonpath, (error, res) => {
+  client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
       if(error) {
         console.log(error)
         var emessage = userError(error)
-        document.getElementById("preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
+        document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
-        document.getElementById("preview-organization-status").innerHTML = "Loading Preview folder...";
+        document.getElementById("para-preview-organization-status").innerHTML = "Loading Preview folder...";
         console.log(res)
         console.log("Done")
-        document.getElementById("preview-organization-status").innerHTML = "Preview folder available in a new window";
+        document.getElementById("para-preview-organization-status").innerHTML = "Preview folder available in a new window";
       }
   })
 })
 
 // Action when user click on Delete Preview file organization button
 deletePreviewBtn.addEventListener('click', () => {
-  document.getElementById("preview-organization-status").innerHTML = ""
-  client.invoke("apiDeletePreviewFileOrganization", (error, res) => {
+  document.getElementById("para-preview-organization-status").innerHTML = ""
+  client.invoke("api_delete_preview_file_organization", (error, res) => {
       if(error) {
         console.log(error)
         var emessage = userError(error)
-        document.getElementById("preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
+        document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
         console.log(res)
         console.log("Done")
-        document.getElementById("preview-organization-status").innerHTML = "Preview folder deleted!";
+        document.getElementById("para-preview-organization-status").innerHTML = "Preview folder deleted!";
       }
   })
 })
@@ -410,7 +410,7 @@ curateDatasetBtn.addEventListener('click', () => {
   var completionstatus = 'Solving'
   var pathdatasetvalue = String(pathdataset.innerHTML)
 
-  client.invoke("apiCurateDataset", pathdatasetvalue, createnewstatus.checked, pathnewdataset.value,
+  client.invoke("api_curate_dataset", pathdatasetvalue, createnewstatus.checked, pathnewdataset.value,
     manifeststatus.checked, submissionstatus, pathsubmission,  descriptionstatus, pathdescription,
     subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus.checked,
     bfdirectlystatus.checked, alreadyorganizedstatus.checked, organizedatasetstatus.checked, newdatasetname.value,
@@ -429,7 +429,7 @@ curateDatasetBtn.addEventListener('click', () => {
 
   var timerprogress = setInterval(progressfunction, 1000)
   function progressfunction(){
-    client.invoke("apiCurateDatasetProgress", (error, res) => {
+    client.invoke("api_curate_dataset_progress", (error, res) => {
       if(error) {
         console.error(error)
       } else {
@@ -460,7 +460,7 @@ bfAddAccountBtn.addEventListener('click', () => {
   bfaddaccountinfo.style.color = blackcolor
   bfAddAccountBtn.disabled = true
   bfaddaccountinfo.value = ''
-  client.invoke("apiBfAddAccount", keyname.value, key.value, secret.value, (error, res) => {
+  client.invoke("api_bf_add_account", keyname.value, key.value, secret.value, (error, res) => {
     if(error) {
       console.log('ERROR')
       var emessage = userError(error)
@@ -486,7 +486,7 @@ bfaccountlist.addEventListener('change', () => {
 
   if (selectedbfaccount == 'Select') {
 
-    document.getElementById("select-account-status").innerHTML = "";
+    document.getElementById("para-select-account-status").innerHTML = "";
 
   } else{
 
@@ -509,7 +509,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
   bfCreateNewDatasetBtn.disabled = true
   bfcreatenewdatasetinfo.value = 'Adding'
   var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
-  client.invoke("apiBfNewDatasetFolder", bfnewdatasetname.value, selectedbfaccount, (error, res) => {
+  client.invoke("api_bf_new_dataset_folder", bfnewdatasetname.value, selectedbfaccount, (error, res) => {
     if (error) {
       console.log('ERROR')
       var emessage = userError(error)
@@ -568,8 +568,8 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
 
 
 bfSubmitDatasetBtn.addEventListener('click', () => {
-  document.getElementById("progress-bar-error-status").innerHTML = ""
-  document.getElementById("progress-bar-status").innerHTML = ""
+  document.getElementById("para-progress-bar-error-status").innerHTML = ""
+  document.getElementById("para-progress-bar-status").innerHTML = ""
   var err = false
   // bfsubmitdatasetinfo.style.color = blackcolor
   bfSubmitDatasetBtn.disabled = true
@@ -577,11 +577,11 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   var completionStatus = 'Solving'
   var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
   var selectedbfdataset = bfdatasetlist.options[bfdatasetlist.selectedIndex].text
-  client.invoke("apiBfSubmitDataset", selectedbfaccount, selectedbfdataset, pathsubmitdataset.value, (error, res) => {
+  client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathsubmitdataset.value, (error, res) => {
     if(error) {
       console.log('ERROR')
       var emessage = userError(error)
-      document.getElementById("progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       progressBar.style.width = 0 + "%";
       err = true
       // bfsubmitdatasetinfo.style.color = redcolor
@@ -594,7 +594,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
 
   var timerprogress = setInterval(progressfunction, 250)
     function progressfunction(){
-      client.invoke("apiSubmitDatasetProgress", (error, res) => {
+      client.invoke("api_submit_dataset_progress", (error, res) => {
         if(error) {
           console.error(error)
         } else {
@@ -607,7 +607,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
           console.log(uploadedFileSize, totalFileSize, value)
           progressBar.style.width = value + "%";
           if (completionStatus != 'Done') {
-            document.getElementById("progress-bar-status").innerHTML = dataProgress.split(',').pop()
+            document.getElementById("para-progress-bar-status").innerHTML = dataProgress.split(',').pop()
             // bfsubmitdatasetinfo.value = dataProgress.split(',').join('\n')
           }
         }
@@ -615,7 +615,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       if (completionStatus === 'Done'){
         if (!err){
           progressBar.style.width = 100 + "%";
-          document.getElementById("progress-bar-status").innerHTML = "Upload completed !"
+          document.getElementById("para-progress-bar-status").innerHTML = "Upload completed !"
         }
         clearInterval(timerprogress)
         bfSubmitDatasetBtn.disabled = false
@@ -669,7 +669,7 @@ function userError(error)
 }
 
 function updateBfAccountList(){
-  client.invoke("apiBfAccountList", (error, res) => {
+  client.invoke("api_bf_account_list", (error, res) => {
   if(error) {
     console.error(error)
   } else {
@@ -713,7 +713,7 @@ function refreshBfDatasetList(bfdstlist){
     optionselect.textContent = 'Select dataset'
     bfdstlist.appendChild(optionselect)
   } else {
-    client.invoke("apiBfDatasetAccount", bfaccountlist.options[bfaccountlist.selectedIndex].text, (error, res) => {
+    client.invoke("api_bf_dataset_account", bfaccountlist.options[bfaccountlist.selectedIndex].text, (error, res) => {
       if(error) {
         console.error(error)
       } else {
@@ -780,11 +780,11 @@ function showCurrentPermission(){
 }
 
 function showAccountDetails(){
-  client.invoke("apiBfAccountDetails", bfaccountlist.options[bfaccountlist.selectedIndex].text, (error, res) => {
+  client.invoke("api_bf_account_details", bfaccountlist.options[bfaccountlist.selectedIndex].text, (error, res) => {
     if(error) {
       console.error(error)
     } else {
-      document.getElementById("select-account-status").innerHTML = res;
+      document.getElementById("para-select-account-status").innerHTML = res;
     }
   })
 }

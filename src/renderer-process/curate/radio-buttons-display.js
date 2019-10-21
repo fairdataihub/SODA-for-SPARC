@@ -1,24 +1,24 @@
 function showModifyExisting(){
-  document.getElementById('divCreateNew').style.display ='none';
-  document.getElementById('divCreateCloud').style.display ='none';
-  document.getElementById('curatebutton').style.display ='block';
-  document.getElementById('progressprint').style.display ='block';
+  document.getElementById('div-create-new').style.display ='none';
+  document.getElementById('div-create-cloud').style.display ='none';
+  document.getElementById('div-curate-button').style.display ='block';
+  document.getElementById('div-progress-print').style.display ='block';
   document.getElementById('progressinfo').value ='';
 }
 
 function showCreateNew(){
-  document.getElementById('divCreateNew').style.display ='block';
-  document.getElementById('divCreateCloud').style.display ='none';
-  document.getElementById('curatebutton').style.display ='block';
-  document.getElementById('progressprint').style.display ='block';
+  document.getElementById('div-create-new').style.display ='block';
+  document.getElementById('div-create-cloud').style.display ='none';
+  document.getElementById('div-curate-button').style.display ='block';
+  document.getElementById('div-progress-print').style.display ='block';
   document.getElementById('progressinfo').value ='';
 }
 
 function showCreateCloud(){
-  document.getElementById('divCreateNew').style.display ='none';
-  document.getElementById('divCreateCloud').style.display ='block';
-    document.getElementById('curatebutton').style.display ='none';
-  document.getElementById('progressprint').style.display ='none';
+  document.getElementById('div-create-new').style.display ='none';
+  document.getElementById('div-create-cloud').style.display ='block';
+    document.getElementById('div-curate-button').style.display ='none';
+  document.getElementById('div-progress-print').style.display ='none';
 }
 
 document.querySelector('#existing-dataset').addEventListener('click', () => {
@@ -33,15 +33,15 @@ document.querySelector('#cloud-dataset').addEventListener('click', () => {
 
 
 function showSelectSubmission(){
-  document.getElementById('divExistingSubmission').style.display ='block';
+  document.getElementById('div-existing-submission').style.display ='block';
 }
 
 function showNewSubmission(){
-  document.getElementById('divExistingSubmission').style.display ='none';
+  document.getElementById('div-existing-submission').style.display ='none';
 }
 
 function showNoSubmission(){
-  document.getElementById('divExistingSubmission').style.display ='none';
+  document.getElementById('div-existing-submission').style.display ='none';
 }
 
 document.querySelector('#existing-submission').addEventListener('click', () => {
@@ -56,15 +56,15 @@ document.querySelector('#no-submission').addEventListener('click', () => {
 
 
 function showSelectDescription(){
-  document.getElementById('divExistingDescription').style.display ='block';
+  document.getElementById('div-existing-description').style.display ='block';
 }
 
 function showNewDescription(){
-  document.getElementById('divExistingDescription').style.display ='none';
+  document.getElementById('div-existing-description').style.display ='none';
 }
 
 function showNoDescription(){
-  document.getElementById('divExistingDescription').style.display ='none';
+  document.getElementById('div-existing-description').style.display ='none';
 }
 
 document.querySelector('#existing-description').addEventListener('click', () => {
@@ -79,15 +79,15 @@ document.querySelector('#no-description').addEventListener('click', () => {
 
 
 function showSelectSubjects(){
-  document.getElementById('divExistingSubjects').style.display ='block';
+  document.getElementById('div-existing-subjects').style.display ='block';
 }
 
 function showNewSubjects(){
-  document.getElementById('divExistingSubjects').style.display ='none';
+  document.getElementById('div-existing-subjects').style.display ='none';
 }
 
 function showNoSubjects(){
-  document.getElementById('divExistingSubjects').style.display ='none';
+  document.getElementById('div-existing-subjects').style.display ='none';
 }
 
 document.querySelector('#existing-subjects').addEventListener('click', () => {
@@ -102,15 +102,15 @@ document.querySelector('#no-subjects').addEventListener('click', () => {
 
 
 function showSelectSamples(){
-  document.getElementById('divExistingSamples').style.display ='block';
+  document.getElementById('div-existing-samples').style.display ='block';
 }
 
 function showNewSamples(){
-  document.getElementById('divExistingSamples').style.display ='none';
+  document.getElementById('div-existing-samples').style.display ='none';
 }
 
 function showNoSamples(){
-  document.getElementById('divExistingSamples').style.display ='none';
+  document.getElementById('div-existing-samples').style.display ='none';
 }
 
 document.querySelector('#existing-samples').addEventListener('click', () => {
@@ -125,32 +125,32 @@ document.querySelector('#no-samples').addEventListener('click', () => {
 
 
 function showPreorganizedDataset(){
-  document.getElementById('divPreorganizedDataset').style.display ='block';
-  document.getElementById('divOrganizeDataset').style.display ='none';
+  document.getElementById('div-pre-organized-dataset').style.display ='block';
+  document.getElementById('div-organize-dataset').style.display ='none';
   document.getElementById('div-smart-organize-dataset').style.display ='none';
-  document.getElementById('save-file-organization-status').innerHTML = '';
-  document.getElementById('divSaveTable').style.display ='block';
-  document.getElementById('divClearTable').style.display ='block';
+  document.getElementById('para-save-file-organization-status').innerHTML = '';
+  document.getElementById('div-save-table').style.display ='block';
+  document.getElementById('div-clear-table').style.display ='block';
   document.getElementById('div-existing-dataset').style.display ='block';
 }
 
 function showOrganizeDataset(){
-  document.getElementById('divPreorganizedDataset').style.display ='none';
-  document.getElementById('divOrganizeDataset').style.display ='block';
+  document.getElementById('div-pre-organized-dataset').style.display ='none';
+  document.getElementById('div-organize-dataset').style.display ='block';
   document.getElementById('div-smart-organize-dataset').style.display ='none';
-  document.getElementById('save-file-organization-status').innerHTML = '';
-  document.getElementById('divSaveTable').style.display ='block';
-  document.getElementById('divClearTable').style.display ='block';
+  document.getElementById('para-save-file-organization-status').innerHTML = '';
+  document.getElementById('div-save-table').style.display ='block';
+  document.getElementById('div-clear-table').style.display ='block';
   document.getElementById('div-existing-dataset').style.display ='none';
 }
 
 function showSmartOrganizeDataset(){
-  document.getElementById('divPreorganizedDataset').style.display ='none';
-  document.getElementById('divOrganizeDataset').style.display ='none';
+  document.getElementById('div-pre-organized-dataset').style.display ='none';
+  document.getElementById('div-organize-dataset').style.display ='none';
   document.getElementById('div-smart-organize-dataset').style.display ='block';
-  document.getElementById('save-file-organization-status').innerHTML = '';
-  document.getElementById('divSaveTable').style.display ='none';
-  document.getElementById('divClearTable').style.display ='none';
+  document.getElementById('para-save-file-organization-status').innerHTML = '';
+  document.getElementById('div-save-table').style.display ='none';
+  document.getElementById('div-clear-table').style.display ='none';
   document.getElementById('div-existing-dataset').style.display ='none';
 }
 

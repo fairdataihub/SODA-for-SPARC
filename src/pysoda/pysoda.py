@@ -17,7 +17,7 @@ import numpy as np
 import collections
 import subprocess
 import shutil
-import re 
+import re
 
 ### Global variables
 curateprogress = ' '
@@ -32,7 +32,7 @@ submitprintstatus = ' '
 
 ### FEATURE #1: SPARC dataset organizer
 # Organize dataset
-def savefileorganization(jsonpath, jsondescription, pathsavefileorganization):
+def save_file_organization(jsonpath, jsondescription, pathsavefileorganization):
     """
     Associated with 'Save' button in 'Organize my dataset' section
     Saves the paths specified along with the description in a CSV file as a template for future use
@@ -65,7 +65,7 @@ def savefileorganization(jsonpath, jsondescription, pathsavefileorganization):
 
 
 compare = lambda x, y: collections.Counter(x) == collections.Counter(y)
-def uploadfileorganization(pathuploadfileorganization, headernames):
+def upload_file_organization(pathuploadfileorganization, headernames):
     """
     Associated with 'Upload' button
     Converts uploaded file template to a dictionary for viewing on UI
@@ -99,7 +99,7 @@ def uploadfileorganization(pathuploadfileorganization, headernames):
         raise e
 
 
-def previewfileorganization(jsonpath):
+def preview_file_organization(jsonpath):
     """
     Associated with 'Preview' button on UI
     Creates a folder for preview and adds empty files but with same name as origin
@@ -118,7 +118,7 @@ def previewfileorganization(jsonpath):
     try:
         makedirs(preview_path)
     except:
-        raise Exception("Preview Folder already present, click on 'Delete Preview Folder' option to get rid of the older vesion")
+        raise Exception("Error: Preview Folder already present, click on 'Delete Preview Folder' option to get rid of the older vesion")
 
     folderrequired = []
     for i in mydict.keys():
@@ -182,7 +182,7 @@ def preview_folder_structure(paths, folder_path):
     return
 
 
-def deletePreviewFileOrganization():
+def delete_preview_file_organization():
     """
     Associated with 'Delete Preview Folder' button
     Deletes the 'Preview' folder from the disk
@@ -192,12 +192,12 @@ def deletePreviewFileOrganization():
     if isdir(preview_path):
         shutil.rmtree(preview_path)
     else:
-        raise Exception("Preview folder not present or already deleted !")
+        raise Exception("Error: Preview folder not present or already deleted !")
     return
 
 
 ### FEATURE #2: SPARC metadata generator
-def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
+def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
         manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
         subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus, bfdirectlystatus,
         alreadyorganizedstatus, organizedatasetstatus, newdatasetname):
@@ -227,8 +227,8 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
             raise Exception('Error: Please select a valid folder for new dataset')
         if (check_forbidden_characters(newdatasetname) or not newdatasetname):
             curatestatus = 'Done'
-            raise Exception('Error: Please enter a valid name for new dataset folder')    
-            
+            raise Exception('Error: Please enter a valid name for new dataset folder')
+
     if submissionstatus:
         if not isfile(pathsubmission):
             curatestatus = 'Done'
@@ -289,7 +289,7 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
         curatestatus = 'Done'
         raise Exception(error)
 
-    #get list of file in pathnewdataset
+    # get list of file in pathnewdataset
     # see if any of submission, dataset_description, subjects, samples exist
     # Show error 'File xxx already exists at target location: either delete or select "None" in the SODA interface'
     if modifyexistingstatus:
@@ -309,7 +309,7 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
             c += 1
 
         if c > 0:
-            error = error + '\nEither delete or select "None" in the SODA interface'
+            error = error + '\nError: Either delete or select "None" in the SODA interface'
             curatestatus = 'Done'
             raise Exception(error)
 
@@ -322,7 +322,7 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
                 curateprogress = curateprogress + ', ,' + "New dataset not requested"
 
                 if manifeststatus:
-                    createmanifestwithdescription(pathdataset, jsonpath, jsondescription)
+                    create_manifest_with_description(pathdataset, jsonpath, jsondescription)
                     curateprogress = curateprogress + ', ,' + 'Manifest created'
                 else:
                     curateprogress = curateprogress + ', ,' + 'Manifest not requested'
@@ -366,17 +366,17 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
             raise e
         try:
             pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
-            curateprogress = 'Started' 
+            curateprogress = 'Started'
             curateprintstatus = 'Curating'
 
             pathdataset = pathnewdatasetfolder
             mkdir(pathdataset)
 
-            createdataset(jsonpath, pathdataset)
+            create_dataset(jsonpath, pathdataset)
             curateprogress = curateprogress + ', ,' + 'New dataset created'
 
             if manifeststatus:
-                createmanifestwithdescription(pathdataset, jsonpath, jsondescription)
+                create_manifest_with_description(pathdataset, jsonpath, jsondescription)
                 curateprogress = curateprogress + ', ,' + 'Manifest created'
             else:
                 curateprogress = curateprogress + ', ,' + 'Manifest not requested'
@@ -413,7 +413,7 @@ def curatedataset(pathdataset, createnewstatus, pathnewdataset, \
             raise e
 
 
-def curatedatasetprogress():
+def curate_dataset_progress():
     """
     Creates global variables to help keep track of the progress
     """
@@ -423,7 +423,7 @@ def curatedatasetprogress():
     return (curateprogress, curatestatus, curateprintstatus)
 
 
-def createmanifestwithdescription(datasetpath, jsonpath, jsondescription):
+def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
     """
     Creates manifest files with the description specified
 
@@ -488,7 +488,7 @@ def createmanifestwithdescription(datasetpath, jsonpath, jsondescription):
             df.to_excel(manifestfile, index=None, header=True)
 
 
-def createdataset(jsonpath, pathdataset):
+def create_dataset(jsonpath, pathdataset):
     """
     Associated with 'Create new dataset locally' button
     Creates folders and files from paths specified in json object TO the destination path specified
@@ -577,22 +577,22 @@ def copyfile(src, dst):
     copy2(src, dst)
 
 
-def check_forbidden_characters(my_string): 
+def check_forbidden_characters(my_string):
     """
     Check for forbidden characters in file/folder name
     Output:
         False: no forbidden character
         True: presence of forbidden character(s)
     """
-    regex = re.compile('[@!#$%^&*()<>?/\|}{~:]')     
-    if(regex.search(my_string) == None): 
+    regex = re.compile('[@!#$%^&*()<>?/\|}{~:]')
+    if(regex.search(my_string) == None):
         return False
-    else: 
+    else:
         return True
 
 ### FEATURE #4: SODA Blackfynn interface
 # Log in to Blackfynn
-def bfaddaccount(keyname, key, secret):
+def bf_add_account(keyname, key, secret):
     """
     Associated with 'Add account' button in 'Login to your Blackfynn account' section
     Adds an account on the local machine linked to the credentials specified
@@ -640,11 +640,11 @@ def bfaddaccount(keyname, key, secret):
             config.write(configfile)
         return 'Success: added account ' + str(bf)
     except:
-        bfdeleteaccount(keyname)
+        bf_delete_account(keyname)
         raise Exception('Authentication Error: please check that key name, key, and secret are entered properly')
 
 
-def bfdeleteaccount(keyname):
+def bf_delete_account(keyname):
     """
     Deletes account information from the system
     """
@@ -655,7 +655,7 @@ def bfdeleteaccount(keyname):
         config.write(configfile)
 
 
-def bfaccountlist():
+def bf_account_list():
     """
     Returns list of accounts stored in the system
     """
@@ -679,7 +679,7 @@ def bfaccountlist():
 
 
 # Visualize existing dataset in the selected account
-def bfdatasetaccount(accountname):
+def bf_dataset_account(accountname):
     """
     Returns list of datasets associated with the specified Account Name ('accountname')
     """
@@ -695,7 +695,7 @@ def bfdatasetaccount(accountname):
         raise e
 
 # Visualize existing dataset in the selected account
-def bfaccountdetails(accountname):
+def bf_account_details(accountname):
     """
     Returns list of datasets associated with the specified Account Name ('accountname')
     """
@@ -709,7 +709,7 @@ def bfaccountdetails(accountname):
 
 
 # Add new empty dataset folder
-def bfnewdatasetfolder(datasetname, accountname):
+def bf_new_dataset_folder(datasetname, accountname):
     """
     Associated with 'Create' button in 'Create new dataset folder'
 
@@ -749,7 +749,7 @@ def bfnewdatasetfolder(datasetname, accountname):
 
 
 # Submit dataset to selected account
-def bfsubmitdataset(accountname, bfdataset, pathdataset):
+def bf_submit_dataset(accountname, bfdataset, pathdataset):
     """
     Associated with 'Submit dataset' button in 'Submit new dataset' section
     Uploads the specified folder to the specified dataset on Blackfynn account
@@ -844,7 +844,7 @@ def upload_structured_file(myds, mypath, myfolder):
             upload_structured_file(mybffolder, myfolderpath, f)
 
 
-def submitdatasetprogress():
+def submit_dataset_progress():
     """
     Creates global variables to help keep track of the dataset submission progress
     """
