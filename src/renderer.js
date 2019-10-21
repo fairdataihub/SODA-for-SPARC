@@ -25,13 +25,13 @@ client.invoke("echo", "server ready", (error, res) => {
 
 // Organize dataset
 const selectDatasetBtn = document.getElementById('button-select-dataset')
-let pathdataset = document.querySelector('#para-selected-dataset')
+let pathDataset = document.querySelector('#para-selected-dataset')
 const tableOrganized = document.getElementById("table-organized")
-var tableOrganizedcount = 0
+var tableOrganizedCount = 0
 const tableNotOrganized = document.getElementById("code_table")
-var tableNotOrganizedcount = 0
-let alreadyorganizedstatus = document.querySelector('#preorganized-dataset')
-let organizedatasetstatus = document.querySelector('#organize-dataset')
+var tableNotOrganizedCount = 0
+let alreadyOrganizedStatus = document.querySelector('#preorganized-dataset')
+let organizeDatasetStatus = document.querySelector('#organize-dataset')
 const clearTableBtn = document.getElementById('button-clear-table')
 
 // Curate dataset
@@ -40,65 +40,65 @@ const selectPreviewBtn = document.getElementById('button-preview-file-organizati
 const deletePreviewBtn = document.getElementById('button-delete-preview-organization-status')
 const selectUploadFileOrganizationBtn = document.getElementById('button-select-upload-file-organization')
 
-let createnewstatus = document.querySelector('#create-newdataset')
-let modifyexistingstatus = document.querySelector('#existing-dataset')
-let bfdirectlystatus = document.querySelector('#cloud-dataset')
-let pathnewdataset = document.querySelector('#selected-new-dataset')
-let newdatasetname = document.querySelector('#new-dataset-name')
-let manifeststatus = document.querySelector('#generate-manifest')
-let curationform = document.querySelector('#dataset-curate-form')
+let createNewStatus = document.querySelector('#create-newdataset')
+let modifyExistingStatus = document.querySelector('#existing-dataset')
+let bfDirectlyStatus = document.querySelector('#cloud-dataset')
+let pathNewDataset = document.querySelector('#selected-new-dataset')
+let newDatasetName = document.querySelector('#new-dataset-name')
+let manifestStatus = document.querySelector('#generate-manifest')
+let curationForm = document.querySelector('#dataset-curate-form')
 
-let existingsubmissionstatus = document.querySelector('#existing-submission')
-let newsubmissionstatus = document.querySelector('#new-submission')
-let pathsubmissionexisting = document.querySelector('#selected-submission')
+let existingSubmissionStatus = document.querySelector('#existing-submission')
+let newSubmissionStatus = document.querySelector('#new-submission')
+let pathSubmissionExisting = document.querySelector('#selected-submission')
 
-let existingdescriptionstatus = document.querySelector('#existing-description')
-let newdescriptionstatus = document.querySelector('#new-description')
-let pathdescriptionexisting = document.querySelector('#selected-description')
+let existingDescriptionStatus = document.querySelector('#existing-description')
+let newDescriptionStatus = document.querySelector('#new-description')
+let pathDescriptionExisting = document.querySelector('#selected-description')
 
-let existingsubjectsstatus = document.querySelector('#existing-subjects')
-let newsubjectsstatus = document.querySelector('#new-subjects')
-let pathsubjectsexisting = document.querySelector('#selected-subjects')
+let existingSubjectsStatus = document.querySelector('#existing-subjects')
+let newSubjectsStatus = document.querySelector('#new-subjects')
+let pathSubjectsExisting = document.querySelector('#selected-subjects')
 
-let existingsamplesstatus = document.querySelector('#existing-samples')
-let newsamplesstatus = document.querySelector('#new-samples')
-let pathsamplesexisting = document.querySelector('#selected-samples')
+let existingSamplesStatus = document.querySelector('#existing-samples')
+let newSamplesStatus = document.querySelector('#new-samples')
+let pathSamplesExisting = document.querySelector('#selected-samples')
 
-var submissionstatus
-var pathsubmission
-var descriptionstatus
-var pathdescription
-var subjectsstatus
-var pathsubjects
-var samplesstatus
-var pathsamples
+var submissionStatus
+var pathSubmission
+var descriptionStatus
+var pathDescription
+var subjectsStatus
+var pathSubjects
+var samplesStatus
+var pathSamples
 
 
 const curateDatasetBtn = document.getElementById('button-curate-dataset')
-let progressinfo = document.querySelector('#progressinfo')
+let progressInfo = document.querySelector('#progressinfo')
 
 
 // Manage and submit
-let keyname = document.querySelector('#bf-key-name')
+let keyName = document.querySelector('#bf-key-name')
 let key = document.querySelector('#bf-key')
 let secret = document.querySelector('#bf-secret')
 const bfAddAccountBtn = document.getElementById('add-bf-account')
-let bfaddaccountinfo = document.querySelector('#add-account-progress')
+let bfAddAccountInfo = document.querySelector('#add-account-progress')
 
-let bfaccountlist = document.querySelector('#bfaccountlist')
+let bfAccountList = document.querySelector('#bfaccountlist')
 var myitem
-let bfdatasetlist = document.querySelector('#bfdatasetlist')
+let bfDatasetList = document.querySelector('#bfdatasetlist')
 
 const bfRefreshDatasetBtn = document.getElementById('button-refresh-dataset-list')
-let bfnewdatasetname = document.querySelector('#bf-new-dataset-name')
+let bfNewDatasetName = document.querySelector('#bf-new-dataset-name')
 const bfCreateNewDatasetBtn = document.getElementById('button-create-bf-new-dataset')
-let bfcreatenewdatasetinfo = document.querySelector('#add-new-dataset-progress')
+let bfCreateNewDatasetInfo = document.querySelector('#add-new-dataset-progress')
 const bfSubmitDatasetBtn = document.getElementById('button-submit-dataset')
-let bfsubmitdatasetinfo = document.querySelector('#progresssubmit')
-let pathsubmitdataset = document.querySelector('#selected-submit-dataset')
+let bfSubmitDatasetInfo = document.querySelector('#progresssubmit')
+let pathSubmitDataset = document.querySelector('#selected-submit-dataset')
 var progressBar = document.getElementById("div-progress-bar")
 
-let bfDatasetlistPermission = document.querySelector('#bfdatasetlist_permission')
+let bfDatasetListPermission = document.querySelector('#bfdatasetlist_permission')
 let currentDatasetPermission = document.querySelector('#para-dataset-permission-current')
 let bfListUsers = document.querySelector('#bf_list_users')
 let bfListRoles = document.querySelector('#bf_list_roles')
@@ -108,8 +108,8 @@ let datasetPermissionStatus = document.querySelector('#para-dataset-permission-s
 //////////////////////////////////
 // Constant parameters
 //////////////////////////////////
-const blackcolor = '#000000'
-const redcolor = '#ff1a1a'
+const blackColor = '#000000'
+const redColor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivatives", "docs", "protocol", "samples", "sourcedata", "subjects"]
 
 
@@ -132,14 +132,14 @@ selectDatasetBtn.addEventListener('click', (event) => {
 })
 ipcRenderer.on('selected-dataset', (event, path) => {
   clearTable(tableOrganized)
-  pathdataset.innerHTML = ""
+  pathDataset.innerHTML = ""
   var folderChecking = checkFolderStruture(path[0])
   if (folderChecking == true) {
-    pathdataset.innerHTML = path
+    pathDataset.innerHTML = path
     var jsonfolder = organizedFolderToJson(path[0])
     jsonToTableOrganized(tableOrganized, jsonfolder)
   } else {
-    pathdataset.innerHTML = "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>"
+    pathDataset.innerHTML = "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>"
   }
 })
 
@@ -161,9 +161,9 @@ ipcRenderer.on('selected-code', (event, path) => {
 
 //Clear table
 clearTableBtn.addEventListener('click', () => {
-  if (alreadyorganizedstatus.checked){
+  if (alreadyOrganizedStatus.checked){
     clearTable(tableOrganized)
-  } else if (organizedatasetstatus.checked) {
+  } else if (organizeDatasetStatus.checked) {
     clearTable(tableNotOrganized)
   }
 })
@@ -235,7 +235,7 @@ selectSaveFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('save-file-dialog-saveorganization')
 })
 ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
-  if (alreadyorganizedstatus.checked == true){
+  if (alreadyOrganizedStatus.checked == true){
     var jsonformat = tableToJson(tableOrganized)
     var jsonvect = tableToJsonWithDescription(tableOrganized)
   } else {
@@ -328,100 +328,100 @@ deletePreviewBtn.addEventListener('click', () => {
 curateDatasetBtn.addEventListener('click', () => {
 
   // Disable curate button to prevent multiple clicks
-  progressinfo.style.color = blackcolor
+  progressInfo.style.color = blackColor
   curateDatasetBtn.disabled = true
-  disableform(curationform)
+  disableform(curationForm)
 
   // Convert table content into json file for transferring to Python
-  if (alreadyorganizedstatus.checked) {
-    if (fs.existsSync(pathdataset.innerHTML)) {
+  if (alreadyOrganizedStatus.checked) {
+    if (fs.existsSync(pathDataset.innerHTML)) {
       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
     } else {
-      progressinfo.style.color = redcolor
-      progressinfo.value = 'Error: Select a valid dataset folder'
+      progressInfo.style.color = redColor
+      progressInfo.value = 'Error: Select a valid dataset folder'
       curateDatasetBtn.disabled = false
-      enableform(curationform)
+      enableform(curationForm)
       console.error('Error')
       return
     }
-  } else if (organizedatasetstatus.checked) {
+  } else if (organizeDatasetStatus.checked) {
     var jsonvect = tableToJsonWithDescription(tableNotOrganized)
   } else {
-  	progressinfo.style.color = redcolor
-  	progressinfo.value = 'Error: Please select an option under "Organize dataset" '
+  	progressInfo.style.color = redColor
+  	progressInfo.value = 'Error: Please select an option under "Organize dataset" '
     curateDatasetBtn.disabled = false
-    enableform(curationform)
+    enableform(curationForm)
   	return
   }
   var jsonpath = jsonvect[0]
   var jsondescription = jsonvect[1]
 
   var metadatafiles = []
-  if (existingsubmissionstatus.checked === true){
-    submissionstatus = true
-    pathsubmission = pathsubmissionexisting.value
-    metadatafiles.push(pathsubmission)
-  } else if (newsubmissionstatus.checked === true){
-    submissionstatus = true
-    pathsubmission = path.join(__dirname, 'file_templates', 'submission.xlsx')
-    metadatafiles.push(pathsubmission)
+  if (existingSubmissionStatus.checked === true){
+    submissionStatus = true
+    pathSubmission = pathSubmissionExisting.value
+    metadatafiles.push(pathSubmission)
+  } else if (newSubmissionStatus.checked === true){
+    submissionStatus = true
+    pathSubmission = path.join(__dirname, 'file_templates', 'submission.xlsx')
+    metadatafiles.push(pathSubmission)
   } else {
-    submissionstatus = false
+    submissionStatus = false
   }
 
-  if (existingdescriptionstatus.checked === true){
-    descriptionstatus = true
-    pathdescription = pathdescriptionexisting.value
-    metadatafiles.push(pathdescription)
-  } else if (newdescriptionstatus.checked === true){
-    descriptionstatus = true
-    pathdescription = path.join(__dirname, 'file_templates', 'dataset_description.xlsx')
-    metadatafiles.push(pathdescription)
+  if (existingDescriptionStatus.checked === true){
+    descriptionStatus = true
+    pathDescription = pathDescriptionExisting.value
+    metadatafiles.push(pathDescription)
+  } else if (newDescriptionStatus.checked === true){
+    descriptionStatus = true
+    pathDescription = path.join(__dirname, 'file_templates', 'dataset_description.xlsx')
+    metadatafiles.push(pathDescription)
   } else {
-    descriptionstatus = false
+    descriptionStatus = false
   }
 
-  if (existingsubjectsstatus.checked === true){
-    subjectsstatus = true
-    pathsubjects = pathsubjectsexisting.value
-    metadatafiles.push(pathsubjects)
-  } else if (newsubjectsstatus.checked === true){
-    subjectsstatus = true
-    pathsubjects = path.join(__dirname, 'file_templates', 'subjects.xlsx')
-    metadatafiles.push(pathsubjects)
+  if (existingSubjectsStatus.checked === true){
+    subjectsStatus = true
+    pathSubjects = pathSubjectsExisting.value
+    metadatafiles.push(pathSubjects)
+  } else if (newSubjectsStatus.checked === true){
+    subjectsStatus = true
+    pathSubjects = path.join(__dirname, 'file_templates', 'subjects.xlsx')
+    metadatafiles.push(pathSubjects)
   } else {
-    subjectsstatus = false
+    subjectsStatus = false
   }
 
-  if (existingsamplesstatus.checked === true){
-    samplesstatus = true
-    pathsamples = pathsamplesexisting.value
-    metadatafiles.push(pathsamples)
-  } else if (newsamplesstatus.checked === true){
-    samplesstatus = true
-    pathsamples = path.join(__dirname, 'file_templates', 'samples.xlsx')
-    metadatafiles.push(pathsamples)
+  if (existingSamplesStatus.checked === true){
+    samplesStatus = true
+    pathSamples = pathSamplesExisting.value
+    metadatafiles.push(pathSamples)
+  } else if (newSamplesStatus.checked === true){
+    samplesStatus = true
+    pathSamples = path.join(__dirname, 'file_templates', 'samples.xlsx')
+    metadatafiles.push(pathSamples)
   } else {
-   samplesstatus = false
+   samplesStatus = false
   }
 
   // Initiate curation by calling python
-  progressinfo.value = ''
+  progressInfo.value = ''
   var completionstatus = 'Solving'
-  var pathdatasetvalue = String(pathdataset.innerHTML)
+  var pathDatasetValue = String(pathDataset.innerHTML)
 
-  client.invoke("api_curate_dataset", pathdatasetvalue, createnewstatus.checked, pathnewdataset.value,
-    manifeststatus.checked, submissionstatus, pathsubmission,  descriptionstatus, pathdescription,
-    subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus.checked,
-    bfdirectlystatus.checked, alreadyorganizedstatus.checked, organizedatasetstatus.checked, newdatasetname.value,
+  client.invoke("api_curate_dataset", pathDatasetValue, createNewStatus.checked, pathNewDataset.value,
+    manifestStatus.checked, submissionStatus, pathSubmission,  descriptionStatus, pathDescription,
+    subjectsStatus, pathSubjects, samplesStatus, pathSamples, jsonpath, jsondescription, modifyExistingStatus.checked,
+    bfDirectlyStatus.checked, alreadyOrganizedStatus.checked, organizeDatasetStatus.checked, newDatasetName.value,
     (error, res) => {
     if(error) {
       console.log('ERROR')
       var emessage = userError(error)
-      progressinfo.style.color = redcolor
-      progressinfo.value = emessage
+      progressInfo.style.color = redColor
+      progressInfo.value = emessage
       console.log(error)
-      enableform(curationform)
+      enableform(curationForm)
     } else {
       console.log('Done', res)
     }
@@ -436,7 +436,7 @@ curateDatasetBtn.addEventListener('click', () => {
         completionstatus = res[1]
         var printstatus = res[2]
         if (printstatus === 'Curating') {
-          progressinfo.value = res[0].split(',').join('\n')
+          progressInfo.value = res[0].split(',').join('\n')
         }
       }
     })
@@ -444,7 +444,7 @@ curateDatasetBtn.addEventListener('click', () => {
     if (completionstatus === 'Done'){
       clearInterval(timerprogress)
       curateDatasetBtn.disabled = false
-      enableform(curationform)
+      enableform(curationForm)
     }
   }
 
@@ -457,18 +457,18 @@ curateDatasetBtn.addEventListener('click', () => {
 
 // Add bf account
 bfAddAccountBtn.addEventListener('click', () => {
-  bfaddaccountinfo.style.color = blackcolor
+  bfAddAccountInfo.style.color = blackColor
   bfAddAccountBtn.disabled = true
-  bfaddaccountinfo.value = ''
-  client.invoke("api_bf_add_account", keyname.value, key.value, secret.value, (error, res) => {
+  bfAddAccountInfo.value = ''
+  client.invoke("api_bf_add_account", keyName.value, key.value, secret.value, (error, res) => {
     if(error) {
       console.log('ERROR')
       var emessage = userError(error)
-      bfaddaccountinfo.style.color = redcolor
-      bfaddaccountinfo.value = emessage
+      bfAddAccountInfo.style.color = redColor
+      bfAddAccountInfo.value = emessage
     } else {
-        bfaddaccountinfo.value = res
-        removeOptions(bfaccountlist)
+        bfAddAccountInfo.value = res
+        removeOptions(bfAccountList)
         updateBfAccountList()
     }
     bfAddAccountBtn.disabled = false
@@ -477,12 +477,12 @@ bfAddAccountBtn.addEventListener('click', () => {
 
 
 // Select bf account from dropdownlist and show existing dataset
-bfaccountlist.addEventListener('change', () => {
-  refreshBfDatasetList(bfdatasetlist)
-  refreshBfDatasetList(bfDatasetlistPermission)
+bfAccountList.addEventListener('change', () => {
+  refreshBfDatasetList(bfDatasetList)
+  refreshBfDatasetList(bfDatasetListPermission)
   currentDatasetPermission.innerHTML = ''
   refreshBfUsersList(bfListUsers)
-  var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
+  var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
 
   if (selectedbfaccount == 'Select') {
 
@@ -497,29 +497,29 @@ bfaccountlist.addEventListener('change', () => {
 
 // Refresh list of bf dataset list (in case user create it online)
 bfRefreshDatasetBtn.addEventListener('click', () => {
-  refreshBfDatasetList(bfdatasetlist)
-  refreshBfDatasetList(bfDatasetlistPermission)
+  refreshBfDatasetList(bfDatasetList)
+  refreshBfDatasetList(bfDatasetListPermission)
   currentDatasetPermission.innerHTML = ''
   console.log("refreshed")
 })
 
 // Add new dataset folder (empty) on bf
 bfCreateNewDatasetBtn.addEventListener('click', () => {
-  bfcreatenewdatasetinfo.style.color = blackcolor
+  bfCreateNewDatasetInfo.style.color = blackColor
   bfCreateNewDatasetBtn.disabled = true
-  bfcreatenewdatasetinfo.value = 'Adding'
-  var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
-  client.invoke("api_bf_new_dataset_folder", bfnewdatasetname.value, selectedbfaccount, (error, res) => {
+  bfCreateNewDatasetInfo.value = 'Adding'
+  var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  client.invoke("api_bf_new_dataset_folder", bfNewDatasetName.value, selectedbfaccount, (error, res) => {
     if (error) {
       console.log('ERROR')
       var emessage = userError(error)
-      bfcreatenewdatasetinfo.style.color = redcolor
-      bfcreatenewdatasetinfo.value = emessage
+      bfCreateNewDatasetInfo.style.color = redColor
+      bfCreateNewDatasetInfo.value = emessage
       bfCreateNewDatasetBtn.disabled = false
     } else {
-        bfcreatenewdatasetinfo.value = 'Success: created folder' + ' ' + bfnewdatasetname.value
-        refreshBfDatasetList(bfdatasetlist)
-        refreshBfDatasetList(bfDatasetlistPermission)
+        bfCreateNewDatasetInfo.value = 'Success: created folder' + ' ' + bfNewDatasetName.value
+        refreshBfDatasetList(bfDatasetList)
+        refreshBfDatasetList(bfDatasetListPermission)
         currentDatasetPermission.innerHTML = ''
         bfCreateNewDatasetBtn.disabled = false
     }
@@ -575,9 +575,9 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   bfSubmitDatasetBtn.disabled = true
   // bfsubmitdatasetinfo.value = 'Submitting'
   var completionStatus = 'Solving'
-  var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
-  var selectedbfdataset = bfdatasetlist.options[bfdatasetlist.selectedIndex].text
-  client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathsubmitdataset.value, (error, res) => {
+  var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text
+  client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathSubmitDataset.value, (error, res) => {
     if(error) {
       console.log('ERROR')
       var emessage = userError(error)
@@ -627,7 +627,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
  * This event tracks change of the selected dataset in the dropdown list
  * under the "Manage dataset permission" feature
  */
-bfDatasetlistPermission.addEventListener('change', () => {
+bfDatasetListPermission.addEventListener('change', () => {
   showCurrentPermission()
 })
 
@@ -638,8 +638,8 @@ bfDatasetlistPermission.addEventListener('change', () => {
  */
 bfAddPermissionBtn.addEventListener('click', () => {
   datasetPermissionStatus.innerHTML = ''
-  var selectedBfAccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
-  var selectedBfDataset = bfDatasetlistPermission.options[bfdatasetlist_permission.selectedIndex].text
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text
 
@@ -678,7 +678,7 @@ function updateBfAccountList(){
       var option = document.createElement("option")
       option.textContent = myitemselect
       option.value = myitemselect
-      bfaccountlist.appendChild(option)
+      bfAccountList.appendChild(option)
     }
   }
 })
@@ -707,13 +707,13 @@ function enableform(formId) {
 
 function refreshBfDatasetList(bfdstlist){
   removeOptions(bfdstlist)
-  var accountselected = bfaccountlist.options[bfaccountlist.selectedIndex].text
+  var accountselected = bfAccountList.options[bfAccountList.selectedIndex].text
   if (accountselected === "Select"){
     var optionselect = document.createElement("option")
     optionselect.textContent = 'Select dataset'
     bfdstlist.appendChild(optionselect)
   } else {
-    client.invoke("api_bf_dataset_account", bfaccountlist.options[bfaccountlist.selectedIndex].text, (error, res) => {
+    client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
       if(error) {
         console.error(error)
       } else {
@@ -735,12 +735,12 @@ function refreshBfDatasetList(bfdstlist){
  */
 function refreshBfUsersList(UsersList){
   removeOptions(UsersList)
-  var accountSelected = bfaccountlist.options[bfaccountlist.selectedIndex].text
+  var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
   var optionUser = document.createElement("option")
   optionUser.textContent = 'Select user'
   UsersList.appendChild(optionUser)
   if (accountSelected !== "Select") {
-    client.invoke("api_bf_get_users", bfaccountlist.options[bfaccountlist.selectedIndex].text, (error, res) => {
+    client.invoke("api_bf_get_users", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
       if (error){
         console.error(error)
       } else{
@@ -758,8 +758,8 @@ function refreshBfUsersList(UsersList){
 
 function showCurrentPermission(){
   currentDatasetPermission.innerHTML = ''
-  var selectedBfAccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
-  var selectedBfDataset = bfDatasetlistPermission.options[bfdatasetlist_permission.selectedIndex].text
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
     currentDatasetPermission.innerHTML = ''
   } else {
@@ -780,7 +780,7 @@ function showCurrentPermission(){
 }
 
 function showAccountDetails(){
-  client.invoke("api_bf_account_details", bfaccountlist.options[bfaccountlist.selectedIndex].text, (error, res) => {
+  client.invoke("api_bf_account_details", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
     if(error) {
       console.error(error)
     } else {
@@ -817,13 +817,13 @@ function checkFolderStruture(pathDatasetFolder){
   return true
 }
 
-function organizedFolderToJson(pathdatasetval){
+function organizedFolderToJson(pathDatasetVal){
   var jsonvar = {}
   var mainfolderfiles = []
-  var files = fs.readdirSync(pathdatasetval)
+  var files = fs.readdirSync(pathDatasetVal)
   for (var i = 0; i<files.length; i++) {
     var filename = files[i]
-    var filepath = path.join(pathdatasetval, filename)
+    var filepath = path.join(pathDatasetVal, filename)
     if (fs.lstatSync(filepath).isDirectory()){
       var filesinfolder = fs.readdirSync(filepath)
       console.log(filesinfolder)
@@ -853,9 +853,9 @@ function jsonToTableOrganized(table, jsonvar){
     var rowcount = document.getElementById(SPARCfolderid).rowIndex
     var pathlist = jsonvar[SPARCfolder]
     for (var i = 0; i < pathlist.length; i++){
-      tableOrganizedcount = tableOrganizedcount + 1
+      tableOrganizedCount = tableOrganizedCount + 1
       var rownum = rowcount + i + 1
-      var table_len = tableOrganizedcount
+      var table_len = tableOrganizedCount
       var row = table.insertRow(rownum).outerHTML="<tr id='row-org"+table_len+"'><td id='name_row_org"+table_len+"'>"+ pathlist[i] +"</td> <td id='description_row_org"+table_len+"'>"+ "" +"</td> <td><input type='button' id='edit_button_org"+table_len+"' value='Edit description' class='edit' onclick='edit_row_org("+table_len+")'> <input type='button' id='save_button_org"+table_len+"' value='Save description' class='save' onclick='save_row_org("+table_len+")'> <input type='button' value='Delete row' class='delete' onclick='delete_row_org("+table_len+")'> </td></tr>";
     }
   }
@@ -912,8 +912,8 @@ function insertFileToTable(table, path){
     ipcRenderer.send('open-error-file-exist', emessage)
   } else {
     for (i = 0; i < path.length; i++) {
-      tableNotOrganizedcount = tableNotOrganizedcount + 1
-      var table_len=tableNotOrganizedcount
+      tableNotOrganizedCount = tableNotOrganizedCount + 1
+      var table_len=tableNotOrganizedCount
       var rownum = rowcount + i + 1
       var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ path[i] +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit description' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save description' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete row' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
     }
@@ -954,8 +954,8 @@ function jsonToTableWithDescription(table, jsonvar){
     for (var i = 0; i < pathlist.length; i++){
       if (pathlist[i] !== "" ) {
 	      var rownum = rowcount + i + 1
-	      tableNotOrganizedcount = tableNotOrganizedcount + 1
-	      var table_len = tableNotOrganizedcount
+	      tableNotOrganizedCount = tableNotOrganizedCount + 1
+	      var table_len = tableNotOrganizedCount
 	      var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ pathlist[i] +"</td><td id='description_row"+table_len+"'>"+ descriptionlist[i] +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit description' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save description' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete row' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
        }
     }
@@ -1018,8 +1018,8 @@ function dropAddToTable(e, myID){
   	for (let f of e.dataTransfer.files) {
           console.log('File(s) you dragged here: ', f.path, myID)
           var rownum = rowcount + i + 1
-  	    tableNotOrganizedcount = tableNotOrganizedcount + 1
-  	    var table_len = tableNotOrganizedcount
+  	    tableNotOrganizedCount = tableNotOrganizedCount + 1
+  	    var table_len = tableNotOrganizedCount
   	    var row = tableNotOrganized.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ f.path +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit description' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save description' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete row' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
        	i = i + 1
       }
