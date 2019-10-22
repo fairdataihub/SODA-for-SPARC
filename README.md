@@ -94,7 +94,7 @@ and try again*
 The previous packaging step would generate folder for the program which contains an executable to run the application. If you desire to generate installers, we suggest the following method:
 #### Windows:<br>
 - Download [Inno Setup](http://www.jrsoftware.org/isdl.php)<br>
-- Open Inno Setup and create Installer from the UI. If you're having troubles, refer to this video tutorial – https://www.youtube.com/watch?v=wW3NUAUZhnY
+- Open Inno Setup and create Installer from the UI. For clear instructions, refer to this video tutorial – https://www.youtube.com/watch?v=wW3NUAUZhnY
 
 #### MAC:<br>
 - Creating DMG Installer – https://github.com/LinusU/node-appdmg<br>
@@ -115,5 +115,5 @@ The previous packaging step would generate folder for the program which contains
 
 #### Linux:<br>
 Creating Debian Installer – https://github.com/electron-userland/electron-installer-debian<br>
-`$ npm install -g electron-installer-debian`<br>
-`$ electron-installer-debian --src path/to/SODA-linux-x64/ --dest installers/ --arch amd64`<br>
+- `$ npm install -g electron-installer-debian`<br>
+- `$ electron-installer-debian --src path/to/SODA-linux-x64/ --dest installers/ --arch amd64`<br>
