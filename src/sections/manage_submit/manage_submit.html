@@ -12,7 +12,7 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button">Login to your Blackfynn account
+        <button id="button-new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button">Login to your Blackfynn account
           <div class="demo-meta u-avoid-clicks"> Easy login interface </div>
         </button>
 
@@ -20,16 +20,16 @@
           <p> Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients"> Blackfynn Help </a>
           for generating an API and setting up your Blackfynn account on your computer for the first time. </p>
 
-          <form id = 'blackfynnAccount'>
+          <form id = 'blackfynn-account'>
             <div>
-              <input id="addAccount" name="blackfynn-account" type="radio" class="with-style" value="preexisting"/>
+              <input id="addAccount" name="blackfynn-account" type="radio" class="with-style" />
               <label for="addAccount" class=labelradio> Add new account </label>
                 <div class="tooltipnew">( ? )
                   <span class="tooltiptext">Authenticate yourself by using API key and secret</span>
                 </div>
             </div>
             <div>
-              <input id="selectAccount" name="blackfynn-account" type="radio" class="with-style" value="local" />
+              <input id="selectAccount" name="blackfynn-account" type="radio" class="with-style" />
               <label for="selectAccount" class=labelradio> Select account </label>
                 <div class="tooltipnew">( ? )
                   <span class="tooltiptext">Added account(s) will be displayed in this drop-down list. <br>
@@ -38,7 +38,7 @@
             </div>
           </form>
 
-          <div id="divAddAccount" class="datasetsaveoption">
+          <div id="div-add-account" class="datasetsaveoption">
             <h5> Add new account </h5>
             <div> <font color="black"> Api key name: </font> </div>
             <div class="demo-controls">
@@ -59,22 +59,21 @@
             </div>
           </div>
 
-            <div id="divSelectAccount" class="datasetsaveoption">
-              <h5> Select account </h5>
-              <div class="demo-controls">
-                <select class="my_dropdown" id=bfaccountlist>
-                </select>
-              </div>
-              <p id='select-account-status'> <p>
+          <div id="div-select-account" class="datasetsaveoption">
+            <h5> Select account </h5>
+            <div class="demo-controls">
+              <select class="my_dropdown" id=bfaccountlist>
+              </select>
             </div>
-
+            <p id='para-select-account-status'> <p>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Create new dataset folder
+        <button id="button-new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Create new dataset folder
           <div class="demo-meta u-avoid-clicks"> Add an empty dataset folder on the selected Blackfynn account </div>
         </button>
         <div class="demo-box">
@@ -91,29 +90,28 @@
 
           <h5> </h5>
           <div class="demo-controls">
-            <button class="demo-button" id="create-bf-new-dataset"> Create </button>
+            <button id="button-create-bf-new-dataset" class="demo-button"> Create </button>
             <textarea class="demo-response" id="add-new-dataset-progress" readonly></textarea>
           </div>
-
         </div>
       </div>
     </div>
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Submit new dataset
+        <button id="button-new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Submit new dataset
           <div class="demo-meta u-avoid-clicks"> Upload a local dataset to your Blackfynn account </div>
         </button>
         <div class="demo-box">
           <p> </p>
 
           <h5> Select local dataset to submit
-            <div class="tooltipnew">( ? )
-              <span class="tooltiptext">Select the local folder that you want to submit to your Blackfynn account</span>
-            </div>
+          <div class="tooltipnew">( ? )
+            <span class="tooltiptext">Select the local folder that you want to submit to your Blackfynn account</span>
+          </div>
           </h5>
           <div class="demo-controls">
-            <button class="demo-button" id="select-submit-dataset">Select Dataset Folder </button>
+            <button id="button-select-submit-dataset" class="demo-button">Select Dataset Folder </button>
             <textarea class="demo-response" id="selected-submit-dataset"></textarea>
           </div>
 
@@ -130,35 +128,33 @@
 
           <h5> </h5>
           <div class="demo-controls">
-            <button class="demo-button" id="refresh-dataset-list"> Refresh list </button>
+            <button id="button-refresh-dataset-list" class="demo-button"> Refresh list </button>
           </div>
 
           <div>
-          <h5> Submit
-            <div class="tooltipnew">( ? )
-              <span class="tooltiptext">Click on 'Submit dataset' to push all the files/folders from the selected local folder into the selected Blackfynn folder. <br>
-              Local folder structure will be preserved</span>
-            </div>
-          </h5>
-          <button class="demo-button" id="submit-dataset"> Submit dataset </button>
-          <p id='progress-bar-error-status'> <p>
-          <h5> Progress </h5>
-          <div id='meter'><div id='progress-bar'></div> </div>
-          <p id='progress-bar-status'> <p>
+            <h5> Submit
+              <div class="tooltipnew">( ? )
+                <span class="tooltiptext">Click on 'Submit dataset' to push all the files/folders from the selected local folder into the selected Blackfynn folder. <br>
+                Local folder structure will be preserved</span>
+              </div>
+            </h5>
+            <button id="button-submit-dataset" class="demo-button"> Submit dataset </button>
+            <p id='para-progress-bar-error-status'> <p>
+            <h5> Progress </h5>
+            <div id='div-meter'><div id='div-progress-bar'></div> </div>
+            <p id='para-progress-bar-status'> <p>
           </div>
-
           <!-- <div>
           <h5> Progress </h5>
           <textarea id='progresssubmit' class='outputprint' rows="25" readonly></textarea>
           </div> -->
-
         </div>
       </div>
     </div>
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Manage dataset permission
+        <button id="button-new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Manage dataset permission
           <div class="demo-meta u-avoid-clicks"> Give access to your dataset to other members of your organization for collaborating or to the Curation Team for review </div>
         </button>
         <div class="demo-box">
@@ -178,7 +174,7 @@
             </div>
           </h5>
           <div class="demo-controls">
-            <p id = "dataset_permission_current"> </p>
+            <p id = "para-dataset-permission-current"> </p>
           </div>
 
           <h5> Add/edit permission
@@ -210,8 +206,8 @@
 
           <h5>  </h5>
           <div class="demo-controls">
-            <button class="demo-button" id="add_permission"> Add permission </button>
-            <p id = "dataset_permission_status"> </p>
+            <button id="button-add-permission" class="demo-button"> Add permission </button>
+            <p id = "para-dataset-permission-status"> </p>
           </div>
         </div>
       </div>
@@ -219,7 +215,7 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Annotate dataset
+        <button id="button-new-window-crashes-demo-toggle" class="js-container-target demo-toggle-button"> Annotate dataset
           <div class="demo-meta u-avoid-clicks"> Inform the model properties for your dataset </div>
         </button>
         <div class="demo-box">

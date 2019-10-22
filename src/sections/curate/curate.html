@@ -12,29 +12,29 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="new-window-demo-toggle" class="js-container-target demo-toggle-button">Organize
+        <button id="button-new-window-demo-toggle" class="js-container-target demo-toggle-button">Organize
           <div class="demo-meta u-avoid-clicks"> Implement the SPARC dataset folder structure
           </div>
         </button>
         <div class="demo-box">
 
-          <form id = 'dataset_organize_form'>
+          <form id = 'form-dataset-organize-form'>
             <div>
-              <input id="preorganized-dataset" name="organizing-dataset" type="radio" class="with-style" value="preorganized"/>
+              <input id="preorganized-dataset" name="organizing-dataset" type="radio" class="with-style" />
               <label for="preorganized-dataset" class=labelradio> Dataset already organized </label>
                 <div class="tooltipnew">( ? )
                   <span class="tooltiptext">Select this option when you already have the SPARC folder structure in place</span>
                 </div>
             </div>
             <div>
-              <input id="organize-dataset" name="organizing-dataset" type="radio" class="with-style" value="not-organized" />
+              <input id="organize-dataset" name="organizing-dataset" type="radio" class="with-style" />
               <label for="organize-dataset" class=labelradio> Organize my dataset </label>
                 <div class="tooltipnew">( ? )
                   <span class="tooltiptext">Select this option to conveniently organize your dataset following the SPARC folder structure</span>
                 </div>
             </div>
             <div>
-              <input id="smart-organize-dataset" name="organizing-dataset" type="radio" class="with-style" value="smart-organize"/>
+              <input id="smart-organize-dataset" name="organizing-dataset" type="radio" class="with-style" />
               <label for="smart-organize-dataset" class=labelradio> Smart organize </label>
                 <div class="tooltipnew">( ? )
                   <span class="tooltiptext">Select to automatically organize your dataset based on a previously saved organized structure. <br>
@@ -50,11 +50,11 @@
             </div>
           </div>
 
-          <div id="divPreorganizedDataset" class="datasetsaveoption">
+          <div id="div-pre-organized-dataset" class="datasetsaveoption">
             <h5> </h5>
             <div class="demo-controls">
-            <button class="demo-button" id="select-dataset"> Select Dataset Folder </button>
-            <p id="selected-dataset"></p>
+            <button id="button-select-dataset" class="demo-button"> Select Dataset Folder </button>
+            <p id="para-selected-dataset"></p>
             </div>
             <h5> </h5>
             <div class="demo-controls">
@@ -103,16 +103,15 @@
               </div>
           </div>
 
-          <div id="divOrganizeDataset" class="datasetsaveoption">
-
+          <div id="div-organize-dataset" class="datasetsaveoption">
             <h5> Upload previously saved file structure
               <div class="tooltipnew">( ? )
                 <span class="tooltiptext">Import template of the file structure you saved earlier</span>
               </div>
             </h5>
             <div class="demo-controls">
-              <button class="demo-button" id="select-upload-file-organization"> Upload </button>
-              <p id='upload-file-organization-status'> <p>
+              <button id="button-select-upload-file-organization" class="demo-button"> Upload </button>
+              <p id='para-upload-file-organization-status'> <p>
             </div>
             <hr>
 
@@ -126,20 +125,20 @@
             <div class="demo-controls">
             	<p> Select SPARC folder: <p>
               <div>	<select id="SPARCfolderlist">
-	              <option> code </option>
-	              <option> derivatives </option>
-	              <option> docs </option>
-	              <option> protocol </option>
-	              <option> samples </option>
-	              <option> sourcedata </option>
-	              <option> subjects </option>
-                <option> main </option>
-	        	</select> </div>
+                <option> code </option>
+                <option> derivatives </option>
+                <option> docs </option>
+                <option> protocol </option>
+                <option> samples </option>
+                <option> sourcedata </option>
+                <option> subjects </option>
+                <option> main </option></select>
+              </div>
             </div>
             <div class="demo-controls">
                 <p> Browse and select files/folders: </p>
-              	<button class="demo-button" id="select-code">Add files </button>
-              	<button class="demo-button" id="select-code-directory">Add folders</button>
+              	<button id="button-select-code" class="demo-button">Add files </button>
+              	<button id="button-select-code-directory" class="demo-button">Add folders</button>
             </div>
             <h5>  </h5>
             <div class="demo-controls">
@@ -183,8 +182,6 @@
                     <th>main</th>
                     <th>description</th>
                   </tr>
-
-
                 </table>
             </div>
 
@@ -194,18 +191,17 @@
                 <span class="tooltiptext">Get a preview of the dataset you organized<br>Remember to click on 'Delete Preview Folder' once you're done !</span>
               </div>
             </h5>
-	        <div class="demo-controls">
-	            <button class="demo-button" id="preview-file-organization"> Preview </button>
-              <p id='preview-organization-status'> <p>
-	        </div><br>
-          <div class="demo-controls">
-              <button class="demo-button" id="delete-preview-organization-status"> Delete Preview Folder </button>
-              <p id='delete-preview-organization-status'> <p>
+            <div class="demo-controls">
+                <button id="button-preview-file-organization" class="demo-button"> Preview </button>
+                <p id='para-preview-organization-status'> <p>
+            </div><br>
+            <div class="demo-controls">
+                <button id="button-delete-preview-organization-status" class="demo-button"> Delete Preview Folder </button>
+                <p id='para-delete-preview-organization-status'> <p>
+            </div>
           </div>
 
-          </div>
-
-          <div id="divSaveTable" class="datasetsaveoption">
+          <div id="div-save-table" class="datasetsaveoption">
             <h5> Save file organization to continue later
               <div class="tooltipnew">( ? )
                 <span class="tooltiptext">Save the table you created as a template (CSV format) for continuing later <br>
@@ -213,24 +209,22 @@
               </div>
             </h5>
             <div class="demo-controls">
-	            <button class="demo-button" id="select-save-file-organization"> Save </button>
-              <p id='save-file-organization-status'> <p>
-  	        </div>
+              <button id="button-select-save-file-organization" class="demo-button"> Save </button>
+              <p id='para-save-file-organization-status'> <p>
+            </div>
           </div>
 
-          <div id="divClearTable" class="datasetsaveoption">
+          <div id="div-clear-table" class="datasetsaveoption">
             <h5> </h5>
-            <button class="demo-button" id="clear-table"> Clear table </button>
+            <button id="button-clear-table" class="demo-button"> Clear table </button>
           </div>
-
-        </div>
-
         </div>
       </div>
+    </div>
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="manage-window-demo-toggle" class="js-container-target demo-toggle-button">Convert file format
+        <button id="button-manage-window-demo-toggle" class="js-container-target demo-toggle-button">Convert file format
           <div class="demo-meta u-avoid-clicks"> Use SPARC standard file formats </div>
         </button>
         <div class="demo-box">
@@ -241,7 +235,7 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="using-window-events-demo-toggle" class="js-container-target demo-toggle-button">Generate metadata
+        <button id="button-using-window-events-demo-toggle" class="js-container-target demo-toggle-button">Generate metadata
           <div class="demo-meta u-avoid-clicks"> Include manifest, submission, dataset_description, subjects and/or samples files</div>
         </button>
         <div class="demo-box">
@@ -261,7 +255,7 @@
             </div>
           </h5>
 
-          <form id='submission_file_form'>
+          <form id='submission-file-form'>
             <div>
               <input id="existing-submission" name="submission_file_option" type="radio" class="with-style" value="existing" />
               <label for="existing-submission" class=labelradio>Select existing</label>
@@ -276,89 +270,88 @@
             </div>
           </form>
 
-          <div id="divExistingSubmission" class="datasetsaveoption">
+          <div id="div-existing-submission" class="datasetsaveoption">
             <h5> </h5>
             <div class="demo-controls">
-            <button class="demo-button" id="select-submission">Select submission file </button>
+            <button id="button-select-submission" class="demo-button">Select submission file </button>
             <textarea class="demo-response" id="selected-submission"></textarea>
             </div>
           </div>
 
           <h5>Dataset description file</h5>
 
-          <form id='description_file_form'>
+          <form id='description-file-form'>
             <div>
-              <input id="existing-description" name="descripion_file_option" type="radio" class="with-style" value="existing" />
+              <input id="existing-description" name="descripion_file_option" type="radio" class="with-style" />
               <label for="existing-description" class=labelradio>Select existing</label>
             </div>
             <div>
-              <input id="new-description" name="descripion_file_option" type="radio" class="with-style" value="new" />
+              <input id="new-description" name="descripion_file_option" type="radio" class="with-style" />
               <label for="new-description" class=labelradio> Generate new from template</label>
             </div>
             <div>
-              <input id="no-description" name="descripion_file_option" type="radio" class="with-style" value="none" checked/>
+              <input id="no-description" name="descripion_file_option" type="radio" class="with-style" checked/>
               <label for="no-description" class=labelradio> None </label>
             </div>
           </form>
 
-          <div id="divExistingDescription" class="datasetsaveoption">
+          <div id="div-existing-description" class="datasetsaveoption">
             <h5> </h5>
             <div class="demo-controls">
-            <button class="demo-button" id="select-description">Select description file </button>
-            <textarea class="demo-response" id="selected-description"></textarea>
+            <button id="button-select-description" class="demo-button">Select description file </button>
+            <textarea id="selected-description" class="demo-response"></textarea>
             </div>
           </div>
 
           <h5>Subjects file</h5>
 
-          <form id='subjects_file_form'>
+          <form id='subjects-file-form'>
             <div>
-              <input id="existing-subjects" name="subjects_file_option" type="radio" class="with-style" value="existing" />
+              <input id="existing-subjects" name="subjects_file_option" type="radio" class="with-style" />
               <label for="existing-subjects" class=labelradio>Select existing</label>
             </div>
             <div>
-              <input id="new-subjects" name="subjects_file_option" type="radio" class="with-style" value="new" />
+              <input id="new-subjects" name="subjects_file_option" type="radio" class="with-style" />
               <label for="new-subjects" class=labelradio> Generate new from template</label>
             </div>
             <div>
-              <input id="no-subjects" name="subjects_file_option" type="radio" class="with-style" value="none" checked/>
+              <input id="no-subjects" name="subjects_file_option" type="radio" class="with-style" checked/>
               <label for="no-subjects" class=labelradio> None </label>
             </div>
           </form>
 
-          <div id="divExistingSubjects" class="datasetsaveoption">
+          <div id="div-existing-subjects" class="datasetsaveoption">
             <h5> </h5>
             <div class="demo-controls">
-            <button class="demo-button" id="select-subjects">Select subjects file </button>
+            <button id="button-select-subjects" class="demo-button">Select subjects file </button>
             <textarea class="demo-response" id="selected-subjects"></textarea>
             </div>
           </div>
 
           <h5>Samples file</h5>
 
-          <form id='samples_file_form'>
+          <form id='samples-file-form'>
             <div>
-              <input id="existing-samples" name="samples_file_option" type="radio" class="with-style" value="existing" />
+              <input id="existing-samples" name="samples_file_option" type="radio" class="with-style" />
               <label for="existing-samples" class=labelradio>Select existing </label>
             </div>
             <div>
-              <input id="new-samples" name="samples_file_option" type="radio" class="with-style" value="new" />
+              <input id="new-samples" name="samples_file_option" type="radio" class="with-style" />
               <label for="new-samples" class=labelradio> Generate new from template </label>
             </div>
             <div>
-              <input id="no-samples" name="samples_file_option" type="radio" class="with-style" value="none" checked/>
+              <input id="no-samples" name="samples_file_option" type="radio" class="with-style" checked/>
               <label for="no-samples" class=labelradio> None </label>
             </div>
           </form>
 
-          <div id="divExistingSamples" class="datasetsaveoption">
+          <div id="div-existing-samples" class="datasetsaveoption">
             <h5> </h5>
             <div class="demo-controls">
-            <button class="demo-button" id="select-samples">Select samples file </button>
-            <textarea class="demo-response" id="selected-samples"></textarea>
+              <button id="button-select-samples" class="demo-button">Select samples file </button>
+              <textarea class="demo-response" id="selected-samples"></textarea>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -382,10 +375,10 @@
 
         <div class="demo-box">
 
-        <h5> New dataset</h5>
-          <form id = 'dataset_curate_form'>
+          <h5> New dataset</h5>
+          <form id = 'dataset-curate-form'>
             <div id = "div-existing-dataset">
-              <input id="existing-dataset" name="new-dataset" type="radio" class="with-style" value="existing"/>
+              <input id="existing-dataset" name="new-dataset" type="radio" class="with-style" />
               <label id = "label-existing-dataset" for="existing-dataset" class=labelradio>Modify current dataset</label>
                 <div class="tooltipnew">( ? )
                   <span class="tooltiptext">This will add all changes to the current dataset folder. <br>
@@ -393,14 +386,14 @@
                 </div>
             </div>
             <div>
-              <input id="create-newdataset" name="new-dataset" type="radio" class="with-style" value="local" />
+              <input id="create-newdataset" name="new-dataset" type="radio" class="with-style" />
               <label for="create-newdataset" class=labelradio>Create new dataset locally</label>
                 <div class="tooltipnew">( ? )
                   <span class="tooltiptext">This option will create the dataset at the desired location locally with all requested files</span>
                 </div>
             </div>
             <div>
-              <input id="cloud-dataset" name="new-dataset" type="radio" class="with-style" value="cloud" />
+              <input id="cloud-dataset" name="new-dataset" type="radio" class="with-style" />
               <label for="cloud-dataset" class=labelradio>Create new dataset directly on Blackfynn</label>
                 <div class="tooltipnew">( ? )
                   <span class="tooltiptext">This option will create the dataset with all requested files directly on your Blackfynn account</span>
@@ -408,36 +401,33 @@
             </div>
           </form>
 
-          <div id="divCreateNew" class="datasetsaveoption">
+          <div id="div-create-new" class="datasetsaveoption">
 
             <h5> Select destination folder for new dataset </h5>
             <div class="demo-controls">
-              <button class="demo-button" id="select-new-dataset"> Select Destination </button>
+              <button id="button-select-new-dataset" class="demo-button"> Select Destination </button>
               <textarea class="demo-response" id="selected-new-dataset"></textarea>
             </div>
 
             <h5> Enter a name for the new dataset  </h5>
               <div class="demo-controls">
-              <textarea class="demo-response" id="new-dataset-name"></textarea>
-            </div>
-
+                <textarea class="demo-response" id="new-dataset-name"></textarea>
+              </div>
           </div>
 
-          <div id="divCreateCloud" class="datasetsaveoption">
-          <p> Coming soon... Tentative date: December 2020</p>
+          <div id="div-create-cloud" class="datasetsaveoption">
+            <p> Coming soon... Tentative date: December 2019</p>
           </div>
 
-          <div id="curatebutton" class="datasetsaveoption">
-          <h5> Apply changes </h5>
-          <button class="demo-button" id="curate-dataset"> Generate </button>
+          <div id="div-curate-button" class="datasetsaveoption">
+            <h5> Apply changes </h5>
+            <button id="button-curate-dataset" class="demo-button"> Generate </button>
           </div>
-          <div id="progressprint" class="datasetsaveoption">
-          <h5> Progress </h5>
-          <textarea id='progressinfo' class='outputprint' rows="25" readonly></textarea>
+          <div id="div-progress-print" class="datasetsaveoption">
+            <h5> Progress </h5>
+            <textarea id='progressinfo' class='outputprint' rows="25" readonly></textarea>
           </div>
-
         </div>
-
       </div>
     </div>
 

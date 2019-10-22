@@ -1,13 +1,13 @@
 const {ipcRenderer} = require('electron')
 
 function showAddAccount(){
-  document.getElementById('divAddAccount').style.display ='block';
-  document.getElementById('divSelectAccount').style.display ='none';
+  document.getElementById('div-add-account').style.display ='block';
+  document.getElementById('div-select-account').style.display ='none';
 }
 
 function showSelectAccount(){
-  document.getElementById('divAddAccount').style.display ='none';
-  document.getElementById('divSelectAccount').style.display ='block';
+  document.getElementById('div-add-account').style.display ='none';
+  document.getElementById('div-select-account').style.display ='block';
 }
 
 document.querySelector('#addAccount').addEventListener('click', () => {

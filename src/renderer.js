@@ -24,92 +24,89 @@ client.invoke("echo", "server ready", (error, res) => {
 //////////////////////////////////
 
 // Organize dataset
-const selectDatasetBtn = document.getElementById('select-dataset')
-let pathdataset = document.querySelector('#selected-dataset')
+const selectDatasetBtn = document.getElementById('button-select-dataset')
+const pathDataset = document.querySelector('#para-selected-dataset')
 const tableOrganized = document.getElementById("table-organized")
-var tableOrganizedcount = 0
+let tableOrganizedCount = 0
 const tableNotOrganized = document.getElementById("code_table")
-var tableNotOrganizedcount = 0
-let alreadyorganizedstatus = document.querySelector('#preorganized-dataset')
-let organizedatasetstatus = document.querySelector('#organize-dataset')
-const clearTableBtn = document.getElementById('clear-table')
-
+let tableNotOrganizedCount = 0
+const alreadyOrganizedStatus = document.querySelector('#preorganized-dataset')
+const organizeDatasetStatus = document.querySelector('#organize-dataset')
+const clearTableBtn = document.getElementById('button-clear-table')
 // Curate dataset
-const selectSaveFileOrganizationBtn = document.getElementById('select-save-file-organization')
-const selectPreviewBtn = document.getElementById('preview-file-organization')
-const deletePreviewBtn = document.getElementById('delete-preview-organization-status')
-const selectUploadFileOrganizationBtn = document.getElementById('select-upload-file-organization')
+const selectSaveFileOrganizationBtn = document.getElementById('button-select-save-file-organization')
+const selectPreviewBtn = document.getElementById('button-preview-file-organization')
+const deletePreviewBtn = document.getElementById('button-delete-preview-organization-status')
+const selectUploadFileOrganizationBtn = document.getElementById('button-select-upload-file-organization')
 
-let createnewstatus = document.querySelector('#create-newdataset')
-let modifyexistingstatus = document.querySelector('#existing-dataset')
-let bfdirectlystatus = document.querySelector('#cloud-dataset')
-let pathnewdataset = document.querySelector('#selected-new-dataset')
-let newdatasetname = document.querySelector('#new-dataset-name')
-let manifeststatus = document.querySelector('#generate-manifest')
-let curationform = document.querySelector('#dataset_curate_form')
+const createNewStatus = document.querySelector('#create-newdataset')
+const modifyExistingStatus = document.querySelector('#existing-dataset')
+const bfDirectlyStatus = document.querySelector('#cloud-dataset')
+const pathNewDataset = document.querySelector('#selected-new-dataset')
+const newDatasetName = document.querySelector('#new-dataset-name')
+const manifestStatus = document.querySelector('#generate-manifest')
+const curationForm = document.querySelector('#dataset-curate-form')
 
-let existingsubmissionstatus = document.querySelector('#existing-submission')
-let newsubmissionstatus = document.querySelector('#new-submission')
-let pathsubmissionexisting = document.querySelector('#selected-submission')
+const existingSubmissionStatus = document.querySelector('#existing-submission')
+const newSubmissionStatus = document.querySelector('#new-submission')
+const pathSubmissionExisting = document.querySelector('#selected-submission')
 
-let existingdescriptionstatus = document.querySelector('#existing-description')
-let newdescriptionstatus = document.querySelector('#new-description')
-let pathdescriptionexisting = document.querySelector('#selected-description')
+const existingDescriptionStatus = document.querySelector('#existing-description')
+const newDescriptionStatus = document.querySelector('#new-description')
+const pathDescriptionExisting = document.querySelector('#selected-description')
 
-let existingsubjectsstatus = document.querySelector('#existing-subjects')
-let newsubjectsstatus = document.querySelector('#new-subjects')
-let pathsubjectsexisting = document.querySelector('#selected-subjects')
+const existingSubjectsStatus = document.querySelector('#existing-subjects')
+const newSubjectsStatus = document.querySelector('#new-subjects')
+const pathSubjectsExisting = document.querySelector('#selected-subjects')
 
-let existingsamplesstatus = document.querySelector('#existing-samples')
-let newsamplesstatus = document.querySelector('#new-samples')
-let pathsamplesexisting = document.querySelector('#selected-samples')
+const existingSamplesStatus = document.querySelector('#existing-samples')
+const newSamplesStatus = document.querySelector('#new-samples')
+const pathSamplesExisting = document.querySelector('#selected-samples')
 
-var submissionstatus
-var pathsubmission
-var descriptionstatus
-var pathdescription
-var subjectsstatus
-var pathsubjects
-var samplesstatus
-var pathsamples
+var submissionStatus
+var pathSubmission
+var descriptionStatus
+var pathDescription
+var subjectsStatus
+var pathSubjects
+var samplesStatus
+var pathSamples
 
-
-const curateDatasetBtn = document.getElementById('curate-dataset')
-let progressinfo = document.querySelector('#progressinfo')
-
+const curateDatasetBtn = document.getElementById('button-curate-dataset')
+const progressInfo = document.querySelector('#progressinfo')
 
 // Manage and submit
-let keyname = document.querySelector('#bf-key-name')
-let key = document.querySelector('#bf-key')
-let secret = document.querySelector('#bf-secret')
+const keyName = document.querySelector('#bf-key-name')
+const key = document.querySelector('#bf-key')
+const secret = document.querySelector('#bf-secret')
 const bfAddAccountBtn = document.getElementById('add-bf-account')
-let bfaddaccountinfo = document.querySelector('#add-account-progress')
+const bfAddAccountInfo = document.querySelector('#add-account-progress')
 
-let bfaccountlist = document.querySelector('#bfaccountlist')
+const bfAccountList = document.querySelector('#bfaccountlist')
 var myitem
-let bfdatasetlist = document.querySelector('#bfdatasetlist')
+const bfDatasetList = document.querySelector('#bfdatasetlist')
 
-const bfRefreshDatasetBtn = document.getElementById('refresh-dataset-list')
-let bfnewdatasetname = document.querySelector('#bf-new-dataset-name')
-const bfCreateNewDatasetBtn = document.getElementById('create-bf-new-dataset')
-let bfcreatenewdatasetinfo = document.querySelector('#add-new-dataset-progress')
-const bfSubmitDatasetBtn = document.getElementById('submit-dataset')
-let bfsubmitdatasetinfo = document.querySelector('#progresssubmit')
-let pathsubmitdataset = document.querySelector('#selected-submit-dataset')
-var progressBar = document.getElementById("progress-bar")
+const bfRefreshDatasetBtn = document.getElementById('button-refresh-dataset-list')
+const bfNewDatasetName = document.querySelector('#bf-new-dataset-name')
+const bfCreateNewDatasetBtn = document.getElementById('button-create-bf-new-dataset')
+const bfCreateNewDatasetInfo = document.querySelector('#add-new-dataset-progress')
+const bfSubmitDatasetBtn = document.getElementById('button-submit-dataset')
+const bfSubmitDatasetInfo = document.querySelector('#progresssubmit')
+const pathSubmitDataset = document.querySelector('#selected-submit-dataset')
+const progressBar = document.getElementById("div-progress-bar")
 
-let bfDatasetlistPermission = document.querySelector('#bfdatasetlist_permission')
-let currentDatasetPermission = document.querySelector('#dataset_permission_current')
-let bfListUsers = document.querySelector('#bf_list_users')
-let bfListRoles = document.querySelector('#bf_list_roles')
-const bfAddPermissionBtn = document.getElementById('add_permission')
-let datasetPermissionStatus = document.querySelector('#dataset_permission_status')
+const bfDatasetListPermission = document.querySelector('#bfdatasetlist_permission')
+const currentDatasetPermission = document.querySelector('#para-dataset-permission-current')
+const bfListUsers = document.querySelector('#bf_list_users')
+const bfListRoles = document.querySelector('#bf_list_roles')
+const bfAddPermissionBtn = document.getElementById('button-add-permission')
+const datasetPermissionStatus = document.querySelector('#para-dataset-permission-status')
 
 //////////////////////////////////
 // Constant parameters
 //////////////////////////////////
-const blackcolor = '#000000'
-const redcolor = '#ff1a1a'
+const blackColor = '#000000'
+const redColor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivatives", "docs", "protocol", "samples", "sourcedata", "subjects"]
 
 
@@ -132,24 +129,24 @@ selectDatasetBtn.addEventListener('click', (event) => {
 })
 ipcRenderer.on('selected-dataset', (event, path) => {
   clearTable(tableOrganized)
-  pathdataset.innerHTML = ""
+  pathDataset.innerHTML = ""
   var folderChecking = checkFolderStruture(path[0])
   if (folderChecking == true) {
-    pathdataset.innerHTML = path
-    var jsonfolder = organizedFolderToJson(path[0])
-    jsonToTableOrganized(tableOrganized, jsonfolder)
+    pathDataset.innerHTML = path
+    var jsonFolder = organizedFolderToJson(path[0])
+    jsonToTableOrganized(tableOrganized, jsonFolder)
   } else {
-    pathdataset.innerHTML = "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>"
+    pathDataset.innerHTML = "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>"
   }
 })
 
 //Select files/folders to be added to table for organizing
-const selectCodeBtn = document.getElementById('select-code')
+const selectCodeBtn = document.getElementById('button-select-code')
 selectCodeBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-code')
 })
 
-const selectCodeDirectoryBtn = document.getElementById('select-code-directory')
+const selectCodeDirectoryBtn = document.getElementById('button-select-code-directory')
 selectCodeDirectoryBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-folder-dialog-code')
 })
@@ -161,67 +158,67 @@ ipcRenderer.on('selected-code', (event, path) => {
 
 //Clear table
 clearTableBtn.addEventListener('click', () => {
-  if (alreadyorganizedstatus.checked){
+  if (alreadyOrganizedStatus.checked){
     clearTable(tableOrganized)
-  } else if (organizedatasetstatus.checked) {
+  } else if (organizeDatasetStatus.checked) {
     clearTable(tableNotOrganized)
   }
 })
 
 // Drag and drop
-var holder_code = document.getElementById('code')
-holder_code.addEventListener("drop", (event)=> {
+var holderCode = document.getElementById('code')
+holderCode.addEventListener("drop", (event)=> {
    event.preventDefault()
-   var myID = holder_code.id
+   var myID = holderCode.id
    dropAddToTable(event, myID)
 })
 
-var holder_derivatives = document.getElementById('derivatives')
-holder_derivatives.addEventListener("drop", (event)=> {
+var holderDerivatives = document.getElementById('derivatives')
+holderDerivatives.addEventListener("drop", (event)=> {
    event.preventDefault()
-   var myID = holder_derivatives.id
+   var myID = holderDerivatives.id
    dropAddToTable(event, myID)
 })
 
-var holder_docs = document.getElementById('docs')
-holder_docs.addEventListener("drop", (event)=> {
+var holderDocs = document.getElementById('docs')
+holderDocs.addEventListener("drop", (event)=> {
    event.preventDefault()
-   var myID = holder_docs.id
+   var myID = holderDocs.id
    dropAddToTable(event, myID)
 })
 
-var holder_protocol = document.getElementById('protocol')
-holder_protocol.addEventListener("drop", (event)=> {
+var holderProtocol = document.getElementById('protocol')
+holderProtocol.addEventListener("drop", (event)=> {
    event.preventDefault()
-   var myID = holder_protocol.id
+   var myID = holderProtocol.id
    dropAddToTable(event, myID)
 })
 
-var holder_samples = document.getElementById('samples')
-holder_samples.addEventListener("drop", (event)=> {
+var holderSamples = document.getElementById('samples')
+holderSamples.addEventListener("drop", (event)=> {
    event.preventDefault()
-   var myID = holder_samples.id
+   var myID = holderSamples.id
    dropAddToTable(event, myID)
 })
 
-var holder_sourcedata = document.getElementById('sourcedata')
-holder_sourcedata.addEventListener("drop", (event)=> {
+var holderSourcedata = document.getElementById('sourcedata')
+holderSourcedata.addEventListener("drop", (event)=> {
    event.preventDefault()
-   var myID = holder_sourcedata.id
+   var myID = holderSourcedata.id
    dropAddToTable(event, myID)
 })
 
-var holder_subjects = document.getElementById('subjects')
-holder_subjects.addEventListener("drop", (event)=> {
+var holderSubjects = document.getElementById('subjects')
+holderSubjects.addEventListener("drop", (event)=> {
    event.preventDefault()
-   var myID = holder_subjects.id
+   var myID = holderSubjects.id
    dropAddToTable(event, myID)
 })
 
-var holder_main = document.getElementById('main')
-holder_main.addEventListener("drop", (event)=> {
+var holderMain = document.getElementById('main')
+holderMain.addEventListener("drop", (event)=> {
    event.preventDefault()
-   var myID = holder_main.id
+   var myID = holderMain.id
    dropAddToTable(event, myID)
 })
 
@@ -235,7 +232,7 @@ selectSaveFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('save-file-dialog-saveorganization')
 })
 ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
-  if (alreadyorganizedstatus.checked == true){
+  if (alreadyOrganizedStatus.checked == true){
     var jsonformat = tableToJson(tableOrganized)
     var jsonvect = tableToJsonWithDescription(tableOrganized)
   } else {
@@ -244,17 +241,17 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
   }
   var jsonpath = jsonvect[0]
   var jsondescription = jsonvect[1]
-  document.getElementById("save-file-organization-status").innerHTML = "";
+  document.getElementById("para-save-file-organization-status").innerHTML = "";
   // Call python to save
   if (path != null){
-    client.invoke("apiSaveFileOrganization", jsonpath, jsondescription, path, (error, res) => {
+    client.invoke("api_save_file_organization", jsonpath, jsondescription, path, (error, res) => {
         if(error) {
           console.log(error)
           var emessage = userError(error)
-          document.getElementById("save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+          document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
         } else {
           console.log(res)
-          document.getElementById("save-file-organization-status").innerHTML = "Saved!";
+          document.getElementById("para-save-file-organization-status").innerHTML = "Saved!";
         }
     })
   }
@@ -266,57 +263,57 @@ selectUploadFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-uploadorganization')
 })
 ipcRenderer.on('selected-uploadorganization', (event, path) => {
-  document.getElementById("upload-file-organization-status").innerHTML = "";
-  var headernames = sparcFolderNames.slice()
-  headernames.push("main")
-  var lennames =  headernames.length
+  document.getElementById("para-upload-file-organization-status").innerHTML = "";
+  var headerNames = sparcFolderNames.slice()
+  headerNames.push("main")
+  var lennames =  headerNames.length
   for (var i = 0; i < lennames; i++) {
-  	headernames.push(headernames[i] + "_description")
+  	headerNames.push(headerNames[i] + "_description")
   }
-  client.invoke("apiUploadFileOrganization", path[0], headernames, (error, res) => {
+  client.invoke("api_upload_file_organization", path[0], headerNames, (error, res) => {
         if(error) {
           console.log(error)
           var emessage = userError(error)
-          document.getElementById("upload-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+          document.getElementById("para-upload-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
         } else {
           console.log(res)
           jsonToTableWithDescription(tableNotOrganized, res)
-          document.getElementById("upload-file-organization-status").innerHTML = "Uploaded!";
+          document.getElementById("para-upload-file-organization-status").innerHTML = "Uploaded!";
         }
   })
 })
 
 // Action when user click on Preview file organization button
 selectPreviewBtn.addEventListener('click', () => {
-  document.getElementById("preview-organization-status").innerHTML = ""
+  document.getElementById("para-preview-organization-status").innerHTML = ""
   var jsonvect = tableToJsonWithDescription(tableNotOrganized)
   var jsonpath = jsonvect[0]
-  client.invoke("apiPreviewFileOrganization", jsonpath, (error, res) => {
+  client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
       if(error) {
         console.log(error)
         var emessage = userError(error)
-        document.getElementById("preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
+        document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
-        document.getElementById("preview-organization-status").innerHTML = "Loading Preview folder...";
+        document.getElementById("para-preview-organization-status").innerHTML = "Loading Preview folder...";
         console.log(res)
         console.log("Done")
-        document.getElementById("preview-organization-status").innerHTML = "Preview folder available in a new window";
+        document.getElementById("para-preview-organization-status").innerHTML = "Preview folder available in a new window";
       }
   })
 })
 
 // Action when user click on Delete Preview file organization button
 deletePreviewBtn.addEventListener('click', () => {
-  document.getElementById("preview-organization-status").innerHTML = ""
-  client.invoke("apiDeletePreviewFileOrganization", (error, res) => {
+  document.getElementById("para-preview-organization-status").innerHTML = ""
+  client.invoke("api_delete_preview_file_organization", (error, res) => {
       if(error) {
         console.log(error)
         var emessage = userError(error)
-        document.getElementById("preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
+        document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
         console.log(res)
         console.log("Done")
-        document.getElementById("preview-organization-status").innerHTML = "Preview folder deleted!";
+        document.getElementById("para-preview-organization-status").innerHTML = "Preview folder deleted!";
       }
   })
 })
@@ -328,123 +325,123 @@ deletePreviewBtn.addEventListener('click', () => {
 curateDatasetBtn.addEventListener('click', () => {
 
   // Disable curate button to prevent multiple clicks
-  progressinfo.style.color = blackcolor
+  progressInfo.style.color = blackColor
   curateDatasetBtn.disabled = true
-  disableform(curationform)
+  disableform(curationForm)
 
   // Convert table content into json file for transferring to Python
-  if (alreadyorganizedstatus.checked) {
-    if (fs.existsSync(pathdataset.innerHTML)) {
+  if (alreadyOrganizedStatus.checked) {
+    if (fs.existsSync(pathDataset.innerHTML)) {
       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
     } else {
-      progressinfo.style.color = redcolor
-      progressinfo.value = 'Error: Select a valid dataset folder'
+      progressInfo.style.color = redColor
+      progressInfo.value = 'Error: Select a valid dataset folder'
       curateDatasetBtn.disabled = false
-      enableform(curationform)
+      enableform(curationForm)
       console.error('Error')
       return
     }
-  } else if (organizedatasetstatus.checked) {
+  } else if (organizeDatasetStatus.checked) {
     var jsonvect = tableToJsonWithDescription(tableNotOrganized)
   } else {
-  	progressinfo.style.color = redcolor
-  	progressinfo.value = 'Error: Please select an option under "Organize dataset" '
+  	progressInfo.style.color = redColor
+  	progressInfo.value = 'Error: Please select an option under "Organize dataset" '
     curateDatasetBtn.disabled = false
-    enableform(curationform)
+    enableform(curationForm)
   	return
   }
   var jsonpath = jsonvect[0]
   var jsondescription = jsonvect[1]
 
   var metadatafiles = []
-  if (existingsubmissionstatus.checked === true){
-    submissionstatus = true
-    pathsubmission = pathsubmissionexisting.value
-    metadatafiles.push(pathsubmission)
-  } else if (newsubmissionstatus.checked === true){
-    submissionstatus = true
-    pathsubmission = path.join(__dirname, 'file_templates', 'submission.xlsx')
-    metadatafiles.push(pathsubmission)
+  if (existingSubmissionStatus.checked === true){
+    submissionStatus = true
+    pathSubmission = pathSubmissionExisting.value
+    metadatafiles.push(pathSubmission)
+  } else if (newSubmissionStatus.checked === true){
+    submissionStatus = true
+    pathSubmission = path.join(__dirname, 'file_templates', 'submission.xlsx')
+    metadatafiles.push(pathSubmission)
   } else {
-    submissionstatus = false
+    submissionStatus = false
   }
 
-  if (existingdescriptionstatus.checked === true){
-    descriptionstatus = true
-    pathdescription = pathdescriptionexisting.value
-    metadatafiles.push(pathdescription)
-  } else if (newdescriptionstatus.checked === true){
-    descriptionstatus = true
-    pathdescription = path.join(__dirname, 'file_templates', 'dataset_description.xlsx')
-    metadatafiles.push(pathdescription)
+  if (existingDescriptionStatus.checked === true){
+    descriptionStatus = true
+    pathDescription = pathDescriptionExisting.value
+    metadatafiles.push(pathDescription)
+  } else if (newDescriptionStatus.checked === true){
+    descriptionStatus = true
+    pathDescription = path.join(__dirname, 'file_templates', 'dataset_description.xlsx')
+    metadatafiles.push(pathDescription)
   } else {
-    descriptionstatus = false
+    descriptionStatus = false
   }
 
-  if (existingsubjectsstatus.checked === true){
-    subjectsstatus = true
-    pathsubjects = pathsubjectsexisting.value
-    metadatafiles.push(pathsubjects)
-  } else if (newsubjectsstatus.checked === true){
-    subjectsstatus = true
-    pathsubjects = path.join(__dirname, 'file_templates', 'subjects.xlsx')
-    metadatafiles.push(pathsubjects)
+  if (existingSubjectsStatus.checked === true){
+    subjectsStatus = true
+    pathSubjects = pathSubjectsExisting.value
+    metadatafiles.push(pathSubjects)
+  } else if (newSubjectsStatus.checked === true){
+    subjectsStatus = true
+    pathSubjects = path.join(__dirname, 'file_templates', 'subjects.xlsx')
+    metadatafiles.push(pathSubjects)
   } else {
-    subjectsstatus = false
+    subjectsStatus = false
   }
 
-  if (existingsamplesstatus.checked === true){
-    samplesstatus = true
-    pathsamples = pathsamplesexisting.value
-    metadatafiles.push(pathsamples)
-  } else if (newsamplesstatus.checked === true){
-    samplesstatus = true
-    pathsamples = path.join(__dirname, 'file_templates', 'samples.xlsx')
-    metadatafiles.push(pathsamples)
+  if (existingSamplesStatus.checked === true){
+    samplesStatus = true
+    pathSamples = pathSamplesExisting.value
+    metadatafiles.push(pathSamples)
+  } else if (newSamplesStatus.checked === true){
+    samplesStatus = true
+    pathSamples = path.join(__dirname, 'file_templates', 'samples.xlsx')
+    metadatafiles.push(pathSamples)
   } else {
-   samplesstatus = false
+   samplesStatus = false
   }
 
   // Initiate curation by calling python
-  progressinfo.value = ''
+  progressInfo.value = ''
   var completionstatus = 'Solving'
-  var pathdatasetvalue = String(pathdataset.innerHTML)
+  var pathDatasetValue = String(pathDataset.innerHTML)
 
-  client.invoke("apiCurateDataset", pathdatasetvalue, createnewstatus.checked, pathnewdataset.value,
-    manifeststatus.checked, submissionstatus, pathsubmission,  descriptionstatus, pathdescription,
-    subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus.checked,
-    bfdirectlystatus.checked, alreadyorganizedstatus.checked, organizedatasetstatus.checked, newdatasetname.value,
+  client.invoke("api_curate_dataset", pathDatasetValue, createNewStatus.checked, pathNewDataset.value,
+    manifestStatus.checked, submissionStatus, pathSubmission,  descriptionStatus, pathDescription,
+    subjectsStatus, pathSubjects, samplesStatus, pathSamples, jsonpath, jsondescription, modifyExistingStatus.checked,
+    bfDirectlyStatus.checked, alreadyOrganizedStatus.checked, organizeDatasetStatus.checked, newDatasetName.value,
     (error, res) => {
     if(error) {
       console.log('ERROR')
       var emessage = userError(error)
-      progressinfo.style.color = redcolor
-      progressinfo.value = emessage
+      progressInfo.style.color = redColor
+      progressInfo.value = emessage
       console.log(error)
-      enableform(curationform)
+      enableform(curationForm)
     } else {
       console.log('Done', res)
     }
   })
 
-  var timerprogress = setInterval(progressfunction, 1000)
+  var timerProgress = setInterval(progressfunction, 1000)
   function progressfunction(){
-    client.invoke("apiCurateDatasetProgress", (error, res) => {
+    client.invoke("api_curate_dataset_progress", (error, res) => {
       if(error) {
         console.error(error)
       } else {
         completionstatus = res[1]
         var printstatus = res[2]
         if (printstatus === 'Curating') {
-          progressinfo.value = res[0].split(',').join('\n')
+          progressInfo.value = res[0].split(',').join('\n')
         }
       }
     })
     console.log('Completion', completionstatus)
     if (completionstatus === 'Done'){
-      clearInterval(timerprogress)
+      clearInterval(timerProgress)
       curateDatasetBtn.disabled = false
-      enableform(curationform)
+      enableform(curationForm)
     }
   }
 
@@ -457,18 +454,18 @@ curateDatasetBtn.addEventListener('click', () => {
 
 // Add bf account
 bfAddAccountBtn.addEventListener('click', () => {
-  bfaddaccountinfo.style.color = blackcolor
+  bfAddAccountInfo.style.color = blackColor
   bfAddAccountBtn.disabled = true
-  bfaddaccountinfo.value = ''
-  client.invoke("apiBfAddAccount", keyname.value, key.value, secret.value, (error, res) => {
+  bfAddAccountInfo.value = ''
+  client.invoke("api_bf_add_account", keyName.value, key.value, secret.value, (error, res) => {
     if(error) {
       console.log('ERROR')
       var emessage = userError(error)
-      bfaddaccountinfo.style.color = redcolor
-      bfaddaccountinfo.value = emessage
+      bfAddAccountInfo.style.color = redColor
+      bfAddAccountInfo.value = emessage
     } else {
-        bfaddaccountinfo.value = res
-        removeOptions(bfaccountlist)
+        bfAddAccountInfo.value = res
+        removeOptions(bfAccountList)
         updateBfAccountList()
     }
     bfAddAccountBtn.disabled = false
@@ -477,19 +474,16 @@ bfAddAccountBtn.addEventListener('click', () => {
 
 
 // Select bf account from dropdownlist and show existing dataset
-bfaccountlist.addEventListener('change', () => {
-  refreshBfDatasetList(bfdatasetlist)
-  refreshBfDatasetList(bfDatasetlistPermission)
+bfAccountList.addEventListener('change', () => {
+  refreshBfDatasetList(bfDatasetList)
+  refreshBfDatasetList(bfDatasetListPermission)
   currentDatasetPermission.innerHTML = ''
   refreshBfUsersList(bfListUsers)
-  var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
+  var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
 
   if (selectedbfaccount == 'Select') {
-
-    document.getElementById("select-account-status").innerHTML = "";
-
+    document.getElementById("para-select-account-status").innerHTML = "";
   } else{
-
     showAccountDetails()
   }
 })
@@ -497,29 +491,29 @@ bfaccountlist.addEventListener('change', () => {
 
 // Refresh list of bf dataset list (in case user create it online)
 bfRefreshDatasetBtn.addEventListener('click', () => {
-  refreshBfDatasetList(bfdatasetlist)
-  refreshBfDatasetList(bfDatasetlistPermission)
+  refreshBfDatasetList(bfDatasetList)
+  refreshBfDatasetList(bfDatasetListPermission)
   currentDatasetPermission.innerHTML = ''
   console.log("refreshed")
 })
 
 // Add new dataset folder (empty) on bf
 bfCreateNewDatasetBtn.addEventListener('click', () => {
-  bfcreatenewdatasetinfo.style.color = blackcolor
+  bfCreateNewDatasetInfo.style.color = blackColor
   bfCreateNewDatasetBtn.disabled = true
-  bfcreatenewdatasetinfo.value = 'Adding'
-  var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
-  client.invoke("apiBfNewDatasetFolder", bfnewdatasetname.value, selectedbfaccount, (error, res) => {
+  bfCreateNewDatasetInfo.value = 'Adding'
+  var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  client.invoke("api_bf_new_dataset_folder", bfNewDatasetName.value, selectedbfaccount, (error, res) => {
     if (error) {
       console.log('ERROR')
       var emessage = userError(error)
-      bfcreatenewdatasetinfo.style.color = redcolor
-      bfcreatenewdatasetinfo.value = emessage
+      bfCreateNewDatasetInfo.style.color = redColor
+      bfCreateNewDatasetInfo.value = emessage
       bfCreateNewDatasetBtn.disabled = false
     } else {
-        bfcreatenewdatasetinfo.value = 'Success: created folder' + ' ' + bfnewdatasetname.value
-        refreshBfDatasetList(bfdatasetlist)
-        refreshBfDatasetList(bfDatasetlistPermission)
+        bfCreateNewDatasetInfo.value = 'Success: created folder' + ' ' + bfNewDatasetName.value
+        refreshBfDatasetList(bfDatasetList)
+        refreshBfDatasetList(bfDatasetListPermission)
         currentDatasetPermission.innerHTML = ''
         bfCreateNewDatasetBtn.disabled = false
     }
@@ -568,20 +562,20 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
 
 
 bfSubmitDatasetBtn.addEventListener('click', () => {
-  document.getElementById("progress-bar-error-status").innerHTML = ""
-  document.getElementById("progress-bar-status").innerHTML = ""
+  document.getElementById("para-progress-bar-error-status").innerHTML = ""
+  document.getElementById("para-progress-bar-status").innerHTML = ""
   var err = false
   // bfsubmitdatasetinfo.style.color = blackcolor
   bfSubmitDatasetBtn.disabled = true
   // bfsubmitdatasetinfo.value = 'Submitting'
   var completionStatus = 'Solving'
-  var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
-  var selectedbfdataset = bfdatasetlist.options[bfdatasetlist.selectedIndex].text
-  client.invoke("apiBfSubmitDataset", selectedbfaccount, selectedbfdataset, pathsubmitdataset.value, (error, res) => {
+  var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text
+  client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathSubmitDataset.value, (error, res) => {
     if(error) {
       console.log('ERROR')
       var emessage = userError(error)
-      document.getElementById("progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       progressBar.style.width = 0 + "%";
       err = true
       // bfsubmitdatasetinfo.style.color = redcolor
@@ -592,9 +586,9 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   })
 
 
-  var timerprogress = setInterval(progressfunction, 250)
+  var timerProgress = setInterval(progressfunction, 250)
     function progressfunction(){
-      client.invoke("apiSubmitDatasetProgress", (error, res) => {
+      client.invoke("api_submit_dataset_progress", (error, res) => {
         if(error) {
           console.error(error)
         } else {
@@ -607,7 +601,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
           console.log(uploadedFileSize, totalFileSize, value)
           progressBar.style.width = value + "%";
           if (completionStatus != 'Done') {
-            document.getElementById("progress-bar-status").innerHTML = dataProgress.split(',').pop()
+            document.getElementById("para-progress-bar-status").innerHTML = dataProgress.split(',').pop()
             // bfsubmitdatasetinfo.value = dataProgress.split(',').join('\n')
           }
         }
@@ -615,9 +609,9 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       if (completionStatus === 'Done'){
         if (!err){
           progressBar.style.width = 100 + "%";
-          document.getElementById("progress-bar-status").innerHTML = "Upload completed !"
+          document.getElementById("para-progress-bar-status").innerHTML = "Upload completed !"
         }
-        clearInterval(timerprogress)
+        clearInterval(timerProgress)
         bfSubmitDatasetBtn.disabled = false
       }
     }
@@ -627,7 +621,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
  * This event tracks change of the selected dataset in the dropdown list
  * under the "Manage dataset permission" feature
  */
-bfDatasetlistPermission.addEventListener('change', () => {
+bfDatasetListPermission.addEventListener('change', () => {
   showCurrentPermission()
 })
 
@@ -638,8 +632,8 @@ bfDatasetlistPermission.addEventListener('change', () => {
  */
 bfAddPermissionBtn.addEventListener('click', () => {
   datasetPermissionStatus.innerHTML = ''
-  var selectedBfAccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
-  var selectedBfDataset = bfDatasetlistPermission.options[bfdatasetlist_permission.selectedIndex].text
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text
 
@@ -669,7 +663,7 @@ function userError(error)
 }
 
 function updateBfAccountList(){
-  client.invoke("apiBfAccountList", (error, res) => {
+  client.invoke("api_bf_account_list", (error, res) => {
   if(error) {
     console.error(error)
   } else {
@@ -678,7 +672,7 @@ function updateBfAccountList(){
       var option = document.createElement("option")
       option.textContent = myitemselect
       option.value = myitemselect
-      bfaccountlist.appendChild(option)
+      bfAccountList.appendChild(option)
     }
   }
 })
@@ -707,13 +701,13 @@ function enableform(formId) {
 
 function refreshBfDatasetList(bfdstlist){
   removeOptions(bfdstlist)
-  var accountselected = bfaccountlist.options[bfaccountlist.selectedIndex].text
-  if (accountselected === "Select"){
-    var optionselect = document.createElement("option")
-    optionselect.textContent = 'Select dataset'
-    bfdstlist.appendChild(optionselect)
+  var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
+  if (accountSelected === "Select"){
+    var optionSelect = document.createElement("option")
+    optionSelect.textContent = 'Select dataset'
+    bfdstlist.appendChild(optionSelect)
   } else {
-    client.invoke("apiBfDatasetAccount", bfaccountlist.options[bfaccountlist.selectedIndex].text, (error, res) => {
+    client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
       if(error) {
         console.error(error)
       } else {
@@ -735,12 +729,12 @@ function refreshBfDatasetList(bfdstlist){
  */
 function refreshBfUsersList(UsersList){
   removeOptions(UsersList)
-  var accountSelected = bfaccountlist.options[bfaccountlist.selectedIndex].text
+  var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
   var optionUser = document.createElement("option")
   optionUser.textContent = 'Select user'
   UsersList.appendChild(optionUser)
   if (accountSelected !== "Select") {
-    client.invoke("api_bf_get_users", bfaccountlist.options[bfaccountlist.selectedIndex].text, (error, res) => {
+    client.invoke("api_bf_get_users", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
       if (error){
         console.error(error)
       } else{
@@ -758,8 +752,8 @@ function refreshBfUsersList(UsersList){
 
 function showCurrentPermission(){
   currentDatasetPermission.innerHTML = ''
-  var selectedBfAccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
-  var selectedBfDataset = bfDatasetlistPermission.options[bfdatasetlist_permission.selectedIndex].text
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
     currentDatasetPermission.innerHTML = ''
   } else {
@@ -780,11 +774,11 @@ function showCurrentPermission(){
 }
 
 function showAccountDetails(){
-  client.invoke("apiBfAccountDetails", bfaccountlist.options[bfaccountlist.selectedIndex].text, (error, res) => {
+  client.invoke("api_bf_account_details", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
     if(error) {
       console.error(error)
     } else {
-      document.getElementById("select-account-status").innerHTML = res;
+      document.getElementById("para-select-account-status").innerHTML = res;
     }
   })
 }
@@ -806,42 +800,42 @@ function checkFolderStruture(pathDatasetFolder){
   }
   //if (folders.length != sparcFolderNames.length)
   //      return false
-  var foldersorted = folders.sort()
+  var folderSorted = folders.sort()
   // var sparcFolderSorted = sparcFolderNames.sort()
-  for (var i = 0; i < foldersorted.length; i++) {
-    //if (foldersorted[i] != sparcFolderSorted[i]) {
-    if (!sparcFolderNames.includes(foldersorted[i])) {
+  for (var i = 0; i < folderSorted.length; i++) {
+    //if (folderSorted[i] != sparcFolderSorted[i]) {
+    if (!sparcFolderNames.includes(folderSorted[i])) {
       return false
     }
   }
   return true
 }
 
-function organizedFolderToJson(pathdatasetval){
+function organizedFolderToJson(pathDatasetVal){
   var jsonvar = {}
-  var mainfolderfiles = []
-  var files = fs.readdirSync(pathdatasetval)
+  var mainFolderFiles = []
+  var files = fs.readdirSync(pathDatasetVal)
   for (var i = 0; i<files.length; i++) {
     var filename = files[i]
-    var filepath = path.join(pathdatasetval, filename)
+    var filepath = path.join(pathDatasetVal, filename)
     if (fs.lstatSync(filepath).isDirectory()){
-      var filesinfolder = fs.readdirSync(filepath)
-      console.log(filesinfolder)
-      filesinfolder = filesinfolder.filter(item => !(/(^|\/)\.[^\/\.]/g).test(item));
-      console.log(filesinfolder)
+      var filesInFolder = fs.readdirSync(filepath)
+      console.log(filesInFolder)
+      filesInFolder = filesInFolder.filter(item => !(/(^|\/)\.[^\/\.]/g).test(item));
+      console.log(filesInFolder)
       var folderfiles = []
-      for (var j = 0; j<filesinfolder.length; j++) {
-        var filenameinfolder = filesinfolder[j]
-        folderfiles.push(path.join(filepath, filenameinfolder))
+      for (var j = 0; j<filesInFolder.length; j++) {
+        var fileNameInFolder = filesInFolder[j]
+        folderfiles.push(path.join(filepath, fileNameInFolder))
       }
       jsonvar[filename] = folderfiles
     } else {
       if(! /^\..*/.test(filename)) {
-        mainfolderfiles.push(filepath)
+        mainFolderFiles.push(filepath)
       }
     }
   }
-  jsonvar['main'] = mainfolderfiles
+  jsonvar['main'] = mainFolderFiles
   return jsonvar
 }
 
@@ -853,9 +847,9 @@ function jsonToTableOrganized(table, jsonvar){
     var rowcount = document.getElementById(SPARCfolderid).rowIndex
     var pathlist = jsonvar[SPARCfolder]
     for (var i = 0; i < pathlist.length; i++){
-      tableOrganizedcount = tableOrganizedcount + 1
+      tableOrganizedCount = tableOrganizedCount + 1
       var rownum = rowcount + i + 1
-      var table_len = tableOrganizedcount
+      var table_len = tableOrganizedCount
       var row = table.insertRow(rownum).outerHTML="<tr id='row-org"+table_len+"'><td id='name_row_org"+table_len+"'>"+ pathlist[i] +"</td> <td id='description_row_org"+table_len+"'>"+ "" +"</td> <td><input type='button' id='edit_button_org"+table_len+"' value='Edit description' class='edit' onclick='edit_row_org("+table_len+")'> <input type='button' id='save_button_org"+table_len+"' value='Save description' class='save' onclick='save_row_org("+table_len+")'> <input type='button' value='Delete row' class='delete' onclick='delete_row_org("+table_len+")'> </td></tr>";
     }
   }
@@ -867,7 +861,7 @@ function tableToJsonWithDescriptionOrganized(table){
   var jsonvardescription= {}
 
   var pathlist = new Array()
-  var descriptionlist = new Array()
+  var descriptionList = new Array()
 
   var keyval = "code"
 
@@ -878,17 +872,17 @@ function tableToJsonWithDescriptionOrganized(table){
     var descriptionname = row.cells[1].innerHTML
     if (tableheaders.includes(pathname)) {
       jsonvar[keyval] = pathlist
-      jsonvardescription[keyval + "_description"] = descriptionlist
+      jsonvardescription[keyval + "_description"] = descriptionList
       keyval = pathname
       var pathlist = new Array()
-      var descriptionlist = new Array()
+      var descriptionList = new Array()
     } else {
       pathlist.push(row.cells[0].innerHTML)
-      descriptionlist.push(row.cells[1].innerHTML)
+      descriptionList.push(row.cells[1].innerHTML)
     }
   }
   jsonvar[keyval] = pathlist
-  jsonvardescription[keyval+ "_description"] = descriptionlist
+  jsonvardescription[keyval+ "_description"] = descriptionList
 
   return [jsonvar, jsonvardescription]
 }
@@ -912,8 +906,8 @@ function insertFileToTable(table, path){
     ipcRenderer.send('open-error-file-exist', emessage)
   } else {
     for (i = 0; i < path.length; i++) {
-      tableNotOrganizedcount = tableNotOrganizedcount + 1
-      var table_len=tableNotOrganizedcount
+      tableNotOrganizedCount = tableNotOrganizedCount + 1
+      var table_len=tableNotOrganizedCount
       var rownum = rowcount + i + 1
       var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ path[i] +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit description' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save description' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete row' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
     }
@@ -950,13 +944,13 @@ function jsonToTableWithDescription(table, jsonvar){
     var SPARCfolderid = SPARCfolder
     var rowcount = document.getElementById(SPARCfolderid).rowIndex
     var pathlist = jsonvar[SPARCfolder]
-    var descriptionlist = jsonvar[SPARCfolder + "_description"]
+    var descriptionList = jsonvar[SPARCfolder + "_description"]
     for (var i = 0; i < pathlist.length; i++){
       if (pathlist[i] !== "" ) {
 	      var rownum = rowcount + i + 1
-	      tableNotOrganizedcount = tableNotOrganizedcount + 1
-	      var table_len = tableNotOrganizedcount
-	      var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ pathlist[i] +"</td><td id='description_row"+table_len+"'>"+ descriptionlist[i] +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit description' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save description' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete row' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
+	      tableNotOrganizedCount = tableNotOrganizedCount + 1
+	      var table_len = tableNotOrganizedCount
+	      var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ pathlist[i] +"</td><td id='description_row"+table_len+"'>"+ descriptionList[i] +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit description' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save description' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete row' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
        }
     }
   }
@@ -968,7 +962,7 @@ function tableToJsonWithDescription(table){
   var jsonvardescription= {}
 
   var pathlist = new Array()
-  var descriptionlist = new Array()
+  var descriptionList = new Array()
 
   var keyval = "code"
   if (table === tableOrganized){
@@ -981,20 +975,20 @@ function tableToJsonWithDescription(table){
     var descriptionname = row.cells[1].innerHTML
     if (tableheaders.includes(pathname)) {
       jsonvar[keyval] = pathlist
-      jsonvardescription[keyval + "_description"] = descriptionlist
+      jsonvardescription[keyval + "_description"] = descriptionList
       keyval = pathname
       if (table === tableOrganized){
       keyval = keyval + "_org"
     }
       var pathlist = new Array()
-      var descriptionlist = new Array()
+      var descriptionList = new Array()
     } else {
       pathlist.push(row.cells[0].innerHTML)
-      descriptionlist.push(row.cells[1].innerHTML)
+      descriptionList.push(row.cells[1].innerHTML)
     }
   }
   jsonvar[keyval] = pathlist
-  jsonvardescription[keyval+ "_description"] = descriptionlist
+  jsonvardescription[keyval+ "_description"] = descriptionList
 
   return [jsonvar, jsonvardescription]
 }
@@ -1018,8 +1012,8 @@ function dropAddToTable(e, myID){
   	for (let f of e.dataTransfer.files) {
           console.log('File(s) you dragged here: ', f.path, myID)
           var rownum = rowcount + i + 1
-  	    tableNotOrganizedcount = tableNotOrganizedcount + 1
-  	    var table_len = tableNotOrganizedcount
+  	    tableNotOrganizedCount = tableNotOrganizedCount + 1
+  	    var table_len = tableNotOrganizedCount
   	    var row = tableNotOrganized.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'><td id='name_row"+table_len+"'>"+ f.path +"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit description' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save description' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete row' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
        	i = i + 1
       }

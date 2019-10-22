@@ -321,5 +321,5 @@ input[type='text'].inputpath
 }
 
 /* Progress bar */
-#meter {border:2px solid #000;width:620px}
-#progress-bar {background:#333;height:25px;width:0%}
+#div-meter {border:2px solid #000;width:620px}
+#div-progress-bar {background:#333;height:25px;width:0%}

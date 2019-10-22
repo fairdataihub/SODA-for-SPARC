@@ -43,7 +43,6 @@
     }
   },
   "dependencies": {
-    "electron": "^6.0.0",
     "glob": "^7.1.0",
     "electron-context-menu": "^0.13.0",
     "electron-settings": "^3.2.0",
@@ -51,6 +50,7 @@
     "zerorpc": "git+https://github.com/fyears/zerorpc-node.git"
   },
   "devDependencies": {
+    "electron": "^6.0.0",
     "electron-packager": "^14.0.6",
     "electron-rebuild": "^1.8.6"
   }
