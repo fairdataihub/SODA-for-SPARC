@@ -93,14 +93,14 @@ and try again*
 ## Distribution (Creating an Installer)
 The previous packaging step would generate folder for the program which contains an executable to run the application. If you desire to generate installers, we suggest the following method:
 *   Windows:<br>
-  - Download [Inno Setup](http://www.jrsoftware.org/isdl.php)<br>
-  - Open Inno Setup and create Installer from the UI. If you're having troubles, refer to this video tutorial – https://www.youtube.com/watch?v=wW3NUAUZhnY
+Download [Inno Setup](http://www.jrsoftware.org/isdl.php)<br>
+Open Inno Setup and create Installer from the UI. If you're having troubles, refer to this video tutorial – https://www.youtube.com/watch?v=wW3NUAUZhnY
 
 *   MAC:<br>
-  - Creating DMG Installer – https://github.com/LinusU/node-appdmg<br>
-  - `$ npm install -g appdmg`<br>
-  - `$ appdmg path/to/spec.json path/to/output.dmg`<br>
-  - Specification of JSON file (spec.json) –
+Creating DMG Installer – https://github.com/LinusU/node-appdmg<br>
+`$ npm install -g appdmg`<br>
+`$ appdmg path/to/spec.json path/to/output.dmg`<br>
+Specification of JSON file (spec.json) –
 ```json
 {
   "title": "SODA",
