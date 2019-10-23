@@ -119,6 +119,7 @@
               <div class="tooltipnew">( ? )
                 <span class="tooltiptext">Select SPARC folder from the drop-down them add files / folders using the corresponding buttons. <br>
                 Alternatively, you could drag-and-drop files / folders on the table headers to import the them. <br><br>
+                All sub-folders and files are included during data preparation BUT only selected folder is displayed on the UI. <br><br>
                 The 'main' folder designates the dataset folder</span>
               </div>
             </h5>
@@ -185,6 +186,24 @@
                 </table>
             </div>
 
+            <div id="div-save-table" class="datasetsaveoption">
+              <h5> Save file organization to continue later
+                <div class="tooltipnew">( ? )
+                  <span class="tooltiptext">Save the table you created as a template (CSV format) for continuing later <br>
+                  You can optionally add file/folder paths and descriptions directly in the teamplate before importing back with the upload button</span>
+                </div>
+              </h5>
+              <div class="demo-controls">
+                <button id="button-select-save-file-organization" class="demo-button"> Save </button>
+                <p id='para-save-file-organization-status'> <p>
+              </div>
+            </div>
+
+            <div id="div-clear-table" class="datasetsaveoption">
+              <h5> </h5>
+              <button id="button-clear-table" class="demo-button"> Clear table </button>
+            </div>
+
             <hr>
             <h5> Preview file organization
               <div class="tooltipnew">( ? )
@@ -199,24 +218,6 @@
                 <button id="button-delete-preview-organization-status" class="demo-button"> Delete Preview Folder </button>
                 <p id='para-delete-preview-organization-status'> <p>
             </div>
-          </div>
-
-          <div id="div-save-table" class="datasetsaveoption">
-            <h5> Save file organization to continue later
-              <div class="tooltipnew">( ? )
-                <span class="tooltiptext">Save the table you created as a template (CSV format) for continuing later <br>
-                You can optionally add file/folder paths and descriptions directly in the teamplate before importing back with the upload button</span>
-              </div>
-            </h5>
-            <div class="demo-controls">
-              <button id="button-select-save-file-organization" class="demo-button"> Save </button>
-              <p id='para-save-file-organization-status'> <p>
-            </div>
-          </div>
-
-          <div id="div-clear-table" class="datasetsaveoption">
-            <h5> </h5>
-            <button id="button-clear-table" class="demo-button"> Clear table </button>
           </div>
         </div>
       </div>

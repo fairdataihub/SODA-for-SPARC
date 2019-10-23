@@ -8,7 +8,7 @@
   bottom: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  color: var(--color-accent); 
+  color: var(--color-accent);
   background-color: var(--color-section);
 
   /* Hide */
@@ -33,7 +33,7 @@
 
 .section-wrapper {
   position: relative;
-  max-width: 740px;
+  max-width: 95%;
   margin: 0 auto;
   padding: 2rem 2rem 1rem 2rem;
   border-bottom: 1px solid var(--color-border);

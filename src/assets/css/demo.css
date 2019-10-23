@@ -14,7 +14,7 @@
 
 .demo-wrapper {
   position: relative;
-  max-width: 740px;
+  max-width: 95%;
   margin: 0 auto;
   padding: 0 2rem;
 }
@@ -321,5 +321,5 @@ input[type='text'].inputpath
 }
 
 /* Progress bar */
-#div-meter {border:2px solid #000;width:620px}
+#div-meter {border:2px solid #000;width:100%}
 #div-progress-bar {background:#333;height:25px;width:0%}
