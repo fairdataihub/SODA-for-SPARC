@@ -6,31 +6,31 @@
         <h1>
           Prepare dataset
         </h1>
-        <h3>This interface will walk you through the steps for performing an initial curation of your dataset before review by the Curation Team. </h3>
+        <h3>This interface will walk you through the steps for performing an initial curation of your dataset before review by the Curation Team. Specify succesively your requirements (files to be added in the SPARC folder structure, metadata to be included, etc.), validate your dataset (based on specifications before it is actually generated), then generate your SPARC dataset (locally on your computer or directly on Blackfynn to avoid duplicating files locally).</h3>
       </div>
     </header>
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-new-window-demo-toggle" class="js-container-target demo-toggle-button">Organize
-          <div class="demo-meta u-avoid-clicks"> Implement the SPARC dataset folder structure
+        <button id="button-new-window-demo-toggle" class="js-container-target demo-toggle-button"> Specify dataset files
+          <div class="demo-meta u-avoid-clicks"> Specify desired local files to be added in each of the SPARC folders of your dataset
           </div>
         </button>
         <div class="demo-box">
 
           <form id = 'form-dataset-organize-form'>
             <div>
-              <input id="preorganized-dataset" name="organizing-dataset" type="radio" class="with-style" />
-              <label for="preorganized-dataset" class=labelradio> Dataset already organized </label>
-                <div class="tooltipnew">( ? )
-                  <span class="tooltiptext">Select this option when you already have the SPARC folder structure in place</span>
-                </div>
-            </div>
-            <div>
               <input id="organize-dataset" name="organizing-dataset" type="radio" class="with-style" />
               <label for="organize-dataset" class=labelradio> Organize my dataset </label>
                 <div class="tooltipnew">( ? )
                   <span class="tooltiptext">Select this option to conveniently organize your dataset following the SPARC folder structure</span>
+                </div>
+            </div>
+            <div>
+              <input id="preorganized-dataset" name="organizing-dataset" type="radio" class="with-style" />
+              <label for="preorganized-dataset" class=labelradio> Dataset already organized </label>
+                <div class="tooltipnew">( ? )
+                  <span class="tooltiptext">Select this option when you already have the SPARC folder structure in place</span>
                 </div>
             </div>
             <div>
@@ -225,8 +225,8 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-manage-window-demo-toggle" class="js-container-target demo-toggle-button">Convert file format
-          <div class="demo-meta u-avoid-clicks"> Use SPARC standard file formats </div>
+        <button id="button-manage-window-demo-toggle" class="js-container-target demo-toggle-button"> Handle file format conversion
+          <div class="demo-meta u-avoid-clicks"> Choose files to be converted to SPARC defined standard formats before being added to your dataset  </div>
         </button>
         <div class="demo-box">
           <p> Coming soon... Tentative date: May 2020 </p>
@@ -236,8 +236,9 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-using-window-events-demo-toggle" class="js-container-target demo-toggle-button">Generate metadata
-          <div class="demo-meta u-avoid-clicks"> Include manifest, submission, dataset_description, subjects and/or samples files</div>
+        <button id="button-using-window-events-demo-toggle" class="js-container-target demo-toggle-button">
+        Specify metadata files to be attached 
+          <div class="demo-meta u-avoid-clicks"> Choose metadata files (manifest, submission, dataset_description, subjects and/or samples files) to be included in your dataset </div>
         </button>
         <div class="demo-box">
 
@@ -359,8 +360,8 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button class="js-container-target demo-toggle-button">Validate dataset
-          <div class="demo-meta u-avoid-clicks"> Verify dataset using validator developed by the Curation Team </div>
+        <button class="js-container-target demo-toggle-button"> Validate dataset before generating
+          <div class="demo-meta u-avoid-clicks"> Validate that information provided during the previous steps will create a SPARC-approved dataset using validator developed by the SPARC Curation Team </div>
         </button>
         <div class="demo-box">
           <p> Coming soon... Tentative date: February 2020 </p>
@@ -371,7 +372,7 @@
     <div class="demo">
       <div class="demo-wrapper">
         <button class="js-container-target demo-toggle-button"> Generate dataset
-          <div class="demo-meta u-avoid-clicks"> Apply changes and create dataset locally or directly on Blackfynn </div>
+          <div class="demo-meta u-avoid-clicks"> Create dataset based on information specified during the previous steps (dataset could be created locally or pushed directly to Blackfynn) </div>
         </button>
 
         <div class="demo-box">
