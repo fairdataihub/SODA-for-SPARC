@@ -4,14 +4,14 @@ channels:
 - conda-forge
 dependencies:
 - python = 3.6
-- PyInstaller 
-- nodejs
-- libgcc
-- git
-- openpyxl
-- pandas
+- PyInstaller = 3.5
+- nodejs = 10.13.0
+- libgcc = 7.2.0
+- git = 2.20.1
 - pip
 - pip:
-  - zerorpc
-  - blackfynn
-  - configparser
+  - pandas == 0.25.2
+  - openpyxl == 3.0.0
+  - zerorpc == 0.6.3
+  - blackfynn == 3.0.1
+  - configparser == 4.0.2
