@@ -266,10 +266,6 @@ table.pathtable tr td:nth-child(2) {
   min-width:40%;
 }
 
-table.pathtable tr:hover {
-  color: #000000;
-}
-
 table.pathtable td {
   text-align:center;
 }

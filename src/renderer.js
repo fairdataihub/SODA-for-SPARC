@@ -523,46 +523,6 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
 })
 
 
-// // Submit local dataset to selected bf dataset
-// bfSubmitDatasetBtn.addEventListener('click', () => {
-//   bfsubmitdatasetinfo.style.color = blackcolor
-//   bfSubmitDatasetBtn.disabled = true
-//   bfsubmitdatasetinfo.value = 'Submitting'
-//   var completionstatus = 'Solving'
-//   var selectedbfaccount = bfaccountlist.options[bfaccountlist.selectedIndex].text
-//   var selectedbfdataset = bfdatasetlist.options[bfdatasetlist.selectedIndex].text
-//   client.invoke("apiBfSubmitDataset", selectedbfaccount, selectedbfdataset, pathsubmitdataset.value, (error, res) => {
-//     if (error) {
-//       console.log('ERROR')
-//       var emessage = userError(error)
-//       bfsubmitdatasetinfo.style.color = redcolor
-//       bfsubmitdatasetinfo.value = emessage
-//     } else {
-//       console.log('Done', res)
-//     }
-//   })
-//
-//   var timerprogress = setInterval(progressfunction, 500)
-//     function progressfunction(){
-//       client.invoke("apiSubmitDatasetProgress", (error, res) => {
-//         if(error) {
-//           console.error(error)
-//         } else {
-//           completionstatus = res[1]
-//           var printstatus = res[2]
-//           if (printstatus === 'Uploading') {
-//             bfsubmitdatasetinfo.value = res[0].split(',').join('\n')
-//           }
-//         }
-//       })
-//       if (completionstatus === 'Done'){
-//         clearInterval(timerprogress)
-//         bfSubmitDatasetBtn.disabled = false
-//       }
-//     }
-// })
-
-
 bfSubmitDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-progress-bar-error-status").innerHTML = ""
   document.getElementById("para-progress-bar-status").innerHTML = ""
@@ -1051,9 +1011,4 @@ function clearTable(table){
     }
   }
   return table
-}
-
-function dragEnter(event) {
-  console.log(event)
-    event.target.style.color = 'black';
 }
