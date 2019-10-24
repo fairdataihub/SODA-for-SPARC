@@ -24,6 +24,7 @@ client.invoke("echo", "server ready", (error, res) => {
 //////////////////////////////////
 
 // Organize dataset
+const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
 const selectDatasetBtn = document.getElementById('button-select-dataset')
 const pathDataset = document.querySelector('#para-selected-dataset')
 const tableOrganized = document.getElementById("table-organized")
@@ -116,8 +117,9 @@ const sparcFolderNames = ["code", "derivatives", "docs", "protocol", "samples", 
 
 
 // Add existing bf account(s) to dropdown list
-updateBfAccountList()
-
+bfAccountCheckBtn.addEventListener('click', (event) => {
+      updateBfAccountList()
+})
 //////////////////////////////////
 // Operations on JavaScript end only
 //////////////////////////////////
@@ -946,7 +948,13 @@ function jsonToTableWithDescription(table, jsonvar){
     var pathlist = jsonvar[SPARCfolder]
     var descriptionList = jsonvar[SPARCfolder + "_description"]
     for (var i = 0; i < pathlist.length; i++){
-      if (pathlist[i] !== "" ) {
+      var countDouble  = 0
+      for (var r = 0, row; row = table.rows[r]; r++) {
+        if (pathlist[i] === row.cells[0].innerHTML){
+          countDouble += 1
+        }
+      }
+      if (pathlist[i] !== "" &&  countDouble === 0) {
 	      var rownum = rowcount + i + 1
 	      tableNotOrganizedCount = tableNotOrganizedCount + 1
 	      var table_len = tableNotOrganizedCount
@@ -994,6 +1002,7 @@ function tableToJsonWithDescription(table){
 }
 
 function dropAddToTable(e, myID){
+  e.target.style.color = 'inherit';
 	var rowcount = document.getElementById(myID).rowIndex
 	var i = 0
   var jsonvar = tableToJson(tableNotOrganized)
@@ -1042,4 +1051,9 @@ function clearTable(table){
     }
   }
   return table
+}
+
+function dragEnter(event) {
+  console.log(event)
+    event.target.style.color = 'black';
 }

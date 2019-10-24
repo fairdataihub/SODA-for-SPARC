@@ -104,13 +104,13 @@
           </div>
 
           <div id="div-organize-dataset" class="datasetsaveoption">
-            <h5> Upload previously saved file structure
+            <h5> Import previously saved file structure
               <div class="tooltipnew">( ? )
                 <span class="tooltiptext">Import template of the file structure you saved earlier</span>
               </div>
             </h5>
             <div class="demo-controls">
-              <button id="button-select-upload-file-organization" class="demo-button"> Upload </button>
+              <button id="button-select-upload-file-organization" class="demo-button"> Import </button>
               <p id='para-upload-file-organization-status'> <p>
             </div>
             <hr>
@@ -144,42 +144,42 @@
             <h5>  </h5>
             <div class="demo-controls">
                 <table id="code_table" class = pathtable>
-                  <tr id="code" droppable="true" ondragenter="return false" ondragover="return false">
+                  <tr id="code" droppable="true" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondragover="return false">
                   	<th>code</th>
                     <th>description</th>
                   </tr>
 
-                  <tr id='derivatives' droppable="true" ondragenter="return false" ondragover="return false">
+                  <tr id='derivatives' droppable="true" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondragover="return false">
                   	<th>derivatives</th>
                     <th>description</th>
                   </tr>
 
-                  <tr id='docs' droppable="true" ondragenter="return false" ondragover="return false">
+                  <tr id='docs' droppable="true" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondragover="return false">
                     <th>docs</th>
                     <th>description</th>
                   </tr>
 
-                  <tr id="protocol" droppable="true" ondragenter="return false" ondragover="return false">
+                  <tr id="protocol" droppable="true" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondragover="return false">
                     <th>protocol</th>
                     <th>description</th>
                   </tr>
 
-                  <tr id='samples' droppable="true" ondragenter="return false" ondragover="return false">
+                  <tr id='samples' droppable="true" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondragover="return false">
                     <th>samples</th>
                     <th>description</th>
                   </tr>
 
-                  <tr id='sourcedata' droppable="true" ondragenter="return false" ondragover="return false">
+                  <tr id='sourcedata' droppable="true" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondragover="return false">
                     <th>sourcedata</th>
                     <th>description</th>
                   </tr>
 
-                  <tr id='subjects' droppable="true" ondragenter="return false" ondragover="return false">
+                  <tr id='subjects' droppable="true" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondragover="return false">
                     <th>subjects</th>
                     <th>description</th>
                   </tr>
 
-                  <tr id='main' droppable="true" ondragenter="return false" ondragover="return false">
+                  <tr id='main' droppable="true" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondragover="return false">
                     <th>main</th>
                     <th>description</th>
                   </tr>

@@ -47,3 +47,18 @@ function save_row(no){
 function delete_row(no){
  document.getElementById("row"+no+"").outerHTML="";
 }
+
+function dragEnter(event) {
+  console.log(event)
+    event.target.style.color = 'black';
+}
+
+function dragLeave(event) {
+  console.log(event)
+    event.target.style.color = 'inherit';
+}
+
+function dragDone(event) {
+  console.log(event)
+    event.target.style.color = 'inherit';
+}

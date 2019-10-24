@@ -120,21 +120,24 @@ def preview_file_organization(jsonpath):
     except:
         raise Exception("Error: Preview Folder already present, click on 'Delete Preview Folder' option to get rid of the older vesion")
 
-    folderrequired = []
-    for i in mydict.keys():
-        if mydict[i] != []:
-            folderrequired.append(i)
-            if i != 'main':
-                makedirs(join(preview_path, i))
+    try:
+        folderrequired = []
+        for i in mydict.keys():
+            if mydict[i] != []:
+                folderrequired.append(i)
+                if i != 'main':
+                    makedirs(join(preview_path, i))
 
-    for i in folderrequired:
-        paths = mydict[i]
-        if (i == 'main'):
-            preview_folder_structure(paths, join(preview_path))
-        else:
-            preview_folder_structure(paths, join(preview_path, i))
-    open_file(preview_path)
-    return preview_path
+        for i in folderrequired:
+            paths = mydict[i]
+            if (i == 'main'):
+                preview_folder_structure(paths, join(preview_path))
+            else:
+                preview_folder_structure(paths, join(preview_path, i))
+        open_file(preview_path)
+        return preview_path
+    except Exception as e:
+        raise e
 
 
 def open_file(file_path):
@@ -147,12 +150,15 @@ def open_file(file_path):
     Action:
         Opens dialog box for the given path
     """
-    if platform.system() == "Windows":
-        subprocess.Popen(r'explorer /select,' + str(file_path))
-    elif platform.system() == "Darwin":
-        subprocess.Popen(["open", file_path])
-    else:
-        subprocess.Popen(["xdg-open", file_path])
+    try:
+        if platform.system() == "Windows":
+            subprocess.Popen(r'explorer /select,' + str(file_path))
+        elif platform.system() == "Darwin":
+            subprocess.Popen(["open", file_path])
+        else:
+            subprocess.Popen(["xdg-open", file_path])
+    except Exception as e:
+        raise e
 
 
 def preview_folder_structure(paths, folder_path):
@@ -187,13 +193,16 @@ def delete_preview_file_organization():
     Associated with 'Delete Preview Folder' button
     Deletes the 'Preview' folder from the disk
     """
-    userpath = expanduser("~")
-    preview_path = join(userpath, "SODA")
-    if isdir(preview_path):
-        shutil.rmtree(preview_path)
-    else:
-        raise Exception("Error: Preview folder not present or already deleted !")
-    return
+    try:
+        userpath = expanduser("~")
+        preview_path = join(userpath, "SODA")
+        if isdir(preview_path):
+            shutil.rmtree(preview_path)
+        else:
+            raise Exception("Error: Preview folder not present or already deleted !")
+        return
+    except Exception as e:
+        raise e
 
 
 ### FEATURE #2: SPARC metadata generator
@@ -205,7 +214,6 @@ def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
     Associated with 'Generate' button in the 'Generate dataset' section
     Checks validity of files / paths / folders and then generates the files and folders as requested along with progress status
     """
-
     global curateprogress
     global curatestatus
     global curateprintstatus
@@ -499,23 +507,26 @@ def create_dataset(jsonpath, pathdataset):
     Action:
         Creates the folders and files specified
     """
-    mydict = jsonpath
-    userpath = expanduser("~")
-    preview_path = pathdataset
-    folderrequired = []
+    try:
+        mydict = jsonpath
+        userpath = expanduser("~")
+        preview_path = pathdataset
+        folderrequired = []
 
-    for i in mydict.keys():
-        if mydict[i] != []:
-            folderrequired.append(i)
-            if i != 'main':
-                makedirs(join(preview_path, i))
+        for i in mydict.keys():
+            if mydict[i] != []:
+                folderrequired.append(i)
+                if i != 'main':
+                    makedirs(join(preview_path, i))
 
-    for i in folderrequired:
-        for path in mydict[i]:
-            if (i == 'main'):
-                create_new_file(path, join(pathdataset))
-            else:
-                create_new_file(path, join(pathdataset, i))
+        for i in folderrequired:
+            for path in mydict[i]:
+                if (i == 'main'):
+                    create_new_file(path, join(pathdataset))
+                else:
+                    create_new_file(path, join(pathdataset, i))
+    except Exception as e:
+        raise e
 
 
 def create_new_file(path, folder_path):
@@ -604,34 +615,38 @@ def bf_add_account(keyname, key, secret):
     Action:
         Adds account to the Blackfynn configuration file (local machine)
     """
-    error, c = '', 0
-    keyname = keyname.strip()
-    if (not keyname) or (not key) or (not secret):
-        raise Exception('Error: Please enter valid keyname, key, and/or secret')
+    try:
+        error, c = '', 0
+        keyname = keyname.strip()
+        if (not keyname) or (not key) or (not secret):
+            raise Exception('Error: Please enter valid keyname, key, and/or secret')
 
-    if (keyname.isspace()) or (key.isspace()) or (secret.isspace()):
-        raise Exception('Error: Please enter valid keyname, key, and/or secret')
+        if (keyname.isspace()) or (key.isspace()) or (secret.isspace()):
+            raise Exception('Error: Please enter valid keyname, key, and/or secret')
 
-    bfpath = join(userpath, '.blackfynn')
-    #Load existing or create new config file
-    config = ConfigParser()
-    if exists(configpath):
-        config.read(configpath)
-        if config.has_section(keyname):
-            raise Exception('Error: Key name already exists')
-    else:
-        if not exists(bfpath):
-            mkdir(bfpath)
-        if not exists(join(bfpath, 'cache')):
-            mkdir(join(bfpath, 'cache'))
+        bfpath = join(userpath, '.blackfynn')
+        #Load existing or create new config file
+        config = ConfigParser()
+        if exists(configpath):
+            config.read(configpath)
+            if config.has_section(keyname):
+                raise Exception('Error: Key name already exists')
+        else:
+            if not exists(bfpath):
+                mkdir(bfpath)
+            if not exists(join(bfpath, 'cache')):
+                mkdir(join(bfpath, 'cache'))
 
-    #Add new account
-    config.add_section(keyname)
-    config.set(keyname, 'api_token', key)
-    config.set(keyname, 'api_secret', secret)
+        #Add new account
+        config.add_section(keyname)
+        config.set(keyname, 'api_token', key)
+        config.set(keyname, 'api_secret', secret)
 
-    with open(configpath, 'w') as configfile:
-        config.write(configfile)
+        with open(configpath, 'w') as configfile:
+            config.write(configfile)
+
+    except Exception as e:
+        raise e
 
     #Check key and secret are valid, if not delete account from config
     try:
@@ -659,23 +674,26 @@ def bf_account_list():
     """
     Returns list of accounts stored in the system
     """
-    accountlist = ['Select']
-    if exists(configpath):
-        config = ConfigParser()
-        config.read(configpath)
-        accountname = config.sections()
-        accountnamenoglobal = [n for n in accountname if n != "global"]
-        if accountnamenoglobal:
-            for n in accountnamenoglobal:
-                try:
-                    bfn = Blackfynn(n)
-                    accountlist.append(n)
-                except:
-                    config.remove_section(n)
-            with open(configpath, 'w') as configfile:
-                config.write(configfile)
+    try:
+        accountlist = ['Select']
+        if exists(configpath):
+            config = ConfigParser()
+            config.read(configpath)
+            accountname = config.sections()
+            accountnamenoglobal = [n for n in accountname if n != "global"]
+            if accountnamenoglobal:
+                for n in accountnamenoglobal:
+                    try:
+                        bfn = Blackfynn(n)
+                        accountlist.append(n)
+                    except:
+                        config.remove_section(n)
+                with open(configpath, 'w') as configfile:
+                    config.write(configfile)
+        return accountlist
 
-    return accountlist
+    except Exception as e:
+        raise e
 
 
 # Visualize existing dataset in the selected account
@@ -719,33 +737,37 @@ def bf_new_dataset_folder(datasetname, accountname):
     Action:
         Creates dataset for the account specified
     """
-    error, c = '', 0
-    datasetname = datasetname.strip()
-
-    if (not datasetname):
-        error = error + 'Error: Please enter valid dataset folder name' + '\n'
-        c += 1
-
-    if (datasetname.isspace()):
-        error = error + 'Error: Please enter valid dataset folder name' + '\n'
-        c += 1
-
     try:
-        bf = Blackfynn(accountname)
+        error, c = '', 0
+        datasetname = datasetname.strip()
+
+        if (not datasetname):
+            error = error + 'Error: Please enter valid dataset folder name' + '\n'
+            c += 1
+
+        if (datasetname.isspace()):
+            error = error + 'Error: Please enter valid dataset folder name' + '\n'
+            c += 1
+
+        try:
+            bf = Blackfynn(accountname)
+        except Exception as e:
+            error = error + 'Error: Please select a valid Blackfynn account' + '\n'
+            c += 1
+
+        if c>0:
+            raise Exception(error)
+
+        dataset_list = []
+        for ds in bf.datasets():
+            dataset_list.append(ds.name)
+        if datasetname in dataset_list:
+            raise Exception('Error: Dataset folder name already exists')
+        else:
+            bf.create_dataset(datasetname)
+
     except Exception as e:
-        error = error + 'Error: Please select a valid Blackfynn account' + '\n'
-        c += 1
-
-    if c>0:
-        raise Exception(error)
-
-    dataset_list = []
-    for ds in bf.datasets():
-        dataset_list.append(ds.name)
-    if datasetname in dataset_list:
-        raise Exception('Error: Dataset folder name already exists')
-    else:
-        bf.create_dataset(datasetname)
+        raise e
 
 
 # Submit dataset to selected account
@@ -923,18 +945,21 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
         error = error + 'Error: Please select a valid Blackfynn dataset' + '<br>'
         c += 1
 
-    if c > 0:
-        raise Exception(error)
-    else:
-        selected_dataset_id = myds.id
-        list_dataset_permission = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/users')
-        list_dataset_permission_first_last_role = []
-        for i in range(len(list_dataset_permission)):
-            first_name = list_dataset_permission[i]['firstName']
-            last_name = list_dataset_permission[i]['lastName']
-            role = list_dataset_permission[i]['role']
-            list_dataset_permission_first_last_role.append(first_name + ' ' + last_name + ' , role: ' + role)
-        return list_dataset_permission_first_last_role
+    try:
+        if c > 0:
+            raise Exception(error)
+        else:
+            selected_dataset_id = myds.id
+            list_dataset_permission = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/users')
+            list_dataset_permission_first_last_role = []
+            for i in range(len(list_dataset_permission)):
+                first_name = list_dataset_permission[i]['firstName']
+                last_name = list_dataset_permission[i]['lastName']
+                role = list_dataset_permission[i]['role']
+                list_dataset_permission_first_last_role.append(first_name + ' ' + last_name + ' , role: ' + role)
+            return list_dataset_permission_first_last_role
+    except Exception as e:
+        raise e
 
 
 
