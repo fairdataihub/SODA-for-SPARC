@@ -234,28 +234,30 @@ selectSaveFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('save-file-dialog-saveorganization')
 })
 ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
-  if (alreadyOrganizedStatus.checked == true){
-    var jsonformat = tableToJson(tableOrganized)
-    var jsonvect = tableToJsonWithDescription(tableOrganized)
-  } else {
-    var jsonformat = tableToJson(tableNotOrganized)
-    var jsonvect = tableToJsonWithDescription(tableNotOrganized)
-  }
-  var jsonpath = jsonvect[0]
-  var jsondescription = jsonvect[1]
-  document.getElementById("para-save-file-organization-status").innerHTML = "";
-  // Call python to save
-  if (path != null){
-    client.invoke("api_save_file_organization", jsonpath, jsondescription, path, (error, res) => {
-        if(error) {
-          console.log(error)
-          var emessage = userError(error)
-          document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-        } else {
-          console.log(res)
-          document.getElementById("para-save-file-organization-status").innerHTML = "Saved!";
-        }
-    })
+  if (path.length > 0){
+    if (alreadyOrganizedStatus.checked == true){
+      var jsonformat = tableToJson(tableOrganized)
+      var jsonvect = tableToJsonWithDescription(tableOrganized)
+    } else {
+      var jsonformat = tableToJson(tableNotOrganized)
+      var jsonvect = tableToJsonWithDescription(tableNotOrganized)
+    }
+    var jsonpath = jsonvect[0]
+    var jsondescription = jsonvect[1]
+    document.getElementById("para-save-file-organization-status").innerHTML = "";
+    // Call python to save
+    if (path != null){
+      client.invoke("api_save_file_organization", jsonpath, jsondescription, path, (error, res) => {
+          if(error) {
+            console.log(error)
+            var emessage = userError(error)
+            document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+          } else {
+            console.log(res)
+            document.getElementById("para-save-file-organization-status").innerHTML = "Saved!";
+          }
+      })
+    }
   }
 })
 
@@ -265,24 +267,26 @@ selectUploadFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-uploadorganization')
 })
 ipcRenderer.on('selected-uploadorganization', (event, path) => {
-  document.getElementById("para-upload-file-organization-status").innerHTML = "";
-  var headerNames = sparcFolderNames.slice()
-  headerNames.push("main")
-  var lennames =  headerNames.length
-  for (var i = 0; i < lennames; i++) {
-  	headerNames.push(headerNames[i] + "_description")
+  if (path.length > 0){
+    document.getElementById("para-upload-file-organization-status").innerHTML = "";
+    var headerNames = sparcFolderNames.slice()
+    headerNames.push("main")
+    var lennames =  headerNames.length
+    for (var i = 0; i < lennames; i++) {
+    	headerNames.push(headerNames[i] + "_description")
+    }
+    client.invoke("api_upload_file_organization", path[0], headerNames, (error, res) => {
+          if(error) {
+            console.log(error)
+            var emessage = userError(error)
+            document.getElementById("para-upload-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+          } else {
+            console.log(res)
+            jsonToTableWithDescription(tableNotOrganized, res)
+            document.getElementById("para-upload-file-organization-status").innerHTML = "Uploaded!";
+          }
+    })
   }
-  client.invoke("api_upload_file_organization", path[0], headerNames, (error, res) => {
-        if(error) {
-          console.log(error)
-          var emessage = userError(error)
-          document.getElementById("para-upload-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-        } else {
-          console.log(res)
-          jsonToTableWithDescription(tableNotOrganized, res)
-          document.getElementById("para-upload-file-organization-status").innerHTML = "Uploaded!";
-        }
-  })
 })
 
 // Action when user click on Preview file organization button
