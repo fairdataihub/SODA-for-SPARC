@@ -249,7 +249,7 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
     if (path != null){
       client.invoke("api_save_file_organization", jsonpath, jsondescription, path, (error, res) => {
           if(error) {
-            console.log(error)
+            console.error(error)
             var emessage = userError(error)
             document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           } else {
@@ -277,11 +277,10 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
     }
     client.invoke("api_upload_file_organization", path[0], headerNames, (error, res) => {
           if(error) {
-            console.log(error)
+            console.error(error)
             var emessage = userError(error)
             document.getElementById("para-upload-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           } else {
-            console.log(res)
             jsonToTableWithDescription(tableNotOrganized, res)
             document.getElementById("para-upload-file-organization-status").innerHTML = "Uploaded!";
           }
@@ -296,7 +295,7 @@ selectPreviewBtn.addEventListener('click', () => {
   var jsonpath = jsonvect[0]
   client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
       if(error) {
-        console.log(error)
+        console.error(error)
         var emessage = userError(error)
         document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
@@ -313,7 +312,7 @@ deletePreviewBtn.addEventListener('click', () => {
   document.getElementById("para-preview-organization-status").innerHTML = ""
   client.invoke("api_delete_preview_file_organization", (error, res) => {
       if(error) {
-        console.log(error)
+        console.error(error)
         var emessage = userError(error)
         document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
@@ -423,7 +422,7 @@ curateDatasetBtn.addEventListener('click', () => {
       var emessage = userError(error)
       progressInfo.style.color = redColor
       progressInfo.value = emessage
-      console.log(error)
+      console.error(error)
       enableform(curationForm)
     } else {
       console.log('Done', res)
@@ -606,7 +605,7 @@ bfAddPermissionBtn.addEventListener('click', () => {
   client.invoke("api_bf_add_permission", selectedBfAccount, selectedBfDataset, selectedUser, selectedRole,
     (error, res) => {
     if(error) {
-      console.log(error)
+      console.error(error)
       var emessage = userError(error)
       datasetPermissionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
     } else {
@@ -726,7 +725,7 @@ function showCurrentPermission(){
     client.invoke("api_bf_get_permission", selectedBfAccount, selectedBfDataset,
     (error, res) => {
       if(error) {
-        console.log(error)
+        console.error(error)
       } else {
         console.log('Done', res)
         var permissionList = ''
@@ -786,9 +785,9 @@ function organizedFolderToJson(pathDatasetVal){
     var filepath = path.join(pathDatasetVal, filename)
     if (fs.lstatSync(filepath).isDirectory()){
       var filesInFolder = fs.readdirSync(filepath)
-      console.log(filesInFolder)
+      // console.log(filesInFolder)
       filesInFolder = filesInFolder.filter(item => !(/(^|\/)\.[^\/\.]/g).test(item));
-      console.log(filesInFolder)
+      // console.log(filesInFolder)
       var folderfiles = []
       for (var j = 0; j<filesInFolder.length; j++) {
         var fileNameInFolder = filesInFolder[j]
