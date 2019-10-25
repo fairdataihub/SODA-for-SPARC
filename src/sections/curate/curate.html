@@ -6,7 +6,7 @@
         <h1>
           Prepare dataset
         </h1>
-        <h3>This interface will walk you through the steps for performing an initial curation of your dataset before review by the Curation Team. Specify succesively your requirements (files to be added in the SPARC folder structure, metadata to be included, etc.), validate your dataset (based on specifications before it is actually generated), then generate your SPARC dataset (locally on your computer or directly on Blackfynn to avoid duplicating files locally).</h3>
+        <h3>This interface will walk you through the steps for performing an initial curation of your dataset before review by the Curation Team. Specify successively your requirements (files to be added in the SPARC folder structure, metadata to be included, etc.), validate your dataset (based on specifications before it is actually generated), then generate your SPARC dataset (locally on your computer or directly on Blackfynn to avoid duplicating files locally). Please watch <a href="https://www.youtube.com"> this introduction video </a> before you get started. </h3>
       </div>
     </header>
 
@@ -23,22 +23,24 @@
               <input id="organize-dataset" name="organizing-dataset" type="radio" class="with-style" />
               <label for="organize-dataset" class=labelradio> Organize my dataset </label>
                 <div class="tooltipnew">( ? )
-                  <span class="tooltiptext">Select this option to conveniently organize your dataset following the SPARC folder structure</span>
+                  <span class="tooltiptext">Select this option to conveniently organize your dataset following the SPARC folder structure
+                  </span>
                 </div>
             </div>
             <div>
               <input id="preorganized-dataset" name="organizing-dataset" type="radio" class="with-style" />
               <label for="preorganized-dataset" class=labelradio> Dataset already organized </label>
                 <div class="tooltipnew">( ? )
-                  <span class="tooltiptext">Select this option when you already have the SPARC folder structure in place</span>
+                  <span class="tooltiptext">Select this option when you already have the SPARC folder structure in place and you only want, e.g., to add description, include metadata files, and/or validate your dataset
+                  </span>
                 </div>
             </div>
             <div>
               <input id="smart-organize-dataset" name="organizing-dataset" type="radio" class="with-style" />
               <label for="smart-organize-dataset" class=labelradio> Smart organize </label>
                 <div class="tooltipnew">( ? )
-                  <span class="tooltiptext">Select to automatically organize your dataset based on a previously saved organized structure. <br>
-                  This applies if you are following a strict dataset organization structure (different than SPARC) and only the high-level folder changes from dataset to dataset</span>
+                  <span class="tooltiptext">Select to automatically organize your dataset based on a previously saved organized structure. This applies if you are following a strict dataset organization structure (different than SPARC) and only the high-level folder changes from dataset to dataset
+                  </span>
                 </div>
             </div>
           </form>
@@ -106,7 +108,7 @@
           <div id="div-organize-dataset" class="datasetsaveoption">
             <h5> Import previously saved file structure
               <div class="tooltipnew">( ? )
-                <span class="tooltiptext">Import template of the file structure you saved earlier</span>
+                <span class="tooltiptext">Import progress file you saved previously (see 'Save' button below the table) and continue organizing your dataset</span>
               </div>
             </h5>
             <div class="demo-controls">
@@ -115,12 +117,19 @@
             </div>
             <hr>
 
-            <h5> Select folders and files to be added in each SPARC folder
+            <h5> Select folders and files to be added in each SPARC folder. The paths will be added under the corresponding table header.
               <div class="tooltipnew">( ? )
-                <span class="tooltiptext">Select SPARC folder from the drop-down them add files / folders using the corresponding buttons. <br>
-                Alternatively, you could drag-and-drop files / folders on the table headers to import the them. <br><br>
-                All sub-folders and files are included during data preparation BUT only selected folder is displayed on the UI. <br><br>
-                The 'main' folder designates the dataset folder</span>
+                <span class="tooltiptext">
+                  Files are organized in SODA by adding them in the table under the desired header (corresponding to a SPARC folder). This table will then be used by the program to create your dataset when you reach the "Generate dataset" step.
+                  <br><br>
+                  Select SPARC folder from the drop-down list then add files/folders in the table using the corresponding buttons. Alternatively, you could drag-and-drop files/folders on the table headers to import them. 
+                  <br><br>
+                  You can then add a description for the file/folder that will be included in the manifest file.
+                  <br><br>
+                  If a folder is added, only the path of the selected folder will be displayed in the table but all sub-folders and files will be included when the dataset is generated.
+                  <br><br>
+                  The 'main' folder designates the dataset folder.
+                </span>
               </div>
             </h5>
             <div class="demo-controls">
@@ -189,7 +198,11 @@
             <hr>
             <h5> Preview file organization
               <div class="tooltipnew">( ? )
-                <span class="tooltiptext">Get a preview of the dataset you organized<br>Remember to click on 'Delete Preview Folder' once you're done !</span>
+                <span class="tooltiptext"> Get a preview of the dataset that will be generated based on the table. 
+                <br><br>
+                The preview is created in a folder named 'Preview' and located in a 'SODA' folder on the user's computer. The files in the preview are mock files (0 kb) with only name and extension corresponding to the actual files.
+                <br><br>
+                To avoid clustering user's computer, only one preview folder can be stored at a time so remember to click on 'Delete Preview Folder' once you're done !</span>
               </div>
             </h5>
             <div class="demo-controls">
@@ -205,8 +218,12 @@
           <div id="div-save-table" class="datasetsaveoption">
             <h5> Save file organization to continue later
               <div class="tooltipnew">( ? )
-                <span class="tooltiptext">Save the table you created as a template (CSV format) for continuing later <br>
-                You can optionally add file/folder paths and descriptions directly in the teamplate before importing back with the upload button</span>
+                <span class="tooltiptext">Save the table you created in a CSV format file for continuing later.
+                 <br><br>
+                 You can optionally add file/folder paths and descriptions directly in that CSV file (e.g. using MS Excel) before importing.
+                 <br><br>
+                 The 'Import' button is located above the table in 'Organize my dataset'. If you are saving your progress under the 'Dataset already organized' feature, you can import and continue there later.
+                </span>
               </div>
             </h5>
             <div class="demo-controls">
@@ -243,7 +260,13 @@
         </button>
         <div class="demo-box">
 
-          <h5>Manifest file</h5>
+          <h5>Manifest file
+            <div class="tooltipnew">( ? )
+              <span class="tooltiptext">
+              Select this option to include a manifest file in each of the SPARC folder. The 'filename', 'timestamp', and 'file type' fields will be populated automatically while 'description' will be populated with descriptions (if any) added in the table under 'Specify dataset files'.
+              </span>
+            </div>
+          </h5>
 
           <div class="demo-controls">
             <input id="generate-manifest" name="manifest" type="checkbox" class="with-style"/>
@@ -252,9 +275,15 @@
 
           <h5>Submission file
             <div class="tooltipnew">( ? )
-              <span class="tooltiptext">Select existing: chose an already existing submission file <br><br>
-                                                    Generate new from template: creates a new empty submission file <br><br>
-                                                    None: Do nothing</span>
+              <span class="tooltiptext">
+              For all other metadata files, the following options are available:
+              <br><br>
+              - Select existing: choose an already existing metadata file (e.g. created under the 'Prepare Metadata' section). The name must match with the file (e.g. 'submission.xlsx' or 'submission.csv' for submission file) 
+              <br><br>
+              - Generate new from template: creates a new empty submission file based on the template provided by the Curation Team 
+              <br><br>
+              - None: Do nothing (e.g. if you already have included the file under the 'main' header of the table)
+              </span>
             </div>
           </h5>
 

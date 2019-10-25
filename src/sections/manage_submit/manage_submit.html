@@ -32,8 +32,8 @@
               <input id="selectAccount" name="blackfynn-account" type="radio" class="with-style" />
               <label for="selectAccount" class=labelradio> Select account </label>
                 <div class="tooltipnew">( ? )
-                  <span class="tooltiptext">Added account(s) will be displayed in this drop-down list. <br>
-                  Select one one before continuing</span>
+                  <span class="tooltiptext">Added account(s) will be displayed in this drop-down list. Click on 'Load existing account(s)' and select one one from the drop-down list before continuing
+                  </span>
                 </div>
             </div>
           </form>
@@ -60,7 +60,7 @@
           </div>
 
           <div id="div-select-account" class="datasetsaveoption"><br>
-            <button id="button-check-bf-account-details" class="demo-button"> Load existing acount(s) </button>
+            <button id="button-check-bf-account-details" class="demo-button"> Load existing account(s) </button>
             <h5> Select account </h5>
             <div class="demo-controls">
               <select class="my_dropdown" id=bfaccountlist>
@@ -118,7 +118,7 @@
 
           <h5> Select Blackfynn Dataset for uploading
             <div class="tooltipnew">( ? )
-              <span class="tooltiptext">Select the target dataset on your Blackfynn (sorted by alphabetically)</span>
+              <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically)</span>
             </div>
           </h5>
           <div class="demo-controls">
@@ -135,8 +135,9 @@
           <div>
             <h5> Submit
               <div class="tooltipnew">( ? )
-                <span class="tooltiptext">Click on 'Submit dataset' to push all the files/folders from the selected local folder into the selected Blackfynn folder. <br>
-                Local folder structure will be preserved</span>
+                <span class="tooltiptext"> 
+                Click on 'Submit dataset' to push all the files/folders from the selected local folder into the selected Blackfynn folder. Local folder structure will be preserved. The progress bar located below will provide a live update on the upload.
+                </span>
               </div>
             </h5>
             <button id="button-submit-dataset" class="demo-button"> Submit dataset </button>
@@ -145,10 +146,6 @@
             <div id='div-meter'><div id='div-progress-bar'></div> </div>
             <p id='para-progress-bar-status'> <p>
           </div>
-          <!-- <div>
-          <h5> Progress </h5>
-          <textarea id='progresssubmit' class='outputprint' rows="25" readonly></textarea>
-          </div> -->
         </div>
       </div>
     </div>
@@ -181,9 +178,9 @@
           <h5> Add/edit permission
             <div class="tooltipnew">( ? )
               <span class="tooltiptext">Select name of user and the role you want to give for the selected dataset and click on  'Add permission'
-              <br>
+              <br> <br>
               To share your dataset with the Curation Team for review select 'SPARC Data Curation Team' under user and 'manager' under role
-              <br>
+              <br><br>
               To remove a permission select name of user and 'remove current permission'</span>
             </div>
           </h5>
