@@ -281,7 +281,6 @@ input[type='text'].inputpath
   width: 40%;
 }
 
-
 .tooltipnew {
   position: relative;
   display: inline-block;
@@ -318,6 +317,8 @@ input[type='text'].inputpath
 }
 .tooltipnew:hover .tooltiptext {
   visibility: visible;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 /* Progress bar */
