@@ -800,7 +800,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     except Exception as e:
         submitdatastatus = 'Done'
         error = error + 'Error: Please select a valid Blackfynn account'
-        raise(error)
+        raise Exception(error)
 
     try:
         myds = bf.get_dataset(bfdataset)
