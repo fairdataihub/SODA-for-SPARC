@@ -49,16 +49,44 @@ function delete_row(no){
 }
 
 function dragEnter(event) {
-  console.log(event)
     event.target.style.color = 'black';
 }
 
 function dragLeave(event) {
-  console.log(event)
     event.target.style.color = 'inherit';
 }
 
 function dragDone(event) {
-  console.log(event)
     event.target.style.color = 'inherit';
 }
+
+document.getElementById("code_table").addEventListener("click", (event) => {
+	rowDisplay(event) 
+});
+
+document.getElementById("table-organized").addEventListener("click", (event) => {
+	rowDisplay(event) 
+});
+
+function rowDisplay(e) {
+	if (e.target.className === "table-header") {
+
+	    e.preventDefault();
+	    var row = e.target.parentNode;
+	    while ((row = nextTr(row)) && !/\bparent\b/.test(row.className)){
+	        toggleIt(row)
+	    }
+	}
+}
+
+function nextTr(row) {
+    while ((row = row.nextSibling) && row.nodeType != 1);
+    return row;
+}
+
+function toggleIt(item){ 
+     if (/\bopen\b/.test(item.className))
+         item.className = item.className.replace(/\bopen\b/," ");
+     else
+         item.className += " open";
+} 

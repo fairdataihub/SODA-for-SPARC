@@ -236,14 +236,13 @@ selectSaveFileOrganizationBtn.addEventListener('click', (event) => {
 ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
   if (path.length > 0){
     if (alreadyOrganizedStatus.checked == true){
-      var jsonformat = tableToJson(tableOrganized)
-      var jsonvect = tableToJsonWithDescription(tableOrganized)
+      var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
     } else {
-      var jsonformat = tableToJson(tableNotOrganized)
       var jsonvect = tableToJsonWithDescription(tableNotOrganized)
     }
     var jsonpath = jsonvect[0]
     var jsondescription = jsonvect[1]
+    console.log(jsonpath)
     document.getElementById("para-save-file-organization-status").innerHTML = "";
     // Call python to save
     if (path != null){
@@ -870,6 +869,12 @@ function insertFileToTable(table, path){
     console.log(emessage)
     ipcRenderer.send('open-error-file-exist', emessage)
   } else {
+    var r = rowcount + 1
+    while ((row = tableNotOrganized.rows[r]) && !/\bparent\b/.test(row.className)){
+      if (/\bopen\b/.test(row.className))
+         row.className = row.className.replace(/\bopen\b/," ")
+      r += 1
+    }
     for (i = 0; i < path.length; i++) {
       tableNotOrganizedCount = tableNotOrganizedCount + 1
       var table_len=tableNotOrganizedCount
@@ -918,6 +923,12 @@ function jsonToTableWithDescription(table, jsonvar){
         }
       }
       if (pathlist[i] !== "" &&  countDouble === 0) {
+        var r = rowcount + 1
+        while ((row = tableNotOrganized.rows[r]) && !/\bparent\b/.test(row.className)){
+          if (/\bopen\b/.test(row.className))
+            row.className = row.className.replace(/\bopen\b/," ")
+            r += 1
+        }
 	      var rownum = rowcount + i + 1
 	      tableNotOrganizedCount = tableNotOrganizedCount + 1
 	      var table_len = tableNotOrganizedCount
@@ -981,6 +992,12 @@ function dropAddToTable(e, myID){
     console.log(emessage)
     ipcRenderer.send('open-error-file-exist', emessage)
   } else {
+    var r = rowcount + 1
+    while ((row = tableNotOrganized.rows[r]) && !/\bparent\b/.test(row.className)){
+      if (/\bopen\b/.test(row.className))
+         row.className = row.className.replace(/\bopen\b/," ")
+      r += 1
+    }
   	for (let f of e.dataTransfer.files) {
           console.log('File(s) you dragged here: ', f.path, myID)
           var rownum = rowcount + i + 1

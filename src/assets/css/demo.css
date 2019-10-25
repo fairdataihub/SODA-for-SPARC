@@ -281,6 +281,10 @@ input[type='text'].inputpath
   width: 40%;
 }
 
+table.pathtable tr.open {
+  display : none;
+}
+
 .tooltipnew {
   position: relative;
   display: inline-block;
