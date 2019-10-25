@@ -118,7 +118,8 @@ const sparcFolderNames = ["code", "derivatives", "docs", "protocol", "samples", 
 
 // Add existing bf account(s) to dropdown list
 bfAccountCheckBtn.addEventListener('click', (event) => {
-      updateBfAccountList()
+  removeOptions(bfAccountList)
+  updateBfAccountList()
 })
 //////////////////////////////////
 // Operations on JavaScript end only
@@ -537,7 +538,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text
   client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathSubmitDataset.value, (error, res) => {
     if(error) {
-      console.log('ERROR')
+      console.log(error)
       var emessage = userError(error)
       document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       progressBar.style.width = 0 + "%";
