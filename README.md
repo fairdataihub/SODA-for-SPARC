@@ -16,7 +16,6 @@ SODA is distributed as an easy to install application for:
 *   [Mac](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EWMhxDuXFCZGksl5rgv9hMsBZvRZC4YEGDfqxF7wqyehiQ?e=m7jxv1) (Developed & tested on Mac OS High Sierra and Mojave)
 *   [Linux](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EVMndexbB_9BroB6dk-f1TcBn_aQzPRKWHi8SDmzYBiwcQ?e=WE5UiS) (Developed & tested on Ubuntu)
 <br>
-<br>
 Please follow the instructions given in [User Manual](docs/SODA_User_manual.pdf) to download, install and use SODA. The software should ideally also work on older version of OS but no testing has been done on those platforms.
 
 ## Using the Source Code
