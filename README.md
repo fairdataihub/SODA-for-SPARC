@@ -117,6 +117,7 @@ The previous packaging step would generate folder for the program which contains
 Creating Debian Installer – https://github.com/electron-userland/electron-installer-debian<br>
 - `$ npm install -g electron-installer-debian`<br>
 - `$ electron-installer-debian --src path/to/SODA-linux-x64/ --arch amd64 --config debian.json`<br>
+- Specification of JSON file (debian.json) –
 ```json
 {
   "dest": "release-builds/",
