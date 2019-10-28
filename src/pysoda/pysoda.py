@@ -197,7 +197,7 @@ def delete_preview_file_organization():
         userpath = expanduser("~")
         preview_path = join(userpath, "SODA")
         if isdir(preview_path):
-            shutil.rmtree(preview_path)
+            shutil.rmtree(preview_path, ignore_errors=True)
         else:
             raise Exception("Error: Preview folder not present or already deleted !")
         return
@@ -821,6 +821,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             global submitdataprogress
             global submitdatastatus
             submitdataprogress = "Started uploading to dataset %s \n" %(bfdataset)
+            # return submitdataprogress
             myds = bf.get_dataset(bfdataset)
             myfolder = myds.name
             mypath = pathdataset
