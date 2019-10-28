@@ -116,4 +116,13 @@ The previous packaging step would generate folder for the program which contains
 #### Linux:<br>
 Creating Debian Installer – https://github.com/electron-userland/electron-installer-debian<br>
 - `$ npm install -g electron-installer-debian`<br>
-- `$ electron-installer-debian --src path/to/SODA-linux-x64/ --dest installers/ --arch amd64`<br>
+- `$ electron-installer-debian --src path/to/SODA-linux-x64/ --arch amd64 --config debian.json`<br>
+```json
+{
+  "dest": "release-builds/",
+  "icon": "SODA/src/assets/app-icon/png/soda_icon.png",
+  "categories": [
+    "Utility"
+  ]
+}
+```
