@@ -282,7 +282,7 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
             document.getElementById("para-upload-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           } else {
             jsonToTableWithDescription(tableNotOrganized, res)
-            document.getElementById("para-upload-file-organization-status").innerHTML = "Uploaded!";
+            document.getElementById("para-upload-file-organization-status").innerHTML = "Imported!";
           }
     })
   }
@@ -472,6 +472,9 @@ bfAddAccountBtn.addEventListener('click', () => {
         bfAddAccountInfo.value = res
         removeOptions(bfAccountList)
         updateBfAccountList()
+        keyName.value = ''
+        key.value = ''
+        secret.value = ''
     }
     bfAddAccountBtn.disabled = false
   })
@@ -538,7 +541,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text
   client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathSubmitDataset.value, (error, res) => {
     if(error) {
-      console.log(error)
+      console.error(error)
       var emessage = userError(error)
       document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       progressBar.style.width = 0 + "%";
