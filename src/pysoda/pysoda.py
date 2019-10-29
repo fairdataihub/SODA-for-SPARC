@@ -118,7 +118,7 @@ def preview_file_organization(jsonpath):
     try:
         makedirs(preview_path)
     except:
-        raise Exception("Error: Preview Folder already present, click on 'Delete Preview Folder' option to get rid of the older vesion")
+        raise Exception("Error: Preview folder already present, click on 'Delete Preview Folder' option to get rid of the older vesion")
 
     try:
         folderrequired = []
