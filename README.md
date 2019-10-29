@@ -10,7 +10,7 @@ Software for Organizing Data Automatically (SODA) is a computer program intended
 
 SODA is distributed as an easy to install application for Windows, Mac and Linux platforms. The front-end (Graphical User Interface or GUI) of SODA is built with [Electron](https://electronjs.org/), an open-source framework developed and maintained by GitHub that conveniently combines HTML, CSS, and Javascript, while the back-end is developed in Python (v3.6). The application is inspired by a [GitHub repository](https://github.com/fyears/electron-python-example) and a [Medium blog](https://medium.com/@abulka/electron-python-4e8c807bfa5e). All source codes and files are shared with an open source license ([MIT](LICENSE)) to permit user modification without restrictions. Folder structure for the source code is based on the Electron standards and similar to the [Electron Demo Application](https://github.com/electron/electron-api-demos)
 
-For reporting any problems/bugs with the software, please open a new issue on the [GitHub page](https://github.com/bvhpatel/SODA/issues) and we can keep track of any requests from there.
+For reporting any problems/bugs with the software, please open a new issue on the [Issues tab](https://github.com/bvhpatel/SODA/issues) and we can keep track of any requests from there.
 
 ## Download the application
 SODA is distributed as an easy to install application for:
