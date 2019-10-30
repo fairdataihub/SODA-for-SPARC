@@ -188,11 +188,11 @@
             <p id = "para-dataset-permission-current"> </p>
           </div>
 
-          <h5> Add/edit permission
+          <h5> Add/edit permission for a user
             <div class="tooltipnew">( ? )
-              <span class="tooltiptext">Select name of user and the role you want to give for the selected dataset and click on  'Add permission'
+              <span class="tooltiptext">Select name of user and the role you want to give for the selected dataset and click on 'Add permission for user'
               <br> <br>
-              To share your dataset with the Curation Team for review select 'SPARC Data Curation Team' under user and 'manager' under role
+              Note: SPARC curation rules require to have the PI of the SPARC award as the owner of a dataset before it is shared with the Curation Team
               <br><br>
               To remove a permission select name of user and 'remove current permission'</span>
             </div>
@@ -211,15 +211,50 @@
               <option> viewer </option>
               <option> manager </option>
               <option> editor </option>
+              <option> owner </option>
               <option> remove current permission </option>
             </select>
           </div>
 
           <h5>  </h5>
           <div class="demo-controls">
-            <button id="button-add-permission" class="demo-button"> Add permission </button>
+            <button id="button-add-permission" class="demo-button"> Add permission for user </button>
             <p id = "para-dataset-permission-status"> </p>
           </div>
+
+          <h5> Add/edit permission for a team
+            <div class="tooltipnew">( ? )
+              <span class="tooltiptext">Select name of team and the role you want to give for the selected dataset and click on 'Add permission for team'
+              <br> <br>
+              Note: You need to give "manager" role to the SPARC Curation Team to share your dataset with the Curation Team for review
+              <br><br>
+              To remove a permission select name of team and 'remove current permission'</span>
+            </div>
+          </h5>
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bf_list_teams">
+              <option> Select team </option>
+            </select>
+          </div>
+
+          <h5>  </h5>
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bf_list_roles_team">
+              <option> Select role </option>
+              <option> viewer </option>
+              <option> manager </option>
+              <option> editor </option>
+              <option> remove current permission </option>
+            </select>
+          </div>
+
+          <h5>  </h5>
+          <div class="demo-controls">
+            <button id="button-add-permission-team" class="demo-button"> Add permission for team </button>
+            <p id = "para-dataset-permission-status-team"> </p>
+          </div>
+
+
         </div>
       </div>
     </div>

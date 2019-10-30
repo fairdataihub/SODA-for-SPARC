@@ -2,7 +2,7 @@ from __future__ import print_function
 from pysoda import copyfile, bf_add_account, bf_account_list, bf_dataset_account, bf_account_details, \
     bf_submit_dataset, submit_dataset_progress, curate_dataset_progress, bf_new_dataset_folder, \
     save_file_organization, upload_file_organization, curate_dataset, preview_file_organization, delete_preview_file_organization, \
-    bf_add_permission, bf_get_users, bf_get_permission
+    bf_add_permission, bf_get_users, bf_get_permission, bf_get_teams, bf_add_permission_team
 import sys
 import zerorpc
 from os.path import isdir, isfile
@@ -103,6 +103,12 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
+    def api_bf_get_teams(self, selected_bfaccount):
+        try:
+            return bf_get_teams(selected_bfaccount)
+        except Exception as e:
+            raise e
+
     def api_bf_get_permission(self, selected_bfaccount, selected_bfdataset):
         try:
             return bf_get_permission(selected_bfaccount, selected_bfdataset)
@@ -112,6 +118,12 @@ class SodaApi(object):
     def api_bf_add_permission(self, selected_bfaccount, selected_bfdataset, selected_user, selected_role):
         try:
             return bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, selected_role)
+        except Exception as e:
+            raise e
+
+    def api_bf_add_permission_team(self, selected_bfaccount, selected_bfdataset, selected_team, selected_role):
+        try:
+            return bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team, selected_role)
         except Exception as e:
             raise e
 
