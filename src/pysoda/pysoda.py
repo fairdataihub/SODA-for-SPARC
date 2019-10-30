@@ -1090,8 +1090,8 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
                         c += 1
                 #check if selected user is owner, dataset permission cannot be changed for owner
                 if user_id == selected_user_id and role == 'owner':
-                    raise Exception("Error: owner's permission cannot be changed" + str(user_id) + str(selected_user_id))
-                    
+                    raise Exception("Error: owner's permission cannot be changed")
+
             if (c == 0):
                 raise Exception('Error: you must be dataset owner or manager to change its permissions')
 
