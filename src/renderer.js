@@ -115,6 +115,31 @@ const blackColor = '#000000'
 const redColor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivatives", "docs", "protocol", "samples", "sourcedata", "subjects"]
 
+// Button selection to move on to next step
+document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
+  document.getElementById('button-specfy-dataset-demo-toggle').click()
+  if (getComputedStyle(document.getElementById('div-file-conversion'), null).display === 'none'){
+    document.getElementById('button-file-conversion-demo-toggle').click()
+  }
+})
+document.getElementById('button-file-conversion-next-step').addEventListener('click', (event) => {
+  document.getElementById('button-file-conversion-demo-toggle').click()
+  if (getComputedStyle(document.getElementById('div-specify-metadata'), null).display === 'none'){
+    document.getElementById('button-specify-metadata-demo-toggle').click()
+  }
+})
+document.getElementById('button-specify-metadata-next-step').addEventListener('click', (event) => {
+  document.getElementById('button-specify-metadata-demo-toggle').click()
+  if (getComputedStyle(document.getElementById('div-validate-dataset'), null).display === 'none'){
+    document.getElementById('button-validate-dataset-demo-toggle').click()
+  }
+})
+document.getElementById('button-validate-dataset-next-step').addEventListener('click', (event) => {
+  document.getElementById('button-validate-dataset-demo-toggle').click()
+  if (getComputedStyle(document.getElementById('div-generate-dataset'), null).display === 'none'){
+    document.getElementById('button-generate-dataset-demo-toggle').click()
+  }
+})
 
 //////////////////////////////////
 // Defaults action (at start on the program)
@@ -166,12 +191,21 @@ ipcRenderer.on('selected-code', (event, path) => {
 
 //Clear table
 clearTableBtn.addEventListener('click', () => {
-  if (alreadyOrganizedStatus.checked){
-    clearTable(tableOrganized)
-  } else if (organizeDatasetStatus.checked) {
-    clearTable(tableNotOrganized)
+  // Generate warning before continuing
+  ipcRenderer.send('warning-clear-table')
+})
+ipcRenderer.on('warning-clear-table-selection', (event, index) => {
+console.log(event)
+  if (index === 0) {
+    if (alreadyOrganizedStatus.checked){
+      clearTable(tableOrganized)
+      pathDataset.innerHTML = ""
+    } else if (organizeDatasetStatus.checked) {
+      clearTable(tableNotOrganized)
+    }
   }
 })
+
 
 // Drag and drop
 var holderCode = document.getElementById('code')
@@ -610,20 +644,22 @@ bfAddPermissionBtn.addEventListener('click', () => {
   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text
 
-  client.invoke("api_bf_add_permission", selectedBfAccount, selectedBfDataset, selectedUser, selectedRole,
-    (error, res) => {
-    if(error) {
-      console.error(error)
-      var emessage = userError(error)
-      datasetPermissionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-    } else {
-      console.log('Done', res)
-      datasetPermissionStatus.innerHTML = res
-      showCurrentPermission()
-    }
-  })
+  if (selectedRole === 'owner'){
+    ipcRenderer.send('warning-add-permission-owner')
+  } else {
+    addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole)
+  }
 })
-
+ipcRenderer.on('warning-add-permission-owner-selection', (event, index) => {
+  datasetPermissionStatus.innerHTML = ''
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
+  var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text
+  var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text
+  if (index === 0) {
+    addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole)
+  }
+})
 
 /**
  * This event listener add permission to the selected dataset
@@ -1093,4 +1129,19 @@ function clearTable(table){
     }
   }
   return table
+}
+
+function addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole){
+  client.invoke("api_bf_add_permission", selectedBfAccount, selectedBfDataset, selectedUser, selectedRole,
+    (error, res) => {
+    if(error) {
+      console.error(error)
+      var emessage = userError(error)
+      datasetPermissionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+    } else {
+      console.log('Done', res)
+      datasetPermissionStatus.innerHTML = res
+      showCurrentPermission()
+    }
+  })
 }
