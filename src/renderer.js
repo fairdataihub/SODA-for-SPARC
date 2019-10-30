@@ -115,6 +115,25 @@ const blackColor = '#000000'
 const redColor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivatives", "docs", "protocol", "samples", "sourcedata", "subjects"]
 
+document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
+  document.getElementById('button-specfy-dataset-demo-toggle').click()
+  document.getElementById('button-file-conversion-demo-toggle').click()
+})
+
+document.getElementById('button-file-conversion-next-step').addEventListener('click', (event) => {
+  document.getElementById('button-file-conversion-demo-toggle').click()
+  document.getElementById('button-specify-metadata-demo-toggle').click()
+})
+
+document.getElementById('button-specify-metadata-next-step').addEventListener('click', (event) => {
+  document.getElementById('button-specify-metadata-demo-toggle').click()
+  document.getElementById('button-validate-dataset-demo-toggle').click()
+})
+
+document.getElementById('button-validate-dataset-next-step').addEventListener('click', (event) => {
+  document.getElementById('button-validate-dataset-demo-toggle').click()
+  document.getElementById('button-generate-dataset-demo-toggle').click()
+})
 
 //////////////////////////////////
 // Defaults action (at start on the program)
@@ -625,7 +644,7 @@ bfAddPermissionBtn.addEventListener('click', () => {
         addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole)
       }
     })
-  } else{
+  } else {
     addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole)
   }
 })

@@ -12,7 +12,7 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-new-window-demo-toggle" class="js-container-target demo-toggle-button"> Specify dataset files
+        <button id="button-specfy-dataset-demo-toggle" class="js-container-target demo-toggle-button"> Specify dataset files
           <div class="demo-meta u-avoid-clicks"> Specify desired local files to be added in each of the SPARC folders of your dataset
           </div>
         </button>
@@ -236,24 +236,33 @@
             <button id="button-clear-table" class="demo-button"> Clear table </button>
           </div>
 
+          <div id="div-organize-next-step" align="right">
+            <h5> </h5>
+            <button id="button-organize-next-step" class="demo-button"> Next step </button>
+          </div>
+
         </div>
       </div>
     </div>
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-manage-window-demo-toggle" class="js-container-target demo-toggle-button"> Handle file format conversion
+        <button id="button-file-conversion-demo-toggle" class="js-container-target demo-toggle-button"> Handle file format conversion
           <div class="demo-meta u-avoid-clicks"> Choose files to be converted to SPARC defined standard formats before adding them to your dataset  </div>
         </button>
         <div class="demo-box">
           <p> Coming soon... Tentative date: May 2020 </p>
+          <div id="div-file-conversion-next-step" align="right">
+            <h5> </h5>
+            <button id="button-file-conversion-next-step" class="demo-button"> Next step </button>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-using-window-events-demo-toggle" class="js-container-target demo-toggle-button">
+        <button id="button-specify-metadata-demo-toggle" class="js-container-target demo-toggle-button">
         Specify metadata files to be attached
           <div class="demo-meta u-avoid-clicks"> Choose metadata files (manifest, submission, dataset_description, subjects and/or samples files) to be included in your dataset </div>
         </button>
@@ -383,24 +392,33 @@
               <textarea class="demo-response" id="selected-samples"></textarea>
             </div>
           </div>
+
+          <div id="div-specify-metadata-next-step" align="right">
+            <h5> </h5>
+            <button id="button-specify-metadata-next-step" class="demo-button"> Next step </button>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button class="js-container-target demo-toggle-button"> Validate dataset before generating
+        <button id="button-validate-dataset-demo-toggle" class="js-container-target demo-toggle-button"> Validate dataset before generating
           <div class="demo-meta u-avoid-clicks"> Validate that information provided during the previous steps will create a SPARC-approved dataset using validator developed by the SPARC Curation Team </div>
         </button>
         <div class="demo-box">
           <p> Coming soon... Tentative date: February 2020 </p>
+          <div id="div-validate-dataset-next-step" align="right">
+            <h5> </h5>
+            <button id="button-validate-dataset-next-step" class="demo-button"> Next step </button>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button class="js-container-target demo-toggle-button"> Generate dataset
+        <button id="button-generate-dataset-demo-toggle" class="js-container-target demo-toggle-button"> Generate dataset
           <div class="demo-meta u-avoid-clicks"> Create dataset based on information specified during the previous steps (dataset could be created locally or pushed directly to Blackfynn) </div>
         </button>
 
