@@ -17,8 +17,8 @@ SODA is distributed as an easy to install application for:
 *   Windows - Coming Soon (Developed & tested on Windows 10)
 *   Mac - Coming Soon (Developed & tested on Mac OS High Sierra and Mojave)
 *   Linux - Coming Soon (Developed & tested on Ubuntu)
-<br>
-Please follow the instructions given in [User Manual](https://github.com/bvhpatel/SODA/blob/master/docs/SODA_User_manual.pdf) to download, install and use SODA. The software should ideally also work on older version of OS but no testing has been done on those platforms.
+
+Please follow the instructions given in [User Manual](docs/SODA_User_manual.pdf) to download, install and use SODA. The software should ideally also work on older version of OS but no testing has been done on those platforms.
 
 ## Using the Source Code
 If you want to modify SODA to suit your needs better or compile it for an OS not mentioned above, please follow the instructions below.
