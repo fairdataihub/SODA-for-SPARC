@@ -857,7 +857,7 @@ def upload_structured_file(myds, mypath, myfolder):
         if isfile(join(mypath, f)):
             submitdataprogress = submitdataprogress + ', ,' + "Uploading " + f + " in " + myfolder
             filepath = join(mypath, f)
-            myds.upload(filepath)
+            myds.upload(filepath, use_agent=False)
             uploaded_file_size += getsize(filepath)
             submitdataprogress = submitdataprogress + ',' + " uploaded"
         else:
@@ -1010,7 +1010,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
                         organization_name = list_dataset_permission_organizations[i]['name']
                         organization_role = list_dataset_permission_organizations[i]['role']
                         list_dataset_permission_first_last_role.append('Organization ' + organization_name + ' , role: ' + organization_role)
-            
+
             return list_dataset_permission_first_last_role
 
     except Exception as e:
@@ -1076,8 +1076,9 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
 
             # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
             current_user = bf._api._get('/user')
-            first_name_current_user = current_user['firstName'] 
-            last_name_current_user = current_user['lastName'] 
+            first_name_current_user = current_user['firstName']
+            last_name_current_user = current_user['lastName']
+            list_dataset_permission = []
             list_dataset_permission = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/users')
             c = 0
             for i in range(len(list_dataset_permission)):
@@ -1093,9 +1094,9 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
                 #check if selected user is owner, dataset permission cannot be changed for owner
                 if user_id == selected_user_id:
                     if role == 'owner':
-                        raise Exception('Error: owner permission cannot be changed')
+                        raise Exception("Error: owner's permission cannot be changed" + str(user_id) + str(selected_user_id))
             if (c == 0):
-                raise Exception('Error: you must be dataset owner or manager to change its permissions')               
+                raise Exception('Error: you must be dataset owner or manager to change its permissions')
 
             if (selected_role == 'remove current permission'):
 
@@ -1108,7 +1109,7 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
                 # change owner
                 bf._api.datasets._put('/' + str(selected_dataset_id) + '/collaborators/owner'.format(dataset_id = selected_dataset_id),
                               json={'id': selected_user_id})
-                # raise error
+                return "Permission " + "'" + selected_role + "' " +  " added for " + selected_user
             else:
                 bf._api.datasets._put('/' + str(selected_dataset_id) + '/collaborators/users'.format(dataset_id = selected_dataset_id),
                               json={'id': selected_user_id, 'role': selected_role})
@@ -1174,8 +1175,8 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
 
             # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
             current_user = bf._api._get('/user')
-            first_name_current_user = current_user['firstName'] 
-            last_name_current_user = current_user['lastName'] 
+            first_name_current_user = current_user['firstName']
+            last_name_current_user = current_user['lastName']
             list_dataset_permission = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/users')
             c = 0
             for i in range(len(list_dataset_permission)):
@@ -1189,7 +1190,7 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
                     else:
                         c += 1
             if (c == 0):
-                raise Exception('Error: you must be dataset owner or manager to change its permissions')               
+                raise Exception('Error: you must be dataset owner or manager to change its permissions')
 
             if (selected_role == 'remove current permission'):
 

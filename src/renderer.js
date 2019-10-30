@@ -166,11 +166,19 @@ ipcRenderer.on('selected-code', (event, path) => {
 
 //Clear table
 clearTableBtn.addEventListener('click', () => {
-  if (alreadyOrganizedStatus.checked){
-    clearTable(tableOrganized)
-  } else if (organizeDatasetStatus.checked) {
-    clearTable(tableNotOrganized)
-  }
+  // Generate warning before continuing
+  ipcRenderer.send('warning-clear-table')
+
+  ipcRenderer.on('warning-clear-table-selection', (event, index) => {
+    if (index === 0) {
+      if (alreadyOrganizedStatus.checked){
+        clearTable(tableOrganized)
+        pathDataset.innerHTML = ""
+      } else if (organizeDatasetStatus.checked) {
+        clearTable(tableNotOrganized)
+      }
+    }
+  })
 })
 
 // Drag and drop
@@ -610,18 +618,16 @@ bfAddPermissionBtn.addEventListener('click', () => {
   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text
 
-  client.invoke("api_bf_add_permission", selectedBfAccount, selectedBfDataset, selectedUser, selectedRole,
-    (error, res) => {
-    if(error) {
-      console.error(error)
-      var emessage = userError(error)
-      datasetPermissionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-    } else {
-      console.log('Done', res)
-      datasetPermissionStatus.innerHTML = res
-      showCurrentPermission()
-    }
-  })
+  if (selectedRole === 'owner'){
+    ipcRenderer.send('warning-add-permission-owner')
+    ipcRenderer.on('warning-add-permission-owner-selection', (event, index) => {
+      if (index === 0) {
+        addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole)
+      }
+    })
+  } else{
+    addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole)
+  }
 })
 
 
@@ -1093,4 +1099,19 @@ function clearTable(table){
     }
   }
   return table
+}
+
+function addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole){
+  client.invoke("api_bf_add_permission", selectedBfAccount, selectedBfDataset, selectedUser, selectedRole,
+    (error, res) => {
+    if(error) {
+      console.error(error)
+      var emessage = userError(error)
+      datasetPermissionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+    } else {
+      console.log('Done', res)
+      datasetPermissionStatus.innerHTML = res
+      showCurrentPermission()
+    }
+  })
 }
