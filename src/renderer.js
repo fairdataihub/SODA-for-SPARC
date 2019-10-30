@@ -103,6 +103,11 @@ const bfListRoles = document.querySelector('#bf_list_roles')
 const bfAddPermissionBtn = document.getElementById('button-add-permission')
 const datasetPermissionStatus = document.querySelector('#para-dataset-permission-status')
 
+const bfListTeams = document.querySelector('#bf_list_teams')
+const bfListRolesTeam = document.querySelector('#bf_list_roles_team')
+const bfAddPermissionTeamBtn = document.getElementById('button-add-permission-team')
+const datasetPermissionStatusTeam = document.querySelector('#para-dataset-permission-status-team')
+
 //////////////////////////////////
 // Constant parameters
 //////////////////////////////////
@@ -453,7 +458,6 @@ curateDatasetBtn.addEventListener('click', () => {
 
 })
 
-
 // // // // // // // // // //
 // // // // // // // // // //
 
@@ -487,6 +491,7 @@ bfAccountList.addEventListener('change', () => {
   refreshBfDatasetList(bfDatasetListPermission)
   currentDatasetPermission.innerHTML = ''
   refreshBfUsersList(bfListUsers)
+  refreshBfTeamsList(bfListTeams)
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
 
   if (selectedbfaccount == 'Select') {
@@ -596,7 +601,7 @@ bfDatasetListPermission.addEventListener('change', () => {
 
 /**
  * This event listener add permission to the selected dataset
- * when user clicks on the "Add permission"  button
+ * when user clicks on the "Add permission for user"  button
  */
 bfAddPermissionBtn.addEventListener('click', () => {
   datasetPermissionStatus.innerHTML = ''
@@ -619,6 +624,31 @@ bfAddPermissionBtn.addEventListener('click', () => {
   })
 })
 
+
+/**
+ * This event listener add permission to the selected dataset
+ * when user clicks on the "Add permission for team"  button
+ */
+bfAddPermissionTeamBtn.addEventListener('click', () => {
+  datasetPermissionStatusTeam.innerHTML = ''
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
+  var selectedTeam = bfListTeams.options[bfListTeams.selectedIndex].text
+  var selectedRole = bfListRolesTeam.options[bfListRolesTeam.selectedIndex].text
+
+  client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
+    (error, res) => {
+    if(error) {
+      console.error(error)
+      var emessage = userError(error)
+      datasetPermissionStatusTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+    } else {
+      console.log('Done', res)
+      datasetPermissionStatusTeam.innerHTML = res
+      showCurrentPermission()
+    }
+  })
+})
 
 // // // // // // // // // //
 // Functions: Organize dataset
@@ -717,6 +747,34 @@ function refreshBfUsersList(UsersList){
     })
   }
 }
+
+/**
+ * refreshBfTeamsList is a function that refreshes the dropdown list
+ * with names of teams when an Blackfynn account is selected
+ */
+function refreshBfTeamsList(teamList){
+  removeOptions(teamList)
+  var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
+  var optionTeam = document.createElement("option")
+  optionTeam.textContent = 'Select team'
+  teamList.appendChild(optionTeam)
+  if (accountSelected !== "Select") {
+    client.invoke("api_bf_get_teams", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
+      if (error){
+        console.error(error)
+      } else{
+        for ( var myItem in res){
+          var myTeam = res[myItem]
+          var optionTeam = document.createElement("option")
+          optionTeam.textContent = myTeam
+          optionTeam.value = myTeam
+          teamList.appendChild(optionTeam)
+        }
+      }
+    })
+  }
+}
+
 
 function showCurrentPermission(){
   currentDatasetPermission.innerHTML = ''
