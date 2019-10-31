@@ -205,6 +205,29 @@ def delete_preview_file_organization():
         raise e
 
 
+def folder_size(path):
+    """
+    Returns total size of a folder
+    """
+    total_size = 0
+    start_path = '.'  # To get size of current directory
+    for path, dirs, files in walk(path):
+        for f in files:
+            fp = join(path, f)
+            total_size += getsize(fp)
+    return total_size
+
+
+def path_size(path):
+    """
+    Returns size of the path, after checking if it's a folder or a file
+    """
+    if os.path.isdir(path):
+        return folder_size(path)
+    else:
+        return os.path.getsize(path)
+
+
 ### FEATURE #2: SPARC metadata generator
 def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
         manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
@@ -217,10 +240,14 @@ def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
     global curateprogress
     global curatestatus
     global curateprintstatus
+    global total_curate_size
+    global curated_size
     curateprogress = ' '
     curatestatus = ''
     curateprintstatus = ' '
     error, c = '', 0
+    total_curate_size = 0
+    curated_size = 0
 
     if alreadyorganizedstatus:
         if not isdir(pathdataset):
@@ -240,45 +267,45 @@ def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
     if submissionstatus:
         if not isfile(pathsubmission):
             curatestatus = 'Done'
-            error = error + 'Error: Select valid path for submission file\n'
+            error = error + 'Error: Select valid path for submission file<br>'
             c += 1
         # Adding check for correct file name
         elif splitext(basename(pathsubmission))[0] != 'submission':
             curatestatus = 'Done'
-            error = error + 'Error: Select valid name for submission file\n'
+            error = error + 'Error: Select valid name for submission file<br>'
             c += 1
 
     if datasetdescriptionstatus:
         if not isfile(pathdescription):
             curatestatus = 'Done'
-            error = error + 'Error: Select valid path for dataset description file\n'
+            error = error + 'Error: Select valid path for dataset description file<br>'
             c += 1
         # Adding check for correct file name
         elif splitext(basename(pathdescription))[0] != 'dataset_description':
             curatestatus = 'Done'
-            error = error + 'Error: Select valid name for dataset_description file\n'
+            error = error + 'Error: Select valid name for dataset_description file<br>'
             c += 1
 
     if subjectsstatus:
         if not isfile(pathsubjects):
             curatestatus = 'Done'
-            error = error + 'Error: Select valid path for subjects file\n'
+            error = error + 'Error: Select valid path for subjects file<br>'
             c += 1
         # Adding check for correct file name
         elif splitext(basename(pathsubjects))[0] != 'subjects':
             curatestatus = 'Done'
-            error = error + 'Error: Select valid name for subjects file\n'
+            error = error + 'Error: Select valid name for subjects file<br>'
             c += 1
 
     if samplesstatus:
         if not isfile(pathsamples):
             curatestatus = 'Done'
-            error = error + 'Error: Select valid path for samples file\n'
+            error = error + 'Error: Select valid path for samples file<br>'
             c += 1
         # Adding check for correct file name
         elif splitext(basename(pathsamples))[0] != 'samples':
             curatestatus = 'Done'
-            error = error + 'Error: Select valid name for samples file\n'
+            error = error + 'Error: Select valid name for samples file<br>'
             c += 1
     if c > 0:
         raise Exception(error)
@@ -288,12 +315,13 @@ def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
     for folders in jsonpath.keys():
         if jsonpath[folders] != []:
             for path in jsonpath[folders]:
+                total_curate_size += path_size(path)
                 if not exists(path):
                     c += 1
-                    error = error + path + ' does not exist \n'
+                    error = error + path + ' does not exist <br>'
 
     if c > 0:
-        error = error + '\nPlease remove invalid paths'
+        error = error + '<br>Please remove invalid paths'
         curatestatus = 'Done'
         raise Exception(error)
 
@@ -304,20 +332,20 @@ def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
         error, c = '', 0
         namefiles = [f for f in listdir(pathdataset) if isfile(join(pathdataset, f))]
         if 'submission.xlsx' in namefiles and submissionstatus:
-            error = error + 'submission file already present\n'
+            error = error + 'submission file already present<br>'
             c += 1
         if 'dataset_description.xlsx' in namefiles and datasetdescriptionstatus:
-            error = error + 'dataset_description file already present\n'
+            error = error + 'dataset_description file already present<br>'
             c += 1
         if  'samples.xlsx' in namefiles and samplesstatus:
-            error = error + 'samples file already present\n'
+            error = error + 'samples file already present<br>'
             c += 1
         if  'subjects.xlsx' in namefiles and subjectsstatus:
-            error = error + 'subjects file already present\n'
+            error = error + 'subjects file already present<br>'
             c += 1
 
         if c > 0:
-            error = error + '\nError: Either delete or select "None" in the SODA interface'
+            error = error + '<br>Error: Either delete or select "None" in the SODA interface'
             curatestatus = 'Done'
             raise Exception(error)
 
@@ -360,6 +388,7 @@ def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
                     curateprogress = curateprogress + ', ,' + 'Samples file not requested'
 
                 curateprogress = curateprogress + ', ,' + 'Success: COMPLETED!'
+                curated_size += total_curate_size
                 curatestatus = 'Done'
 
             except Exception as e:
@@ -428,7 +457,9 @@ def curate_dataset_progress():
     global curateprogress
     global curatestatus
     global curateprintstatus
-    return (curateprogress, curatestatus, curateprintstatus)
+    global total_curate_size
+    global curated_size
+    return (curateprogress, curatestatus, curateprintstatus, total_curate_size, curated_size)
 
 
 def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
@@ -533,11 +564,14 @@ def create_new_file(path, folder_path):
     """
     Helper function to copy all files from source ('path') to destination ('folder_path') in the same folder structure
     """
+    global curated_size
     if isfile(path):
         copyfile(path, folder_path)
+        curated_size += path_size(path)
     elif isdir(path):
         foldername = basename(path)
         copytree(path, join(folder_path, foldername))
+        curated_size += path_size(path)
 
 
 def return_new_path(topath):
@@ -879,19 +913,6 @@ def submit_dataset_progress():
     return (submitdataprogress, submitdatastatus, submitprintstatus, uploaded_file_size, total_file_size)
 
 
-def folder_size(path):
-    """
-    Returns total size of a folder
-    """
-    total_size = 0
-    start_path = '.'  # To get size of current directory
-    for path, dirs, files in walk(path):
-        for f in files:
-            fp = join(path, f)
-            total_size += getsize(fp)
-    return total_size
-
-
 # Share dataset with Curation Team
 def bf_get_users(selected_bfaccount):
     """
@@ -1086,6 +1107,8 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
                 if (first_name == first_name_current_user and last_name == last_name_current_user):
                     if role not in ['owner', 'manager']:
                         raise Exception('Error: you must be dataset owner or manager to change its permissions')
+                    elif selected_role == 'owner' and role != 'owner':
+                        raise Exception('Error: you must be dataset owner to change the ownership')
                     else:
                         c += 1
                 #check if selected user is owner, dataset permission cannot be changed for owner

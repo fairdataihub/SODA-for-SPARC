@@ -2,23 +2,23 @@ function showModifyExisting(){
   document.getElementById('div-create-new').style.display ='none';
   document.getElementById('div-create-cloud').style.display ='none';
   document.getElementById('div-curate-button').style.display ='block';
-  document.getElementById('div-progress-print').style.display ='block';
-  document.getElementById('progressinfo').value ='';
+  // document.getElementById('div-progress-print').style.display ='block';
+  // document.getElementById('progressinfo').value ='';
 }
 
 function showCreateNew(){
   document.getElementById('div-create-new').style.display ='block';
   document.getElementById('div-create-cloud').style.display ='none';
   document.getElementById('div-curate-button').style.display ='block';
-  document.getElementById('div-progress-print').style.display ='block';
-  document.getElementById('progressinfo').value ='';
+  // document.getElementById('div-progress-print').style.display ='block';
+  // document.getElementById('progressinfo').value ='';
 }
 
 function showCreateCloud(){
   document.getElementById('div-create-new').style.display ='none';
   document.getElementById('div-create-cloud').style.display ='block';
     document.getElementById('div-curate-button').style.display ='none';
-  document.getElementById('div-progress-print').style.display ='none';
+  // document.getElementById('div-progress-print').style.display ='none';
 }
 
 document.querySelector('#existing-dataset').addEventListener('click', () => {

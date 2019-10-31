@@ -74,7 +74,7 @@ var samplesStatus
 var pathSamples
 
 const curateDatasetBtn = document.getElementById('button-curate-dataset')
-const progressInfo = document.querySelector('#progressinfo')
+// const progressInfo = document.querySelector('#progressinfo')
 
 // Manage and submit
 const keyName = document.querySelector('#bf-key-name')
@@ -95,6 +95,7 @@ const bfSubmitDatasetBtn = document.getElementById('button-submit-dataset')
 const bfSubmitDatasetInfo = document.querySelector('#progresssubmit')
 const pathSubmitDataset = document.querySelector('#selected-submit-dataset')
 const progressBar = document.getElementById("div-progress-bar")
+const progressBarCurate = document.getElementById("div-curate-progress-bar")
 
 const bfDatasetListPermission = document.querySelector('#bfdatasetlist_permission')
 const currentDatasetPermission = document.querySelector('#para-dataset-permission-current')
@@ -369,17 +370,20 @@ deletePreviewBtn.addEventListener('click', () => {
 curateDatasetBtn.addEventListener('click', () => {
 
   // Disable curate button to prevent multiple clicks
-  progressInfo.style.color = blackColor
+  // progressInfo.style.color = blackColor
   curateDatasetBtn.disabled = true
   disableform(curationForm)
+  document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
+  document.getElementById("para-curate-progress-bar-status").innerHTML = ""
+  progressBarCurate.style.width = 0 + "%";
 
   // Convert table content into json file for transferring to Python
   if (alreadyOrganizedStatus.checked) {
     if (fs.existsSync(pathDataset.innerHTML)) {
       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
     } else {
-      progressInfo.style.color = redColor
-      progressInfo.value = 'Error: Select a valid dataset folder'
+      // progressInfo.style.color = redColor
+      // progressInfo.value = 'Error: Select a valid dataset folder'
       curateDatasetBtn.disabled = false
       enableform(curationForm)
       console.error('Error')
@@ -388,8 +392,8 @@ curateDatasetBtn.addEventListener('click', () => {
   } else if (organizeDatasetStatus.checked) {
     var jsonvect = tableToJsonWithDescription(tableNotOrganized)
   } else {
-  	progressInfo.style.color = redColor
-  	progressInfo.value = 'Error: Please select an option under "Organize dataset" '
+  	// progressInfo.style.color = redColor
+  	// progressInfo.value = 'Error: Please select an option under "Organize dataset" '
     curateDatasetBtn.disabled = false
     enableform(curationForm)
   	return
@@ -447,20 +451,22 @@ curateDatasetBtn.addEventListener('click', () => {
   }
 
   // Initiate curation by calling python
-  progressInfo.value = ''
+  // progressInfo.value = ''
+  var err = false
   var completionstatus = 'Solving'
   var pathDatasetValue = String(pathDataset.innerHTML)
-
   client.invoke("api_curate_dataset", pathDatasetValue, createNewStatus.checked, pathNewDataset.value,
     manifestStatus.checked, submissionStatus, pathSubmission,  descriptionStatus, pathDescription,
     subjectsStatus, pathSubjects, samplesStatus, pathSamples, jsonpath, jsondescription, modifyExistingStatus.checked,
     bfDirectlyStatus.checked, alreadyOrganizedStatus.checked, organizeDatasetStatus.checked, newDatasetName.value,
     (error, res) => {
     if(error) {
-      console.log('ERROR')
       var emessage = userError(error)
-      progressInfo.style.color = redColor
-      progressInfo.value = emessage
+      // progressInfo.style.color = redColor
+      // progressInfo.value = emessage
+      document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      progressBarCurate.style.width = 0 + "%";
+      err = true
       console.error(error)
       enableform(curationForm)
     } else {
@@ -476,13 +482,22 @@ curateDatasetBtn.addEventListener('click', () => {
       } else {
         completionstatus = res[1]
         var printstatus = res[2]
-        if (printstatus === 'Curating') {
-          progressInfo.value = res[0].split(',').join('\n')
-        }
+        var totalCurateSize = res[3]
+        var curatedSize = res[4]
+        var value = (curatedSize / totalCurateSize) * 100
+        progressBarCurate.style.width = value + "%";
+        console.log(value, totalCurateSize, curatedSize)
+        // if (printstatus === 'Curating') {
+        //   progressInfo.value = res[0].split(',').join('\n')
+        // }
       }
     })
     console.log('Completion', completionstatus)
     if (completionstatus === 'Done'){
+      if (!err){
+        progressBarCurate.style.width = 100 + "%";
+        document.getElementById("para-curate-progress-bar-status").innerHTML = "Dataset Generated !"
+      }
       clearInterval(timerProgress)
       curateDatasetBtn.disabled = false
       enableform(curationForm)
