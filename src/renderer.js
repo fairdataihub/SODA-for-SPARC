@@ -196,7 +196,6 @@ clearTableBtn.addEventListener('click', () => {
   ipcRenderer.send('warning-clear-table')
 })
 ipcRenderer.on('warning-clear-table-selection', (event, index) => {
-console.log(event)
   if (index === 0) {
     if (alreadyOrganizedStatus.checked){
       clearTable(tableOrganized)
@@ -503,8 +502,6 @@ curateDatasetBtn.addEventListener('click', () => {
       enableform(curationForm)
     }
   }
-
-
 })
 
 // // // // // // // // // //
@@ -517,7 +514,7 @@ bfAddAccountBtn.addEventListener('click', () => {
   bfAddAccountInfo.value = ''
   client.invoke("api_bf_add_account", keyName.value, key.value, secret.value, (error, res) => {
     if(error) {
-      console.log('ERROR')
+      console.error(error)
       var emessage = userError(error)
       bfAddAccountInfo.style.color = redColor
       bfAddAccountInfo.value = emessage
@@ -567,7 +564,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
   client.invoke("api_bf_new_dataset_folder", bfNewDatasetName.value, selectedbfaccount, (error, res) => {
     if (error) {
-      console.log('ERROR')
+      console.error(error)
       var emessage = userError(error)
       bfCreateNewDatasetInfo.style.color = redColor
       bfCreateNewDatasetInfo.value = emessage
