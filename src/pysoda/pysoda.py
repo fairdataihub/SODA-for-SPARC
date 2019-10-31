@@ -23,6 +23,8 @@ import re
 curateprogress = ' '
 curatestatus = ' '
 curateprintstatus = ' '
+total_curate_size = 0
+curated_size = 0
 
 userpath = expanduser("~")
 configpath = join(userpath, '.blackfynn', 'config.ini')
@@ -222,10 +224,10 @@ def path_size(path):
     """
     Returns size of the path, after checking if it's a folder or a file
     """
-    if os.path.isdir(path):
+    if isdir(path):
         return folder_size(path)
     else:
-        return os.path.getsize(path)
+        return getsize(path)
 
 
 ### FEATURE #2: SPARC metadata generator
@@ -315,8 +317,9 @@ def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
     for folders in jsonpath.keys():
         if jsonpath[folders] != []:
             for path in jsonpath[folders]:
-                total_curate_size += path_size(path)
-                if not exists(path):
+                if exists(path):
+                    total_curate_size += path_size(path)
+                else:
                     c += 1
                     error = error + path + ' does not exist <br>'
 
@@ -410,7 +413,9 @@ def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
             pathdataset = pathnewdatasetfolder
             mkdir(pathdataset)
 
-            create_dataset(jsonpath, pathdataset)
+            t = threading.Thread(target=create_dataset(jsonpath, pathdataset))
+            t.start()
+
             curateprogress = curateprogress + ', ,' + 'New dataset created'
 
             if manifeststatus:
@@ -450,18 +455,6 @@ def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
         except Exception as e:
             curatestatus = 'Done'
             raise e
-
-
-def curate_dataset_progress():
-    """
-    Creates global variables to help keep track of the progress
-    """
-    global curateprogress
-    global curatestatus
-    global curateprintstatus
-    global total_curate_size
-    global curated_size
-    return (curateprogress, curatestatus, curateprintstatus, total_curate_size, curated_size)
 
 
 def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
@@ -573,7 +566,6 @@ def create_new_file(path, folder_path):
     elif isdir(path):
         foldername = basename(path)
         copytree(path, join(folder_path, foldername))
-        curated_size += path_size(path)
 
 
 def return_new_path(topath):
@@ -605,6 +597,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
     Action:
         Creates folders in the original folder structure
     """
+    global curated_size
     if not exists(dst):
         makedirs(dst)
     for item in listdir(src):
@@ -615,6 +608,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
         else:
             if not exists(d) or stat(s).st_mtime - stat(d).st_mtime > 1:
                 copy2(s, d)
+                curated_size += path_size(s)
 
 
 def copyfile(src, dst):
@@ -622,6 +616,18 @@ def copyfile(src, dst):
     Wrapper function to copy files from source path ('src') to destination ('dst')
     """
     copy2(src, dst)
+
+
+def curate_dataset_progress():
+    """
+    Creates global variables to help keep track of the progress
+    """
+    global curateprogress
+    global curatestatus
+    global curateprintstatus
+    global total_curate_size
+    global curated_size
+    return (curateprogress, curatestatus, curateprintstatus, total_curate_size, curated_size)
 
 
 def check_forbidden_characters(my_string):
@@ -636,6 +642,7 @@ def check_forbidden_characters(my_string):
         return False
     else:
         return True
+
 
 ### FEATURE #4: SODA Blackfynn interface
 # Log in to Blackfynn

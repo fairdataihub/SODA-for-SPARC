@@ -162,15 +162,17 @@ selectDatasetBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-dataset')
 })
 ipcRenderer.on('selected-dataset', (event, path) => {
-  clearTable(tableOrganized)
-  pathDataset.innerHTML = ""
-  var folderChecking = checkFolderStruture(path[0])
-  if (folderChecking == true) {
-    pathDataset.innerHTML = path
-    var jsonFolder = organizedFolderToJson(path[0])
-    jsonToTableOrganized(tableOrganized, jsonFolder)
-  } else {
-    pathDataset.innerHTML = "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>"
+  if (path.length > 0) {
+    clearTable(tableOrganized)
+    pathDataset.innerHTML = ""
+    var folderChecking = checkFolderStruture(path[0])
+    if (folderChecking == true) {
+      pathDataset.innerHTML = path
+      var jsonFolder = organizedFolderToJson(path[0])
+      jsonToTableOrganized(tableOrganized, jsonFolder)
+    } else {
+      pathDataset.innerHTML = "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>"
+    }
   }
 })
 
@@ -306,7 +308,7 @@ selectUploadFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-uploadorganization')
 })
 ipcRenderer.on('selected-uploadorganization', (event, path) => {
-  if (path.length > 0){
+  if (path.length > 0) {
     document.getElementById("para-upload-file-organization-status").innerHTML = "";
     var headerNames = sparcFolderNames.slice()
     headerNames.push("main")
@@ -459,7 +461,7 @@ curateDatasetBtn.addEventListener('click', () => {
     subjectsStatus, pathSubjects, samplesStatus, pathSamples, jsonpath, jsondescription, modifyExistingStatus.checked,
     bfDirectlyStatus.checked, alreadyOrganizedStatus.checked, organizeDatasetStatus.checked, newDatasetName.value,
     (error, res) => {
-    if(error) {
+    if (error) {
       var emessage = userError(error)
       // progressInfo.style.color = redColor
       // progressInfo.value = emessage
@@ -467,18 +469,25 @@ curateDatasetBtn.addEventListener('click', () => {
       progressBarCurate.style.width = 0 + "%";
       err = true
       console.error(error)
+      curateDatasetBtn.disabled = false
       enableform(curationForm)
     } else {
       console.log('Done', res)
+      curateDatasetBtn.disabled = false
+      enableform(curationForm)
     }
   })
 
-  var timerProgress = setInterval(progressfunction, 1000)
+  var timerProgress = setInterval(progressfunction, 250)
   function progressfunction(){
+  document.getElementById("para-curate-progress-bar-status").innerHTML = "Generating files and folders ...."
     client.invoke("api_curate_dataset_progress", (error, res) => {
-      if(error) {
+      console.log('invoked')
+      if (error) {
+        console.log('error')
         console.error(error)
       } else {
+        console.log('invoked')
         completionstatus = res[1]
         var printstatus = res[2]
         var totalCurateSize = res[3]
@@ -486,16 +495,18 @@ curateDatasetBtn.addEventListener('click', () => {
         var value = (curatedSize / totalCurateSize) * 100
         progressBarCurate.style.width = value + "%";
         console.log(value, totalCurateSize, curatedSize)
-        // if (printstatus === 'Curating') {
-        //   progressInfo.value = res[0].split(',').join('\n')
-        // }
+        if (printstatus === 'Curating') {
+          console.log(value, totalCurateSize, curatedSize)
+        }
       }
     })
-    console.log('Completion', completionstatus)
+    // console.log('Completion status:', completionstatus)
     if (completionstatus === 'Done'){
-      if (!err){
-        progressBarCurate.style.width = 100 + "%";
+      console.log(err)
+      if (!err) {
+        document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
         document.getElementById("para-curate-progress-bar-status").innerHTML = "Dataset Generated !"
+        progressBarCurate.style.width = 100 + "%";
       }
       clearInterval(timerProgress)
       curateDatasetBtn.disabled = false
@@ -591,7 +602,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text
   client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathSubmitDataset.value, (error, res) => {
-    if(error) {
+    if (error) {
       console.error(error)
       var emessage = userError(error)
       document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"

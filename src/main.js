@@ -136,7 +136,7 @@ function makeSingleInstance () {
         mainWindow.focus()
       }
     })
-  }  
+  }
 }
 
 // Right click context menu
