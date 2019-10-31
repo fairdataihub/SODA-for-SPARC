@@ -390,6 +390,7 @@ def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
                 curateprogress = curateprogress + ', ,' + 'Success: COMPLETED!'
                 curated_size += total_curate_size
                 curatestatus = 'Done'
+                open_file(pathdataset)
 
             except Exception as e:
                 curatestatus = 'Done'
@@ -444,6 +445,7 @@ def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
 
             curateprogress = curateprogress + ', ,' + 'Success: COMPLETED!'
             curatestatus = 'Done'
+            open_file(pathnewdatasetfolder)
 
         except Exception as e:
             curatestatus = 'Done'
