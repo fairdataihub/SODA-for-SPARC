@@ -7,7 +7,7 @@ const path = require('path')
 const {ipcRenderer} = require('electron')
 
 // Connect to python server and check
-let client = new zerorpc.Client()
+let client = new zerorpc.Client({ timeout: 300000 })
 
 client.connect("tcp://127.0.0.1:4242")
 
@@ -74,7 +74,7 @@ var samplesStatus
 var pathSamples
 
 const curateDatasetBtn = document.getElementById('button-curate-dataset')
-// const progressInfo = document.querySelector('#progressinfo')
+const progressInfo = document.querySelector('#progressinfo')
 
 // Manage and submit
 const keyName = document.querySelector('#bf-key-name')
@@ -371,20 +371,22 @@ deletePreviewBtn.addEventListener('click', () => {
 curateDatasetBtn.addEventListener('click', () => {
 
   // Disable curate button to prevent multiple clicks
-  // progressInfo.style.color = blackColor
+  progressInfo.style.color = blackColor
+  progressInfo.value = ''
+  progressInfo.value = "Started generating files ..."
   curateDatasetBtn.disabled = true
   disableform(curationForm)
-  document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
-  document.getElementById("para-curate-progress-bar-status").innerHTML = ""
-  progressBarCurate.style.width = 0 + "%";
+  // document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
+  // document.getElementById("para-curate-progress-bar-status").innerHTML = ""
+  // progressBarCurate.style.width = 0 + "%";
 
   // Convert table content into json file for transferring to Python
   if (alreadyOrganizedStatus.checked) {
     if (fs.existsSync(pathDataset.innerHTML)) {
       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
     } else {
-      // progressInfo.style.color = redColor
-      // progressInfo.value = 'Error: Select a valid dataset folder'
+      progressInfo.style.color = redColor
+      progressInfo.value = 'Error: Select a valid dataset folder'
       curateDatasetBtn.disabled = false
       enableform(curationForm)
       console.error('Error')
@@ -393,8 +395,8 @@ curateDatasetBtn.addEventListener('click', () => {
   } else if (organizeDatasetStatus.checked) {
     var jsonvect = tableToJsonWithDescription(tableNotOrganized)
   } else {
-  	// progressInfo.style.color = redColor
-  	// progressInfo.value = 'Error: Please select an option under "Organize dataset" '
+  	progressInfo.style.color = redColor
+  	progressInfo.value = 'Error: Please select an option under "Organize dataset" '
     curateDatasetBtn.disabled = false
     enableform(curationForm)
   	return
@@ -452,7 +454,6 @@ curateDatasetBtn.addEventListener('click', () => {
   }
 
   // Initiate curation by calling python
-  // progressInfo.value = ''
   var err = false
   var completionstatus = 'Solving'
   var pathDatasetValue = String(pathDataset.innerHTML)
@@ -463,10 +464,12 @@ curateDatasetBtn.addEventListener('click', () => {
     (error, res) => {
     if (error) {
       var emessage = userError(error)
-      // progressInfo.style.color = redColor
-      // progressInfo.value = emessage
-      document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      progressBarCurate.style.width = 0 + "%";
+      progressInfo.style.color = redColor
+      if (emessage !== 'Lost remote after 10000ms') {
+        progressInfo.value = emessage
+      }
+      // document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      // progressBarCurate.style.width = 0 + "%";
       err = true
       console.error(error)
       curateDatasetBtn.disabled = false
@@ -480,34 +483,32 @@ curateDatasetBtn.addEventListener('click', () => {
 
   var timerProgress = setInterval(progressfunction, 250)
   function progressfunction(){
-  document.getElementById("para-curate-progress-bar-status").innerHTML = "Generating files and folders ...."
+  // document.getElementById("para-curate-progress-bar-status").innerHTML = "Generating files and folders ...."
     client.invoke("api_curate_dataset_progress", (error, res) => {
-      console.log('invoked')
       if (error) {
         console.log('error')
         console.error(error)
       } else {
-        console.log('invoked')
         completionstatus = res[1]
         var printstatus = res[2]
         var totalCurateSize = res[3]
         var curatedSize = res[4]
         var value = (curatedSize / totalCurateSize) * 100
-        progressBarCurate.style.width = value + "%";
+        // progressBarCurate.style.width = value + "%";
         console.log(value, totalCurateSize, curatedSize)
         if (printstatus === 'Curating') {
-          console.log(value, totalCurateSize, curatedSize)
+          progressInfo.value = res[0].split(',').join('\n')
         }
       }
     })
-    // console.log('Completion status:', completionstatus)
+    console.log('Completion status:', completionstatus)
     if (completionstatus === 'Done'){
       console.log(err)
-      if (!err) {
-        document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
-        document.getElementById("para-curate-progress-bar-status").innerHTML = "Dataset Generated !"
-        progressBarCurate.style.width = 100 + "%";
-      }
+      // if (!err) {
+      //   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
+      //   document.getElementById("para-curate-progress-bar-status").innerHTML = "Dataset Generated !"
+      //   progressBarCurate.style.width = 100 + "%";
+      // }
       clearInterval(timerProgress)
       curateDatasetBtn.disabled = false
       enableform(curationForm)

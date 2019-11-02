@@ -18,6 +18,7 @@ import collections
 import subprocess
 import shutil
 import re
+import gevent
 
 ### Global variables
 curateprogress = ' '
@@ -174,6 +175,7 @@ def preview_folder_structure(paths, folder_path):
         Creates folders and empty files at the given 'folder_path'
     """
     for p in paths:
+        gevent.sleep(0)
         if isfile(p):
             file = basename(p)
             open(join(folder_path, file), 'a').close()
@@ -407,6 +409,7 @@ def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
             raise e
         try:
             pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
+            open_file(pathnewdatasetfolder)
             curateprogress = 'Started'
             curateprintstatus = 'Curating'
 
@@ -450,7 +453,6 @@ def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
 
             curateprogress = curateprogress + ', ,' + 'Success: COMPLETED!'
             curatestatus = 'Done'
-            open_file(pathnewdatasetfolder)
 
         except Exception as e:
             curatestatus = 'Done'
