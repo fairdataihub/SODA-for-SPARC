@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # python module for Software for Organizing Data Automatically (SODA)
-import os 
+import os
 import platform
 from os import listdir, stat, makedirs, mkdir, walk
 from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname, getsize
@@ -34,7 +34,7 @@ submitdatastatus = ' '
 submitprintstatus = ' '
 
 
-### Internal functions 
+### Internal functions
 def open_file(file_path):
     """
     Opening folder on all platforms
@@ -61,7 +61,7 @@ def folder_size(path):
     Provides the size of the folder indicated by path
 
     Args:
-            path: path of the folder 
+            path: path of the folder
     Returns:
             total_siz: Total size of the folder in bytes (integer)
     """
@@ -147,7 +147,7 @@ def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
                 # Save manifest as Excel sheet
                 manifestfile = join(folderpath, 'manifest.xlsx')
                 df.to_excel(manifestfile, index=None, header=True)
-                
+
     except Exception as e:
         raise e
 
@@ -268,7 +268,7 @@ def import_file_organization(pathuploadfileorganization, headernames):
         pathuploadfileorganization: path of previously saved CSV file (string)
         headernames: names of SPARC folder (list of strings)
     Returns:
-        mydict: dictionary with headers of CSV file as keys and cell contents as list of strings for each key  
+        mydict: dictionary with headers of CSV file as keys and cell contents as list of strings for each key
     """
     try:
         csvsavepath = join(pathuploadfileorganization)
@@ -476,45 +476,45 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     if submissionstatus:
         if not isfile(pathsubmission):
             curatestatus = 'Done'
-            error = error + 'Error: Select valid path for submission file<br>'
+            error = error + 'Error: Select valid path for submission file\n'
             c += 1
         # Adding check for correct file name
         elif splitext(basename(pathsubmission))[0] != 'submission':
             curatestatus = 'Done'
-            error = error + 'Error: Select valid name for submission file<br>'
+            error = error + 'Error: Select valid name for submission file\n'
             c += 1
 
     if datasetdescriptionstatus:
         if not isfile(pathdescription):
             curatestatus = 'Done'
-            error = error + 'Error: Select valid path for dataset description file<br>'
+            error = error + 'Error: Select valid path for dataset description file\n'
             c += 1
         # Adding check for correct file name
         elif splitext(basename(pathdescription))[0] != 'dataset_description':
             curatestatus = 'Done'
-            error = error + 'Error: Select valid name for dataset_description file<br>'
+            error = error + 'Error: Select valid name for dataset_description file\n'
             c += 1
 
     if subjectsstatus:
         if not isfile(pathsubjects):
             curatestatus = 'Done'
-            error = error + 'Error: Select valid path for subjects file<br>'
+            error = error + 'Error: Select valid path for subjects file\n'
             c += 1
         # Adding check for correct file name
         elif splitext(basename(pathsubjects))[0] != 'subjects':
             curatestatus = 'Done'
-            error = error + 'Error: Select valid name for subjects file<br>'
+            error = error + 'Error: Select valid name for subjects file\n'
             c += 1
 
     if samplesstatus:
         if not isfile(pathsamples):
             curatestatus = 'Done'
-            error = error + 'Error: Select valid path for samples file<br>'
+            error = error + 'Error: Select valid path for samples file\n'
             c += 1
         # Adding check for correct file name
         elif splitext(basename(pathsamples))[0] != 'samples':
             curatestatus = 'Done'
-            error = error + 'Error: Select valid name for samples file<br>'
+            error = error + 'Error: Select valid name for samples file\n'
             c += 1
     if c > 0:
         raise Exception(error)
@@ -528,10 +528,10 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                     total_dataset_size += path_size(path)
                 else:
                     c += 1
-                    error = error + path + ' does not exist <br>'
+                    error = error + path + ' does not exist \n'
 
     if c > 0:
-        error = error + '<br>Please remove invalid paths'
+        error = error + '\nPlease remove invalid paths'
         curatestatus = 'Done'
         raise Exception(error)
 
@@ -542,20 +542,20 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         error, c = '', 0
         namefiles = [f for f in listdir(pathdataset) if isfile(join(pathdataset, f))]
         if 'submission.xlsx' in namefiles and submissionstatus:
-            error = error + 'submission file already present<br>'
+            error = error + 'submission file already present\n'
             c += 1
         if 'dataset_description.xlsx' in namefiles and datasetdescriptionstatus:
-            error = error + 'dataset_description file already present<br>'
+            error = error + 'dataset_description file already present\n'
             c += 1
         if  'samples.xlsx' in namefiles and samplesstatus:
-            error = error + 'samples file already present<br>'
+            error = error + 'samples file already present\n'
             c += 1
         if  'subjects.xlsx' in namefiles and subjectsstatus:
-            error = error + 'subjects file already present<br>'
+            error = error + 'subjects file already present\n'
             c += 1
 
         if c > 0:
-            error = error + '<br>Error: Either delete or select "None" in the SODA interface'
+            error = error + '\nError: Either delete or select "None" in the SODA interface'
             curatestatus = 'Done'
             raise Exception(error)
 
