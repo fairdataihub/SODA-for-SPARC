@@ -7,7 +7,7 @@ const path = require('path')
 const {ipcRenderer} = require('electron')
 
 // Connect to python server and check
-let client = new zerorpc.Client({ timeout: 300000 })
+let client = new zerorpc.Client({ timeout: 300000})
 
 client.connect("tcp://127.0.0.1:4242")
 
@@ -35,12 +35,12 @@ let tableNotOrganizedCount = 0
 const alreadyOrganizedStatus = document.querySelector('#preorganized-dataset')
 const organizeDatasetStatus = document.querySelector('#organize-dataset')
 const clearTableBtn = document.getElementById('button-clear-table')
-// Curate dataset
 const selectSaveFileOrganizationBtn = document.getElementById('button-select-save-file-organization')
 const selectPreviewBtn = document.getElementById('button-preview-file-organization')
 const deletePreviewBtn = document.getElementById('button-delete-preview-organization-status')
 const selectImportFileOrganizationBtn = document.getElementById('button-select-upload-file-organization')
 
+// Generate dataset
 const createNewStatus = document.querySelector('#create-newdataset')
 const modifyExistingStatus = document.querySelector('#existing-dataset')
 const bfUploadDirectlyStatus = document.querySelector('#cloud-dataset')
@@ -116,12 +116,18 @@ const bfListRolesTeam = document.querySelector('#bf_list_roles_team')
 const bfAddPermissionTeamBtn = document.getElementById('button-add-permission-team')
 const datasetPermissionStatusTeam = document.querySelector('#para-dataset-permission-status-team')
 
+
 //////////////////////////////////
 // Constant parameters
 //////////////////////////////////
 const blackColor = '#000000'
 const redColor = '#ff1a1a'
-const sparcFolderNames = ["code", "derivatives", "docs", "protocol", "samples", "sourcedata", "subjects"]
+const sparcFolderNames = ["code", "derivatives", "docs", "primary", "protocol", "sourcedata"]
+
+
+//////////////////////////////////
+// Operations on JavaScript end only
+//////////////////////////////////
 
 // Button selection to move on to next step
 document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
@@ -150,24 +156,8 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 })
 
 //////////////////////////////////
-// Defaults action (at start on the program)
-//////////////////////////////////
-
-
-// Add existing bf account(s) to dropdown list
-bfAccountCheckBtn.addEventListener('click', (event) => {
-  removeOptions(bfAccountList)
-  updateBfAccountList(bfAccountList)
-})
-bfUploadAccountCheckBtn.addEventListener('click', (event) => {
-  removeOptions(bfUploadAccountList)
-  updateBfAccountList(bfUploadAccountList)
-})
-//////////////////////////////////
 // Operations on JavaScript end only
 //////////////////////////////////
-
-
 // Select organized dataset folder and populate table
 selectDatasetBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-dataset')
@@ -242,6 +232,13 @@ holderDocs.addEventListener("drop", (event)=> {
    dropAddToTable(event, myID)
 })
 
+var holderPrimary = document.getElementById('primary')
+holderPrimary.addEventListener("drop", (event)=> {
+   event.preventDefault()
+   var myID = holderPrimary.id
+   dropAddToTable(event, myID)
+})
+
 var holderProtocol = document.getElementById('protocol')
 holderProtocol.addEventListener("drop", (event)=> {
    event.preventDefault()
@@ -249,24 +246,11 @@ holderProtocol.addEventListener("drop", (event)=> {
    dropAddToTable(event, myID)
 })
 
-var holderSamples = document.getElementById('samples')
-holderSamples.addEventListener("drop", (event)=> {
-   event.preventDefault()
-   var myID = holderSamples.id
-   dropAddToTable(event, myID)
-})
 
 var holderSourcedata = document.getElementById('sourcedata')
 holderSourcedata.addEventListener("drop", (event)=> {
    event.preventDefault()
    var myID = holderSourcedata.id
-   dropAddToTable(event, myID)
-})
-
-var holderSubjects = document.getElementById('subjects')
-holderSubjects.addEventListener("drop", (event)=> {
-   event.preventDefault()
-   var myID = holderSubjects.id
    dropAddToTable(event, myID)
 })
 
@@ -356,7 +340,7 @@ selectPreviewBtn.addEventListener('click', () => {
         document.getElementById("para-preview-organization-status").innerHTML = "Loading Preview folder...";
         console.log(res)
         console.log("Done")
-        document.getElementById("para-preview-organization-status").innerHTML = "Preview folder available in a new window";
+        document.getElementById("para-preview-organization-status").innerHTML = "Preview folder available in a new file explorer window";
       }
   })
 })
@@ -502,9 +486,6 @@ curateDatasetBtn.addEventListener('click', () => {
     if (error) {
       var emessage = userError(error)
       progressInfo.style.color = redColor
-      if (emessage !== 'Lost remote after 10000ms') {
-        progressInfo.value = emessage
-      }
       // document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       // progressBarCurate.style.width = 0 + "%";
       err = true
@@ -518,9 +499,8 @@ curateDatasetBtn.addEventListener('click', () => {
     }
   })
 
-  var timerProgress = setInterval(progressfunction, 250)
+  var timerProgress = setInterval(progressfunction, 1000)
   function progressfunction(){
-  // document.getElementById("para-curate-progress-bar-status").innerHTML = "Generating files and folders ...."
     client.invoke("api_curate_dataset_progress", (error, res) => {
       if (error) {
         console.log('error')
@@ -540,12 +520,7 @@ curateDatasetBtn.addEventListener('click', () => {
     })
     console.log('Completion status:', completionstatus)
     if (completionstatus === 'Done'){
-      console.log(err)
-      // if (!err) {
-      //   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
-      //   document.getElementById("para-curate-progress-bar-status").innerHTML = "Dataset Generated !"
-      //   progressBarCurate.style.width = 100 + "%";
-      // }
+      console.log('Done')
       clearInterval(timerProgress)
       curateDatasetBtn.disabled = false
       enableform(curationForm)
@@ -553,118 +528,20 @@ curateDatasetBtn.addEventListener('click', () => {
   }
 })
 
-// bfUploadDatasetBtn.addEventListener('click', () => {
-//   pathDatasetValue = String(pathDataset.innerHTML)
-//   console.log(pathDatasetValue)
-//
-//   // Disable curate button to prevent multiple clicks
-//   progressInfo.style.color = blackColor
-//   progressInfo.value = ''
-//   progressInfo.value = "Started generating files ..."
-//   curateDatasetBtn.disabled = true
-//   disableform(curationForm)
-//   // document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
-//   // document.getElementById("para-curate-progress-bar-status").innerHTML = ""
-//   // progressBarCurate.style.width = 0 + "%";
-//
-//   var sourceDataset = ''
-//   // Convert table content into json file for transferring to Python
-//   if (alreadyOrganizedStatus.checked) {
-//     if (fs.existsSync(pathDataset.innerHTML)) {
-//       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
-//       sourceDataset = 'already organized'
-//     } else {
-//       progressInfo.style.color = redColor
-//       progressInfo.value = 'Error: Select a valid dataset folder'
-//       curateDatasetBtn.disabled = false
-//       enableform(curationForm)
-//       console.error('Error')
-//       return
-//     }
-//   } else if (organizeDatasetStatus.checked) {
-//     var jsonvect = tableToJsonWithDescription(tableNotOrganized)
-//     sourceDataset = 'not organized'
-//   } else {
-//   	progressInfo.style.color = redColor
-//   	progressInfo.value = 'Error: Please select an option under "Organize dataset" '
-//     curateDatasetBtn.disabled = false
-//     enableform(curationForm)
-//   	return
-//   }
-//
-//   var jsonpath = jsonvect[0]
-//   var jsondescription = jsonvect[1]
-//
-//   var destinationDataset = ''
-//   var pathDatasetValue = ''
-//   if (modifyExistingStatus.checked) {
-//     destinationDataset = 'modify existing'
-//     pathDatasetValue = String(pathDataset.innerHTML)
-//   } else if (createNewStatus.checked) {
-//     destinationDataset = 'create new'
-//     pathDatasetValue = pathNewDataset.value
-//   }
-//
-//   var metadatafiles = []
-//   if (existingSubmissionStatus.checked === true) {
-//     submissionStatus = true
-//     pathSubmission = pathSubmissionExisting.value
-//     metadatafiles.push(pathSubmission)
-//   } else if (newSubmissionStatus.checked === true) {
-//     submissionStatus = true
-//     pathSubmission = path.join(__dirname, 'file_templates', 'submission.xlsx')
-//     metadatafiles.push(pathSubmission)
-//   } else {
-//     submissionStatus = false
-//   }
-//
-//   if (existingDescriptionStatus.checked === true){
-//     descriptionStatus = true
-//     pathDescription = pathDescriptionExisting.value
-//     metadatafiles.push(pathDescription)
-//   } else if (newDescriptionStatus.checked === true){
-//     descriptionStatus = true
-//     pathDescription = path.join(__dirname, 'file_templates', 'dataset_description.xlsx')
-//     metadatafiles.push(pathDescription)
-//   } else {
-//     descriptionStatus = false
-//   }
-//
-//   if (existingSubjectsStatus.checked === true){
-//     subjectsStatus = true
-//     pathSubjects = pathSubjectsExisting.value
-//     metadatafiles.push(pathSubjects)
-//   } else if (newSubjectsStatus.checked === true){
-//     subjectsStatus = true
-//     pathSubjects = path.join(__dirname, 'file_templates', 'subjects.xlsx')
-//     metadatafiles.push(pathSubjects)
-//   } else {
-//     subjectsStatus = false
-//   }
-//
-//   if (existingSamplesStatus.checked === true){
-//     samplesStatus = true
-//     pathSamples = pathSamplesExisting.value
-//     metadatafiles.push(pathSamples)
-//   } else if (newSamplesStatus.checked === true){
-//     samplesStatus = true
-//     pathSamples = path.join(__dirname, 'file_templates', 'samples.xlsx')
-//     metadatafiles.push(pathSamples)
-//   } else {
-//    samplesStatus = false
-//   }
-//
-//   // Initiate curation by calling python
-//   var err = false
-//   var completionstatus = 'Solving'
-//
-//   client.invoke("api_curate_dataset_progress", jsonpath, jsondescription, (error, res) => {
-//     console.log(res)
-//   })
-// })
+// // // // // // // // // //
+//MANAGE AND SUBMIT
+// // // // // // // // // //
 
-// // // // // // // // // //
-// // // // // // // // // //
+
+// Add existing bf account(s) to dropdown list
+bfAccountCheckBtn.addEventListener('click', (event) => {
+  removeOptions(bfAccountList)
+  updateBfAccountList(bfAccountList)
+})
+bfUploadAccountCheckBtn.addEventListener('click', (event) => {
+  removeOptions(bfUploadAccountList)
+  updateBfAccountList(bfUploadAccountList)
+})
 
 // Add bf account
 bfAddAccountBtn.addEventListener('click', () => {
@@ -692,6 +569,7 @@ bfAddAccountBtn.addEventListener('click', () => {
 
 // Select bf account from dropdownlist and show existing dataset
 bfAccountList.addEventListener('change', () => {
+  document.getElementById("para-select-account-status").innerHTML = "Wait..."
   refreshBfDatasetList(bfDatasetList, bfAccountList)
   refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
   currentDatasetPermission.innerHTML = ''
@@ -707,7 +585,7 @@ bfAccountList.addEventListener('change', () => {
 })
 
 bfUploadAccountList.addEventListener('change', () => {
-  console.log('insideAccountEventList')
+  document.getElementById("para-upload-select-account-status").innerHTML = "Wait..."
   refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
   // refreshBfDatasetList(bfDatasetListPermission)
   // currentDatasetPermission.innerHTML = ''
@@ -760,7 +638,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
   })
 })
 
-
+// Submit dataset to bf
 bfSubmitDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-progress-bar-error-status").innerHTML = ""
   document.getElementById("para-progress-bar-status").innerHTML = ""
@@ -882,50 +760,6 @@ bfAddPermissionTeamBtn.addEventListener('click', () => {
 // // // // // // // // // //
 // Functions: Organize dataset
 // // // // // // // // // //
-
-function userError(error)
-{
-  var myerror = error.message
-  return myerror
-}
-
-function updateBfAccountList(bfAccountList){
-  client.invoke("api_bf_account_list", (error, res) => {
-  if(error) {
-    console.error(error)
-  } else {
-    console.log('invoked')
-    for (myitem in res){
-      var myitemselect = res[myitem]
-      var option = document.createElement("option")
-      option.textContent = myitemselect
-      option.value = myitemselect
-      bfAccountList.appendChild(option)
-    }
-  }
-})
-}
-
-function removeOptions(selectbox)
-{
-    var i;
-    for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
-    {
-        selectbox.remove(i);
-    }
-}
-
-function disableform(formId) {
-  var f = formId.elements;
-  for (var i=0;i<f.length;i++)
-     f[i].disabled=true
-  }
-
-function enableform(formId) {
-  var f = formId.elements;
-  for (var i=0;i<f.length;i++)
-     f[i].disabled=false
-}
 
 function refreshBfDatasetList(bfdstlist, bfAccountList){
   removeOptions(bfdstlist)
@@ -1050,8 +884,58 @@ function showUploadAccountDetails(bfSelectAccountStatus){
   })
 }
 
+
 // // // // // // // // // //
-// Functions: Organize dataset
+// Helper Functions
+// // // // // // // // // //
+
+function userError(error)
+{
+  var myerror = error.message
+  return myerror
+}
+
+function updateBfAccountList(){
+  client.invoke("api_bf_account_list", (error, res) => {
+  if(error) {
+    console.error(error)
+  } else {
+    for (myitem in res){
+      var myitemselect = res[myitem]
+      var option = document.createElement("option")
+      option.textContent = myitemselect
+      option.value = myitemselect
+      bfAccountList.appendChild(option)
+      document.getElementById("para-select-account-status").innerHTML = ""
+    }
+  }
+})
+}
+
+function removeOptions(selectbox)
+{
+    var i;
+    for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
+    {
+        selectbox.remove(i);
+    }
+}
+
+function disableform(formId) {
+  var f = formId.elements;
+  for (var i=0;i<f.length;i++)
+     f[i].disabled=true
+  }
+
+function enableform(formId) {
+  var f = formId.elements;
+  for (var i=0;i<f.length;i++)
+     f[i].disabled=false
+}
+
+
+// // // // // // // // // //
+// Helper Functions: Organize dataset
 // // // // // // // // // //
 
 // Organized
@@ -1087,9 +971,7 @@ function organizedFolderToJson(pathDatasetVal){
     var filepath = path.join(pathDatasetVal, filename)
     if (fs.lstatSync(filepath).isDirectory()){
       var filesInFolder = fs.readdirSync(filepath)
-      // console.log(filesInFolder)
       filesInFolder = filesInFolder.filter(item => !(/(^|\/)\.[^\/\.]/g).test(item));
-      // console.log(filesInFolder)
       var folderfiles = []
       for (var j = 0; j<filesInFolder.length; j++) {
         var fileNameInFolder = filesInFolder[j]

@@ -7,7 +7,7 @@ from os import listdir, stat, makedirs, mkdir, walk
 from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname, getsize
 import pandas as pd
 from time import strftime, localtime
-from shutil import copy2
+from shutil import copy2, copy, copyfile
 from blackfynn import Blackfynn
 from configparser import ConfigParser
 import threading
@@ -24,8 +24,8 @@ import gevent
 curateprogress = ' '
 curatestatus = ' '
 curateprintstatus = ' '
-total_curate_size = 0
-curated_size = 0
+total_dataset_size = 0
+curated_dataset_size = 0
 
 userpath = expanduser("~")
 configpath = join(userpath, '.blackfynn', 'config.ini')
@@ -63,7 +63,7 @@ def folder_size(path):
     Args:
             path: path of the folder
     Returns:
-            Total size of the folder in bytes (integer)
+            total_siz: Total size of the folder in bytes (integer)
     """
     total_size = 0
     start_path = '.'  # To get size of current directory
@@ -72,6 +72,7 @@ def folder_size(path):
             fp = join(path, f)
             total_size += getsize(fp)
     return total_size
+
 
 def path_size(path):
     """
@@ -94,8 +95,6 @@ def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
     Action:
         Creates manifest files in Excel format
     """
-    # Get the names of all the subfolder in the dataset
-
     try:
         folders = list(jsonpath.keys())
         if 'main' in folders:
@@ -136,7 +135,7 @@ def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
                         filetype.append('folder')
                     else:
                         fileextension = splitext(file)[1]
-                        if not fileextension:  #if empty (happens for Readme files)
+                        if not fileextension:  #if empty (happens e.g. with Readme files)
                             fileextension = 'None'
                         filetype.append(fileextension)
 
@@ -162,7 +161,7 @@ def check_forbidden_characters(my_string):
         False: no forbidden character
         True: presence of forbidden character(s)
     """
-    regex = re.compile('[@!#$%^&*()<>?/\|}{~:]')
+    regex = re.compile('[@!#$%^&*()<>?/\|}{~:],')
     if(regex.search(my_string) == None):
         return False
     else:
@@ -188,28 +187,37 @@ def return_new_path(topath):
         return topath
 
 
-def copytree(src, dst, symlinks=False, ignore=None):
-    """
-    Preserves the original folder structure by creating corresponding folders in destination path
+def mycopyfileobj(fsrc, fdst, src, length=16*1024):
+    global curateprogress
+    global total_dataset_size
+    global curated_dataset_size
+    while True:
+        buf = fsrc.read(length)
+        if not buf:
+            break
+        gevent.sleep(0)
+        fdst.write(buf)
+        curated_dataset_size += len(buf)
+        curateprogress = 'Copying ' + str(src) + ','
+        curateprogress += 'Progress: ' + str(curated_dataset_size/total_dataset_size*100) + '%'  
 
-    Input:
-        src: Path of the source folder
-        dst: Path of the destination folder
-    Action:
-        Creates folders in the original folder structure
+
+def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     """
-    global curated_size
-    if not exists(dst):
-        makedirs(dst)
-    for item in listdir(src):
-        s = join(src, item)
-        d = join(dst, item)
-        if isdir(s):
-            copytree(s, d, symlinks, ignore)
-        else:
-            if not exists(d) or stat(s).st_mtime - stat(d).st_mtime > 1:
-                copy2(s, d)
-                curated_size += path_size(s)
+    Copy file src to dst with metadata (timestamp, permission, etc.) conserved
+
+    If follow_symlinks is not set and src is a symbolic link, a new
+    symlink will be created instead of copying the file it points to.
+
+    """
+    if not follow_symlinks and os.path.islink(src):
+        os.symlink(os.readlink(src), dst)
+    else:
+        with open(src, 'rb') as fsrc:
+            with open(dst, 'wb') as fdst:
+                mycopyfileobj(fsrc, fdst, src)
+    shutil.copystat(src, dst)
+    return dst
 
 
 ### SPARC dataset organizer
@@ -369,7 +377,7 @@ def delete_preview_file_organization():
 ### SPARC generate dataset
 def create_dataset(jsonpath, pathdataset):
     """
-    Associated with 'Create new dataset locally' button
+    Associated with 'Create new dataset locally' 
     Creates folders and files from paths specified in json object TO the destination path specified
 
     Input:
@@ -378,32 +386,50 @@ def create_dataset(jsonpath, pathdataset):
     Action:
         Creates the folders and files specified
     """
-
-    global curated_size
     try:
         mydict = jsonpath
-        userpath = expanduser("~")
-        preview_path = pathdataset
         folderrequired = []
 
+        #create SPARC folder structure
         for i in mydict.keys():
             if mydict[i] != []:
                 folderrequired.append(i)
                 if i != 'main':
-                    makedirs(join(preview_path, i))
+                    makedirs(join(pathdataset, i))
 
+        # create all subfolders and generate a list of all files to copy
+        listallfiles = []
         for i in folderrequired:
-            for path in mydict[i]:
-                if (i == 'main'):
-                    folder_path = join(pathdataset)
+            if i == 'main':
+                outputpath = pathdataset
+            else:
+                outputpath = join(pathdataset, i)
+            for tablepath in mydict[i]:
+                if isdir(tablepath):
+                    foldername = basename(tablepath)
+                    outputpathdir = join(outputpath, foldername)
+                    if not os.path.isdir(outputpathdir):
+                        os.mkdir(outputpathdir)
+                    for dirpath, dirnames, filenames in os.walk(tablepath):
+                        distdir = os.path.join(outputpathdir, os.path.relpath(dirpath, tablepath))
+                        if not os.path.isdir(distdir):
+                            os.mkdir(distdir)
+                        for file in filenames:
+                            srcfile = os.path.join(dirpath, file)
+                            distfile = os.path.join(distdir, file)
+                            listallfiles.append([srcfile, distfile])
                 else:
-                    folder_path = join(pathdataset, i)
-                if isfile(path):
-                    copy2(path, folder_path)
-                    curated_size += path_size(path)
-                elif isdir(path):
-                    foldername = basename(path)
-                    copytree(path, join(folder_path, foldername))
+                    srcfile = tablepath
+                    file = basename(tablepath)
+                    distfile= os.path.join(outputpath, file)
+                    listallfiles.append([srcfile, distfile])
+
+        # copy all files to corresponding folders
+        for fileinfo in listallfiles:
+            srcfile = fileinfo[0]
+            distfile = fileinfo[1]
+            mycopyfile_with_metadata(srcfile, distfile)
+
     except Exception as e:
         raise e
 
@@ -416,18 +442,19 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     Associated with 'Generate' button in the 'Generate dataset' section
     Checks validity of files / paths / folders and then generates the files and folders as requested along with progress status
     """
-    global curateprogress
-    global curatestatus
-    global curateprintstatus
-    global total_curate_size
-    global curated_size
+
+    global curatestatus #set to 'Done' when completed or error to stop progress tracking from front-end
+    global curateprogress #GUI messages shown to user to provide upadte on progress
+    global curateprintstatus # If = "Curating" Progress messages are shown to user
+    global total_dataset_size # total size of the dataset to be generated
+    global curated_dataset_size # total size of the dataset generated (locally or on blackfynn) at a given time
+    
     curateprogress = ' '
     curatestatus = ''
     curateprintstatus = ' '
     error, c = '', 0
-    total_curate_size = 0
-    curated_size = 0
-    # raise Exception(str(newdatasetname))
+    total_dataset_size = 0
+    curated_dataset_size = 0
 
     # if sourcedataset == 'already organized':
     #     if not isdir(pathdataset):
@@ -441,7 +468,8 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         if (check_forbidden_characters(newdatasetname) or not newdatasetname):
             curatestatus = 'Done'
             raise Exception('Error: Please enter a valid name for new dataset folder')
-
+    
+    error, c = '', 0
     if submissionstatus:
         if not isfile(pathsubmission):
             curatestatus = 'Done'
@@ -488,13 +516,13 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     if c > 0:
         raise Exception(error)
 
-    # check if path in jsonpath are valid
+    # check if path in jsonpath are valid and calculate total dataset size
     error, c = '', 0
     for folders in jsonpath.keys():
         if jsonpath[folders] != []:
             for path in jsonpath[folders]:
                 if exists(path):
-                    total_curate_size += path_size(path)
+                    total_dataset_size += path_size(path)
                 else:
                     c += 1
                     error = error + path + ' does not exist \n'
@@ -504,9 +532,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         curatestatus = 'Done'
         raise Exception(error)
 
-    # get list of file in pathnewdataset
-    # see if any of submission, dataset_description, subjects, samples exist
-    # Show error 'File xxx already exists at target location: either delete or select "None" in the SODA interface'
+    # MODIFY EXISTING
     if destinationdataset == 'modify existing':
         error, c = '', 0
         namefiles = [f for f in listdir(pathdataset) if isfile(join(pathdataset, f))]
@@ -528,109 +554,92 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             curatestatus = 'Done'
             raise Exception(error)
 
-        # In case of no errors, code-block below will execute which will start the data generation process
+        # If no errors, code-block below will execute which will start the data generation process
         else:
             try:
+
+                open_file(pathdataset)
+
                 curateprogress = 'Started'
                 curateprintstatus = 'Curating'
 
-                curateprogress = curateprogress + ', ,' + "New dataset not requested"
+                curateprogress = "New dataset not requested"
 
                 if manifeststatus:
                     create_manifest_with_description(pathdataset, jsonpath, jsondescription)
-                    curateprogress = curateprogress + ', ,' + 'Manifest created'
-                else:
-                    curateprogress = curateprogress + ', ,' + 'Manifest not requested'
+                    curateprogress = 'Manifest created'
 
                 if submissionstatus:
-                    copy2(pathsubmission, pathdataset)
-                    curateprogress = curateprogress + ', ,' + 'Submission file created'
-                else:
-                    curateprogress = curateprogress + ', ,' + 'Submission file not requested'
+                    copy(pathsubmission, pathdataset)
+                    curateprogress = 'Submission file created'
 
                 if datasetdescriptionstatus:
-                    copy2(pathdescription, pathdataset)
-                    curateprogress = curateprogress + ', ,' + 'Dataset description file created'
-                else:
-                    curateprogress = curateprogress + ', ,' + 'Dataset description file not requested'
+                    copy(pathdescription, pathdataset)
+                    curateprogress = 'Dataset description file created'
 
                 if subjectsstatus:
-                    copy2(pathsubjects, pathdataset)
-                    curateprogress = curateprogress + ', ,' + 'Subjects file created'
-                else:
-                    curateprogress = curateprogress + ', ,' + 'Subjects file not requested'
+                    copy(pathsubjects, pathdataset)
+                    curateprogress = 'Subjects file created'
 
                 if samplesstatus:
-                    copy2(pathsamples, pathdataset)
-                    curateprogress = curateprogress + ', ,' + 'Samples file created'
-                else:
-                    curateprogress = curateprogress + ', ,' + 'Samples file not requested'
+                    copy(pathsamples, pathdataset)
+                    curateprogress = 'Samples file created'
 
-                curateprogress = curateprogress + ', ,' + 'Success: COMPLETED!'
-                curated_size += total_curate_size
+                curateprogress = 'Success: COMPLETED!'
+                
                 curatestatus = 'Done'
-                open_file(pathdataset)
 
             except Exception as e:
                 curatestatus = 'Done'
                 raise e
 
+    # CREATE NEW
     elif destinationdataset == 'create new':
         try:
+
             pathnewdatasetfolder = join(pathdataset, newdatasetname)
-        except Exception as e:
-            curatestatus = 'Done'
-            raise e
-        try:
             pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
             open_file(pathnewdatasetfolder)
             curateprogress = 'Started'
+
             curateprintstatus = 'Curating'
 
             pathdataset = pathnewdatasetfolder
             mkdir(pathdataset)
 
-            t = threading.Thread(target=create_dataset(jsonpath, pathdataset))
-            t.start()
+            create_dataset(jsonpath, pathdataset)
 
-            curateprogress = curateprogress + ', ,' + 'New dataset created'
+            curateprogress = 'New dataset created'
 
             if manifeststatus:
                 create_manifest_with_description(pathdataset, jsonpath, jsondescription)
-                curateprogress = curateprogress + ', ,' + 'Manifest created'
-            else:
-                curateprogress = curateprogress + ', ,' + 'Manifest not requested'
+                curateprogress = 'Manifest created'
 
             if submissionstatus:
                 copy2(pathsubmission, pathdataset)
-                curateprogress = curateprogress + ', ,' + 'Submission file created'
-            else:
-                curateprogress = curateprogress + ', ,' + 'Submission file not requested'
+                curateprogress = 'Submission file created'
 
             if datasetdescriptionstatus:
                 copy2(pathdescription, pathdataset)
-                curateprogress = curateprogress + ', ,' + 'Dataset description file created'
-            else:
-                curateprogress = curateprogress + ', ,' + 'Dataset description file not requested'
+                curateprogress = 'Dataset description file created'
 
             if subjectsstatus:
                 copy2(pathsubjects, pathdataset)
-                curateprogress = curateprogress + ', ,' + 'Subjects file created'
-            else:
-                curateprogress = curateprogress + ', ,' + 'Subjects file not requested'
+                curateprogress = 'Subjects file created'
 
             if samplesstatus:
                 copy2(pathsamples, pathdataset)
-                curateprogress = curateprogress + ', ,' + 'Samples file created'
-            else:
-                curateprogress = curateprogress + ', ,' + 'Samples file not requested'
+                curateprogress = 'Samples file created'
 
-            curateprogress = curateprogress + ', ,' + 'Success: COMPLETED!'
+            curateprogress = 'Success: COMPLETED!'
+
             curatestatus = 'Done'
 
         except Exception as e:
             curatestatus = 'Done'
             raise e
+    
+    # UPLOAD TO BLACKFYNN
 
     elif destinationdataset == 'upload to blackfynn':
         error, c = '', 0
@@ -705,8 +714,8 @@ def directly_upload_structured_file(myds, mypath, myfolder):
         Uploads the folder to Blackfynn
     """
     global curateprogress
-    global curated_size
-    global total_curate_size
+    global curated_dataset_size
+    global total_dataset_size
 
     try:
         mypath = join(mypath)
@@ -715,18 +724,18 @@ def directly_upload_structured_file(myds, mypath, myfolder):
                 if isfile(join(mypath, f)):
                     curateprogress =  "Uploading " + f
                     filepath = join(mypath, f)
-                    curateprogress = curateprogress + ',' + 'Progress: ' + str((curated_size/total_curate_size)*100) + '%'
+                    curateprogress = curateprogress + ',' + 'Progress: ' + str((curated_size/total_dataset_size)*100) + '%'
                     myds.upload(filepath, use_agent=False)
-                    curated_size += getsize(filepath)
+                    curated_dataset_size += getsize(filepath)
                 else:
                     mybffolder = myds.create_collection(f)
                     myfolderpath = join(mypath, f)
                     directly_upload_structured_file(mybffolder, myfolderpath, f)
         else:
             curateprogress = "Uploading " + str(mypath)
-            curateprogress = curateprogress + ',' + 'Progress: ' + str(curated_size/total_curate_size) + '%'
+            curateprogress = curateprogress + ',' + 'Progress: ' + str(curated_size/total_dataset_size) + '%'
             myds.upload(mypath, use_agent=False)
-            curated_size += getsize(mypath)
+            curated_dataset_size += getsize(mypath)
 
     except Exception as e:
         curatestatus = 'Done'
@@ -735,18 +744,18 @@ def directly_upload_structured_file(myds, mypath, myfolder):
 
 def curate_dataset_progress():
     """
-    Creates global variables to help keep track of the progress
+    Function frequently called by front end to help keep track of the progress
     """
     global curateprogress
     global curatestatus
     global curateprintstatus
-    global total_curate_size
-    global curated_size
-    return (curateprogress, curatestatus, curateprintstatus, total_curate_size, curated_size)
+    global total_dataset_size
+    global curated_dataset_size
+    return (curateprogress, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size)
 
 
 ### SODA Blackfynn interface
-# Log in to Blackfynn
+
 def bf_add_account(keyname, key, secret):
     """
     Associated with 'Add account' button in 'Login to your Blackfynn account' section
@@ -840,7 +849,6 @@ def bf_account_list():
         raise e
 
 
-# Visualize existing dataset in the selected account
 def bf_dataset_account(accountname):
     """
     Returns list of datasets associated with the specified Account Name ('accountname')
@@ -856,7 +864,7 @@ def bf_dataset_account(accountname):
     except Exception as e:
         raise e
 
-# Visualize existing dataset in the selected account
+
 def bf_account_details(accountname):
     """
     Returns list of datasets associated with the specified Account Name ('accountname')
@@ -870,7 +878,6 @@ def bf_account_details(accountname):
         raise e
 
 
-# Add new empty dataset folder
 def bf_new_dataset_folder(datasetname, accountname):
     """
     Associated with 'Create' button in 'Create new dataset folder'
@@ -884,6 +891,10 @@ def bf_new_dataset_folder(datasetname, accountname):
     try:
         error, c = '', 0
         datasetname = datasetname.strip()
+
+        if check_forbidden_characters(datasetname):
+            error = error + 'Error: Please enter valid dataset folder name' + '\n'
+            c += 1
 
         if (not datasetname):
             error = error + 'Error: Please enter valid dataset folder name' + '\n'
@@ -914,7 +925,36 @@ def bf_new_dataset_folder(datasetname, accountname):
         raise e
 
 
-# Submit dataset to selected account
+def upload_structured_file(myds, mypath, myfolder):
+    """
+    Helper function to upload given folder to Blackfynn dataset in the original folder structure
+
+    Input:
+        myds: Dataset name on Blackfynn
+        mypath: Path of the organized dataset on local machine
+        myfolder: Current folder inside the path
+    Action:
+        Uploads the folder to Blackfynn
+    """
+    global submitdataprogress
+    global submitdatastatus
+    global uploaded_file_size
+
+    mypath = join(mypath)
+    for f in listdir(mypath):
+        if isfile(join(mypath, f)):
+            submitdataprogress = submitdataprogress + ', ,' + "Uploading " + f + " in " + myfolder
+            filepath = join(mypath, f)
+            myds.upload(filepath, use_agent=False)
+            uploaded_file_size += getsize(filepath)
+            submitdataprogress = submitdataprogress + ',' + " uploaded"
+        else:
+            submitdataprogress = submitdataprogress + ', ,' +"Creating folder " + f
+            mybffolder = myds.create_collection(f)
+            myfolderpath = join(mypath, f)
+            upload_structured_file(mybffolder, myfolderpath, f)
+
+
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
     """
     Associated with 'Submit dataset' button in 'Submit new dataset' section
@@ -979,39 +1019,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     except Exception as e:
         submitdatastatus = 'Done'
         raise e
-
-
-
-def upload_structured_file(myds, mypath, myfolder):
-    """
-    Helper function to upload given folder to Blackfynn dataset in the original folder structure
-
-    Input:
-        myds: Dataset name on Blackfynn
-        mypath: Path of the organized dataset on local machine
-        myfolder: Current folder inside the path
-    Action:
-        Uploads the folder to Blackfynn
-    """
-    global submitdataprogress
-    global submitdatastatus
-    global uploaded_file_size
-
-    mypath = join(mypath)
-    for f in listdir(mypath):
-        if isfile(join(mypath, f)):
-            submitdataprogress = submitdataprogress + ', ,' + "Uploading " + f + " in " + myfolder
-            filepath = join(mypath, f)
-            myds.upload(filepath, use_agent=False)
-            uploaded_file_size += getsize(filepath)
-            submitdataprogress = submitdataprogress + ',' + " uploaded"
-        else:
-            submitdataprogress = submitdataprogress + ', ,' +"Creating folder " + f
-            mybffolder = myds.create_collection(f)
-            myfolderpath = join(mypath, f)
-            upload_structured_file(mybffolder, myfolderpath, f)
-
-
+        
+        
 def submit_dataset_progress():
     """
     Creates global variables to help keep track of the dataset submission progress
@@ -1024,7 +1033,7 @@ def submit_dataset_progress():
     return (submitdataprogress, submitdatastatus, submitprintstatus, uploaded_file_size, total_file_size)
 
 
-# Share dataset with Curation Team
+
 def bf_get_users(selected_bfaccount):
     """
     Function to get list of users belonging to the organization of
@@ -1050,7 +1059,7 @@ def bf_get_users(selected_bfaccount):
     except Exception as e:
         raise e
 
-# Share dataset with Curation Team
+
 def bf_get_teams(selected_bfaccount):
     """
     Function to get list of teams belonging to the organization of
@@ -1075,6 +1084,7 @@ def bf_get_teams(selected_bfaccount):
         return list_teams_name
     except Exception as e:
         raise e
+
 
 def bf_get_permission(selected_bfaccount, selected_bfdataset):
 
@@ -1149,11 +1159,10 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
         raise e
 
 
-
 def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, selected_role):
 
     """
-    Function to add permission to a selected dataset
+    Function to add/remove permission for a suser to a selected dataset
 
     Input:
         selected_bfaccount (string): name of selected Blackfynn acccount
@@ -1248,15 +1257,16 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
         except Exception as e:
                 raise e
 
+
 def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team, selected_role):
 
     """
-    Function to add permission to a selected dataset
+    Function to add/remove permission fo a team to a selected dataset
 
     Input:
         selected_bfaccount (string): name of selected Blackfynn acccount
         selected_bfdataset (string): name of selected Blackfynn dataset
-        selected_team (string): name (first name -- last name) of selected Blackfynn user
+        selected_team (string): name of selected Blackfynn team
         selected_role (string): desired role ('manager', 'viewer', 'editor', 'remove current permission')
     Output:
         success or error message (string)
