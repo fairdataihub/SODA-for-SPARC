@@ -1,12 +1,10 @@
 from __future__ import print_function
-from pysoda import copyfile, bf_add_account, bf_account_list, bf_dataset_account, bf_account_details, \
+from pysoda import bf_add_account, bf_account_list, bf_dataset_account, bf_account_details, \
     bf_submit_dataset, submit_dataset_progress, curate_dataset_progress, bf_new_dataset_folder, \
-    save_file_organization, upload_file_organization, curate_dataset, preview_file_organization, delete_preview_file_organization, \
+    save_file_organization, import_file_organization, curate_dataset, preview_file_organization, delete_preview_file_organization, \
     bf_add_permission, bf_get_users, bf_get_permission, bf_get_teams, bf_add_permission_team
 import sys
 import zerorpc
-from os.path import isdir, isfile
-
 
 class SodaApi(object):
 
@@ -17,9 +15,9 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_upload_file_organization(self, pathsavefileorganization, foldernames):
+    def api_import_file_organization(self, pathsavefileorganization, foldernames):
         try:
-            return upload_file_organization(pathsavefileorganization, foldernames)
+            return import_file_organization(pathsavefileorganization, foldernames)
         except Exception as e:
             raise e
 
@@ -35,15 +33,15 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_curate_dataset(self, pathdataset, createnewstatus, pathnewdataset,
-        manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
-        subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus,
-        bfdirectlystatus, alreadyorganizedstatus, organizedatasetstatus, newdatasetname):
+    def api_curate_dataset(self, sourcedataset, destinationdataset, pathdataset, newdatasetname,\
+                submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
+                subjectsstatus, pathsubjects, samplesstatus, pathsamples, manifeststatus, \
+                jsonpath, jsondescription):
         try:
-            curate_dataset(pathdataset, createnewstatus, pathnewdataset,
-                manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription,
-                subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus,
-                bfdirectlystatus, alreadyorganizedstatus, organizedatasetstatus, newdatasetname)
+            curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetname,\
+                submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
+                subjectsstatus, pathsubjects, samplesstatus, pathsamples, manifeststatus, \
+                jsonpath, jsondescription)
         except Exception as e:
             raise e
 

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 # python module for Software for Organizing Data Automatically (SODA)
-import os ## Some functions are not available on all OS
+import os
 import platform
 from os import listdir, stat, makedirs, mkdir, walk
 from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname, getsize
 import pandas as pd
 from time import strftime, localtime
-from shutil import copy2
+from shutil import copy2, copy, copyfile
 from blackfynn import Blackfynn
 from configparser import ConfigParser
 import threading
@@ -24,8 +24,8 @@ import gevent
 curateprogress = ' '
 curatestatus = ' '
 curateprintstatus = ' '
-total_curate_size = 0
-curated_size = 0
+total_dataset_size = 0
+curated_dataset_size = 0
 
 userpath = expanduser("~")
 configpath = join(userpath, '.blackfynn', 'config.ini')
@@ -33,19 +33,211 @@ submitdataprogress = ' '
 submitdatastatus = ' '
 submitprintstatus = ' '
 
-### FEATURE #1: SPARC dataset organizer
-# Organize dataset
+
+### Internal functions
+def open_file(file_path):
+    """
+    Opening folder on all platforms
+    https://stackoverflow.com/questions/6631299/python-opening-a-folder-in-explorer-nautilus-mac-thingie
+
+    Args:
+        file_path: path of the folder
+    Action:
+        Opens dialog box for the given path
+    """
+    try:
+        if platform.system() == "Windows":
+            subprocess.Popen(r'explorer /select,' + str(file_path))
+        elif platform.system() == "Darwin":
+            subprocess.Popen(["open", file_path])
+        else:
+            subprocess.Popen(["xdg-open", file_path])
+    except Exception as e:
+        raise e
+
+
+def folder_size(path):
+    """
+    Provides the size of the folder indicated by path
+
+    Args:
+            path: path of the folder
+    Returns:
+            total_siz: Total size of the folder in bytes (integer)
+    """
+    total_size = 0
+    start_path = '.'  # To get size of current directory
+    for path, dirs, files in walk(path):
+        for f in files:
+            fp = join(path, f)
+            total_size += getsize(fp)
+    return total_size
+
+
+def path_size(path):
+    """
+    Returns size of the path, after checking if it's a folder or a file
+    """
+    if isdir(path):
+        return folder_size(path)
+    else:
+        return getsize(path)
+
+
+def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
+    """
+    Creates manifest files with the description specified
+
+    Args:
+        datasetpath: path of the dataset
+        jsonpath: all paths in json format
+        jsondescription: description associated with each path
+    Action:
+        Creates manifest files in Excel format
+    """
+    try:
+        folders = list(jsonpath.keys())
+        if 'main' in folders:
+            folders.remove('main')
+        # In each subfolder, generate a manifest file
+        for folder in folders:
+            if (jsonpath[folder] != []):
+
+                # Initialize dataframe where manifest info will be stored
+                df = pd.DataFrame(columns=['filename', 'timestamp', 'description',
+                                        'file type', 'Additional Metadata…'])
+                # Get list of files/folders in the the folde#
+                # Remove manifest file from the list if already exists
+                folderpath = join(datasetpath, folder)
+                allfiles = jsonpath[folder]
+                alldescription = jsondescription[folder + '_description']
+                manifestexists = join(folderpath, 'manifest.xlsx')
+
+                countpath = -1
+                for pathname in allfiles:
+                    countpath += 1
+                    if basename(pathname) == 'manifest.xlsx':
+                        allfiles.pop(countpath)
+                        alldescription.pop(countpath)
+
+                # Populate manifest dataframe
+                filename, timestamp, filetype, filedescription = [], [], [], []
+                countpath = -1
+                for filepath in allfiles:
+                    countpath += 1
+                    file = basename(filepath)
+                    filename.append(splitext(file)[0])
+                    lastmodtime = getmtime(filepath)
+                    timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
+                                              localtime(lastmodtime)))
+                    filedescription.append(alldescription[countpath])
+                    if isdir(filepath):
+                        filetype.append('folder')
+                    else:
+                        fileextension = splitext(file)[1]
+                        if not fileextension:  #if empty (happens for Readme files)
+                            fileextension = 'None'
+                        filetype.append(fileextension)
+
+                df['filename'] = filename
+                df['timestamp'] = timestamp
+                df['file type'] = filetype
+                df['description'] = filedescription
+
+                # Save manifest as Excel sheet
+                manifestfile = join(folderpath, 'manifest.xlsx')
+                df.to_excel(manifestfile, index=None, header=True)
+
+    except Exception as e:
+        raise e
+
+
+def check_forbidden_characters(my_string):
+    """
+    Check for forbidden characters in file/folder name
+    Args:
+        my_string: string with characters
+    Returns:
+        False: no forbidden character
+        True: presence of forbidden character(s)
+    """
+    regex = re.compile('[@!#$%^&*()<>?/\|}{~:],')
+    if(regex.search(my_string) == None):
+        return False
+    else:
+        return True
+
+
+def return_new_path(topath):
+    """
+    This function checks if the folder already exists and in such cases, appends the name with (2) or (3) etc.
+
+    Args:
+        topath: path where the folder is supposed to be copied
+    Returns:
+        topath: new folder name based on the availability in destination folder
+    """
+    if exists(topath):
+        i = 2
+        while True:
+            if not exists(topath + ' (' + str(i) + ')'):
+                return topath + ' (' + str(i) + ')'
+            i += 1
+    else:
+        return topath
+
+
+def copy_progress(copied, total):
+    100*copied/total
+   
+
+def mycopyfileobj(fsrc, fdst, src, callback, total, length=16*1024):
+    global curateprogress
+    global total_dataset_size
+    global curated_dataset_size
+    while True:
+        buf = fsrc.read(length)
+        if not buf:
+            break
+        gevent.sleep(0)
+        fdst.write(buf)
+        curated_dataset_size += len(buf)
+        curateprogress = 'Copying ' + str(src) + ','
+        curateprogress += 'Progress: ' + str(curated_dataset_size/total_dataset_size*100) + '%'  
+
+
+def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
+    """
+    Copy file src to dst with metadata (timestamp, permission, etc.) conserved
+
+    If follow_symlinks is not set and src is a symbolic link, a new
+    symlink will be created instead of copying the file it points to.
+
+    """
+    if not follow_symlinks and os.path.islink(src):
+        os.symlink(os.readlink(src), dst)
+    else:
+        size = os.stat(src).st_size
+        with open(src, 'rb') as fsrc:
+            with open(dst, 'wb') as fdst:
+                mycopyfileobj(fsrc, fdst, src, callback=copy_progress, total=size)
+    shutil.copystat(src, dst)
+    return dst
+
+
+### SPARC dataset organizer
 def save_file_organization(jsonpath, jsondescription, pathsavefileorganization):
     """
-    Associated with 'Save' button in 'Organize my dataset' section
-    Saves the paths specified along with the description in a CSV file as a template for future use
+    Associated with 'Save' button in the SODA GUI
+    Saves the paths and associated descriptions from json to a CSV file for future use
+    Each json key (SPARC foler name) becomes a header in the CSV
 
-    Input:
-        jsonpath: paths of all files in the json object
-        jsondescription: description associated with each file in json object
-        pathsavefileorganization: destination path of saved template
-    Action:
-        Saves all the paths specified in a CSV file
+    Args:
+        jsonpath: paths of all files (json object)
+        jsondescription: description associated with each file (json object)
+        pathsavefileorganization: destination path for CSV file to be saved (string)
+    Returns:
+        CSV file with path and description for files in SPARC folders
     """
     try:
         mydict = jsonpath
@@ -67,17 +259,16 @@ def save_file_organization(jsonpath, jsondescription, pathsavefileorganization):
         raise e
 
 
-compare = lambda x, y: collections.Counter(x) == collections.Counter(y)
-def upload_file_organization(pathuploadfileorganization, headernames):
+def import_file_organization(pathuploadfileorganization, headernames):
     """
-    Associated with 'Upload' button
-    Converts uploaded file template to a dictionary for viewing on UI
+    Associated with 'Import' button in the SODA GUI
+    Import previously saved progress (CSV file) to a dictionary for viewing in the SODA GUI
 
-    Input:
-        pathuploadfileorganization: path of saved template
-        headernames: Folder names according to SPARC format
+    Args:
+        pathuploadfileorganization: path of previously saved CSV file (string)
+        headernames: names of SPARC folder (list of strings)
     Returns:
-        mydict: Returns all folders and corresponding paths as a dictionary
+        mydict: dictionary with headers of CSV file as keys and cell contents as list of strings for each key
     """
     try:
         csvsavepath = join(pathuploadfileorganization)
@@ -85,6 +276,7 @@ def upload_file_organization(pathuploadfileorganization, headernames):
         dfnan = df.isnull()
         mydict = {}
         dictkeys = df.columns
+        compare = lambda x, y: collections.Counter(x) == collections.Counter(y)
         if not compare(dictkeys, headernames):
             raise Exception("Error: Please select a valid file")
         rowcount = len(df.index)
@@ -102,18 +294,46 @@ def upload_file_organization(pathuploadfileorganization, headernames):
         raise e
 
 
+def create_preview_files(paths, folder_path):
+    """
+    Creates folders and empty files from original 'paths' to the destination 'folder_path'
+
+    Args:
+        paths: Paths of all the files that need to be copied
+        folder_path: Destination to which the files / folders need to be copied
+    Action:
+        Creates folders and empty files at the given 'folder_path'
+    """
+    for p in paths:
+        gevent.sleep(0)
+        if isfile(p):
+            file = basename(p)
+            open(join(folder_path, file), 'a').close()
+        else:
+            all_files = listdir(p)
+            all_files_path = []
+            for f in all_files:
+                all_files_path.append(join(p, f))
+
+            pname = basename(p)
+            new_folder_path = join(folder_path, pname)
+            makedirs(new_folder_path)
+            create_preview_files(all_files_path, new_folder_path)
+    return
+
+
 def preview_file_organization(jsonpath):
     """
-    Associated with 'Preview' button on UI
-    Creates a folder for preview and adds empty files but with same name as origin
+    Associated with 'Preview' button in the SODA GUI
+    Creates a folder for preview and adds mock files from SODA table (same name as origin but 0 kb in size)
     Opens the dialog box to showcase the files / folders added
 
-    Input:
-        jsonpath: json object containing all paths
+    Args:
+        jsonpath: json object containing all paths (keys are SPARC folder names)
     Action:
         Opens the dialog box at preview_path
     Returns:
-        preview_path: path where the preview files are located
+        preview_path: path of the folder where the preview files are located
     """
     mydict = jsonpath
     userpath = expanduser("~")
@@ -134,62 +354,13 @@ def preview_file_organization(jsonpath):
         for i in folderrequired:
             paths = mydict[i]
             if (i == 'main'):
-                preview_folder_structure(paths, join(preview_path))
+                create_preview_files(paths, join(preview_path))
             else:
-                preview_folder_structure(paths, join(preview_path, i))
+                create_preview_files(paths, join(preview_path, i))
         open_file(preview_path)
         return preview_path
     except Exception as e:
         raise e
-
-
-def open_file(file_path):
-    """
-    Opening folder on all platforms
-    https://stackoverflow.com/questions/6631299/python-opening-a-folder-in-explorer-nautilus-mac-thingie
-
-    Input:
-        file_path: path of the folder
-    Action:
-        Opens dialog box for the given path
-    """
-    try:
-        if platform.system() == "Windows":
-            subprocess.Popen(r'explorer /select,' + str(file_path))
-        elif platform.system() == "Darwin":
-            subprocess.Popen(["open", file_path])
-        else:
-            subprocess.Popen(["xdg-open", file_path])
-    except Exception as e:
-        raise e
-
-
-def preview_folder_structure(paths, folder_path):
-    """
-    Creates folders and empty files from original 'paths' to the destination 'folder_path'
-
-    Input:
-        paths: Paths of all the files that need to be copied
-        folder_path: Destination to which the files / folders need to be copied
-    Action:
-        Creates folders and empty files at the given 'folder_path'
-    """
-    for p in paths:
-        gevent.sleep(0)
-        if isfile(p):
-            file = basename(p)
-            open(join(folder_path, file), 'a').close()
-        else:
-            all_files = listdir(p)
-            all_files_path = []
-            for f in all_files:
-                all_files_path.append(join(p, f))
-
-            pname = basename(p)
-            new_folder_path = join(folder_path, pname)
-            makedirs(new_folder_path)
-            preview_folder_structure(all_files_path, new_folder_path)
-    return
 
 
 def delete_preview_file_organization():
@@ -204,329 +375,14 @@ def delete_preview_file_organization():
             shutil.rmtree(preview_path, ignore_errors=True)
         else:
             raise Exception("Error: Preview folder not present or already deleted !")
-        return
     except Exception as e:
         raise e
 
 
-def folder_size(path):
-    """
-    Returns total size of a folder
-    """
-    total_size = 0
-    start_path = '.'  # To get size of current directory
-    for path, dirs, files in walk(path):
-        for f in files:
-            fp = join(path, f)
-            total_size += getsize(fp)
-    return total_size
-
-
-def path_size(path):
-    """
-    Returns size of the path, after checking if it's a folder or a file
-    """
-    if isdir(path):
-        return folder_size(path)
-    else:
-        return getsize(path)
-
-
-### FEATURE #2: SPARC metadata generator
-def curate_dataset(pathdataset, createnewstatus, pathnewdataset, \
-        manifeststatus, submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
-        subjectsstatus, pathsubjects, samplesstatus, pathsamples, jsonpath, jsondescription, modifyexistingstatus, bfdirectlystatus,
-        alreadyorganizedstatus, organizedatasetstatus, newdatasetname):
-    """
-    Associated with 'Generate' button in the 'Generate dataset' section
-    Checks validity of files / paths / folders and then generates the files and folders as requested along with progress status
-    """
-    global curateprogress
-    global curatestatus
-    global curateprintstatus
-    global total_curate_size
-    global curated_size
-    curateprogress = ' '
-    curatestatus = ''
-    curateprintstatus = ' '
-    error, c = '', 0
-    total_curate_size = 0
-    curated_size = 0
-
-    if alreadyorganizedstatus:
-        if not isdir(pathdataset):
-            curatestatus = 'Done'
-            raise Exception('Error: Please select a valid dataset folder')
-
-    if createnewstatus:
-        pathnewdataset = pathnewdataset.strip()
-        newdatasetname = newdatasetname.strip()
-        if not isdir(pathnewdataset):
-            curatestatus = 'Done'
-            raise Exception('Error: Please select a valid folder for new dataset')
-        if (check_forbidden_characters(newdatasetname) or not newdatasetname):
-            curatestatus = 'Done'
-            raise Exception('Error: Please enter a valid name for new dataset folder')
-
-    if submissionstatus:
-        if not isfile(pathsubmission):
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid path for submission file<br>'
-            c += 1
-        # Adding check for correct file name
-        elif splitext(basename(pathsubmission))[0] != 'submission':
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid name for submission file<br>'
-            c += 1
-
-    if datasetdescriptionstatus:
-        if not isfile(pathdescription):
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid path for dataset description file<br>'
-            c += 1
-        # Adding check for correct file name
-        elif splitext(basename(pathdescription))[0] != 'dataset_description':
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid name for dataset_description file<br>'
-            c += 1
-
-    if subjectsstatus:
-        if not isfile(pathsubjects):
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid path for subjects file<br>'
-            c += 1
-        # Adding check for correct file name
-        elif splitext(basename(pathsubjects))[0] != 'subjects':
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid name for subjects file<br>'
-            c += 1
-
-    if samplesstatus:
-        if not isfile(pathsamples):
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid path for samples file<br>'
-            c += 1
-        # Adding check for correct file name
-        elif splitext(basename(pathsamples))[0] != 'samples':
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid name for samples file<br>'
-            c += 1
-    if c > 0:
-        raise Exception(error)
-
-    # check if path in jsonpath are valid
-    error, c = '', 0
-    for folders in jsonpath.keys():
-        if jsonpath[folders] != []:
-            for path in jsonpath[folders]:
-                if exists(path):
-                    total_curate_size += path_size(path)
-                else:
-                    c += 1
-                    error = error + path + ' does not exist <br>'
-
-    if c > 0:
-        error = error + '<br>Please remove invalid paths'
-        curatestatus = 'Done'
-        raise Exception(error)
-
-    # get list of file in pathnewdataset
-    # see if any of submission, dataset_description, subjects, samples exist
-    # Show error 'File xxx already exists at target location: either delete or select "None" in the SODA interface'
-    if modifyexistingstatus:
-        error, c = '', 0
-        namefiles = [f for f in listdir(pathdataset) if isfile(join(pathdataset, f))]
-        if 'submission.xlsx' in namefiles and submissionstatus:
-            error = error + 'submission file already present<br>'
-            c += 1
-        if 'dataset_description.xlsx' in namefiles and datasetdescriptionstatus:
-            error = error + 'dataset_description file already present<br>'
-            c += 1
-        if  'samples.xlsx' in namefiles and samplesstatus:
-            error = error + 'samples file already present<br>'
-            c += 1
-        if  'subjects.xlsx' in namefiles and subjectsstatus:
-            error = error + 'subjects file already present<br>'
-            c += 1
-
-        if c > 0:
-            error = error + '<br>Error: Either delete or select "None" in the SODA interface'
-            curatestatus = 'Done'
-            raise Exception(error)
-
-        # In case of no errors, code-bloack below will execute which will start the data preparation process
-        else:
-            try:
-                curateprogress = 'Started'
-                curateprintstatus = 'Curating'
-
-                curateprogress = curateprogress + ', ,' + "New dataset not requested"
-
-                if manifeststatus:
-                    create_manifest_with_description(pathdataset, jsonpath, jsondescription)
-                    curateprogress = curateprogress + ', ,' + 'Manifest created'
-                else:
-                    curateprogress = curateprogress + ', ,' + 'Manifest not requested'
-
-                if submissionstatus:
-                    copyfile(pathsubmission, pathdataset)
-                    curateprogress = curateprogress + ', ,' + 'Submission file created'
-                else:
-                    curateprogress = curateprogress + ', ,' + 'Submission file not requested'
-
-                if datasetdescriptionstatus:
-                    copyfile(pathdescription, pathdataset)
-                    curateprogress = curateprogress + ', ,' + 'Dataset description file created'
-                else:
-                    curateprogress = curateprogress + ', ,' + 'Dataset description file not requested'
-
-                if subjectsstatus:
-                    copyfile(pathsubjects, pathdataset)
-                    curateprogress = curateprogress + ', ,' + 'Subjects file created'
-                else:
-                    curateprogress = curateprogress + ', ,' + 'Subjects file not requested'
-
-                if samplesstatus:
-                    copyfile(pathsamples, pathdataset)
-                    curateprogress = curateprogress + ', ,' + 'Samples file created'
-                else:
-                    curateprogress = curateprogress + ', ,' + 'Samples file not requested'
-
-                curateprogress = curateprogress + ', ,' + 'Success: COMPLETED!'
-                curated_size += total_curate_size
-                curatestatus = 'Done'
-                open_file(pathdataset)
-
-            except Exception as e:
-                curatestatus = 'Done'
-                raise e
-
-    elif createnewstatus:
-        try:
-            pathnewdatasetfolder = join(pathnewdataset, newdatasetname)
-        except Exception as e:
-            curatestatus = 'Done'
-            raise e
-        try:
-            pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
-            open_file(pathnewdatasetfolder)
-            curateprogress = 'Started'
-            curateprintstatus = 'Curating'
-
-            pathdataset = pathnewdatasetfolder
-            mkdir(pathdataset)
-
-            t = threading.Thread(target=create_dataset(jsonpath, pathdataset))
-            t.start()
-
-            curateprogress = curateprogress + ', ,' + 'New dataset created'
-
-            if manifeststatus:
-                create_manifest_with_description(pathdataset, jsonpath, jsondescription)
-                curateprogress = curateprogress + ', ,' + 'Manifest created'
-            else:
-                curateprogress = curateprogress + ', ,' + 'Manifest not requested'
-
-            if submissionstatus:
-                copyfile(pathsubmission, pathdataset)
-                curateprogress = curateprogress + ', ,' + 'Submission file created'
-            else:
-                curateprogress = curateprogress + ', ,' + 'Submission file not requested'
-
-            if datasetdescriptionstatus:
-                copyfile(pathdescription, pathdataset)
-                curateprogress = curateprogress + ', ,' + 'Dataset description file created'
-            else:
-                curateprogress = curateprogress + ', ,' + 'Dataset description file not requested'
-
-            if subjectsstatus:
-                copyfile(pathsubjects, pathdataset)
-                curateprogress = curateprogress + ', ,' + 'Subjects file created'
-            else:
-                curateprogress = curateprogress + ', ,' + 'Subjects file not requested'
-
-            if samplesstatus:
-                copyfile(pathsamples, pathdataset)
-                curateprogress = curateprogress + ', ,' + 'Samples file created'
-            else:
-                curateprogress = curateprogress + ', ,' + 'Samples file not requested'
-
-            curateprogress = curateprogress + ', ,' + 'Success: COMPLETED!'
-            curatestatus = 'Done'
-
-        except Exception as e:
-            curatestatus = 'Done'
-            raise e
-
-
-def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
-    """
-    Creates manifest files with the description specified
-
-    Input:
-        datasetpath: original path of the dataset
-        jsonpath: all paths in json format
-        jsondescription: Description associated with each path
-    Action:
-        Creates manifest files in Excel format
-    """
-    # Get the names of all the subfolder in the dataset
-    folders = list(jsonpath.keys())
-    if 'main' in folders:
-        folders.remove('main')
-    # In each subfolder, generate a manifest file
-    for folder in folders:
-        if (jsonpath[folder] != []):
-
-            # Initialize dataframe where manifest info will be stored
-            df = pd.DataFrame(columns=['filename', 'timestamp', 'description',
-                                    'file type', 'Additional Metadata…'])
-            # Get list of files/folders in the the folde#
-            # Remove manifest file from the list if already exists
-            folderpath = join(datasetpath, folder)
-            allfiles = jsonpath[folder]
-            alldescription = jsondescription[folder + '_description']
-            manifestexists = join(folderpath, 'manifest.xlsx')
-
-            countpath = -1
-            for pathname in allfiles:
-                countpath += 1
-                if basename(pathname) == 'manifest.xlsx':
-                    allfiles.pop(countpath)
-                    alldescription.pop(countpath)
-
-            # Populate manifest dataframe
-            filename, timestamp, filetype, filedescription = [], [], [], []
-            countpath = -1
-            for filepath in allfiles:
-                countpath += 1
-                file = basename(filepath)
-                filename.append(splitext(file)[0])
-                lastmodtime = getmtime(filepath)
-                timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
-                                          localtime(lastmodtime)))
-                filedescription.append(alldescription[countpath])
-                if isdir(filepath):
-                    filetype.append('folder')
-                else:
-                    fileextension = splitext(file)[1]
-                    if not fileextension:  #if empty (happens for Readme files)
-                        fileextension = 'None'
-                    filetype.append(fileextension)
-
-            df['filename'] = filename
-            df['timestamp'] = timestamp
-            df['file type'] = filetype
-            df['description'] = filedescription
-
-            # Save manifest as Excel sheet
-            manifestfile = join(folderpath, 'manifest.xlsx')
-            df.to_excel(manifestfile, index=None, header=True)
-
-
+### SPARC generate dataset
 def create_dataset(jsonpath, pathdataset):
     """
-    Associated with 'Create new dataset locally' button
+    Associated with 'Create new dataset locally' 
     Creates folders and files from paths specified in json object TO the destination path specified
 
     Input:
@@ -537,87 +393,261 @@ def create_dataset(jsonpath, pathdataset):
     """
     try:
         mydict = jsonpath
-        userpath = expanduser("~")
-        preview_path = pathdataset
         folderrequired = []
 
+        #create SPARC folder structure
         for i in mydict.keys():
             if mydict[i] != []:
                 folderrequired.append(i)
                 if i != 'main':
-                    makedirs(join(preview_path, i))
+                    makedirs(join(pathdataset, i))
 
+        # create all subfolders and generate a list of all files to copy
+        listallfiles = []
         for i in folderrequired:
-            for path in mydict[i]:
-                if (i == 'main'):
-                    create_new_file(path, join(pathdataset))
+            if i == 'main':
+                outputpath = pathdataset
+            else:
+                outputpath = join(pathdataset, i)
+            for tablepath in mydict[i]:
+                if isdir(tablepath):
+                    foldername = basename(tablepath)
+                    outputpathdir = join(outputpath, foldername)
+                    if not os.path.isdir(outputpathdir):
+                        os.mkdir(outputpathdir)
+                    for dirpath, dirnames, filenames in os.walk(tablepath):
+                        distdir = os.path.join(outputpathdir, os.path.relpath(dirpath, tablepath))
+                        if not os.path.isdir(distdir):
+                            os.mkdir(distdir)
+                        for file in filenames:
+                            srcfile = os.path.join(dirpath, file)
+                            distfile = os.path.join(distdir, file)
+                            listallfiles.append([srcfile, distfile])
                 else:
-                    create_new_file(path, join(pathdataset, i))
+                    srcfile = tablepath
+                    file = basename(tablepath)
+                    distfile= os.path.join(outputpath, file)
+                    listallfiles.append([srcfile, distfile])
+
+        for fileinfo in listallfiles:
+            srcfile = fileinfo[0]
+            distfile = fileinfo[1]
+            mycopyfile_with_metadata(srcfile, distfile)
+
     except Exception as e:
         raise e
 
 
-def create_new_file(path, folder_path):
+def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetname,\
+        submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
+        subjectsstatus, pathsubjects, samplesstatus, pathsamples, manifeststatus, \
+        jsonpath, jsondescription):
     """
-    Helper function to copy all files from source ('path') to destination ('folder_path') in the same folder structure
+    Associated with 'Generate' button in the 'Generate dataset' section
+    Checks validity of files / paths / folders and then generates the files and folders as requested along with progress status
     """
-    global curated_size
-    if isfile(path):
-        copyfile(path, folder_path)
-        curated_size += path_size(path)
-    elif isdir(path):
-        foldername = basename(path)
-        copytree(path, join(folder_path, foldername))
 
+    global curatestatus #set to 'Done' when completed or error to stop progress tracking from front-end
+    global curateprogress
+    
+    global curateprintstatus
+    global total_dataset_size
+    global curated_dataset_size
+    curateprogress = ' '
+    curatestatus = ''
+    curateprintstatus = ' '
+    error, c = '', 0
+    total_dataset_size = 0
+    curated_dataset_size = 0
 
-def return_new_path(topath):
-    """
-    This function checks if the folder already exists and in such cases, appends the name with (2) or (3) etc.
+    if sourcedataset == 'already organized':
+        if not isdir(pathdataset):
+            curatestatus = 'Done'
+            raise Exception('Error: Please select a valid dataset folder')
 
-    Input:
-        topath: path where the folder is supposed to be copied
-    Returns:
-        topath: new folder name based on the availability in destination folder
-    """
-    if exists(topath):
-        i = 2
-        while True:
-            if not exists(topath + ' (' + str(i) + ')'):
-                return topath + ' (' + str(i) + ')'
-            i += 1
-    else:
-        return topath
+    if destinationdataset == 'create new':
+        if not isdir(pathdataset):
+            curatestatus = 'Done'
+            raise Exception('Error: Please select a valid folder for new dataset')
+        if (check_forbidden_characters(newdatasetname) or not newdatasetname):
+            curatestatus = 'Done'
+            raise Exception('Error: Please enter a valid name for new dataset folder')
 
+    if submissionstatus:
+        if not isfile(pathsubmission):
+            curatestatus = 'Done'
+            error = error + 'Error: Select valid path for submission file\n'
+            c += 1
+        # Adding check for correct file name
+        elif splitext(basename(pathsubmission))[0] != 'submission':
+            curatestatus = 'Done'
+            error = error + 'Error: Select valid name for submission file\n'
+            c += 1
 
-def copytree(src, dst, symlinks=False, ignore=None):
-    """
-    Preserves the original folder structure by creating corresponding folders in destination path
+    if datasetdescriptionstatus:
+        if not isfile(pathdescription):
+            curatestatus = 'Done'
+            error = error + 'Error: Select valid path for dataset description file\n'
+            c += 1
+        # Adding check for correct file name
+        elif splitext(basename(pathdescription))[0] != 'dataset_description':
+            curatestatus = 'Done'
+            error = error + 'Error: Select valid name for dataset_description file\n'
+            c += 1
 
-    Input:
-        src: Path of the source folder
-        dst: Path of the destination folder
-    Action:
-        Creates folders in the original folder structure
-    """
-    global curated_size
-    if not exists(dst):
-        makedirs(dst)
-    for item in listdir(src):
-        s = join(src, item)
-        d = join(dst, item)
-        if isdir(s):
-            copytree(s, d, symlinks, ignore)
+    if subjectsstatus:
+        if not isfile(pathsubjects):
+            curatestatus = 'Done'
+            error = error + 'Error: Select valid path for subjects file\n'
+            c += 1
+        # Adding check for correct file name
+        elif splitext(basename(pathsubjects))[0] != 'subjects':
+            curatestatus = 'Done'
+            error = error + 'Error: Select valid name for subjects file\n'
+            c += 1
+
+    if samplesstatus:
+        if not isfile(pathsamples):
+            curatestatus = 'Done'
+            error = error + 'Error: Select valid path for samples file\n'
+            c += 1
+        # Adding check for correct file name
+        elif splitext(basename(pathsamples))[0] != 'samples':
+            curatestatus = 'Done'
+            error = error + 'Error: Select valid name for samples file\n'
+            c += 1
+    if c > 0:
+        raise Exception(error)
+
+    # check if path in jsonpath are valid
+    error, c = '', 0
+    for folders in jsonpath.keys():
+        if jsonpath[folders] != []:
+            for path in jsonpath[folders]:
+                if exists(path):
+                    total_dataset_size += path_size(path)
+                else:
+                    c += 1
+                    error = error + path + ' does not exist \n'
+
+    if c > 0:
+        error = error + '\nPlease remove invalid paths'
+        curatestatus = 'Done'
+        raise Exception(error)
+
+    # get list of file in pathnewdataset
+    # see if any of submission, dataset_description, subjects, samples exist
+    # Show error 'File xxx already exists at target location: either delete or select "None" in the SODA interface'
+    if destinationdataset == 'modify existing':
+        error, c = '', 0
+        namefiles = [f for f in listdir(pathdataset) if isfile(join(pathdataset, f))]
+        if 'submission.xlsx' in namefiles and submissionstatus:
+            error = error + 'submission file already present\n'
+            c += 1
+        if 'dataset_description.xlsx' in namefiles and datasetdescriptionstatus:
+            error = error + 'dataset_description file already present\n'
+            c += 1
+        if  'samples.xlsx' in namefiles and samplesstatus:
+            error = error + 'samples file already present\n'
+            c += 1
+        if  'subjects.xlsx' in namefiles and subjectsstatus:
+            error = error + 'subjects file already present\n'
+            c += 1
+
+        if c > 0:
+            error = error + '\nError: Either delete or select "None" in the SODA interface'
+            curatestatus = 'Done'
+            raise Exception(error)
+
+        # If no errors, code-block below will execute which will start the data generation process
         else:
-            if not exists(d) or stat(s).st_mtime - stat(d).st_mtime > 1:
-                copy2(s, d)
-                curated_size += path_size(s)
+            try:
 
+                open_file(pathdataset)
 
-def copyfile(src, dst):
-    """
-    Wrapper function to copy files from source path ('src') to destination ('dst')
-    """
-    copy2(src, dst)
+                curateprogress = 'Started'
+                curateprintstatus = 'Curating'
+
+                curateprogress = "New dataset not requested"
+
+                if manifeststatus:
+                    create_manifest_with_description(pathdataset, jsonpath, jsondescription)
+                    curateprogress = 'Manifest created'
+
+                if submissionstatus:
+                    copy(pathsubmission, pathdataset)
+                    curateprogress = 'Submission file created'
+
+                if datasetdescriptionstatus:
+                    copy(pathdescription, pathdataset)
+                    curateprogress = 'Dataset description file created'
+
+                if subjectsstatus:
+                    copy(pathsubjects, pathdataset)
+                    curateprogress = 'Subjects file created'
+
+                if samplesstatus:
+                    copy(pathsamples, pathdataset)
+                    curateprogress = 'Samples file created'
+
+                curateprogress = 'Success: COMPLETED!'
+                
+                curatestatus = 'Done'
+
+                #curated_dataset_size += total_dataset_size
+
+            except Exception as e:
+                curatestatus = 'Done'
+                raise e
+
+    elif destinationdataset == 'create new':
+        try:
+            pathnewdatasetfolder = join(pathdataset, newdatasetname)
+        except Exception as e:
+            curatestatus = 'Done'
+            raise e
+
+        try:
+            pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
+            open_file(pathnewdatasetfolder)
+            curateprogress = 'Started'
+
+            curateprintstatus = 'Curating'
+
+            pathdataset = pathnewdatasetfolder
+            mkdir(pathdataset)
+
+            create_dataset(jsonpath, pathdataset)
+
+            curateprogress = 'New dataset created'
+
+            if manifeststatus:
+                create_manifest_with_description(pathdataset, jsonpath, jsondescription)
+                curateprogress = 'Manifest created'
+
+            if submissionstatus:
+                copy2(pathsubmission, pathdataset)
+                curateprogress = 'Submission file created'
+
+            if datasetdescriptionstatus:
+                copy2(pathdescription, pathdataset)
+                curateprogress = 'Dataset description file created'
+
+            if subjectsstatus:
+                copy2(pathsubjects, pathdataset)
+                curateprogress = 'Subjects file created'
+
+            if samplesstatus:
+                copy2(pathsamples, pathdataset)
+                curateprogress = 'Samples file created'
+
+            curateprogress = 'Success: COMPLETED!'
+
+            curatestatus = 'Done'
+
+        except Exception as e:
+            curatestatus = 'Done'
+            raise e
 
 
 def curate_dataset_progress():
@@ -627,26 +657,12 @@ def curate_dataset_progress():
     global curateprogress
     global curatestatus
     global curateprintstatus
-    global total_curate_size
-    global curated_size
-    return (curateprogress, curatestatus, curateprintstatus, total_curate_size, curated_size)
+    global total_dataset_size
+    global curated_dataset_size
+    return (curateprogress, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size)
 
 
-def check_forbidden_characters(my_string):
-    """
-    Check for forbidden characters in file/folder name
-    Output:
-        False: no forbidden character
-        True: presence of forbidden character(s)
-    """
-    regex = re.compile('[@!#$%^&*()<>?/\|}{~:]')
-    if(regex.search(my_string) == None):
-        return False
-    else:
-        return True
-
-
-### FEATURE #4: SODA Blackfynn interface
+### SODA Blackfynn interface
 # Log in to Blackfynn
 def bf_add_account(keyname, key, secret):
     """
@@ -785,6 +801,10 @@ def bf_new_dataset_folder(datasetname, accountname):
     try:
         error, c = '', 0
         datasetname = datasetname.strip()
+
+        if check_forbidden_characters(datasetname):
+            error = error + 'Error: Please enter valid dataset folder name' + '\n'
+            c += 1
 
         if (not datasetname):
             error = error + 'Error: Please enter valid dataset folder name' + '\n'

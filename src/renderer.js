@@ -7,7 +7,7 @@ const path = require('path')
 const {ipcRenderer} = require('electron')
 
 // Connect to python server and check
-let client = new zerorpc.Client({ timeout: 300000 })
+let client = new zerorpc.Client({ timeout: 300000})
 
 client.connect("tcp://127.0.0.1:4242")
 
@@ -38,7 +38,7 @@ const clearTableBtn = document.getElementById('button-clear-table')
 const selectSaveFileOrganizationBtn = document.getElementById('button-select-save-file-organization')
 const selectPreviewBtn = document.getElementById('button-preview-file-organization')
 const deletePreviewBtn = document.getElementById('button-delete-preview-organization-status')
-const selectUploadFileOrganizationBtn = document.getElementById('button-select-upload-file-organization')
+const selectImportFileOrganizationBtn = document.getElementById('button-select-upload-file-organization')
 
 const createNewStatus = document.querySelector('#create-newdataset')
 const modifyExistingStatus = document.querySelector('#existing-dataset')
@@ -149,6 +149,7 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 
 // Add existing bf account(s) to dropdown list
 bfAccountCheckBtn.addEventListener('click', (event) => {
+  document.getElementById("para-select-account-status").innerHTML = "Wait..."
   removeOptions(bfAccountList)
   updateBfAccountList()
 })
@@ -274,6 +275,7 @@ holderMain.addEventListener("drop", (event)=> {
 // Action when user click on Save file organization button
 selectSaveFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('save-file-dialog-saveorganization')
+  document.getElementById("para-save-file-organization-status").innerHTML = ""
 })
 ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
   if (path.length > 0){
@@ -285,7 +287,7 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
     var jsonpath = jsonvect[0]
     var jsondescription = jsonvect[1]
     console.log(jsonpath)
-    document.getElementById("para-save-file-organization-status").innerHTML = "";
+    document.getElementById("para-save-file-organization-status").innerHTML = ""
     // Call python to save
     if (path != null){
       client.invoke("api_save_file_organization", jsonpath, jsondescription, path, (error, res) => {
@@ -295,7 +297,7 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
             document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           } else {
             console.log(res)
-            document.getElementById("para-save-file-organization-status").innerHTML = "Saved!";
+            document.getElementById("para-save-file-organization-status").innerHTML = "Saved!"
           }
       })
     }
@@ -303,20 +305,21 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
 })
 
 
-// Action when user click on upload file organization button
-selectUploadFileOrganizationBtn.addEventListener('click', (event) => {
+// Action when user click on "Import" button
+selectImportFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-uploadorganization')
+  document.getElementById("para-upload-file-organization-status").innerHTML = ""
 })
 ipcRenderer.on('selected-uploadorganization', (event, path) => {
   if (path.length > 0) {
-    document.getElementById("para-upload-file-organization-status").innerHTML = "";
+    document.getElementById("para-upload-file-organization-status").innerHTML = ""
     var headerNames = sparcFolderNames.slice()
     headerNames.push("main")
     var lennames =  headerNames.length
     for (var i = 0; i < lennames; i++) {
     	headerNames.push(headerNames[i] + "_description")
     }
-    client.invoke("api_upload_file_organization", path[0], headerNames, (error, res) => {
+    client.invoke("api_import_file_organization", path[0], headerNames, (error, res) => {
           if(error) {
             console.error(error)
             var emessage = userError(error)
@@ -365,7 +368,7 @@ deletePreviewBtn.addEventListener('click', () => {
 })
 
 // // // // // // // // // //
-// Action when user click on Curate Dataset
+// Action when user click on Generate Dataset
 // // // // // // // // // //
 
 curateDatasetBtn.addEventListener('click', () => {
@@ -380,10 +383,12 @@ curateDatasetBtn.addEventListener('click', () => {
   // document.getElementById("para-curate-progress-bar-status").innerHTML = ""
   // progressBarCurate.style.width = 0 + "%";
 
+  var sourceDataset = ''
   // Convert table content into json file for transferring to Python
   if (alreadyOrganizedStatus.checked) {
     if (fs.existsSync(pathDataset.innerHTML)) {
       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
+      sourceDataset = 'already organized'
     } else {
       progressInfo.style.color = redColor
       progressInfo.value = 'Error: Select a valid dataset folder'
@@ -394,6 +399,7 @@ curateDatasetBtn.addEventListener('click', () => {
     }
   } else if (organizeDatasetStatus.checked) {
     var jsonvect = tableToJsonWithDescription(tableNotOrganized)
+    sourceDataset = 'not organized'
   } else {
   	progressInfo.style.color = redColor
   	progressInfo.value = 'Error: Please select an option under "Organize dataset" '
@@ -401,8 +407,19 @@ curateDatasetBtn.addEventListener('click', () => {
     enableform(curationForm)
   	return
   }
+
   var jsonpath = jsonvect[0]
   var jsondescription = jsonvect[1]
+
+  var destinationDataset = ''
+  var pathDatasetValue = ''
+  if (modifyExistingStatus.checked) {
+    destinationDataset = 'modify existing'
+    pathDatasetValue = String(pathDataset.innerHTML)
+  } else if (createNewStatus.checked) {
+    destinationDataset = 'create new'
+    pathDatasetValue = pathNewDataset.value
+  }
 
   var metadatafiles = []
   if (existingSubmissionStatus.checked === true){
@@ -456,18 +473,16 @@ curateDatasetBtn.addEventListener('click', () => {
   // Initiate curation by calling python
   var err = false
   var completionstatus = 'Solving'
-  var pathDatasetValue = String(pathDataset.innerHTML)
-  client.invoke("api_curate_dataset", pathDatasetValue, createNewStatus.checked, pathNewDataset.value,
-    manifestStatus.checked, submissionStatus, pathSubmission,  descriptionStatus, pathDescription,
-    subjectsStatus, pathSubjects, samplesStatus, pathSamples, jsonpath, jsondescription, modifyExistingStatus.checked,
-    bfDirectlyStatus.checked, alreadyOrganizedStatus.checked, organizeDatasetStatus.checked, newDatasetName.value,
+  
+  client.invoke("api_curate_dataset", 
+    sourceDataset, destinationDataset, pathDatasetValue, newDatasetName.value,
+    submissionStatus, pathSubmission,  descriptionStatus, pathDescription,
+    subjectsStatus, pathSubjects, samplesStatus, pathSamples, manifestStatus.checked, 
+    jsonpath, jsondescription, 
     (error, res) => {
     if (error) {
       var emessage = userError(error)
       progressInfo.style.color = redColor
-      if (emessage !== 'Lost remote after 10000ms') {
-        progressInfo.value = emessage
-      }
       // document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       // progressBarCurate.style.width = 0 + "%";
       err = true
@@ -481,9 +496,8 @@ curateDatasetBtn.addEventListener('click', () => {
     }
   })
 
-  var timerProgress = setInterval(progressfunction, 250)
+  var timerProgress = setInterval(progressfunction, 1000)
   function progressfunction(){
-  // document.getElementById("para-curate-progress-bar-status").innerHTML = "Generating files and folders ...."
     client.invoke("api_curate_dataset_progress", (error, res) => {
       if (error) {
         console.log('error')
@@ -503,12 +517,7 @@ curateDatasetBtn.addEventListener('click', () => {
     })
     console.log('Completion status:', completionstatus)
     if (completionstatus === 'Done'){
-      console.log(err)
-      // if (!err) {
-      //   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
-      //   document.getElementById("para-curate-progress-bar-status").innerHTML = "Dataset Generated !"
-      //   progressBarCurate.style.width = 100 + "%";
-      // }
+      console.log('Done')
       clearInterval(timerProgress)
       curateDatasetBtn.disabled = false
       enableform(curationForm)
@@ -545,6 +554,7 @@ bfAddAccountBtn.addEventListener('click', () => {
 
 // Select bf account from dropdownlist and show existing dataset
 bfAccountList.addEventListener('change', () => {
+  document.getElementById("para-select-account-status").innerHTML = "Wait..."
   refreshBfDatasetList(bfDatasetList)
   refreshBfDatasetList(bfDatasetListPermission)
   currentDatasetPermission.innerHTML = ''
@@ -731,6 +741,7 @@ function updateBfAccountList(){
       option.textContent = myitemselect
       option.value = myitemselect
       bfAccountList.appendChild(option)
+      document.getElementById("para-select-account-status").innerHTML = ""
     }
   }
 })
