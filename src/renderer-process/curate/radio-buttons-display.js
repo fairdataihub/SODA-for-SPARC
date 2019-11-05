@@ -17,8 +17,8 @@ function showCreateNew(){
 function showCreateCloud(){
   document.getElementById('div-create-new').style.display ='none';
   document.getElementById('div-create-cloud').style.display ='block';
-    document.getElementById('div-curate-button').style.display ='none';
-  document.getElementById('div-progress-print').style.display ='none';
+    document.getElementById('div-curate-button').style.display ='block';
+  document.getElementById('div-progress-print').style.display ='block';
 }
 
 document.querySelector('#existing-dataset').addEventListener('click', () => {

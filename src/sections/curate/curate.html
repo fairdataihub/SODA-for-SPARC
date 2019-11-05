@@ -468,7 +468,43 @@
           </div>
 
           <div id="div-create-cloud" class="datasetsaveoption">
-            <p> Coming soon... Tentative date: December 2019</p>
+            <h5></h5>
+            <button id="button-upload-check-bf-account-details" class="demo-button"> Load existing account(s) </button>
+            <h5> Select account </h5>
+            <div class="demo-controls">
+              <select class="my_dropdown" id="bfuploadaccountlist">
+                <option> Select </option>
+              </select>
+            </div>
+            <p id='para-upload-select-account-status'> <p>
+
+            <p> </p>
+
+            <!-- <h5> Select local dataset to submit
+              <div class="tooltipnew">( ? )
+                <span class="tooltiptext">Select the local folder that you want to submit to your Blackfynn account</span>
+              </div>
+            </h5>
+            <div class="demo-controls">
+              <button id="button-select-submit-dataset" class="demo-button">Select Dataset Folder </button>
+              <textarea class="demo-response" id="selected-submit-dataset"></textarea>
+            </div> -->
+
+            <h5> Select Blackfynn Dataset for uploading
+              <div class="tooltipnew">( ? )
+                <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically)</span>
+              </div>
+            </h5>
+            <div class="demo-controls">
+              <select class="my_dropdown" id="bfuploaddatasetlist">
+                <option> Select dataset </option>
+              </select>
+            </div>
+
+            <h5> </h5>
+            <div class="demo-controls">
+              <button id="button-upload-refresh-dataset-list" class="demo-button"> Refresh list </button>
+            </div>
           </div>
 
           <div id="div-curate-button" class="datasetsaveoption">

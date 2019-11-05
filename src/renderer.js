@@ -25,6 +25,7 @@ client.invoke("echo", "server ready", (error, res) => {
 
 // Organize dataset
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
+const bfUploadAccountCheckBtn = document.getElementById('button-upload-check-bf-account-details')
 const selectDatasetBtn = document.getElementById('button-select-dataset')
 const pathDataset = document.querySelector('#para-selected-dataset')
 const tableOrganized = document.getElementById("table-organized")
@@ -42,7 +43,7 @@ const selectImportFileOrganizationBtn = document.getElementById('button-select-u
 
 const createNewStatus = document.querySelector('#create-newdataset')
 const modifyExistingStatus = document.querySelector('#existing-dataset')
-const bfDirectlyStatus = document.querySelector('#cloud-dataset')
+const bfUploadDirectlyStatus = document.querySelector('#cloud-dataset')
 const pathNewDataset = document.querySelector('#selected-new-dataset')
 const newDatasetName = document.querySelector('#new-dataset-name')
 const manifestStatus = document.querySelector('#generate-manifest')
@@ -74,6 +75,7 @@ var samplesStatus
 var pathSamples
 
 const curateDatasetBtn = document.getElementById('button-curate-dataset')
+const bfUploadDatasetBtn = document.getElementById('button-upload-dataset')
 const progressInfo = document.querySelector('#progressinfo')
 
 // Manage and submit
@@ -84,10 +86,15 @@ const bfAddAccountBtn = document.getElementById('add-bf-account')
 const bfAddAccountInfo = document.querySelector('#add-account-progress')
 
 const bfAccountList = document.querySelector('#bfaccountlist')
+const bfUploadAccountList = document.querySelector('#bfuploadaccountlist')
 var myitem
 const bfDatasetList = document.querySelector('#bfdatasetlist')
+const bfUploadDatasetList = document.querySelector('#bfuploaddatasetlist')
+const bfSelectAccountStatus = document.getElementById("para-select-account-status")
+const bfUploadSelectAccountStatus = document.getElementById("para-upload-select-account-status")
 
 const bfRefreshDatasetBtn = document.getElementById('button-refresh-dataset-list')
+const bfUploadRefreshDatasetBtn = document.getElementById('button-upload-refresh-dataset-list')
 const bfNewDatasetName = document.querySelector('#bf-new-dataset-name')
 const bfCreateNewDatasetBtn = document.getElementById('button-create-bf-new-dataset')
 const bfCreateNewDatasetInfo = document.querySelector('#add-new-dataset-progress')
@@ -150,7 +157,11 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 // Add existing bf account(s) to dropdown list
 bfAccountCheckBtn.addEventListener('click', (event) => {
   removeOptions(bfAccountList)
-  updateBfAccountList()
+  updateBfAccountList(bfAccountList)
+})
+bfUploadAccountCheckBtn.addEventListener('click', (event) => {
+  removeOptions(bfUploadAccountList)
+  updateBfAccountList(bfUploadAccountList)
 })
 //////////////////////////////////
 // Operations on JavaScript end only
@@ -412,20 +423,29 @@ curateDatasetBtn.addEventListener('click', () => {
 
   var destinationDataset = ''
   var pathDatasetValue = ''
+  var newDatasetNameVar = ''
   if (modifyExistingStatus.checked) {
     destinationDataset = 'modify existing'
     pathDatasetValue = String(pathDataset.innerHTML)
   } else if (createNewStatus.checked) {
     destinationDataset = 'create new'
     pathDatasetValue = pathNewDataset.value
+    newDatasetNameVar = newDatasetName.value
+  } else if (bfUploadDirectlyStatus.checked) {
+    destinationDataset = 'upload to blackfynn'
+    pathDatasetValue = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
+    newDatasetNameVar = bfUploadDatasetList.options[bfUploadDatasetList.selectedIndex].text
+    console.log('generate')
+    // pathDatasetValue = // name of account
+    // newDatasetNameVar = // name of dataset
   }
 
   var metadatafiles = []
-  if (existingSubmissionStatus.checked === true){
+  if (existingSubmissionStatus.checked === true) {
     submissionStatus = true
     pathSubmission = pathSubmissionExisting.value
     metadatafiles.push(pathSubmission)
-  } else if (newSubmissionStatus.checked === true){
+  } else if (newSubmissionStatus.checked === true) {
     submissionStatus = true
     pathSubmission = path.join(__dirname, 'file_templates', 'submission.xlsx')
     metadatafiles.push(pathSubmission)
@@ -472,12 +492,12 @@ curateDatasetBtn.addEventListener('click', () => {
   // Initiate curation by calling python
   var err = false
   var completionstatus = 'Solving'
-  
-  client.invoke("api_curate_dataset", 
-    sourceDataset, destinationDataset, pathDatasetValue, newDatasetName.value,
+  console.log(pathDatasetValue)
+  client.invoke("api_curate_dataset",
+    sourceDataset, destinationDataset, pathDatasetValue, newDatasetNameVar,
     submissionStatus, pathSubmission,  descriptionStatus, pathDescription,
-    subjectsStatus, pathSubjects, samplesStatus, pathSamples, manifestStatus.checked, 
-    jsonpath, jsondescription, 
+    subjectsStatus, pathSubjects, samplesStatus, pathSamples, manifestStatus.checked,
+    jsonpath, jsondescription,
     (error, res) => {
     if (error) {
       var emessage = userError(error)
@@ -533,6 +553,116 @@ curateDatasetBtn.addEventListener('click', () => {
   }
 })
 
+// bfUploadDatasetBtn.addEventListener('click', () => {
+//   pathDatasetValue = String(pathDataset.innerHTML)
+//   console.log(pathDatasetValue)
+//
+//   // Disable curate button to prevent multiple clicks
+//   progressInfo.style.color = blackColor
+//   progressInfo.value = ''
+//   progressInfo.value = "Started generating files ..."
+//   curateDatasetBtn.disabled = true
+//   disableform(curationForm)
+//   // document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
+//   // document.getElementById("para-curate-progress-bar-status").innerHTML = ""
+//   // progressBarCurate.style.width = 0 + "%";
+//
+//   var sourceDataset = ''
+//   // Convert table content into json file for transferring to Python
+//   if (alreadyOrganizedStatus.checked) {
+//     if (fs.existsSync(pathDataset.innerHTML)) {
+//       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
+//       sourceDataset = 'already organized'
+//     } else {
+//       progressInfo.style.color = redColor
+//       progressInfo.value = 'Error: Select a valid dataset folder'
+//       curateDatasetBtn.disabled = false
+//       enableform(curationForm)
+//       console.error('Error')
+//       return
+//     }
+//   } else if (organizeDatasetStatus.checked) {
+//     var jsonvect = tableToJsonWithDescription(tableNotOrganized)
+//     sourceDataset = 'not organized'
+//   } else {
+//   	progressInfo.style.color = redColor
+//   	progressInfo.value = 'Error: Please select an option under "Organize dataset" '
+//     curateDatasetBtn.disabled = false
+//     enableform(curationForm)
+//   	return
+//   }
+//
+//   var jsonpath = jsonvect[0]
+//   var jsondescription = jsonvect[1]
+//
+//   var destinationDataset = ''
+//   var pathDatasetValue = ''
+//   if (modifyExistingStatus.checked) {
+//     destinationDataset = 'modify existing'
+//     pathDatasetValue = String(pathDataset.innerHTML)
+//   } else if (createNewStatus.checked) {
+//     destinationDataset = 'create new'
+//     pathDatasetValue = pathNewDataset.value
+//   }
+//
+//   var metadatafiles = []
+//   if (existingSubmissionStatus.checked === true) {
+//     submissionStatus = true
+//     pathSubmission = pathSubmissionExisting.value
+//     metadatafiles.push(pathSubmission)
+//   } else if (newSubmissionStatus.checked === true) {
+//     submissionStatus = true
+//     pathSubmission = path.join(__dirname, 'file_templates', 'submission.xlsx')
+//     metadatafiles.push(pathSubmission)
+//   } else {
+//     submissionStatus = false
+//   }
+//
+//   if (existingDescriptionStatus.checked === true){
+//     descriptionStatus = true
+//     pathDescription = pathDescriptionExisting.value
+//     metadatafiles.push(pathDescription)
+//   } else if (newDescriptionStatus.checked === true){
+//     descriptionStatus = true
+//     pathDescription = path.join(__dirname, 'file_templates', 'dataset_description.xlsx')
+//     metadatafiles.push(pathDescription)
+//   } else {
+//     descriptionStatus = false
+//   }
+//
+//   if (existingSubjectsStatus.checked === true){
+//     subjectsStatus = true
+//     pathSubjects = pathSubjectsExisting.value
+//     metadatafiles.push(pathSubjects)
+//   } else if (newSubjectsStatus.checked === true){
+//     subjectsStatus = true
+//     pathSubjects = path.join(__dirname, 'file_templates', 'subjects.xlsx')
+//     metadatafiles.push(pathSubjects)
+//   } else {
+//     subjectsStatus = false
+//   }
+//
+//   if (existingSamplesStatus.checked === true){
+//     samplesStatus = true
+//     pathSamples = pathSamplesExisting.value
+//     metadatafiles.push(pathSamples)
+//   } else if (newSamplesStatus.checked === true){
+//     samplesStatus = true
+//     pathSamples = path.join(__dirname, 'file_templates', 'samples.xlsx')
+//     metadatafiles.push(pathSamples)
+//   } else {
+//    samplesStatus = false
+//   }
+//
+//   // Initiate curation by calling python
+//   var err = false
+//   var completionstatus = 'Solving'
+//
+//   client.invoke("api_curate_dataset_progress", jsonpath, jsondescription, (error, res) => {
+//     console.log(res)
+//   })
+// })
+
 // // // // // // // // // //
 // // // // // // // // // //
 
@@ -562,25 +692,47 @@ bfAddAccountBtn.addEventListener('click', () => {
 
 // Select bf account from dropdownlist and show existing dataset
 bfAccountList.addEventListener('change', () => {
-  refreshBfDatasetList(bfDatasetList)
-  refreshBfDatasetList(bfDatasetListPermission)
+  refreshBfDatasetList(bfDatasetList, bfAccountList)
+  refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
   currentDatasetPermission.innerHTML = ''
   refreshBfUsersList(bfListUsers)
   refreshBfTeamsList(bfListTeams)
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
 
   if (selectedbfaccount == 'Select') {
-    document.getElementById("para-select-account-status").innerHTML = "";
+    bfSelectAccountStatus.innerHTML = "";
   } else{
     showAccountDetails()
+  }
+})
+
+bfUploadAccountList.addEventListener('change', () => {
+  console.log('insideAccountEventList')
+  refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
+  // refreshBfDatasetList(bfDatasetListPermission)
+  // currentDatasetPermission.innerHTML = ''
+  // refreshBfUsersList(bfListUsers)
+  // refreshBfTeamsList(bfListTeams)
+  var selectedbfaccount = bfUploadAccountList.options[bfAccountList.selectedIndex].text
+
+  if (selectedbfaccount == 'Select') {
+    document.getElementById("para-upload-select-account-status").innerHTML = "";
+  } else {
+    showUploadAccountDetails(bfUploadSelectAccountStatus)
   }
 })
 
 
 // Refresh list of bf dataset list (in case user create it online)
 bfRefreshDatasetBtn.addEventListener('click', () => {
-  refreshBfDatasetList(bfDatasetList)
-  refreshBfDatasetList(bfDatasetListPermission)
+  refreshBfDatasetList(bfDatasetList, bfAccountList)
+  refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
+  currentDatasetPermission.innerHTML = ''
+  console.log("refreshed")
+})
+bfUploadRefreshDatasetBtn.addEventListener('click', () => {
+  refreshBfDatasetList(bfDatasetList, bfUploadAccountList)
+  // refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
   currentDatasetPermission.innerHTML = ''
   console.log("refreshed")
 })
@@ -600,8 +752,8 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
       bfCreateNewDatasetBtn.disabled = false
     } else {
         bfCreateNewDatasetInfo.value = 'Success: created folder' + ' ' + bfNewDatasetName.value
-        refreshBfDatasetList(bfDatasetList)
-        refreshBfDatasetList(bfDatasetListPermission)
+        refreshBfDatasetList(bfDatasetList, bfAccountList)
+        refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
         currentDatasetPermission.innerHTML = ''
         bfCreateNewDatasetBtn.disabled = false
     }
@@ -737,11 +889,12 @@ function userError(error)
   return myerror
 }
 
-function updateBfAccountList(){
+function updateBfAccountList(bfAccountList){
   client.invoke("api_bf_account_list", (error, res) => {
   if(error) {
     console.error(error)
   } else {
+    console.log('invoked')
     for (myitem in res){
       var myitemselect = res[myitem]
       var option = document.createElement("option")
@@ -774,8 +927,9 @@ function enableform(formId) {
      f[i].disabled=false
 }
 
-function refreshBfDatasetList(bfdstlist){
+function refreshBfDatasetList(bfdstlist, bfAccountList){
   removeOptions(bfdstlist)
+  console.log('inside refreshBfDatasetList')
   var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
   if (accountSelected === "Select"){
     var optionSelect = document.createElement("option")
@@ -881,7 +1035,17 @@ function showAccountDetails(){
     if(error) {
       console.error(error)
     } else {
-      document.getElementById("para-select-account-status").innerHTML = res;
+      bfSelectAccountStatus.innerHTML = res;
+    }
+  })
+}
+
+function showUploadAccountDetails(bfSelectAccountStatus){
+  client.invoke("api_bf_account_details", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
+    if(error) {
+      console.error(error)
+    } else {
+      bfUploadSelectAccountStatus.innerHTML = res;
     }
   })
 }
