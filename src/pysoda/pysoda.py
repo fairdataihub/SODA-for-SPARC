@@ -452,13 +452,14 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     curateprogress = ' '
     curatestatus = ''
     curateprintstatus = ' '
+    error, c = '', 0
     total_dataset_size = 0
     curated_dataset_size = 0
 
-    if sourcedataset == 'already organized':
-        if not isdir(pathdataset):
-            curatestatus = 'Done'
-            raise Exception('Error: Please select a valid dataset folder')
+    # if sourcedataset == 'already organized':
+    #     if not isdir(pathdataset):
+    #         curatestatus = 'Done'
+    #         raise Exception('Error: Please select a valid dataset folder')
 
     if destinationdataset == 'create new':
         if not isdir(pathdataset):
@@ -639,6 +640,106 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             raise e
     
     # UPLOAD TO BLACKFYNN
+
+    elif destinationdataset == 'upload to blackfynn':
+        error, c = '', 0
+        accountname = pathdataset
+        bfdataset = newdatasetname
+        try:
+            bf = Blackfynn(accountname)
+        except Exception as e:
+            curatestatus = 'Done'
+            error = error + 'Error: Please select a valid Blackfynn account\n'
+            c += 1
+
+        try:
+            myds = bf.get_dataset(bfdataset)
+        except Exception as e:
+            curatestatus = 'Done'
+            error = error + 'Error: Please select a valid Blackfynn dataset\n'
+            c += 1
+
+        # if not isdir(pathdataset):
+        #     submitdatastatus = 'Done'
+        #     error = error + 'Error: Please select a valid local dataset folder' + '<br>'
+        #     c += 1
+        if c>0:
+            raise Exception(error)
+
+        try:
+            def calluploaddirectly():
+                global curateprogress
+                global curatestatus
+                curateprogress = "Started uploading to dataset %s" %(bfdataset)
+                # return submitdataprogress
+                myds = bf.get_dataset(bfdataset)
+                myfolder = myds.name
+                for folder in jsonpath.keys():
+                    if jsonpath[folder] != []:
+                        if folder != 'main':
+                            mybffolder = myds.create_collection(folder)
+                        else:
+                            mybffolder = myds
+                        for mypath in jsonpath[folder]:
+                            if isdir(mypath):
+                                temp_bffolder = mybffolder
+                                mybffolder = mybffolder.create_collection(basename(mypath))
+                                curateprogress = str(mypath)
+                                directly_upload_structured_file(mybffolder, mypath, folder)
+                                mybffolder = temp_bffolder
+                            else:
+                                curateprogress = str(mypath)
+                                directly_upload_structured_file(mybffolder, mypath, folder)
+
+
+                curateprogress = "Success: dataset and associated files have been uploaded"
+                curatestatus = 'Done'
+
+            curateprintstatus = 'Curating'
+            t = threading.Thread(target=calluploaddirectly)
+            t.start()
+        except Exception as e:
+            curatestatus = 'Done'
+            raise e
+
+def directly_upload_structured_file(myds, mypath, myfolder):
+    """
+    Helper function to upload given folder to Blackfynn dataset in the original folder structure
+
+    Input:
+        myds: Dataset name on Blackfynn
+        mypath: Path of the organized dataset on local machine
+        myfolder: Current folder inside the path
+    Action:
+        Uploads the folder to Blackfynn
+    """
+    global curateprogress
+    global curated_dataset_size
+    global total_dataset_size
+
+    try:
+        mypath = join(mypath)
+        if isdir(mypath):
+            for f in listdir(mypath):
+                if isfile(join(mypath, f)):
+                    curateprogress =  "Uploading " + f
+                    filepath = join(mypath, f)
+                    curateprogress = curateprogress + ',' + 'Progress: ' + str((curated_size/total_dataset_size)*100) + '%'
+                    myds.upload(filepath, use_agent=False)
+                    curated_dataset_size += getsize(filepath)
+                else:
+                    mybffolder = myds.create_collection(f)
+                    myfolderpath = join(mypath, f)
+                    directly_upload_structured_file(mybffolder, myfolderpath, f)
+        else:
+            curateprogress = "Uploading " + str(mypath)
+            curateprogress = curateprogress + ',' + 'Progress: ' + str(curated_size/total_dataset_size) + '%'
+            myds.upload(mypath, use_agent=False)
+            curated_dataset_size += getsize(mypath)
+
+    except Exception as e:
+        curatestatus = 'Done'
+        raise e
 
 
 def curate_dataset_progress():
@@ -918,8 +1019,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     except Exception as e:
         submitdatastatus = 'Done'
         raise e
-
-
+        
+        
 def submit_dataset_progress():
     """
     Creates global variables to help keep track of the dataset submission progress
