@@ -7,7 +7,7 @@ const path = require('path')
 const {ipcRenderer} = require('electron')
 
 // Connect to python server and check
-let client = new zerorpc.Client({ timeout: 300000 })
+let client = new zerorpc.Client({ timeout: 300000})
 
 client.connect("tcp://127.0.0.1:4242")
 
@@ -149,6 +149,7 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 
 // Add existing bf account(s) to dropdown list
 bfAccountCheckBtn.addEventListener('click', (event) => {
+  document.getElementById("para-select-account-status").innerHTML = "Wait..."
   removeOptions(bfAccountList)
   updateBfAccountList()
 })
@@ -482,9 +483,6 @@ curateDatasetBtn.addEventListener('click', () => {
     if (error) {
       var emessage = userError(error)
       progressInfo.style.color = redColor
-      if (emessage !== 'Lost remote after 10000ms') {
-        progressInfo.value = emessage
-      }
       // document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       // progressBarCurate.style.width = 0 + "%";
       err = true
@@ -498,9 +496,8 @@ curateDatasetBtn.addEventListener('click', () => {
     }
   })
 
-  var timerProgress = setInterval(progressfunction, 250)
+  var timerProgress = setInterval(progressfunction, 1000)
   function progressfunction(){
-  // document.getElementById("para-curate-progress-bar-status").innerHTML = "Generating files and folders ...."
     client.invoke("api_curate_dataset_progress", (error, res) => {
       if (error) {
         console.log('error')
@@ -520,12 +517,7 @@ curateDatasetBtn.addEventListener('click', () => {
     })
     console.log('Completion status:', completionstatus)
     if (completionstatus === 'Done'){
-      console.log(err)
-      // if (!err) {
-      //   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
-      //   document.getElementById("para-curate-progress-bar-status").innerHTML = "Dataset Generated !"
-      //   progressBarCurate.style.width = 100 + "%";
-      // }
+      console.log('Done')
       clearInterval(timerProgress)
       curateDatasetBtn.disabled = false
       enableform(curationForm)
@@ -562,6 +554,7 @@ bfAddAccountBtn.addEventListener('click', () => {
 
 // Select bf account from dropdownlist and show existing dataset
 bfAccountList.addEventListener('change', () => {
+  document.getElementById("para-select-account-status").innerHTML = "Wait..."
   refreshBfDatasetList(bfDatasetList)
   refreshBfDatasetList(bfDatasetListPermission)
   currentDatasetPermission.innerHTML = ''
@@ -748,6 +741,7 @@ function updateBfAccountList(){
       option.textContent = myitemselect
       option.value = myitemselect
       bfAccountList.appendChild(option)
+      document.getElementById("para-select-account-status").innerHTML = ""
     }
   }
 })

@@ -7,7 +7,7 @@ from os import listdir, stat, makedirs, mkdir, walk
 from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname, getsize
 import pandas as pd
 from time import strftime, localtime
-from shutil import copy2
+from shutil import copy2, copy, copyfile
 from blackfynn import Blackfynn
 from configparser import ConfigParser
 import threading
@@ -24,8 +24,8 @@ import gevent
 curateprogress = ' '
 curatestatus = ' '
 curateprintstatus = ' '
-total_curate_size = 0
-curated_size = 0
+total_dataset_size = 0
+curated_dataset_size = 0
 
 userpath = expanduser("~")
 configpath = join(userpath, '.blackfynn', 'config.ini')
@@ -63,7 +63,7 @@ def folder_size(path):
     Args:
             path: path of the folder 
     Returns:
-            Total size of the folder in bytes (integer)
+            total_siz: Total size of the folder in bytes (integer)
     """
     total_size = 0
     start_path = '.'  # To get size of current directory
@@ -72,6 +72,7 @@ def folder_size(path):
             fp = join(path, f)
             total_size += getsize(fp)
     return total_size
+
 
 def path_size(path):
     """
@@ -94,8 +95,6 @@ def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
     Action:
         Creates manifest files in Excel format
     """
-    # Get the names of all the subfolder in the dataset
-
     try:
         folders = list(jsonpath.keys())
         if 'main' in folders:
@@ -162,7 +161,7 @@ def check_forbidden_characters(my_string):
         False: no forbidden character
         True: presence of forbidden character(s)
     """
-    regex = re.compile('[@!#$%^&*()<>?/\|}{~:]')
+    regex = re.compile('[@!#$%^&*()<>?/\|}{~:],')
     if(regex.search(my_string) == None):
         return False
     else:
@@ -188,28 +187,42 @@ def return_new_path(topath):
         return topath
 
 
-def copytree(src, dst, symlinks=False, ignore=None):
-    """
-    Preserves the original folder structure by creating corresponding folders in destination path
+def copy_progress(copied, total):
+    100*copied/total
+   
 
-    Input:
-        src: Path of the source folder
-        dst: Path of the destination folder
-    Action:
-        Creates folders in the original folder structure
+def mycopyfileobj(fsrc, fdst, src, callback, total, length=16*1024):
+    global curateprogress
+    global total_dataset_size
+    global curated_dataset_size
+    while True:
+        buf = fsrc.read(length)
+        if not buf:
+            break
+        gevent.sleep(0)
+        fdst.write(buf)
+        curated_dataset_size += len(buf)
+        curateprogress = 'Copying ' + str(src) + ','
+        curateprogress += 'Progress: ' + str(curated_dataset_size/total_dataset_size*100) + '%'  
+
+
+def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     """
-    global curated_size
-    if not exists(dst):
-        makedirs(dst)
-    for item in listdir(src):
-        s = join(src, item)
-        d = join(dst, item)
-        if isdir(s):
-            copytree(s, d, symlinks, ignore)
-        else:
-            if not exists(d) or stat(s).st_mtime - stat(d).st_mtime > 1:
-                copy2(s, d)
-                curated_size += path_size(s)
+    Copy file src to dst with metadata (timestamp, permission, etc.) conserved
+
+    If follow_symlinks is not set and src is a symbolic link, a new
+    symlink will be created instead of copying the file it points to.
+
+    """
+    if not follow_symlinks and os.path.islink(src):
+        os.symlink(os.readlink(src), dst)
+    else:
+        size = os.stat(src).st_size
+        with open(src, 'rb') as fsrc:
+            with open(dst, 'wb') as fdst:
+                mycopyfileobj(fsrc, fdst, src, callback=copy_progress, total=size)
+    shutil.copystat(src, dst)
+    return dst
 
 
 ### SPARC dataset organizer
@@ -369,7 +382,7 @@ def delete_preview_file_organization():
 ### SPARC generate dataset
 def create_dataset(jsonpath, pathdataset):
     """
-    Associated with 'Create new dataset locally' button
+    Associated with 'Create new dataset locally' 
     Creates folders and files from paths specified in json object TO the destination path specified
 
     Input:
@@ -378,32 +391,49 @@ def create_dataset(jsonpath, pathdataset):
     Action:
         Creates the folders and files specified
     """
-
-    global curated_size
     try:
         mydict = jsonpath
-        userpath = expanduser("~")
-        preview_path = pathdataset
         folderrequired = []
 
+        #create SPARC folder structure
         for i in mydict.keys():
             if mydict[i] != []:
                 folderrequired.append(i)
                 if i != 'main':
-                    makedirs(join(preview_path, i))
+                    makedirs(join(pathdataset, i))
 
+        # create all subfolders and generate a list of all files to copy
+        listallfiles = []
         for i in folderrequired:
-            for path in mydict[i]:
-                if (i == 'main'):
-                    folder_path = join(pathdataset)
+            if i == 'main':
+                outputpath = pathdataset
+            else:
+                outputpath = join(pathdataset, i)
+            for tablepath in mydict[i]:
+                if isdir(tablepath):
+                    foldername = basename(tablepath)
+                    outputpathdir = join(outputpath, foldername)
+                    if not os.path.isdir(outputpathdir):
+                        os.mkdir(outputpathdir)
+                    for dirpath, dirnames, filenames in os.walk(tablepath):
+                        distdir = os.path.join(outputpathdir, os.path.relpath(dirpath, tablepath))
+                        if not os.path.isdir(distdir):
+                            os.mkdir(distdir)
+                        for file in filenames:
+                            srcfile = os.path.join(dirpath, file)
+                            distfile = os.path.join(distdir, file)
+                            listallfiles.append([srcfile, distfile])
                 else:
-                    folder_path = join(pathdataset, i)
-                if isfile(path):
-                    copy2(path, folder_path)
-                    curated_size += path_size(path)
-                elif isdir(path):
-                    foldername = basename(path)
-                    copytree(path, join(folder_path, foldername))
+                    srcfile = tablepath
+                    file = basename(tablepath)
+                    distfile= os.path.join(outputpath, file)
+                    listallfiles.append([srcfile, distfile])
+
+        for fileinfo in listallfiles:
+            srcfile = fileinfo[0]
+            distfile = fileinfo[1]
+            mycopyfile_with_metadata(srcfile, distfile)
+
     except Exception as e:
         raise e
 
@@ -416,17 +446,19 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     Associated with 'Generate' button in the 'Generate dataset' section
     Checks validity of files / paths / folders and then generates the files and folders as requested along with progress status
     """
+
+    global curatestatus #set to 'Done' when completed or error to stop progress tracking from front-end
     global curateprogress
-    global curatestatus
+    
     global curateprintstatus
-    global total_curate_size
-    global curated_size
+    global total_dataset_size
+    global curated_dataset_size
     curateprogress = ' '
     curatestatus = ''
     curateprintstatus = ' '
     error, c = '', 0
-    total_curate_size = 0
-    curated_size = 0
+    total_dataset_size = 0
+    curated_dataset_size = 0
 
     if sourcedataset == 'already organized':
         if not isdir(pathdataset):
@@ -493,7 +525,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         if jsonpath[folders] != []:
             for path in jsonpath[folders]:
                 if exists(path):
-                    total_curate_size += path_size(path)
+                    total_dataset_size += path_size(path)
                 else:
                     c += 1
                     error = error + path + ' does not exist <br>'
@@ -527,48 +559,42 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             curatestatus = 'Done'
             raise Exception(error)
 
-        # In case of no errors, code-block below will execute which will start the data generation process
+        # If no errors, code-block below will execute which will start the data generation process
         else:
             try:
+
+                open_file(pathdataset)
+
                 curateprogress = 'Started'
                 curateprintstatus = 'Curating'
 
-                curateprogress = curateprogress + ', ,' + "New dataset not requested"
+                curateprogress = "New dataset not requested"
 
                 if manifeststatus:
                     create_manifest_with_description(pathdataset, jsonpath, jsondescription)
-                    curateprogress = curateprogress + ', ,' + 'Manifest created'
-                else:
-                    curateprogress = curateprogress + ', ,' + 'Manifest not requested'
+                    curateprogress = 'Manifest created'
 
                 if submissionstatus:
-                    copy2(pathsubmission, pathdataset)
-                    curateprogress = curateprogress + ', ,' + 'Submission file created'
-                else:
-                    curateprogress = curateprogress + ', ,' + 'Submission file not requested'
+                    copy(pathsubmission, pathdataset)
+                    curateprogress = 'Submission file created'
 
                 if datasetdescriptionstatus:
-                    copy2(pathdescription, pathdataset)
-                    curateprogress = curateprogress + ', ,' + 'Dataset description file created'
-                else:
-                    curateprogress = curateprogress + ', ,' + 'Dataset description file not requested'
+                    copy(pathdescription, pathdataset)
+                    curateprogress = 'Dataset description file created'
 
                 if subjectsstatus:
-                    copy2(pathsubjects, pathdataset)
-                    curateprogress = curateprogress + ', ,' + 'Subjects file created'
-                else:
-                    curateprogress = curateprogress + ', ,' + 'Subjects file not requested'
+                    copy(pathsubjects, pathdataset)
+                    curateprogress = 'Subjects file created'
 
                 if samplesstatus:
-                    copy2(pathsamples, pathdataset)
-                    curateprogress = curateprogress + ', ,' + 'Samples file created'
-                else:
-                    curateprogress = curateprogress + ', ,' + 'Samples file not requested'
+                    copy(pathsamples, pathdataset)
+                    curateprogress = 'Samples file created'
 
-                curateprogress = curateprogress + ', ,' + 'Success: COMPLETED!'
-                curated_size += total_curate_size
+                curateprogress = 'Success: COMPLETED!'
+                
                 curatestatus = 'Done'
-                open_file(pathdataset)
+
+                #curated_dataset_size += total_dataset_size
 
             except Exception as e:
                 curatestatus = 'Done'
@@ -580,51 +606,43 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         except Exception as e:
             curatestatus = 'Done'
             raise e
+
         try:
             pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
             open_file(pathnewdatasetfolder)
             curateprogress = 'Started'
+
             curateprintstatus = 'Curating'
 
             pathdataset = pathnewdatasetfolder
             mkdir(pathdataset)
 
-            t = threading.Thread(target=create_dataset(jsonpath, pathdataset))
-            t.start()
+            create_dataset(jsonpath, pathdataset)
 
-            curateprogress = curateprogress + ', ,' + 'New dataset created'
+            curateprogress = 'New dataset created'
 
             if manifeststatus:
                 create_manifest_with_description(pathdataset, jsonpath, jsondescription)
-                curateprogress = curateprogress + ', ,' + 'Manifest created'
-            else:
-                curateprogress = curateprogress + ', ,' + 'Manifest not requested'
+                curateprogress = 'Manifest created'
 
             if submissionstatus:
                 copy2(pathsubmission, pathdataset)
-                curateprogress = curateprogress + ', ,' + 'Submission file created'
-            else:
-                curateprogress = curateprogress + ', ,' + 'Submission file not requested'
+                curateprogress = 'Submission file created'
 
             if datasetdescriptionstatus:
                 copy2(pathdescription, pathdataset)
-                curateprogress = curateprogress + ', ,' + 'Dataset description file created'
-            else:
-                curateprogress = curateprogress + ', ,' + 'Dataset description file not requested'
+                curateprogress = 'Dataset description file created'
 
             if subjectsstatus:
                 copy2(pathsubjects, pathdataset)
-                curateprogress = curateprogress + ', ,' + 'Subjects file created'
-            else:
-                curateprogress = curateprogress + ', ,' + 'Subjects file not requested'
+                curateprogress = 'Subjects file created'
 
             if samplesstatus:
                 copy2(pathsamples, pathdataset)
-                curateprogress = curateprogress + ', ,' + 'Samples file created'
-            else:
-                curateprogress = curateprogress + ', ,' + 'Samples file not requested'
+                curateprogress = 'Samples file created'
 
-            curateprogress = curateprogress + ', ,' + 'Success: COMPLETED!'
+            curateprogress = 'Success: COMPLETED!'
+
             curatestatus = 'Done'
 
         except Exception as e:
@@ -639,9 +657,9 @@ def curate_dataset_progress():
     global curateprogress
     global curatestatus
     global curateprintstatus
-    global total_curate_size
-    global curated_size
-    return (curateprogress, curatestatus, curateprintstatus, total_curate_size, curated_size)
+    global total_dataset_size
+    global curated_dataset_size
+    return (curateprogress, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size)
 
 
 ### SODA Blackfynn interface
@@ -783,6 +801,10 @@ def bf_new_dataset_folder(datasetname, accountname):
     try:
         error, c = '', 0
         datasetname = datasetname.strip()
+
+        if check_forbidden_characters(datasetname):
+            error = error + 'Error: Please enter valid dataset folder name' + '\n'
+            c += 1
 
         if (not datasetname):
             error = error + 'Error: Please enter valid dataset folder name' + '\n'
