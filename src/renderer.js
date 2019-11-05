@@ -34,12 +34,12 @@ let tableNotOrganizedCount = 0
 const alreadyOrganizedStatus = document.querySelector('#preorganized-dataset')
 const organizeDatasetStatus = document.querySelector('#organize-dataset')
 const clearTableBtn = document.getElementById('button-clear-table')
-// Curate dataset
 const selectSaveFileOrganizationBtn = document.getElementById('button-select-save-file-organization')
 const selectPreviewBtn = document.getElementById('button-preview-file-organization')
 const deletePreviewBtn = document.getElementById('button-delete-preview-organization-status')
 const selectImportFileOrganizationBtn = document.getElementById('button-select-upload-file-organization')
 
+// Generate dataset
 const createNewStatus = document.querySelector('#create-newdataset')
 const modifyExistingStatus = document.querySelector('#existing-dataset')
 const bfDirectlyStatus = document.querySelector('#cloud-dataset')
@@ -109,12 +109,18 @@ const bfListRolesTeam = document.querySelector('#bf_list_roles_team')
 const bfAddPermissionTeamBtn = document.getElementById('button-add-permission-team')
 const datasetPermissionStatusTeam = document.querySelector('#para-dataset-permission-status-team')
 
+
 //////////////////////////////////
 // Constant parameters
 //////////////////////////////////
 const blackColor = '#000000'
 const redColor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivatives", "docs", "primary", "protocol", "sourcedata"]
+
+
+//////////////////////////////////
+// Operations on JavaScript end only
+//////////////////////////////////
 
 // Button selection to move on to next step
 document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
@@ -141,22 +147,6 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
     document.getElementById('button-generate-dataset-demo-toggle').click()
   }
 })
-
-//////////////////////////////////
-// Defaults action (at start on the program)
-//////////////////////////////////
-
-
-// Add existing bf account(s) to dropdown list
-bfAccountCheckBtn.addEventListener('click', (event) => {
-  document.getElementById("para-select-account-status").innerHTML = "Wait..."
-  removeOptions(bfAccountList)
-  updateBfAccountList()
-})
-//////////////////////////////////
-// Operations on JavaScript end only
-//////////////////////////////////
-
 
 // Select organized dataset folder and populate table
 selectDatasetBtn.addEventListener('click', (event) => {
@@ -340,7 +330,7 @@ selectPreviewBtn.addEventListener('click', () => {
         document.getElementById("para-preview-organization-status").innerHTML = "Loading Preview folder...";
         console.log(res)
         console.log("Done")
-        document.getElementById("para-preview-organization-status").innerHTML = "Preview folder available in a new window";
+        document.getElementById("para-preview-organization-status").innerHTML = "Preview folder available in a new file explorer window";
       }
   })
 })
@@ -520,7 +510,15 @@ curateDatasetBtn.addEventListener('click', () => {
 })
 
 // // // // // // // // // //
+//MANAGE AND SUBMIT
 // // // // // // // // // //
+
+// Add existing bf account(s) to dropdown list
+bfAccountCheckBtn.addEventListener('click', (event) => {
+  document.getElementById("para-select-account-status").innerHTML = "Wait..."
+  removeOptions(bfAccountList)
+  updateBfAccountList()
+})
 
 // Add bf account
 bfAddAccountBtn.addEventListener('click', () => {
@@ -595,7 +593,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
   })
 })
 
-
+// Submit dataset to bf
 bfSubmitDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-progress-bar-error-status").innerHTML = ""
   document.getElementById("para-progress-bar-status").innerHTML = ""
@@ -714,54 +712,6 @@ bfAddPermissionTeamBtn.addEventListener('click', () => {
   })
 })
 
-// // // // // // // // // //
-// Functions: Organize dataset
-// // // // // // // // // //
-
-function userError(error)
-{
-  var myerror = error.message
-  return myerror
-}
-
-function updateBfAccountList(){
-  client.invoke("api_bf_account_list", (error, res) => {
-  if(error) {
-    console.error(error)
-  } else {
-    for (myitem in res){
-      var myitemselect = res[myitem]
-      var option = document.createElement("option")
-      option.textContent = myitemselect
-      option.value = myitemselect
-      bfAccountList.appendChild(option)
-      document.getElementById("para-select-account-status").innerHTML = ""
-    }
-  }
-})
-}
-
-function removeOptions(selectbox)
-{
-    var i;
-    for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
-    {
-        selectbox.remove(i);
-    }
-}
-
-function disableform(formId) {
-  var f = formId.elements;
-  for (var i=0;i<f.length;i++)
-     f[i].disabled=true
-  }
-
-function enableform(formId) {
-  var f = formId.elements;
-  for (var i=0;i<f.length;i++)
-     f[i].disabled=false
-}
-
 function refreshBfDatasetList(bfdstlist){
   removeOptions(bfdstlist)
   var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
@@ -874,8 +824,58 @@ function showAccountDetails(){
   })
 }
 
+
 // // // // // // // // // //
-// Functions: Organize dataset
+// Helper Functions
+// // // // // // // // // //
+
+function userError(error)
+{
+  var myerror = error.message
+  return myerror
+}
+
+function updateBfAccountList(){
+  client.invoke("api_bf_account_list", (error, res) => {
+  if(error) {
+    console.error(error)
+  } else {
+    for (myitem in res){
+      var myitemselect = res[myitem]
+      var option = document.createElement("option")
+      option.textContent = myitemselect
+      option.value = myitemselect
+      bfAccountList.appendChild(option)
+      document.getElementById("para-select-account-status").innerHTML = ""
+    }
+  }
+})
+}
+
+function removeOptions(selectbox)
+{
+    var i;
+    for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
+    {
+        selectbox.remove(i);
+    }
+}
+
+function disableform(formId) {
+  var f = formId.elements;
+  for (var i=0;i<f.length;i++)
+     f[i].disabled=true
+  }
+
+function enableform(formId) {
+  var f = formId.elements;
+  for (var i=0;i<f.length;i++)
+     f[i].disabled=false
+}
+
+
+// // // // // // // // // //
+// Helper Functions: Organize dataset
 // // // // // // // // // //
 
 // Organized
@@ -911,9 +911,7 @@ function organizedFolderToJson(pathDatasetVal){
     var filepath = path.join(pathDatasetVal, filename)
     if (fs.lstatSync(filepath).isDirectory()){
       var filesInFolder = fs.readdirSync(filepath)
-      // console.log(filesInFolder)
       filesInFolder = filesInFolder.filter(item => !(/(^|\/)\.[^\/\.]/g).test(item));
-      // console.log(filesInFolder)
       var folderfiles = []
       for (var j = 0; j<filesInFolder.length; j++) {
         var fileNameInFolder = filesInFolder[j]
