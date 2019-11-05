@@ -114,7 +114,7 @@ const datasetPermissionStatusTeam = document.querySelector('#para-dataset-permis
 //////////////////////////////////
 const blackColor = '#000000'
 const redColor = '#ff1a1a'
-const sparcFolderNames = ["code", "derivatives", "docs", "protocol", "samples", "sourcedata", "subjects"]
+const sparcFolderNames = ["code", "derivatives", "docs", "primary", "protocol", "sourcedata"]
 
 // Button selection to move on to next step
 document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
@@ -232,6 +232,13 @@ holderDocs.addEventListener("drop", (event)=> {
    dropAddToTable(event, myID)
 })
 
+var holderPrimary = document.getElementById('primary')
+holderPrimary.addEventListener("drop", (event)=> {
+   event.preventDefault()
+   var myID = holderPrimary.id
+   dropAddToTable(event, myID)
+})
+
 var holderProtocol = document.getElementById('protocol')
 holderProtocol.addEventListener("drop", (event)=> {
    event.preventDefault()
@@ -239,24 +246,11 @@ holderProtocol.addEventListener("drop", (event)=> {
    dropAddToTable(event, myID)
 })
 
-var holderSamples = document.getElementById('samples')
-holderSamples.addEventListener("drop", (event)=> {
-   event.preventDefault()
-   var myID = holderSamples.id
-   dropAddToTable(event, myID)
-})
 
 var holderSourcedata = document.getElementById('sourcedata')
 holderSourcedata.addEventListener("drop", (event)=> {
    event.preventDefault()
    var myID = holderSourcedata.id
-   dropAddToTable(event, myID)
-})
-
-var holderSubjects = document.getElementById('subjects')
-holderSubjects.addEventListener("drop", (event)=> {
-   event.preventDefault()
-   var myID = holderSubjects.id
    dropAddToTable(event, myID)
 })
 
