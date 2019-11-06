@@ -209,6 +209,7 @@ ipcRenderer.on('warning-clear-table-selection', (event, index) => {
       pathDataset.innerHTML = ""
     } else if (organizeDatasetStatus.checked) {
       clearTable(tableNotOrganized)
+      clearStrings()
     }
   }
 })
@@ -306,11 +307,11 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
 // Action when user click on "Import" button
 selectImportFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-uploadorganization')
-  document.getElementById("para-upload-file-organization-status").innerHTML = ""
+    clearStrings()
 })
 ipcRenderer.on('selected-uploadorganization', (event, path) => {
   if (path.length > 0) {
-    document.getElementById("para-upload-file-organization-status").innerHTML = ""
+    clearStrings()
     var headerNames = sparcFolderNames.slice()
     headerNames.push("main")
     var lennames =  headerNames.length
@@ -943,6 +944,12 @@ function enableform(formId) {
   var f = formId.elements;
   for (var i=0;i<f.length;i++)
      f[i].disabled=false
+}
+
+function clearStrings() {
+  document.getElementById("para-preview-organization-status").innerHTML = ""
+  document.getElementById("para-save-file-organization-status").innerHTML = ""
+  document.getElementById("para-upload-file-organization-status").innerHTML = ""
 }
 
 
