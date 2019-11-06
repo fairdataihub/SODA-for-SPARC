@@ -537,10 +537,12 @@ curateDatasetBtn.addEventListener('click', () => {
 
 // Add existing bf account(s) to dropdown list
 bfAccountCheckBtn.addEventListener('click', (event) => {
+  bfSelectAccountStatus.innerHTML = "Wait..."
   removeOptions(bfAccountList)
   updateBfAccountList(bfAccountList, bfSelectAccountStatus)
 })
 bfUploadAccountCheckBtn.addEventListener('click', (event) => {
+  bfUploadSelectAccountStatus.innerHTML = "Wait..."
   removeOptions(bfUploadAccountList)
   updateBfAccountList(bfUploadAccountList, bfUploadSelectAccountStatus)
 })
@@ -844,7 +846,7 @@ function refreshBfTeamsList(teamList){
 
 
 function showCurrentPermission(){
-  currentDatasetPermission.innerHTML = ''
+  currentDatasetPermission.innerHTML = "Wait..."
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){

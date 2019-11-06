@@ -6,7 +6,9 @@ selectSubmissionBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-submission')
 })
 ipcRenderer.on('selected-submission', (event, path) => {
-  document.getElementById('selected-submission').value = path
+  if (path.length > 0) {
+    document.getElementById('selected-submission').value = path
+  }
 })
 
 const selectDescriptionBtn = document.getElementById('button-select-description')
@@ -14,7 +16,9 @@ selectDescriptionBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-description')
 })
 ipcRenderer.on('selected-description', (event, path) => {
-  document.getElementById('selected-description').value = path
+  if (path.length > 0) {
+      document.getElementById('selected-description').value = path
+  }
 })
 
 
@@ -23,7 +27,9 @@ selectSubjectsBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-subjects')
 })
 ipcRenderer.on('selected-subjects', (event, path) => {
-  document.getElementById('selected-subjects').value = path
+  if (path.length > 0) {
+    document.getElementById('selected-subjects').value = path
+  }
 })
 
 const selectSamplesBtn = document.getElementById('button-select-samples')
@@ -31,7 +37,9 @@ selectSamplesBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-samples')
 })
 ipcRenderer.on('selected-samples', (event, path) => {
-  document.getElementById('selected-samples').value = path
+  if (path.length > 0) {
+    document.getElementById('selected-samples').value = path
+  }
 })
 
 const selectnewDatasetBtn = document.getElementById('button-select-new-dataset')
