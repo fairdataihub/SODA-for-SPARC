@@ -111,12 +111,12 @@ def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
                 folderpath = join(datasetpath, folder)
                 allfiles = jsonpath[folder]
                 alldescription = jsondescription[folder + '_description']
-                manifestexists = join(folderpath, 'manifest.xlsx')
+                manifestexists = join(folderpath, 'manifest.csv')
 
                 countpath = -1
                 for pathname in allfiles:
                     countpath += 1
-                    if basename(pathname) == 'manifest.xlsx':
+                    if basename(pathname) == 'manifest.csv':
                         allfiles.pop(countpath)
                         alldescription.pop(countpath)
 
@@ -145,8 +145,8 @@ def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
                 df['description'] = filedescription
 
                 # Save manifest as Excel sheet
-                manifestfile = join(folderpath, 'manifest.xlsx')
-                df.to_excel(manifestfile, index=None, header=True)
+                manifestfile = join(folderpath, 'manifest.csv')
+                df.to_csv(manifestfile, index=None, header=True)
 
     except Exception as e:
         raise e
@@ -525,10 +525,10 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                     total_dataset_size += path_size(path)
                 else:
                     c += 1
-                    error = error + path + ' does not exist \n'
+                    error = error + path + ' does not exist <br>'
 
     if c > 0:
-        error = error + '\nPlease remove invalid paths'
+        error = error + '<br>Please remove invalid paths'
         curatestatus = 'Done'
         raise Exception(error)
 
@@ -536,7 +536,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     if destinationdataset == 'modify existing':
         error, c = '', 0
         namefiles = [f for f in listdir(pathdataset) if isfile(join(pathdataset, f))]
-        if 'submission.xlsx' in namefiles and submissionstatus:
+        if ('submission.xlsx' in namefiles or 'submission.csv' in namefiles) and submissionstatus:
             error = error + 'submission file already present<br>'
             c += 1
         if 'dataset_description.xlsx' in namefiles and datasetdescriptionstatus:

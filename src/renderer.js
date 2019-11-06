@@ -76,7 +76,7 @@ var pathSamples
 
 const curateDatasetBtn = document.getElementById('button-curate-dataset')
 const bfUploadDatasetBtn = document.getElementById('button-upload-dataset')
-const progressInfo = document.querySelector('#progressinfo')
+// const progressInfo = document.querySelector('#progressinfo')
 
 // Manage and submit
 const keyName = document.querySelector('#bf-key-name')
@@ -154,6 +154,10 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
     document.getElementById('button-generate-dataset-demo-toggle').click()
   }
 })
+//
+// if (getComputedStyle(document.getElementById('div-curate-progress-bar-error-status'), null).display === 'block'){
+//   document.getElementById('button-specify-metadata-demo-toggle').click()
+// }
 
 //////////////////////////////////
 // Operations on JavaScript end only
@@ -366,14 +370,15 @@ deletePreviewBtn.addEventListener('click', () => {
 // // // // // // // // // //
 
 curateDatasetBtn.addEventListener('click', () => {
+  var radios = document.getElementsByName("newdataset");
+  for (var i=0, iLen=radios.length; i<iLen; i++) {
+    radios[i].disabled = true;
+  }
 
   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
-  document.getElementById("para-curate-progress-bar-status").innerHTML = ""
+  document.getElementById("para-curate-progress-bar-status").innerHTML = "Started generating files ..."
   progressBarCurate.style.width = 0 + "%";
   // Disable curate button to prevent multiple clicks
-  progressInfo.style.color = blackColor
-  progressInfo.value = ''
-  progressInfo.value = "Started generating files ..."
   curateDatasetBtn.disabled = true
   disableform(curationForm)
 
@@ -384,8 +389,10 @@ curateDatasetBtn.addEventListener('click', () => {
       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
       sourceDataset = 'already organized'
     } else {
-      progressInfo.style.color = redColor
-      progressInfo.value = 'Error: Select a valid dataset folder'
+      // progressInfo.style.color = redColor
+      // progressInfo.value = 'Error: Select a valid dataset folder'
+      var emessage = 'Error: Select a valid dataset folder'
+      document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       curateDatasetBtn.disabled = false
       enableform(curationForm)
       console.error('Error')
@@ -395,8 +402,10 @@ curateDatasetBtn.addEventListener('click', () => {
     var jsonvect = tableToJsonWithDescription(tableNotOrganized)
     sourceDataset = 'not organized'
   } else {
-  	progressInfo.style.color = redColor
-  	progressInfo.value = 'Error: Please select an option under "Organize dataset" '
+  	// progressInfo.style.color = redColor
+  	// progressInfo.value = 'Error: Please select an option under "Organize dataset" '
+    var emessage = 'Error: Please select an option under "Organize dataset" '
+    document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
     curateDatasetBtn.disabled = false
     enableform(curationForm)
   	return
@@ -419,7 +428,6 @@ curateDatasetBtn.addEventListener('click', () => {
     destinationDataset = 'upload to blackfynn'
     pathDatasetValue = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
     newDatasetNameVar = bfUploadDatasetList.options[bfUploadDatasetList.selectedIndex].text
-    console.log('generate')
     // pathDatasetValue = // name of account
     // newDatasetNameVar = // name of dataset
   }
@@ -431,7 +439,7 @@ curateDatasetBtn.addEventListener('click', () => {
     metadatafiles.push(pathSubmission)
   } else if (newSubmissionStatus.checked === true) {
     submissionStatus = true
-    pathSubmission = path.join(__dirname, 'file_templates', 'submission.xlsx')
+    pathSubmission = path.join(__dirname, 'file_templates', 'submission.csv')
     metadatafiles.push(pathSubmission)
   } else {
     submissionStatus = false
@@ -443,7 +451,7 @@ curateDatasetBtn.addEventListener('click', () => {
     metadatafiles.push(pathDescription)
   } else if (newDescriptionStatus.checked === true){
     descriptionStatus = true
-    pathDescription = path.join(__dirname, 'file_templates', 'dataset_description.xlsx')
+    pathDescription = path.join(__dirname, 'file_templates', 'dataset_description.csv')
     metadatafiles.push(pathDescription)
   } else {
     descriptionStatus = false
@@ -455,7 +463,7 @@ curateDatasetBtn.addEventListener('click', () => {
     metadatafiles.push(pathSubjects)
   } else if (newSubjectsStatus.checked === true){
     subjectsStatus = true
-    pathSubjects = path.join(__dirname, 'file_templates', 'subjects.xlsx')
+    pathSubjects = path.join(__dirname, 'file_templates', 'subjects.csv')
     metadatafiles.push(pathSubjects)
   } else {
     subjectsStatus = false
@@ -467,7 +475,7 @@ curateDatasetBtn.addEventListener('click', () => {
     metadatafiles.push(pathSamples)
   } else if (newSamplesStatus.checked === true){
     samplesStatus = true
-    pathSamples = path.join(__dirname, 'file_templates', 'samples.xlsx')
+    pathSamples = path.join(__dirname, 'file_templates', 'samples.csv')
     metadatafiles.push(pathSamples)
   } else {
    samplesStatus = false
@@ -485,7 +493,6 @@ curateDatasetBtn.addEventListener('click', () => {
     (error, res) => {
     if (error) {
       var emessage = userError(error)
-      progressInfo.style.color = redColor
       document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       progressBarCurate.style.width = 0 + "%";
       err = true
@@ -494,16 +501,17 @@ curateDatasetBtn.addEventListener('click', () => {
       enableform(curationForm)
     } else {
       console.log('Done', res)
-      curateDatasetBtn.disabled = false
-      enableform(curationForm)
     }
   })
 
   var timerProgress = setInterval(progressfunction, 1000)
   function progressfunction(){
+    curateDatasetBtn.disabled = true
+    disableform(curationForm)
     client.invoke("api_curate_dataset_progress", (error, res) => {
       if (error) {
-        document.getElementById("para-curate-progress-bar-error-status").innerHTML = error
+        var emessage = userError(error)
+        document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
         console.log('error')
         console.error(error)
       } else {
@@ -537,12 +545,12 @@ curateDatasetBtn.addEventListener('click', () => {
 
 // Add existing bf account(s) to dropdown list
 bfAccountCheckBtn.addEventListener('click', (event) => {
-  bfSelectAccountStatus.innerHTML = "Wait..."
+  bfSelectAccountStatus.innerHTML = "Please wait..."
   removeOptions(bfAccountList)
   updateBfAccountList(bfAccountList, bfSelectAccountStatus)
 })
 bfUploadAccountCheckBtn.addEventListener('click', (event) => {
-  bfUploadSelectAccountStatus.innerHTML = "Wait..."
+  bfUploadSelectAccountStatus.innerHTML = "Please wait..."
   removeOptions(bfUploadAccountList)
   updateBfAccountList(bfUploadAccountList, bfUploadSelectAccountStatus)
 })
@@ -573,7 +581,7 @@ bfAddAccountBtn.addEventListener('click', () => {
 
 // Select bf account from dropdownlist and show existing dataset
 bfAccountList.addEventListener('change', () => {
-  bfSelectAccountStatus.innerHTML = "Wait..."
+  bfSelectAccountStatus.innerHTML = "Please wait..."
   refreshBfDatasetList(bfDatasetList, bfAccountList)
   refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
   currentDatasetPermission.innerHTML = ''
@@ -589,7 +597,7 @@ bfAccountList.addEventListener('change', () => {
 })
 
 bfUploadAccountList.addEventListener('change', () => {
-  document.getElementById("para-upload-select-account-status").innerHTML = "Wait..."
+  document.getElementById("para-upload-select-account-status").innerHTML = "Please wait..."
   refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
   // refreshBfDatasetList(bfDatasetListPermission, bfUploadAccountList)
   // currentDatasetPermission.innerHTML = ''
@@ -846,7 +854,7 @@ function refreshBfTeamsList(teamList){
 
 
 function showCurrentPermission(){
-  currentDatasetPermission.innerHTML = "Wait..."
+  currentDatasetPermission.innerHTML = "Please wait..."
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){

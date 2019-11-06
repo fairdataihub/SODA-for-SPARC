@@ -416,7 +416,7 @@
           <h5> New dataset</h5>
           <form id = 'dataset-curate-form'>
             <div id = "div-existing-dataset">
-              <input id="existing-dataset" name="new-dataset" type="radio" class="with-style" />
+              <input id="existing-dataset" name="newdataset" type="radio" class="with-style" />
               <label id = "label-existing-dataset" for="existing-dataset" class=labelradio> Modify current dataset</label>
                 <div class="tooltipnew">( ? )
                   <span class="tooltiptext">This will add all changes to the current dataset folder.
@@ -427,14 +427,14 @@
                 </div>
             </div>
             <div>
-              <input id="create-newdataset" name="new-dataset" type="radio" class="with-style" />
+              <input id="create-newdataset" name="newdataset" type="radio" class="with-style" />
               <label for="create-newdataset" class=labelradio>Create new dataset locally</label>
                 <div class="tooltipnew">( ? )
                   <span class="tooltiptext">This option will create the dataset at the desired location locally with all requested files</span>
                 </div>
             </div>
             <div>
-              <input id="cloud-dataset" name="new-dataset" type="radio" class="with-style" />
+              <input id="cloud-dataset" name="newdataset" type="radio" class="with-style" />
               <label for="cloud-dataset" class="labelradio">Create new dataset directly on Blackfynn</label>
                 <div class="tooltipnew">( ? )
                   <span class="tooltiptext">This option will create the dataset with all requested files directly on your Blackfynn account</span>
@@ -512,10 +512,10 @@
             <p id='para-curate-progress-bar-status'> <p>
           </div>
 
-          <div id="div-progress-print" class="datasetsaveoption">
+          <!-- <div id="div-progress-print" class="datasetsaveoption">
             <h5> Progress </h5>
             <textarea id='progressinfo' class='outputprint' rows="25" readonly></textarea>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>
