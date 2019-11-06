@@ -367,15 +367,15 @@ deletePreviewBtn.addEventListener('click', () => {
 
 curateDatasetBtn.addEventListener('click', () => {
 
+  document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
+  document.getElementById("para-curate-progress-bar-status").innerHTML = ""
+  progressBarCurate.style.width = 0 + "%";
   // Disable curate button to prevent multiple clicks
   progressInfo.style.color = blackColor
   progressInfo.value = ''
   progressInfo.value = "Started generating files ..."
   curateDatasetBtn.disabled = true
   disableform(curationForm)
-  // document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
-  // document.getElementById("para-curate-progress-bar-status").innerHTML = ""
-  // progressBarCurate.style.width = 0 + "%";
 
   var sourceDataset = ''
   // Convert table content into json file for transferring to Python
@@ -486,8 +486,8 @@ curateDatasetBtn.addEventListener('click', () => {
     if (error) {
       var emessage = userError(error)
       progressInfo.style.color = redColor
-      // document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      // progressBarCurate.style.width = 0 + "%";
+      document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      progressBarCurate.style.width = 0 + "%";
       err = true
       console.error(error)
       curateDatasetBtn.disabled = false
@@ -503,6 +503,7 @@ curateDatasetBtn.addEventListener('click', () => {
   function progressfunction(){
     client.invoke("api_curate_dataset_progress", (error, res) => {
       if (error) {
+        document.getElementById("para-curate-progress-bar-error-status").innerHTML = error
         console.log('error')
         console.error(error)
       } else {
@@ -511,10 +512,11 @@ curateDatasetBtn.addEventListener('click', () => {
         var totalCurateSize = res[3]
         var curatedSize = res[4]
         var value = (curatedSize / totalCurateSize) * 100
-        // progressBarCurate.style.width = value + "%";
+        progressBarCurate.style.width = value + "%";
         console.log(value, totalCurateSize, curatedSize)
         if (printstatus === 'Curating') {
-          progressInfo.value = res[0].split(',').join('\n')
+          document.getElementById("para-curate-progress-bar-status").innerHTML = res[0]
+          // progressInfo.value = res[0].split(',').join('\n')
         }
       }
     })
@@ -536,11 +538,11 @@ curateDatasetBtn.addEventListener('click', () => {
 // Add existing bf account(s) to dropdown list
 bfAccountCheckBtn.addEventListener('click', (event) => {
   removeOptions(bfAccountList)
-  updateBfAccountList(bfAccountList)
+  updateBfAccountList(bfAccountList, bfSelectAccountStatus)
 })
 bfUploadAccountCheckBtn.addEventListener('click', (event) => {
   removeOptions(bfUploadAccountList)
-  updateBfAccountList(bfUploadAccountList)
+  updateBfAccountList(bfUploadAccountList, bfUploadSelectAccountStatus)
 })
 
 // Add bf account
@@ -557,7 +559,7 @@ bfAddAccountBtn.addEventListener('click', () => {
     } else {
         bfAddAccountInfo.value = res
         removeOptions(bfAccountList)
-        updateBfAccountList()
+        updateBfAccountList(bfAccountList, bfSelectAccountStatus)
         keyName.value = ''
         key.value = ''
         secret.value = ''
@@ -569,7 +571,7 @@ bfAddAccountBtn.addEventListener('click', () => {
 
 // Select bf account from dropdownlist and show existing dataset
 bfAccountList.addEventListener('change', () => {
-  document.getElementById("para-select-account-status").innerHTML = "Wait..."
+  bfSelectAccountStatus.innerHTML = "Wait..."
   refreshBfDatasetList(bfDatasetList, bfAccountList)
   refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
   currentDatasetPermission.innerHTML = ''
@@ -587,16 +589,16 @@ bfAccountList.addEventListener('change', () => {
 bfUploadAccountList.addEventListener('change', () => {
   document.getElementById("para-upload-select-account-status").innerHTML = "Wait..."
   refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
-  // refreshBfDatasetList(bfDatasetListPermission)
+  // refreshBfDatasetList(bfDatasetListPermission, bfUploadAccountList)
   // currentDatasetPermission.innerHTML = ''
   // refreshBfUsersList(bfListUsers)
   // refreshBfTeamsList(bfListTeams)
-  var selectedbfaccount = bfUploadAccountList.options[bfAccountList.selectedIndex].text
+  var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
 
   if (selectedbfaccount == 'Select') {
     document.getElementById("para-upload-select-account-status").innerHTML = "";
   } else {
-    showUploadAccountDetails(bfUploadSelectAccountStatus)
+    showUploadAccountDetails()
   }
 })
 
@@ -609,9 +611,9 @@ bfRefreshDatasetBtn.addEventListener('click', () => {
   console.log("refreshed")
 })
 bfUploadRefreshDatasetBtn.addEventListener('click', () => {
-  refreshBfDatasetList(bfDatasetList, bfUploadAccountList)
-  // refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
-  currentDatasetPermission.innerHTML = ''
+  refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
+  // refreshBfDatasetList(bfDatasetListPermission, bfUploadAccountList)
+  // currentDatasetPermission.innerHTML = ''
   console.log("refreshed")
 })
 
@@ -874,8 +876,8 @@ function showAccountDetails(){
   })
 }
 
-function showUploadAccountDetails(bfSelectAccountStatus){
-  client.invoke("api_bf_account_details", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
+function showUploadAccountDetails(){
+  client.invoke("api_bf_account_details", bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text, (error, res) => {
     if(error) {
       console.error(error)
     } else {
@@ -895,7 +897,7 @@ function userError(error)
   return myerror
 }
 
-function updateBfAccountList(){
+function updateBfAccountList(bfAccountList, bfSelectAccountStatus){
   client.invoke("api_bf_account_list", (error, res) => {
   if(error) {
     console.error(error)
@@ -906,7 +908,7 @@ function updateBfAccountList(){
       option.textContent = myitemselect
       option.value = myitemselect
       bfAccountList.appendChild(option)
-      document.getElementById("para-select-account-status").innerHTML = ""
+      bfSelectAccountStatus.innerHTML = ""
     }
   }
 })

@@ -199,7 +199,7 @@ def mycopyfileobj(fsrc, fdst, src, length=16*1024):
         fdst.write(buf)
         curated_dataset_size += len(buf)
         curateprogress = 'Copying ' + str(src) + ','
-        curateprogress += 'Progress: ' + str(curated_dataset_size/total_dataset_size*100) + '%'  
+        # curateprogress += 'Progress: ' + str(curated_dataset_size/total_dataset_size*100) + '%'
 
 
 def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
@@ -377,7 +377,7 @@ def delete_preview_file_organization():
 ### SPARC generate dataset
 def create_dataset(jsonpath, pathdataset):
     """
-    Associated with 'Create new dataset locally' 
+    Associated with 'Create new dataset locally'
     Creates folders and files from paths specified in json object TO the destination path specified
 
     Input:
@@ -448,7 +448,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     global curateprintstatus # If = "Curating" Progress messages are shown to user
     global total_dataset_size # total size of the dataset to be generated
     global curated_dataset_size # total size of the dataset generated (locally or on blackfynn) at a given time
-    
+
     curateprogress = ' '
     curatestatus = ''
     curateprintstatus = ' '
@@ -468,50 +468,50 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         if (check_forbidden_characters(newdatasetname) or not newdatasetname):
             curatestatus = 'Done'
             raise Exception('Error: Please enter a valid name for new dataset folder')
-    
+
     error, c = '', 0
     if submissionstatus:
         if not isfile(pathsubmission):
             curatestatus = 'Done'
-            error = error + 'Error: Select valid path for submission file\n'
+            error = error + 'Error: Select valid path for submission file<br>'
             c += 1
         # Adding check for correct file name
         elif splitext(basename(pathsubmission))[0] != 'submission':
             curatestatus = 'Done'
-            error = error + 'Error: Select valid name for submission file\n'
+            error = error + 'Error: Select valid name for submission file<br>'
             c += 1
 
     if datasetdescriptionstatus:
         if not isfile(pathdescription):
             curatestatus = 'Done'
-            error = error + 'Error: Select valid path for dataset description file\n'
+            error = error + 'Error: Select valid path for dataset description file<br>'
             c += 1
         # Adding check for correct file name
         elif splitext(basename(pathdescription))[0] != 'dataset_description':
             curatestatus = 'Done'
-            error = error + 'Error: Select valid name for dataset_description file\n'
+            error = error + 'Error: Select valid name for dataset_description file<br>'
             c += 1
 
     if subjectsstatus:
         if not isfile(pathsubjects):
             curatestatus = 'Done'
-            error = error + 'Error: Select valid path for subjects file\n'
+            error = error + 'Error: Select valid path for subjects file<br>'
             c += 1
         # Adding check for correct file name
         elif splitext(basename(pathsubjects))[0] != 'subjects':
             curatestatus = 'Done'
-            error = error + 'Error: Select valid name for subjects file\n'
+            error = error + 'Error: Select valid name for subjects file<br>'
             c += 1
 
     if samplesstatus:
         if not isfile(pathsamples):
             curatestatus = 'Done'
-            error = error + 'Error: Select valid path for samples file\n'
+            error = error + 'Error: Select valid path for samples file<br>'
             c += 1
         # Adding check for correct file name
         elif splitext(basename(pathsamples))[0] != 'samples':
             curatestatus = 'Done'
-            error = error + 'Error: Select valid name for samples file\n'
+            error = error + 'Error: Select valid name for samples file<br>'
             c += 1
     if c > 0:
         raise Exception(error)
@@ -537,20 +537,20 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         error, c = '', 0
         namefiles = [f for f in listdir(pathdataset) if isfile(join(pathdataset, f))]
         if 'submission.xlsx' in namefiles and submissionstatus:
-            error = error + 'submission file already present\n'
+            error = error + 'submission file already present<br>'
             c += 1
         if 'dataset_description.xlsx' in namefiles and datasetdescriptionstatus:
-            error = error + 'dataset_description file already present\n'
+            error = error + 'dataset_description file already present<br>'
             c += 1
         if  'samples.xlsx' in namefiles and samplesstatus:
-            error = error + 'samples file already present\n'
+            error = error + 'samples file already present<br>'
             c += 1
         if  'subjects.xlsx' in namefiles and subjectsstatus:
-            error = error + 'subjects file already present\n'
+            error = error + 'subjects file already present<br>'
             c += 1
 
         if c > 0:
-            error = error + '\nError: Either delete or select "None" in the SODA interface'
+            error = error + '<br>Error: Either delete or select "None" in the SODA interface'
             curatestatus = 'Done'
             raise Exception(error)
 
@@ -586,7 +586,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                     curateprogress = 'Samples file created'
 
                 curateprogress = 'Success: COMPLETED!'
-                
+
                 curatestatus = 'Done'
 
             except Exception as e:
@@ -638,7 +638,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         except Exception as e:
             curatestatus = 'Done'
             raise e
-    
+
     # UPLOAD TO BLACKFYNN
 
     elif destinationdataset == 'upload to blackfynn':
@@ -649,14 +649,14 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             bf = Blackfynn(accountname)
         except Exception as e:
             curatestatus = 'Done'
-            error = error + 'Error: Please select a valid Blackfynn account\n'
+            error = error + 'Error: Please select a valid Blackfynn account<br>'
             c += 1
 
         try:
             myds = bf.get_dataset(bfdataset)
         except Exception as e:
             curatestatus = 'Done'
-            error = error + 'Error: Please select a valid Blackfynn dataset\n'
+            error = error + 'Error: Please select a valid Blackfynn dataset<br>'
             c += 1
 
         # if not isdir(pathdataset):
@@ -724,7 +724,7 @@ def directly_upload_structured_file(myds, mypath, myfolder):
                 if isfile(join(mypath, f)):
                     curateprogress =  "Uploading " + f
                     filepath = join(mypath, f)
-                    curateprogress = curateprogress + ',' + 'Progress: ' + str((curated_size/total_dataset_size)*100) + '%'
+                    # curateprogress = curateprogress + ',' + 'Progress: ' + str((curated_dataset_size/total_dataset_size)*100) + '%'
                     myds.upload(filepath, use_agent=False)
                     curated_dataset_size += getsize(filepath)
                 else:
@@ -733,7 +733,7 @@ def directly_upload_structured_file(myds, mypath, myfolder):
                     directly_upload_structured_file(mybffolder, myfolderpath, f)
         else:
             curateprogress = "Uploading " + str(mypath)
-            curateprogress = curateprogress + ',' + 'Progress: ' + str(curated_size/total_dataset_size) + '%'
+            # curateprogress = curateprogress + ',' + 'Progress: ' + str(curated_dataset_size/total_dataset_size) + '%'
             myds.upload(mypath, use_agent=False)
             curated_dataset_size += getsize(mypath)
 
@@ -1019,8 +1019,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     except Exception as e:
         submitdatastatus = 'Done'
         raise e
-        
-        
+
+
 def submit_dataset_progress():
     """
     Creates global variables to help keep track of the dataset submission progress

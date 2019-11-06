@@ -2,7 +2,10 @@ function showModifyExisting(){
   document.getElementById('div-create-new').style.display ='none';
   document.getElementById('div-create-cloud').style.display ='none';
   document.getElementById('div-curate-button').style.display ='block';
-  document.getElementById('div-progress-print').style.display ='block';
+  document.getElementById('div-curate-progress-bar-error-status').style.display ='block';
+  document.getElementById('div-curate-meter-progress').style.display ='none';
+  document.getElementById('div-curate-progress-bar-status').style.display ='block';
+  document.getElementById('div-progress-print').style.display ='none';
   document.getElementById('progressinfo').value ='';
 }
 
@@ -10,7 +13,10 @@ function showCreateNew(){
   document.getElementById('div-create-new').style.display ='block';
   document.getElementById('div-create-cloud').style.display ='none';
   document.getElementById('div-curate-button').style.display ='block';
-  document.getElementById('div-progress-print').style.display ='block';
+  document.getElementById('div-curate-progress-bar-error-status').style.display ='block';
+  document.getElementById('div-curate-meter-progress').style.display ='block';
+  document.getElementById('div-curate-progress-bar-status').style.display ='block';
+  document.getElementById('div-progress-print').style.display ='none';
   document.getElementById('progressinfo').value ='';
 }
 
@@ -18,7 +24,10 @@ function showCreateCloud(){
   document.getElementById('div-create-new').style.display ='none';
   document.getElementById('div-create-cloud').style.display ='block';
     document.getElementById('div-curate-button').style.display ='block';
-  document.getElementById('div-progress-print').style.display ='block';
+    document.getElementById('div-curate-progress-bar-error-status').style.display ='block';
+    document.getElementById('div-curate-meter-progress').style.display ='block';
+    document.getElementById('div-curate-progress-bar-status').style.display ='block';
+    document.getElementById('div-progress-print').style.display ='none';
 }
 
 document.querySelector('#existing-dataset').addEventListener('click', () => {
