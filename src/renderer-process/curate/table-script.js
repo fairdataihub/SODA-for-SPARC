@@ -50,22 +50,25 @@ function delete_row(no){
 
 function dragEnter(event) {
     event.target.style.color = 'black';
+		event.target.style.backgroundColor = 'lightblue';
 }
 
 function dragLeave(event) {
     event.target.style.color = 'inherit';
+		event.target.style.backgroundColor = '';
 }
 
 function dragDone(event) {
     event.target.style.color = 'inherit';
+		event.target.style.backgroundColor = '';
 }
 
 document.getElementById("code_table").addEventListener("click", (event) => {
-	rowDisplay(event) 
+	rowDisplay(event)
 });
 
 document.getElementById("table-organized").addEventListener("click", (event) => {
-	rowDisplay(event) 
+	rowDisplay(event)
 });
 
 function rowDisplay(e) {
@@ -84,9 +87,9 @@ function nextTr(row) {
     return row;
 }
 
-function toggleIt(item){ 
+function toggleIt(item){
      if (/\bopen\b/.test(item.className))
          item.className = item.className.replace(/\bopen\b/," ");
      else
          item.className += " open";
-} 
+}

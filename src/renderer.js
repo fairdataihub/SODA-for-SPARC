@@ -1181,6 +1181,7 @@ function tableToJsonWithDescription(table){
 
 function dropAddToTable(e, myID){
   e.target.style.color = 'inherit';
+    e.target.style.backgroundColor = '';
 	var rowcount = document.getElementById(myID).rowIndex
 	var i = 0
   var jsonvar = tableToJson(tableNotOrganized)
