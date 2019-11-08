@@ -122,7 +122,7 @@ const datasetPermissionStatusTeam = document.querySelector('#para-dataset-permis
 //////////////////////////////////
 const blackColor = '#000000'
 const redColor = '#ff1a1a'
-const sparcFolderNames = ["code", "derivatives", "docs", "primary", "protocol", "sourcedata"]
+const sparcFolderNames = ["code", "derivatives", "docs", "primary", "protocol", "source"]
 
 
 //////////////////////////////////
@@ -252,10 +252,10 @@ holderProtocol.addEventListener("drop", (event)=> {
 })
 
 
-var holderSourcedata = document.getElementById('sourcedata')
-holderSourcedata.addEventListener("drop", (event)=> {
+var holderSource = document.getElementById('source')
+holderSource.addEventListener("drop", (event)=> {
    event.preventDefault()
-   var myID = holderSourcedata.id
+   var myID = holderSource.id
    dropAddToTable(event, myID)
 })
 
@@ -382,7 +382,6 @@ curateDatasetBtn.addEventListener('click', () => {
   // Disable curate button to prevent multiple clicks
   curateDatasetBtn.disabled = true
   disableform(curationForm)
-
   var sourceDataset = ''
   // Convert table content into json file for transferring to Python
   if (alreadyOrganizedStatus.checked) {
@@ -414,6 +413,7 @@ curateDatasetBtn.addEventListener('click', () => {
 
   var jsonpath = jsonvect[0]
   var jsondescription = jsonvect[1]
+  console.log(jsonpath)
 
   var destinationDataset = ''
   var pathDatasetValue = ''
