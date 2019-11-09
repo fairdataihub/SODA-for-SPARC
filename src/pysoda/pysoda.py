@@ -3,7 +3,7 @@
 # python module for Software for Organizing Data Automatically (SODA)
 import os
 import platform
-from os import listdir, stat, makedirs, mkdir, walk
+from os import listdir, stat, makedirs, mkdir, walk, remove
 from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname, getsize
 import pandas as pd
 from time import strftime, localtime
@@ -18,6 +18,7 @@ import collections
 import subprocess
 import shutil
 import re
+import time
 import gevent
 
 ### Global variables
@@ -26,6 +27,7 @@ curatestatus = ' '
 curateprintstatus = ' '
 total_dataset_size = 0
 curated_dataset_size = 0
+initial_bfdataset_size = 0
 
 userpath = expanduser("~")
 configpath = join(userpath, '.blackfynn', 'config.ini')
@@ -73,6 +75,19 @@ def folder_size(path):
             total_size += getsize(fp)
     return total_size
 
+def dataset_size_blackfynn():
+    """
+    Function to get storage size of a dataset on Blackfynn
+    """
+    global myds
+    global bf
+    try:
+        selected_dataset_id = myds.id
+        bf_response = bf._api._get('/datasets/' + str(selected_dataset_id))
+        return bf_response['storage'] if 'storage' in bf_response.keys() else 0
+    except Exception as e:
+        raise e
+
 
 def path_size(path):
     """
@@ -105,7 +120,7 @@ def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
 
                 # Initialize dataframe where manifest info will be stored
                 df = pd.DataFrame(columns=['filename', 'timestamp', 'description',
-                                        'file type', 'Additional Metadata…'])
+                                        'file type', 'Additional Metadata'])
                 # Get list of files/folders in the the folde#
                 # Remove manifest file from the list if already exists
                 folderpath = join(datasetpath, folder)
@@ -147,6 +162,81 @@ def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
                 # Save manifest as Excel sheet
                 manifestfile = join(folderpath, 'manifest.csv')
                 df.to_csv(manifestfile, index=None, header=True)
+
+    except Exception as e:
+        raise e
+
+
+def create_high_level_manifest(datasetpath, jsonpath, jsondescription):
+    """
+    Creates one manifest file containing details of all sub-files
+
+    Args:
+        datasetpath: destination path of the dataset
+        jsonpath: all paths in json format
+        jsondescription: description associated with each path
+    Action:
+        Creates manifest files in Excel format
+    """
+    try:
+        # Initialize dataframe where manifest info will be stored
+        df = pd.DataFrame(columns=['filename', 'timestamp', 'description',
+                                'file type', 'Additional Metadata'])
+        filename, timestamp, description, filetype = [], [], [], []
+
+        # path to the dataset folder
+        # paths = r'C:\\Users\\HSrivastava\\Desktop\\Review-documents\\example-dataset-organized\\primary'
+
+        for key in jsonpath.keys():
+            for paths in jsonpath[key]:
+                alldescription = jsondescription[key + '_description']
+                # loop through all folders and subfolders
+                if isdir(paths):
+                    alldescription.pop(0)
+                    for subdir, dirs, files in os.walk(paths):
+                        for file in files:
+                            filepath = join(paths,subdir,file) #full local file path
+                            lastmodtime = getmtime(filepath)
+                            timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
+                                                                  localtime(lastmodtime)))
+                            fullfilename = basename(filepath)
+                            if subdir == paths: # if file in main folder
+                                filename.append(splitext(fullfilename)[0])
+                            else:
+                                subdirname = os.path.relpath(subdir, paths) # gives relative path of the directory of the file w.r.t paths
+                                filename.append(join(key, subdirname, splitext(fullfilename)[0]))
+                            fileextension = splitext(fullfilename)[1]
+                            if not fileextension:  # if empty (happens e.g. with Readme files)
+                                fileextension = 'None'
+                            filetype.append(fileextension)
+                            description.append('')
+                else:
+                    lastmodtime = getmtime(paths)
+                    timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
+                                                                  localtime(lastmodtime)))
+
+                    fullfilename = basename(paths)
+                    filename.append(join(key, fullfilename)) if key != 'main' else filename.append(fullfilename)
+
+                    fileextension = splitext(fullfilename)[1]
+                    print(fileextension)
+                    if not fileextension:  # if empty (happens e.g. with Readme files)
+                        fileextension = 'None'
+                    filetype.append(fileextension)
+                    description.append(alldescription[0])
+                    alldescription.pop(0)
+
+
+        df['filename'] = filename
+        df['timestamp'] = timestamp
+        df['file type'] = filetype
+        df['description'] = description
+
+        # Save manifest as Excel sheet
+        manifestfile = join(datasetpath, 'manifest.csv')
+        df.to_csv(manifestfile, index=None, header=True)
+        jsonpath['main'].append(manifestfile)
+        return jsonpath
 
     except Exception as e:
         raise e
@@ -448,6 +538,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     global curateprintstatus # If = "Curating" Progress messages are shown to user
     global total_dataset_size # total size of the dataset to be generated
     global curated_dataset_size # total size of the dataset generated (locally or on blackfynn) at a given time
+    global start_time
 
     curateprogress = ' '
     curatestatus = ''
@@ -455,6 +546,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     error, c = '', 0
     total_dataset_size = 0
     curated_dataset_size = 0
+    start_time = 0
 
     # if sourcedataset == 'already organized':
     #     if not isdir(pathdataset):
@@ -646,6 +738,34 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         accountname = pathdataset
         bfdataset = newdatasetname
         try:
+            if manifeststatus:
+                jsonpath = create_high_level_manifest(userpath, jsonpath, jsondescription)
+                curateprogress = 'Manifest created'
+
+            if submissionstatus:
+                jsonpath['main'].append(pathsubmission)
+                # copy2(pathsubmission, pathdataset)
+                curateprogress = 'Submission file created'
+
+            if datasetdescriptionstatus:
+                jsonpath['main'].append(pathdescription)
+                # copy2(pathdescription, pathdataset)
+                curateprogress = 'Dataset description file created'
+
+            if subjectsstatus:
+                jsonpath['main'].append(pathsubjects)
+                # copy2(pathsubjects, pathdataset)
+                curateprogress = 'Subjects file created'
+
+            if samplesstatus:
+                jsonpath['main'].append(pathsamples)
+                # copy2(pathsamples, pathdataset)
+                curateprogress = 'Samples file created'
+
+        except Exception as e:
+            raise e
+
+        try:
             bf = Blackfynn(accountname)
         except Exception as e:
             curatestatus = 'Done'
@@ -694,8 +814,10 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
 
                 curateprogress = "Success: dataset and associated files have been uploaded"
                 curatestatus = 'Done'
+                remove(join(userpath, 'manifest.csv'))
 
             curateprintstatus = 'Curating'
+            start_time = time.time()
             t = threading.Thread(target=calluploaddirectly)
             t.start()
         except Exception as e:
@@ -751,7 +873,9 @@ def curate_dataset_progress():
     global curateprintstatus
     global total_dataset_size
     global curated_dataset_size
-    return (curateprogress, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size)
+    global start_time
+    elapsed_time = time.time() - start_time
+    return (curateprogress, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time)
 
 
 ### SODA Blackfynn interface
@@ -893,15 +1017,15 @@ def bf_new_dataset_folder(datasetname, accountname):
         datasetname = datasetname.strip()
 
         if check_forbidden_characters(datasetname):
-            error = error + 'Error: Please enter valid dataset folder name' + '\n'
+            error = error + 'Error: Please enter valid dataset name' + '\n'
             c += 1
 
         if (not datasetname):
-            error = error + 'Error: Please enter valid dataset folder name' + '\n'
+            error = error + 'Error: Please enter valid dataset name' + '\n'
             c += 1
 
         if (datasetname.isspace()):
-            error = error + 'Error: Please enter valid dataset folder name' + '\n'
+            error = error + 'Error: Please enter valid dataset name' + '\n'
             c += 1
 
         try:
@@ -917,7 +1041,7 @@ def bf_new_dataset_folder(datasetname, accountname):
         for ds in bf.datasets():
             dataset_list.append(ds.name)
         if datasetname in dataset_list:
-            raise Exception('Error: Dataset folder name already exists')
+            raise Exception('Error: Dataset name already exists')
         else:
             bf.create_dataset(datasetname)
 
@@ -972,6 +1096,9 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global total_file_size
     global uploaded_file_size
     global submitprintstatus
+    # global myds
+    # global bf
+    # global initial_bfdataset_size
     total_file_size = folder_size(pathdataset)
     submitdataprogress = ' '
     submitdatastatus = ' '
@@ -1004,10 +1131,12 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         def calluploadfolder():
             global submitdataprogress
             global submitdatastatus
+            # global initial_bfdataset_size
             submitdataprogress = "Started uploading to dataset %s \n" %(bfdataset)
             # return submitdataprogress
             myds = bf.get_dataset(bfdataset)
             myfolder = myds.name
+            # initial_bfdataset_size = dataset_size_blackfynn()
             mypath = pathdataset
             upload_structured_file(myds, mypath, myfolder)
             submitdataprogress = submitdataprogress + ', ,' + "Success: dataset and associated files have been uploaded"
@@ -1028,10 +1157,13 @@ def submit_dataset_progress():
     global submitdataprogress
     global submitdatastatus
     global submitprintstatus
+    # global myds
+    # global bf
+    # global initial_bfdataset_size
+    # uploaded_file_size = dataset_size_blackfynn() - initial_bfdataset_size
     global uploaded_file_size
     global total_file_size
     return (submitdataprogress, submitdatastatus, submitprintstatus, uploaded_file_size, total_file_size)
-
 
 
 def bf_get_users(selected_bfaccount):

@@ -492,6 +492,7 @@ curateDatasetBtn.addEventListener('click', () => {
     subjectsStatus, pathSubjects, samplesStatus, pathSamples, manifestStatus.checked,
     jsonpath, jsondescription,
     (error, res) => {
+    console.log(jsondescription)
     if (error) {
       var emessage = userError(error)
       document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
@@ -522,7 +523,7 @@ curateDatasetBtn.addEventListener('click', () => {
         var curatedSize = res[4]
         var value = (curatedSize / totalCurateSize) * 100
         progressBarCurate.style.width = value + "%";
-        console.log(value, totalCurateSize, curatedSize)
+        console.log(value, totalCurateSize, curatedSize, res[5])
         if (printstatus === 'Curating') {
           document.getElementById("para-curate-progress-bar-status").innerHTML = res[0]
           // progressInfo.value = res[0].split(',').join('\n')
