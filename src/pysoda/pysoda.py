@@ -75,6 +75,7 @@ def folder_size(path):
             total_size += getsize(fp)
     return total_size
 
+
 def dataset_size_blackfynn():
     """
     Function to get storage size of a dataset on Blackfynn
@@ -98,11 +99,9 @@ def path_size(path):
     else:
         return getsize(path)
 
-
 def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
     """
     Creates manifest files with the description specified
-
     Args:
         datasetpath: path of the dataset
         jsonpath: all paths in json format
@@ -178,54 +177,61 @@ def create_high_level_manifest(datasetpath, jsonpath, jsondescription):
     Action:
         Creates manifest files in Excel format
     """
+    global total_dataset_size
     try:
         # Initialize dataframe where manifest info will be stored
         df = pd.DataFrame(columns=['filename', 'timestamp', 'description',
                                 'file type', 'Additional Metadata'])
         filename, timestamp, description, filetype = [], [], [], []
 
-        # path to the dataset folder
-        # paths = r'C:\\Users\\HSrivastava\\Desktop\\Review-documents\\example-dataset-organized\\primary'
-
         for key in jsonpath.keys():
-            for paths in jsonpath[key]:
-                alldescription = jsondescription[key + '_description']
-                # loop through all folders and subfolders
-                if isdir(paths):
-                    alldescription.pop(0)
-                    for subdir, dirs, files in os.walk(paths):
-                        for file in files:
-                            filepath = join(paths,subdir,file) #full local file path
-                            lastmodtime = getmtime(filepath)
-                            timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
-                                                                  localtime(lastmodtime)))
-                            fullfilename = basename(filepath)
-                            if subdir == paths: # if file in main folder
-                                filename.append(splitext(fullfilename)[0])
-                            else:
-                                subdirname = os.path.relpath(subdir, paths) # gives relative path of the directory of the file w.r.t paths
-                                filename.append(join(key, subdirname, splitext(fullfilename)[0]))
-                            fileextension = splitext(fullfilename)[1]
-                            if not fileextension:  # if empty (happens e.g. with Readme files)
-                                fileextension = 'None'
-                            filetype.append(fileextension)
-                            description.append('')
-                else:
-                    lastmodtime = getmtime(paths)
-                    timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
-                                                                  localtime(lastmodtime)))
+            if jsonpath[key] != []:
+                for paths in jsonpath[key]:
+                    alldescription = jsondescription[key + '_description']
+                    folder = ''
+                    # loop through all folders and subfolders
+                    if isdir(paths):
+                        fullfilename = basename(paths)
+                        alldescription.pop(0)
+                        if key != 'main':
+                            folder = join(key, fullfilename)
+                        else:
+                            folder = fullfilename
 
-                    fullfilename = basename(paths)
-                    filename.append(join(key, fullfilename)) if key != 'main' else filename.append(fullfilename)
+                        for subdir, dirs, files in os.walk(paths):
+                            for file in files:
+                                filepath = join(paths,subdir,file) #full local file path
+                                lastmodtime = getmtime(filepath)
+                                timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
+                                                                      localtime(lastmodtime)))
+                                fullfilename = basename(filepath)
+                                if key == 'main': # if file in main folder
+                                    filename.append(splitext(fullfilename)[0]) if folder == '' else filename.append(join(folder, splitext(fullfilename)[0]))
+                                else:
+                                    subdirname = os.path.relpath(subdir, paths) # gives relative path of the directory of the file w.r.t paths
+                                    if subdirname == '.':
+                                        filename.append(join(folder, splitext(fullfilename)[0]))
+                                    else:
+                                        filename.append(join(folder, subdirname, splitext(fullfilename)[0]))
+                                    print(join(folder, subdirname, splitext(fullfilename)[0]))
+                                fileextension = splitext(fullfilename)[1]
+                                if not fileextension:  # if empty (happens e.g. with Readme files)
+                                    fileextension = 'None'
+                                filetype.append(fileextension)
+                                description.append('')
+                    else:
+                        lastmodtime = getmtime(paths)
+                        timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
+                                                                      localtime(lastmodtime)))
+                        fullfilename = basename(paths)
+                        filename.append(join(key, fullfilename)) if key != 'main' else filename.append(fullfilename)
 
-                    fileextension = splitext(fullfilename)[1]
-                    print(fileextension)
-                    if not fileextension:  # if empty (happens e.g. with Readme files)
-                        fileextension = 'None'
-                    filetype.append(fileextension)
-                    description.append(alldescription[0])
-                    alldescription.pop(0)
-
+                        fileextension = splitext(fullfilename)[1]
+                        if not fileextension:  # if empty (happens e.g. with Readme files)
+                            fileextension = 'None'
+                        filetype.append(fileextension)
+                        description.append(alldescription[0])
+                        alldescription.pop(0)
 
         df['filename'] = filename
         df['timestamp'] = timestamp
@@ -235,6 +241,7 @@ def create_high_level_manifest(datasetpath, jsonpath, jsondescription):
         # Save manifest as Excel sheet
         manifestfile = join(datasetpath, 'manifest.csv')
         df.to_csv(manifestfile, index=None, header=True)
+        total_dataset_size += path_size(manifestfile)
         jsonpath['main'].append(manifestfile)
         return jsonpath
 
@@ -631,13 +638,13 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         if ('submission.xlsx' in namefiles or 'submission.csv' in namefiles) and submissionstatus:
             error = error + 'submission file already present<br>'
             c += 1
-        if 'dataset_description.xlsx' in namefiles and datasetdescriptionstatus:
+        if ('dataset_description.xlsx' in namefiles or 'dataset_description.csv' in namefiles) and datasetdescriptionstatus:
             error = error + 'dataset_description file already present<br>'
             c += 1
-        if  'samples.xlsx' in namefiles and samplesstatus:
+        if  ('samples.xlsx' in namefiles or 'samples.csv' in namefiles) and samplesstatus:
             error = error + 'samples file already present<br>'
             c += 1
-        if  'subjects.xlsx' in namefiles and subjectsstatus:
+        if  ('subjects.xlsx' in namefiles or 'subjects.csv' in namefiles) and subjectsstatus:
             error = error + 'subjects file already present<br>'
             c += 1
 
@@ -649,16 +656,13 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         # If no errors, code-block below will execute which will start the data generation process
         else:
             try:
-
                 open_file(pathdataset)
-
                 curateprogress = 'Started'
                 curateprintstatus = 'Curating'
-
                 curateprogress = "New dataset not requested"
 
                 if manifeststatus:
-                    create_manifest_with_description(pathdataset, jsonpath, jsondescription)
+                    create_high_level_manifest(pathdataset, jsonpath, jsondescription)
                     curateprogress = 'Manifest created'
 
                 if submissionstatus:
@@ -678,7 +682,6 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                     curateprogress = 'Samples file created'
 
                 curateprogress = 'Success: COMPLETED!'
-
                 curatestatus = 'Done'
 
             except Exception as e:
@@ -688,7 +691,6 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     # CREATE NEW
     elif destinationdataset == 'create new':
         try:
-
             pathnewdatasetfolder = join(pathdataset, newdatasetname)
             pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
             open_file(pathnewdatasetfolder)
@@ -704,7 +706,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             curateprogress = 'New dataset created'
 
             if manifeststatus:
-                create_manifest_with_description(pathdataset, jsonpath, jsondescription)
+                create_high_level_manifest(pathdataset, jsonpath, jsondescription)
                 curateprogress = 'Manifest created'
 
             if submissionstatus:
@@ -744,22 +746,22 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
 
             if submissionstatus:
                 jsonpath['main'].append(pathsubmission)
-                # copy2(pathsubmission, pathdataset)
+                total_dataset_size += path_size(pathsubmission)
                 curateprogress = 'Submission file created'
 
             if datasetdescriptionstatus:
                 jsonpath['main'].append(pathdescription)
-                # copy2(pathdescription, pathdataset)
+                total_dataset_size += path_size(pathdescription)
                 curateprogress = 'Dataset description file created'
 
             if subjectsstatus:
                 jsonpath['main'].append(pathsubjects)
-                # copy2(pathsubjects, pathdataset)
+                total_dataset_size += path_size(pathsubjects)
                 curateprogress = 'Subjects file created'
 
             if samplesstatus:
                 jsonpath['main'].append(pathsamples)
-                # copy2(pathsamples, pathdataset)
+                total_dataset_size += path_size(pathsamples)
                 curateprogress = 'Samples file created'
 
         except Exception as e:

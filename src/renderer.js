@@ -285,7 +285,6 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
     }
     var jsonpath = jsonvect[0]
     var jsondescription = jsonvect[1]
-    console.log(jsonpath)
     document.getElementById("para-save-file-organization-status").innerHTML = ""
     // Call python to save
     if (path != null){
@@ -343,7 +342,6 @@ selectPreviewBtn.addEventListener('click', () => {
         document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
         document.getElementById("para-preview-organization-status").innerHTML = "Loading Preview folder...";
-        console.log(res)
         console.log("Done")
         document.getElementById("para-preview-organization-status").innerHTML = "Preview folder available in a new file explorer window";
       }
@@ -359,7 +357,6 @@ deletePreviewBtn.addEventListener('click', () => {
         var emessage = userError(error)
         document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
-        console.log(res)
         console.log("Done")
         document.getElementById("para-preview-organization-status").innerHTML = "Preview folder deleted!";
       }
@@ -413,7 +410,6 @@ curateDatasetBtn.addEventListener('click', () => {
 
   var jsonpath = jsonvect[0]
   var jsondescription = jsonvect[1]
-  console.log(jsonpath)
 
   var destinationDataset = ''
   var pathDatasetValue = ''
@@ -485,17 +481,16 @@ curateDatasetBtn.addEventListener('click', () => {
   // Initiate curation by calling python
   var err = false
   var completionstatus = 'Solving'
-  console.log(pathDatasetValue)
   client.invoke("api_curate_dataset",
     sourceDataset, destinationDataset, pathDatasetValue, newDatasetNameVar,
     submissionStatus, pathSubmission,  descriptionStatus, pathDescription,
     subjectsStatus, pathSubjects, samplesStatus, pathSamples, manifestStatus.checked,
     jsonpath, jsondescription,
     (error, res) => {
-    console.log(jsondescription)
     if (error) {
       var emessage = userError(error)
       document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      document.getElementById("para-curate-progress-bar-status").innerHTML = ""
       progressBarCurate.style.width = 0 + "%";
       err = true
       console.error(error)
@@ -514,7 +509,6 @@ curateDatasetBtn.addEventListener('click', () => {
       if (error) {
         var emessage = userError(error)
         document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-        console.log('error')
         console.error(error)
       } else {
         completionstatus = res[1]
@@ -549,11 +543,15 @@ curateDatasetBtn.addEventListener('click', () => {
 bfAccountCheckBtn.addEventListener('click', (event) => {
   bfSelectAccountStatus.innerHTML = "Please wait..."
   removeOptions(bfAccountList)
+  removeOptions(bfUploadAccountList)
   updateBfAccountList(bfAccountList, bfSelectAccountStatus)
+  updateBfAccountList(bfUploadAccountList, bfUploadSelectAccountStatus)
 })
 bfUploadAccountCheckBtn.addEventListener('click', (event) => {
   bfUploadSelectAccountStatus.innerHTML = "Please wait..."
+  removeOptions(bfAccountList)
   removeOptions(bfUploadAccountList)
+  updateBfAccountList(bfAccountList, bfSelectAccountStatus)
   updateBfAccountList(bfUploadAccountList, bfUploadSelectAccountStatus)
 })
 
@@ -646,6 +644,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
         bfCreateNewDatasetInfo.value = 'Success: created folder' + ' ' + bfNewDatasetName.value
         refreshBfDatasetList(bfDatasetList, bfAccountList)
         refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
+        refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
         currentDatasetPermission.innerHTML = ''
         bfCreateNewDatasetBtn.disabled = false
     }
@@ -777,7 +776,6 @@ bfAddPermissionTeamBtn.addEventListener('click', () => {
 
 function refreshBfDatasetList(bfdstlist, bfAccountList){
   removeOptions(bfdstlist)
-  console.log('inside refreshBfDatasetList')
   var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
   if (accountSelected === "Select"){
     var optionSelect = document.createElement("option")
