@@ -99,7 +99,8 @@ def path_size(path):
     else:
         return getsize(path)
 
-def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
+
+def create_folder_level_manifest(datasetpath, jsonpath, jsondescription):
     """
     Creates manifest files with the description specified
     Args:
@@ -109,6 +110,7 @@ def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
     Action:
         Creates manifest files in Excel format
     """
+    global total_dataset_size
     try:
         folders = list(jsonpath.keys())
         if 'main' in folders:
@@ -116,7 +118,6 @@ def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
         # In each subfolder, generate a manifest file
         for folder in folders:
             if (jsonpath[folder] != []):
-
                 # Initialize dataframe where manifest info will be stored
                 df = pd.DataFrame(columns=['filename', 'timestamp', 'description',
                                         'file type', 'Additional Metadata'])
@@ -130,74 +131,18 @@ def create_manifest_with_description(datasetpath, jsonpath, jsondescription):
                 countpath = -1
                 for pathname in allfiles:
                     countpath += 1
-                    if basename(pathname) == 'manifest.csv':
+                    if basename(pathname) == 'manifest.csv' or basename(pathname) == 'manifest.xlsx':
                         allfiles.pop(countpath)
                         alldescription.pop(countpath)
 
                 # Populate manifest dataframe
                 filename, timestamp, filetype, filedescription = [], [], [], []
                 countpath = -1
-                for filepath in allfiles:
-                    countpath += 1
-                    file = basename(filepath)
-                    filename.append(splitext(file)[0])
-                    lastmodtime = getmtime(filepath)
-                    timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
-                                              localtime(lastmodtime)))
-                    filedescription.append(alldescription[countpath])
-                    if isdir(filepath):
-                        filetype.append('folder')
-                    else:
-                        fileextension = splitext(file)[1]
-                        if not fileextension:  #if empty (happens e.g. with Readme files)
-                            fileextension = 'None'
-                        filetype.append(fileextension)
-
-                df['filename'] = filename
-                df['timestamp'] = timestamp
-                df['file type'] = filetype
-                df['description'] = filedescription
-
-                # Save manifest as Excel sheet
-                manifestfile = join(folderpath, 'manifest.csv')
-                df.to_csv(manifestfile, index=None, header=True)
-
-    except Exception as e:
-        raise e
-
-
-def create_high_level_manifest(datasetpath, jsonpath, jsondescription):
-    """
-    Creates one manifest file containing details of all sub-files
-
-    Args:
-        datasetpath: destination path of the dataset
-        jsonpath: all paths in json format
-        jsondescription: description associated with each path
-    Action:
-        Creates manifest files in Excel format
-    """
-    global total_dataset_size
-    try:
-        # Initialize dataframe where manifest info will be stored
-        df = pd.DataFrame(columns=['filename', 'timestamp', 'description',
-                                'file type', 'Additional Metadata'])
-        filename, timestamp, description, filetype = [], [], [], []
-
-        for key in jsonpath.keys():
-            if jsonpath[key] != []:
-                for paths in jsonpath[key]:
-                    alldescription = jsondescription[key + '_description']
-                    folder = ''
-                    # loop through all folders and subfolders
+                for paths in allfiles:
+                    print(paths, alldescription)
                     if isdir(paths):
-                        fullfilename = basename(paths)
+                        key = basename(paths)
                         alldescription.pop(0)
-                        if key != 'main':
-                            folder = join(key, fullfilename)
-                        else:
-                            folder = fullfilename
-
                         for subdir, dirs, files in os.walk(paths):
                             for file in files:
                                 filepath = join(paths,subdir,file) #full local file path
@@ -205,44 +150,48 @@ def create_high_level_manifest(datasetpath, jsonpath, jsondescription):
                                 timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
                                                                       localtime(lastmodtime)))
                                 fullfilename = basename(filepath)
-                                if key == 'main': # if file in main folder
+                                if folder == 'main': # if file in main folder
                                     filename.append(splitext(fullfilename)[0]) if folder == '' else filename.append(join(folder, splitext(fullfilename)[0]))
                                 else:
                                     subdirname = os.path.relpath(subdir, paths) # gives relative path of the directory of the file w.r.t paths
                                     if subdirname == '.':
-                                        filename.append(join(folder, splitext(fullfilename)[0]))
+                                        filename.append(join(key, splitext(fullfilename)[0]))
                                     else:
-                                        filename.append(join(folder, subdirname, splitext(fullfilename)[0]))
-                                    print(join(folder, subdirname, splitext(fullfilename)[0]))
+                                        filename.append(join(key, subdirname, splitext(fullfilename)[0]))
+
                                 fileextension = splitext(fullfilename)[1]
                                 if not fileextension:  # if empty (happens e.g. with Readme files)
                                     fileextension = 'None'
                                 filetype.append(fileextension)
-                                description.append('')
+                                filedescription.append('')
                     else:
+                        countpath += 1
+                        file = basename(paths)
+                        filename.append(splitext(file)[0])
                         lastmodtime = getmtime(paths)
                         timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
-                                                                      localtime(lastmodtime)))
-                        fullfilename = basename(paths)
-                        filename.append(join(key, fullfilename)) if key != 'main' else filename.append(fullfilename)
+                                                  localtime(lastmodtime)))
+                        filedescription.append(alldescription[countpath])
+                        if isdir(paths):
+                            filetype.append('folder')
+                        else:
+                            fileextension = splitext(file)[1]
+                            if not fileextension:  #if empty (happens e.g. with Readme files)
+                                fileextension = 'None'
+                            filetype.append(fileextension)
 
-                        fileextension = splitext(fullfilename)[1]
-                        if not fileextension:  # if empty (happens e.g. with Readme files)
-                            fileextension = 'None'
-                        filetype.append(fileextension)
-                        description.append(alldescription[0])
-                        alldescription.pop(0)
+                df['filename'] = filename
+                df['timestamp'] = timestamp
+                df['file type'] = filetype
+                df['description'] = filedescription
 
-        df['filename'] = filename
-        df['timestamp'] = timestamp
-        df['file type'] = filetype
-        df['description'] = description
+                makedirs(folderpath)
+                # Save manifest as Excel sheet
+                manifestfile = join(folderpath, 'manifest.csv')
+                df.to_csv(manifestfile, index=None, header=True)
+                total_dataset_size += path_size(manifestfile)
+                jsonpath[folder].append(manifestfile)
 
-        # Save manifest as Excel sheet
-        manifestfile = join(datasetpath, 'manifest.csv')
-        df.to_csv(manifestfile, index=None, header=True)
-        total_dataset_size += path_size(manifestfile)
-        jsonpath['main'].append(manifestfile)
         return jsonpath
 
     except Exception as e:
@@ -539,6 +488,13 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     Associated with 'Generate' button in the 'Generate dataset' section
     Checks validity of files / paths / folders and then generates the files and folders as requested along with progress status
     """
+    # Creating folder to store manigfest file
+    userpath = expanduser("~")
+    datasetpath = join(userpath, 'SODA_metadata')
+    try:
+        makedirs(datasetpath)
+    except:
+        raise Exception("Error: SODA_metadata folder already present in User/SODA_metadata")
 
     global curatestatus #set to 'Done' when completed or error to stop progress tracking from front-end
     global curateprogress #GUI messages shown to user to provide upadte on progress
@@ -631,6 +587,31 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         curatestatus = 'Done'
         raise Exception(error)
 
+    # Add metadata to jsonpath
+    if manifeststatus:
+        jsonpath = create_folder_level_manifest(datasetpath, jsonpath, jsondescription)
+        curateprogress = 'Manifest created'
+
+    if submissionstatus:
+        jsonpath['main'].append(pathsubmission)
+        total_dataset_size += path_size(pathsubmission)
+        curateprogress = 'Submission file created'
+
+    if datasetdescriptionstatus:
+        jsonpath['main'].append(pathdescription)
+        total_dataset_size += path_size(pathdescription)
+        curateprogress = 'Dataset description file created'
+
+    if subjectsstatus:
+        jsonpath['main'].append(pathsubjects)
+        total_dataset_size += path_size(pathsubjects)
+        curateprogress = 'Subjects file created'
+
+    if samplesstatus:
+        jsonpath['main'].append(pathsamples)
+        total_dataset_size += path_size(pathsamples)
+        curateprogress = 'Samples file created'
+
     # MODIFY EXISTING
     if destinationdataset == 'modify existing':
         error, c = '', 0
@@ -661,25 +642,36 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                 curateprintstatus = 'Curating'
                 curateprogress = "New dataset not requested"
 
+                metadata_files = ['submission', 'dataset_description', 'samples', 'subjects']
+                for filepath in jsonpath['main']:
+                    if splitext(basename(filepath))[0] in metadata_files:
+                        copy2(filepath, pathdataset)
+
                 if manifeststatus:
-                    create_high_level_manifest(pathdataset, jsonpath, jsondescription)
+                    # jsonpath = create_folder_level_manifest(pathdataset, jsonpath, jsondescription)
+                    for folder in jsonpath.keys():
+                        if folder != 'main':
+                            for filepath in jsonpath[folder]:
+                                if splitext(basename(filepath))[0] == 'manifest':
+                                    copy2(filepath, join(pathdataset, folder))
+
                     curateprogress = 'Manifest created'
 
-                if submissionstatus:
-                    copy(pathsubmission, pathdataset)
-                    curateprogress = 'Submission file created'
-
-                if datasetdescriptionstatus:
-                    copy(pathdescription, pathdataset)
-                    curateprogress = 'Dataset description file created'
-
-                if subjectsstatus:
-                    copy(pathsubjects, pathdataset)
-                    curateprogress = 'Subjects file created'
-
-                if samplesstatus:
-                    copy(pathsamples, pathdataset)
-                    curateprogress = 'Samples file created'
+                # if submissionstatus:
+                #     copy(pathsubmission, pathdataset)
+                #     curateprogress = 'Submission file created'
+                #
+                # if datasetdescriptionstatus:
+                #     copy(pathdescription, pathdataset)
+                #     curateprogress = 'Dataset description file created'
+                #
+                # if subjectsstatus:
+                #     copy(pathsubjects, pathdataset)
+                #     curateprogress = 'Subjects file created'
+                #
+                # if samplesstatus:
+                #     copy(pathsamples, pathdataset)
+                #     curateprogress = 'Samples file created'
 
                 curateprogress = 'Success: COMPLETED!'
                 curatestatus = 'Done'
@@ -705,25 +697,25 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
 
             curateprogress = 'New dataset created'
 
-            if manifeststatus:
-                create_high_level_manifest(pathdataset, jsonpath, jsondescription)
-                curateprogress = 'Manifest created'
-
-            if submissionstatus:
-                copy2(pathsubmission, pathdataset)
-                curateprogress = 'Submission file created'
-
-            if datasetdescriptionstatus:
-                copy2(pathdescription, pathdataset)
-                curateprogress = 'Dataset description file created'
-
-            if subjectsstatus:
-                copy2(pathsubjects, pathdataset)
-                curateprogress = 'Subjects file created'
-
-            if samplesstatus:
-                copy2(pathsamples, pathdataset)
-                curateprogress = 'Samples file created'
+            # if manifeststatus:
+            #     create_folder_level_manifest(pathdataset, jsonpath, jsondescription)
+            #     curateprogress = 'Manifest created'
+            #
+            # if submissionstatus:
+            #     copy2(pathsubmission, pathdataset)
+            #     curateprogress = 'Submission file created'
+            #
+            # if datasetdescriptionstatus:
+            #     copy2(pathdescription, pathdataset)
+            #     curateprogress = 'Dataset description file created'
+            #
+            # if subjectsstatus:
+            #     copy2(pathsubjects, pathdataset)
+            #     curateprogress = 'Subjects file created'
+            #
+            # if samplesstatus:
+            #     copy2(pathsamples, pathdataset)
+            #     curateprogress = 'Samples file created'
 
             curateprogress = 'Success: COMPLETED!'
 
@@ -739,33 +731,33 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         error, c = '', 0
         accountname = pathdataset
         bfdataset = newdatasetname
-        try:
-            if manifeststatus:
-                jsonpath = create_high_level_manifest(userpath, jsonpath, jsondescription)
-                curateprogress = 'Manifest created'
+        # try:
+            # if manifeststatus:
+            #     jsonpath = create_folder_level_manifest(userpath, jsonpath, jsondescription)
+            #     curateprogress = 'Manifest created'
 
-            if submissionstatus:
-                jsonpath['main'].append(pathsubmission)
-                total_dataset_size += path_size(pathsubmission)
-                curateprogress = 'Submission file created'
+            # if submissionstatus:
+            #     jsonpath['main'].append(pathsubmission)
+            #     total_dataset_size += path_size(pathsubmission)
+            #     curateprogress = 'Submission file created'
+            #
+            # if datasetdescriptionstatus:
+            #     jsonpath['main'].append(pathdescription)
+            #     total_dataset_size += path_size(pathdescription)
+            #     curateprogress = 'Dataset description file created'
+            #
+            # if subjectsstatus:
+            #     jsonpath['main'].append(pathsubjects)
+            #     total_dataset_size += path_size(pathsubjects)
+            #     curateprogress = 'Subjects file created'
+            #
+            # if samplesstatus:
+            #     jsonpath['main'].append(pathsamples)
+            #     total_dataset_size += path_size(pathsamples)
+            #     curateprogress = 'Samples file created'
 
-            if datasetdescriptionstatus:
-                jsonpath['main'].append(pathdescription)
-                total_dataset_size += path_size(pathdescription)
-                curateprogress = 'Dataset description file created'
-
-            if subjectsstatus:
-                jsonpath['main'].append(pathsubjects)
-                total_dataset_size += path_size(pathsubjects)
-                curateprogress = 'Subjects file created'
-
-            if samplesstatus:
-                jsonpath['main'].append(pathsamples)
-                total_dataset_size += path_size(pathsamples)
-                curateprogress = 'Samples file created'
-
-        except Exception as e:
-            raise e
+        # except Exception as e:
+        #     raise e
 
         try:
             bf = Blackfynn(accountname)
@@ -816,15 +808,16 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
 
                 curateprogress = "Success: dataset and associated files have been uploaded"
                 curatestatus = 'Done'
-                remove(join(userpath, 'manifest.csv'))
 
             curateprintstatus = 'Curating'
-            start_time = time.time()
+            # start_time = time.time()
             t = threading.Thread(target=calluploaddirectly)
             t.start()
         except Exception as e:
             curatestatus = 'Done'
             raise e
+
+    shutil.rmtree(join(userpath, 'SODA_metadata'))
 
 def directly_upload_structured_file(myds, mypath, myfolder):
     """
@@ -876,8 +869,8 @@ def curate_dataset_progress():
     global total_dataset_size
     global curated_dataset_size
     global start_time
-    elapsed_time = time.time() - start_time
-    return (curateprogress, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time)
+    # elapsed_time = time.time() - start_time
+    return (curateprogress, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size)
 
 
 ### SODA Blackfynn interface
