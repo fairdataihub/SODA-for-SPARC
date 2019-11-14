@@ -640,7 +640,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
       bfCreateNewDatasetInfo.value = emessage
       bfCreateNewDatasetBtn.disabled = false
     } else {
-        bfCreateNewDatasetInfo.value = 'Success: created folder' + ' ' + bfNewDatasetName.value
+        bfCreateNewDatasetInfo.value = 'Success: created dataset' + ' ' + bfNewDatasetName.value
         refreshBfDatasetList(bfDatasetList, bfAccountList)
         refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
         refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)

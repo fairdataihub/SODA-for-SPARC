@@ -139,7 +139,6 @@ def create_folder_level_manifest(datasetpath, jsonpath, jsondescription):
                 filename, timestamp, filetype, filedescription = [], [], [], []
                 countpath = -1
                 for paths in allfiles:
-                    print(paths, alldescription)
                     if isdir(paths):
                         key = basename(paths)
                         alldescription.pop(0)
@@ -244,7 +243,7 @@ def mycopyfileobj(fsrc, fdst, src, length=16*1024):
         gevent.sleep(0)
         fdst.write(buf)
         curated_dataset_size += len(buf)
-        curateprogress = 'Copying ' + str(src) + ','
+        curateprogress = 'Copying ' + str(src)
         # curateprogress += 'Progress: ' + str(curated_dataset_size/total_dataset_size*100) + '%'
 
 
@@ -488,14 +487,6 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     Associated with 'Generate' button in the 'Generate dataset' section
     Checks validity of files / paths / folders and then generates the files and folders as requested along with progress status
     """
-    # Creating folder to store manigfest file
-    userpath = expanduser("~")
-    datasetpath = join(userpath, 'SODA_metadata')
-    try:
-        makedirs(datasetpath)
-    except:
-        raise Exception("Error: SODA_metadata folder already present in User/SODA_metadata")
-
     global curatestatus #set to 'Done' when completed or error to stop progress tracking from front-end
     global curateprogress #GUI messages shown to user to provide upadte on progress
     global curateprintstatus # If = "Curating" Progress messages are shown to user
@@ -588,29 +579,32 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         raise Exception(error)
 
     # Add metadata to jsonpath
+    curateprogress = 'Generating metadata'
     if manifeststatus:
+        # Creating folder to store manifest file
+        userpath = expanduser("~")
+        datasetpath = join(userpath, 'SODA_metadata')
+        try:
+            makedirs(datasetpath)
+        except:
+            raise Exception("Error: SODA_metadata folder already present in User/SODA_metadata")
         jsonpath = create_folder_level_manifest(datasetpath, jsonpath, jsondescription)
-        curateprogress = 'Manifest created'
 
     if submissionstatus:
         jsonpath['main'].append(pathsubmission)
         total_dataset_size += path_size(pathsubmission)
-        curateprogress = 'Submission file created'
 
     if datasetdescriptionstatus:
         jsonpath['main'].append(pathdescription)
         total_dataset_size += path_size(pathdescription)
-        curateprogress = 'Dataset description file created'
 
     if subjectsstatus:
         jsonpath['main'].append(pathsubjects)
         total_dataset_size += path_size(pathsubjects)
-        curateprogress = 'Subjects file created'
 
     if samplesstatus:
         jsonpath['main'].append(pathsamples)
         total_dataset_size += path_size(pathsamples)
-        curateprogress = 'Samples file created'
 
     # MODIFY EXISTING
     if destinationdataset == 'modify existing':
@@ -632,6 +626,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         if c > 0:
             error = error + '<br>Error: Either delete or select "None" in the SODA interface'
             curatestatus = 'Done'
+            shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
             raise Exception(error)
 
         # If no errors, code-block below will execute which will start the data generation process
@@ -648,7 +643,6 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                         copy2(filepath, pathdataset)
 
                 if manifeststatus:
-                    # jsonpath = create_folder_level_manifest(pathdataset, jsonpath, jsondescription)
                     for folder in jsonpath.keys():
                         if folder != 'main':
                             for filepath in jsonpath[folder]:
@@ -657,27 +651,13 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
 
                     curateprogress = 'Manifest created'
 
-                # if submissionstatus:
-                #     copy(pathsubmission, pathdataset)
-                #     curateprogress = 'Submission file created'
-                #
-                # if datasetdescriptionstatus:
-                #     copy(pathdescription, pathdataset)
-                #     curateprogress = 'Dataset description file created'
-                #
-                # if subjectsstatus:
-                #     copy(pathsubjects, pathdataset)
-                #     curateprogress = 'Subjects file created'
-                #
-                # if samplesstatus:
-                #     copy(pathsamples, pathdataset)
-                #     curateprogress = 'Samples file created'
-
                 curateprogress = 'Success: COMPLETED!'
                 curatestatus = 'Done'
+                shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
 
             except Exception as e:
                 curatestatus = 'Done'
+                shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
                 raise e
 
     # CREATE NEW
@@ -686,43 +666,22 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             pathnewdatasetfolder = join(pathdataset, newdatasetname)
             pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
             open_file(pathnewdatasetfolder)
-            curateprogress = 'Started'
 
+            curateprogress = 'Started'
             curateprintstatus = 'Curating'
 
             pathdataset = pathnewdatasetfolder
             mkdir(pathdataset)
-
             create_dataset(jsonpath, pathdataset)
 
             curateprogress = 'New dataset created'
-
-            # if manifeststatus:
-            #     create_folder_level_manifest(pathdataset, jsonpath, jsondescription)
-            #     curateprogress = 'Manifest created'
-            #
-            # if submissionstatus:
-            #     copy2(pathsubmission, pathdataset)
-            #     curateprogress = 'Submission file created'
-            #
-            # if datasetdescriptionstatus:
-            #     copy2(pathdescription, pathdataset)
-            #     curateprogress = 'Dataset description file created'
-            #
-            # if subjectsstatus:
-            #     copy2(pathsubjects, pathdataset)
-            #     curateprogress = 'Subjects file created'
-            #
-            # if samplesstatus:
-            #     copy2(pathsamples, pathdataset)
-            #     curateprogress = 'Samples file created'
-
             curateprogress = 'Success: COMPLETED!'
-
             curatestatus = 'Done'
+            shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
 
         except Exception as e:
             curatestatus = 'Done'
+            shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
             raise e
 
     # UPLOAD TO BLACKFYNN
@@ -731,33 +690,6 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         error, c = '', 0
         accountname = pathdataset
         bfdataset = newdatasetname
-        # try:
-            # if manifeststatus:
-            #     jsonpath = create_folder_level_manifest(userpath, jsonpath, jsondescription)
-            #     curateprogress = 'Manifest created'
-
-            # if submissionstatus:
-            #     jsonpath['main'].append(pathsubmission)
-            #     total_dataset_size += path_size(pathsubmission)
-            #     curateprogress = 'Submission file created'
-            #
-            # if datasetdescriptionstatus:
-            #     jsonpath['main'].append(pathdescription)
-            #     total_dataset_size += path_size(pathdescription)
-            #     curateprogress = 'Dataset description file created'
-            #
-            # if subjectsstatus:
-            #     jsonpath['main'].append(pathsubjects)
-            #     total_dataset_size += path_size(pathsubjects)
-            #     curateprogress = 'Subjects file created'
-            #
-            # if samplesstatus:
-            #     jsonpath['main'].append(pathsamples)
-            #     total_dataset_size += path_size(pathsamples)
-            #     curateprogress = 'Samples file created'
-
-        # except Exception as e:
-        #     raise e
 
         try:
             bf = Blackfynn(accountname)
@@ -778,6 +710,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         #     error = error + 'Error: Please select a valid local dataset folder' + '<br>'
         #     c += 1
         if c>0:
+            shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
             raise Exception(error)
 
         try:
@@ -805,19 +738,18 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                                 curateprogress = str(mypath)
                                 directly_upload_structured_file(mybffolder, mypath, folder)
 
-
                 curateprogress = "Success: dataset and associated files have been uploaded"
                 curatestatus = 'Done'
+                shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
 
             curateprintstatus = 'Curating'
-            # start_time = time.time()
+            start_time = time.time()
             t = threading.Thread(target=calluploaddirectly)
             t.start()
         except Exception as e:
             curatestatus = 'Done'
+            shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
             raise e
-
-    shutil.rmtree(join(userpath, 'SODA_metadata'))
 
 def directly_upload_structured_file(myds, mypath, myfolder):
     """
@@ -839,9 +771,8 @@ def directly_upload_structured_file(myds, mypath, myfolder):
         if isdir(mypath):
             for f in listdir(mypath):
                 if isfile(join(mypath, f)):
-                    curateprogress =  "Uploading " + f
                     filepath = join(mypath, f)
-                    # curateprogress = curateprogress + ',' + 'Progress: ' + str((curated_dataset_size/total_dataset_size)*100) + '%'
+                    curateprogress =  "Uploading " + filepath
                     myds.upload(filepath, use_agent=False)
                     curated_dataset_size += getsize(filepath)
                 else:
@@ -850,7 +781,6 @@ def directly_upload_structured_file(myds, mypath, myfolder):
                     directly_upload_structured_file(mybffolder, myfolderpath, f)
         else:
             curateprogress = "Uploading " + str(mypath)
-            # curateprogress = curateprogress + ',' + 'Progress: ' + str(curated_dataset_size/total_dataset_size) + '%'
             myds.upload(mypath, use_agent=False)
             curated_dataset_size += getsize(mypath)
 
@@ -897,7 +827,7 @@ def bf_add_account(keyname, key, secret):
             raise Exception('Error: Please enter valid keyname, key, and/or secret')
 
         bfpath = join(userpath, '.blackfynn')
-        #Load existing or create new config file
+        # Load existing or create new config file
         config = ConfigParser()
         if exists(configpath):
             config.read(configpath)
@@ -909,7 +839,7 @@ def bf_add_account(keyname, key, secret):
             if not exists(join(bfpath, 'cache')):
                 mkdir(join(bfpath, 'cache'))
 
-        #Add new account
+        # Add new account
         config.add_section(keyname)
         config.set(keyname, 'api_token', key)
         config.set(keyname, 'api_secret', secret)
@@ -920,7 +850,7 @@ def bf_add_account(keyname, key, secret):
     except Exception as e:
         raise e
 
-    #Check key and secret are valid, if not delete account from config
+    # Check key and secret are valid, if not delete account from config
     try:
         bf = Blackfynn(keyname)
         with open(configpath, 'w') as configfile:
@@ -1062,13 +992,12 @@ def upload_structured_file(myds, mypath, myfolder):
     mypath = join(mypath)
     for f in listdir(mypath):
         if isfile(join(mypath, f)):
-            submitdataprogress = submitdataprogress + ', ,' + "Uploading " + f + " in " + myfolder
             filepath = join(mypath, f)
+            submitdataprogress =  "Uploading " + str(filepath)
             myds.upload(filepath, use_agent=False)
             uploaded_file_size += getsize(filepath)
-            submitdataprogress = submitdataprogress + ',' + " uploaded"
         else:
-            submitdataprogress = submitdataprogress + ', ,' +"Creating folder " + f
+            submitdataprogress = "Creating folder " + f
             mybffolder = myds.create_collection(f)
             myfolderpath = join(mypath, f)
             upload_structured_file(mybffolder, myfolderpath, f)
@@ -1128,7 +1057,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             global submitdatastatus
             # global initial_bfdataset_size
             submitdataprogress = "Started uploading to dataset %s \n" %(bfdataset)
-            # return submitdataprogress
             myds = bf.get_dataset(bfdataset)
             myfolder = myds.name
             # initial_bfdataset_size = dataset_size_blackfynn()
