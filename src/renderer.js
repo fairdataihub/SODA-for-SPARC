@@ -699,7 +699,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       if (completionStatus === 'Done'){
         if (!err){
           progressBar.style.width = 100 + "%";
-          document.getElementById("para-progress-bar-status").innerHTML = "Upload completed !"
+          document.getElementById("para-progress-bar-status").innerHTML = "Upload completed!"
         }
         clearInterval(timerProgress)
         bfSubmitDatasetBtn.disabled = false
