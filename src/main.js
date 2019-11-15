@@ -39,9 +39,9 @@ const createPyProc = () => {
   let port = '' + selectPort()
 
   if (guessPackaged()) {
-    pyProc = require('child_process').execFile(script, [port])
+    pyProc = require('child_process').execFile(script, [port], { stdio: 'ignore' })
   } else {
-    pyProc = require('child_process').spawn('python', [script, port])
+    pyProc = require('child_process').spawn('python', [script, port], { stdio: 'ignore' })
   }
 
   if (pyProc != null) {

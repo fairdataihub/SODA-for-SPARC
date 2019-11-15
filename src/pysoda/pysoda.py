@@ -232,7 +232,7 @@ def return_new_path(topath):
         return topath
 
 
-def mycopyfileobj(fsrc, fdst, src, length=16*1024):
+def mycopyfileobj(fsrc, fdst, src, length=16*1024*16):
     global curateprogress
     global total_dataset_size
     global curated_dataset_size
@@ -243,9 +243,6 @@ def mycopyfileobj(fsrc, fdst, src, length=16*1024):
         gevent.sleep(0)
         fdst.write(buf)
         curated_dataset_size += len(buf)
-        curateprogress = 'Copying ' + str(src)
-        # curateprogress += 'Progress: ' + str(curated_dataset_size/total_dataset_size*100) + '%'
-
 
 def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     """
@@ -414,7 +411,7 @@ def delete_preview_file_organization():
         if isdir(preview_path):
             shutil.rmtree(preview_path, ignore_errors=True)
         else:
-            raise Exception("Error: Preview folder not present or already deleted !")
+            raise Exception("Error: Preview folder not present or already deleted!")
     except Exception as e:
         raise e
 
@@ -431,6 +428,7 @@ def create_dataset(jsonpath, pathdataset):
     Action:
         Creates the folders and files specified
     """
+    global curateprogress
     try:
         mydict = jsonpath
         folderrequired = []
@@ -473,6 +471,7 @@ def create_dataset(jsonpath, pathdataset):
         for fileinfo in listallfiles:
             srcfile = fileinfo[0]
             distfile = fileinfo[1]
+            curateprogress = 'Copying ' + str(srcfile)
             mycopyfile_with_metadata(srcfile, distfile)
 
     except Exception as e:
@@ -579,17 +578,18 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         raise Exception(error)
 
     # Add metadata to jsonpath
+    userpath = expanduser("~")
+    metadatapath = join(userpath, 'SODA_metadata')
     curateprogress = 'Generating metadata'
     if manifeststatus:
         # Creating folder to store manifest file
-        userpath = expanduser("~")
-        datasetpath = join(userpath, 'SODA_metadata')
         try:
-            makedirs(datasetpath)
-        except:
+            shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
+            makedirs(metadatapath)
+            jsonpath = create_folder_level_manifest(metadatapath, jsonpath, jsondescription)
+        except Exception as e:
             curatestatus = 'Done'
-            raise Exception("Error: SODA_metadata folder already present at "+str(datasetpath))
-        jsonpath = create_folder_level_manifest(datasetpath, jsonpath, jsondescription)
+            raise e
 
     if submissionstatus:
         jsonpath['main'].append(pathsubmission)
@@ -627,7 +627,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         if c > 0:
             error = error + '<br>Error: Either delete or select "None" in the SODA interface'
             curatestatus = 'Done'
-            shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
+            shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
             raise Exception(error)
 
         # If no errors, code-block below will execute which will start the data generation process
@@ -635,6 +635,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             try:
                 open_file(pathdataset)
                 curateprogress = 'Started'
+                start_time = time.time()
                 curateprintstatus = 'Curating'
                 curateprogress = "New dataset not requested"
 
@@ -654,11 +655,11 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
 
                 curateprogress = 'Success: COMPLETED!'
                 curatestatus = 'Done'
-                shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
+                shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
 
             except Exception as e:
                 curatestatus = 'Done'
-                shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
+                shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
                 raise e
 
     # CREATE NEW
@@ -670,6 +671,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
 
             curateprogress = 'Started'
             curateprintstatus = 'Curating'
+            start_time = time.time()
 
             pathdataset = pathnewdatasetfolder
             mkdir(pathdataset)
@@ -678,11 +680,11 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             curateprogress = 'New dataset created'
             curateprogress = 'Success: COMPLETED!'
             curatestatus = 'Done'
-            shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
+            shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
 
         except Exception as e:
             curatestatus = 'Done'
-            shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
+            shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
             raise e
 
     # UPLOAD TO BLACKFYNN
@@ -711,7 +713,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         #     error = error + 'Error: Please select a valid local dataset folder' + '<br>'
         #     c += 1
         if c>0:
-            shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
+            shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
             raise Exception(error)
 
         try:
@@ -739,9 +741,9 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                                 curateprogress = str(mypath)
                                 directly_upload_structured_file(mybffolder, mypath, folder)
 
-                curateprogress = "Success: dataset and associated files have been uploaded"
+                curateprogress = 'Success: COMPLETED!'
                 curatestatus = 'Done'
-                shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
+                shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
 
             curateprintstatus = 'Curating'
             start_time = time.time()
@@ -749,7 +751,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             t.start()
         except Exception as e:
             curatestatus = 'Done'
-            shutil.rmtree(join(userpath, 'SODA_metadata')) if isdir(join(userpath, 'SODA_metadata')) else 0
+            shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
             raise e
 
 def directly_upload_structured_file(myds, mypath, myfolder):
@@ -800,8 +802,8 @@ def curate_dataset_progress():
     global total_dataset_size
     global curated_dataset_size
     global start_time
-    # elapsed_time = time.time() - start_time
-    return (curateprogress, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size)
+    elapsed_time = time.time() - start_time
+    return (curateprogress, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time/60)
 
 
 ### SODA Blackfynn interface
