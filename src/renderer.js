@@ -676,7 +676,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   })
 
 
-  var timerProgress = setInterval(progressfunction, 250)
+  var timerProgress = setInterval(progressfunction, 1000)
     function progressfunction(){
       client.invoke("api_submit_dataset_progress", (error, res) => {
         if(error) {
