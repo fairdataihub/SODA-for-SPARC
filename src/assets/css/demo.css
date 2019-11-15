@@ -295,6 +295,12 @@ table.pathtable tr.open {
   color: black;
 }
 
+.info {
+  width:16px;
+  height:16px;
+  float: right;
+}
+
 .tooltipnew .tooltiptext {
   visibility: hidden;
   width: 600px;

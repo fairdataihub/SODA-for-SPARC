@@ -587,7 +587,8 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         try:
             makedirs(datasetpath)
         except:
-            raise Exception("Error: SODA_metadata folder already present in User/SODA_metadata")
+            curatestatus = 'Done'
+            raise Exception("Error: SODA_metadata folder already present at "+str(datasetpath))
         jsonpath = create_folder_level_manifest(datasetpath, jsonpath, jsondescription)
 
     if submissionstatus:
@@ -989,18 +990,22 @@ def upload_structured_file(myds, mypath, myfolder):
     global submitdatastatus
     global uploaded_file_size
 
-    mypath = join(mypath)
-    for f in listdir(mypath):
-        if isfile(join(mypath, f)):
-            filepath = join(mypath, f)
-            submitdataprogress =  "Uploading " + str(filepath)
-            myds.upload(filepath, use_agent=False)
-            uploaded_file_size += getsize(filepath)
-        else:
-            submitdataprogress = "Creating folder " + f
-            mybffolder = myds.create_collection(f)
-            myfolderpath = join(mypath, f)
-            upload_structured_file(mybffolder, myfolderpath, f)
+    try:
+        mypath = join(mypath)
+        for f in listdir(mypath):
+            if isfile(join(mypath, f)):
+                filepath = join(mypath, f)
+                submitdataprogress =  "Uploading " + str(filepath)
+                myds.upload(filepath, use_agent=False)
+                uploaded_file_size += getsize(filepath)
+            else:
+                submitdataprogress = "Creating folder " + f
+                mybffolder = myds.create_collection(f)
+                myfolderpath = join(mypath, f)
+                upload_structured_file(mybffolder, myfolderpath, f)
+
+    except Exception as e:
+        raise e
 
 
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
