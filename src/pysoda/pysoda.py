@@ -150,13 +150,13 @@ def create_folder_level_manifest(datasetpath, jsonpath, jsondescription):
                                                                       localtime(lastmodtime)))
                                 fullfilename = basename(filepath)
                                 if folder == 'main': # if file in main folder
-                                    filename.append(splitext(fullfilename)[0]) if folder == '' else filename.append(join(folder, splitext(fullfilename)[0]))
+                                    filename.append(fullfilename) if folder == '' else filename.append(join(folder, fullfilename))
                                 else:
                                     subdirname = os.path.relpath(subdir, paths) # gives relative path of the directory of the file w.r.t paths
                                     if subdirname == '.':
-                                        filename.append(join(key, splitext(fullfilename)[0]))
+                                        filename.append(join(key, fullfilename))
                                     else:
-                                        filename.append(join(key, subdirname, splitext(fullfilename)[0]))
+                                        filename.append(join(key, subdirname, fullfilename))
 
                                 fileextension = splitext(fullfilename)[1]
                                 if not fileextension:  # if empty (happens e.g. with Readme files)
@@ -166,7 +166,7 @@ def create_folder_level_manifest(datasetpath, jsonpath, jsondescription):
                     else:
                         countpath += 1
                         file = basename(paths)
-                        filename.append(splitext(file)[0])
+                        filename.append(file)
                         lastmodtime = getmtime(paths)
                         timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
                                                   localtime(lastmodtime)))
