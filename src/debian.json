@@ -1,0 +1,7 @@
+{
+  "dest": "release-builds/",
+  "icon": "assets/app-icon/png/soda_icon.png",
+  "categories": [
+    "Utility"
+  ]
+}
