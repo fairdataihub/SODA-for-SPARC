@@ -4,7 +4,7 @@ const glob = require('glob')
 const contextMenu = require('electron-context-menu');
 
 /*************************************************************
- * py process
+ * Python Process
  *************************************************************/
 
 const PY_DIST_FOLDER = 'pysodadist'
@@ -61,7 +61,7 @@ app.on('will-quit', exitPyProc)
 
 
 /*************************************************************
- * window management
+ * Main app window
  *************************************************************/
 
 let mainWindow = null

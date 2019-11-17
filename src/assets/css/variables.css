@@ -9,10 +9,9 @@
   --color-bg:       hsl(0,0%,96%);
 
   --color-border:   hsl(0,0%,88%);
-  --color-bg-plum:       hsl(339,86.8%,38.6%);
-  --color-strong-white:   hsl(0,100%,100%);
-  /*--color-bg:       hsl(350,69%,45%);*/
-  
+  --color-bg-plum:       hsl(339,90%,30%);
+  /*--color-bg-plum:       hsl(339,86.8%,38.6%);*/
+  --color-strong-white:   hsl(0,100%,100%);  
 
   --color-section:  hsla(0, 0%, 100%);
 
