@@ -18,7 +18,7 @@ SODA is distributed as an easy to install application for:
 *   Mac - [Click Here](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EeJQbemo2MtDmEJumGbu7moByRrcw3xyC-A5-pD2EdjVRw?e=Gcd3lX) (Developed & tested on Mac OS High Sierra and Mojave)
 *   Linux - [Click Here](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EQLHAKyyfaZJoDMYDYIwHIQB_jBZWh8mxBE5rRW-g_Oo5w?e=7wLGLI) (Developed & tested on Ubuntu)
 
-Example datasets can be downloaded from [here](https://3dtholdings-my.sharepoint.com/:f:/g/personal/bpatel_calmi2_org/Eig4sjUjchRCiUtfpeH-ydYBjvql_KYW0ZSE9_Td6bPzrQ?e=ApSOvh)
+Example datasets can be downloaded from [here](https://3dtholdings-my.sharepoint.com/:f:/g/personal/bpatel_calmi2_org/Eig4sjUjchRCiUtfpeH-ydYBjvql_KYW0ZSE9_Td6bPzrQ?e=ApSOvh).
 Please follow the instructions given in [User Manual](docs/SODA_User_manual.pdf) to download, install and use SODA. The software should also work on older versions of OS but no testing has been done on those platforms.
 
 ## Using the Source Code
