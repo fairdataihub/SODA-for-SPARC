@@ -337,3 +337,10 @@ table.pathtable tr.open {
 /* Progress bar */
 #div-meter {border:2px solid #000;width:100%}
 #div-progress-bar {background:#333;height:25px;width:0%}
+
+
+.message-icon {
+  width:18px;
+  height:29px;
+  margin-left: 3px;
+}

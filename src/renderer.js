@@ -518,7 +518,7 @@ curateDatasetBtn.addEventListener('click', () => {
         progressBarCurate.style.width = value + "%";
         console.log(value, totalCurateSize, curatedSize, res[5])
         if (printstatus === 'Curating') {
-          document.getElementById("para-curate-progress-bar-status").innerHTML = res[0]
+          document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + '<img class="message-icon" src="assets/img/can-smiley.png">'
           // progressInfo.value = res[0].split(',').join('\n')
         }
       }
