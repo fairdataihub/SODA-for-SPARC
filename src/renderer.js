@@ -730,7 +730,6 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
           var totalFileSize = res[4]
           var value = (uploadedFileSize / totalFileSize) * 100
           console.log(uploadedFileSize, totalFileSize, value)
-          progressBar.style.width = value + "%";
           progressBarUploadBf.value = value
           if (completionStatus != 'Done') {
             document.getElementById("para-progress-bar-status").innerHTML = dataProgress.split(',').pop()
