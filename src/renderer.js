@@ -272,7 +272,6 @@ holderMain.addEventListener("drop", (event)=> {
    dropAddToTable(event, myID)
 })
 
-
 //////////////////////////////////
 // Operations calling to pysoda.py functions //
 //////////////////////////////////
@@ -1072,6 +1071,14 @@ function jsonToTableOrganized(table, jsonvar){
     var SPARCfolderid = SPARCfolder + '_org'
     var rowcount = document.getElementById(SPARCfolderid).rowIndex
     var pathlist = jsonvar[SPARCfolder]
+    console.log(pathlist)
+    if (pathlist.length !== 0){
+      console.log(SPARCfolder)
+      var myheader = tableOrganized.rows[rowcount].cells[0]
+      if (myheader.className === "table-header"){
+        myheader.className = "table-header openfolder"
+      }
+    }
     for (var i = 0; i < pathlist.length; i++){
       tableOrganizedCount = tableOrganizedCount + 1
       var rownum = rowcount + i + 1
@@ -1131,8 +1138,12 @@ function insertFileToTable(table, path){
     console.log(emessage)
     ipcRenderer.send('open-error-file-exist', emessage)
   } else {
+    var myheader = tableNotOrganized.rows[rowcount].cells[0]
+    if (myheader.className === "table-header"){
+      myheader.className = "table-header openfolder"
+    } 
     var r = rowcount + 1
-    while ((row = tableNotOrganized.rows[r]) && !/\bparent\b/.test(row.className)){
+    while ((row = tableNotOrganized.rows[r]) && !/\bparent\b/.test(row.className)){       
       if (/\bopen\b/.test(row.className))
          row.className = row.className.replace(/\bopen\b/," ")
       r += 1
@@ -1185,6 +1196,10 @@ function jsonToTableWithDescription(table, jsonvar){
         }
       }
       if (pathlist[i] !== "" &&  countDouble === 0) {
+        var myheader = tableNotOrganized.rows[rowcount].cells[0]
+        if (myheader.className === "table-header"){
+          myheader.className = "table-header openfolder"
+        }
         var r = rowcount + 1
         while ((row = tableNotOrganized.rows[r]) && !/\bparent\b/.test(row.className)){
           if (/\bopen\b/.test(row.className))
@@ -1255,6 +1270,10 @@ function dropAddToTable(e, myID){
     console.log(emessage)
     ipcRenderer.send('open-error-file-exist', emessage)
   } else {
+    var myheader = tableNotOrganized.rows[rowcount].cells[0]
+    if (myheader.className === "table-header"){
+      myheader.className = "table-header openfolder"
+    }
     var r = rowcount + 1
     while ((row = tableNotOrganized.rows[r]) && !/\bparent\b/.test(row.className)){
       if (/\bopen\b/.test(row.className))
@@ -1277,6 +1296,17 @@ function clearTable(table){
   var keyvect = sparcFolderNames.slice()
   keyvect.push("main")
   clearStrings()
+  for (var j = 0; j < keyvect.length; j++) {
+    var SPARCfolderid = keyvect[j]
+    if (table == tableOrganized){
+      SPARCfolderid = SPARCfolderid + "_org"
+    }
+    var rowcount = document.getElementById(SPARCfolderid).rowIndex
+    var myheader = table.rows[rowcount].cells[0]
+    if (myheader.className === "table-header openfolder"){
+      myheader.className = "table-header"
+    }
+  }
   while (table.rows.length > keyvect.length){
     var keyrow = []
     for (var j = 0; j < keyvect.length; j++) {

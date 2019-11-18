@@ -242,6 +242,55 @@ select.my_dropdown {
     width:80%;
 }
 
+table {
+  width: 100%;
+  border-spacing: 0;
+  border: 1px solid hsla(0,0%,0%,.08);
+  border-width: 0 1px 1px 0;
+}
+
+th {
+  background-color: hsla(0,0%,50%,.06);
+}
+
+th:hover {
+  background-color: lightblue;
+}
+
+th,
+td {
+  text-align: center;
+  border: 1px solid hsla(0,0%,0%,.08);
+  border-width: 1px 0 0 1px;
+}
+
+th.table-header {
+  text-indent: 40%;
+  text-align: left;
+}
+
+.table-header:before{
+  content: '';
+  background: url('../img/close_folder.png');
+  background-size: cover;
+  position:absolute;
+  width:20px;
+  height:15px;
+  margin-left:-30px;
+  margin-top:3px;
+}
+
+.table-header.openfolder:before{
+  content: '';
+  background: url('../img/open_folder.png');
+  background-size:cover;
+  position:absolute;
+  width:20px;
+  height:20px;
+  margin-left:-30px;
+  margin-top:0px;
+}
+
 table.pathtable {
   margin: auto;
   width: 100%;
@@ -250,7 +299,7 @@ table.pathtable {
   font:inherit;
   word-break: break-word;
   border-collapse: collapse;
-  border: 1px solid #fff; /*for older IE*/
+  border: 1px solid #fff; 
   border-style: hidden
   }
 
