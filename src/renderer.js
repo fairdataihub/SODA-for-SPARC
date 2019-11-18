@@ -128,6 +128,7 @@ const blackColor = '#000000'
 const redColor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivatives", "docs", "primary", "protocol", "source"]
 const smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">'
+const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
 //////////////////////////////////
 // Operations on JavaScript end only
 //////////////////////////////////
@@ -179,7 +180,7 @@ ipcRenderer.on('selected-dataset', (event, path) => {
       var jsonFolder = organizedFolderToJson(path[0])
       jsonToTableOrganized(tableOrganized, jsonFolder)
     } else {
-      pathDataset.innerHTML = "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>"
+      pathDataset.innerHTML = "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>" + sadCan
     }
   }
 })
@@ -298,7 +299,7 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
             document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           } else {
             console.log(res)
-            document.getElementById("para-save-file-organization-status").innerHTML = "Saved!"
+            document.getElementById("para-save-file-organization-status").innerHTML = "Saved!" 
           }
       })
     }
