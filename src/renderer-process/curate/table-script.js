@@ -72,8 +72,12 @@ document.getElementById("table-organized").addEventListener("click", (event) => 
 });
 
 function rowDisplay(e) {
-	if (e.target.className === "table-header") {
-
+	if (e.target.className === "table-header" || e.target.className === "table-header openfolder") {
+		if (e.target.className === "table-header"){
+			e.target.className = "table-header openfolder"
+		} else {
+			e.target.className = "table-header"
+		}
 	    e.preventDefault();
 	    var row = e.target.parentNode;
 	    while ((row = nextTr(row)) && !/\bparent\b/.test(row.className)){
