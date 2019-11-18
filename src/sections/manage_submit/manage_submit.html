@@ -67,6 +67,9 @@
                 <option> Select </option>
               </select>
             </div>
+            <div id=div-bf-account-load-progress class="progressdiv">
+              <div class="indeterminatebar"></div>
+            </div>
             <p id='para-select-account-status'> <p>
           </div>
         </div>
@@ -156,7 +159,7 @@
             <button id="button-submit-dataset" class="demo-button"> Submit dataset </button>
             <p id='para-progress-bar-error-status'> <p>
             <h5> Progress </h5>
-            <div id='div-meter'><div id='div-progress-bar'></div> </div>
+            <progress class=progresstrack id=progress-bar-upload-bf max="100" value="0"></progress>
             <p id='para-progress-bar-status'> <p>
           </div>
         </div>
@@ -184,6 +187,9 @@
               <span class="tooltiptext">Name of user (First name, Last name) and their current permission ('viewer', 'manager', or 'editor') will be shown here for the selected dataset</span>
             </div>
           </h5>
+          <div id=div-bf-current-permission-progress class="progressdiv">
+            <div class="indeterminatebar"></div>
+          </div>
           <div class="demo-controls">
             <p id = "para-dataset-permission-current"> </p>
           </div>

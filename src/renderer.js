@@ -48,6 +48,7 @@ const pathNewDataset = document.querySelector('#selected-new-dataset')
 const newDatasetName = document.querySelector('#new-dataset-name')
 const manifestStatus = document.querySelector('#generate-manifest')
 const curationForm = document.querySelector('#dataset-curate-form')
+const progressBarCurate = document.getElementById("progress-bar-curate")
 
 const existingSubmissionStatus = document.querySelector('#existing-submission')
 const newSubmissionStatus = document.querySelector('#new-submission')
@@ -87,6 +88,9 @@ const bfAddAccountInfo = document.querySelector('#add-account-progress')
 
 const bfAccountList = document.querySelector('#bfaccountlist')
 const bfUploadAccountList = document.querySelector('#bfuploadaccountlist')
+const bfAccountLoadProgress = document.querySelector('#div-bf-account-load-progress')
+const bfAccountLoadProgressCurate = document.querySelector('#div-bf-account-load-progress-curate')
+
 var myitem
 const bfDatasetList = document.querySelector('#bfdatasetlist')
 const bfUploadDatasetList = document.querySelector('#bfuploaddatasetlist')
@@ -101,11 +105,11 @@ const bfCreateNewDatasetInfo = document.querySelector('#add-new-dataset-progress
 const bfSubmitDatasetBtn = document.getElementById('button-submit-dataset')
 const bfSubmitDatasetInfo = document.querySelector('#progresssubmit')
 const pathSubmitDataset = document.querySelector('#selected-submit-dataset')
-const progressBar = document.getElementById("div-progress-bar")
-const progressBarCurate = document.getElementById("div-curate-progress-bar")
+const progressBarUploadBf = document.getElementById("progress-bar-upload-bf")
 
 const bfDatasetListPermission = document.querySelector('#bfdatasetlist_permission')
 const currentDatasetPermission = document.querySelector('#para-dataset-permission-current')
+const bfCurrentPermissionProgress = document.querySelector('#div-bf-current-permission-progress')
 const bfListUsers = document.querySelector('#bf_list_users')
 const bfListRoles = document.querySelector('#bf_list_roles')
 const bfAddPermissionBtn = document.getElementById('button-add-permission')
@@ -123,8 +127,8 @@ const datasetPermissionStatusTeam = document.querySelector('#para-dataset-permis
 const blackColor = '#000000'
 const redColor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivatives", "docs", "primary", "protocol", "source"]
-
-
+const smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">'
+const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
 //////////////////////////////////
 // Operations on JavaScript end only
 //////////////////////////////////
@@ -176,7 +180,7 @@ ipcRenderer.on('selected-dataset', (event, path) => {
       var jsonFolder = organizedFolderToJson(path[0])
       jsonToTableOrganized(tableOrganized, jsonFolder)
     } else {
-      pathDataset.innerHTML = "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>"
+      pathDataset.innerHTML = "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>" + sadCan
     }
   }
 })
@@ -295,7 +299,7 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
             document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           } else {
             console.log(res)
-            document.getElementById("para-save-file-organization-status").innerHTML = "Saved!"
+            document.getElementById("para-save-file-organization-status").innerHTML = "Saved!" 
           }
       })
     }
@@ -374,7 +378,7 @@ curateDatasetBtn.addEventListener('click', () => {
 
   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
   document.getElementById("para-curate-progress-bar-status").innerHTML = "Started generating files ..."
-  progressBarCurate.style.width = 0 + "%";
+  progressBarCurate.value = 0;
   // Disable curate button to prevent multiple clicks
   curateDatasetBtn.disabled = true
   disableform(curationForm)
@@ -490,7 +494,7 @@ curateDatasetBtn.addEventListener('click', () => {
       var emessage = userError(error)
       document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       document.getElementById("para-curate-progress-bar-status").innerHTML = ""
-      progressBarCurate.style.width = 0 + "%";
+      progressBarCurate.value = 0;
       err = true
       console.error(error)
       curateDatasetBtn.disabled = false
@@ -515,10 +519,14 @@ curateDatasetBtn.addEventListener('click', () => {
         var totalCurateSize = res[3]
         var curatedSize = res[4]
         var value = (curatedSize / totalCurateSize) * 100
-        progressBarCurate.style.width = value + "%";
+        progressBarCurate.value = value;
         console.log(value, totalCurateSize, curatedSize, res[5])
         if (printstatus === 'Curating') {
-          document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + '<img class="message-icon" src="assets/img/can-smiley.png">'
+          if (res[0] === 'Success: COMPLETED!'){
+            document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + smileyCan
+          } else {
+            document.getElementById("para-curate-progress-bar-status").innerHTML = res[0]
+          }
           // progressInfo.value = res[0].split(',').join('\n')
         }
       }
@@ -541,17 +549,20 @@ curateDatasetBtn.addEventListener('click', () => {
 // Add existing bf account(s) to dropdown list
 bfAccountCheckBtn.addEventListener('click', (event) => {
   bfSelectAccountStatus.innerHTML = "Please wait..."
+  bfAccountLoadProgress.style.display = 'block'
   removeOptions(bfAccountList)
   removeOptions(bfUploadAccountList)
-  updateBfAccountList(bfAccountList, bfSelectAccountStatus)
-  updateBfAccountList(bfUploadAccountList, bfUploadSelectAccountStatus)
+  updateBfAccountList(bfAccountList, bfSelectAccountStatus, bfAccountLoadProgress)
+  updateBfAccountList(bfUploadAccountList, bfUploadSelectAccountStatus, bfAccountLoadProgress)
 })
+
 bfUploadAccountCheckBtn.addEventListener('click', (event) => {
   bfUploadSelectAccountStatus.innerHTML = "Please wait..."
+  bfAccountLoadProgressCurate.style.display = 'block'
   removeOptions(bfAccountList)
   removeOptions(bfUploadAccountList)
-  updateBfAccountList(bfAccountList, bfSelectAccountStatus)
-  updateBfAccountList(bfUploadAccountList, bfUploadSelectAccountStatus)
+  updateBfAccountList(bfAccountList, bfSelectAccountStatus, bfAccountLoadProgressCurate)
+  updateBfAccountList(bfUploadAccountList, bfUploadSelectAccountStatus, bfAccountLoadProgressCurate)
 })
 
 // Add bf account
@@ -581,6 +592,7 @@ bfAddAccountBtn.addEventListener('click', () => {
 // Select bf account from dropdownlist and show existing dataset
 bfAccountList.addEventListener('change', () => {
   bfSelectAccountStatus.innerHTML = "Please wait..."
+  bfAccountLoadProgress.style.display = 'block'
   refreshBfDatasetList(bfDatasetList, bfAccountList)
   refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
   currentDatasetPermission.innerHTML = ''
@@ -590,13 +602,17 @@ bfAccountList.addEventListener('change', () => {
 
   if (selectedbfaccount == 'Select') {
     bfSelectAccountStatus.innerHTML = "";
+    bfAccountLoadProgress.style.display = 'none'
   } else{
-    showAccountDetails()
+    showAccountDetails(bfAccountLoadProgress)
   }
+
+  
 })
 
 bfUploadAccountList.addEventListener('change', () => {
-  document.getElementById("para-upload-select-account-status").innerHTML = "Please wait..."
+  bfUploadSelectAccountStatus.innerHTML = "Please wait..."
+  bfAccountLoadProgressCurate.style.display = 'block'
   refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
   // refreshBfDatasetList(bfDatasetListPermission, bfUploadAccountList)
   // currentDatasetPermission.innerHTML = ''
@@ -605,9 +621,10 @@ bfUploadAccountList.addEventListener('change', () => {
   var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
 
   if (selectedbfaccount == 'Select') {
-    document.getElementById("para-upload-select-account-status").innerHTML = "";
+    bfUploadSelectAccountStatus.innerHTML = "";
+    bfAccountLoadProgressCurate.style.display = 'none'
   } else {
-    showUploadAccountDetails()
+    showUploadAccountDetails(bfAccountLoadProgressCurate)
   }
 })
 
@@ -666,7 +683,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       console.error(error)
       var emessage = userError(error)
       document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      progressBar.style.width = 0 + "%";
+      progressBarUploadBf.value = 0
       err = true
       // bfsubmitdatasetinfo.style.color = redcolor
       // bfsubmitdatasetinfo.value = emessage
@@ -690,6 +707,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
           var value = (uploadedFileSize / totalFileSize) * 100
           console.log(uploadedFileSize, totalFileSize, value)
           progressBar.style.width = value + "%";
+          progressBarUploadBf.value = value
           if (completionStatus != 'Done') {
             document.getElementById("para-progress-bar-status").innerHTML = dataProgress.split(',').pop()
             // bfsubmitdatasetinfo.value = dataProgress.split(',').join('\n')
@@ -698,8 +716,8 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       })
       if (completionStatus === 'Done'){
         if (!err){
-          progressBar.style.width = 100 + "%";
-          document.getElementById("para-progress-bar-status").innerHTML = "Upload completed!"
+          progressBarUploadBf.value = 100
+          document.getElementById("para-progress-bar-status").innerHTML = "Upload completed!" + smileyCan
         }
         clearInterval(timerProgress)
         bfSubmitDatasetBtn.disabled = false
@@ -712,6 +730,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
  * under the "Manage dataset permission" feature
  */
 bfDatasetListPermission.addEventListener('change', () => {
+  bfCurrentPermissionProgress.style.display = 'block'
   showCurrentPermission()
 })
 
@@ -722,6 +741,7 @@ bfDatasetListPermission.addEventListener('change', () => {
  */
 bfAddPermissionBtn.addEventListener('click', () => {
   datasetPermissionStatus.innerHTML = ''
+  bfCurrentPermissionProgress.style.display = 'block'
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text
@@ -741,6 +761,8 @@ ipcRenderer.on('warning-add-permission-owner-selection', (event, index) => {
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text
   if (index === 0) {
     addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole)
+  } else {
+    bfCurrentPermissionProgress.style.display = 'none'
   }
 })
 
@@ -750,6 +772,7 @@ ipcRenderer.on('warning-add-permission-owner-selection', (event, index) => {
  */
 bfAddPermissionTeamBtn.addEventListener('click', () => {
   datasetPermissionStatusTeam.innerHTML = ''
+  bfCurrentPermissionProgress.style.display = 'block'
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
   var selectedTeam = bfListTeams.options[bfListTeams.selectedIndex].text
@@ -761,6 +784,7 @@ bfAddPermissionTeamBtn.addEventListener('click', () => {
       console.error(error)
       var emessage = userError(error)
       datasetPermissionStatusTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfCurrentPermissionProgress.style.display = 'none'
     } else {
       console.log('Done', res)
       datasetPermissionStatusTeam.innerHTML = res
@@ -858,11 +882,13 @@ function showCurrentPermission(){
   var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
     currentDatasetPermission.innerHTML = ''
+    bfCurrentPermissionProgress.style.display = 'none'
   } else {
     client.invoke("api_bf_get_permission", selectedBfAccount, selectedBfDataset,
     (error, res) => {
       if(error) {
         console.error(error)
+        bfCurrentPermissionProgress.style.display = 'none'
       } else {
         console.log('Done', res)
         var permissionList = ''
@@ -870,27 +896,32 @@ function showCurrentPermission(){
           permissionList = permissionList + res[i] + '<br>'
         }
         currentDatasetPermission.innerHTML = permissionList
+        bfCurrentPermissionProgress.style.display = 'none'
       }
     })
   }
 }
 
-function showAccountDetails(){
+function showAccountDetails(bfLoadAccount){
   client.invoke("api_bf_account_details", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
     if(error) {
       console.error(error)
+      bfLoadAccount.style.display = 'none'
     } else {
       bfSelectAccountStatus.innerHTML = res;
+      bfLoadAccount.style.display = 'none'
     }
   })
 }
 
-function showUploadAccountDetails(){
+function showUploadAccountDetails(bfLoadAccount){
   client.invoke("api_bf_account_details", bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text, (error, res) => {
     if(error) {
       console.error(error)
+      bfLoadAccount.style.display = 'none'
     } else {
       bfUploadSelectAccountStatus.innerHTML = res;
+      bfLoadAccount.style.display = 'none'
     }
   })
 }
@@ -906,7 +937,7 @@ function userError(error)
   return myerror
 }
 
-function updateBfAccountList(bfAccountList, bfSelectAccountStatus){
+function updateBfAccountList(bfAccountList, bfSelectAccountStatus, bfLoadProgress){
   client.invoke("api_bf_account_list", (error, res) => {
   if(error) {
     console.error(error)
@@ -918,6 +949,7 @@ function updateBfAccountList(bfAccountList, bfSelectAccountStatus){
       option.value = myitemselect
       bfAccountList.appendChild(option)
       bfSelectAccountStatus.innerHTML = ""
+      bfLoadProgress.style.display = 'none'
     }
   }
 })

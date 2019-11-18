@@ -62,7 +62,7 @@
             <h5> </h5>
             <div class="demo-controls">
             <button id="button-select-dataset" class="demo-button"> Select Dataset Folder </button>
-            <p id="para-selected-dataset"></p>
+            <p id="para-selected-dataset" style="margin-top:-5px"></p>
             </div>
             <h5> </h5>
             <div class="demo-controls">
@@ -472,6 +472,9 @@
                 <option> Select </option>
               </select>
             </div>
+            <div id=div-bf-account-load-progress-curate class="progressdiv">
+              <div class="indeterminatebar"></div>
+            </div>
             <p id='para-upload-select-account-status'> <p>
 
             <p> </p>
@@ -511,13 +514,16 @@
           <div id="div-curate-progress-bar-error-status" class="datasetsaveoption">
             <p id='para-curate-progress-bar-error-status'> <p>
           </div>
+
           <div id="div-curate-meter-progress" class="datasetsaveoption">
             <h5> Progress </h5>
-            <div id='div-curate-meter'><div id='div-curate-progress-bar'></div> </div>
+            <progress class=progresstrack id=progress-bar-curate max="100" value="0"></progress>
           </div>
+
           <div id="div-curate-progress-bar-status" class="datasetsaveoption">
             <p id='para-curate-progress-bar-status'> <p>
           </div>
+
 
           <!-- <div id="div-progress-print" class="datasetsaveoption">
             <h5> Progress </h5>

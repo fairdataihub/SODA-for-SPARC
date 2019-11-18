@@ -3,13 +3,13 @@ function showModifyExisting(){
   document.getElementById('div-create-cloud').style.display ='none';
   document.getElementById('div-curate-button').style.display ='block';
   document.getElementById('div-curate-progress-bar-error-status').style.display ='block';
-  document.getElementById('div-curate-meter-progress').style.display ='none';
   document.getElementById('div-curate-progress-bar-status').style.display ='block';
   // document.getElementById('div-progress-print').style.display ='none';
   // document.getElementById('progressinfo').value ='';
   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
   document.getElementById("para-curate-progress-bar-status").innerHTML = ""
-  document.getElementById("div-curate-progress-bar").style.width = 0 + "%";
+  document.getElementById("div-curate-meter-progress").style.display ='none';
+  document.getElementById("progress-bar-curate").value = 0;
 }
 
 function showCreateNew(){
@@ -17,13 +17,13 @@ function showCreateNew(){
   document.getElementById('div-create-cloud').style.display ='none';
   document.getElementById('div-curate-button').style.display ='block';
   document.getElementById('div-curate-progress-bar-error-status').style.display ='block';
-  document.getElementById('div-curate-meter-progress').style.display ='block';
   document.getElementById('div-curate-progress-bar-status').style.display ='block';
   // document.getElementById('div-progress-print').style.display ='none';
   // document.getElementById('progressinfo').value ='';
   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
   document.getElementById("para-curate-progress-bar-status").innerHTML = ""
-  document.getElementById("div-curate-progress-bar").style.width = 0 + "%";
+  document.getElementById("div-curate-meter-progress").style.display ='block';
+  document.getElementById("progress-bar-curate").value = 0;
 }
 
 function showCreateCloud(){
@@ -31,12 +31,12 @@ function showCreateCloud(){
   document.getElementById('div-create-cloud').style.display ='block';
   document.getElementById('div-curate-button').style.display ='block';
   document.getElementById('div-curate-progress-bar-error-status').style.display ='block';
-  document.getElementById('div-curate-meter-progress').style.display ='block';
   document.getElementById('div-curate-progress-bar-status').style.display ='block';
   // document.getElementById('div-progress-print').style.display ='none';
   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
   document.getElementById("para-curate-progress-bar-status").innerHTML = ""
-  document.getElementById("div-curate-progress-bar").style.width = 0 + "%";
+  document.getElementById("div-curate-meter-progress").style.display ='block';
+  document.getElementById("progress-bar-curate").value = 0;
 }
 
 document.querySelector('#existing-dataset').addEventListener('click', () => {
