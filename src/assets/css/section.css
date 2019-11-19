@@ -48,6 +48,6 @@
 .section-icon {
   width: 32px;
   height: 32px;
-  vertical-align: middle;
+  vertical-align: sub;
   margin-right: .5em;
 }
