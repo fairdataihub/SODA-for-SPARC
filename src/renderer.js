@@ -379,7 +379,6 @@ curateDatasetBtn.addEventListener('click', () => {
   }
 
   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
-  document.getElementById("para-curate-progress-bar-status").innerHTML = "Started generating files ..."
   progressBarCurate.value = 0;
   // Disable curate button to prevent multiple clicks
   curateDatasetBtn.disabled = true
@@ -408,14 +407,14 @@ curateDatasetBtn.addEventListener('click', () => {
         error = false
       }
     }
-      if (error) {
-        var emessage = 'Error: Select a non-empty dataset'
-        document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-        curateDatasetBtn.disabled = false
-        enableform(curationForm)
-        console.error('Error')
-        return
-      }
+    if (error) {
+      var emessage = 'Error: Please add files to your dataset'
+      document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      curateDatasetBtn.disabled = false
+      enableform(curationForm)
+      console.error(emessage)
+      return
+    }
     console.log(jsonvect)
     sourceDataset = 'not organized'
   } else {
@@ -501,6 +500,7 @@ curateDatasetBtn.addEventListener('click', () => {
   // Initiate curation by calling python
   var err = false
   var completionstatus = 'Solving'
+  document.getElementById("para-curate-progress-bar-status").innerHTML = "Started generating files ..."
   client.invoke("api_curate_dataset",
     sourceDataset, destinationDataset, pathDatasetValue, newDatasetNameVar,
     submissionStatus, pathSubmission,  descriptionStatus, pathDescription,
