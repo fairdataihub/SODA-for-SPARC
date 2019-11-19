@@ -7,12 +7,10 @@ from os import listdir, stat, makedirs, mkdir, walk, remove
 from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname, getsize
 import pandas as pd
 from time import strftime, localtime
-from shutil import copy2, copy, copyfile
+from shutil import copy2
 from blackfynn import Blackfynn
 from configparser import ConfigParser
 import threading
-import json
-from pandas.io.html import read_html
 import numpy as np
 import collections
 import subprocess
@@ -27,7 +25,7 @@ curatestatus = ' '
 curateprintstatus = ' '
 total_dataset_size = 0
 curated_dataset_size = 0
-initial_bfdataset_size = 0
+#initial_bfdataset_size = 0
 
 userpath = expanduser("~")
 configpath = join(userpath, '.blackfynn', 'config.ini')
@@ -102,7 +100,7 @@ def path_size(path):
 
 def create_folder_level_manifest(datasetpath, jsonpath, jsondescription):
     """
-    Creates manifest files with the description specified
+    Creates manifest files with the description specified in each SPARC folder
     Args:
         datasetpath: path of the dataset
         jsonpath: all paths in json format
@@ -487,7 +485,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     Checks validity of files / paths / folders and then generates the files and folders as requested along with progress status
     """
     global curatestatus #set to 'Done' when completed or error to stop progress tracking from front-end
-    global curateprogress #GUI messages shown to user to provide upadte on progress
+    global curateprogress #GUI messages shown to user to provide update on progress
     global curateprintstatus # If = "Curating" Progress messages are shown to user
     global total_dataset_size # total size of the dataset to be generated
     global curated_dataset_size # total size of the dataset generated (locally or on blackfynn) at a given time
@@ -708,10 +706,6 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             error = error + 'Error: Please select a valid Blackfynn dataset<br>'
             c += 1
 
-        # if not isdir(pathdataset):
-        #     submitdatastatus = 'Done'
-        #     error = error + 'Error: Please select a valid local dataset folder' + '<br>'
-        #     c += 1
         if c>0:
             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
             raise Exception(error)
@@ -1040,9 +1034,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global total_file_size
     global uploaded_file_size
     global submitprintstatus
-    # global myds
-    # global bf
-    # global initial_bfdataset_size
+
     total_file_size = folder_size(pathdataset)
     submitdataprogress = ' '
     submitdatastatus = ' '
@@ -1111,10 +1103,6 @@ def submit_dataset_progress():
     global submitdataprogress
     global submitdatastatus
     global submitprintstatus
-    # global myds
-    # global bf
-    # global initial_bfdataset_size
-    # uploaded_file_size = dataset_size_blackfynn() - initial_bfdataset_size
     global uploaded_file_size
     global total_file_size
     return (submitdataprogress, submitdatastatus, submitprintstatus, uploaded_file_size, total_file_size)
