@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# python module for Software for Organizing Data Automatically (SODA)
+### Import required python modules
 import os
 import platform
 from os import listdir, stat, makedirs, mkdir, walk, remove
@@ -25,14 +25,12 @@ curatestatus = ' '
 curateprintstatus = ' '
 total_dataset_size = 0
 curated_dataset_size = 0
-#initial_bfdataset_size = 0
 
 userpath = expanduser("~")
 configpath = join(userpath, '.blackfynn', 'config.ini')
 submitdataprogress = ' '
 submitdatastatus = ' '
 submitprintstatus = ' '
-
 
 ### Internal functions
 def open_file(file_path):
@@ -41,9 +39,9 @@ def open_file(file_path):
     https://stackoverflow.com/questions/6631299/python-opening-a-folder-in-explorer-nautilus-mac-thingie
 
     Args:
-        file_path: path of the folder
+        file_path: path of the folder (string)
     Action:
-        Opens dialog box for the given path
+        Opens file explorer window to the given path
     """
     try:
         if platform.system() == "Windows":
@@ -61,9 +59,9 @@ def folder_size(path):
     Provides the size of the folder indicated by path
 
     Args:
-            path: path of the folder
+        path: path of the folder (string)
     Returns:
-            total_siz: Total size of the folder in bytes (integer)
+        total_size: total size of the folder in bytes (integer)
     """
     total_size = 0
     start_path = '.'  # To get size of current directory
@@ -91,6 +89,10 @@ def dataset_size_blackfynn():
 def path_size(path):
     """
     Returns size of the path, after checking if it's a folder or a file
+    Args:
+        path: path of the file/folder (string)
+    Returns:
+        total_size: total size of the file/folder in bytes (integer)
     """
     if isdir(path):
         return folder_size(path)
@@ -100,20 +102,22 @@ def path_size(path):
 
 def create_folder_level_manifest(datasetpath, jsonpath, jsondescription):
     """
-    Creates manifest files with the description specified in each SPARC folder
+    Function to create manifest files for each SPARC folder. 
+    Files are created in a temporary folder
+
     Args:
-        datasetpath: path of the dataset
-        jsonpath: all paths in json format
-        jsondescription: description associated with each path
+        datasetpath: path of the dataset (string)
+        jsonpath: all paths in json format with key being SPARC folder names (dictionary)
+        jsondescription: description associated with each path (dictionary)
     Action:
-        Creates manifest files in Excel format
+        Creates manifest files in csv format for each SPARC folder
     """
     global total_dataset_size
     try:
         folders = list(jsonpath.keys())
         if 'main' in folders:
             folders.remove('main')
-        # In each subfolder, generate a manifest file
+        # In each SPARC folder, generate a manifest file
         for folder in folders:
             if (jsonpath[folder] != []):
                 # Initialize dataframe where manifest info will be stored
@@ -198,8 +202,9 @@ def create_folder_level_manifest(datasetpath, jsonpath, jsondescription):
 def check_forbidden_characters(my_string):
     """
     Check for forbidden characters in file/folder name
+
     Args:
-        my_string: string with characters
+        my_string: string with characters (string)
     Returns:
         False: no forbidden character
         True: presence of forbidden character(s)
@@ -213,12 +218,13 @@ def check_forbidden_characters(my_string):
 
 def return_new_path(topath):
     """
-    This function checks if the folder already exists and in such cases, appends the name with (2) or (3) etc.
+    This function checks if a folder already exists and in such cases, 
+    appends (2) or (3) etc. to the folder name
 
     Args:
-        topath: path where the folder is supposed to be copied
+        topath: path where the folder is supposed to be created (string)
     Returns:
-        topath: new folder name based on the availability in destination folder
+        topath: new folder name based on the availability in destination folder (string)
     """
     if exists(topath):
         i = 2
@@ -230,7 +236,15 @@ def return_new_path(topath):
         return topath
 
 
-def mycopyfileobj(fsrc, fdst, src, length=16*1024*16):
+def mycopyfileobj(fsrc, fdst, length=16*1024*16):
+    """
+    Helper function to copy file
+
+    Args:
+        fsrc: source file opened in python (file-like object)
+        fdst: destination file accessed in python (file-like object)
+        length: copied buffer size in bytes (integer)
+    """
     global curateprogress
     global total_dataset_size
     global curated_dataset_size
@@ -245,34 +259,36 @@ def mycopyfileobj(fsrc, fdst, src, length=16*1024*16):
 def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     """
     Copy file src to dst with metadata (timestamp, permission, etc.) conserved
-
-    If follow_symlinks is not set and src is a symbolic link, a new
-    symlink will be created instead of copying the file it points to.
-
+    
+    Args:
+        src: source file (string)
+        dst: destination file (string)
+    Returns:
+        dst 
     """
     if not follow_symlinks and os.path.islink(src):
         os.symlink(os.readlink(src), dst)
     else:
         with open(src, 'rb') as fsrc:
             with open(dst, 'wb') as fdst:
-                mycopyfileobj(fsrc, fdst, src)
+                mycopyfileobj(fsrc, fdst)
     shutil.copystat(src, dst)
     return dst
 
 
-### SPARC dataset organizer
+### Prepare dataset
 def save_file_organization(jsonpath, jsondescription, pathsavefileorganization):
     """
-    Associated with 'Save' button in the SODA GUI
-    Saves the paths and associated descriptions from json to a CSV file for future use
+    Associated with 'Save' button in the SODA interface
+    Saves the paths and associated descriptions from the interface table to a CSV file for future use
     Each json key (SPARC foler name) becomes a header in the CSV
 
     Args:
-        jsonpath: paths of all files (json object)
-        jsondescription: description associated with each file (json object)
+        jsonpath: paths of all files (dictionary)
+        jsondescription: description associated with each file (dictionary)
         pathsavefileorganization: destination path for CSV file to be saved (string)
-    Returns:
-        CSV file with path and description for files in SPARC folders
+    Action:
+        Creates CSV file with path and description for files in SPARC folders
     """
     try:
         mydict = jsonpath
@@ -296,8 +312,8 @@ def save_file_organization(jsonpath, jsondescription, pathsavefileorganization):
 
 def import_file_organization(pathuploadfileorganization, headernames):
     """
-    Associated with 'Import' button in the SODA GUI
-    Import previously saved progress (CSV file) to a dictionary for viewing in the SODA GUI
+    Associated with 'Import' button in the SODA interface
+    Import previously saved progress (CSV file) for viewing in the SODA interface
 
     Args:
         pathuploadfileorganization: path of previously saved CSV file (string)
@@ -334,8 +350,8 @@ def create_preview_files(paths, folder_path):
     Creates folders and empty files from original 'paths' to the destination 'folder_path'
 
     Args:
-        paths: Paths of all the files that need to be copied
-        folder_path: Destination to which the files / folders need to be copied
+        paths: paths of all the files that need to be copied (list of strings)
+        folder_path: Destination to which the files / folders need to be copied (string)
     Action:
         Creates folders and empty files at the given 'folder_path'
     """
@@ -359,12 +375,12 @@ def create_preview_files(paths, folder_path):
 
 def preview_file_organization(jsonpath):
     """
-    Associated with 'Preview' button in the SODA GUI
+    Associated with 'Preview' button in the SODA interface
     Creates a folder for preview and adds mock files from SODA table (same name as origin but 0 kb in size)
     Opens the dialog box to showcase the files / folders added
 
     Args:
-        jsonpath: json object containing all paths (keys are SPARC folder names)
+        jsonpath: dictionary containing all paths (keys are SPARC folder names)
     Action:
         Opens the dialog box at preview_path
     Returns:
@@ -400,8 +416,10 @@ def preview_file_organization(jsonpath):
 
 def delete_preview_file_organization():
     """
-    Associated with 'Delete Preview Folder' button
-    Deletes the 'Preview' folder from the disk
+    Associated with 'Delete Preview Folder' button of the SODA interface
+    
+    Action:
+        Deletes the 'Preview' folder from the disk
     """
     try:
         userpath = expanduser("~")
@@ -414,15 +432,14 @@ def delete_preview_file_organization():
         raise e
 
 
-### SPARC generate dataset
 def create_dataset(jsonpath, pathdataset):
     """
-    Associated with 'Create new dataset locally'
-    Creates folders and files from paths specified in json object TO the destination path specified
+    Associated with 'Create new dataset locally' option of SODA interface
+    for creating requested folders and files to the destination path specified
 
-    Input:
-        jsonpath: JSON object of all paths from origin
-        pathdataset: destination path for creating a new dataset as specified
+    Args:
+        jsonpath: all paths (dictionary, keys are SPARC folder names)
+        pathdataset: destination path for creating a new dataset as specified (string)
     Action:
         Creates the folders and files specified
     """
@@ -481,8 +498,26 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         subjectsstatus, pathsubjects, samplesstatus, pathsamples, manifeststatus, \
         jsonpath, jsondescription):
     """
-    Associated with 'Generate' button in the 'Generate dataset' section
-    Checks validity of files / paths / folders and then generates the files and folders as requested along with progress status
+    Associated with 'Generate' button in the 'Generate dataset' section of SODA interface
+    Checks validity of files / paths / folders and then generates the files and folders 
+    as requested along with progress status
+
+    Args:
+        sourcedataset: state of the source dataset ('already organized' or 'not organized')
+        destinationdataset: type of destination dataset ('modify existing', 'create new', or 'upload to blackfynn')
+        pathdataset: destination path of new dataset if created locally or name of blackfynn account (string)
+        newdatasetname: name of the local dataset or name of the dataset on blackfynn (string)
+        submissionstatus: boolean to check if user request submission file 
+        pathsubmission: path to the submission file (string)
+        datasetdescriptionstatus: boolean to check if user request dataset_description file
+        pathdescription: path to the dataset_description file (string)
+        subjectsstatus: boolean to check if user request subjects file
+        pathsubjects: path to the subjects file (string)
+        samplesstatus: boolean to check if user request samples file
+        pathsamples: path to the ssamples file (string)
+        manifeststatus: boolean to check if user request manifest files
+        jsonpath: path of the files to be included in the dataset (dictionary)
+        jsondescription: associated description to be included in manifest file (dictionary)
     """
     global curatestatus #set to 'Done' when completed or error to stop progress tracking from front-end
     global curateprogress #GUI messages shown to user to provide update on progress
@@ -686,7 +721,6 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             raise e
 
     # UPLOAD TO BLACKFYNN
-
     elif destinationdataset == 'upload to blackfynn':
         error, c = '', 0
         accountname = pathdataset
@@ -763,12 +797,12 @@ def directly_upload_structured_file(myds, mypath, myfolder):
     """
     Helper function to upload given folder to Blackfynn dataset in the original folder structure
 
-    Input:
-        myds: Dataset name on Blackfynn
-        mypath: Path of the organized dataset on local machine
-        myfolder: Current folder inside the path
+    Args:
+        myds: Dataset name on Blackfynn (string)
+        mypath: Path of the organized dataset on local machine (string)
+        myfolder: Current subfolder inside the path (string)
     Action:
-        Uploads the folder to Blackfynn
+        Uploads the files/folders to Blackfynn
     """
     global curateprogress
     global curated_dataset_size
@@ -799,7 +833,7 @@ def directly_upload_structured_file(myds, mypath, myfolder):
 
 def curate_dataset_progress():
     """
-    Function frequently called by front end to help keep track of the progress
+    Function frequently called by front end to help keep track of the dataset generation progress
     """
     global curateprogress
     global curatestatus
@@ -811,17 +845,15 @@ def curate_dataset_progress():
     return (curateprogress, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time/60)
 
 
-### SODA Blackfynn interface
-
+### Manage datasets (Blackfynn interface)
 def bf_add_account(keyname, key, secret):
     """
-    Associated with 'Add account' button in 'Login to your Blackfynn account' section
-    Adds an account on the local machine linked to the credentials specified
+    Associated with 'Add account' button in 'Login to your Blackfynn account' section of SODA
 
-    Input:
-        keyname: Name of the Account to be associated with the given credentials
-        key: API key
-        secret: API Secret
+    Args:
+        keyname: Name of the account to be associated with the given credentials (string)
+        key: API key (string)
+        secret: API Secret (string)
     Action:
         Adds account to the Blackfynn configuration file (local machine)
     """
@@ -871,7 +903,10 @@ def bf_add_account(keyname, key, secret):
 
 def bf_delete_account(keyname):
     """
-    Deletes account information from the system
+    Args:
+        keyname: name of local Blackfynn account key (string)
+    Action:
+        Deletes account information from the Blackfynn config file
     """
     config = ConfigParser()
     config.read(configpath)
@@ -882,7 +917,8 @@ def bf_delete_account(keyname):
 
 def bf_account_list():
     """
-    Returns list of accounts stored in the system
+    Action:
+        Returns list of accounts stored in the system
     """
     try:
         accountlist = ['Select']
@@ -908,7 +944,12 @@ def bf_account_list():
 
 def bf_dataset_account(accountname):
     """
-    Returns list of datasets associated with the specified Account Name ('accountname')
+    Args:
+        accountname: name of local Blackfynn account key (string)
+    Return:
+        dataset_list: list of datasets associated with the specified account Name (list of string)
+    Action:
+        Returns list of datasets associated with the specified account Name ('accountname')
     """
     try:
         dataset_list = []
@@ -926,7 +967,12 @@ def bf_dataset_account(accountname):
 
 def bf_account_details(accountname):
     """
-    Returns list of datasets associated with the specified Account Name ('accountname')
+    Args:
+        accountname: name of local Blackfynn account key (string)
+    Return:
+        acc_details: account user email and organization (string)
+    Action:
+        Returns: return details of user associated with the account 
     """
     try:
         bf = Blackfynn(accountname)
@@ -941,9 +987,9 @@ def bf_new_dataset_folder(datasetname, accountname):
     """
     Associated with 'Create' button in 'Create new dataset folder'
 
-    Input:
-        datasetname: Name of the dataset to be created
-        accountname: Account in which the dataset needs to be created
+    Args:
+        datasetname: name of the dataset to be created (string)
+        accountname: account in which the dataset needs to be created (string)
     Action:
         Creates dataset for the account specified
     """
@@ -989,9 +1035,9 @@ def upload_structured_file(myds, mypath, myfolder):
     Helper function to upload given folder to Blackfynn dataset in the original folder structure
 
     Input:
-        myds: Dataset name on Blackfynn
-        mypath: Path of the organized dataset on local machine
-        myfolder: Current folder inside the path
+        myds: dataset name on Blackfynn (string)
+        mypath: path of the organized dataset on local machine (string)
+        myfolder: current folder inside the path (string)
     Action:
         Uploads the folder to Blackfynn
     """
@@ -1023,9 +1069,9 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     Uploads the specified folder to the specified dataset on Blackfynn account
 
     Input:
-        accountname: Account in which the dataset needs to be created
-        bfdataset: Name of the dataset on Blackfynn
-        pathdataset: Path of dataset on local machine
+        accountname: account in which the dataset needs to be created (string)
+        bfdataset: name of the dataset on Blackfynn (string)
+        pathdataset: path of dataset on local machine (string)
     Action:
         Uploads dataset on Blackfynn account
     """
@@ -1098,7 +1144,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
 def submit_dataset_progress():
     """
-    Creates global variables to help keep track of the dataset submission progress
+    Keeps track of the dataset submission progress
     """
     global submitdataprogress
     global submitdatastatus
@@ -1113,11 +1159,11 @@ def bf_get_users(selected_bfaccount):
     Function to get list of users belonging to the organization of
     the given Blackfynn account
 
-    Input:
-      selected_bfaccount (string): name of selected Blackfynn acccount
-    Output:
+    Args:
+      selected_bfaccount: name of selected Blackfynn acccount (string)
+    Retun:
         list_users : list of users (first name -- last name) associated with the organization of the
-        selected Blackfynn account
+        selected Blackfynn account (list of string)
     """
     try:
         bf = Blackfynn(selected_bfaccount)
@@ -1136,14 +1182,14 @@ def bf_get_users(selected_bfaccount):
 
 def bf_get_teams(selected_bfaccount):
     """
-    Function to get list of teams belonging to the organization of
-    the given Blackfynn account
-
-    Input:
-      selected_bfaccount (string): name of selected Blackfynn acccount
-    Output:
+    Args:
+      selected_bfaccount: name of selected Blackfynn acccount (string)
+    Return:
         list_teams : list of teams (name) associated with the organization of the
-        selected Blackfynn account
+        selected Blackfynn account (list of string)
+    Action:
+        Provides list of teams belonging to the organization of
+        the given Blackfynn account
     """
     try:
         bf = Blackfynn(selected_bfaccount)
@@ -1161,16 +1207,15 @@ def bf_get_teams(selected_bfaccount):
 
 
 def bf_get_permission(selected_bfaccount, selected_bfdataset):
-
     """
-    Function to get permission for a selected dataset
+    Function to get current permission for a selected Blackfynn dataset
 
-    Input:
-        selected_bfaccount (string): name of selected Blackfynn acccount
-        selected_bfdataset (string): name of selected Blackfynn dataset
-    Output:
-        list_permission (list): list of permission (first name -- last name -- role) associated with the
-        selected dataset
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+    Return:
+        list_permission: list of permission (first name -- last name -- role) associated with the
+        selected dataset (list of strings)
     """
     error = ''
 
@@ -1237,12 +1282,12 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
     """
     Function to get permission for a selected dataset
 
-    Input:
-        selected_bfaccount (string): name of selected Blackfynn acccount
-        selected_bfdataset (string): name of selected Blackfynn dataset
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
     Output:
-        list_permission (list): list of permission (first name -- last name -- role) associated with the
-        selected dataset
+        list_permission: list of permission (first name -- last name -- role) associated with the
+        selected dataset (list of string)
     """
     error = ''
 
@@ -1309,12 +1354,12 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
     """
     Function to add/remove permission for a suser to a selected dataset
 
-    Input:
-        selected_bfaccount (string): name of selected Blackfynn acccount
-        selected_bfdataset (string): name of selected Blackfynn dataset
-        selected_user (string): name (first name -- last name) of selected Blackfynn user
-        selected_role (string): desired role ('manager', 'viewer', 'editor', 'remove current permission')
-    Output:
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_user: name (first name -- last name) of selected Blackfynn user (string)
+        selected_role: desired role ('manager', 'viewer', 'editor', 'remove current permission') (string)
+    Return:
         success or error message (string)
     """
 
@@ -1408,12 +1453,12 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
     """
     Function to add/remove permission fo a team to a selected dataset
 
-    Input:
-        selected_bfaccount (string): name of selected Blackfynn acccount
-        selected_bfdataset (string): name of selected Blackfynn dataset
-        selected_team (string): name of selected Blackfynn team
-        selected_role (string): desired role ('manager', 'viewer', 'editor', 'remove current permission')
-    Output:
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_team: name of selected Blackfynn team (string)
+        selected_role: desired role ('manager', 'viewer', 'editor', 'remove current permission') (string)
+    Return:
         success or error message (string)
     """
 
