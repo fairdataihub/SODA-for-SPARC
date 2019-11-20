@@ -20,7 +20,7 @@ client.invoke("echo", "server ready", (error, res) => {
 })
 
 //////////////////////////////////
-// Inputs from html elements fronm user interface //
+// Get html elements from the user interface //
 //////////////////////////////////
 
 // Organize dataset
@@ -77,9 +77,8 @@ var pathSamples
 
 const curateDatasetBtn = document.getElementById('button-curate-dataset')
 const bfUploadDatasetBtn = document.getElementById('button-upload-dataset')
-// const progressInfo = document.querySelector('#progressinfo')
 
-// Manage and submit
+// Manage datasets
 const keyName = document.querySelector('#bf-key-name')
 const key = document.querySelector('#bf-key')
 const secret = document.querySelector('#bf-secret')
@@ -131,6 +130,8 @@ const redColor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivatives", "docs", "primary", "protocol", "source"]
 const smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">'
 const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
+
+
 //////////////////////////////////
 // Operations on JavaScript end only
 //////////////////////////////////
@@ -160,14 +161,12 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
     document.getElementById('button-generate-dataset-demo-toggle').click()
   }
 })
-//
-// if (getComputedStyle(document.getElementById('div-curate-progress-bar-error-status'), null).display === 'block'){
-//   document.getElementById('button-specify-metadata-demo-toggle').click()
-// }
+
 
 //////////////////////////////////
 // Operations on JavaScript end only
 //////////////////////////////////
+
 // Select organized dataset folder and populate table
 selectDatasetBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-dataset')
@@ -276,7 +275,7 @@ holderMain.addEventListener("drop", (event)=> {
 // Operations calling to pysoda.py functions //
 //////////////////////////////////
 
-// Action when user click on Save file organization button
+// Action when user click on "Save" file organization button
 selectSaveFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('save-file-dialog-saveorganization')
   document.getElementById("para-save-file-organization-status").innerHTML = ""
@@ -336,7 +335,7 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
   }
 })
 
-// Action when user click on Preview file organization button
+// Action when user click on "Preview" file organization button
 selectPreviewBtn.addEventListener('click', () => {
   document.getElementById("para-preview-organization-status").innerHTML = "Please wait..."
   var jsonvect = tableToJsonWithDescription(tableNotOrganized)
@@ -390,8 +389,6 @@ curateDatasetBtn.addEventListener('click', () => {
       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
       sourceDataset = 'already organized'
     } else {
-      // progressInfo.style.color = redColor
-      // progressInfo.value = 'Error: Select a valid dataset folder'
       var emessage = 'Error: Select a valid dataset folder'
       document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       curateDatasetBtn.disabled = false
@@ -418,8 +415,6 @@ curateDatasetBtn.addEventListener('click', () => {
     console.log(jsonvect)
     sourceDataset = 'not organized'
   } else {
-  	// progressInfo.style.color = redColor
-  	// progressInfo.value = 'Error: Please select an option under "Organize dataset" '
     var emessage = 'Error: Please select an option under "Organize dataset" '
     document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
     curateDatasetBtn.disabled = false
@@ -444,8 +439,6 @@ curateDatasetBtn.addEventListener('click', () => {
     destinationDataset = 'upload to blackfynn'
     pathDatasetValue = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
     newDatasetNameVar = bfUploadDatasetList.options[bfUploadDatasetList.selectedIndex].text
-    // pathDatasetValue = // name of account
-    // newDatasetNameVar = // name of dataset
   }
 
   var metadatafiles = []
@@ -544,7 +537,6 @@ curateDatasetBtn.addEventListener('click', () => {
           } else {
             document.getElementById("para-curate-progress-bar-status").innerHTML = res[0]
           }
-          // progressInfo.value = res[0].split(',').join('\n')
         }
       }
     })
@@ -559,7 +551,7 @@ curateDatasetBtn.addEventListener('click', () => {
 })
 
 // // // // // // // // // //
-//MANAGE AND SUBMIT
+//MANAGE DATASETS
 // // // // // // // // // //
 
 
@@ -584,19 +576,14 @@ bfUploadAccountCheckBtn.addEventListener('click', (event) => {
 
 // Add bf account
 bfAddAccountBtn.addEventListener('click', () => {
-  // bfAddAccountInfo.style.color = blackColor
   bfAddAccountBtn.disabled = true
-  // bfAddAccountInfo.value = ''
   bfAddAccountStatus.innerHTML = ''
   client.invoke("api_bf_add_account", keyName.value, key.value, secret.value, (error, res) => {
     if(error) {
       console.error(error)
       var emessage = userError(error)
-      // bfAddAccountInfo.style.color = redColor
-      // bfAddAccountInfo.value = emessage
       bfAddAccountStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
     } else {
-        // bfAddAccountInfo.value = res
         bfAddAccountStatus.innerHTML = res + smileyCan
         removeOptions(bfAccountList)
         updateBfAccountList(bfAccountList, bfSelectAccountStatus)
@@ -634,10 +621,6 @@ bfUploadAccountList.addEventListener('change', () => {
   bfUploadSelectAccountStatus.innerHTML = "Please wait..."
   bfAccountLoadProgressCurate.style.display = 'block'
   refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
-  // refreshBfDatasetList(bfDatasetListPermission, bfUploadAccountList)
-  // currentDatasetPermission.innerHTML = ''
-  // refreshBfUsersList(bfListUsers)
-  // refreshBfTeamsList(bfListTeams)
   var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
 
   if (selectedbfaccount == 'Select') {
@@ -658,29 +641,22 @@ bfRefreshDatasetBtn.addEventListener('click', () => {
 })
 bfUploadRefreshDatasetBtn.addEventListener('click', () => {
   refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
-  // refreshBfDatasetList(bfDatasetListPermission, bfUploadAccountList)
-  // currentDatasetPermission.innerHTML = ''
   console.log("refreshed")
 })
 
 // Add new dataset folder (empty) on bf
 bfCreateNewDatasetBtn.addEventListener('click', () => {
-  // bfCreateNewDatasetInfo.style.color = blackColor
   bfCreateNewDatasetBtn.disabled = true
-  // bfCreateNewDatasetInfo.value = 'Adding'
   bfCreateNewDatasetStatus.innerHTML = 'Adding...'
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
   client.invoke("api_bf_new_dataset_folder", bfNewDatasetName.value, selectedbfaccount, (error, res) => {
     if (error) {
       console.error(error)
       var emessage = userError(error)
-      // bfCreateNewDatasetInfo.style.color = redColor
-      // bfCreateNewDatasetInfo.value = emessage
       bfCreateNewDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
       bfCreateNewDatasetBtn.disabled = false
     } else {
         bfCreateNewDatasetStatus.innerHTML = 'Success: created dataset' + ' ' + bfNewDatasetName.value + smileyCan
-        // bfCreateNewDatasetInfo.value = 'Success: created dataset' + ' ' + bfNewDatasetName.value
         refreshBfDatasetList(bfDatasetList, bfAccountList)
         refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
         refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
@@ -695,9 +671,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-progress-bar-error-status").innerHTML = ""
   document.getElementById("para-progress-bar-status").innerHTML = ""
   var err = false
-  // bfsubmitdatasetinfo.style.color = blackcolor
   bfSubmitDatasetBtn.disabled = true
-  // bfsubmitdatasetinfo.value = 'Submitting'
   var completionStatus = 'Solving'
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text
@@ -708,8 +682,6 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       progressBarUploadBf.value = 0
       err = true
-      // bfsubmitdatasetinfo.style.color = redcolor
-      // bfsubmitdatasetinfo.value = emessage
     } else {
       console.log('Done', res)
     }
@@ -722,7 +694,6 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
         if(error) {
           console.error(error)
         } else {
-          // (submitdataprogress, submitdatastatus, submitprintstatus, uploaded_file_size, total_file_size)
           var dataProgress = res[0]
           completionStatus = res[1]
           var uploadedFileSize = res[3]
@@ -732,7 +703,6 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
           progressBarUploadBf.value = value
           if (completionStatus != 'Done') {
             document.getElementById("para-progress-bar-status").innerHTML = dataProgress.split(',').pop()
-            // bfsubmitdatasetinfo.value = dataProgress.split(',').join('\n')
           }
         }
       })
@@ -816,7 +786,7 @@ bfAddPermissionTeamBtn.addEventListener('click', () => {
 })
 
 // // // // // // // // // //
-// Functions: Organize dataset
+// Helper functions
 // // // // // // // // // //
 
 function refreshBfDatasetList(bfdstlist, bfAccountList){
@@ -896,7 +866,6 @@ function refreshBfTeamsList(teamList){
     })
   }
 }
-
 
 function showCurrentPermission(){
   currentDatasetPermission.innerHTML = "Please wait..."
@@ -1010,7 +979,7 @@ function clearStrings() {
 // Helper Functions: Organize dataset
 // // // // // // // // // //
 
-// Organized
+// Dataset Organized
 function checkFolderStruture(pathDatasetFolder){
   var files = fs.readdirSync(pathDatasetFolder)
   var folders = []
@@ -1120,7 +1089,7 @@ function tableToJsonWithDescriptionOrganized(table){
   return [jsonvar, jsonvardescription]
 }
 
-// Not organized
+// Daaset not organized
 function insertFileToTable(table, path){
   var i
   let SPARCfolder = document.querySelector('#SPARCfolderlist').value
@@ -1291,7 +1260,7 @@ function dropAddToTable(e, myID){
   }
 }
 
-//Both
+//Both organized and not organized options
 function clearTable(table){
   var keyvect = sparcFolderNames.slice()
   keyvect.push("main")
