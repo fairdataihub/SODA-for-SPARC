@@ -37,7 +37,7 @@ const organizeDatasetStatus = document.querySelector('#organize-dataset')
 const clearTableBtn = document.getElementById('button-clear-table')
 const selectSaveFileOrganizationBtn = document.getElementById('button-select-save-file-organization')
 const selectPreviewBtn = document.getElementById('button-preview-file-organization')
-const deletePreviewBtn = document.getElementById('button-delete-preview-organization-status')
+// const deletePreviewBtn = document.getElementById('button-delete-preview-organization-status')
 const selectImportFileOrganizationBtn = document.getElementById('button-select-upload-file-organization')
 
 // Generate dataset
@@ -337,6 +337,7 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
 
 // Action when user click on "Preview" file organization button
 selectPreviewBtn.addEventListener('click', () => {
+  clearStrings()
   document.getElementById("para-preview-organization-status").innerHTML = "Please wait..."
   var jsonvect = tableToJsonWithDescription(tableNotOrganized)
   var jsonpath = jsonvect[0]
@@ -353,19 +354,19 @@ selectPreviewBtn.addEventListener('click', () => {
 })
 
 // Action when user click on Delete Preview file organization button
-deletePreviewBtn.addEventListener('click', () => {
-  document.getElementById("para-preview-organization-status").innerHTML = "Please wait..."
-  client.invoke("api_delete_preview_file_organization", (error, res) => {
-      if(error) {
-        console.error(error)
-        var emessage = userError(error)
-        document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
-      } else {
-        console.log("Done")
-        document.getElementById("para-preview-organization-status").innerHTML = "Preview folder deleted!";
-      }
-  })
-})
+// deletePreviewBtn.addEventListener('click', () => {
+//   document.getElementById("para-preview-organization-status").innerHTML = "Please wait..."
+//   client.invoke("api_delete_preview_file_organization", (error, res) => {
+//       if(error) {
+//         console.error(error)
+//         var emessage = userError(error)
+//         document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
+//       } else {
+//         console.log("Done")
+//         document.getElementById("para-preview-organization-status").innerHTML = "Preview folder deleted!";
+//       }
+//   })
+// })
 
 // // // // // // // // // //
 // Action when user click on Generate Dataset
@@ -1110,9 +1111,9 @@ function insertFileToTable(table, path){
     var myheader = tableNotOrganized.rows[rowcount].cells[0]
     if (myheader.className === "table-header"){
       myheader.className = "table-header openfolder"
-    } 
+    }
     var r = rowcount + 1
-    while ((row = tableNotOrganized.rows[r]) && !/\bparent\b/.test(row.className)){       
+    while ((row = tableNotOrganized.rows[r]) && !/\bparent\b/.test(row.className)){
       if (/\bopen\b/.test(row.className))
          row.className = row.className.replace(/\bopen\b/," ")
       r += 1

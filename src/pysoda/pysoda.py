@@ -390,9 +390,13 @@ def preview_file_organization(jsonpath):
     userpath = expanduser("~")
     preview_path = join(userpath, "SODA", "Preview")
     try:
-        makedirs(preview_path)
-    except:
-        raise Exception("Error: Preview folder already present, click on 'Delete Preview Folder' option to get rid of the older vesion")
+        if isdir(preview_path):
+            delete_preview_file_organization()
+            makedirs(preview_path)
+        else:
+            makedirs(preview_path)
+    except Exception as e:
+        raise e
 
     try:
         folderrequired = []
