@@ -23,7 +23,7 @@ import gevent
 curateprogress = ' '
 curatestatus = ' '
 curateprintstatus = ' '
-total_dataset_size = 0
+total_dataset_size = 1
 curated_dataset_size = 0
 
 userpath = expanduser("~")
@@ -31,6 +31,8 @@ configpath = join(userpath, '.blackfynn', 'config.ini')
 submitdataprogress = ' '
 submitdatastatus = ' '
 submitprintstatus = ' '
+total_file_size = 1
+uploaded_file_size = 0
 
 ### Internal functions
 def open_file(file_path):
@@ -102,7 +104,7 @@ def path_size(path):
 
 def create_folder_level_manifest(datasetpath, jsonpath, jsondescription):
     """
-    Function to create manifest files for each SPARC folder. 
+    Function to create manifest files for each SPARC folder.
     Files are created in a temporary folder
 
     Args:
@@ -218,7 +220,7 @@ def check_forbidden_characters(my_string):
 
 def return_new_path(topath):
     """
-    This function checks if a folder already exists and in such cases, 
+    This function checks if a folder already exists and in such cases,
     appends (2) or (3) etc. to the folder name
 
     Args:
@@ -259,12 +261,12 @@ def mycopyfileobj(fsrc, fdst, length=16*1024*16):
 def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     """
     Copy file src to dst with metadata (timestamp, permission, etc.) conserved
-    
+
     Args:
         src: source file (string)
         dst: destination file (string)
     Returns:
-        dst 
+        dst
     """
     if not follow_symlinks and os.path.islink(src):
         os.symlink(os.readlink(src), dst)
@@ -421,7 +423,7 @@ def preview_file_organization(jsonpath):
 def delete_preview_file_organization():
     """
     Associated with 'Delete Preview Folder' button of the SODA interface
-    
+
     Action:
         Deletes the 'Preview' folder from the disk
     """
@@ -503,7 +505,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         jsonpath, jsondescription):
     """
     Associated with 'Generate' button in the 'Generate dataset' section of SODA interface
-    Checks validity of files / paths / folders and then generates the files and folders 
+    Checks validity of files / paths / folders and then generates the files and folders
     as requested along with progress status
 
     Args:
@@ -511,7 +513,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         destinationdataset: type of destination dataset ('modify existing', 'create new', or 'upload to blackfynn')
         pathdataset: destination path of new dataset if created locally or name of blackfynn account (string)
         newdatasetname: name of the local dataset or name of the dataset on blackfynn (string)
-        submissionstatus: boolean to check if user request submission file 
+        submissionstatus: boolean to check if user request submission file
         pathsubmission: path to the submission file (string)
         datasetdescriptionstatus: boolean to check if user request dataset_description file
         pathdescription: path to the dataset_description file (string)
@@ -534,7 +536,6 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     curatestatus = ''
     curateprintstatus = ' '
     error, c = '', 0
-    total_dataset_size = 0
     curated_dataset_size = 0
     start_time = 0
 
@@ -600,6 +601,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
 
     # check if path in jsonpath are valid and calculate total dataset size
     error, c = '', 0
+    total_dataset_size = 0
     for folders in jsonpath.keys():
         if jsonpath[folders] != []:
             for path in jsonpath[folders]:
@@ -976,7 +978,7 @@ def bf_account_details(accountname):
     Return:
         acc_details: account user email and organization (string)
     Action:
-        Returns: return details of user associated with the account 
+        Returns: return details of user associated with the account
     """
     try:
         bf = Blackfynn(accountname)

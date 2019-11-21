@@ -391,7 +391,7 @@ curateDatasetBtn.addEventListener('click', () => {
       sourceDataset = 'already organized'
     } else {
       var emessage = 'Error: Select a valid dataset folder'
-      document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
       curateDatasetBtn.disabled = false
       enableform(curationForm)
       console.error('Error')
@@ -407,7 +407,7 @@ curateDatasetBtn.addEventListener('click', () => {
     }
     if (error) {
       var emessage = 'Error: Please add files to your dataset'
-      document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
       curateDatasetBtn.disabled = false
       enableform(curationForm)
       console.error(emessage)
@@ -417,7 +417,7 @@ curateDatasetBtn.addEventListener('click', () => {
     sourceDataset = 'not organized'
   } else {
     var emessage = 'Error: Please select an option under "Organize dataset" '
-    document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+    document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
     curateDatasetBtn.disabled = false
     enableform(curationForm)
   	return
@@ -503,7 +503,7 @@ curateDatasetBtn.addEventListener('click', () => {
     (error, res) => {
     if (error) {
       var emessage = userError(error)
-      document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
       document.getElementById("para-curate-progress-bar-status").innerHTML = ""
       progressBarCurate.value = 0;
       err = true
@@ -522,7 +522,7 @@ curateDatasetBtn.addEventListener('click', () => {
     client.invoke("api_curate_dataset_progress", (error, res) => {
       if (error) {
         var emessage = userError(error)
-        document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+        document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
         console.error(error)
       } else {
         completionstatus = res[1]
@@ -680,7 +680,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
     if (error) {
       console.error(error)
       var emessage = userError(error)
-      document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
       progressBarUploadBf.value = 0
       err = true
     } else {
@@ -693,6 +693,8 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
     function progressfunction(){
       client.invoke("api_submit_dataset_progress", (error, res) => {
         if(error) {
+          var emessage = userError(error)
+          document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
           console.error(error)
         } else {
           var dataProgress = res[0]
