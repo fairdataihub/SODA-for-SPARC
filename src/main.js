@@ -1,4 +1,5 @@
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, dialog} = require('electron')
+app.showExitPrompt = true
 const path = require('path')
 const glob = require('glob')
 const contextMenu = require('electron-context-menu');
@@ -92,9 +93,28 @@ function initialize () {
     mainWindow = new BrowserWindow(windowOptions)
     mainWindow.loadURL(path.join('file://', __dirname, '/index.html'))
 
-    mainWindow.on('closed', () => {
+/*    mainWindow.on('closed', () => {
       mainWindow = null
+    })*/
+
+    mainWindow.on('close', (e) => {
+    if (app.showExitPrompt) {
+        e.preventDefault() // Prevents the window from closing 
+        dialog.showMessageBox({
+            type: 'question',
+            buttons: ['Yes', 'No'],
+            title: 'Confirm',
+            message: 'Any running proccess will be stopped. Are you sure you want to quit?'
+        }, function (response) {
+            if (response === 0) { // Runs the following if 'Yes' is clicked
+                app.showExitPrompt = false
+                mainWindow.close()
+            }
+        })
+    }
     })
+
+
   }
 
   app.on('ready', () => {
