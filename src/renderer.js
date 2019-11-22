@@ -524,6 +524,7 @@ curateDatasetBtn.addEventListener('click', () => {
         var emessage = userError(error)
         document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
         console.error(error)
+        document.getElementById("para-curate-progress-bar-status").innerHTML = ''
       } else {
         completionstatus = res[1]
         var printstatus = res[2]
@@ -536,7 +537,7 @@ curateDatasetBtn.addEventListener('click', () => {
           if (res[0].includes('Success: COMPLETED!')){
             document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + smileyCan
           } else {
-            document.getElementById("para-curate-progress-bar-status").innerHTML = res[0]
+            document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + 'Progress: ' + value.toFixed(2) + '%'
           }
         }
       }

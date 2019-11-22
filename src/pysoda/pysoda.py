@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
-import os
 import platform
-from os import listdir, stat, makedirs, mkdir, walk, remove
-from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname, getsize
+import os
+from os import listdir, stat, makedirs, mkdir, walk, remove, pardir
+from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname, getsize, abspath
 import pandas as pd
 from time import strftime, localtime
 from shutil import copy2
@@ -624,6 +624,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     userpath = expanduser("~")
     metadatapath = join(userpath, 'SODA_metadata')
     curateprogress = 'Generating metadata'
+    
     if manifeststatus:
         # Creating folder to store manifest file
         try:
@@ -676,18 +677,24 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         # If no errors, code-block below will execute which will start the data generation process
         else:
             try:
+
+                curateprintstatus = 'Curating'
+                start_time = time.time()
                 open_file(pathdataset)
                 curateprogress = 'Started'
                 start_time = time.time()
-                curateprintstatus = 'Curating'
-                curateprogress = "New dataset not requested"
-
+                
+                gevent.sleep(0.1)
                 metadata_files = ['submission', 'dataset_description', 'samples', 'subjects']
                 for filepath in jsonpath['main']:
-                    if splitext(basename(filepath))[0] in metadata_files:
+                    filepath_parent = abspath(join(filepath, pardir))
+                    if (splitext(basename(filepath))[0] in metadata_files and filepath_parent != pathdataset):
+                        curateprogress = "Copying metadata"
                         copy2(filepath, pathdataset)
 
+                
                 if manifeststatus:
+                    curateprogress = "Copying manifest files"
                     for folder in jsonpath.keys():
                         if folder != 'main':
                             for filepath in jsonpath[folder]:
