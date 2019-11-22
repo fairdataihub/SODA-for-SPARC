@@ -532,7 +532,7 @@ curateDatasetBtn.addEventListener('click', () => {
         var curatedSize = res[4]
         var value = (curatedSize / totalCurateSize) * 100
         progressBarCurate.value = value
-        console.log(value, totalCurateSize, curatedSize, res[5])
+        console.log(value, curatedSize, totalCurateSize, res[5])
         if (printstatus === 'Curating') {
           if (res[0].includes('Success: COMPLETED!')){
             document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + smileyCan
@@ -703,10 +703,10 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
           var uploadedFileSize = res[3]
           var totalFileSize = res[4]
           var value = (uploadedFileSize / totalFileSize) * 100
-          console.log(uploadedFileSize, totalFileSize, value)
+          console.log(value, uploadedFileSize, totalFileSize, res[5])
           progressBarUploadBf.value = value
           if (completionStatus != 'Done') {
-            document.getElementById("para-progress-bar-status").innerHTML = dataProgress.split(',').pop()
+            document.getElementById("para-progress-bar-status").innerHTML = dataProgress + 'Progress: ' + value.toFixed(2) + '%'
           }
         }
       })

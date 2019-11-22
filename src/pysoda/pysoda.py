@@ -25,6 +25,7 @@ curatestatus = ' '
 curateprintstatus = ' '
 total_dataset_size = 1
 curated_dataset_size = 0
+start_time = 0
 
 userpath = expanduser("~")
 configpath = join(userpath, '.blackfynn', 'config.ini')
@@ -33,6 +34,7 @@ submitdatastatus = ' '
 submitprintstatus = ' '
 total_file_size = 1
 uploaded_file_size = 0
+start_time_bf_upload = 0
 
 ### Internal functions
 def open_file(file_path):
@@ -624,7 +626,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     userpath = expanduser("~")
     metadatapath = join(userpath, 'SODA_metadata')
     curateprogress = 'Generating metadata'
-    
+
     if manifeststatus:
         # Creating folder to store manifest file
         try:
@@ -682,7 +684,6 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                 start_time = time.time()
                 open_file(pathdataset)
                 curateprogress = 'Started'
-                start_time = time.time()
                 
                 gevent.sleep(0.1)
                 metadata_files = ['submission', 'dataset_description', 'samples', 'subjects']
@@ -1099,6 +1100,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global total_file_size
     global uploaded_file_size
     global submitprintstatus
+    global start_time_bf_upload
 
     total_file_size = folder_size(pathdataset)
     submitdataprogress = ' '
@@ -1106,6 +1108,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     uploaded_file_size = 0
     submitprintstatus = ' '
     error, c = '', 0
+    start_time_bf_upload = 0
 
     try:
         bf = Blackfynn(accountname)
@@ -1150,10 +1153,11 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             # initial_bfdataset_size = dataset_size_blackfynn()
             mypath = pathdataset
             upload_structured_file(myds, mypath, myfolder)
-            submitdataprogress = submitdataprogress + ', ,' + "Success: dataset and associated files have been uploaded"
+            submitdataprogress = 'Upload completed!'
             submitdatastatus = 'Done'
 
         submitprintstatus = 'Uploading'
+        start_time_bf_upload = time.time()
         t = threading.Thread(target=calluploadfolder)
         t.start()
     except Exception as e:
@@ -1170,7 +1174,11 @@ def submit_dataset_progress():
     global submitprintstatus
     global uploaded_file_size
     global total_file_size
-    return (submitdataprogress, submitdatastatus, submitprintstatus, uploaded_file_size, total_file_size)
+    global start_time_bf_upload
+    elapsed_time = time.time() - start_time_bf_upload
+    elapsed_time_formatted = time_format(elapsed_time)
+    elapsed_time_formatted_display = '<br>' + 'Elapsed time: ' + elapsed_time_formatted + '<br>'
+    return (submitdataprogress + elapsed_time_formatted_display, submitdatastatus, submitprintstatus, uploaded_file_size, total_file_size, elapsed_time_formatted)
 
 
 def bf_get_users(selected_bfaccount):
