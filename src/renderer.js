@@ -530,10 +530,10 @@ curateDatasetBtn.addEventListener('click', () => {
         var totalCurateSize = res[3]
         var curatedSize = res[4]
         var value = (curatedSize / totalCurateSize) * 100
-        progressBarCurate.value = value;
+        progressBarCurate.value = value
         console.log(value, totalCurateSize, curatedSize, res[5])
         if (printstatus === 'Curating') {
-          if (res[0] === 'Success: COMPLETED!'){
+          if (res[0].includes('Success: COMPLETED!')){
             document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + smileyCan
           } else {
             document.getElementById("para-curate-progress-bar-status").innerHTML = res[0]

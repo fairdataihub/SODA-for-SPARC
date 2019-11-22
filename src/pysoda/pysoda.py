@@ -237,6 +237,10 @@ def return_new_path(topath):
     else:
         return topath
 
+def time_format(elapsed_time):
+    mins, secs = divmod(elapsed_time, 60) 
+    hours, mins = divmod(mins, 60) 
+    return "%dh:%02dmin:%02ds" % (hours, mins, secs)
 
 def mycopyfileobj(fsrc, fdst, length=16*1024*16):
     """
@@ -848,7 +852,9 @@ def curate_dataset_progress():
     global curated_dataset_size
     global start_time
     elapsed_time = time.time() - start_time
-    return (curateprogress, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time/60)
+    elapsed_time_formatted = time_format(elapsed_time)
+    elapsed_time_formatted_display = '<br>' + 'Elapsed time: ' + elapsed_time_formatted + '<br>'
+    return (curateprogress+elapsed_time_formatted_display, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time_formatted)
 
 
 ### Manage datasets (Blackfynn interface)
