@@ -111,6 +111,14 @@ const progressBarUploadBf = document.getElementById("progress-bar-upload-bf")
 const bfDatasetListPermission = document.querySelector('#bfdatasetlist_permission')
 const currentDatasetPermission = document.querySelector('#para-dataset-permission-current')
 const bfCurrentPermissionProgress = document.querySelector('#div-bf-current-permission-progress')
+
+const bfListUsersPI = document.querySelector('#bf_list_users_pi')
+const bfAddPermissionPIBtn = document.getElementById('button-add-permission-pi')
+const datasetPermissionStatusPI = document.querySelector('#para-dataset-permission-status-pi')
+
+const bfAddPermissionCurationTeamBtn = document.getElementById('button-add-permission-curation-team')
+const datasetPermissionStatusCurationTeam = document.querySelector('#para-dataset-permission-status-curation-team')
+
 const bfListUsers = document.querySelector('#bf_list_users')
 const bfListRoles = document.querySelector('#bf_list_roles')
 const bfAddPermissionBtn = document.getElementById('button-add-permission')
@@ -606,6 +614,7 @@ bfAccountList.addEventListener('change', () => {
   refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
   currentDatasetPermission.innerHTML = ''
   refreshBfUsersList(bfListUsers)
+  refreshBfUsersListPI(bfListUsersPI)
   refreshBfTeamsList(bfListTeams)
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
 
@@ -730,6 +739,40 @@ bfDatasetListPermission.addEventListener('change', () => {
   showCurrentPermission()
 })
 
+/**
+ * This event listener make PI owener of the selected dataset
+ * when user clicks on the "Make PI owner"  button
+ */
+bfAddPermissionPIBtn.addEventListener('click', () => {
+  datasetPermissionStatusPI.innerHTML = ''
+  bfCurrentPermissionProgress.style.display = 'block'
+  ipcRenderer.send('warning-add-permission-owner-PI')
+})
+ipcRenderer.on('warning-add-permission-owner-selection-PI', (event, index) => {
+  datasetPermissionStatusPI.innerHTML = ''
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
+  var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].text
+  var selectedRole = 'owner'
+  if (index === 0) {
+    client.invoke("api_bf_add_permission", selectedBfAccount, selectedBfDataset, selectedUser, selectedRole,
+    (error, res) => {
+    if(error) {
+      console.error(error)
+      var emessage = userError(error)
+      datasetPermissionStatusPI.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfCurrentPermissionProgress.style.display = 'none'
+    } else {
+      console.log('Done', res)
+      datasetPermissionStatusPI.innerHTML = res
+      showCurrentPermission()
+    }
+  })
+  } else {
+    bfCurrentPermissionProgress.style.display = 'none'
+  }
+})
+
 
 /**
  * This event listener add permission to the selected dataset
@@ -761,6 +804,33 @@ ipcRenderer.on('warning-add-permission-owner-selection', (event, index) => {
     bfCurrentPermissionProgress.style.display = 'none'
   }
 })
+
+/**
+ * This event listener add permission to the selected dataset
+ * when user clicks on the "Add permission for team"  button
+ */
+bfAddPermissionCurationTeamBtn.addEventListener('click', () => {
+  datasetPermissionStatusCurationTeam.innerHTML = ''
+  bfCurrentPermissionProgress.style.display = 'block'
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
+  var selectedTeam = 'SPARC Data Curation Team'
+  var selectedRole = 'manager'
+  client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
+    (error, res) => {
+    if(error) {
+      console.error(error)
+      var emessage = userError(error)
+      datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfCurrentPermissionProgress.style.display = 'none'
+    } else {
+      console.log('Done', res)
+      datasetPermissionStatusCurationTeam.innerHTML = 'Shared with Curation Team'
+      showCurrentPermission()
+    }
+  })
+})
+
 
 /**
  * This event listener add permission to the selected dataset
@@ -843,6 +913,34 @@ function refreshBfUsersList(UsersList){
     })
   }
 }
+
+/**
+ * refreshBfUsersList is a function that refreshes the dropdown list under the "Make PI owner" field
+ * with names of users when an Blackfynn account is selected
+ */
+function refreshBfUsersListPI(UsersList){
+  removeOptions(UsersList)
+  var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
+  var optionUser = document.createElement("option")
+  optionUser.textContent = 'Select PI'
+  UsersList.appendChild(optionUser)
+  if (accountSelected !== "Select") {
+    client.invoke("api_bf_get_users", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
+      if (error){
+        console.error(error)
+      } else{
+        for ( var myItem in res){
+          var myUser = res[myItem]
+          var optionUser = document.createElement("option")
+          optionUser.textContent = myUser
+          optionUser.value = myUser
+          UsersList.appendChild(optionUser)
+        }
+      }
+    })
+  }
+}
+
 
 /**
  * refreshBfTeamsList is a function that refreshes the dropdown list
@@ -1307,6 +1405,7 @@ function addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, s
       console.error(error)
       var emessage = userError(error)
       datasetPermissionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfCurrentPermissionProgress.style.display = 'none'
     } else {
       console.log('Done', res)
       datasetPermissionStatus.innerHTML = res

@@ -114,7 +114,6 @@ function initialize () {
     }
     })
 
-
   }
 
   app.on('ready', () => {

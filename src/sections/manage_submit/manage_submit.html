@@ -105,6 +105,7 @@
       </div>
     </div>
 
+
     <div class="demo">
       <div class="demo-wrapper">
         <button id="button-new-window-metadata-demo-toggle" class="js-container-target demo-toggle-button"> Add metadata to Blackfynn dataset
@@ -119,8 +120,146 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-new-window-submit-demo-toggle" class="js-container-target demo-toggle-button"> Submit new dataset
-          <div class="demo-meta u-avoid-clicks"> Upload a local dataset to your Blackfynn account </div>
+        <button id="button-new-window-permission-demo-toggle" class="js-container-target demo-toggle-button"> Manage dataset permissions
+          <div class="demo-meta u-avoid-clicks"> Make PI owner, share with the Curation Team for review, give access to other members for collaborating  </div>
+        </button>
+        <div class="demo-box">
+          <h5> Select Blackfynn Dataset
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permission (sorted alphabetically)</span>
+            </div>
+          </h5>
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bfdatasetlist_permission">
+              <option> Select dataset </option>
+            </select>
+          </div>
+          <h5> Current permission
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">Name of user (First name, Last name) and their current permission ('viewer', 'manager', or 'editor') will be shown here for the selected dataset</span>
+            </div>
+          </h5>
+          <div id=div-bf-current-permission-progress class="progressdiv">
+            <div class="indeterminatebar"></div>
+          </div>
+          <div class="demo-controls">
+            <p id = "para-dataset-permission-current"> </p>
+          </div>
+
+
+          <h5> Make grant PI owner of the dataset 
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">Select name of the PI and click on 'Make PI owner'
+              <br> <br>
+              Note: SPARC curation rules require to have the PI of the SPARC award as the owner of a dataset before it is shared with the Curation Team
+            </div>
+          </h5>
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bf_list_users_pi">
+              <option> Select PI </option>
+            </select>
+          </div>
+
+          <h5>  </h5>
+          <div class="demo-controls">
+            <button id="button-add-permission-pi" class="demo-button"> Make PI owner </button>
+            <p id = "para-dataset-permission-status-pi"> </p>
+          </div>
+
+
+          <h5> Share with Curation Team
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">This button will give "manager" role to the SPARC Curation Team giving them access for reviewing your dataset'
+            </div>
+          </h5>
+
+          <h5>  </h5>
+          <div class="demo-controls">
+            <button id="button-add-permission-curation-team" class="demo-button"> Share with Curation Team </button>
+            <p id = "para-dataset-permission-status-curation-team"> </p>
+          </div>
+
+
+          <h5> Add/edit permission for a user (optional)
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">Select name of user and the role you want to give for the selected dataset and click on 'Add permission for user'
+            </div>
+          </h5>
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bf_list_users">
+              <option> Select user </option>
+            </select>
+          </div>
+
+          <h5>  </h5>
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bf_list_roles">
+              <option> Select role </option>
+              <option> viewer </option>
+              <option> manager </option>
+              <option> editor </option>
+              <option> owner </option>
+              <option> remove current permission </option>
+            </select>
+          </div>
+
+          <h5>  </h5>
+          <div class="demo-controls">
+            <button id="button-add-permission" class="demo-button"> Add permission for user </button>
+            <p id = "para-dataset-permission-status"> </p>
+          </div>
+
+          <h5> Add/edit permission for a team (optional)
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">Select name of team and the role you want to give for the selected dataset and click on 'Add permission for team'
+            </div>
+          </h5>
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bf_list_teams">
+              <option> Select team </option>
+            </select>
+          </div>
+
+          <h5>  </h5>
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bf_list_roles_team">
+              <option> Select role </option>
+              <option> viewer </option>
+              <option> manager </option>
+              <option> editor </option>
+              <option> remove current permission </option>
+            </select>
+          </div>
+
+          <h5>  </h5>
+          <div class="demo-controls">
+            <button id="button-add-permission-team" class="demo-button"> Add permission for team </button>
+            <p id = "para-dataset-permission-status-team"> </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button"> Annotate dataset
+          <div class="demo-meta u-avoid-clicks"> Inform the model properties for your dataset </div>
+        </button>
+        <div class="demo-box">
+          <p> </p>
+
+          <p> Coming soon... Tentative date: April 2020</p>
+
+        </div>
+      </div>
+    </div>
+
+    
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="button-new-window-submit-demo-toggle" class="js-container-target demo-toggle-button"> Upload local dataset
+          <div class="demo-meta u-avoid-clicks"> Upload a locally stored dataset to your Blackfynn account </div>
         </button>
         <div class="demo-box">
           <p> </p>
@@ -169,116 +308,6 @@
       </div>
     </div>
 
-    <div class="demo">
-      <div class="demo-wrapper">
-        <button id="button-new-window-permission-demo-toggle" class="js-container-target demo-toggle-button"> Manage dataset permission
-          <div class="demo-meta u-avoid-clicks"> Give access to your dataset to other members of your organization for collaborating or to the Curation Team for review </div>
-        </button>
-        <div class="demo-box">
-          <h5> Select Blackfynn Dataset
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permission (sorted alphabetically)</span>
-            </div>
-          </h5>
-          <div class="demo-controls">
-            <select class="my_dropdown" id="bfdatasetlist_permission">
-              <option> Select dataset </option>
-            </select>
-          </div>
-          <h5> Current permission
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Name of user (First name, Last name) and their current permission ('viewer', 'manager', or 'editor') will be shown here for the selected dataset</span>
-            </div>
-          </h5>
-          <div id=div-bf-current-permission-progress class="progressdiv">
-            <div class="indeterminatebar"></div>
-          </div>
-          <div class="demo-controls">
-            <p id = "para-dataset-permission-current"> </p>
-          </div>
-
-          <h5> Add/edit permission for a user
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select name of user and the role you want to give for the selected dataset and click on 'Add permission for user'
-              <br> <br>
-              Note: SPARC curation rules require to have the PI of the SPARC award as the owner of a dataset before it is shared with the Curation Team
-              <br><br>
-              To remove a permission select name of user and 'remove current permission'</span>
-            </div>
-          </h5>
-          <div class="demo-controls">
-            <select class="my_dropdown" id="bf_list_users">
-
-              <option> Select user </option>
-            </select>
-          </div>
-
-          <h5>  </h5>
-          <div class="demo-controls">
-            <select class="my_dropdown" id="bf_list_roles">
-              <option> Select role </option>
-              <option> viewer </option>
-              <option> manager </option>
-              <option> editor </option>
-              <option> owner </option>
-              <option> remove current permission </option>
-            </select>
-          </div>
-
-          <h5>  </h5>
-          <div class="demo-controls">
-            <button id="button-add-permission" class="demo-button"> Add permission for user </button>
-            <p id = "para-dataset-permission-status"> </p>
-          </div>
-
-          <h5> Add/edit permission for a team
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select name of team and the role you want to give for the selected dataset and click on 'Add permission for team'
-              <br> <br>
-              Note: You need to give "manager" role to the SPARC Curation Team to share your dataset with the Curation Team for review
-              <br><br>
-              To remove a permission select name of team and 'remove current permission'</span>
-            </div>
-          </h5>
-          <div class="demo-controls">
-            <select class="my_dropdown" id="bf_list_teams">
-              <option> Select team </option>
-            </select>
-          </div>
-
-          <h5>  </h5>
-          <div class="demo-controls">
-            <select class="my_dropdown" id="bf_list_roles_team">
-              <option> Select role </option>
-              <option> viewer </option>
-              <option> manager </option>
-              <option> editor </option>
-              <option> remove current permission </option>
-            </select>
-          </div>
-
-          <h5>  </h5>
-          <div class="demo-controls">
-            <button id="button-add-permission-team" class="demo-button"> Add permission for team </button>
-            <p id = "para-dataset-permission-status-team"> </p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo">
-      <div class="demo-wrapper">
-        <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button"> Annotate dataset
-          <div class="demo-meta u-avoid-clicks"> Inform the model properties for your dataset </div>
-        </button>
-        <div class="demo-box">
-          <p> </p>
-
-          <p> Coming soon... Tentative date: April 2020</p>
-
-        </div>
-      </div>
-    </div>
 
     <script type="text/javascript">
       require('./renderer-process/native-ui/dialogs/open-file')
