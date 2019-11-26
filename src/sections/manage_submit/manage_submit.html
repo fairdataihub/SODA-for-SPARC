@@ -95,11 +95,21 @@
             <input id="bf-new-dataset-name" class="demo-response"> </input>
           </div>
 
+          <h5> Enter subtitle (short description of less than 256 characters)
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">Add a short description that explains what is in your dataset. 
+              <br> <br>
+              It could also be added later under the "Add medatata to Blackfynn dataset" feature</span>
+            </div>
+          </h5>
+          <div class="demo-controls">
+            <textarea id="bf-new-dataset-subtitle" class="demo-response" rows="4" maxlength = "256"> </textarea>
+          </div>
+
           <h5> </h5>
           <div class="demo-controls">
             <button id="button-create-bf-new-dataset" class="demo-button"> Create </button>
             <p id='para-add-new-dataset-status' style="margin-top:-5px"></p>
-            <!-- <textarea class="demo-response" id="add-new-dataset-progress" readonly></textarea> -->
           </div>
         </div>
       </div>
@@ -114,7 +124,82 @@
         </button>
         <div class="demo-box">
           <p> Coming soon... tentative date: December 2019 </p>
+
+          <h5> Select Blackfynn Dataset
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">Select the Blackfynn dataset you wish to add/edit metadata (sorted alphabetically)</span>
+            </div>
+          </h5>
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bfdatasetlist_metadata">
+              <option> Select dataset </option>
+            </select>
+          </div>
+
+          <div id=div-bf-current-metadata-progress class="progressdiv">
+            <div class="indeterminatebar"></div>
+          </div>
+
+          <h5> Radio: Add/edit subtitle (short description of less than 256 characters)
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext"> Add a short description that explains what is in your dataset. 
+            </div>
+          </h5>
+
+          <h5> Radio: Add/edit description
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext"> Provide a detailed description of your dataset.
+              <br>
+              This description will be highly visible once your dataset is published
+            </div>
+          </h5>
+
+          <h5> Radio: Add/edit a banner image 
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext"> This image will be associated with the dataset.
+              <br>
+              It will be visisble once the dataset is published.
+            </div>
+          </h5>
+
+          <h5> Radio: Choose/change a license 
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext"> Select a license that you want to associate with the dataset once it is published. 
+            </div>
+          </h5>
+          <h5> Current license
+          </h5>
+          <div class="demo-controls">
+            <p id = "para-dataset-license-current"> </p>
+          </div>
+
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bf-license-list">
+              <option> Select license </option>
+              <optgroup label="Better for data">
+              <option>Community Data License Agreement – Permissive </option>
+              <option>Community Data License Agreement – Sharing </option>
+              <option>Creative Commons Zero 1.0 Universal </option>
+              <option>Creative Commons Attribution </option>
+              <option>Creative Commons Attribution - ShareAlike </option>
+              <option>Open Data Commons Open Database </option>
+              <option>Open Data Commons Attribution </option>
+              <option>Open Data Commons Public Domain Dedication and License </option>
+              <optgroup label="Better for code">
+              <option>Apache 2.0 </option>
+              <option>GNU General Public License v3.0 </option>
+              <option>GNU Lesser General Public License </option>
+              <option>MIT </option>
+              <option>Mozilla Public License 2.0 </option>
+            </select>
+          </div>
+
+          <div class="demo-controls">
+            <p id = "para-dataset-license-status"> </p>
+          </div>
+
         </div>
+
       </div>
     </div>
 
@@ -147,7 +232,7 @@
           </div>
 
 
-          <h5> Make grant PI owner of the dataset 
+          <h5> Radio: Make grant PI owner of the dataset 
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">Select name of the PI and click on 'Make PI owner'
               <br> <br>
@@ -167,7 +252,7 @@
           </div>
 
 
-          <h5> Share with Curation Team
+          <h5> Radio: Share with Curation Team
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">This button will give "manager" role to the SPARC Curation Team giving them access for reviewing your dataset'
             </div>
@@ -180,7 +265,7 @@
           </div>
 
 
-          <h5> Add/edit permission for a user (optional)
+          <h5> Radio: Add/edit permission for a user (optional)
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">Select name of user and the role you want to give for the selected dataset and click on 'Add permission for user'
             </div>
@@ -209,7 +294,7 @@
             <p id = "para-dataset-permission-status"> </p>
           </div>
 
-          <h5> Add/edit permission for a team (optional)
+          <h5> Radio: Add/edit permission for a team (optional)
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">Select name of team and the role you want to give for the selected dataset and click on 'Add permission for team'
             </div>
