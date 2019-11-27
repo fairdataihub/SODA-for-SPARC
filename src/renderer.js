@@ -108,6 +108,10 @@ const bfSubmitDatasetInfo = document.querySelector('#progresssubmit')
 const pathSubmitDataset = document.querySelector('#selected-submit-dataset')
 const progressBarUploadBf = document.getElementById("progress-bar-upload-bf")
 
+const bfDatasetListMetadata = document.querySelector('#bfdatasetlist_metadata')
+const bfCurrentMetadataProgress = document.querySelector('#div-bf-current-metadata-progress')
+const currentDatasetLicense = document.querySelector('#para-dataset-license-current')
+
 const bfDatasetListPermission = document.querySelector('#bfdatasetlist_permission')
 const currentDatasetPermission = document.querySelector('#para-dataset-permission-current')
 const bfCurrentPermissionProgress = document.querySelector('#div-bf-current-permission-progress')
@@ -611,6 +615,7 @@ bfAccountList.addEventListener('change', () => {
   bfSelectAccountStatus.innerHTML = "Please wait..."
   bfAccountLoadProgress.style.display = 'block'
   refreshBfDatasetList(bfDatasetList, bfAccountList)
+  refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
   refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
   currentDatasetPermission.innerHTML = ''
   refreshBfUsersList(bfListUsers)
@@ -624,7 +629,6 @@ bfAccountList.addEventListener('change', () => {
   } else{
     showAccountDetails(bfAccountLoadProgress)
   }
-
 
 })
 
@@ -646,6 +650,7 @@ bfUploadAccountList.addEventListener('change', () => {
 // Refresh list of bf dataset list (in case user create it online)
 bfRefreshDatasetBtn.addEventListener('click', () => {
   refreshBfDatasetList(bfDatasetList, bfAccountList)
+  refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
   refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
   currentDatasetPermission.innerHTML = ''
   console.log("refreshed")
@@ -669,6 +674,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
     } else {
         bfCreateNewDatasetStatus.innerHTML = 'Success: created dataset' + ' ' + bfNewDatasetName.value + smileyCan
         refreshBfDatasetList(bfDatasetList, bfAccountList)
+        refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
         refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
         refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
         currentDatasetPermission.innerHTML = ''
@@ -728,6 +734,14 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
         bfSubmitDatasetBtn.disabled = false
       }
     }
+})
+
+/**
+ * This event tracks change of the selected dataset in the dropdown list
+ * under the "Add metadata to Blackfynn dataset" feature
+ */
+bfDatasetListMetadata.addEventListener('change', () => {
+  bfCurrentMetadataProgress.style.display = 'block'
 })
 
 /**
@@ -886,6 +900,29 @@ function refreshBfDatasetList(bfdstlist, bfAccountList){
     })
   }
 }
+
+function showCurrentLicense(){
+  currentDatasetLicense.innerHTML = "Please wait..."
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
+  if (selectedBfDataset === 'Select dataset'){
+    currentDatasetLicense.innerHTML = ''
+    bfCurrentMetadataProgress.style.display = 'none'
+  } else {
+    client.invoke("api_bf_get_license", selectedBfAccount, selectedBfDataset,
+    (error, res) => {
+      if(error) {
+        console.error(error)
+        bfCurrentMetadataProgress.style.display = 'none'
+      } else {
+        console.log('Done', res)
+        currentDatasetLicense.innerHTML = res
+        bfCurrentPermissionProgress.style.display = 'none'
+      }
+    })
+  }
+}
+
 
 /**
  * refreshBfUsersList is a function that refreshes the dropdown list
