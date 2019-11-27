@@ -132,7 +132,7 @@ def create_folder_level_manifest(datasetpath, jsonpath, jsondescription):
                 folderpath = join(datasetpath, folder)
                 allfiles = jsonpath[folder]
                 alldescription = jsondescription[folder + '_description']
-                manifestexists = join(folderpath, 'manifest.csv')
+                manifestexists = join(folderpath, 'manifest.xlsx')
 
                 countpath = -1
                 for pathname in allfiles:
@@ -192,8 +192,8 @@ def create_folder_level_manifest(datasetpath, jsonpath, jsondescription):
 
                 makedirs(folderpath)
                 # Save manifest as Excel sheet
-                manifestfile = join(folderpath, 'manifest.csv')
-                df.to_csv(manifestfile, index=None, header=True)
+                manifestfile = join(folderpath, 'manifest.xlsx')
+                df.to_excel(manifestfile, index=None, header=True)
                 total_dataset_size += path_size(manifestfile)
                 jsonpath[folder].append(manifestfile)
 
@@ -240,8 +240,8 @@ def return_new_path(topath):
         return topath
 
 def time_format(elapsed_time):
-    mins, secs = divmod(elapsed_time, 60) 
-    hours, mins = divmod(mins, 60) 
+    mins, secs = divmod(elapsed_time, 60)
+    hours, mins = divmod(mins, 60)
     return "%dh:%02dmin:%02ds" % (hours, mins, secs)
 
 def mycopyfileobj(fsrc, fdst, length=16*1024*16):
@@ -684,7 +684,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                 start_time = time.time()
                 open_file(pathdataset)
                 curateprogress = 'Started'
-                
+
                 gevent.sleep(0.1)
                 metadata_files = ['submission', 'dataset_description', 'samples', 'subjects']
                 for filepath in jsonpath['main']:
@@ -693,7 +693,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                         curateprogress = "Copying metadata"
                         copy2(filepath, pathdataset)
 
-                
+
                 if manifeststatus:
                     curateprogress = "Copying manifest files"
                     for folder in jsonpath.keys():
@@ -1517,7 +1517,7 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
             if bf.context.name != 'SPARC Consortium':
                 raise Exception('Error: Please login under the SPARC Consortium organization to share with Curation Team')
     except Exception as e:
-        raise e           
+        raise e
 
 
     try:
@@ -1529,7 +1529,7 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
         for i in range(len(list_teams)):
                 list_teams_name.append(list_teams[i]['team']['name'])
                 dict_teams[list_teams_name[i]] = list_teams[i]['team']['id']
-        if selected_team not in list_teams_name: 
+        if selected_team not in list_teams_name:
            error = error + 'Error: Please select a valid team' + '<br>'
            c += 1
     except Exception as e:
