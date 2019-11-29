@@ -47,15 +47,23 @@ function showAddEditLicense(){
 }
 
 document.querySelector('#addEditSubtitle').addEventListener('click', () => {
+    document.getElementById("para-dataset-subtitle-status").innerHTML = ""
+    document.getElementById("para-dataset-license-status").innerHTML = ""
     showAddEditSubtitle()
 })
 document.querySelector('#addEditDescription').addEventListener('click', () => {
+    document.getElementById("para-dataset-subtitle-status").innerHTML = ""
+    document.getElementById("para-dataset-license-status").innerHTML = ""
     showAddEditDescription()
 })
 document.querySelector('#addEditBanner').addEventListener('click', () => {
+    document.getElementById("para-dataset-subtitle-status").innerHTML = ""
+    document.getElementById("para-dataset-license-status").innerHTML = ""
     showAddEditBanner()
 })
 document.querySelector('#addEditLicense').addEventListener('click', () => {
+    document.getElementById("para-dataset-subtitle-status").innerHTML = ""
+    document.getElementById("para-dataset-license-status").innerHTML = ""
     showAddEditLicense()
 })
 //

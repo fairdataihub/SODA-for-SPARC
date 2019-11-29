@@ -99,6 +99,8 @@ const bfSelectAccountStatus = document.getElementById("para-select-account-statu
 const bfUploadSelectAccountStatus = document.getElementById("para-upload-select-account-status")
 
 const bfRefreshDatasetBtn = document.getElementById('button-refresh-dataset-list')
+const bfRefreshDatasetMetadataBtn = document.getElementById('button-refresh-dataset-list-metadata')
+const bfRefreshDatasetPermissionBtn = document.getElementById('button-refresh-dataset-list-permission')
 const bfUploadRefreshDatasetBtn = document.getElementById('button-upload-refresh-dataset-list')
 const bfNewDatasetName = document.querySelector('#bf-new-dataset-name')
 const bfCreateNewDatasetBtn = document.getElementById('button-create-bf-new-dataset')
@@ -655,7 +657,14 @@ bfUploadRefreshDatasetBtn.addEventListener('click', () => {
   refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
   console.log("refreshed")
 })
-
+bfRefreshDatasetMetadataBtn.addEventListener('click', () => {
+  refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
+  console.log("refreshed")
+})
+bfRefreshDatasetPermissionBtn.addEventListener('click', () => {
+  refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
+  console.log("refreshed")
+})
 // Add new dataset folder (empty) on bf
 bfCreateNewDatasetBtn.addEventListener('click', () => {
   bfCreateNewDatasetBtn.disabled = true
@@ -1184,6 +1193,13 @@ function enableform(formId) {
 }
 
 function clearStrings() {
+  document.getElementById("para-preview-organization-status").innerHTML = ""
+  document.getElementById("para-save-file-organization-status").innerHTML = ""
+  document.getElementById("para-upload-file-organization-status").innerHTML = ""
+  document.getElementById("para-selected-dataset").innerHTML = ""
+}
+
+function clearPermissionsStrings() {
   document.getElementById("para-preview-organization-status").innerHTML = ""
   document.getElementById("para-save-file-organization-status").innerHTML = ""
   document.getElementById("para-upload-file-organization-status").innerHTML = ""
