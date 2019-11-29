@@ -103,7 +103,7 @@
             </div>
           </h5>
           <div class="demo-controls">
-            <textarea id="bf-new-dataset-subtitle" class="demo-response" rows="4" maxlength = "256"> </textarea>
+            <textarea id="bf-new-dataset-subtitle" class="demo-response" rows="4" maxlength="256"> </textarea>
           </div>
 
           <h5> </h5>
@@ -119,7 +119,7 @@
     <div class="demo">
       <div class="demo-wrapper">
         <button id="button-new-window-metadata-demo-toggle" class="js-container-target demo-toggle-button"> Add metadata to Blackfynn dataset
-          <div class="demo-meta u-avoid-clicks"> Add a banner image to your dataset and a description
+          <div class="demo-meta u-avoid-clicks"> Add subtitle, description, banner image, and license to your dataset
           </div>
         </button>
         <div class="demo-box">
@@ -136,19 +136,20 @@
             </select>
           </div>
 
+          <h5> </h5>
           <div id=div-bf-current-metadata-progress class="progressdiv">
             <div class="indeterminatebar"></div>
           </div>
 
-
           <form id = 'blackfynn-add-metadata'>
             <div style = "padding:10px 0px">
               <input id="addEditSubtitle" name="blackfynn-account" type="radio" class="with-style" />
-              <label for="addEditSubtitle" class="labelradio"> Add/edit subtitle (short description of less than 256 characters) </label>
+              <label for="addEditSubtitle" class="labelradio"> Add/edit subtitle </label>
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                   <span class="tooltiptext">Add a short description that explains what is in your dataset.</span>
                 </div>
             </div>
+
             <div style = "padding:10px 0px">
               <input id="addEditDescription" name="blackfynn-account" type="radio" class="with-style" />
               <label for="addEditDescription" class="labelradio"> Add/edit description </label>
@@ -159,6 +160,7 @@
                   </span>
                 </div>
             </div>
+
             <div style = "padding:10px 0px">
               <input id="addEditBanner" name="blackfynn-account" type="radio" class="with-style" />
               <label for="addEditBanner" class="labelradio"> Add/edit a banner image </label>
@@ -169,19 +171,28 @@
                   </span>
                 </div>
             </div>
+
             <div style = "padding:10px 0px">
               <input id="addEditLicense" name="blackfynn-account" type="radio" class="with-style" />
               <label for="addEditLicense" class="labelradio"> Choose/change a license </label>
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Select a license that you want to associate with the dataset once it is published.
+                  <span class="tooltiptext">View and/or add a license that you want to associate with the dataset once it is published.
                   </span>
                 </div>
             </div>
           </form>
 
           <div id="div-add-edit-subtitle" class="datasetsaveoption">
-              <h5>
-              </h5>
+            <h5> View/type subtitle
+            </h5>
+            <div class="demo-controls">
+              <textarea id="bf-dataset-subtitle" class="demo-response" rows="4" maxlength="256"> </textarea>
+            </div>
+            <h5> </h5>
+            <div class="demo-controls">
+              <button id="button-add-subtitle" class="demo-button"> Add subtitle </button>
+              <p id = "para-dataset-subtitle-status"> </p>
+            </div>
           </div>
           
           <div id="div-add-edit-description" class="datasetsaveoption">
@@ -195,36 +206,39 @@
           </div>
 
           <div id="div-add-edit-license" class="datasetsaveoption">
-              <h5>
-              </h5>
-              <div class="demo-controls">
-                <p id = "para-dataset-license-current"> </p>
-              </div>
-              <div class="demo-controls">
-                <select class="my_dropdown" id="bf-license-list">
-                  <option> Select license </option>
-                  <optgroup label="Better for data">
-                  <option>Community Data License Agreement – Permissive </option>
-                  <option>Community Data License Agreement – Sharing </option>
-                  <option>Creative Commons Zero 1.0 Universal </option>
-                  <option>Creative Commons Attribution </option>
-                  <option>Creative Commons Attribution - ShareAlike </option>
-                  <option>Open Data Commons Open Database </option>
-                  <option>Open Data Commons Attribution </option>
-                  <option>Open Data Commons Public Domain Dedication and License </option>
-                  <optgroup label="Better for code">
-                  <option>Apache 2.0 </option>
-                  <option>GNU General Public License v3.0 </option>
-                  <option>GNU Lesser General Public License </option>
-                  <option>MIT </option>
-                  <option>Mozilla Public License 2.0 </option>
-                </select>
-              </div>
-          </div>
+            <h5> Current License </h5>
+            <div class="demo-controls">
+              <p id = "para-dataset-license-current"> </p>
+            </div>
 
-          <h5>  </h5>
-          <div class="demo-controls">
-            <button id="button-add-license" class="demo-button"> Add license </button>
+            <h5> Change license </h5>
+            <div class="demo-controls">
+              <select class="my_dropdown" id="bf-license-list">
+                <option> Select license </option>
+                <optgroup label="Better for data">
+                <option>Community Data License Agreement – Permissive </option>
+                <option>Community Data License Agreement – Sharing </option>
+                <option>Creative Commons Zero 1.0 Universal </option>
+                <option>Creative Commons Attribution </option>
+                <option>Creative Commons Attribution - ShareAlike </option>
+                <option>Open Data Commons Open Database </option>
+                <option>Open Data Commons Attribution </option>
+                <option>Open Data Commons Public Domain Dedication and License </option>
+                <optgroup label="Better for code">
+                <option>Apache 2.0 </option>
+                <option>GNU General Public License v3.0 </option>
+                <option>GNU Lesser General Public License </option>
+                <option>MIT </option>
+                <option>Mozilla Public License 2.0 </option>
+              </select>
+            </div>
+
+            <h5>  </h5>
+            <div class="demo-controls">
+              <button id="button-add-license" class="demo-button"> Add license </button>
+              <p id = "para-dataset-license-status"> </p>
+            </div>
+
           </div>
 
         </div>
@@ -250,7 +264,7 @@
           </div>
           <h5> Current permission
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Name of user (First name, Last name) and their current permission ('viewer', 'manager', or 'editor') will be shown here for the selected dataset</span>
+              <span class="tooltiptext">Name of user (First name, Last name) and their current permission ('owner', 'viewer', 'manager', or 'editor') will be shown here for the selected dataset</span>
             </div>
           </h5>
           <div id=div-bf-current-permission-progress class="progressdiv">

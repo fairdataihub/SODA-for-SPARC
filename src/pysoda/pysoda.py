@@ -1018,21 +1018,21 @@ def bf_new_dataset_folder(datasetname, accountname):
         datasetname = datasetname.strip()
 
         if check_forbidden_characters(datasetname):
-            error = error + 'Error: Please enter valid dataset name' + '\n'
+            error = error + 'Error: Please enter valid dataset name' + "<br>"
             c += 1
 
         if (not datasetname):
-            error = error + 'Error: Please enter valid dataset name' + '\n'
+            error = error + 'Error: Please enter valid dataset name' + "<br>"
             c += 1
 
         if (datasetname.isspace()):
-            error = error + 'Error: Please enter valid dataset name' + '\n'
+            error = error + 'Error: Please enter valid dataset name' + "<br>"
             c += 1
 
         try:
             bf = Blackfynn(accountname)
         except Exception as e:
-            error = error + 'Error: Please select a valid Blackfynn account' + '\n'
+            error = error + 'Error: Please select a valid Blackfynn account' + "<br>"
             c += 1
 
         if c>0:
@@ -1569,3 +1569,157 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
             return "Permission " + "'" + selected_role + "' " +  " added for " + selected_team
     except Exception as e:
             raise e
+
+
+"""
+    Function to get current subtitle associated with a selected dataset
+
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+    Return:
+        License name, if any, or "No license" message
+    """
+def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        selected_dataset_id = myds.id
+        dataset_info = bf._api._get('/datasets/' + str(selected_dataset_id))
+        res = dataset_info['content']['description']
+        return res
+    except Exception as e:
+        raise Exception(e)
+
+
+"""
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_license: name of selected license (string)
+    Action: 
+        Add/change license for a selected dataset
+    Return:
+        Success messsge or error
+    """
+def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        selected_dataset_id = myds.id
+        jsonfile = {'description': input_subtitle}
+        bf._api.datasets._put('/' + str(selected_dataset_id),
+                              json=jsonfile)
+        return 'Subtitle added'
+    except Exception as e:
+        raise Exception(e)
+
+
+"""
+    Function to get current license associated with a selected dataset
+
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+    Return:
+        License name, if any, or "No license" message
+    """
+def bf_get_license(selected_bfaccount, selected_bfdataset):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        selected_dataset_id = myds.id
+        dataset_info = bf._api._get('/datasets/' + str(selected_dataset_id))
+        list_keys = dataset_info['content'].keys()
+        if 'license' in list_keys:
+            res = dataset_info['content']['license']
+        else:
+            res = 'No license is currently associated'
+        return res
+    except Exception as e:
+        raise Exception(e)
+
+
+"""
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_license: name of selected license (string)
+    Action: 
+        Add/change license for a selected dataset
+    Return:
+        Success messsge or error
+    """
+def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        allowed_licenses_list = [
+            'Community Data License Agreement – Permissive',
+            'Community Data License Agreement – Sharing',
+            'Creative Commons Zero 1.0 Universal',
+            'Creative Commons Attribution',
+            'Creative Commons Attribution - ShareAlike',
+            'Open Data Commons Open Database',
+            'Open Data Commons Attribution',
+            'Open Data Commons Public Domain Dedication and License',
+            'Apache 2.0',
+            'GNU General Public License v3.0',
+            'GNU Lesser General Public License',
+            'MIT',
+            'Mozilla Public License 2.0'
+            ]
+        if selected_license not in allowed_licenses_list:
+            error = 'Error: Please select a valid license'
+            raise Exception(error)
+        selected_dataset_id = myds.id
+        jsonfile = {'license': selected_license}
+        bf._api.datasets._put('/' + str(selected_dataset_id),
+                              json=jsonfile)
+        return 'License added'
+    except Exception as e:
+        raise Exception(e)

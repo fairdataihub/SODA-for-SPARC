@@ -3,7 +3,7 @@ from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_o
     import_file_organization, curate_dataset, preview_file_organization, delete_preview_file_organization, \
     bf_add_account, bf_account_list, bf_dataset_account, bf_account_details, \
     bf_submit_dataset, bf_new_dataset_folder, bf_add_permission, bf_get_users, bf_get_permission, \
-    bf_get_teams, bf_add_permission_team
+    bf_get_teams, bf_add_permission_team, bf_get_license, bf_add_license, bf_get_subtitle, bf_add_subtitle
         
 import sys
 import zerorpc
@@ -124,6 +124,30 @@ class SodaApi(object):
     def api_bf_add_permission_team(self, selected_bfaccount, selected_bfdataset, selected_team, selected_role):
         try:
             return bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team, selected_role)
+        except Exception as e:
+            raise e
+
+    def api_bf_get_subtitle(self, selected_bfaccount, selected_bfdataset):
+        try:
+            return bf_get_subtitle(selected_bfaccount, selected_bfdataset)
+        except Exception as e:
+            raise e
+
+    def api_bf_add_subtitle(self, selected_bfaccount, selected_bfdataset, input_subtitle):
+        try:
+            return bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle)
+        except Exception as e:
+            raise e
+
+    def api_bf_get_license(self, selected_bfaccount, selected_bfdataset):
+        try:
+            return bf_get_license(selected_bfaccount, selected_bfdataset)
+        except Exception as e:
+            raise e
+
+    def api_bf_add_license(self, selected_bfaccount, selected_bfdataset, selected_license):
+        try:
+            return bf_add_license(selected_bfaccount, selected_bfdataset, selected_license)
         except Exception as e:
             raise e
 

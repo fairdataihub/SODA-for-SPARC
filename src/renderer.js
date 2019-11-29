@@ -19,6 +19,7 @@ client.invoke("echo", "server ready", (error, res) => {
   }
 })
 
+
 //////////////////////////////////
 // Get html elements from the user interface //
 //////////////////////////////////
@@ -101,8 +102,9 @@ const bfRefreshDatasetBtn = document.getElementById('button-refresh-dataset-list
 const bfUploadRefreshDatasetBtn = document.getElementById('button-upload-refresh-dataset-list')
 const bfNewDatasetName = document.querySelector('#bf-new-dataset-name')
 const bfCreateNewDatasetBtn = document.getElementById('button-create-bf-new-dataset')
-const bfCreateNewDatasetInfo = document.querySelector('#add-new-dataset-progress')
 const bfCreateNewDatasetStatus = document.querySelector('#para-add-new-dataset-status')
+const bfNewDatasetSubtitle = document.querySelector('#bf-new-dataset-subtitle')
+
 const bfSubmitDatasetBtn = document.getElementById('button-submit-dataset')
 const bfSubmitDatasetInfo = document.querySelector('#progresssubmit')
 const pathSubmitDataset = document.querySelector('#selected-submit-dataset')
@@ -110,7 +112,15 @@ const progressBarUploadBf = document.getElementById("progress-bar-upload-bf")
 
 const bfDatasetListMetadata = document.querySelector('#bfdatasetlist_metadata')
 const bfCurrentMetadataProgress = document.querySelector('#div-bf-current-metadata-progress')
+
+const bfDatasetSubtitle = document.querySelector('#bf-dataset-subtitle')
+const bfAddSubtitleBtn = document.getElementById('button-add-subtitle')
+const datasetSubtitleStatus = document.querySelector('#para-dataset-subtitle-status')
+
 const currentDatasetLicense = document.querySelector('#para-dataset-license-current')
+const bfListLicense = document.querySelector('#bf-license-list')
+const bfAddLicenseBtn = document.getElementById('button-add-license')
+const datasetLicenseStatus = document.querySelector('#para-dataset-license-status')
 
 const bfDatasetListPermission = document.querySelector('#bfdatasetlist_permission')
 const currentDatasetPermission = document.querySelector('#para-dataset-permission-current')
@@ -365,20 +375,6 @@ selectPreviewBtn.addEventListener('click', () => {
   })
 })
 
-// Action when user click on Delete Preview file organization button
-// deletePreviewBtn.addEventListener('click', () => {
-//   document.getElementById("para-preview-organization-status").innerHTML = "Please wait..."
-//   client.invoke("api_delete_preview_file_organization", (error, res) => {
-//       if(error) {
-//         console.error(error)
-//         var emessage = userError(error)
-//         document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
-//       } else {
-//         console.log("Done")
-//         document.getElementById("para-preview-organization-status").innerHTML = "Preview folder deleted!";
-//       }
-//   })
-// })
 
 // // // // // // // // // //
 // Action when user click on Generate Dataset
@@ -668,17 +664,28 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
   client.invoke("api_bf_new_dataset_folder", bfNewDatasetName.value, selectedbfaccount, (error, res) => {
     if (error) {
       console.error(error)
-      var emessage = userError(error)
+      var emessage = error
       bfCreateNewDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
       bfCreateNewDatasetBtn.disabled = false
     } else {
-        bfCreateNewDatasetStatus.innerHTML = 'Success: created dataset' + ' ' + bfNewDatasetName.value + smileyCan
-        refreshBfDatasetList(bfDatasetList, bfAccountList)
-        refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
-        refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
-        refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
-        currentDatasetPermission.innerHTML = ''
-        bfCreateNewDatasetBtn.disabled = false
+        var inputSubtitle = bfNewDatasetSubtitle.value
+        client.invoke("api_bf_add_subtitle", selectedbfaccount, bfNewDatasetName.value, inputSubtitle,
+        (error, res) => {
+        if(error) {
+          console.error(error)
+          var emessage = userError(error)
+          bfCreateNewDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
+          bfCreateNewDatasetBtn.disabled = false
+        } else {
+          bfCreateNewDatasetStatus.innerHTML = 'Success: created dataset' + ' ' + bfNewDatasetName.value + smileyCan
+          refreshBfDatasetList(bfDatasetList, bfAccountList)
+          refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
+          refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
+          refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
+          currentDatasetPermission.innerHTML = ''
+          bfCreateNewDatasetBtn.disabled = false
+        }
+      })
     }
   })
 })
@@ -736,12 +743,62 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
     }
 })
 
+
 /**
  * This event tracks change of the selected dataset in the dropdown list
  * under the "Add metadata to Blackfynn dataset" feature
  */
 bfDatasetListMetadata.addEventListener('change', () => {
   bfCurrentMetadataProgress.style.display = 'block'
+  datasetSubtitleStatus.innerHTML = ''
+  datasetLicenseStatus.innerHTML = ''
+  bfDatasetSubtitle.value = ''
+  showCurrentLicense()
+  showCurrentSubtitle()
+})
+
+
+bfAddSubtitleBtn.addEventListener('click', () => {
+  bfCurrentMetadataProgress.style.display = 'block'
+  datasetSubtitleStatus.innerHTML = ''
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
+  var inputSubtitle = bfDatasetSubtitle.value
+  client.invoke("api_bf_add_subtitle", selectedBfAccount, selectedBfDataset, inputSubtitle,
+    (error, res) => {
+    if(error) {
+      console.error(error)
+      var emessage = userError(error)
+      datasetSubtitleStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfCurrentMetadataProgress.style.display = 'none'
+    } else {
+      console.log('Done', res)
+      datasetSubtitleStatus.innerHTML = res
+      bfCurrentMetadataProgress.style.display = 'none'
+    }
+  })
+})
+
+
+bfAddLicenseBtn.addEventListener('click', () => {
+  bfCurrentMetadataProgress.style.display = 'block'
+  datasetLicenseStatus.innerHTML = ''
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
+  var selectedLicense = bfListLicense.options[bfListLicense.selectedIndex].text
+  client.invoke("api_bf_add_license", selectedBfAccount, selectedBfDataset, selectedLicense,
+    (error, res) => {
+    if(error) {
+      console.error(error)
+      var emessage = userError(error)
+      datasetLicenseStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfCurrentMetadataProgress.style.display = 'none'
+    } else {
+      console.log('Done', res)
+      datasetLicenseStatus.innerHTML = res
+      showCurrentLicense()
+    }
+  })
 })
 
 /**
@@ -901,10 +958,30 @@ function refreshBfDatasetList(bfdstlist, bfAccountList){
   }
 }
 
+
+function showCurrentSubtitle(){
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
+  if (selectedBfDataset === 'Select dataset'){
+    bfCurrentMetadataProgress.style.display = 'none'
+  } else {
+    client.invoke("api_bf_get_subtitle", selectedBfAccount, selectedBfDataset,
+    (error, res) => {
+      if(error) {
+        console.error(error)
+      } else {
+        console.log('Done', res)
+        bfDatasetSubtitle.value = res
+      }
+    })
+  }
+}
+
+
 function showCurrentLicense(){
   currentDatasetLicense.innerHTML = "Please wait..."
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
-  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
+  var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
     currentDatasetLicense.innerHTML = ''
     bfCurrentMetadataProgress.style.display = 'none'
@@ -917,7 +994,7 @@ function showCurrentLicense(){
       } else {
         console.log('Done', res)
         currentDatasetLicense.innerHTML = res
-        bfCurrentPermissionProgress.style.display = 'none'
+        bfCurrentMetadataProgress.style.display = 'none'
       }
     })
   }
