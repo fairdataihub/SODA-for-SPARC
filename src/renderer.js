@@ -5,6 +5,7 @@ const zerorpc = require("zerorpc")
 const fs = require("fs")
 const path = require('path')
 const {ipcRenderer} = require('electron')
+const Quill = require('quill')
 
 // Connect to python server and check
 let client = new zerorpc.Client({ timeout: 300000})
@@ -117,6 +118,12 @@ const bfDatasetSubtitle = document.querySelector('#bf-dataset-subtitle')
 const bfAddSubtitleBtn = document.getElementById('button-add-subtitle')
 const datasetSubtitleStatus = document.querySelector('#para-dataset-subtitle-status')
 
+const bfAddDescriptionBtn = document.getElementById('button-add-description')
+const datasetDescriptionStatus = document.querySelector('#para-dataset-description-status')
+
+const bfAddBannerImageBtn = document.getElementById('button-add-banner-image')
+const datasetBannerImageStatus = document.querySelector('#para-dataset-banner-image-status')
+
 const currentDatasetLicense = document.querySelector('#para-dataset-license-current')
 const bfListLicense = document.querySelector('#bf-license-list')
 const bfAddLicenseBtn = document.getElementById('button-add-license')
@@ -152,7 +159,13 @@ const redColor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivatives", "docs", "primary", "protocol", "source"]
 const smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">'
 const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
-
+var MarkdownIt = require('markdown-it')
+var md = new MarkdownIt();
+md.set({
+    html: true
+  });
+var TurndownService = require('turndown')
+var turndownService = new TurndownService()
 
 //////////////////////////////////
 // Operations on JavaScript end only
@@ -292,6 +305,21 @@ holderMain.addEventListener("drop", (event)=> {
    var myID = holderMain.id
    dropAddToTable(event, myID)
 })
+
+
+var element = document.getElementById('div-add-edit-description')
+var options = {
+  modules: {
+    toolbar: true
+  },
+  placeholder: 'Type your description here...',
+  //readOnly: true,
+  theme: 'snow', // or 'bubble'
+  bounds: element
+};
+
+
+var quillDescription = new Quill('#editor-container', options);
 
 //////////////////////////////////
 // Operations calling to pysoda.py functions //
@@ -753,8 +781,11 @@ bfDatasetListMetadata.addEventListener('change', () => {
   datasetSubtitleStatus.innerHTML = ''
   datasetLicenseStatus.innerHTML = ''
   bfDatasetSubtitle.value = ''
-  showCurrentLicense()
+  datasetDescriptionStatus.innerHTML = ''
+  datasetBannerImageStatus.innerHTML = ''
   showCurrentSubtitle()
+  showCurrentDescription()
+  showCurrentLicense()
 })
 
 
@@ -774,6 +805,30 @@ bfAddSubtitleBtn.addEventListener('click', () => {
     } else {
       console.log('Done', res)
       datasetSubtitleStatus.innerHTML = res
+      bfCurrentMetadataProgress.style.display = 'none'
+    }
+  })
+})
+
+bfAddDescriptionBtn.addEventListener('click', () => {
+  bfCurrentMetadataProgress.style.display = 'block'
+  datasetDescriptionStatus.innerHTML = ''
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
+  var inputDescription = quillDescription.container.firstChild.innerHTML
+  console.log(inputDescription)
+  var markdownDescription = turndownService.turndown(inputDescription)
+  console.log(markdownDescription)
+  client.invoke("api_bf_add_description", selectedBfAccount, selectedBfDataset, markdownDescription,
+    (error, res) => {
+    if(error) {
+      console.error(error)
+      var emessage = userError(error)
+      datasetDescriptionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfCurrentMetadataProgress.style.display = 'none'
+    } else {
+      console.log('Done', res)
+      datasetDescriptionStatus.innerHTML = res
       bfCurrentMetadataProgress.style.display = 'none'
     }
   })
@@ -977,6 +1032,25 @@ function showCurrentSubtitle(){
   }
 }
 
+function showCurrentDescription(){
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
+  if (selectedBfDataset === 'Select dataset'){
+    bfCurrentMetadataProgress.style.display = 'none'
+  } else {
+    client.invoke("api_bf_get_description", selectedBfAccount, selectedBfDataset,
+    (error, res) => {
+      if(error) {
+        console.error(error)
+      } else {
+        console.log('Description', res)
+        var html = md.render(res);
+        console.log('HTML', html)
+        quillDescription.clipboard.dangerouslyPasteHTML(html)
+      }
+    })
+  }
+}
 
 function showCurrentLicense(){
   currentDatasetLicense.innerHTML = "Please wait..."

@@ -196,13 +196,23 @@
           </div>
           
           <div id="div-add-edit-description" class="datasetsaveoption">
-              <h5>
-              </h5>
+            <h5> </h5>
+            <div id="editor-container">
+            </div>
+            <h5> </h5>
+            <div class="demo-controls">
+              <button id="button-add-description" class="demo-button"> Add description to dataset </button>
+              <p id = "para-dataset-description-status"> </p>
+            </div>
           </div>
 
           <div id="div-add-edit-banner" class="datasetsaveoption">
               <h5>
               </h5>
+              <div class="demo-controls">
+              <button id="button-add-banner-image" class="demo-button"> Add banner image </button>
+              <p id = "para-dataset-banner-image-status"> Place holder </p>
+            </div>
           </div>
 
           <div id="div-add-edit-license" class="datasetsaveoption">
@@ -470,6 +480,7 @@
       require('./renderer-process/native-ui/dialogs/save')
       require('./renderer-process/manage_submit/blackfynn_account')
     </script>
+
 
   </section>
 </template>

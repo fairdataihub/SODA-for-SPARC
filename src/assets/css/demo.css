@@ -495,3 +495,9 @@ progress.progresstrack[value]::-webkit-progress-value {
   height:29px;
   margin-left: 3px;
 }
+
+#editor-container {
+  height: 375px;
+  background-color: white;
+  color: black
+}

@@ -1607,9 +1607,9 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
     Args:
         selected_bfaccount: name of selected Blackfynn acccount (string)
         selected_bfdataset: name of selected Blackfynn dataset (string)
-        selected_license: name of selected license (string)
+        input_subtitle: subtitle limited to 256 characters (string)
     Action: 
-        Add/change license for a selected dataset
+        Add/change subtitle for a selected dataset
     Return:
         Success messsge or error
     """
@@ -1633,6 +1633,73 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
         bf._api.datasets._put('/' + str(selected_dataset_id),
                               json=jsonfile)
         return 'Subtitle added'
+    except Exception as e:
+        raise Exception(e)
+
+
+"""
+    Function to get current description associated with a selected dataset
+
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+    Return:
+        Description
+    """
+def bf_get_description(selected_bfaccount, selected_bfdataset):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        selected_dataset_id = myds.id
+        dataset_readme_info = bf._api._get('/datasets/' + str(selected_dataset_id) + '/readme')
+        res = dataset_readme_info['readme']
+        return res
+    except Exception as e:
+        raise Exception(e)
+
+
+
+"""
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+        markdown_input: description with markdown formatting (string)
+    Action: 
+        Add/change desciption for a selected dataset
+    Return:
+        Success messsge or error
+    """
+def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        selected_dataset_id = myds.id
+        jsonfile = {'readme': markdown_input}
+        bf._api.datasets._put('/' + str(selected_dataset_id) + '/readme',
+                              json=jsonfile)
+        return 'Description added'
     except Exception as e:
         raise Exception(e)
 
