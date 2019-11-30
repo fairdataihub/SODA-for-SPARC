@@ -1632,7 +1632,7 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
         jsonfile = {'description': input_subtitle}
         bf._api.datasets._put('/' + str(selected_dataset_id),
                               json=jsonfile)
-        return 'Subtitle added'
+        return 'Subtitle added!'
     except Exception as e:
         raise Exception(e)
 
@@ -1699,7 +1699,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
         jsonfile = {'readme': markdown_input}
         bf._api.datasets._put('/' + str(selected_dataset_id) + '/readme',
                               json=jsonfile)
-        return 'Description added'
+        return 'Description added!'
     except Exception as e:
         raise Exception(e)
 
@@ -1787,6 +1787,6 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
         jsonfile = {'license': selected_license}
         bf._api.datasets._put('/' + str(selected_dataset_id),
                               json=jsonfile)
-        return 'License added'
+        return 'License added!'
     except Exception as e:
         raise Exception(e)
