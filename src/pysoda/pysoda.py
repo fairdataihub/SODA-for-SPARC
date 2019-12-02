@@ -435,7 +435,7 @@ def delete_preview_file_organization():
     """
     try:
         userpath = expanduser("~")
-        preview_path = join(userpath, "SODA")
+        preview_path = join(userpath, "SODA", "Preview")
         if isdir(preview_path):
             shutil.rmtree(preview_path, ignore_errors=True)
         else:
@@ -624,7 +624,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
 
     # Add metadata to jsonpath
     userpath = expanduser("~")
-    metadatapath = join(userpath, 'SODA_metadata')
+    metadatapath = join(userpath, 'SODA', 'SODA_metadata')
     curateprogress = 'Generating metadata'
 
     if manifeststatus:
@@ -1607,7 +1607,7 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
         selected_bfaccount: name of selected Blackfynn acccount (string)
         selected_bfdataset: name of selected Blackfynn dataset (string)
         input_subtitle: subtitle limited to 256 characters (string)
-    Action: 
+    Action:
         Add/change subtitle for a selected dataset
     Return:
         Success messsge or error
@@ -1673,7 +1673,7 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
         selected_bfaccount: name of selected Blackfynn acccount (string)
         selected_bfdataset: name of selected Blackfynn dataset (string)
         markdown_input: description with markdown formatting (string)
-    Action: 
+    Action:
         Add/change desciption for a selected dataset
     Return:
         Success messsge or error
@@ -1743,7 +1743,7 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
         selected_bfaccount: name of selected Blackfynn acccount (string)
         selected_bfdataset: name of selected Blackfynn dataset (string)
         selected_license: name of selected license (string)
-    Action: 
+    Action:
         Add/change license for a selected dataset
     Return:
         Success messsge or error
