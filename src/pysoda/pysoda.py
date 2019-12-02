@@ -6,18 +6,18 @@ import os
 from os import listdir, stat, makedirs, mkdir, walk, remove, pardir
 from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname, getsize, abspath
 import pandas as pd
+import time
 from time import strftime, localtime
+import shutil
 from shutil import copy2
-from blackfynn import Blackfynn
 from configparser import ConfigParser
 import threading
 import numpy as np
 import collections
 import subprocess
-import shutil
 import re
-import time
 import gevent
+from blackfynn import Blackfynn
 
 ### Global variables
 curateprogress = ' '
