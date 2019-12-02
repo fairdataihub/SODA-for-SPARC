@@ -778,7 +778,6 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                 global curateprogress
                 global curatestatus
                 curateprogress = "Started uploading to dataset %s" %(bfdataset)
-                # return submitdataprogress
                 myds = bf.get_dataset(bfdataset)
                 myfolder = myds.name
                 for folder in jsonpath.keys():
@@ -1667,7 +1666,6 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
         return res
     except Exception as e:
         raise Exception(e)
-
 
 
 """

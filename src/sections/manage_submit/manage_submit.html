@@ -7,7 +7,12 @@
           <img class="section-icon" src="assets/img/manage-teal.png">
           Manage Datasets
         </h1>
-        <h3>This interface will assist you in managing and submitting your datasets on Blackfynn. It will also guide you for annotating your datasets using the Blackfynn model properties.</h3>
+        <h3>This interface will assist you in managing and submitting your datasets on Blackfynn. It will also guide you for annotating your datasets using the Blackfynn model and properties tools.
+        <br>
+        <br>
+        Please watch <a href="https://youtu.be/T_AHgEUXFAA">this introduction video</a> before you get started. </h3>
+
+        </h3>
       </div>
     </header>
 
@@ -18,7 +23,7 @@
         </button>
 
         <div class="demo-box">
-          <p> Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients"> Blackfynn Help </a>
+          <p> Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients"> Blackfynn Help</a>
           for generating an API and setting up your Blackfynn account on your computer for the first time. </p>
 
           <form id = 'blackfynn-account'>
@@ -56,7 +61,6 @@
             <h5> </h5>
             <div class="demo-controls">
               <button class="demo-button" id="add-bf-account"> Add account </button>
-              <!-- <textarea class="demo-response" id="add-account-progress" readonly></textarea> -->
             </div>
             <p id="para-add-account-status"></p>
           </div>
@@ -88,7 +92,7 @@
 
           <h5> Enter name
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Enter the name of the Dataset you want to create</span>
+              <span class="tooltiptext">Enter desired name for the new dataset</span>
             </div>
           </h5>
           <div class="demo-controls">
@@ -97,9 +101,9 @@
 
           <h5> Enter subtitle (short description of less than 256 characters)
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Add a short description that explains what is in your dataset.
+              <span class="tooltiptext">Add a short description that explains the content of your dataset.
               <br> <br>
-              It could also be added later under the "Add medatata to Blackfynn dataset" feature</span>
+              It could also be added later under the "Add medatata to Blackfynn dataset" section</span>
             </div>
           </h5>
           <div class="demo-controls">
@@ -123,9 +127,7 @@
           </div>
         </button>
         <div class="demo-box">
-          <p> Coming soon... tentative date: December 2019 </p>
-
-          <h5> Select Blackfynn Dataset
+          <h5> Select Blackfynn dataset
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">Select the Blackfynn dataset you wish to add/edit metadata (sorted alphabetically)</span>
             </div>
@@ -137,7 +139,7 @@
           </div>
           <h5></h5>
           <div class="demo-controls">
-            <button id="button-refresh-dataset-list-metadata" class="demo-button"> Refresh list </button>
+            <button id="button-refresh-dataset-list-metadata" class="demo-button"> Refresh dataset list </button>
           </div>
 
           <h5> </h5>
@@ -150,7 +152,7 @@
               <input id="addEditSubtitle" name="blackfynn-account" type="radio" class="with-style" />
               <label for="addEditSubtitle" class="labelradio"> Add/edit subtitle </label>
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Add a short description that explains what is in your dataset.</span>
+                  <span class="tooltiptext">Add a short description that explains the content of your dataset.</span>
                 </div>
             </div>
 
@@ -266,7 +268,7 @@
           <div class="demo-meta u-avoid-clicks"> Make PI owner, share with the Curation Team for review, give access to other members for collaborating  </div>
         </button>
         <div class="demo-box">
-          <h5> Select Blackfynn Dataset
+          <h5> Select Blackfynn dataset
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permission (sorted alphabetically)</span>
             </div>
@@ -278,7 +280,7 @@
           </div>
           <h5></h5>
           <div class="demo-controls">
-            <button id="button-refresh-dataset-list-permission" class="demo-button"> Refresh list </button>
+            <button id="button-refresh-dataset-list-permission" class="demo-button"> Refresh dataset list </button>
           </div>
           <h5> Current permission
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -307,7 +309,7 @@
               <input id="curation-team" name="blackfynn-permission-sharing" type="radio" class="with-style" />
               <label for="curation-team" class="labelradio"> Share with Curation Team </label>
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">This button will give "manager" role to the SPARC Curation Team giving them access for reviewing your dataset'
+                  <span class="tooltiptext">This button will provide "manager" role to the SPARC Curation Team giving them access for reviewing your dataset
                   </span>
                 </div>
             </div>
@@ -448,7 +450,7 @@
             <textarea class="demo-response" id="selected-submit-dataset"></textarea>
           </div>
 
-          <h5> Select Blackfynn Dataset for uploading
+          <h5> Select Blackfynn dataset for uploading
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically)</span>
             </div>
@@ -461,7 +463,7 @@
 
           <h5> </h5>
           <div class="demo-controls">
-            <button id="button-refresh-dataset-list" class="demo-button"> Refresh list </button>
+            <button id="button-refresh-dataset-list" class="demo-button"> Refresh dataset list </button>
           </div>
 
           <div>
