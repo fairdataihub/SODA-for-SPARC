@@ -46,24 +46,32 @@ function showAddEditLicense(){
   document.getElementById('div-add-edit-license').style.display ='block';
 }
 
-document.querySelector('#addEditSubtitle').addEventListener('click', () => {
-    document.getElementById("para-dataset-subtitle-status").innerHTML = ""
-    document.getElementById("para-dataset-license-status").innerHTML = ""
+document.querySelector('#add-edit-subtitle').addEventListener('click', () => {
+    document.getElementById('para-dataset-subtitle-status').innerHTML = "";
+    document.getElementById('para-dataset-description-status').innerHTML = "";
+    document.getElementById('para-dataset-banner-image-status').innerHTML = "";
+    document.getElementById('para-dataset-license-status').innerHTML = "";
     showAddEditSubtitle()
 })
-document.querySelector('#addEditDescription').addEventListener('click', () => {
-    document.getElementById("para-dataset-subtitle-status").innerHTML = ""
-    document.getElementById("para-dataset-license-status").innerHTML = ""
+document.querySelector('#add-edit-description').addEventListener('click', () => {
+    document.getElementById('para-dataset-subtitle-status').innerHTML = "";
+    document.getElementById('para-dataset-description-status').innerHTML = "";
+    document.getElementById('para-dataset-banner-image-status').innerHTML = "";
+    document.getElementById('para-dataset-license-status').innerHTML = "";
     showAddEditDescription()
 })
-document.querySelector('#addEditBanner').addEventListener('click', () => {
-    document.getElementById("para-dataset-subtitle-status").innerHTML = ""
-    document.getElementById("para-dataset-license-status").innerHTML = ""
+document.querySelector('#add-edit-banner').addEventListener('click', () => {
+    document.getElementById('para-dataset-subtitle-status').innerHTML = "";
+    document.getElementById('para-dataset-description-status').innerHTML = "";
+    document.getElementById('para-dataset-banner-image-status').innerHTML = "";
+    document.getElementById('para-dataset-license-status').innerHTML = "";
     showAddEditBanner()
 })
-document.querySelector('#addEditLicense').addEventListener('click', () => {
-    document.getElementById("para-dataset-subtitle-status").innerHTML = ""
-    document.getElementById("para-dataset-license-status").innerHTML = ""
+document.querySelector('#add-edit-license').addEventListener('click', () => {
+    document.getElementById('para-dataset-subtitle-status').innerHTML = "";
+    document.getElementById('para-dataset-description-status').innerHTML = "";
+    document.getElementById('para-dataset-banner-image-status').innerHTML = "";
+    document.getElementById('para-dataset-license-status').innerHTML = "";
     showAddEditLicense()
 })
 //
