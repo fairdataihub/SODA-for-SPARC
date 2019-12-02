@@ -675,23 +675,27 @@ bfUploadAccountList.addEventListener('change', () => {
 
 // Refresh list of bf dataset list (in case user create it online)
 bfRefreshDatasetBtn.addEventListener('click', () => {
-  refreshBfDatasetList(bfDatasetList, bfAccountList)
-  refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
-  refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
+  // refreshBfDatasetList(bfDatasetList, bfAccountList)
+  // refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
+  // refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
   currentDatasetPermission.innerHTML = ''
   console.log("refreshed")
+  refreshAllBFDatasetLists()
 })
 bfUploadRefreshDatasetBtn.addEventListener('click', () => {
   refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
   console.log("refreshed")
+  // refreshAllBFDatasetLists()
 })
 bfRefreshDatasetMetadataBtn.addEventListener('click', () => {
-  refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
+  // refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
   console.log("refreshed")
+  refreshAllBFDatasetLists()
 })
 bfRefreshDatasetPermissionBtn.addEventListener('click', () => {
-  refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
+  // refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
   console.log("refreshed")
+  refreshAllBFDatasetLists()
 })
 // Add new dataset folder (empty) on bf
 bfCreateNewDatasetBtn.addEventListener('click', () => {
@@ -1022,6 +1026,12 @@ function refreshBfDatasetList(bfdstlist, bfAccountList){
   }
 }
 
+function refreshAllBFDatasetLists(){
+    refreshBfDatasetList(bfDatasetList, bfAccountList)
+    refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
+    refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
+    // refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
+}
 
 function showCurrentSubtitle(){
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
