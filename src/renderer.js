@@ -331,6 +331,7 @@ var quillDescription = new Quill('#editor-container', options);
 selectSaveFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('save-file-dialog-saveorganization')
   document.getElementById("para-save-file-organization-status").innerHTML = ""
+  clearStrings()
 })
 ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
   if (path.length > 0){
@@ -341,7 +342,6 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
     }
     var jsonpath = jsonvect[0]
     var jsondescription = jsonvect[1]
-    clearStrings()
     document.getElementById("para-save-file-organization-status").innerHTML = ""
     // Call python to save
     if (path != null){
