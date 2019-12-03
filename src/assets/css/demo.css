@@ -299,7 +299,7 @@ table.pathtable {
   font:inherit;
   word-break: break-word;
   border-collapse: collapse;
-  border: 1px solid #fff; 
+  border: 1px solid #fff;
   border-style: hidden
   }
 
@@ -332,6 +332,25 @@ input[type='text'].inputpath
 
 table.pathtable tr.open {
   display : none;
+}
+
+/* YouTube video frames */
+.video-container {
+position: relative;
+padding-bottom: 56.25%;
+padding-top: 30px; height: 0; overflow: hidden;
+}
+
+.video-container iframe,
+.video-container object,
+.video-container embed {
+margin-left:5em;
+margin-top:1em;
+position: absolute;
+top: 0;
+left: 0;
+width: 80%;
+height: 80%;
 }
 
 .tooltipnew {
@@ -403,11 +422,11 @@ progress.progresstrack[value]::-webkit-progress-bar {
 
 progress.progresstrack[value]::-webkit-progress-value {
   background-image:
-     -webkit-linear-gradient(-45deg, 
-                             transparent 33%, rgba(0, 0, 0, .1) 33%, 
+     -webkit-linear-gradient(-45deg,
+                             transparent 33%, rgba(0, 0, 0, .1) 33%,
                              rgba(0,0, 0, .1) 66%, transparent 66%),
      -webkit-linear-gradient(left, hsl(339,90%,30%), hsl(190, 60%, 36%));
-  border-radius: 2px; 
+  border-radius: 2px;
   background-size: 35px 25px, 100% 100%, 100% 100%;
 }
 
