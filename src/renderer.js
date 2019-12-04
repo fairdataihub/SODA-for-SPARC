@@ -1,12 +1,12 @@
 //////////////////////////////////
 // Import required modules
 //////////////////////////////////
+const $ = require("jquery");
 const zerorpc = require("zerorpc")
 const fs = require("fs")
 const path = require('path')
 const {ipcRenderer} = require('electron')
 const Quill = require('quill')
-
 // Connect to python server and check
 let client = new zerorpc.Client({ timeout: 300000})
 
@@ -690,6 +690,7 @@ bfUploadRefreshDatasetBtn.addEventListener('click', () => {
 bfRefreshDatasetMetadataBtn.addEventListener('click', () => {
   // refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
   console.log("refreshed")
+  addSearchList()
   refreshAllBFDatasetLists()
 })
 bfRefreshDatasetPermissionBtn.addEventListener('click', () => {
@@ -1625,6 +1626,19 @@ function clearTable(table){
     }
   }
   return table
+}
+
+// Refresh List and Search
+
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function addSearchList(){
+  // console.log($("bfdatasetlist_metadata"))
+  $(document).ready(function() {
+    console.log($('#bfdatasetlist_metadata.my_dropdown_meta').length)
+    console.log($('.my_dropdown_meta','#bfdatasetlist_metadata'))
+    $('.my_dropdown_meta').select2( {placeholder: 'Select a dataset'} );
+  });
 }
 
 function addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole){

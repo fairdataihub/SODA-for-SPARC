@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="assets/css/demo.css">
     <link rel="stylesheet" href="node_modules/quill/dist/quill.snow.css">
     <link rel="stylesheet" href="node_modules/quill/dist/quill.bubble.css">
+    <link rel="stylesheet" href="node_modules/select2/dist/css/select2.min.css">
 
     <link rel="import" href="sections/getting_started/getting_started.html">
     <link rel="import" href="sections/prepare_metadata/prepare_metadata.html">
@@ -35,24 +36,26 @@
     </header>
 
     <div class="nav-item u-category-windows">
-      <button type="button" id="button-getting-started" data-section="getting_started" class="nav-button"> 
+      <button type="button" id="button-getting-started" data-section="getting_started" class="nav-button">
       <img class="nav-icon" src="assets/img/getting-started-white.png">
       Getting started <em></em></button>
-      <button type="button" id="button-prepare-metadata" data-section="prepare_metadata" class="nav-button"> 
+      <button type="button" id="button-prepare-metadata" data-section="prepare_metadata" class="nav-button">
       <img class="nav-icon" src="assets/img/metadata-white.png">
       Prepare Metadata <em></em></button>
-      <button type="button" id="button-windows" data-section="curate" class="nav-button"> 
+      <button type="button" id="button-windows" data-section="curate" class="nav-button">
         <img class="nav-icon" src="assets/img/dataset-white.png">
         Prepare Dataset <em></em></button>
-      <button type="button" id="button-crash-hang" data-section="manage_submit" class="nav-button"> 
+      <button type="button" id="button-crash-hang" data-section="manage_submit" class="nav-button">
         <img class="nav-icon" src="assets/img/manage-white.png">
         Manage Datasets </button>
-      <button type="button" id="button-menus" data-section="help" class="nav-button"> 
+      <button type="button" id="button-menus" data-section="help" class="nav-button">
       <img class="nav-icon" src="assets/img/help-white.png">
       Help </button>
     </div>
 
   </nav>
+
+  <!-- <script src="./node_modules/select2/dist/js/select2.min.js"></script> -->
 
   <main class="content js-content"></main>
 
@@ -65,7 +68,6 @@
   </script>
 
 </body>
-
   <script>
     require('./renderer.js') // js script for talking with Python back-end
   </script>
