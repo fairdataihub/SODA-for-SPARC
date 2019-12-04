@@ -1,7 +1,7 @@
 //////////////////////////////////
 // Import required modules
 //////////////////////////////////
-const $ = require("jquery");
+// const $ = require("jquery");
 const zerorpc = require("zerorpc")
 const fs = require("fs")
 const path = require('path')
@@ -690,7 +690,7 @@ bfUploadRefreshDatasetBtn.addEventListener('click', () => {
 bfRefreshDatasetMetadataBtn.addEventListener('click', () => {
   // refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
   console.log("refreshed")
-  addSearchList()
+  // addSearchList()
   refreshAllBFDatasetLists()
 })
 bfRefreshDatasetPermissionBtn.addEventListener('click', () => {
@@ -1632,14 +1632,14 @@ function clearTable(table){
 
 /* When the user clicks on the button,
 toggle between hiding and showing the dropdown content */
-function addSearchList(){
-  // console.log($("bfdatasetlist_metadata"))
-  $(document).ready(function() {
-    console.log($('#bfdatasetlist_metadata.my_dropdown_meta').length)
-    console.log($('.my_dropdown_meta','#bfdatasetlist_metadata'))
-    $('.my_dropdown_meta').select2( {placeholder: 'Select a dataset'} );
-  });
-}
+// function addSearchList(){
+//   // console.log($("bfdatasetlist_metadata"))
+//   $(document).ready(function() {
+//     console.log($('#bfdatasetlist_metadata.my_dropdown_meta').length)
+//     console.log($('.my_dropdown_meta','#bfdatasetlist_metadata'))
+//     $('.my_dropdown_meta').select2( {placeholder: 'Select a dataset'} );
+//   });
+// }
 
 function addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole){
   client.invoke("api_bf_add_permission", selectedBfAccount, selectedBfDataset, selectedUser, selectedRole,
