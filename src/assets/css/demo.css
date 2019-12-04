@@ -520,3 +520,16 @@ progress.progresstrack[value]::-webkit-progress-value {
   background-color: white;
   color: black
 }
+
+
+#canvas {
+  height: 600px;
+  width: 600px;
+  background-color: #ffffff;
+  cursor: default;
+  border: 1px solid black;
+}
+
+#current-banner-img {
+  max-width: 50%;
+}

@@ -763,12 +763,10 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             raise Exception(error)
 
         try:
-            selected_dataset_id = myds.id
-            dataset_permission_info = bf._api._get('/datasets/' + str(selected_dataset_id) + '/permission')
-            role = dataset_permission_info['permission']
-            if role in ['viewer', 'delete']:
+            role = bf_get_current_user_permission(accountname, bfdataset)
+            if role not in ['owner', 'manager', 'editor']:
                 curatestatus = 'Done'
-                error = "Error: You have 'viewer' permission only for the selected dataset"
+                error = "Error: You don't have permission for uploading on this Blackfynn dataset"
                 raise Exception(error)
         except Exception as e:
             raise e
@@ -1106,16 +1104,16 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     submitdatastatus = ' '
     uploaded_file_size = 0
     submitprintstatus = ' '
-    error, c = '', 0
     start_time_bf_upload = 0
 
     try:
         bf = Blackfynn(accountname)
     except Exception as e:
         submitdatastatus = 'Done'
-        error = error + 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Blackfynn account'
         raise Exception(error)
 
+    error, c = '', 0
     try:
         myds = bf.get_dataset(bfdataset)
     except Exception as e:
@@ -1127,16 +1125,21 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         submitdatastatus = 'Done'
         error = error + 'Error: Please select a valid local dataset folder' + '<br>'
         c += 1
+
     if c>0:
         raise Exception(error)
 
+
+    if total_file_size == 0:
+        submitdatastatus = 'Done'
+        error = 'Error: Please select a non-empty local dataset'
+        raise Exception(error)
+
     try:
-        selected_dataset_id = myds.id
-        dataset_permission_info = bf._api._get('/datasets/' + str(selected_dataset_id) + '/permission')
-        role = dataset_permission_info['permission']
-        if role in ['viewer', 'delete']:
+        role = bf_get_current_user_permission(accountname, bfdataset)
+        if role not in ['owner', 'manager', 'editor']:
             submitdatastatus = 'Done'
-            error = "Error: You have 'viewer' permission only for the selected dataset"
+            error = "Error: You don't have permission for uploading on this Blackfynn dataset"
             raise Exception(error)
     except Exception as e:
         raise e
@@ -1233,77 +1236,6 @@ def bf_get_teams(selected_bfaccount):
 
 
 def bf_get_permission(selected_bfaccount, selected_bfdataset):
-    """
-    Function to get current permission for a selected Blackfynn dataset
-
-    Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
-    Return:
-        list_permission: list of permission (first name -- last name -- role) associated with the
-        selected dataset (list of strings)
-    """
-    error = ''
-
-    try:
-        bf = Blackfynn(selected_bfaccount)
-    except Exception as e:
-        error = error + 'Error: Please select a valid Blackfynn account'
-        raise Exception(error)
-
-    c = 0
-
-    try:
-        myds = bf.get_dataset(selected_bfdataset)
-    except Exception as e:
-        error = error + 'Error: Please select a valid Blackfynn dataset' + '<br>'
-        c += 1
-
-    try:
-        if c > 0:
-            raise Exception(error)
-        else:
-            # user permissions
-            selected_dataset_id = myds.id
-            list_dataset_permission = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/users')
-            list_dataset_permission_first_last_role = []
-            for i in range(len(list_dataset_permission)):
-                first_name = list_dataset_permission[i]['firstName']
-                last_name = list_dataset_permission[i]['lastName']
-                role = list_dataset_permission[i]['role']
-                list_dataset_permission_first_last_role.append('User ' +  first_name + ' ' + last_name + ' , role: ' + role)
-
-            # team permissions
-            list_dataset_permission_teams = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/teams')
-            for i in range(len(list_dataset_permission_teams)):
-                team_keys = list(list_dataset_permission_teams[i].keys())
-                if 'role' in team_keys:
-                    team_name = list_dataset_permission_teams[i]['name']
-                    team_role = list_dataset_permission_teams[i]['role']
-                    list_dataset_permission_first_last_role.append('Team ' + team_name + ' , role: ' + team_role)
-
-            # Organization permissions
-            list_dataset_permission_organizations = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/organizations')
-            if type(list_dataset_permission_organizations) is dict:
-                    organization_keys = list(list_dataset_permission_organizations.keys())
-                    if 'role' in organization_keys:
-                        organization_name = list_dataset_permission_organizations['name']
-                        organization_role = list_dataset_permission_organizations['role']
-                        list_dataset_permission_first_last_role.append('Organization ' + organization_name + ' , role: ' + organization_role)
-            else:
-                for i in range(len(list_dataset_permission_organizations)):
-                    organization_keys = list(list_dataset_permission_organizations[i].keys())
-                    if 'role' in organization_keys:
-                        organization_name = list_dataset_permission_organizations[i]['name']
-                        organization_role = list_dataset_permission_organizations[i]['role']
-                        list_dataset_permission_first_last_role.append('Organization ' + organization_name + ' , role: ' + organization_role)
-
-            return list_dataset_permission_first_last_role
-
-    except Exception as e:
-        raise e
-
-def bf_get_permission(selected_bfaccount, selected_bfdataset):
 
     """
     Function to get permission for a selected dataset
@@ -1315,65 +1247,103 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
         list_permission: list of permission (first name -- last name -- role) associated with the
         selected dataset (list of string)
     """
-    error = ''
 
     try:
         bf = Blackfynn(selected_bfaccount)
     except Exception as e:
-        error = error + 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Blackfynn account'
         raise Exception(error)
-
-    c = 0
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = error + 'Error: Please select a valid Blackfynn dataset' + '<br>'
-        c += 1
+        error = 'Error: Please select a valid Blackfynn dataset' + '<br>'
+        raise Exception(error)
 
     try:
-        if c > 0:
-            raise Exception(error)
+        # user permissions
+        selected_dataset_id = myds.id
+        list_dataset_permission = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/users')
+        list_dataset_permission_first_last_role = []
+        for i in range(len(list_dataset_permission)):
+            first_name = list_dataset_permission[i]['firstName']
+            last_name = list_dataset_permission[i]['lastName']
+            role = list_dataset_permission[i]['role']
+            list_dataset_permission_first_last_role.append('User ' +  first_name + ' ' + last_name + ' , role: ' + role)
+
+        # team permissions
+        list_dataset_permission_teams = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/teams')
+        for i in range(len(list_dataset_permission_teams)):
+            team_keys = list(list_dataset_permission_teams[i].keys())
+            if 'role' in team_keys:
+                team_name = list_dataset_permission_teams[i]['name']
+                team_role = list_dataset_permission_teams[i]['role']
+                list_dataset_permission_first_last_role.append('Team ' + team_name + ', role: ' + team_role)
+
+        # Organization permissions
+        list_dataset_permission_organizations = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/organizations')
+        if type(list_dataset_permission_organizations) is dict:
+                organization_keys = list(list_dataset_permission_organizations.keys())
+                if 'role' in organization_keys:
+                    organization_name = list_dataset_permission_organizations['name']
+                    organization_role = list_dataset_permission_organizations['role']
+                    list_dataset_permission_first_last_role.append('Organization ' + organization_name + ', role: ' + organization_role)
         else:
-            # user permissions
-            selected_dataset_id = myds.id
-            list_dataset_permission = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/users')
-            list_dataset_permission_first_last_role = []
-            for i in range(len(list_dataset_permission)):
-                first_name = list_dataset_permission[i]['firstName']
-                last_name = list_dataset_permission[i]['lastName']
-                role = list_dataset_permission[i]['role']
-                list_dataset_permission_first_last_role.append('User ' +  first_name + ' ' + last_name + ' , role: ' + role)
+            for i in range(len(list_dataset_permission_organizations)):
+                organization_keys = list(list_dataset_permission_organizations[i].keys())
+                if 'role' in organization_keys:
+                    organization_name = list_dataset_permission_organizations[i]['name']
+                    organization_role = list_dataset_permission_organizations[i]['role']
+                    list_dataset_permission_first_last_role.append('Organization ' + organization_name + ', role: ' + organization_role)
 
-            # team permissions
-            list_dataset_permission_teams = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/teams')
-            for i in range(len(list_dataset_permission_teams)):
-                team_keys = list(list_dataset_permission_teams[i].keys())
-                if 'role' in team_keys:
-                    team_name = list_dataset_permission_teams[i]['name']
-                    team_role = list_dataset_permission_teams[i]['role']
-                    list_dataset_permission_first_last_role.append('Team ' + team_name + ', role: ' + team_role)
-
-            # Organization permissions
-            list_dataset_permission_organizations = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/organizations')
-            if type(list_dataset_permission_organizations) is dict:
-                    organization_keys = list(list_dataset_permission_organizations.keys())
-                    if 'role' in organization_keys:
-                        organization_name = list_dataset_permission_organizations['name']
-                        organization_role = list_dataset_permission_organizations['role']
-                        list_dataset_permission_first_last_role.append('Organization ' + organization_name + ', role: ' + organization_role)
-            else:
-                for i in range(len(list_dataset_permission_organizations)):
-                    organization_keys = list(list_dataset_permission_organizations[i].keys())
-                    if 'role' in organization_keys:
-                        organization_name = list_dataset_permission_organizations[i]['name']
-                        organization_role = list_dataset_permission_organizations[i]['role']
-                        list_dataset_permission_first_last_role.append('Organization ' + organization_name + ', role: ' + organization_role)
-
-            return list_dataset_permission_first_last_role
+        return list_dataset_permission_first_last_role
 
     except Exception as e:
         raise e
+
+def bf_get_current_user_permission(selected_bfaccount, selected_bfdataset):
+
+    """
+    Function to get the permission of currently logged in user for a selected dataset
+
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+    Output:
+        permission of current user (string)
+    """
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset' + '<br>'
+        raise Exception(error)
+
+    try:
+        # user permissions
+        current_user_email = bf.profile.email
+        selected_dataset_id = myds.id
+        list_dataset_permission = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/users')
+        c = 0
+        for i in range(len(list_dataset_permission)):
+            email = list_dataset_permission[i]['email']
+            role = list_dataset_permission[i]['role']
+            if current_user_email == email:
+                res = role
+                c +=1 
+        if c == 0:
+            res = "No permission"
+        return res
+
+    except Exception as e:
+        raise e
+
 
 def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, selected_role):
 
@@ -1627,6 +1597,15 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
         raise Exception(error)
 
     try:
+        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        if role not in ['owner', 'manager']:
+            curatestatus = 'Done'
+            error = "Error: You don't have permission for editing metadata on this Blackfynn dataset"
+            raise Exception(error)
+    except Exception as e:
+        raise e
+
+    try:
         selected_dataset_id = myds.id
         jsonfile = {'description': input_subtitle}
         bf._api.datasets._put('/' + str(selected_dataset_id),
@@ -1643,7 +1622,7 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
         selected_bfaccount: name of selected Blackfynn acccount (string)
         selected_bfdataset: name of selected Blackfynn dataset (string)
     Return:
-        Description
+        Description (string with markdown code)
     """
 def bf_get_description(selected_bfaccount, selected_bfdataset):
 
@@ -1693,11 +1672,56 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
         raise Exception(error)
 
     try:
+        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        if role not in ['owner', 'manager']:
+            curatestatus = 'Done'
+            error = "Error: You don't have permission for editing metadata on this Blackfynn dataset"
+            raise Exception(error)
+    except Exception as e:
+        raise e
+
+    try:
         selected_dataset_id = myds.id
         jsonfile = {'readme': markdown_input}
         bf._api.datasets._put('/' + str(selected_dataset_id) + '/readme',
                               json=jsonfile)
         return 'Description added!'
+    except Exception as e:
+        raise Exception(e)
+
+
+"""
+    Function to get url of current banner image associated with a selected dataset
+
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+    Return:
+        url of banner image (string)
+    """
+def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        selected_dataset_id = myds.id
+        dataset_banner_info = bf._api._get('/datasets/' + str(selected_dataset_id) + '/banner')
+        list_keys = dataset_banner_info.keys()
+        if 'banner' in list_keys:
+            res = dataset_banner_info['banner']
+        else:
+            res = 'No banner image'
+        return res
     except Exception as e:
         raise Exception(e)
 
@@ -1761,6 +1785,15 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
     except Exception as e:
         error = 'Error: Please select a valid Blackfynn dataset'
         raise Exception(error)
+
+    try:
+        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        if role not in ['owner', 'manager']:
+            curatestatus = 'Done'
+            error = "Error: You don't have permission for editing metadata on this Blackfynn dataset"
+            raise Exception(error)
+    except Exception as e:
+        raise e
 
     try:
         allowed_licenses_list = [

@@ -123,6 +123,8 @@ const datasetSubtitleStatus = document.querySelector('#para-dataset-subtitle-sta
 const bfAddDescriptionBtn = document.getElementById('button-add-description')
 const datasetDescriptionStatus = document.querySelector('#para-dataset-description-status')
 
+
+const bfCurrentBannerImg = document.getElementById('current-banner-img')
 const bfAddBannerImageBtn = document.getElementById('button-add-banner-image')
 const datasetBannerImageStatus = document.querySelector('#para-dataset-banner-image-status')
 
@@ -798,6 +800,7 @@ bfDatasetListMetadata.addEventListener('change', () => {
   datasetBannerImageStatus.innerHTML = ''
   showCurrentSubtitle()
   showCurrentDescription()
+  showCurrentBannerImage()
   showCurrentLicense()
 })
 
@@ -1070,6 +1073,31 @@ function showCurrentDescription(){
     })
   }
 }
+
+function showCurrentBannerImage(){
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
+  if (selectedBfDataset === 'Select dataset'){
+    bfCurrentMetadataProgress.style.display = 'none'
+  } else {
+    client.invoke("api_bf_get_banner_image", selectedBfAccount, selectedBfDataset,
+    (error, res) => {
+      if(error) {
+        console.error(error)
+      } else {
+        console.log('Banner image', res)
+        if (res === 'No banner image'){
+          bfCurrentBannerImg.src = 'assets/img/can-sad.png'
+        }
+        else {
+          bfCurrentBannerImg.src = res
+        }
+      }
+    })
+  }
+}
+
+bfCurrentBannerImg
 
 function showCurrentLicense(){
   currentDatasetLicense.innerHTML = "Please wait..."
