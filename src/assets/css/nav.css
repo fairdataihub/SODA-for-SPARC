@@ -59,6 +59,13 @@
   margin-right: .25rem;
 }
 
+.nav-video {
+  width: 23px;
+  height: 23px;
+  vertical-align: sub;
+  text-decoration: none;
+}
+
 .nav-category {
   margin: .2em 0;
   padding-left: 2rem;

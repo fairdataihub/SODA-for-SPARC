@@ -45,6 +45,10 @@ a[href^="https://"],
 a[href^="http://"] {
   border-bottom: 1px solid;
 }
+/* For YouTube Video links */
+a[href^="https://www.youtube.com"] {
+  border-bottom: 0px solid;
+}
 
 a:hover,
 a:focus {
