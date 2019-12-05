@@ -129,7 +129,10 @@
         <div class="demo-box">
           <h5> Select Blackfynn dataset
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the Blackfynn dataset you wish to add/edit metadata (sorted alphabetically)</span>
+              <span class="tooltiptext">Select the Blackfynn dataset you wish to add/edit metadata (sorted alphabetically)
+              <br>
+              Note: You must must be dataset owner or manager to edit metadata.
+              </span>
             </div>
           </h5>
           <div class="demo-controls">
@@ -213,10 +216,23 @@
           </div>
 
           <div id="div-add-edit-banner" class="datasetsaveoption">
-              <h5>
-              </h5>
-              <div class="demo-controls">
-              <button id="button-add-banner-image" class="demo-button"> Add banner image </button>
+            <h5> Current banner image </h5>
+            <div class="demo-controls">
+              <img id='current-banner-img' src=./assets/img/can-sad.png />
+            </div>
+            <h5> Edit banner image </h5>
+            <div class="demo-controls">
+              <button id="button-import-image" class="demo-button"> Import image </button>
+            </div>
+            <h5> </h5>
+            <div class="demo-controls">
+              <canvas id="canvas">
+                Your browser does not support the HTML5 canvas element.
+              </canvas>
+            </div>
+            <h5> </h5>
+            <div class="demo-controls">
+              <button id="button-add-banner-image" class="demo-button"> Save selection as banner image </button>
               <p id = "para-dataset-banner-image-status"> Place holder </p>
             </div>
           </div>
@@ -270,7 +286,10 @@
         <div class="demo-box">
           <h5> Select Blackfynn dataset
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permission (sorted alphabetically)</span>
+              <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permission (sorted alphabetically)
+              <br>
+              Note: You must must be dataset owner or manager to edit permission.
+              </span>
             </div>
           </h5>
           <div class="demo-controls">
@@ -452,7 +471,10 @@
 
           <h5> Select Blackfynn dataset for uploading
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically)</span>
+              <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically)
+              <br>
+              Note: You must must be dataset owner, manager, or editor to upload.
+              </span>
             </div>
           </h5>
           <div class="demo-controls">
@@ -490,6 +512,8 @@
       require('./renderer-process/native-ui/dialogs/save')
       require('./renderer-process/manage_submit/blackfynn_account')
     </script>
+
+    <script src="node_modules/cropperjs/dist/cropper.js"></script>
 
   </section>
 </template>
