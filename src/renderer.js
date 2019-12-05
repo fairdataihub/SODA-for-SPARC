@@ -39,7 +39,6 @@ const organizeDatasetStatus = document.querySelector('#organize-dataset')
 const clearTableBtn = document.getElementById('button-clear-table')
 const selectSaveFileOrganizationBtn = document.getElementById('button-select-save-file-organization')
 const selectPreviewBtn = document.getElementById('button-preview-file-organization')
-// const deletePreviewBtn = document.getElementById('button-delete-preview-organization-status')
 const selectImportFileOrganizationBtn = document.getElementById('button-select-upload-file-organization')
 
 // Generate dataset
@@ -1656,18 +1655,6 @@ function clearTable(table){
   return table
 }
 
-// Refresh List and Search
-
-/* When the user clicks on the button,
-toggle between hiding and showing the dropdown content */
-// function addSearchList(){
-//   // console.log($("bfdatasetlist_metadata"))
-//   $(document).ready(function() {
-//     console.log($('#bfdatasetlist_metadata.my_dropdown_meta').length)
-//     console.log($('.my_dropdown_meta','#bfdatasetlist_metadata'))
-//     $('.my_dropdown_meta').select2( {placeholder: 'Select a dataset'} );
-//   });
-// }
 
 function addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole){
   client.invoke("api_bf_add_permission", selectedBfAccount, selectedBfDataset, selectedUser, selectedRole,
