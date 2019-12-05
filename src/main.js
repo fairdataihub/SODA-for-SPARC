@@ -80,7 +80,7 @@ function initialize () {
       height: 680,
       center: true,
       //title: app.getName(),
-      icon: __dirname + '/assets/app-icon/png/soda_icon.png',
+      icon: __dirname + '/assets/menu-icon/soda_icon.png',
       webPreferences: {
         nodeIntegration: true
       }
@@ -99,7 +99,7 @@ function initialize () {
 
     mainWindow.on('close', (e) => {
     if (app.showExitPrompt) {
-        e.preventDefault() // Prevents the window from closing 
+        e.preventDefault() // Prevents the window from closing
         dialog.showMessageBox({
             type: 'question',
             buttons: ['Yes', 'No'],
