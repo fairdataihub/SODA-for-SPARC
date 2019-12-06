@@ -310,10 +310,18 @@ holderMain.addEventListener("drop", (event)=> {
 })
 
 
+var toolbarOptions = [
+  [{ 'header': [1, 2, 3, false] }],
+  ['bold', 'italic', 'link'],        // toggled buttons
+  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+  ['blockquote'],
+  ['clean']                                         // remove formatting button
+]
+
 var element = document.getElementById('div-add-edit-description')
 var options = {
   modules: {
-    toolbar: true
+    toolbar: toolbarOptions
   },
   placeholder: 'Type your description here...',
   //readOnly: true,
