@@ -617,9 +617,9 @@ bfAccountCheckBtn.addEventListener('click', (event) => {
 bfUploadAccountCheckBtn.addEventListener('click', (event) => {
   bfUploadSelectAccountStatus.innerHTML = "Please wait..."
   bfAccountLoadProgressCurate.style.display = 'block'
-  removeOptions(bfAccountList)
+  //removeOptions(bfAccountList)
   removeOptions(bfUploadAccountList)
-  updateBfAccountList(bfAccountList, bfSelectAccountStatus, bfAccountLoadProgressCurate)
+  //updateBfAccountList(bfAccountList, bfSelectAccountStatus, bfAccountLoadProgressCurate)
   updateBfAccountList(bfUploadAccountList, bfUploadSelectAccountStatus, bfAccountLoadProgressCurate)
 })
 
