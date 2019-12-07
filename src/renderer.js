@@ -635,7 +635,8 @@ bfAddAccountBtn.addEventListener('click', () => {
     } else {
         bfAddAccountStatus.innerHTML = res + smileyCan
         removeOptions(bfAccountList)
-        updateBfAccountList(bfAccountList, bfSelectAccountStatus)
+        bfAccountLoadProgress.style.display = 'block'
+        updateBfAccountList(bfAccountList, bfSelectAccountStatus, bfAccountLoadProgress)
         keyName.value = ''
         key.value = ''
         secret.value = ''
