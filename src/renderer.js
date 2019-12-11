@@ -716,7 +716,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
   client.invoke("api_bf_new_dataset_folder", bfNewDatasetName.value, selectedbfaccount, (error, res) => {
     if (error) {
       console.error(error)
-      var emessage = error
+      var emessage = userError(error)
       bfCreateNewDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
       bfCreateNewDatasetBtn.disabled = false
     } else {
