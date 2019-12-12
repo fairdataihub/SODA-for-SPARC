@@ -865,7 +865,8 @@ bfAddLicenseBtn.addEventListener('click', () => {
   datasetLicenseStatus.innerHTML = ''
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
-  var selectedLicense = bfListLicense.options[bfListLicense.selectedIndex].text
+  /*var selectedLicense = bfListLicense.options[bfListLicense.selectedIndex].text*/
+  var selectedLicense = 'Creative Commons Attribution'
   client.invoke("api_bf_add_license", selectedBfAccount, selectedBfDataset, selectedLicense,
     (error, res) => {
     if(error) {
