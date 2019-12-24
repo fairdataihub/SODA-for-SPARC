@@ -184,9 +184,11 @@
               <input id="add-edit-banner" name="blackfynn-add-metadata" type="radio" class="with-style" />
               <label for="add-edit-banner" class="labelradio"> Add/edit a banner image </label>
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">This image will be associated with the dataset.
+                  <span class="tooltiptext">This image will be associated with the dataset. It will be visible once the dataset is published.
                   <br>
-                  It will be visisble once the dataset is published.
+                  <br>
+                  This interface will help you make sure the uploaded image is square as per SPARC dataset requirements.
+                  Final image size of 2048x2048 px is highly recommended.
                   </span>
                 </div>
             </div>
@@ -227,27 +229,51 @@
             </div>
           </div>
 
+
+
+
           <div id="div-add-edit-banner" class="datasetsaveoption">
+
             <h5> Current banner image </h5>
             <div class="demo-controls">
-              <img id='current-banner-img' src=./assets/img/can-sad.png />
+              <img id='current-banner-img'  src=./assets/img/no-banner-image.png />
             </div>
-            <h5> Edit banner image </h5>
+
+            <h5> Add/edit banner image </h5>
             <div class="demo-controls">
-              <button id="button-import-image" class="demo-button"> Import image </button>
+              <button id="button-import-banner-image" class="demo-button"> Import image </button>
+              <p id = "para-path-image"> </p>
             </div>
+
             <h5> </h5>
             <div class="demo-controls">
-              <canvas id="canvas">
-                Your browser does not support the HTML5 canvas element.
-              </canvas>
+              <button id="save-banner-image" class="demo-button"> Save as banner image </button>
+              <p id = "para-dataset-banner-image-status"> </p>
             </div>
+
             <h5> </h5>
             <div class="demo-controls">
-              <button id="button-add-banner-image" class="demo-button"> Save selection as banner image </button>
-              <p id = "para-dataset-banner-image-status"> Place holder </p>
+              <form>
+                  <label class='input-banner-img' for='form-banner-height'>Cropped height (px):</label>
+                  <input id='form-banner-height' type="text" readonly="readonly" size="7">
+                  <label class='input-banner-img' for='form-banner-width'>Cropped width (px):</label>
+                  <input id='form-banner-width' type="text" readonly="readonly" size="7">
+              </form>
             </div>
+
+            <h5> </h5>
+            <div class="demo-controls">
+              <div id= 'div-img-container' class='img-container'>
+                <img id="image-banner" class='banner-img' width="100%" height:'auto'>
+              </div>
+              <div style="flex:40%">
+                <div id='banner-preview' class="preview">
+                </div>
+              </div>
+            </div>
+            
           </div>
+
 
           <div id="div-add-edit-license" class="datasetsaveoption">
             <h5> Current License </h5>
@@ -325,6 +351,7 @@
             <div class="indeterminatebar"></div>
           </div>
           <div class="demo-controls">
+
             <p id = "para-dataset-permission-current"> </p>
           </div>
 

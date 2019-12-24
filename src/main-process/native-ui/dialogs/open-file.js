@@ -121,3 +121,17 @@ ipcMain.on('open-file-dialog-submit-dataset', (event) => {
     }
   })
 })
+ 
+// Blackfynn metadata
+ipcMain.on('open-file-dialog-import-banner-image', (event) => {
+  dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [
+    { name: 'Image', extensions: ['jpg', 'png'] },
+  ]
+  }, (files) => {
+    if (files) {
+      event.sender.send('selected-banner-image', files)
+    }
+  })
+})
