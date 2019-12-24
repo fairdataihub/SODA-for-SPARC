@@ -533,3 +533,29 @@ progress.progresstrack[value]::-webkit-progress-value {
 #current-banner-img {
   max-width: 50%;
 }
+
+
+.img-container {
+  /* Never limit the container height here */
+  width: 50%;
+  float: left;
+  flex: 50%;
+}
+
+.img-container img {
+  /*display:block;*/
+  /* This is important */
+  max-width: 100%;
+}
+
+.preview {
+  overflow: hidden;
+  width: 300px; 
+  height: 300px;
+/*  padding-bottom: 30%;*/
+}
+
+label.input-banner-img{
+  padding-left: 10px;
+  color: black;
+}

@@ -124,8 +124,13 @@ const datasetDescriptionStatus = document.querySelector('#para-dataset-descripti
 
 
 const bfCurrentBannerImg = document.getElementById('current-banner-img')
-const bfAddBannerImageBtn = document.getElementById('button-add-banner-image')
+const bfImportBannerImageBtn = document.getElementById('button-import-banner-image')
+const datasetBannerImagePath = document.querySelector('#para-path-image')
+const bfViewImportedImage = document.querySelector('#image-banner')
+const bfSaveBannerImageBtn = document.getElementById('save-banner-image')
 const datasetBannerImageStatus = document.querySelector('#para-dataset-banner-image-status')
+const formBannerHeight = document.getElementById('form-banner-height')
+const formBannerWidth = document.getElementById('form-banner-width')
 
 const currentDatasetLicense = document.querySelector('#para-dataset-license-current')
 const bfListLicense = document.querySelector('#bf-license-list')
@@ -319,7 +324,7 @@ var toolbarOptions = [
 ]
 
 var element = document.getElementById('div-add-edit-description')
-var options = {
+var quillOptions = {
   modules: {
     toolbar: toolbarOptions
   },
@@ -330,7 +335,11 @@ var options = {
 };
 
 
-var quillDescription = new Quill('#editor-container', options);
+var quillDescription = new Quill('#editor-container', quillOptions);
+
+
+
+
 
 //////////////////////////////////
 // Operations calling to pysoda.py functions //
@@ -816,7 +825,7 @@ bfDatasetListMetadata.addEventListener('change', () => {
 
 bfAddSubtitleBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'
-  datasetSubtitleStatus.innerHTML = ''
+  datasetSubtitleStatus.innerHTML = 'Please wait...'
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   var inputSubtitle = bfDatasetSubtitle.value
@@ -837,7 +846,7 @@ bfAddSubtitleBtn.addEventListener('click', () => {
 
 bfAddDescriptionBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'
-  datasetDescriptionStatus.innerHTML = ''
+  datasetDescriptionStatus.innerHTML = "Please wait..."
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   var inputDescription = quillDescription.container.firstChild.innerHTML
@@ -860,10 +869,91 @@ bfAddDescriptionBtn.addEventListener('click', () => {
 })
 
 
+const Cropper = require('cropperjs')
+var cropOptions = {
+  aspectRatio: 1,
+  movable: false,
+   // Enable to rotate the image
+  rotatable: false,
+  // Enable to scale the image
+  scalable: false,
+  // Enable to zoom the image
+  zoomable: false,
+  // Enable to zoom the image by dragging touch
+  zoomOnTouch: false,
+  // Enable to zoom the image by wheeling mouse
+  zoomOnWheel: false,
+  preview: '.preview',
+  viewMode: 1,
+  crop: function(e) {
+      var data = e.detail;
+      formBannerHeight.value = Math.round(data.height)
+      formBannerWidth.value = Math.round(data.width)
+  }
+  // ready() {
+  //   console.log('ready')
+  //   console.log(myCropper.getCanvasData().height)
+  //   document.getElementById('banner-preview').style.height = String(myCropper.getCanvasData().height) + 'px'
+  //   console.log(document.getElementById('banner-preview').style.height)
+  //   console.log(String(myCropper.getCanvasData().height) + 'px')
+  // }
+  // minCanvasWidth: 0,
+  // minCanvasHeight: 0,
+  /*minContainerWidth: 400,
+  minContainerHeight: 400,*/
+}
+
+
+var myCropper = new Cropper(bfViewImportedImage, cropOptions)
+// Action when user click on "Import image" button for banner image
+bfImportBannerImageBtn.addEventListener('click', (event) => {
+  datasetBannerImageStatus.innerHTML = ""
+  ipcRenderer.send('open-file-dialog-import-banner-image')
+})
+ipcRenderer.on('selected-banner-image', (event, path) => {
+  if (path.length > 0){
+    datasetBannerImagePath.innerHTML = path
+    bfViewImportedImage.src = path[0]
+    myCropper.destroy()
+    myCropper = new Cropper(bfViewImportedImage, cropOptions)
+    }  
+  })
+
+bfSaveBannerImageBtn.addEventListener('click', (event) => { 
+  datasetBannerImageStatus.innerHTML = ""
+  if (bfViewImportedImage.src.length > 0){
+    if (formBannerHeight.value>1023 && formBannerWidth.value>1023){
+      bfCurrentMetadataProgress.style.display = 'block'
+      datasetBannerImageStatus.innerHTML = 'Please wait...'
+      var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+      var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
+      var croppedImageDataURL = myCropper.getCroppedCanvas().toDataURL()
+      console.log(croppedImageDataURL)
+      client.invoke("api_bf_add_banner_image", selectedBfAccount, selectedBfDataset, croppedImageDataURL, (error, res) => {
+        if(error) {
+          console.error(error)
+          var emessage = userError(error)
+          datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+          bfCurrentMetadataProgress.style.display = 'none'
+        } else {
+          console.log(res)
+          datasetBannerImageStatus.innerHTML = res
+          showCurrentBannerImage()
+          bfCurrentMetadataProgress.style.display = 'none'
+        }
+      })
+    } else {
+      datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Height and width of selected area must be at least 1024 px" + "</span>"
+    }
+  } else{
+    datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Please select an image first" + "</span>"
+  }
+})
+
 bfAddLicenseBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'
-  datasetLicenseStatus.innerHTML = ''
-  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  datasetLicenseStatus.innerHTML = 'Please wait...'
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].textc
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   var selectedLicense = bfListLicense.options[bfListLicense.selectedIndex].text
   client.invoke("api_bf_add_license", selectedBfAccount, selectedBfDataset, selectedLicense,
@@ -1096,7 +1186,7 @@ function showCurrentBannerImage(){
       } else {
         console.log('Banner image', res)
         if (res === 'No banner image'){
-          bfCurrentBannerImg.src = 'assets/img/can-sad.png'
+          bfCurrentBannerImg.src = 'assets/img/no-banner-image.png'
         }
         else {
           bfCurrentBannerImg.src = res
@@ -1105,8 +1195,6 @@ function showCurrentBannerImage(){
     })
   }
 }
-
-bfCurrentBannerImg
 
 function showCurrentLicense(){
   currentDatasetLicense.innerHTML = "Please wait..."

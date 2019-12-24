@@ -18,6 +18,7 @@ import subprocess
 import re
 import gevent
 from blackfynn import Blackfynn
+from urllib.request import urlopen
 
 ### Global variables
 curateprogress = ' '
@@ -1722,6 +1723,40 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
         else:
             res = 'No banner image'
         return res
+    except Exception as e:
+        raise Exception(e)
+
+
+"""
+    Function to add banner to a selected dataset
+
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_banner_image: name of selected Blackfynn dataset (data-uri)
+    Return:
+        Success or error message
+    """
+def bf_add_banner_image(selected_bfaccount, selected_bfdataset, selected_banner_image):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        selected_dataset_id = myds.id
+        with urlopen(selected_banner_image) as response:
+            f = response.read()
+        bf._api._put('/datasets/' + str(selected_dataset_id) + '/banner', files={"banner": f})
+        return('Saved!')
     except Exception as e:
         raise Exception(e)
 

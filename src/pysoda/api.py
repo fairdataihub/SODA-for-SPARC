@@ -4,7 +4,7 @@ from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_o
     bf_add_account, bf_account_list, bf_dataset_account, bf_account_details, \
     bf_submit_dataset, bf_new_dataset_folder, bf_add_permission, bf_get_users, bf_get_permission, \
     bf_get_teams, bf_add_permission_team, bf_add_subtitle, bf_get_subtitle, bf_get_description, \
-    bf_add_description, bf_get_banner_image, bf_get_license, bf_add_license
+    bf_add_description, bf_get_banner_image, bf_add_banner_image, bf_get_license, bf_add_license
         
 import sys
 import zerorpc
@@ -155,6 +155,12 @@ class SodaApi(object):
     def api_bf_get_banner_image(self, selected_bfaccount, selected_bfdataset):
         try:
             return bf_get_banner_image(selected_bfaccount, selected_bfdataset)
+        except Exception as e:
+            raise e
+
+    def api_bf_add_banner_image(self, selected_bfaccount, selected_bfdataset, selected_banner_image):
+        try:
+            return bf_add_banner_image(selected_bfaccount, selected_bfdataset, selected_banner_image)
         except Exception as e:
             raise e
 
