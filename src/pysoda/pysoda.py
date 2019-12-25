@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
@@ -36,6 +37,11 @@ submitprintstatus = ' '
 total_file_size = 1
 uploaded_file_size = 0
 start_time_bf_upload = 0
+
+bf = ""
+myds = ""
+initial_bfdataset_size = 0
+upload_directly_to_bf = 0
 
 ### Internal functions
 def open_file(file_path):
@@ -77,12 +83,12 @@ def folder_size(path):
     return total_size
 
 
-def dataset_size_blackfynn():
+def bf_dataset_size():
     """
     Function to get storage size of a dataset on Blackfynn
     """
-    global myds
     global bf
+    global myds
     try:
         selected_dataset_id = myds.id
         bf_response = bf._api._get('/datasets/' + str(selected_dataset_id))
@@ -538,6 +544,9 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     global total_dataset_size # total size of the dataset to be generated
     global curated_dataset_size # total size of the dataset generated (locally or on blackfynn) at a given time
     global start_time
+    global bf
+    global myds
+    global upload_directly_to_bf
 
     curateprogress = ' '
     curatestatus = ''
@@ -545,6 +554,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     error, c = '', 0
     curated_dataset_size = 0
     start_time = 0
+    upload_directly_to_bf = 0
 
     # if sourcedataset == 'already organized':
     #     if not isdir(pathdataset):
@@ -744,6 +754,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         error, c = '', 0
         accountname = pathdataset
         bfdataset = newdatasetname
+        upload_directly_to_bf = 1
 
         try:
             bf = Blackfynn(accountname)
@@ -776,9 +787,10 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             def calluploaddirectly():
                 global curateprogress
                 global curatestatus
-                curateprogress = "Started uploading to dataset %s" %(bfdataset)
+                global initial_bfdataset_size
+                curateprogress = "Uploading to dataset '%s' " %(bfdataset)
                 myds = bf.get_dataset(bfdataset)
-                myfolder = myds.name
+                initial_bfdataset_size = bf_dataset_size()
                 for folder in jsonpath.keys():
                     if jsonpath[folder] != []:
                         if folder != 'main':
@@ -787,14 +799,9 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                             mybffolder = myds
                         for mypath in jsonpath[folder]:
                             if isdir(mypath):
-                                temp_bffolder = mybffolder
-                                mybffolder = mybffolder.create_collection(basename(mypath))
-                                curateprogress = str(mypath)
-                                directly_upload_structured_file(mybffolder, mypath, folder)
-                                mybffolder = temp_bffolder
+                                mybffolder.upload(mypath, recursive=True, use_agent=True)
                             else:
-                                curateprogress = str(mypath)
-                                directly_upload_structured_file(mybffolder, mypath, folder)
+                                mybffolder.upload(mypath, use_agent=True)
 
                 curateprogress = 'Success: COMPLETED!'
                 curatestatus = 'Done'
@@ -857,9 +864,12 @@ def curate_dataset_progress():
     global total_dataset_size
     global curated_dataset_size
     global start_time
+    global upload_directly_to_bf
     elapsed_time = time.time() - start_time
     elapsed_time_formatted = time_format(elapsed_time)
     elapsed_time_formatted_display = '<br>' + 'Elapsed time: ' + elapsed_time_formatted + '<br>'
+    if upload_directly_to_bf == 1:
+        curated_dataset_size = bf_dataset_size() - initial_bfdataset_size
     return (curateprogress+elapsed_time_formatted_display, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time_formatted)
 
 
@@ -1099,6 +1109,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global uploaded_file_size
     global submitprintstatus
     global start_time_bf_upload
+    global bf
+    global myds
 
     total_file_size = folder_size(pathdataset)
     submitdataprogress = ' '
@@ -1149,13 +1161,16 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         def calluploadfolder():
             global submitdataprogress
             global submitdatastatus
-            # global initial_bfdataset_size
-            submitdataprogress = "Started uploading to dataset %s \n" %(bfdataset)
+            global initial_bfdataset_size
+            submitdataprogress = "Uploading to dataset '%s \n' " %(bfdataset)
             myds = bf.get_dataset(bfdataset)
-            myfolder = myds.name
-            # initial_bfdataset_size = dataset_size_blackfynn()
-            mypath = pathdataset
-            upload_structured_file(myds, mypath, myfolder)
+            initial_bfdataset_size = bf_dataset_size()
+            for filename in listdir(pathdataset):
+                filepath = join(pathdataset, filename)
+                if isdir(filepath):
+                    myds.upload(filepath, recursive=True, use_agent=True)
+                else:
+                    myds.upload(filepath, use_agent=True)
             submitdataprogress = 'Upload completed!'
             submitdatastatus = 'Done'
 
@@ -1175,9 +1190,11 @@ def submit_dataset_progress():
     global submitdataprogress
     global submitdatastatus
     global submitprintstatus
-    global uploaded_file_size
     global total_file_size
     global start_time_bf_upload
+    global initial_bfdataset_size
+
+    uploaded_file_size = bf_dataset_size() - initial_bfdataset_size
     elapsed_time = time.time() - start_time_bf_upload
     elapsed_time_formatted = time_format(elapsed_time)
     elapsed_time_formatted_display = '<br>' + 'Elapsed time: ' + elapsed_time_formatted + '<br>'
