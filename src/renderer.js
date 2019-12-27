@@ -965,7 +965,7 @@ bfAddLicenseBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'
   datasetLicenseStatus.innerHTML = 'Please wait...'
   disableform(bfMetadataForm)
-  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].textc
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   /*var selectedLicense = bfListLicense.options[bfListLicense.selectedIndex].text*/
   var selectedLicense = 'Creative Commons Attribution'

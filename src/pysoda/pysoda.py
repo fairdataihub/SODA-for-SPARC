@@ -1616,7 +1616,6 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
     try:
         role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
         if role not in ['owner', 'manager']:
-            curatestatus = 'Done'
             error = "Error: You don't have permission for editing metadata on this Blackfynn dataset"
             raise Exception(error)
     except Exception as e:
@@ -1691,7 +1690,6 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
     try:
         role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
         if role not in ['owner', 'manager']:
-            curatestatus = 'Done'
             error = "Error: You don't have permission for editing metadata on this Blackfynn dataset"
             raise Exception(error)
     except Exception as e:
@@ -1768,6 +1766,14 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, selected_banner_
         raise Exception(error)
 
     try:
+        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        if role not in ['owner', 'manager']:
+            error = "Error: You don't have permission for editing metadata on this Blackfynn dataset"
+            raise Exception(error)
+    except Exception as e:
+        raise e
+
+    try:
         selected_dataset_id = myds.id
         with urlopen(selected_banner_image) as response:
             f = response.read()
@@ -1840,7 +1846,6 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
     try:
         role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
         if role not in ['owner', 'manager']:
-            curatestatus = 'Done'
             error = "Error: You don't have permission for editing metadata on this Blackfynn dataset"
             raise Exception(error)
     except Exception as e:
