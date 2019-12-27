@@ -1492,21 +1492,6 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
         error = error + 'Error: Please select a valid Blackfynn dataset' + '<br>'
         c += 1
 
-    if selected_role not in ['manager', 'viewer', 'editor', 'remove current permission']:
-        error = error + 'Error: Please select a valid role' + '<br>'
-        c += 1
-
-    if c > 0:
-        raise Exception(error)
-
-    try:
-        if (selected_team == 'SPARC Data Curation Team'):
-            if bf.context.name != 'SPARC Consortium':
-                raise Exception('Error: Please login under the SPARC Consortium organization to share with Curation Team')
-    except Exception as e:
-        raise e
-
-
     try:
         organization_name = bf.context.name
         organization_id = bf.context.id
@@ -1519,6 +1504,20 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
         if selected_team not in list_teams_name:
            error = error + 'Error: Please select a valid team' + '<br>'
            c += 1
+    except Exception as e:
+        raise e
+
+    if selected_role not in ['manager', 'viewer', 'editor', 'remove current permission']:
+        error = error + 'Error: Please select a valid role' + '<br>'
+        c += 1
+
+    if c > 0:
+        raise Exception(error)
+
+    try:
+        if (selected_team == 'SPARC Data Curation Team'):
+            if bf.context.name != 'SPARC Consortium':
+                raise Exception('Error: Please login under the SPARC Consortium organization to share with Curation Team')
     except Exception as e:
         raise e
 

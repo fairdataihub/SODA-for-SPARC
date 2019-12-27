@@ -112,6 +112,10 @@ const bfSubmitDatasetInfo = document.querySelector('#progresssubmit')
 const pathSubmitDataset = document.querySelector('#selected-submit-dataset')
 const progressBarUploadBf = document.getElementById("progress-bar-upload-bf")
 
+
+// Blackfynn dataset metadata
+const bfMetadataForm = document.querySelector('#bf-add-metadata-form')
+
 const bfDatasetListMetadata = document.querySelector('#bfdatasetlist_metadata')
 const bfCurrentMetadataProgress = document.querySelector('#div-bf-current-metadata-progress')
 
@@ -136,6 +140,10 @@ const currentDatasetLicense = document.querySelector('#para-dataset-license-curr
 const bfListLicense = document.querySelector('#bf-license-list')
 const bfAddLicenseBtn = document.getElementById('button-add-license')
 const datasetLicenseStatus = document.querySelector('#para-dataset-license-status')
+
+
+// Blackfynn dataset permission
+const bfPermissionForm = document.querySelector('#blackfynn-permission-form')
 
 const bfDatasetListPermission = document.querySelector('#bfdatasetlist_permission')
 const currentDatasetPermission = document.querySelector('#para-dataset-permission-current')
@@ -429,11 +437,6 @@ selectPreviewBtn.addEventListener('click', () => {
 // // // // // // // // // //
 
 curateDatasetBtn.addEventListener('click', () => {
-  var radios = document.getElementsByName("newdataset");
-  for (var i=0, iLen=radios.length; i<iLen; i++) {
-    radios[i].disabled = true;
-  }
-
   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
   progressBarCurate.value = 0;
   // Disable curate button to prevent multiple clicks
@@ -738,7 +741,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
           bfCreateNewDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
           bfCreateNewDatasetBtn.disabled = false
         } else {
-          bfCreateNewDatasetStatus.innerHTML = 'Success: created dataset' + ' ' + bfNewDatasetName.value + smileyCan
+          bfCreateNewDatasetStatus.innerHTML = 'Success: created dataset' + " '" + bfNewDatasetName.value + "'" + smileyCan
           refreshBfDatasetList(bfDatasetList, bfAccountList)
           refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
           refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
@@ -826,6 +829,7 @@ bfDatasetListMetadata.addEventListener('change', () => {
 bfAddSubtitleBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'
   datasetSubtitleStatus.innerHTML = 'Please wait...'
+  disableform(bfMetadataForm)
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   var inputSubtitle = bfDatasetSubtitle.value
@@ -836,10 +840,12 @@ bfAddSubtitleBtn.addEventListener('click', () => {
       var emessage = userError(error)
       datasetSubtitleStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentMetadataProgress.style.display = 'none'
+      enableform(bfMetadataForm)
     } else {
       console.log('Done', res)
       datasetSubtitleStatus.innerHTML = res
       bfCurrentMetadataProgress.style.display = 'none'
+      enableform(bfMetadataForm)
     }
   })
 })
@@ -847,6 +853,7 @@ bfAddSubtitleBtn.addEventListener('click', () => {
 bfAddDescriptionBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'
   datasetDescriptionStatus.innerHTML = "Please wait..."
+  disableform(bfMetadataForm)
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   var inputDescription = quillDescription.container.firstChild.innerHTML
@@ -860,10 +867,12 @@ bfAddDescriptionBtn.addEventListener('click', () => {
       var emessage = userError(error)
       datasetDescriptionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentMetadataProgress.style.display = 'none'
+      enableform(bfMetadataForm)
     } else {
       console.log('Done', res)
       datasetDescriptionStatus.innerHTML = res
       bfCurrentMetadataProgress.style.display = 'none'
+      enableform(bfMetadataForm)
     }
   })
 })
@@ -925,21 +934,23 @@ bfSaveBannerImageBtn.addEventListener('click', (event) => {
     if (formBannerHeight.value>1023 && formBannerWidth.value>1023){
       bfCurrentMetadataProgress.style.display = 'block'
       datasetBannerImageStatus.innerHTML = 'Please wait...'
+      disableform(bfMetadataForm)
       var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
       var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
       var croppedImageDataURL = myCropper.getCroppedCanvas().toDataURL()
-      console.log(croppedImageDataURL)
       client.invoke("api_bf_add_banner_image", selectedBfAccount, selectedBfDataset, croppedImageDataURL, (error, res) => {
         if(error) {
           console.error(error)
           var emessage = userError(error)
           datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           bfCurrentMetadataProgress.style.display = 'none'
+          enableform(bfMetadataForm)
         } else {
           console.log(res)
           datasetBannerImageStatus.innerHTML = res
           showCurrentBannerImage()
           bfCurrentMetadataProgress.style.display = 'none'
+          enableform(bfMetadataForm)
         }
       })
     } else {
@@ -953,6 +964,7 @@ bfSaveBannerImageBtn.addEventListener('click', (event) => {
 bfAddLicenseBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'
   datasetLicenseStatus.innerHTML = 'Please wait...'
+  disableform(bfMetadataForm)
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].textc
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   /*var selectedLicense = bfListLicense.options[bfListLicense.selectedIndex].text*/
@@ -964,10 +976,12 @@ bfAddLicenseBtn.addEventListener('click', () => {
       var emessage = userError(error)
       datasetLicenseStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentMetadataProgress.style.display = 'none'
+      enableform(bfMetadataForm)
     } else {
       console.log('Done', res)
       datasetLicenseStatus.innerHTML = res
       showCurrentLicense()
+      enableform(bfMetadataForm)
     }
   })
 })
@@ -992,6 +1006,7 @@ bfAddPermissionPIBtn.addEventListener('click', () => {
 })
 ipcRenderer.on('warning-add-permission-owner-selection-PI', (event, index) => {
   datasetPermissionStatusPI.innerHTML = ''
+  disableform(bfPermissionForm)
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
   var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].text
@@ -1004,15 +1019,47 @@ ipcRenderer.on('warning-add-permission-owner-selection-PI', (event, index) => {
       var emessage = userError(error)
       datasetPermissionStatusPI.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentPermissionProgress.style.display = 'none'
+      enableform(bfPermissionForm)
     } else {
       console.log('Done', res)
       datasetPermissionStatusPI.innerHTML = res
       showCurrentPermission()
+      enableform(bfPermissionForm)
     }
   })
   } else {
     bfCurrentPermissionProgress.style.display = 'none'
+    enableform(bfPermissionForm)
   }
+})
+
+/**
+ * This event listener add 'manager' permission for the Curation Team
+ * when user clicks on the "Share with Curation Team"  button
+ */
+bfAddPermissionCurationTeamBtn.addEventListener('click', () => {
+  datasetPermissionStatusCurationTeam.innerHTML = ''
+  bfCurrentPermissionProgress.style.display = 'block'
+  disableform(bfPermissionForm)
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
+  var selectedTeam = 'SPARC Data Curation Team'
+  var selectedRole = 'manager'
+  client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
+    (error, res) => {
+    if(error) {
+      console.error(error)
+      var emessage = userError(error)
+      datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfCurrentPermissionProgress.style.display = 'none'
+      enableform(bfPermissionForm)
+    } else {
+      console.log('Done', res)
+      datasetPermissionStatusCurationTeam.innerHTML = 'Shared with Curation Team'
+      showCurrentPermission()
+      enableform(bfPermissionForm)
+    }
+  })
 })
 
 
@@ -1023,11 +1070,11 @@ ipcRenderer.on('warning-add-permission-owner-selection-PI', (event, index) => {
 bfAddPermissionBtn.addEventListener('click', () => {
   datasetPermissionStatus.innerHTML = ''
   bfCurrentPermissionProgress.style.display = 'block'
+  disableform(bfPermissionForm)
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text
-
   if (selectedRole === 'owner'){
     ipcRenderer.send('warning-add-permission-owner')
   } else {
@@ -1044,33 +1091,8 @@ ipcRenderer.on('warning-add-permission-owner-selection', (event, index) => {
     addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole)
   } else {
     bfCurrentPermissionProgress.style.display = 'none'
+    enableform(bfPermissionForm)
   }
-})
-
-/**
- * This event listener add permission to the selected dataset
- * when user clicks on the "Add permission for team"  button
- */
-bfAddPermissionCurationTeamBtn.addEventListener('click', () => {
-  datasetPermissionStatusCurationTeam.innerHTML = ''
-  bfCurrentPermissionProgress.style.display = 'block'
-  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
-  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
-  var selectedTeam = 'SPARC Data Curation Team'
-  var selectedRole = 'manager'
-  client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
-    (error, res) => {
-    if(error) {
-      console.error(error)
-      var emessage = userError(error)
-      datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      bfCurrentPermissionProgress.style.display = 'none'
-    } else {
-      console.log('Done', res)
-      datasetPermissionStatusCurationTeam.innerHTML = 'Shared with Curation Team'
-      showCurrentPermission()
-    }
-  })
 })
 
 
@@ -1081,11 +1103,11 @@ bfAddPermissionCurationTeamBtn.addEventListener('click', () => {
 bfAddPermissionTeamBtn.addEventListener('click', () => {
   datasetPermissionStatusTeam.innerHTML = ''
   bfCurrentPermissionProgress.style.display = 'block'
+  disableform(bfPermissionForm)
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
   var selectedTeam = bfListTeams.options[bfListTeams.selectedIndex].text
   var selectedRole = bfListRolesTeam.options[bfListRolesTeam.selectedIndex].text
-
   client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
     (error, res) => {
     if(error) {
@@ -1093,10 +1115,12 @@ bfAddPermissionTeamBtn.addEventListener('click', () => {
       var emessage = userError(error)
       datasetPermissionStatusTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentPermissionProgress.style.display = 'none'
+      enableform(bfPermissionForm)
     } else {
       console.log('Done', res)
       datasetPermissionStatusTeam.innerHTML = res
       showCurrentPermission()
+      enableform(bfPermissionForm)
     }
   })
 })
@@ -1762,10 +1786,12 @@ function addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, s
       var emessage = userError(error)
       datasetPermissionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentPermissionProgress.style.display = 'none'
+      enableform(bfPermissionForm)
     } else {
       console.log('Done', res)
       datasetPermissionStatus.innerHTML = res
       showCurrentPermission()
+      enableform(bfPermissionForm)
     }
   })
 }
