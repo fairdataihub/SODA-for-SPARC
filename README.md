@@ -60,6 +60,7 @@ git clone https://github.com/bvhpatel/SODA.git
 ```bash
 $ sudo npm install -g node-gyp
 $ npm config set python \path\to\python2.exe
+$ npm config set msvs_version 2017
 $ npm install
 $ "./node_modules/.bin/"electron-rebuild .
 $ npm start
