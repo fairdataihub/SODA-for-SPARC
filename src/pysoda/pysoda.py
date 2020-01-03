@@ -618,12 +618,28 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
 
     # check if path in jsonpath are valid and calculate total dataset size
     error, c = '', 0
-    total_dataset_size = 0
+    total_dataset_size = 1
     for folders in jsonpath.keys():
         if jsonpath[folders] != []:
             for path in jsonpath[folders]:
                 if exists(path):
-                    total_dataset_size += path_size(path)
+                    if isfile(path):
+                        mypathsize =  getsize(path)
+                        if mypathsize == 0:
+                            c += 1
+                            error = error + path + ' is 0kb <br>'
+                        else:
+                            total_dataset_size += mypathsize
+                    else:
+                        for path, dirs, files in walk(path):
+                            for f in files:
+                                fp = join(path, f)
+                                mypathsize =  getsize(fp)
+                                if mypathsize == 0:
+                                    c += 1
+                                    error = error + path + ' is 0kb <br>'
+                                else:
+                                    total_dataset_size += mypathsize
                 else:
                     c += 1
                     error = error + path + ' does not exist <br>'
@@ -633,6 +649,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         curatestatus = 'Done'
         raise Exception(error)
 
+    total_dataset_size = total_dataset_size - 1
     # Add metadata to jsonpath
     userpath = expanduser("~")
     metadatapath = join(userpath, 'SODA', 'SODA_metadata')
@@ -1112,7 +1129,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global bf
     global myds
 
-    total_file_size = folder_size(pathdataset)
     submitdataprogress = ' '
     submitdatastatus = ' '
     uploaded_file_size = 0
@@ -1142,11 +1158,30 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     if c>0:
         raise Exception(error)
 
+    error, c = '', 0
+    total_file_size = 1
+    try:
+        for path, dirs, files in walk(pathdataset):
+            for f in files:
+                fp = join(path, f)
+                mypathsize = getsize(fp)
+                if mypathsize == 0:
+                    c += 1
+                    error = error + path + ' is 0kb <br>'
+                else:
+                    total_file_size += mypathsize
+    except Exception as e:
+        raise e
 
-    if total_file_size == 0:
+    if c>0:
         submitdatastatus = 'Done'
-        error = 'Error: Please select a non-empty local dataset'
-        raise Exception(error)
+        raise Exception(error)  
+
+    total_file_size = total_file_size - 1  
+    # if total_file_size == 0:
+    #     submitdatastatus = 'Done'
+    #     error = 'Error: Please select a non-empty local dataset'
+    #     raise Exception(error)
 
     try:
         role = bf_get_current_user_permission(accountname, bfdataset)

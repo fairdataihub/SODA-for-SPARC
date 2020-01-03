@@ -6,7 +6,8 @@ const zerorpc = require("zerorpc")
 const fs = require("fs")
 const path = require('path')
 const {ipcRenderer} = require('electron')
-const Quill = require('quill')
+const Editor = require('tui-editor')
+
 // Connect to python server and check
 let client = new zerorpc.Client({ timeout: 300000})
 
@@ -175,13 +176,6 @@ const redColor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivatives", "docs", "primary", "protocol", "source"]
 const smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">'
 const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
-var MarkdownIt = require('markdown-it')
-var md = new MarkdownIt();
-md.set({
-    html: true
-  });
-var TurndownService = require('turndown')
-var turndownService = new TurndownService()
 
 //////////////////////////////////
 // Operations on JavaScript end only
@@ -323,30 +317,39 @@ holderMain.addEventListener("drop", (event)=> {
 })
 
 
-var toolbarOptions = [
-  [{ 'header': [1, 2, 3, false] }],
-  ['bold', 'italic', 'link'],        // toggled buttons
-  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-  ['blockquote'],
-  ['clean']                                         // remove formatting button
-]
-
-var element = document.getElementById('div-add-edit-description')
-var quillOptions = {
-  modules: {
-    toolbar: toolbarOptions
-  },
-  placeholder: 'Type your description here...',
-  //readOnly: true,
-  theme: 'snow', // or 'bubble'
-  bounds: element
-};
-
-
-var quillDescription = new Quill('#editor-container', quillOptions);
-
-
-
+const tuiInstance = new Editor({
+  el: document.querySelector('#editorSection'),
+  initialEditType: 'wysiwyg',
+  previewStyle: 'vertical',
+  height: '400px',
+  toolbarItems: [
+    'heading',
+    'bold',
+    'italic',
+    'strike',
+    'link',
+    'divider',
+    'ul',
+    'ol',
+    'divider',
+    'hr',
+    'quote',
+    'code',
+    'codeblock',
+    'divider',
+    // First way to add a button
+    {
+      type: 'button',
+      options: {
+        $el: $('<div class="custom-button"><i class="fas fa-briefcase-medical"></i></div>'),
+        name: 'test2',
+        className: '',
+        command: 'Bold', // you can use "Bold"
+        tooltip: 'Bold'
+      }
+    }
+  ]
+})
 
 
 //////////////////////////////////
@@ -856,9 +859,7 @@ bfAddDescriptionBtn.addEventListener('click', () => {
   disableform(bfMetadataForm)
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
-  var inputDescription = quillDescription.container.firstChild.innerHTML
-  console.log(inputDescription)
-  var markdownDescription = turndownService.turndown(inputDescription)
+  var markdownDescription = tuiInstance.getMarkdown()
   console.log(markdownDescription)
   client.invoke("api_bf_add_description", selectedBfAccount, selectedBfDataset, markdownDescription,
     (error, res) => {
@@ -1190,9 +1191,7 @@ function showCurrentDescription(){
         console.error(error)
       } else {
         console.log('Description', res)
-        var html = md.render(res);
-        console.log('HTML', html)
-        quillDescription.clipboard.dangerouslyPasteHTML(html)
+        tuiInstance.setMarkdown(res)
       }
     })
   }
