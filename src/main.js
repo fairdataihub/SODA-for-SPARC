@@ -77,7 +77,7 @@ function initialize () {
       minWidth: 1080,
       minHeight: 680,
       width: 1080,
-      height: 680,
+      height: 720,
       center: true,
       //title: app.getName(),
       icon: __dirname + '/assets/menu-icon/soda_icon.png',
