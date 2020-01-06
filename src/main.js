@@ -152,13 +152,13 @@ function makeSingleInstance () {
   }
 }
 
-// Right click context menu
-contextMenu({
-  prepend: (params, browserWindow) => [{
-    label: "hello"
-  }
-  ]
-});
+/*
+the saveImage context Menu-Item works; however, it does not notify users that a download occurs.
+If you check your download folder, you'll see it there.
+See: https://github.com/nteract/nteract/issues/1655
+showSaveImageAs prompts the users where they want to save the image.
+*/
+contextMenu({showSaveImageAs: true})
 
 // Require each JS file in the main-process dir
 function loadDemos () {
