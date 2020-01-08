@@ -158,7 +158,7 @@ If you check your download folder, you'll see it there.
 See: https://github.com/nteract/nteract/issues/1655
 showSaveImageAs prompts the users where they want to save the image.
 */
-contextMenu({showSaveImageAs: true})
+contextMenu()
 
 // Require each JS file in the main-process dir
 function loadDemos () {
