@@ -107,6 +107,7 @@ const bfNewDatasetName = document.querySelector('#bf-new-dataset-name')
 const bfCreateNewDatasetBtn = document.getElementById('button-create-bf-new-dataset')
 const bfCreateNewDatasetStatus = document.querySelector('#para-add-new-dataset-status')
 const bfNewDatasetSubtitle = document.querySelector('#bf-new-dataset-subtitle')
+const bfNewDatasetSubtitleCharCount = document.querySelector('#para-char-count')
 
 const bfSubmitDatasetBtn = document.getElementById('button-submit-dataset')
 const bfSubmitDatasetInfo = document.querySelector('#progresssubmit')
@@ -121,6 +122,7 @@ const bfDatasetListMetadata = document.querySelector('#bfdatasetlist_metadata')
 const bfCurrentMetadataProgress = document.querySelector('#div-bf-current-metadata-progress')
 
 const bfDatasetSubtitle = document.querySelector('#bf-dataset-subtitle')
+const bfDatasetSubtitleCharCount = document.querySelector('#para-char-count-metadata')
 const bfAddSubtitleBtn = document.getElementById('button-add-subtitle')
 const datasetSubtitleStatus = document.querySelector('#para-dataset-subtitle-status')
 
@@ -351,6 +353,23 @@ const tuiInstance = new Editor({
   ]
 })
 
+
+function countCharacters(textelement, pelement) {                                          
+  var textEntered = textelement.value;  
+  var counter = (256 - (textEntered.length));
+  pelement.innerHTML = counter + ' characters remaining' 
+}
+
+bfNewDatasetSubtitle.addEventListener('keyup',  function(){
+  countCharacters(bfNewDatasetSubtitle, bfNewDatasetSubtitleCharCount)
+})
+
+bfDatasetSubtitle.addEventListener('keyup',  function(){
+  countCharacters(bfDatasetSubtitle, bfDatasetSubtitleCharCount)
+})
+
+
+//bfDatasetSubtitle.addEventListener('keyup', countCharacters(bfNewDatasetSubtitleCharCount), false)
 
 //////////////////////////////////
 // Operations calling to pysoda.py functions //
