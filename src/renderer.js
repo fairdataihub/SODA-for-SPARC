@@ -369,8 +369,6 @@ bfDatasetSubtitle.addEventListener('keyup',  function(){
 })
 
 
-//bfDatasetSubtitle.addEventListener('keyup', countCharacters(bfNewDatasetSubtitleCharCount), false)
-
 //////////////////////////////////
 // Operations calling to pysoda.py functions //
 //////////////////////////////////
