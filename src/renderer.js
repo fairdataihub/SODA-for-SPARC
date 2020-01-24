@@ -185,27 +185,27 @@ const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
 
 // Button selection to move on to next step
 document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
-  document.getElementById('button-specfy-dataset-demo-toggle').click()
   if (getComputedStyle(document.getElementById('div-file-conversion'), null).display === 'none'){
     document.getElementById('button-file-conversion-demo-toggle').click()
+    document.getElementById('button-specfy-dataset-demo-toggle').click()
   }
 })
 document.getElementById('button-file-conversion-next-step').addEventListener('click', (event) => {
-  document.getElementById('button-file-conversion-demo-toggle').click()
   if (getComputedStyle(document.getElementById('div-specify-metadata'), null).display === 'none'){
     document.getElementById('button-specify-metadata-demo-toggle').click()
+    document.getElementById('button-file-conversion-demo-toggle').click()
   }
 })
 document.getElementById('button-specify-metadata-next-step').addEventListener('click', (event) => {
-  document.getElementById('button-specify-metadata-demo-toggle').click()
   if (getComputedStyle(document.getElementById('div-validate-dataset'), null).display === 'none'){
     document.getElementById('button-validate-dataset-demo-toggle').click()
+    document.getElementById('button-specify-metadata-demo-toggle').click()
   }
 })
 document.getElementById('button-validate-dataset-next-step').addEventListener('click', (event) => {
-  document.getElementById('button-validate-dataset-demo-toggle').click()
   if (getComputedStyle(document.getElementById('div-generate-dataset'), null).display === 'none'){
     document.getElementById('button-generate-dataset-demo-toggle').click()
+    document.getElementById('button-validate-dataset-demo-toggle').click()
   }
 })
 
