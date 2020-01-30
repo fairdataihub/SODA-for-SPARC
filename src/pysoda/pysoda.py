@@ -1138,6 +1138,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global start_time_bf_upload
     global bf
     global myds
+    global start_submit 
 
     submitdataprogress = ' '
     submitdatastatus = ' '
