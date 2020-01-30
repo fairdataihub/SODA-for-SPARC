@@ -37,6 +37,7 @@ submitprintstatus = ' '
 total_file_size = 1
 uploaded_file_size = 0
 start_time_bf_upload = 0
+start_submit = 0
 
 bf = ""
 myds = ""
@@ -89,12 +90,17 @@ def bf_dataset_size():
     """
     global bf
     global myds
-    try:
-        selected_dataset_id = myds.id
-        bf_response = bf._api._get('/datasets/' + str(selected_dataset_id))
-        return bf_response['storage'] if 'storage' in bf_response.keys() else 0
-    except Exception as e:
-        raise e
+    global start_submit
+
+    if start_submit == 1:
+        try:
+            selected_dataset_id = myds.id
+            bf_response = bf._api._get('/datasets/' + str(selected_dataset_id))
+            return bf_response['storage'] if 'storage' in bf_response.keys() else 0
+        except Exception as e:
+            raise e
+    else:
+        return 0
 
 
 def path_size(path):
@@ -463,6 +469,7 @@ def create_dataset(jsonpath, pathdataset):
         Creates the folders and files specified
     """
     global curateprogress
+
     try:
         mydict = jsonpath
         folderrequired = []
@@ -547,6 +554,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     global bf
     global myds
     global upload_directly_to_bf
+    global start_submit
 
     curateprogress = ' '
     curatestatus = ''
@@ -790,6 +798,8 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         if c>0:
             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
             raise Exception(error)
+        else:
+            start_submit = 1
 
         try:
             role = bf_get_current_user_permission(accountname, bfdataset)
@@ -1157,6 +1167,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     if c>0:
         raise Exception(error)
+    else:
+        start_submit = 1
 
     error, c = '', 0
     total_file_size = 1
@@ -1175,9 +1187,9 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     if c>0:
         submitdatastatus = 'Done'
-        raise Exception(error)  
+        raise Exception(error)
 
-    total_file_size = total_file_size - 1  
+    total_file_size = total_file_size - 1
     # if total_file_size == 0:
     #     submitdatastatus = 'Done'
     #     error = 'Error: Please select a non-empty local dataset'
@@ -1389,7 +1401,7 @@ def bf_get_current_user_permission(selected_bfaccount, selected_bfdataset):
             role = list_dataset_permission[i]['role']
             if current_user_email == email:
                 res = role
-                c +=1 
+                c +=1
         if c == 0:
             res = "No permission"
         return res

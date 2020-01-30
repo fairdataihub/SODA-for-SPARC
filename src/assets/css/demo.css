@@ -135,14 +135,24 @@
   display: flex;
   align-items: center;
 }
-
-.demo-button {
+.demo-button-next-step {
   align-self: flex-start;
   margin-right: 1em;
   border: 2px solid;
   border-radius: 4px;
   font: inherit;
   font-size: 1.2em;
+  padding: .4em 1.2em;
+  color: inherit;
+  background-color: transparent;
+}
+.demo-button {
+  align-self: flex-start;
+  margin-right: 1em;
+  border: 2px solid;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 1.1em;
   padding: .4em 1.2em;
   color: inherit;
   background-color: transparent;
@@ -175,6 +185,9 @@
   flex: 1;
   word-break: break-word;
   font: inherit;
+  padding: 8px 12px;
+  border: 1px solid;
+  border-radius: 4px;
 }
 
 .smooth-appear {
@@ -236,10 +249,17 @@ textarea.outputprint{
     max-width:100%;
     min-width:100%;
     font:inherit;
+    max-height:40px;
+    resize: vertical;
 }
 
 select.my_dropdown {
-    width:80%;
+    width:85%;
+    padding: 8px 12px;
+    border: 1px solid;
+    border-radius: 4px;
+    background-color: #ffffff;
+    font: inherit
 }
 
 table {
@@ -550,7 +570,7 @@ progress.progresstrack[value]::-webkit-progress-value {
 
 .preview {
   overflow: hidden;
-  width: 300px; 
+  width: 300px;
   height: 300px;
 /*  padding-bottom: 30%;*/
 }

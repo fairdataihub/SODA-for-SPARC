@@ -231,7 +231,7 @@
 
           <div id="div-organize-next-step" align="right">
             <h5> </h5>
-            <button id="button-organize-next-step" class="demo-button"> Next step </button>
+            <button id="button-organize-next-step" class="demo-button-next-step"> Next step </button>
           </div>
 
         </div>
@@ -250,7 +250,7 @@
           <p> Coming soon... Tentative date: May 2020 </p>
           <div id="div-file-conversion-next-step" align="right">
             <h5> </h5>
-            <button id="button-file-conversion-next-step" class="demo-button"> Next step </button>
+            <button id="button-file-conversion-next-step" class="demo-button-next-step"> Next step </button>
           </div>
         </div>
       </div>
@@ -394,7 +394,7 @@
 
           <div id="div-specify-metadata-next-step" align="right">
             <h5> </h5>
-            <button id="button-specify-metadata-next-step" class="demo-button"> Next step </button>
+            <button id="button-specify-metadata-next-step" class="demo-button-next-step"> Next step </button>
           </div>
         </div>
       </div>
@@ -412,7 +412,7 @@
           <p> Coming soon... Tentative date: February 2020 </p>
           <div id="div-validate-dataset-next-step" align="right">
             <h5> </h5>
-            <button id="button-validate-dataset-next-step" class="demo-button"> Next step </button>
+            <button id="button-validate-dataset-next-step" class="demo-button-next-step"> Next step </button>
           </div>
         </div>
       </div>
@@ -472,19 +472,24 @@
 
           <div id="div-create-cloud" class="datasetsaveoption">
             <h5> </h5>
-            <button id="button-upload-check-bf-account-details" class="demo-button"> Load existing account(s) </button>
+            <!-- <button id="button-upload-check-bf-account-details" class="demo-button"> Load existing account(s) </button> -->
             <h5> Select account </h5>
             <div class="demo-controls">
               <select id="bfuploadaccountlist" class="my_dropdown">
                 <option> Select </option>
               </select>
             </div>
+
+            <h5> </h5>
+            <div class="demo-controls">
+              <button id="button-upload-check-bf-account-details" class="demo-button"> Load existing account(s) </button>
+            </div>
+
             <div id=div-bf-account-load-progress-curate class="progressdiv">
               <div class="indeterminatebar"></div>
             </div>
             <p id='para-upload-select-account-status'> <p>
 
-            <p> </p>
 
             <h5> Select Blackfynn dataset for uploading
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -506,7 +511,10 @@
             </div>
           </div>
 
+          <p> </p>
+
           <div id="div-curate-button" class="datasetsaveoption">
+
             <h5> Apply changes </h5>
             <button id="button-curate-dataset" class="demo-button"> Generate </button>
           </div>
