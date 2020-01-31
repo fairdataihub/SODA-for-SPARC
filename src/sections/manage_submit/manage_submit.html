@@ -67,20 +67,26 @@
               <button class="demo-button" id="add-bf-account"> Add account </button>
             </div>
             <p id="para-add-account-status"></p>
-          </div>
-
-          <div id="div-select-account" class="datasetsaveoption"><br>
-            <button id="button-check-bf-account-details" class="demo-button"> Load existing account(s) </button>
-            <h5> Select account </h5>
-            <div class="demo-controls">
-              <select class="my_dropdown" id="bfaccountlist">
-                <option> Select </option>
-              </select>
             </div>
+
+            <div id="div-select-account" class="datasetsaveoption" style="margin-left:20px"><br>
+
+            <h5> Select this Account: </h5>
+            <div class="demo-controls">
+              <select class="my_dropdown" style="width:65%" id="bfaccountlist">
+                <!-- <option>  </option> -->
+              </select>
+              <p></p>
+              <button id="button-check-bf-account-details" class="demo-button"> Switch Account </button>
+            </div>
+
             <div id=div-bf-account-load-progress class="progressdiv">
               <div class="indeterminatebar"></div>
             </div>
             <p id='para-select-account-status'> <p>
+            <!-- <div>
+
+            </div> -->
           </div>
         </div>
       </div>
@@ -189,7 +195,7 @@
                   <span class="tooltiptext">This image will be associated with the dataset. It will be visible once the dataset is published.
                   <br>
                   <br>
-                  This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 1024x1024 px and 2048x2048 px is highly recommended. The final image size must not exceed 5MB as per Blackfynn's restriction. 
+                  This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 1024x1024 px and 2048x2048 px is highly recommended. The final image size must not exceed 5MB as per Blackfynn's restriction.
                   </span>
                 </div>
             </div>
@@ -198,7 +204,7 @@
               <input id="add-edit-license" name="blackfynn-add-metadata" type="radio" class="with-style" />
               <label for="add-edit-license" class="labelradio"> Associate a license </label>
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Associate a license with your dataset. 
+                  <span class="tooltiptext">Associate a license with your dataset.
                   <br>
                   Note: SPARC dataset must be licensed under Creative Commons Attribution (CC-BY)
                   </span>
@@ -275,7 +281,7 @@
                 </div>
               </div>
             </div>
-            
+
           </div>
 
 
@@ -518,7 +524,7 @@
           </h5>
           <div class="demo-controls">
             <button id="button-select-submit-dataset" class="demo-button">Select Dataset Folder </button>
-            <textarea class="demo-response" id="selected-submit-dataset"></textarea>
+            <textarea class="demo-response" style="resize: none; height:45px;" id="selected-submit-dataset"></textarea>
           </div>
 
           <h5> Select Blackfynn dataset for uploading
@@ -530,15 +536,16 @@
             </div>
           </h5>
           <div class="demo-controls">
+            <button id="button-refresh-dataset-list" class="demo-button"> Refresh Dataset List </button>
             <select class="my_dropdown" id="bfdatasetlist">
               <option> Select dataset </option>
             </select>
           </div>
 
           <h5> </h5>
-          <div class="demo-controls">
+          <!-- <div class="demo-controls">
             <button id="button-refresh-dataset-list" class="demo-button"> Refresh dataset list </button>
-          </div>
+          </div> -->
 
           <div>
             <h5> Submit
