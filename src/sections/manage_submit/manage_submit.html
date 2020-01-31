@@ -67,20 +67,26 @@
               <button class="demo-button" id="add-bf-account"> Add account </button>
             </div>
             <p id="para-add-account-status"></p>
-          </div>
-
-          <div id="div-select-account" class="datasetsaveoption"><br>
-            <button id="button-check-bf-account-details" class="demo-button"> Load existing account(s) </button>
-            <h5> Select account </h5>
-            <div class="demo-controls">
-              <select class="my_dropdown" id="bfaccountlist">
-                <option> Select </option>
-              </select>
             </div>
+
+            <div id="div-select-account" class="datasetsaveoption" style="margin-left:20px"><br>
+
+            <h5> Select this Account: </h5>
+            <div class="demo-controls">
+              <select class="my_dropdown" style="width:65%" id="bfaccountlist">
+                <!-- <option>  </option> -->
+              </select>
+              <p></p>
+              <button id="button-check-bf-account-details" class="demo-button"> Switch Account </button>
+            </div>
+
             <div id=div-bf-account-load-progress class="progressdiv">
               <div class="indeterminatebar"></div>
             </div>
             <p id='para-select-account-status'> <p>
+            <!-- <div>
+
+            </div> -->
           </div>
         </div>
       </div>
@@ -518,7 +524,7 @@
           </h5>
           <div class="demo-controls">
             <button id="button-select-submit-dataset" class="demo-button">Select Dataset Folder </button>
-            <textarea class="demo-response" id="selected-submit-dataset"></textarea>
+            <textarea class="demo-response" style="resize: none; height:45px;" id="selected-submit-dataset"></textarea>
           </div>
 
           <h5> Select Blackfynn dataset for uploading

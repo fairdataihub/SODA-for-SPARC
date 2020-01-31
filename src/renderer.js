@@ -354,10 +354,10 @@ const tuiInstance = new Editor({
 })
 
 
-function countCharacters(textelement, pelement) {                                          
-  var textEntered = textelement.value;  
+function countCharacters(textelement, pelement) {
+  var textEntered = textelement.value;
   var counter = (256 - (textEntered.length));
-  pelement.innerHTML = counter + ' characters remaining' 
+  pelement.innerHTML = counter + ' characters remaining'
 }
 
 bfNewDatasetSubtitle.addEventListener('keyup',  function(){
@@ -635,8 +635,9 @@ curateDatasetBtn.addEventListener('click', () => {
 //MANAGE DATASETS
 // // // // // // // // // //
 
-
 // Add existing bf account(s) to dropdown list
+
+
 bfAccountCheckBtn.addEventListener('click', (event) => {
   bfSelectAccountStatus.innerHTML = "Please wait..."
   bfAccountLoadProgress.style.display = 'block'
@@ -665,7 +666,7 @@ bfAddAccountBtn.addEventListener('click', () => {
       var emessage = userError(error)
       bfAddAccountStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
     } else {
-        bfAddAccountStatus.innerHTML = res + smileyCan
+        bfAddAccountStatus.innerHTML = res + smileyCan +". Please select your account below!"
         removeOptions(bfAccountList)
         bfAccountLoadProgress.style.display = 'block'
         updateBfAccountList(bfAccountList, bfSelectAccountStatus, bfAccountLoadProgress)
@@ -943,10 +944,10 @@ ipcRenderer.on('selected-banner-image', (event, path) => {
     bfViewImportedImage.src = path[0]
     myCropper.destroy()
     myCropper = new Cropper(bfViewImportedImage, cropOptions)
-    }  
+    }
   })
 
-bfSaveBannerImageBtn.addEventListener('click', (event) => { 
+bfSaveBannerImageBtn.addEventListener('click', (event) => {
   datasetBannerImageStatus.innerHTML = ""
   if (bfViewImportedImage.src.length > 0){
     if (formBannerHeight.value>1023 && formBannerWidth.value>1023){
@@ -1402,6 +1403,32 @@ function userError(error)
   var myerror = error.message
   return myerror
 }
+
+client.invoke("api_load_default_bf_account", (error, res) => {
+  if(error) {
+    console.error(error)
+  } else {
+      if (res.length > 0) {
+        var myitemselect = res[0]
+        var option = document.createElement("option")
+        option.textContent = myitemselect
+        option.value = myitemselect
+        bfAccountList.appendChild(option)
+        bfAccountLoadProgressCurate.style.display = 'block'
+        var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
+        showAccountDetails(bfAccountLoadProgressCurate)
+        refreshAllBFDatasetLists()
+    } else {
+        var myitemselect = "Select"
+        var option = document.createElement("option")
+        option.textContent = myitemselect
+        option.value = myitemselect
+        bfAccountList.appendChild(option)
+        bfAccountLoadProgressCurate.style.display = 'block'
+        var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
+    }
+  }
+})
 
 function updateBfAccountList(bfAccountList, bfSelectAccountStatus, bfLoadProgress){
   client.invoke("api_bf_account_list", (error, res) => {

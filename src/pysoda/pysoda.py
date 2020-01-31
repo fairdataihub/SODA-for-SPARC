@@ -950,7 +950,7 @@ def bf_add_account(keyname, key, secret):
         bf = Blackfynn(keyname)
         with open(configpath, 'w') as configfile:
             config.write(configfile)
-        return 'Success: added account ' + str(bf)
+        return 'Successfully added account ' + str(bf)
     except:
         bf_delete_account(keyname)
         raise Exception('Authentication Error: please check that key name, key, and secret are entered properly')
@@ -996,6 +996,32 @@ def bf_account_list():
     except Exception as e:
         raise e
 
+def bf_default_account_load():
+    """
+    Action:
+        Returns the first valid account as the default account
+    """
+    try:
+        accountlist = []
+        if exists(configpath):
+            config = ConfigParser()
+            config.read(configpath)
+            accountname = config.sections()
+            accountnamenoglobal = [n for n in accountname if n != "global"]
+            if accountnamenoglobal:
+                for n in accountnamenoglobal:
+                    try:
+                        bfn = Blackfynn(n)
+                        accountlist.append(n)
+                        break
+                    except:
+                        config.remove_section(n)
+                with open(configpath, 'w') as configfile:
+                    config.write(configfile)
+        return accountlist
+
+    except Exception as e:
+        raise e
 
 def bf_dataset_account(accountname):
     """
@@ -1138,7 +1164,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global start_time_bf_upload
     global bf
     global myds
-    global start_submit 
+    global start_submit
 
     submitdataprogress = ' '
     submitdatastatus = ' '
