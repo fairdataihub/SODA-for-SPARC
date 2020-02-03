@@ -19,6 +19,7 @@ import subprocess
 import re
 import gevent
 from blackfynn import Blackfynn
+from blackfynn.api.agent import agent_cmd
 from urllib.request import urlopen
 
 ### Global variables
@@ -1166,6 +1167,11 @@ def upload_structured_file(myds, mypath, myfolder):
     except Exception as e:
         raise e
 
+def clear_queue():
+    command = [agent_cmd(), "upload-status", "--cancel-all"]
+
+    proc = subprocess.run(command, check=True)   # env=agent_env(?settings?)
+    return proc
 
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
     """
@@ -1245,14 +1251,13 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     #     error = 'Error: Please select a non-empty local dataset'
     #     raise Exception(error)
 
-    try:
-        role = bf_get_current_user_permission(accountname, bfdataset)
-        if role not in ['owner', 'manager', 'editor']:
-            submitdatastatus = 'Done'
-            error = "Error: You don't have permission for uploading on this Blackfynn dataset"
-            raise Exception(error)
-    except Exception as e:
-        raise e
+    role = bf_get_current_user_permission(accountname, bfdataset)
+    if role not in ['owner', 'manager', 'editor']:
+        submitdatastatus = 'Done'
+        error = "Error: You don't have permission for uploading on this Blackfynn dataset"
+        raise Exception(error)
+
+    clear_queue()
 
     try:
         def calluploadfolder():
