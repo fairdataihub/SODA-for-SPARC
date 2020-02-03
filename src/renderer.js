@@ -1404,7 +1404,7 @@ function userError(error)
   return myerror
 }
 
-client.invoke("api_load_default_bf_account", (error, res) => {
+client.invoke("api_bf_default_account_load", (error, res) => {
   if(error) {
     console.error(error)
   } else {
@@ -1414,9 +1414,9 @@ client.invoke("api_load_default_bf_account", (error, res) => {
         option.textContent = myitemselect
         option.value = myitemselect
         bfAccountList.appendChild(option)
-        bfAccountLoadProgressCurate.style.display = 'block'
         var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
         showAccountDetails(bfAccountLoadProgressCurate)
+        bfAccountLoadProgressCurate.style.display = 'block'
         refreshAllBFDatasetLists()
     } else {
         var myitemselect = "Select"
@@ -1435,15 +1435,15 @@ function updateBfAccountList(bfAccountList, bfSelectAccountStatus, bfLoadProgres
   if(error) {
     console.error(error)
   } else {
-    for (myitem in res){
-      var myitemselect = res[myitem]
-      var option = document.createElement("option")
-      option.textContent = myitemselect
-      option.value = myitemselect
-      bfAccountList.appendChild(option)
-      bfSelectAccountStatus.innerHTML = ""
-      bfLoadProgress.style.display = 'none'
-    }
+      for (myitem in res){
+        var myitemselect = res[myitem]
+        var option = document.createElement("option")
+        option.textContent = myitemselect
+        option.value = myitemselect
+        bfAccountList.appendChild(option)
+        bfSelectAccountStatus.innerHTML = ""
+        bfLoadProgress.style.display = 'none'
+      }
   }
 })
 }

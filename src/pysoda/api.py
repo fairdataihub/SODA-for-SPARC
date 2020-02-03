@@ -69,7 +69,7 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_load_default_bf_account(self):
+    def api_bf_default_account_load(self):
         try:
             return bf_default_account_load()
         except Exception as e:

@@ -948,9 +948,17 @@ def bf_add_account(keyname, key, secret):
     # Check key and secret are valid, if not delete account from config
     try:
         bf = Blackfynn(keyname)
+
+        if not config.has_section("global"):
+            config.add_section("global")
+
+        default_acc = config["global"]
+        default_acc["default_profile"] = keyname
+
         with open(configpath, 'w') as configfile:
             config.write(configfile)
         return 'Successfully added account ' + str(bf)
+
     except:
         bf_delete_account(keyname)
         raise Exception('Authentication Error: please check that key name, key, and secret are entered properly')
@@ -1059,7 +1067,22 @@ def bf_account_details(accountname):
         bf = Blackfynn(accountname)
         acc_details = "User email: " + bf.profile.email + "<br>"
         acc_details = acc_details + "Organization: " + bf.context.name
+
+        if exists(configpath):
+            config = ConfigParser()
+            config.read(configpath)
+
+        if not config.has_section("global"):
+            config.add_section("global")
+            config.set("global", "default_profile", accountname)
+        else:
+            config["global"]["default_profile"] = accountname
+
+        with open(configpath, 'w') as configfile:
+            config.write(configfile)
+
         return acc_details
+
     except Exception as e:
         raise e
 
