@@ -566,6 +566,7 @@ progress.progresstrack[value]::-webkit-progress-value {
   /*display:block;*/
   /* This is important */
   max-width: 100%;
+  background-color: white
 }
 
 .preview {
