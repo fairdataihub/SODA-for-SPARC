@@ -19,6 +19,7 @@ import subprocess
 import re
 import gevent
 from blackfynn import Blackfynn
+from blackfynn.api.agent import agent_cmd
 from urllib.request import urlopen
 
 ### Global variables
@@ -947,9 +948,17 @@ def bf_add_account(keyname, key, secret):
     # Check key and secret are valid, if not delete account from config
     try:
         bf = Blackfynn(keyname)
+
+        if not config.has_section("global"):
+            config.add_section("global")
+
+        default_acc = config["global"]
+        default_acc["default_profile"] = keyname
+
         with open(configpath, 'w') as configfile:
             config.write(configfile)
         return 'Successfully added account ' + str(bf)
+
     except:
         bf_delete_account(keyname)
         raise Exception('Authentication Error: please check that key name, key, and secret are entered properly')
@@ -1058,7 +1067,22 @@ def bf_account_details(accountname):
         bf = Blackfynn(accountname)
         acc_details = "User email: " + bf.profile.email + "<br>"
         acc_details = acc_details + "Organization: " + bf.context.name
+
+        if exists(configpath):
+            config = ConfigParser()
+            config.read(configpath)
+
+        if not config.has_section("global"):
+            config.add_section("global")
+            config.set("global", "default_profile", accountname)
+        else:
+            config["global"]["default_profile"] = accountname
+
+        with open(configpath, 'w') as configfile:
+            config.write(configfile)
+
         return acc_details
+
     except Exception as e:
         raise e
 
@@ -1142,6 +1166,11 @@ def upload_structured_file(myds, mypath, myfolder):
     except Exception as e:
         raise e
 
+def clear_queue():
+    command = [agent_cmd(), "upload-status", "--cancel-all"]
+
+    proc = subprocess.run(command, check=True)   # env=agent_env(?settings?)
+    return proc
 
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
     """
@@ -1221,14 +1250,13 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     #     error = 'Error: Please select a non-empty local dataset'
     #     raise Exception(error)
 
-    try:
-        role = bf_get_current_user_permission(accountname, bfdataset)
-        if role not in ['owner', 'manager', 'editor']:
-            submitdatastatus = 'Done'
-            error = "Error: You don't have permission for uploading on this Blackfynn dataset"
-            raise Exception(error)
-    except Exception as e:
-        raise e
+    role = bf_get_current_user_permission(accountname, bfdataset)
+    if role not in ['owner', 'manager', 'editor']:
+        submitdatastatus = 'Done'
+        error = "Error: You don't have permission for uploading on this Blackfynn dataset"
+        raise Exception(error)
+
+    clear_queue()
 
     try:
         def calluploadfolder():
