@@ -112,6 +112,7 @@ const bfNewDatasetSubtitleCharCount = document.querySelector('#para-char-count')
 const bfSubmitDatasetBtn = document.getElementById('button-submit-dataset')
 const bfSubmitDatasetInfo = document.querySelector('#progresssubmit')
 const pathSubmitDataset = document.querySelector('#selected-submit-dataset')
+const progressUploadBf = document.getElementById("div-progress-submit")
 const progressBarUploadBf = document.getElementById("progress-bar-upload-bf")
 
 
@@ -777,6 +778,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
 
 // Submit dataset to bf
 bfSubmitDatasetBtn.addEventListener('click', () => {
+  document.getElementById("para-please-wait").innerHTML = "Please wait..."
   document.getElementById("para-progress-bar-error-status").innerHTML = ""
   document.getElementById("para-progress-bar-status").innerHTML = ""
   var err = false
@@ -786,12 +788,15 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text
   client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathSubmitDataset.value, (error, res) => {
     if (error) {
+      document.getElementById("para-please-wait").style.display = "none"
       console.error(error)
       var emessage = userError(error)
       document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
+      progressUploadBf.style.display = "none"
       progressBarUploadBf.value = 0
       err = true
     } else {
+      progressUploadBf.style.display = "block"
       console.log('Done', res)
     }
   })
