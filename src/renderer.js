@@ -7,6 +7,11 @@ const fs = require("fs")
 const path = require('path')
 const {ipcRenderer} = require('electron')
 const Editor = require('tui-editor')
+const remote = require('electron').remote;
+const app = remote.app;
+const imageDataURI = require("image-data-uri");
+
+var homeDirectory = app.getPath('home')
 
 // Connect to python server and check
 let client = new zerorpc.Client({ timeout: 300000})
@@ -931,6 +936,7 @@ var cropOptions = {
   minContainerHeight: 400,*/
 }
 
+var imageExtension
 
 var myCropper = new Cropper(bfViewImportedImage, cropOptions)
 // Action when user click on "Import image" button for banner image
@@ -941,6 +947,7 @@ bfImportBannerImageBtn.addEventListener('click', (event) => {
 ipcRenderer.on('selected-banner-image', (event, path) => {
   if (path.length > 0){
     datasetBannerImagePath.innerHTML = path
+    imageExtension = path[0].split('.').pop()
     bfViewImportedImage.src = path[0]
     myCropper.destroy()
     myCropper = new Cropper(bfViewImportedImage, cropOptions)
@@ -954,29 +961,50 @@ bfSaveBannerImageBtn.addEventListener('click', (event) => {
       bfCurrentMetadataProgress.style.display = 'block'
       datasetBannerImageStatus.innerHTML = 'Please wait...'
       disableform(bfMetadataForm)
-      var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
-      var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
-      var croppedImageDataURL = myCropper.getCroppedCanvas().toDataURL()
-      client.invoke("api_bf_add_banner_image", selectedBfAccount, selectedBfDataset, croppedImageDataURL, (error, res) => {
-        if(error) {
-          console.error(error)
-          var emessage = userError(error)
-          datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-          bfCurrentMetadataProgress.style.display = 'none'
-          enableform(bfMetadataForm)
+
+      //Save cropped image locally and check size
+      var imageFolder = path.join(homeDirectory, 'SODA', 'banner-image')
+      console.log(imageFolder)
+      if (!fs.existsSync(imageFolder)){
+        fs.mkdirSync(imageFolder)
+      }
+      if (imageExtension == 'png'){
+        var imageType = 'image/png'
+      } else {
+        var imageType = 'image/jpeg'
+      }
+      console.log(imageType)
+      var imagePath = path.join(imageFolder, 'banner-image-SODA.' + imageExtension)
+      var croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType)
+      imageDataURI.outputFile(croppedImageDataURI, imagePath).then( function() {
+        if(fs.statSync(imagePath)["size"] < 5*1024*1024) {
+          var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+          var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
+          client.invoke("api_bf_add_banner_image", selectedBfAccount, selectedBfDataset, imagePath, (error, res) => {
+            if(error) {
+              console.error(error)
+              var emessage = userError(error)
+              datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+              bfCurrentMetadataProgress.style.display = 'none'
+              enableform(bfMetadataForm)
+            } else {
+              console.log(res)
+              datasetBannerImageStatus.innerHTML = res
+              showCurrentBannerImage()
+              bfCurrentMetadataProgress.style.display = 'none'
+              enableform(bfMetadataForm)
+            }
+          })
         } else {
-          console.log(res)
-          datasetBannerImageStatus.innerHTML = res
-          showCurrentBannerImage()
-          bfCurrentMetadataProgress.style.display = 'none'
-          enableform(bfMetadataForm)
+          datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Final image size must be less than 5 MB" + "</span>"
         }
-      })
+      }
+      )
     } else {
       datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Height and width of selected area must be at least 1024 px" + "</span>"
     }
-  } else{
-    datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Please select an image first" + "</span>"
+  } else {
+    datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Please import an image first" + "</span>"
   }
 })
 
