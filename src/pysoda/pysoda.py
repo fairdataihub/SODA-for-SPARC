@@ -414,7 +414,6 @@ def preview_file_organization(jsonpath):
         preview_path: path of the folder where the preview files are located
     """
     mydict = jsonpath
-    userpath = expanduser("~")
     preview_path = join(userpath, "SODA", "Preview")
     try:
         if isdir(preview_path):
@@ -1140,39 +1139,6 @@ def bf_new_dataset_folder(datasetname, accountname):
     except Exception as e:
         raise e
 
-
-def upload_structured_file(myds, mypath, myfolder):
-    """
-    Helper function to upload given folder to Blackfynn dataset in the original folder structure
-
-    Input:
-        myds: dataset name on Blackfynn (string)
-        mypath: path of the organized dataset on local machine (string)
-        myfolder: current folder inside the path (string)
-    Action:
-        Uploads the folder to Blackfynn
-    """
-    global submitdataprogress
-    global submitdatastatus
-    global uploaded_file_size
-
-    try:
-        mypath = join(mypath)
-        for f in listdir(mypath):
-            if isfile(join(mypath, f)):
-                filepath = join(mypath, f)
-                submitdataprogress =  "Uploading " + str(filepath)
-                myds.upload(filepath, use_agent=False)
-                uploaded_file_size += getsize(filepath)
-            else:
-                submitdataprogress = "Creating folder " + f
-                mybffolder = myds.create_collection(f)
-                myfolderpath = join(mypath, f)
-                upload_structured_file(mybffolder, myfolderpath, f)
-
-    except Exception as e:
-        raise e
-
 def clear_queue():
     command = [agent_cmd(), "upload-status", "--cancel-all"]
 
@@ -1879,7 +1845,7 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
     Return:
         Success or error message
     """
-def bf_add_banner_image(selected_bfaccount, selected_bfdataset, selected_banner_image):
+def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_path):
 
     try:
         bf = Blackfynn(selected_bfaccount)
@@ -1899,13 +1865,18 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, selected_banner_
             error = "Error: You don't have permission for editing metadata on this Blackfynn dataset"
             raise Exception(error)
     except Exception as e:
-        raise e
+        raise Exception(error)
 
     try:
         selected_dataset_id = myds.id
-        with urlopen(selected_banner_image) as response:
-            f = response.read()
-        bf._api._put('/datasets/' + str(selected_dataset_id) + '/banner', files={"banner": f})
+        def upload_image():
+            with open(banner_image_path, "rb") as f:
+                bf._api._put('/datasets/' + str(selected_dataset_id) + '/banner', files={"banner": f})
+        #delete banner image folder if it is located in SODA
+        gevent.spawn(upload_image())
+        image_folder = dirname(banner_image_path)
+        if isdir(image_folder) and ('SODA' in image_folder):
+            shutil.rmtree(image_folder, ignore_errors=True)
         return('Saved!')
     except Exception as e:
         raise Exception(e)

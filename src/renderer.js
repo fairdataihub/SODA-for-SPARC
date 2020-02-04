@@ -7,6 +7,11 @@ const fs = require("fs")
 const path = require('path')
 const {ipcRenderer} = require('electron')
 const Editor = require('tui-editor')
+const remote = require('electron').remote;
+const app = remote.app;
+const imageDataURI = require("image-data-uri");
+
+var homeDirectory = app.getPath('home')
 
 // Connect to python server and check
 let client = new zerorpc.Client({ timeout: 300000})
@@ -248,7 +253,6 @@ selectCodeDirectoryBtn.addEventListener('click', (event) => {
 
 ipcRenderer.on('selected-code', (event, path) => {
     insertFileToTable(tableNotOrganized, path)
-    console.log(tableNotOrganized)
 })
 
 //Clear table
@@ -399,7 +403,6 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
             var emessage = userError(error)
             document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           } else {
-            console.log(res)
             document.getElementById("para-save-file-organization-status").innerHTML = "Saved!"
           }
       })
@@ -447,7 +450,6 @@ selectPreviewBtn.addEventListener('click', () => {
         var emessage = userError(error)
         document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
-        console.log("Done")
         document.getElementById("para-preview-organization-status").innerHTML = "Preview folder available in a new file explorer window";
       }
   })
@@ -495,7 +497,6 @@ curateDatasetBtn.addEventListener('click', () => {
       console.error(emessage)
       return
     }
-    console.log(jsonvect)
     sourceDataset = 'not organized'
   } else {
     var emessage = 'Error: Please select an option under "Organize dataset" '
@@ -597,10 +598,10 @@ curateDatasetBtn.addEventListener('click', () => {
     } else {
       document.getElementById("para-please-wait-curate").innerHTML = "Please wait...";
       progressCurateUpload.style.display = "block";
-      console.log('Done', res)
+      console.log('Started curating')
     }
   })
-
+  var countDone = 0
   var timerProgress = setInterval(progressfunction, 1000)
   function progressfunction(){
     curateDatasetBtn.disabled = true
@@ -618,7 +619,6 @@ curateDatasetBtn.addEventListener('click', () => {
         var curatedSize = res[4]
         var value = (curatedSize / totalCurateSize) * 100
         progressBarCurate.value = value
-        console.log(value, curatedSize, totalCurateSize, res[5])
         if (printstatus === 'Curating') {
           if (res[0].includes('Success: COMPLETED!')){
             document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + smileyCan
@@ -628,12 +628,14 @@ curateDatasetBtn.addEventListener('click', () => {
         }
       }
     })
-    console.log('Completion status:', completionstatus)
     if (completionstatus === 'Done'){
-      console.log('Done')
-      clearInterval(timerProgress)
-      curateDatasetBtn.disabled = false
-      enableform(curationForm)
+      countDone++
+      if (countDone > 1){
+        console.log('Done curating')
+        clearInterval(timerProgress)
+        curateDatasetBtn.disabled = false
+        enableform(curationForm)
+      }
     }
   }
 })
@@ -729,23 +731,19 @@ bfRefreshDatasetBtn.addEventListener('click', () => {
   // refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
   // refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
   currentDatasetPermission.innerHTML = ''
-  console.log("refreshed")
   refreshAllBFDatasetLists()
 })
 bfUploadRefreshDatasetBtn.addEventListener('click', () => {
   refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
-  console.log("refreshed")
   // refreshAllBFDatasetLists()
 })
 bfRefreshDatasetMetadataBtn.addEventListener('click', () => {
   // refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
-  console.log("refreshed")
   // addSearchList()
   refreshAllBFDatasetLists()
 })
 bfRefreshDatasetPermissionBtn.addEventListener('click', () => {
   // refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
-  console.log("refreshed")
   refreshAllBFDatasetLists()
 })
 // Add new dataset folder (empty) on bf
@@ -804,11 +802,11 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
     } else {
       document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
       progressUploadBf.style.display = "block"
-      console.log('Done', res)
+      console.log('Started uploading')
     }
   })
 
-
+  var countDone = 0
   var timerProgress = setInterval(progressfunction, 1000)
     function progressfunction(){
       client.invoke("api_submit_dataset_progress", (error, res) => {
@@ -822,7 +820,6 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
           var uploadedFileSize = res[3]
           var totalFileSize = res[4]
           var value = (uploadedFileSize / totalFileSize) * 100
-          console.log(value, uploadedFileSize, totalFileSize, res[5])
           progressBarUploadBf.value = value
           if (completionStatus != 'Done') {
             document.getElementById("para-progress-bar-status").innerHTML = dataProgress + 'Progress: ' + value.toFixed(2) + '%'
@@ -830,12 +827,16 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
         }
       })
       if (completionStatus === 'Done'){
-        if (!err){
-          progressBarUploadBf.value = 100
-          document.getElementById("para-progress-bar-status").innerHTML = "Upload completed!" + smileyCan
+        countDone++
+        if (countDone > 1){
+          console.log('Done uploading')
+          if (!err){
+            progressBarUploadBf.value = 100
+            document.getElementById("para-progress-bar-status").innerHTML = "Upload completed!" + smileyCan
+          }
+          clearInterval(timerProgress)
+          bfSubmitDatasetBtn.disabled = false
         }
-        clearInterval(timerProgress)
-        bfSubmitDatasetBtn.disabled = false
       }
     }
 })
@@ -875,7 +876,6 @@ bfAddSubtitleBtn.addEventListener('click', () => {
       bfCurrentMetadataProgress.style.display = 'none'
       enableform(bfMetadataForm)
     } else {
-      console.log('Done', res)
       datasetSubtitleStatus.innerHTML = res
       bfCurrentMetadataProgress.style.display = 'none'
       enableform(bfMetadataForm)
@@ -890,7 +890,6 @@ bfAddDescriptionBtn.addEventListener('click', () => {
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   var markdownDescription = tuiInstance.getMarkdown()
-  console.log(markdownDescription)
   client.invoke("api_bf_add_description", selectedBfAccount, selectedBfDataset, markdownDescription,
     (error, res) => {
     if(error) {
@@ -900,7 +899,6 @@ bfAddDescriptionBtn.addEventListener('click', () => {
       bfCurrentMetadataProgress.style.display = 'none'
       enableform(bfMetadataForm)
     } else {
-      console.log('Done', res)
       datasetDescriptionStatus.innerHTML = res
       bfCurrentMetadataProgress.style.display = 'none'
       enableform(bfMetadataForm)
@@ -943,6 +941,7 @@ var cropOptions = {
   minContainerHeight: 400,*/
 }
 
+var imageExtension
 
 var myCropper = new Cropper(bfViewImportedImage, cropOptions)
 // Action when user click on "Import image" button for banner image
@@ -953,6 +952,7 @@ bfImportBannerImageBtn.addEventListener('click', (event) => {
 ipcRenderer.on('selected-banner-image', (event, path) => {
   if (path.length > 0){
     datasetBannerImagePath.innerHTML = path
+    imageExtension = path[0].split('.').pop()
     bfViewImportedImage.src = path[0]
     myCropper.destroy()
     myCropper = new Cropper(bfViewImportedImage, cropOptions)
@@ -966,29 +966,47 @@ bfSaveBannerImageBtn.addEventListener('click', (event) => {
       bfCurrentMetadataProgress.style.display = 'block'
       datasetBannerImageStatus.innerHTML = 'Please wait...'
       disableform(bfMetadataForm)
-      var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
-      var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
-      var croppedImageDataURL = myCropper.getCroppedCanvas().toDataURL()
-      client.invoke("api_bf_add_banner_image", selectedBfAccount, selectedBfDataset, croppedImageDataURL, (error, res) => {
-        if(error) {
-          console.error(error)
-          var emessage = userError(error)
-          datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-          bfCurrentMetadataProgress.style.display = 'none'
-          enableform(bfMetadataForm)
+
+      //Save cropped image locally and check size
+      var imageFolder = path.join(homeDirectory, 'SODA', 'banner-image')
+      if (!fs.existsSync(imageFolder)){
+        fs.mkdirSync(imageFolder)
+      }
+      if (imageExtension == 'png'){
+        var imageType = 'image/png'
+      } else {
+        var imageType = 'image/jpeg'
+      }
+      var imagePath = path.join(imageFolder, 'banner-image-SODA.' + imageExtension)
+      var croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType)
+      imageDataURI.outputFile(croppedImageDataURI, imagePath).then( function() {
+        if(fs.statSync(imagePath)["size"] < 5*1024*1024) {
+          var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+          var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
+          client.invoke("api_bf_add_banner_image", selectedBfAccount, selectedBfDataset, imagePath, (error, res) => {
+            if(error) {
+              console.error(error)
+              var emessage = userError(error)
+              datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+              bfCurrentMetadataProgress.style.display = 'none'
+              enableform(bfMetadataForm)
+            } else {
+              datasetBannerImageStatus.innerHTML = res
+              showCurrentBannerImage()
+              bfCurrentMetadataProgress.style.display = 'none'
+              enableform(bfMetadataForm)
+            }
+          })
         } else {
-          console.log(res)
-          datasetBannerImageStatus.innerHTML = res
-          showCurrentBannerImage()
-          bfCurrentMetadataProgress.style.display = 'none'
-          enableform(bfMetadataForm)
+          datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Final image size must be less than 5 MB" + "</span>"
         }
-      })
+      }
+      )
     } else {
       datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Height and width of selected area must be at least 1024 px" + "</span>"
     }
-  } else{
-    datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Please select an image first" + "</span>"
+  } else {
+    datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Please import an image first" + "</span>"
   }
 })
 
@@ -1009,7 +1027,6 @@ bfAddLicenseBtn.addEventListener('click', () => {
       bfCurrentMetadataProgress.style.display = 'none'
       enableform(bfMetadataForm)
     } else {
-      console.log('Done', res)
       datasetLicenseStatus.innerHTML = res
       showCurrentLicense()
       enableform(bfMetadataForm)
@@ -1052,7 +1069,6 @@ ipcRenderer.on('warning-add-permission-owner-selection-PI', (event, index) => {
       bfCurrentPermissionProgress.style.display = 'none'
       enableform(bfPermissionForm)
     } else {
-      console.log('Done', res)
       datasetPermissionStatusPI.innerHTML = res
       showCurrentPermission()
       enableform(bfPermissionForm)
@@ -1085,7 +1101,6 @@ bfAddPermissionCurationTeamBtn.addEventListener('click', () => {
       bfCurrentPermissionProgress.style.display = 'none'
       enableform(bfPermissionForm)
     } else {
-      console.log('Done', res)
       datasetPermissionStatusCurationTeam.innerHTML = 'Shared with Curation Team'
       showCurrentPermission()
       enableform(bfPermissionForm)
@@ -1148,7 +1163,6 @@ bfAddPermissionTeamBtn.addEventListener('click', () => {
       bfCurrentPermissionProgress.style.display = 'none'
       enableform(bfPermissionForm)
     } else {
-      console.log('Done', res)
       datasetPermissionStatusTeam.innerHTML = res
       showCurrentPermission()
       enableform(bfPermissionForm)
@@ -1202,7 +1216,6 @@ function showCurrentSubtitle(){
       if(error) {
         console.error(error)
       } else {
-        console.log('Done', res)
         bfDatasetSubtitle.value = res
       }
     })
@@ -1220,7 +1233,6 @@ function showCurrentDescription(){
       if(error) {
         console.error(error)
       } else {
-        console.log('Description', res)
         tuiInstance.setMarkdown(res)
       }
     })
@@ -1238,7 +1250,6 @@ function showCurrentBannerImage(){
       if(error) {
         console.error(error)
       } else {
-        console.log('Banner image', res)
         if (res === 'No banner image'){
           bfCurrentBannerImg.src = 'assets/img/no-banner-image.png'
         }
@@ -1264,7 +1275,6 @@ function showCurrentLicense(){
         console.error(error)
         bfCurrentMetadataProgress.style.display = 'none'
       } else {
-        console.log('Done', res)
         currentDatasetLicense.innerHTML = res
         bfCurrentMetadataProgress.style.display = 'none'
       }
@@ -1369,7 +1379,6 @@ function showCurrentPermission(){
         console.error(error)
         bfCurrentPermissionProgress.style.display = 'none'
       } else {
-        console.log('Done', res)
         var permissionList = ''
         for (var i in res){
           permissionList = permissionList + res[i] + '<br>'
@@ -1562,7 +1571,6 @@ function jsonToTableOrganized(table, jsonvar){
     var rowcount = document.getElementById(SPARCfolderid).rowIndex
     var pathlist = jsonvar[SPARCfolder]
     if (pathlist.length !== 0){
-      console.log(SPARCfolder)
       var myheader = tableOrganized.rows[rowcount].cells[0]
       if (myheader.className === "table-header"){
         myheader.className = "table-header openfolder"
@@ -1628,7 +1636,6 @@ function insertFileToTable(table, path){
       }
   }
   if (count > 0) {
-    console.log(emessage)
     ipcRenderer.send('open-error-file-exist', emessage)
   } else {
     var myheader = tableNotOrganized.rows[rowcount].cells[0]
@@ -1768,7 +1775,6 @@ function dropAddToTable(e, myID){
       }
   }
   if (count > 0) {
-    console.log(emessage)
     ipcRenderer.send('open-error-file-exist', emessage)
   } else {
     var myheader = tableNotOrganized.rows[rowcount].cells[0]
@@ -1782,7 +1788,6 @@ function dropAddToTable(e, myID){
       r += 1
     }
   	for (let f of e.dataTransfer.files) {
-          console.log('File(s) you dragged here: ', f.path, myID)
           var rownum = rowcount + i + 1
   	    tableNotOrganizedCount = tableNotOrganizedCount + 1
   	    var table_len = tableNotOrganizedCount
@@ -1843,7 +1848,6 @@ function addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, s
       bfCurrentPermissionProgress.style.display = 'none'
       enableform(bfPermissionForm)
     } else {
-      console.log('Done', res)
       datasetPermissionStatus.innerHTML = res
       showCurrentPermission()
       enableform(bfPermissionForm)
