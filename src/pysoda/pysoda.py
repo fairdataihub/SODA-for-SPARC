@@ -16,10 +16,15 @@ import threading
 import numpy as np
 import collections
 import subprocess
+from websocket import create_connection
+import socket
+import errno
 import re
 import gevent
 from blackfynn import Blackfynn
+from blackfynn.log import get_logger
 from blackfynn.api.agent import agent_cmd
+from blackfynn.api.agent import AgentError, check_port, socket_address
 from urllib.request import urlopen
 
 ### Global variables
@@ -810,7 +815,9 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         except Exception as e:
             raise e
 
+        clear_queue()
         try:
+            agent_running()
             def calluploaddirectly():
                 global curateprogress
                 global curatestatus
@@ -1172,6 +1179,27 @@ def clear_queue():
     proc = subprocess.run(command, check=True)   # env=agent_env(?settings?)
     return proc
 
+def agent_running():
+    logger = get_logger('blackfynn.agent')
+    listen_port = 11235
+
+    try:
+        logger.debug("Checking port %s", listen_port)
+        create_connection(socket_address(listen_port)).close()
+
+    except socket.error as e:
+
+        if e.errno == errno.ECONNREFUSED:  # ConnectionRefusedError for Python 3
+            logger.debug("No agent found, port %s OK", listen_port)
+            return True
+        else:
+            raise
+    else:
+        raise AgentError("The agent is already running. Please go to your Task Manager/Activity Monitor to stop any running blackfynn_agent processes and try again")
+
+    socket_address(listen_port)
+
+
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
     """
     Associated with 'Submit dataset' button in 'Submit new dataset' section
@@ -1257,8 +1285,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         raise Exception(error)
 
     clear_queue()
-
     try:
+        agent_running()
         def calluploadfolder():
             global submitdataprogress
             global submitdatastatus
@@ -1282,7 +1310,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     except Exception as e:
         submitdatastatus = 'Done'
         raise e
-
 
 def submit_dataset_progress():
     """
