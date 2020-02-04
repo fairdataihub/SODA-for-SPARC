@@ -816,7 +816,9 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         except Exception as e:
             raise e
 
+        clear_queue()
         try:
+            agent_running()
             def calluploaddirectly():
                 global curateprogress
                 global curatestatus

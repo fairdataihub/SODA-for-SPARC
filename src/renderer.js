@@ -51,6 +51,7 @@ const newDatasetName = document.querySelector('#new-dataset-name')
 const manifestStatus = document.querySelector('#generate-manifest')
 const curationForm = document.querySelector('#dataset-curate-form')
 const progressBarCurate = document.getElementById("progress-bar-curate")
+const progressCurateUpload = document.getElementById("div-curate-progress")
 
 const existingSubmissionStatus = document.querySelector('#existing-submission')
 const newSubmissionStatus = document.querySelector('#new-submission')
@@ -458,6 +459,7 @@ selectPreviewBtn.addEventListener('click', () => {
 // // // // // // // // // //
 
 curateDatasetBtn.addEventListener('click', () => {
+  document.getElementById("para-please-wait-curate").innerHTML = "Please wait..."
   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
   progressBarCurate.value = 0;
   // Disable curate button to prevent multiple clicks
@@ -582,15 +584,19 @@ curateDatasetBtn.addEventListener('click', () => {
     jsonpath, jsondescription,
     (error, res) => {
     if (error) {
+      document.getElementById("para-please-wait-curate").innerHTML = ""
       var emessage = userError(error)
       document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
       document.getElementById("para-curate-progress-bar-status").innerHTML = ""
+      progressCurateUpload.style.display = "none"
       progressBarCurate.value = 0;
       err = true
       console.error(error)
       curateDatasetBtn.disabled = false
       enableform(curationForm)
     } else {
+      document.getElementById("para-please-wait-curate").innerHTML = "Please wait...";
+      progressCurateUpload.style.display = "block";
       console.log('Done', res)
     }
   })
@@ -778,7 +784,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
 
 // Submit dataset to bf
 bfSubmitDatasetBtn.addEventListener('click', () => {
-  document.getElementById("para-please-wait").innerHTML = "Please wait..."
+  document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
   document.getElementById("para-progress-bar-error-status").innerHTML = ""
   document.getElementById("para-progress-bar-status").innerHTML = ""
   var err = false
@@ -788,7 +794,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text
   client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathSubmitDataset.value, (error, res) => {
     if (error) {
-      document.getElementById("para-please-wait").style.display = "none"
+      document.getElementById("para-please-wait-manage-dataset").style.display = "none"
       console.error(error)
       var emessage = userError(error)
       document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
@@ -796,6 +802,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       progressBarUploadBf.value = 0
       err = true
     } else {
+      document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
       progressUploadBf.style.display = "block"
       console.log('Done', res)
     }
