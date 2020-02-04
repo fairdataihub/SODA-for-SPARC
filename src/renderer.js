@@ -598,10 +598,10 @@ curateDatasetBtn.addEventListener('click', () => {
     } else {
       document.getElementById("para-please-wait-curate").innerHTML = "Please wait...";
       progressCurateUpload.style.display = "block";
-      console.log('Done', res)
+      console.log('Started curating')
     }
   })
-
+  var countDone = 0
   var timerProgress = setInterval(progressfunction, 1000)
   function progressfunction(){
     curateDatasetBtn.disabled = true
@@ -628,12 +628,14 @@ curateDatasetBtn.addEventListener('click', () => {
         }
       }
     })
-    console.log('Completion status:', completionstatus)
     if (completionstatus === 'Done'){
-      console.log('Done')
-      clearInterval(timerProgress)
-      curateDatasetBtn.disabled = false
-      enableform(curationForm)
+      countDone++
+      if (countDone > 1){
+        console.log('Done curating')
+        clearInterval(timerProgress)
+        curateDatasetBtn.disabled = false
+        enableform(curationForm)
+      }
     }
   }
 })
@@ -800,11 +802,11 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
     } else {
       document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
       progressUploadBf.style.display = "block"
-      console.log('Done', res)
+      console.log('Started uploading')
     }
   })
 
-
+  var countDone = 0
   var timerProgress = setInterval(progressfunction, 1000)
     function progressfunction(){
       client.invoke("api_submit_dataset_progress", (error, res) => {
@@ -825,12 +827,16 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
         }
       })
       if (completionStatus === 'Done'){
-        if (!err){
-          progressBarUploadBf.value = 100
-          document.getElementById("para-progress-bar-status").innerHTML = "Upload completed!" + smileyCan
+        countDone++
+        if (countDone > 1){
+          console.log('Done uploading')
+          if (!err){
+            progressBarUploadBf.value = 100
+            document.getElementById("para-progress-bar-status").innerHTML = "Upload completed!" + smileyCan
+          }
+          clearInterval(timerProgress)
+          bfSubmitDatasetBtn.disabled = false
         }
-        clearInterval(timerProgress)
-        bfSubmitDatasetBtn.disabled = false
       }
     }
 })

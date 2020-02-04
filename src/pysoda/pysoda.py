@@ -1140,39 +1140,6 @@ def bf_new_dataset_folder(datasetname, accountname):
     except Exception as e:
         raise e
 
-
-def upload_structured_file(myds, mypath, myfolder):
-    """
-    Helper function to upload given folder to Blackfynn dataset in the original folder structure
-
-    Input:
-        myds: dataset name on Blackfynn (string)
-        mypath: path of the organized dataset on local machine (string)
-        myfolder: current folder inside the path (string)
-    Action:
-        Uploads the folder to Blackfynn
-    """
-    global submitdataprogress
-    global submitdatastatus
-    global uploaded_file_size
-
-    try:
-        mypath = join(mypath)
-        for f in listdir(mypath):
-            if isfile(join(mypath, f)):
-                filepath = join(mypath, f)
-                submitdataprogress =  "Uploading " + str(filepath)
-                myds.upload(filepath, use_agent=False)
-                uploaded_file_size += getsize(filepath)
-            else:
-                submitdataprogress = "Creating folder " + f
-                mybffolder = myds.create_collection(f)
-                myfolderpath = join(mypath, f)
-                upload_structured_file(mybffolder, myfolderpath, f)
-
-    except Exception as e:
-        raise e
-
 def clear_queue():
     command = [agent_cmd(), "upload-status", "--cancel-all"]
 
