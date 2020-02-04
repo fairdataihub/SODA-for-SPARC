@@ -1035,7 +1035,6 @@ def bf_default_account_load():
                 with open(configpath, 'w') as configfile:
                     config.write(configfile)
         return accountlist
-
     except Exception as e:
         raise e
 
