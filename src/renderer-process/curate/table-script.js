@@ -23,6 +23,10 @@ function delete_row_org(no){
  document.getElementById("row-org"+no+"").outerHTML="";
 }
 
+function delete_row_metadata(no){
+ document.getElementById("row_metadata"+no+"").outerHTML="";
+}
+
 // Not Organized
 function edit_row(no){
 	document.getElementById("edit_button"+no).style.display="none"

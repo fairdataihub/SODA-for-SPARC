@@ -58,30 +58,8 @@ const curationForm = document.querySelector('#dataset-curate-form')
 const progressBarCurate = document.getElementById("progress-bar-curate")
 const progressCurateUpload = document.getElementById("div-curate-progress")
 
-const existingSubmissionStatus = document.querySelector('#existing-submission')
-const newSubmissionStatus = document.querySelector('#new-submission')
-const pathSubmissionExisting = document.querySelector('#selected-submission')
-
-const existingDescriptionStatus = document.querySelector('#existing-description')
-const newDescriptionStatus = document.querySelector('#new-description')
-const pathDescriptionExisting = document.querySelector('#selected-description')
-
-const existingSubjectsStatus = document.querySelector('#existing-subjects')
-const newSubjectsStatus = document.querySelector('#new-subjects')
-const pathSubjectsExisting = document.querySelector('#selected-subjects')
-
-const existingSamplesStatus = document.querySelector('#existing-samples')
-const newSamplesStatus = document.querySelector('#new-samples')
-const pathSamplesExisting = document.querySelector('#selected-samples')
-
-var submissionStatus
-var pathSubmission
-var descriptionStatus
-var pathDescription
-var subjectsStatus
-var pathSubjects
-var samplesStatus
-var pathSamples
+const tableMetadata = document.getElementById("metadata-table")
+let tableMetadataCount = 0
 
 const curateDatasetBtn = document.getElementById('button-curate-dataset')
 const bfUploadDatasetBtn = document.getElementById('button-upload-dataset')
@@ -309,7 +287,6 @@ holderProtocol.addEventListener("drop", (event)=> {
    dropAddToTable(event, myID)
 })
 
-
 var holderSource = document.getElementById('source')
 holderSource.addEventListener("drop", (event)=> {
    event.preventDefault()
@@ -317,12 +294,24 @@ holderSource.addEventListener("drop", (event)=> {
    dropAddToTable(event, myID)
 })
 
-var holderMain = document.getElementById('main')
-holderMain.addEventListener("drop", (event)=> {
+var holderMetadata = document.getElementById('metadata')
+holderMetadata.addEventListener("drop", (event)=> {
    event.preventDefault()
-   var myID = holderMain.id
-   dropAddToTable(event, myID)
+   var myID = holderMetadata.id
+   console.log(myID)
+   dropAddToTableMetadata(event, myID)
 })
+
+
+//Select files to be added to metadata files table
+const selectMetadataBtn = document.getElementById('button-select-metadata')
+selectMetadataBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-file-dialog-metadata')
+})
+ipcRenderer.on('selected-metadata', (event, path) => {
+    insertFileToMetadataTable(tableMetadata, path)
+})
+
 
 
 const tuiInstance = new Editor({
@@ -420,7 +409,6 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
   if (path.length > 0) {
     clearStrings()
     var headerNames = sparcFolderNames.slice()
-    headerNames.push("main")
     var lennames =  headerNames.length
     for (var i = 0; i < lennames; i++) {
     	headerNames.push(headerNames[i] + "_description")
@@ -476,6 +464,7 @@ curateDatasetBtn.addEventListener('click', () => {
     } else {
       var emessage = 'Error: Select a valid dataset folder'
       document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
+      document.getElementById("para-please-wait-curate").innerHTML = "";
       curateDatasetBtn.disabled = false
       enableform(curationForm)
       console.error('Error')
@@ -492,6 +481,7 @@ curateDatasetBtn.addEventListener('click', () => {
     if (error) {
       var emessage = 'Error: Please add files to your dataset'
       document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
+      document.getElementById("para-please-wait-curate").innerHTML = "";
       curateDatasetBtn.disabled = false
       enableform(curationForm)
       console.error(emessage)
@@ -501,6 +491,7 @@ curateDatasetBtn.addEventListener('click', () => {
   } else {
     var emessage = 'Error: Please select an option under "Organize dataset" '
     document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
+    document.getElementById("para-please-wait-curate").innerHTML = "";
     curateDatasetBtn.disabled = false
     enableform(curationForm)
   	return
@@ -508,6 +499,13 @@ curateDatasetBtn.addEventListener('click', () => {
 
   var jsonpath = jsonvect[0]
   var jsondescription = jsonvect[1]
+  console.log(jsonpath)
+  console.log(jsondescription)
+  var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
+  jsonpath['main'] = jsonpathMetadata['metadata']
+
+  console.log(jsonpath)
+  console.log(jsondescription)
 
   var destinationDataset = ''
   var pathDatasetValue = ''
@@ -525,70 +523,20 @@ curateDatasetBtn.addEventListener('click', () => {
     newDatasetNameVar = bfUploadDatasetList.options[bfUploadDatasetList.selectedIndex].text
   }
 
-  var metadatafiles = []
-  if (existingSubmissionStatus.checked === true) {
-    submissionStatus = true
-    pathSubmission = pathSubmissionExisting.value
-    metadatafiles.push(pathSubmission)
-  } else if (newSubmissionStatus.checked === true) {
-    submissionStatus = true
-    pathSubmission = path.join(__dirname, 'file_templates', 'submission.xlsx')
-    metadatafiles.push(pathSubmission)
-  } else {
-    submissionStatus = false
-  }
-
-  if (existingDescriptionStatus.checked === true){
-    descriptionStatus = true
-    pathDescription = pathDescriptionExisting.value
-    metadatafiles.push(pathDescription)
-  } else if (newDescriptionStatus.checked === true){
-    descriptionStatus = true
-    pathDescription = path.join(__dirname, 'file_templates', 'dataset_description.xlsx')
-    metadatafiles.push(pathDescription)
-  } else {
-    descriptionStatus = false
-  }
-
-  if (existingSubjectsStatus.checked === true){
-    subjectsStatus = true
-    pathSubjects = pathSubjectsExisting.value
-    metadatafiles.push(pathSubjects)
-  } else if (newSubjectsStatus.checked === true){
-    subjectsStatus = true
-    pathSubjects = path.join(__dirname, 'file_templates', 'subjects.xlsx')
-    metadatafiles.push(pathSubjects)
-  } else {
-    subjectsStatus = false
-  }
-
-  if (existingSamplesStatus.checked === true){
-    samplesStatus = true
-    pathSamples = pathSamplesExisting.value
-    metadatafiles.push(pathSamples)
-  } else if (newSamplesStatus.checked === true){
-    samplesStatus = true
-    pathSamples = path.join(__dirname, 'file_templates', 'samples.xlsx')
-    metadatafiles.push(pathSamples)
-  } else {
-   samplesStatus = false
-  }
-
-  // Initiate curation by calling python
+  // Initiate curation by calling python funtion
   var err = false
   var completionstatus = 'Solving'
   document.getElementById("para-curate-progress-bar-status").innerHTML = "Started generating files ..."
   client.invoke("api_curate_dataset",
     sourceDataset, destinationDataset, pathDatasetValue, newDatasetNameVar,
-    submissionStatus, pathSubmission,  descriptionStatus, pathDescription,
-    subjectsStatus, pathSubjects, samplesStatus, pathSamples, manifestStatus.checked,
-    jsonpath, jsondescription,
+    manifestStatus.checked, jsonpath, jsondescription,
     (error, res) => {
     if (error) {
       document.getElementById("para-please-wait-curate").innerHTML = ""
       var emessage = userError(error)
       document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
       document.getElementById("para-curate-progress-bar-status").innerHTML = ""
+      document.getElementById("para-please-wait-curate").innerHTML = "";
       progressCurateUpload.style.display = "none"
       progressBarCurate.value = 0;
       err = true
@@ -599,6 +547,7 @@ curateDatasetBtn.addEventListener('click', () => {
       document.getElementById("para-please-wait-curate").innerHTML = "Please wait...";
       progressCurateUpload.style.display = "block";
       console.log('Started curating')
+      console.log(res)
     }
   })
   var countDone = 0
@@ -632,6 +581,7 @@ curateDatasetBtn.addEventListener('click', () => {
       countDone++
       if (countDone > 1){
         console.log('Done curating')
+        document.getElementById("para-please-wait-curate").innerHTML = "";
         clearInterval(timerProgress)
         curateDatasetBtn.disabled = false
         enableform(curationForm)
@@ -792,7 +742,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text
   client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathSubmitDataset.value, (error, res) => {
     if (error) {
-      document.getElementById("para-please-wait-manage-dataset").style.display = "none"
+      document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
       console.error(error)
       var emessage = userError(error)
       document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
@@ -833,6 +783,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
           if (!err){
             progressBarUploadBf.value = 100
             document.getElementById("para-progress-bar-status").innerHTML = "Upload completed!" + smileyCan
+            document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
           }
           clearInterval(timerProgress)
           bfSubmitDatasetBtn.disabled = false
@@ -1539,7 +1490,6 @@ function checkFolderStruture(pathDatasetFolder){
 
 function organizedFolderToJson(pathDatasetVal){
   var jsonvar = {}
-  var mainFolderFiles = []
   var files = fs.readdirSync(pathDatasetVal)
   for (var i = 0; i<files.length; i++) {
     var filename = files[i]
@@ -1553,13 +1503,8 @@ function organizedFolderToJson(pathDatasetVal){
         folderfiles.push(path.join(filepath, fileNameInFolder))
       }
       jsonvar[filename] = folderfiles
-    } else {
-      if(! /^\..*/.test(filename)) {
-        mainFolderFiles.push(filepath)
-      }
-    }
+    } 
   }
-  jsonvar['main'] = mainFolderFiles
   return jsonvar
 }
 
@@ -1600,7 +1545,6 @@ function tableToJsonWithDescriptionOrganized(table){
   var keyval = "code"
 
   var tableheaders = sparcFolderNames.slice()
-  tableheaders.push("main")
   for (var i = 1, row; row = table.rows[i]; i++) {
     var pathname = row.cells[0].innerHTML
     var descriptionname = row.cells[1].innerHTML
@@ -1631,7 +1575,7 @@ function insertFileToTable(table, path){
   var count = 0
   for (i = 0; i < path.length; i++) {
       if ( jsonvar[SPARCfolder].indexOf(path[i]) > -1 ) {
-        emessage = emessage + path[i] + ' already exists in ' + SPARCfolder + "\n"
+        emessage = emessage + path[i] + ' already added to ' + SPARCfolder + "\n"
         count += 1
       }
   }
@@ -1662,12 +1606,39 @@ function insertFileToTable(table, path){
   }
 }
 
+function insertFileToMetadataTable(table, path){
+  var i
+  var rowcount = 0
+  var jsonvar = tableToJsonMetadata(table)
+  var emessage = ''
+  var count = 0
+  var SPARCfolder = 'metadata'
+  for (i = 0; i < path.length; i++) {
+      if ( jsonvar[SPARCfolder].indexOf(path[i]) > -1 ) {
+        emessage = emessage + path[i] + ' already added to ' + SPARCfolder + "\n"
+        count += 1
+      }
+  }
+  if (count > 0) {
+    ipcRenderer.send('open-error-file-exist', emessage)
+  } else {
+    var myheader = tableNotOrganized.rows[rowcount].cells[0]
+    for (i = 0; i < path.length; i++) {
+      tableMetadataCount = tableMetadataCount + 1
+      var table_len= tableMetadataCount
+      var rownum = rowcount + i + 1
+      var row = table.insertRow(rownum).outerHTML="<tr id='row_metadata"+table_len+"'style='color: #000000;'><td id='name_row_metadata"+table_len+"'>"+ path[i] +"</td><td> <input type='button' value='Delete row' class='delete' onclick='delete_row_metadata("+table_len+")'></td></tr>";
+      }
+    }
+    return table
+  }
+
+
 function tableToJson(table){
   var jsonvar = {}
   var pathlist = new Array()
   var keyval = "code"
   var tableheaders = sparcFolderNames.slice()
-  tableheaders.push("main")
   for (var i = 1, row; row = table.rows[i]; i++) {
     var pathname = row.cells[0].innerHTML
     if (tableheaders.includes(pathname)) {
@@ -1682,10 +1653,23 @@ function tableToJson(table){
   return jsonvar
 }
 
+function tableToJsonMetadata(table){
+  var jsonvar = {}
+  var pathlist = new Array()
+  var keyval = "metadata"
+  for (var i = 1, row; row = table.rows[i]; i++) {
+    var pathname = row.cells[0].innerHTML
+    if (pathname !== keyval) {
+      pathlist.push(row.cells[0].innerHTML)
+    }
+  }
+  jsonvar[keyval] = pathlist
+  return jsonvar
+}
+
 function jsonToTableWithDescription(table, jsonvar){
   var keyvect = Object.keys(jsonvar)
   var tableheaders = sparcFolderNames.slice()
-  tableheaders.push("main")
   for (var j = 0; j < tableheaders.length; j++) {
     let SPARCfolder = tableheaders[j]
     var SPARCfolderid = SPARCfolder
@@ -1736,7 +1720,6 @@ function tableToJsonWithDescription(table){
     keyval = keyval + "_org"
   }
   var tableheaders = sparcFolderNames.slice()
-  tableheaders.push("main")
   for (var i = 1, row; row = table.rows[i]; i++) {
     var pathname = row.cells[0].innerHTML
     var descriptionname = row.cells[1].innerHTML
@@ -1762,7 +1745,7 @@ function tableToJsonWithDescription(table){
 
 function dropAddToTable(e, myID){
   e.target.style.color = 'inherit';
-    e.target.style.backgroundColor = '';
+  e.target.style.backgroundColor = '';
 	var rowcount = document.getElementById(myID).rowIndex
 	var i = 0
   var jsonvar = tableToJson(tableNotOrganized)
@@ -1770,7 +1753,7 @@ function dropAddToTable(e, myID){
   var count = 0
   for (let f of e.dataTransfer.files) {
       if ( jsonvar[myID].indexOf(f.path) > -1 ) {
-        emessage = emessage + f.path + ' already exists in ' + myID + "\n"
+        emessage = emessage + f.path + ' already added to ' + myID + "\n"
         count += 1
       }
   }
@@ -1801,10 +1784,43 @@ function dropAddToTable(e, myID){
   }
 }
 
+function dropAddToTableMetadata(e, myID){
+  e.target.style.color = 'inherit';
+  e.target.style.backgroundColor = '';
+  var rowcount = document.getElementById(myID).rowIndex
+  var i = 0
+  var jsonvar = tableToJsonMetadata(tableMetadata)
+  var emessage = ''
+  var emessage2 = ''
+  var count = 0
+  var count2 = 0
+  for (let f of e.dataTransfer.files) {
+    if ( jsonvar[myID].indexOf(f.path) > -1 ) {
+      emessage = emessage + f.path + ' already added to ' + myID + "\n"
+      count += 1
+    }
+    var validFormat = ['.csv', '.xlsx', '.xls']
+    if (validFormat.indexOf(path.extname(f.path)) === -1 ) {
+      emessage2 = emessage2 + f.path + ' is not a csv or xslx file ' + "\n"
+      count2 += 1
+    }
+  }
+  if (count > 0) {
+    ipcRenderer.send('open-error-file-exist', emessage)
+  } else {
+    for (let f of e.dataTransfer.files) {
+      var rownum = rowcount + i + 1
+      tableMetadataCount = tableMetadataCount + 1
+      var table_len = tableMetadataCount
+      var row = tableMetadata.insertRow(rownum).outerHTML="<tr id='row_metadata"+table_len+"'style='color: #000000;'><td id='name_row_metadata"+table_len+"'>"+ f.path +"</td><td> <input type='button' value='Delete row' class='delete' onclick='delete_row_metadata("+table_len+")'></td></tr>";
+      i = i + 1
+    }
+  }
+}
+
 //Both organized and not organized options
 function clearTable(table){
   var keyvect = sparcFolderNames.slice()
-  keyvect.push("main")
   clearStrings()
   for (var j = 0; j < keyvect.length; j++) {
     var SPARCfolderid = keyvect[j]

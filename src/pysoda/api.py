@@ -38,14 +38,10 @@ class SodaApi(object):
             raise e
 
     def api_curate_dataset(self, sourcedataset, destinationdataset, pathdataset, newdatasetname,\
-                submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
-                subjectsstatus, pathsubjects, samplesstatus, pathsamples, manifeststatus, \
-                jsonpath, jsondescription):
+                manifeststatus, jsonpath, jsondescription):
         try:
             curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetname,\
-                submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
-                subjectsstatus, pathsubjects, samplesstatus, pathsamples, manifeststatus, \
-                jsonpath, jsondescription)
+                manifeststatus, jsonpath, jsondescription)
         except Exception as e:
             raise e
 

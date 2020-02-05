@@ -88,10 +88,6 @@
                       <th>description</th>
                     </tr>
 
-                    <tr class="parent" id='main_org'>
-                      <th class="table-header">main</th>
-                      <th>description</th>
-                    </tr>
                   </table>
               </div>
               <h5> </h5>
@@ -135,26 +131,21 @@
                     <th>description</th>
                   </tr>
 
-                  <tr class="parent" id='main' droppable="true" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondragover="return false">
-                    <th class="table-header">main</th>
-                    <th>description</th>
-                  </tr>
                 </table>
             </div>
             <hr>
             <h5> Select folders and files to be added in each SPARC folder. <br>
+            Use file navigators buttons below or drag/drop directly in the table from your computer. <br>
             The paths will be added under the corresponding table header.
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">
                   Files are organized in SODA by adding them in the table under the desired header (corresponding to a SPARC folder). This table will then be used by the program to create your dataset when you reach the "Generate dataset" step.
                   <br><br>
-                  Select SPARC folder from the drop-down list then add files/folders in the table using the corresponding buttons. Alternatively, you could drag-and-drop files/folders on the table headers to import them.
+                  Select SPARC folder from the drop-down list then add files/folders in the table using the corresponding buttons. Alternatively, you could drag/drop files/folders from your computer on the table headers to import them.
                   <br><br>
-                  You can then add a description for the file that will be included in the manifest file.
+                  You can then add a description for the file, which will be included in the corresponding manifest file if generated with SODA.
                   <br><br>
                   If a folder is added, only the path of the selected folder will be displayed in the table but all sub-folders and files will be included when the dataset is generated.
-                  <br><br>
-                  The 'main' folder designates the dataset folder.
                 </span>
               </div>
             </h5>
@@ -167,7 +158,7 @@
                 <option> primary </option>
                 <option> protocol </option>
                 <option> source </option>
-                <option> main </option></select>
+                </select>
               </div>
             </div>
             <div class="demo-controls">
@@ -280,118 +271,15 @@
             <label for="generate-manifest" class="labelradio"> Include manifest files </label>
           </div>
 
-          <h5>Submission file
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">
-              For all other metadata files, the following options are available:
-              <br><br>
-              - Select existing: choose an already existing metadata file (e.g. created under the 'Prepare Metadata' section). The name must match with the file (e.g. 'submission.xlsx' or 'submission.csv' for submission file)
-              <br><br>
-              - Include new from template: creates a new empty submission file based on the template provided by the Curation Team
-              <br><br>
-              - None: Do nothing (e.g. if you already have included the file under the 'main' header of the table)
-              </span>
-            </div>
-          </h5>
+          <h5>High level metadata files </h5>
+            <table id="metadata-table" class = "pathtable">
+              <tr class="parent" id='metadata' droppable="true" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondragover="return false">
+                <th class="table-header">metadata file</th>
+              </tr>
+            </table>
 
-          <form id='submission-file-form'>
-            <div>
-              <input id="existing-submission" name="submission_file_option" type="radio" class="with-style" value="existing" />
-              <label for="existing-submission" class="labelradio">Select existing</label>
-            </div>
-            <div>
-              <input id="new-submission" name="submission_file_option" type="radio" class="with-style" value="new" />
-              <label for="new-submission" class="labelradio"> Include new from template</label>
-            </div>
-            <div>
-              <input id="no-submission" name="submission_file_option" type="radio" class="with-style" value="none" checked/>
-              <label for="no-submission" class="labelradio"> None </label>
-            </div>
-          </form>
-
-          <div id="div-existing-submission" class="datasetsaveoption">
-            <h5> </h5>
-            <div class="demo-controls">
-            <button id="button-select-submission" class="demo-button">Select submission file </button>
-            <textarea id="selected-submission" class="demo-response"></textarea>
-            </div>
-          </div>
-
-          <h5>Dataset description file</h5>
-
-          <form id='description-file-form'>
-            <div>
-              <input id="existing-description" name="descripion_file_option" type="radio" class="with-style" />
-              <label for="existing-description" class=labelradio>Select existing</label>
-            </div>
-            <div>
-              <input id="new-description" name="descripion_file_option" type="radio" class="with-style" />
-              <label for="new-description" class=labelradio> Include new from template</label>
-            </div>
-            <div>
-              <input id="no-description" name="descripion_file_option" type="radio" class="with-style" checked/>
-              <label for="no-description" class="labelradio"> None </label>
-            </div>
-          </form>
-
-          <div id="div-existing-description" class="datasetsaveoption">
-            <h5> </h5>
-            <div class="demo-controls">
-            <button id="button-select-description" class="demo-button">Select description file </button>
-            <textarea id="selected-description" class="demo-response"></textarea>
-            </div>
-          </div>
-
-          <h5>Subjects file</h5>
-
-          <form id='subjects-file-form'>
-            <div>
-              <input id="existing-subjects" name="subjects_file_option" type="radio" class="with-style" />
-              <label for="existing-subjects" class="labelradio">Select existing</label>
-            </div>
-            <div>
-              <input id="new-subjects" name="subjects_file_option" type="radio" class="with-style" />
-              <label for="new-subjects" class="labelradio"> Include new from template</label>
-            </div>
-            <div>
-              <input id="no-subjects" name="subjects_file_option" type="radio" class="with-style" checked/>
-              <label for="no-subjects" class="labelradio"> None </label>
-            </div>
-          </form>
-
-          <div id="div-existing-subjects" class="datasetsaveoption">
-            <h5> </h5>
-            <div class="demo-controls">
-            <button id="button-select-subjects" class="demo-button">Select subjects file </button>
-            <textarea class="demo-response" id="selected-subjects"></textarea>
-            </div>
-          </div>
-
-          <h5>Samples file</h5>
-
-          <form id='samples-file-form'>
-            <div>
-              <input id="existing-samples" name="samples_file_option" type="radio" class="with-style" />
-              <label for="existing-samples" class="labelradio">Select existing </label>
-            </div>
-            <div>
-              <input id="new-samples" name="samples_file_option" type="radio" class="with-style" />
-              <label for="new-samples" class="labelradio"> Include new from template </label>
-            </div>
-            <div>
-              <input id="no-samples" name="samples_file_option" type="radio" class="with-style" checked/>
-              <label for="no-samples" class="labelradio"> None </label>
-            </div>
-          </form>
-
-          <div id="div-existing-samples" class="datasetsaveoption">
-            <h5> </h5>
-            <div class="demo-controls">
-              <button id="button-select-samples" class="demo-button">Select samples file </button>
-              <textarea class="demo-response" id="selected-samples"></textarea>
-            </div>
-          </div>
-
+          <h5> </h5>
+          <button id="button-select-metadata" class="demo-button">Add metadata files </button>
           <div id="div-specify-metadata-next-step" align="right">
             <h5> </h5>
             <button id="button-specify-metadata-next-step" class="demo-button-next-step"> Next step </button>
