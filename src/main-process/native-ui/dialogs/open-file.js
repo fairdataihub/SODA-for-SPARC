@@ -50,6 +50,18 @@ ipcMain.on('open-file-dialog-uploadorganization', (event) => {
 
 
 // Metadata
+
+ipcMain.on('open-file-dialog-metadata', (event) => {
+  dialog.showOpenDialog({
+    properties: ['openFile', 'multiSelections'],
+  }, (files) => {
+    if (files) {
+      event.sender.send('selected-metadata', files)
+    }
+  })
+})
+
+
 ipcMain.on('open-file-dialog-submission', (event) => {
   dialog.showOpenDialog({
     properties: ['openFile'],

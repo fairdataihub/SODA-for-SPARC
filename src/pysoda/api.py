@@ -1,4 +1,5 @@
 from __future__ import print_function
+from gevent import monkey; monkey.patch_all()
 from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_organization, \
     import_file_organization, curate_dataset, preview_file_organization, delete_preview_file_organization, \
     bf_add_account, bf_account_list, bf_dataset_account, bf_account_details, \
@@ -9,6 +10,7 @@ from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_o
 
 import sys
 import zerorpc
+from gevent import monkey; monkey.patch_all()
 
 class SodaApi(object):
 
@@ -38,14 +40,10 @@ class SodaApi(object):
             raise e
 
     def api_curate_dataset(self, sourcedataset, destinationdataset, pathdataset, newdatasetname,\
-                submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
-                subjectsstatus, pathsubjects, samplesstatus, pathsamples, manifeststatus, \
-                jsonpath, jsondescription):
+                manifeststatus, jsonpath, jsondescription):
         try:
             curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetname,\
-                submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
-                subjectsstatus, pathsubjects, samplesstatus, pathsamples, manifeststatus, \
-                jsonpath, jsondescription)
+                manifeststatus, jsonpath, jsondescription)
         except Exception as e:
             raise e
 
