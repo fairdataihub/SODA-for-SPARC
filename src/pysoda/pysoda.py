@@ -956,7 +956,6 @@ def bf_default_account_load():
                 with open(configpath, 'w') as configfile:
                     config.write(configfile)
         return accountlist
-
     except Exception as e:
         raise e
 
@@ -1230,6 +1229,7 @@ def bf_get_users(selected_bfaccount):
         selected Blackfynn account (list of string)
     """
     try:
+        # def get_users_list():
         bf = Blackfynn(selected_bfaccount)
         organization_name = bf.context.name
         organization_id = bf.context.id
@@ -1240,6 +1240,9 @@ def bf_get_users(selected_bfaccount):
                 list_users_first_last.append(first_last)
         list_users_first_last.sort() # Returning the list of users in alphabetical order
         return list_users_first_last
+        # list_users_first_last = gevent.spawn(get_users_list())
+        # gevent.sleep(0)
+        # return list_users_first_last
     except Exception as e:
         raise e
 
@@ -1498,8 +1501,15 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
     try:
         bf = Blackfynn(selected_bfaccount)
     except Exception as e:
-        error = error + 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Blackfynn account'
         raise Exception(error)
+
+    try:
+        if (selected_team == 'SPARC Data Curation Team'):
+            if bf.context.name != 'SPARC Consortium':
+                raise Exception('Error: Please login under the SPARC Consortium organization to share with Curation Team')
+    except Exception as e:
+        raise e
 
     c = 0
 
@@ -1530,13 +1540,6 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
 
     if c > 0:
         raise Exception(error)
-
-    try:
-        if (selected_team == 'SPARC Data Curation Team'):
-            if bf.context.name != 'SPARC Consortium':
-                raise Exception('Error: Please login under the SPARC Consortium organization to share with Curation Team')
-    except Exception as e:
-        raise e
 
     try:
         selected_dataset_id = myds.id
