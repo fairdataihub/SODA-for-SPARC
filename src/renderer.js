@@ -570,6 +570,7 @@ curateDatasetBtn.addEventListener('click', () => {
         progressBarCurate.value = value
         if (printstatus === 'Curating') {
           if (res[0].includes('Success: COMPLETED!')){
+            document.getElementById("para-please-wait-curate").innerHTML = "";
             document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + smileyCan
           } else {
             document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + 'Progress: ' + value.toFixed(2) + '%'
@@ -600,19 +601,15 @@ curateDatasetBtn.addEventListener('click', () => {
 bfAccountCheckBtn.addEventListener('click', (event) => {
   bfSelectAccountStatus.innerHTML = "Please wait..."
   bfAccountLoadProgress.style.display = 'block'
-  removeOptions(bfAccountList)
-  removeOptions(bfUploadAccountList)
-  updateBfAccountList(bfAccountList, bfSelectAccountStatus, bfAccountLoadProgress)
-  updateBfAccountList(bfUploadAccountList, bfUploadSelectAccountStatus, bfAccountLoadProgress)
+  bfAccountLoadProgressCurate.style.display = 'block'
+  updateBfAccountList()
 })
 
 bfUploadAccountCheckBtn.addEventListener('click', (event) => {
-  bfUploadSelectAccountStatus.innerHTML = "Please wait..."
+  bfSelectAccountStatus.innerHTML = "Please wait..."
+  bfAccountLoadProgress.style.display = 'block'
   bfAccountLoadProgressCurate.style.display = 'block'
-  //removeOptions(bfAccountList)
-  removeOptions(bfUploadAccountList)
-  //updateBfAccountList(bfAccountList, bfSelectAccountStatus, bfAccountLoadProgressCurate)
-  updateBfAccountList(bfUploadAccountList, bfUploadSelectAccountStatus, bfAccountLoadProgressCurate)
+  updateBfAccountList()
 })
 
 // Add bf account
@@ -626,9 +623,8 @@ bfAddAccountBtn.addEventListener('click', () => {
       bfAddAccountStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
     } else {
         bfAddAccountStatus.innerHTML = res + smileyCan +". Please select your account below!"
-        removeOptions(bfAccountList)
         bfAccountLoadProgress.style.display = 'block'
-        updateBfAccountList(bfAccountList, bfSelectAccountStatus, bfAccountLoadProgress)
+        updateBfAccountList()
         keyName.value = ''
         key.value = ''
         secret.value = ''
@@ -642,58 +638,63 @@ bfAddAccountBtn.addEventListener('click', () => {
 bfAccountList.addEventListener('change', () => {
   bfSelectAccountStatus.innerHTML = "Please wait..."
   bfAccountLoadProgress.style.display = 'block'
-  refreshBfDatasetList(bfDatasetList, bfAccountList)
-  refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
-  refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
   currentDatasetPermission.innerHTML = ''
+  var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  if (selectedbfaccount == 'Select') {
+    bfSelectAccountStatus.innerHTML = "";
+    bfUploadSelectAccountStatus.innerHTML = "";
+    bfAccountLoadProgress.style.display = 'none'
+  } else{
+    var myitemselect = selectedbfaccount
+    var option = document.createElement("option")
+    option.textContent = myitemselect
+    option.value = myitemselect
+    bfUploadAccountList.value = selectedbfaccount
+    showAccountDetails(bfAccountLoadProgress)
+  }
+  refreshAllBFDatasetLists()
   refreshBfUsersList(bfListUsers)
   refreshBfUsersListPI(bfListUsersPI)
   refreshBfTeamsList(bfListTeams)
-  var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
-
-  if (selectedbfaccount == 'Select') {
-    bfSelectAccountStatus.innerHTML = "";
-    bfAccountLoadProgress.style.display = 'none'
-  } else{
-    showAccountDetails(bfAccountLoadProgress)
-  }
 
 })
+
 
 bfUploadAccountList.addEventListener('change', () => {
   bfUploadSelectAccountStatus.innerHTML = "Please wait..."
   bfAccountLoadProgressCurate.style.display = 'block'
-  refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
+  currentDatasetPermission.innerHTML = ''
   var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
-
   if (selectedbfaccount == 'Select') {
+    bfSelectAccountStatus.innerHTML = "";
     bfUploadSelectAccountStatus.innerHTML = "";
     bfAccountLoadProgressCurate.style.display = 'none'
-  } else {
-    showUploadAccountDetails(bfAccountLoadProgressCurate)
+  } else{
+    var myitemselect = selectedbfaccount
+    var option = document.createElement("option")
+    option.textContent = myitemselect
+    option.value = myitemselect
+    bfAccountList.value = selectedbfaccount
+    showAccountDetails(bfAccountLoadProgressCurate)
   }
+  refreshAllBFDatasetLists()
+  refreshBfUsersList(bfListUsers)
+  refreshBfUsersListPI(bfListUsersPI)
+  refreshBfTeamsList(bfListTeams)
 })
-
 
 // Refresh list of bf dataset list (in case user create it online)
 bfRefreshDatasetBtn.addEventListener('click', () => {
-  // refreshBfDatasetList(bfDatasetList, bfAccountList)
-  // refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
-  // refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
   currentDatasetPermission.innerHTML = ''
   refreshAllBFDatasetLists()
 })
 bfUploadRefreshDatasetBtn.addEventListener('click', () => {
-  refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
-  // refreshAllBFDatasetLists()
+  refreshAllBFDatasetLists()
 })
 bfRefreshDatasetMetadataBtn.addEventListener('click', () => {
-  // refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
-  // addSearchList()
   refreshAllBFDatasetLists()
 })
 bfRefreshDatasetPermissionBtn.addEventListener('click', () => {
-  // refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
   refreshAllBFDatasetLists()
 })
 // Add new dataset folder (empty) on bf
@@ -718,10 +719,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
           bfCreateNewDatasetBtn.disabled = false
         } else {
           bfCreateNewDatasetStatus.innerHTML = 'Success: created dataset' + " '" + bfNewDatasetName.value + "'" + smileyCan
-          refreshBfDatasetList(bfDatasetList, bfAccountList)
-          refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
-          refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
-          refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
+          refreshAllBFDatasetLists()
           currentDatasetPermission.innerHTML = ''
           bfCreateNewDatasetBtn.disabled = false
         }
@@ -1150,10 +1148,43 @@ function refreshBfDatasetList(bfdstlist, bfAccountList){
 }
 
 function refreshAllBFDatasetLists(){
-    refreshBfDatasetList(bfDatasetList, bfAccountList)
-    refreshBfDatasetList(bfDatasetListMetadata, bfAccountList)
-    refreshBfDatasetList(bfDatasetListPermission, bfAccountList)
-    // refreshBfDatasetList(bfUploadDatasetList, bfUploadAccountList)
+    removeOptions(bfDatasetList)
+    removeOptions(bfDatasetListMetadata)
+    removeOptions(bfDatasetListPermission)
+    removeOptions(bfUploadDatasetList)
+    var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
+    if (accountSelected === "Select"){
+      var optionSelect = document.createElement("option")
+      optionSelect.textContent = 'Select dataset'
+      bfDatasetList.appendChild(optionSelect)
+      var option2 = optionSelect.cloneNode(true)
+      var option3 = optionSelect.cloneNode(true)
+      var option4 = optionSelect.cloneNode(true)
+      bfDatasetListMetadata.appendChild(option2)
+      bfDatasetListPermission.appendChild(option3)
+      bfUploadDatasetList.appendChild(option4)
+    } else {
+      client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
+        if(error) {
+          console.error(error)
+        } else {
+          for (myitem in res){
+            var myitemselect = res[myitem]
+            var option = document.createElement("option")
+            option.textContent = myitemselect
+            option.value = myitemselect
+            bfDatasetList.appendChild(option)
+            var option2 = option.cloneNode(true)
+            var option3 = option.cloneNode(true)
+            var option4 = option.cloneNode(true)
+            bfDatasetListMetadata.appendChild(option2)
+            bfDatasetListPermission.appendChild(option3)
+            bfUploadDatasetList.appendChild(option4)
+
+        }
+      }
+    })
+    }
 }
 
 function showCurrentSubtitle(){
@@ -1348,6 +1379,7 @@ function showAccountDetails(bfLoadAccount){
       bfLoadAccount.style.display = 'none'
     } else {
       bfSelectAccountStatus.innerHTML = res;
+      bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
       bfLoadAccount.style.display = 'none'
     }
   })
@@ -1385,11 +1417,18 @@ client.invoke("api_bf_default_account_load", (error, res) => {
         var option = document.createElement("option")
         option.textContent = myitemselect
         option.value = myitemselect
+        var option2 = option.cloneNode(true)
+        removeOptions(bfAccountList)
         bfAccountList.appendChild(option)
-        var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
-        showAccountDetails(bfAccountLoadProgressCurate)
-        bfAccountLoadProgressCurate.style.display = 'block'
+        console.log(option2)
+        removeOptions(bfUploadAccountList)
+        bfUploadAccountList.appendChild(option2)
+        showAccountDetails(bfAccountLoadProgress)
+        bfAccountLoadProgress.style.display = 'block'
         refreshAllBFDatasetLists()
+        refreshBfUsersList(bfListUsers)
+        refreshBfUsersListPI(bfListUsersPI)
+        refreshBfTeamsList(bfListTeams)
     } else {
         var myitemselect = "Select"
         var option = document.createElement("option")
@@ -1402,7 +1441,9 @@ client.invoke("api_bf_default_account_load", (error, res) => {
   }
 })
 
-function updateBfAccountList(bfAccountList, bfSelectAccountStatus, bfLoadProgress){
+function updateBfAccountList(){
+  removeOptions(bfAccountList)
+  removeOptions(bfUploadAccountList)
   client.invoke("api_bf_account_list", (error, res) => {
   if(error) {
     console.error(error)
@@ -1414,8 +1455,16 @@ function updateBfAccountList(bfAccountList, bfSelectAccountStatus, bfLoadProgres
         option.value = myitemselect
         bfAccountList.appendChild(option)
         bfSelectAccountStatus.innerHTML = ""
-        bfLoadProgress.style.display = 'none'
+        bfAccountLoadProgress.style.display = 'none'
+        var option2 = option.cloneNode(true)
+        bfUploadAccountList.appendChild(option2)
+        bfUploadSelectAccountStatus.innerHTML = ""
+        bfAccountLoadProgressCurate.style.display = 'none'
       }
+    refreshAllBFDatasetLists()
+    refreshBfUsersList(bfListUsers)
+    refreshBfUsersListPI(bfListUsersPI)
+    refreshBfTeamsList(bfListTeams)
   }
 })
 }
