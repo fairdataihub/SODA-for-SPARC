@@ -210,20 +210,24 @@
 }
 
 /* Download Template Links */
-a.download{
+a.download-metadata{
   background-color: hsla(190,60%,36%,1);
   /* border: none; */
   color: white;
   /* padding: 8px 10px; */
   cursor: pointer;
-  font-size: 14px;
+  font-size: 15px;
   display: inline-block;
   border: 1px solid;
   border-radius: 4px;
   padding:0.3em 1.2em;
   margin:0 0.3em 0.3em 0;
+  width: 300px;
+  height: 45px;
+  text-align: center;
+  vertical-align: middle;
 }
-a.download:hover {
+a.download-metadata:hover {
   background-color: hsla(192,69%,23%,1);
 }
 

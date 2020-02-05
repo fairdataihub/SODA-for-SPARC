@@ -222,9 +222,9 @@ function downloadTemplates(templateItem) {
 // })
   var downloadedPath = path.join(userDownloadFolder, templateItem)
   if (fs.existsSync(downloadedPath)) {
-    window.alert("File name already exists in Downloads folder")
+    window.alert("File already exists in Downloads folder")
   } else {
-    window.alert("Successfully saved file to Downloads")
+    window.alert("Successfully saved file to your Downloads folder")
     fs.createReadStream(path.join("file_templates", templateItem)).pipe(fs.createWriteStream(path.join(userDownloadFolder, templateItem)))
   }
 }
@@ -1474,13 +1474,12 @@ function updateBfAccountList(){
         bfAccountLoadProgressCurate.style.display = 'none'
       }
     }
-    if (res[0] === "Select") {
+    if (res[0] === "Select" && res.length === 1) {
       bfSelectAccountStatus.innerHTML = "No existing accounts to switch. Please add a new account!"
       bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
     }
 
     refreshAllBfDatasetLists()
-
     refreshBfUsersList()
     refreshBfTeamsList(bfListTeams)
 })
