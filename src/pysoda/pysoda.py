@@ -1501,8 +1501,15 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
     try:
         bf = Blackfynn(selected_bfaccount)
     except Exception as e:
-        error = error + 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Blackfynn account'
         raise Exception(error)
+
+    try:
+        if (selected_team == 'SPARC Data Curation Team'):
+            if bf.context.name != 'SPARC Consortium':
+                raise Exception('Error: Please login under the SPARC Consortium organization to share with Curation Team')
+    except Exception as e:
+        raise e
 
     c = 0
 
@@ -1533,13 +1540,6 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
 
     if c > 0:
         raise Exception(error)
-
-    try:
-        if (selected_team == 'SPARC Data Curation Team'):
-            if bf.context.name != 'SPARC Consortium':
-                raise Exception('Error: Please login under the SPARC Consortium organization to share with Curation Team')
-    except Exception as e:
-        raise e
 
     try:
         selected_dataset_id = myds.id
