@@ -1307,6 +1307,7 @@ def bf_get_users(selected_bfaccount):
         selected Blackfynn account (list of string)
     """
     try:
+        # def get_users_list():
         bf = Blackfynn(selected_bfaccount)
         organization_name = bf.context.name
         organization_id = bf.context.id
@@ -1317,6 +1318,9 @@ def bf_get_users(selected_bfaccount):
                 list_users_first_last.append(first_last)
         list_users_first_last.sort() # Returning the list of users in alphabetical order
         return list_users_first_last
+        # list_users_first_last = gevent.spawn(get_users_list())
+        # gevent.sleep(0)
+        # return list_users_first_last
     except Exception as e:
         raise e
 

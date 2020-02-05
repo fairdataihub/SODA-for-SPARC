@@ -688,11 +688,7 @@ bfAddAccountBtn.addEventListener('click', () => {
 bfAccountList.addEventListener('change', () => {
   bfSelectAccountStatus.innerHTML = "Please wait..."
   bfAccountLoadProgress.style.display = 'block'
-  refreshAllBFDatasetLists()
   currentDatasetPermission.innerHTML = ''
-  refreshBfUsersList(bfListUsers)
-  refreshBfUsersListPI(bfListUsersPI)
-  refreshBfTeamsList(bfListTeams)
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
   if (selectedbfaccount == 'Select') {
     bfSelectAccountStatus.innerHTML = "";
@@ -706,16 +702,18 @@ bfAccountList.addEventListener('change', () => {
     bfUploadAccountList.value = selectedbfaccount
     showAccountDetails(bfAccountLoadProgress)
   }
+  refreshAllBFDatasetLists()
+  refreshBfUsersList(bfListUsers)
+  refreshBfUsersListPI(bfListUsersPI)
+  refreshBfTeamsList(bfListTeams)
+
 })
+
 
 bfUploadAccountList.addEventListener('change', () => {
   bfUploadSelectAccountStatus.innerHTML = "Please wait..."
   bfAccountLoadProgressCurate.style.display = 'block'
-  refreshAllBFDatasetLists()
   currentDatasetPermission.innerHTML = ''
-  refreshBfUsersList(bfListUsers)
-  refreshBfUsersListPI(bfListUsersPI)
-  refreshBfTeamsList(bfListTeams)
   var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
   if (selectedbfaccount == 'Select') {
     bfSelectAccountStatus.innerHTML = "";
@@ -729,6 +727,10 @@ bfUploadAccountList.addEventListener('change', () => {
     bfAccountList.value = selectedbfaccount
     showAccountDetails(bfAccountLoadProgressCurate)
   }
+  refreshAllBFDatasetLists()
+  refreshBfUsersList(bfListUsers)
+  refreshBfUsersListPI(bfListUsersPI)
+  refreshBfTeamsList(bfListTeams)
 })
 
 // Refresh list of bf dataset list (in case user create it online)
@@ -1227,9 +1229,10 @@ function refreshAllBFDatasetLists(){
             bfDatasetListMetadata.appendChild(option2)
             bfDatasetListPermission.appendChild(option3)
             bfUploadDatasetList.appendChild(option4)
-          }
+
         }
-      })
+      }
+    })
     }
 }
 
@@ -1472,6 +1475,9 @@ client.invoke("api_bf_default_account_load", (error, res) => {
         showAccountDetails(bfAccountLoadProgress)
         bfAccountLoadProgress.style.display = 'block'
         refreshAllBFDatasetLists()
+        refreshBfUsersList(bfListUsers)
+        refreshBfUsersListPI(bfListUsersPI)
+        refreshBfTeamsList(bfListTeams)
     } else {
         var myitemselect = "Select"
         var option = document.createElement("option")
@@ -1503,8 +1509,11 @@ function updateBfAccountList(){
         bfUploadAccountList.appendChild(option2)
         bfUploadSelectAccountStatus.innerHTML = ""
         bfAccountLoadProgressCurate.style.display = 'none'
-        refreshAllBFDatasetLists()
       }
+    refreshAllBFDatasetLists()
+    refreshBfUsersList(bfListUsers)
+    refreshBfUsersListPI(bfListUsersPI)
+    refreshBfTeamsList(bfListTeams)
   }
 })
 }
