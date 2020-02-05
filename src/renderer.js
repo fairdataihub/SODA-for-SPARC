@@ -621,6 +621,7 @@ curateDatasetBtn.addEventListener('click', () => {
         progressBarCurate.value = value
         if (printstatus === 'Curating') {
           if (res[0].includes('Success: COMPLETED!')){
+            document.getElementById("para-please-wait-curate").innerHTML = "";
             document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + smileyCan
           } else {
             document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + 'Progress: ' + value.toFixed(2) + '%'
