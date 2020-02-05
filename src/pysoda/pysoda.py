@@ -97,18 +97,13 @@ def bf_dataset_size():
     """
     global bf
     global myds
-    global start_submit
 
-    if start_submit == 1:
-        try:
-            selected_dataset_id = myds.id
-            bf_response = bf._api._get('/datasets/' + str(selected_dataset_id))
-            return bf_response['storage'] if 'storage' in bf_response.keys() else 0
-        except Exception as e:
-            raise e
-    else:
-        return 0
-
+    try:
+        selected_dataset_id = myds.id
+        bf_response = bf._api._get('/datasets/' + str(selected_dataset_id))
+        return bf_response['storage'] if 'storage' in bf_response.keys() else 0
+    except Exception as e:
+        raise e
 
 def path_size(path):
     """
@@ -559,6 +554,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     global myds
     global upload_directly_to_bf
     global start_submit
+    global initial_bfdataset_size
 
     curateprogress = ' '
     curatestatus = ''
@@ -567,6 +563,8 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     curated_dataset_size = 0
     start_time = 0
     upload_directly_to_bf = 0
+    start_submit = 0
+    initial_bfdataset_size = 0
 
     # if sourcedataset == 'already organized':
     #     if not isdir(pathdataset):
@@ -651,6 +649,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             try:
                 curateprintstatus = 'Curating'
                 start_time = time.time()
+                start_submit = 1
                 open_file(pathdataset)
                 curateprogress = 'Started'
 
@@ -686,6 +685,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             curateprogress = 'Started'
             curateprintstatus = 'Curating'
             start_time = time.time()
+            start_submit = 1
 
             pathdataset = pathnewdatasetfolder
             mkdir(pathdataset)
@@ -725,8 +725,6 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         if c>0:
             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
             raise Exception(error)
-        else:
-            start_submit = 1
 
         try:
             role = bf_get_current_user_permission(accountname, bfdataset)
@@ -743,10 +741,10 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             def calluploaddirectly():
                 global curateprogress
                 global curatestatus
-                global initial_bfdataset_size
+
                 curateprogress = "Uploading to dataset '%s' " %(bfdataset)
                 myds = bf.get_dataset(bfdataset)
-                initial_bfdataset_size = bf_dataset_size()
+                
                 for folder in jsonpath.keys():
                     if jsonpath[folder] != []:
                         if folder != 'main':
@@ -765,50 +763,16 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
 
             curateprintstatus = 'Curating'
             start_time = time.time()
-            t = threading.Thread(target=calluploaddirectly)
-            t.start()
+            initial_bfdataset_size = bf_dataset_size()
+            start_submit = 1
+            gevent.spawn(calluploaddirectly)
+            gevent.sleep(0)
+            # t = threading.Thread(target=calluploaddirectly)
+            # t.start()
         except Exception as e:
             curatestatus = 'Done'
             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
             raise e
-
-def directly_upload_structured_file(myds, mypath, myfolder):
-    """
-    Helper function to upload given folder to Blackfynn dataset in the original folder structure
-
-    Args:
-        myds: Dataset name on Blackfynn (string)
-        mypath: Path of the organized dataset on local machine (string)
-        myfolder: Current subfolder inside the path (string)
-    Action:
-        Uploads the files/folders to Blackfynn
-    """
-    global curateprogress
-    global curated_dataset_size
-    global total_dataset_size
-
-    try:
-        mypath = join(mypath)
-        if isdir(mypath):
-            for f in listdir(mypath):
-                if isfile(join(mypath, f)):
-                    filepath = join(mypath, f)
-                    curateprogress =  "Uploading " + filepath
-                    myds.upload(filepath, use_agent=False)
-                    curated_dataset_size += getsize(filepath)
-                else:
-                    mybffolder = myds.create_collection(f)
-                    myfolderpath = join(mypath, f)
-                    directly_upload_structured_file(mybffolder, myfolderpath, f)
-        else:
-            curateprogress = "Uploading " + str(mypath)
-            myds.upload(mypath, use_agent=False)
-            curated_dataset_size += getsize(mypath)
-
-    except Exception as e:
-        curatestatus = 'Done'
-        raise e
-
 
 def curate_dataset_progress():
     """
@@ -821,11 +785,21 @@ def curate_dataset_progress():
     global curated_dataset_size
     global start_time
     global upload_directly_to_bf
-    elapsed_time = time.time() - start_time
-    elapsed_time_formatted = time_format(elapsed_time)
-    elapsed_time_formatted_display = '<br>' + 'Elapsed time: ' + elapsed_time_formatted + '<br>'
-    if upload_directly_to_bf == 1:
-        curated_dataset_size = bf_dataset_size() - initial_bfdataset_size
+    global start_submit
+    global initial_bfdataset_size
+
+    if start_submit == 1:
+        if upload_directly_to_bf == 1:
+            curated_dataset_size = bf_dataset_size() - initial_bfdataset_size
+        elapsed_time = time.time() - start_time
+        elapsed_time_formatted = time_format(elapsed_time)
+        elapsed_time_formatted_display = '<br>' + 'Elapsed time: ' + elapsed_time_formatted + '<br>'
+    else:
+        if upload_directly_to_bf == 1:
+            curated_dataset_size = 0
+        elapsed_time_formatted = 0
+        elapsed_time_formatted_display = '<br>' + 'Initiating...' + '<br>'
+
     return (curateprogress+elapsed_time_formatted_display, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time_formatted)
 
 
@@ -1110,12 +1084,15 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global bf
     global myds
     global start_submit
+    global initial_bfdataset_size
 
     submitdataprogress = ' '
     submitdatastatus = ' '
     uploaded_file_size = 0
     submitprintstatus = ' '
     start_time_bf_upload = 0
+    initial_bfdataset_size = 0 
+    start_submit = 0
 
     try:
         bf = Blackfynn(accountname)
@@ -1139,8 +1116,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     if c>0:
         raise Exception(error)
-    else:
-        start_submit = 1
+        
 
     error, c = '', 0
     total_file_size = 1
@@ -1159,6 +1135,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     if c>0:
         submitdatastatus = 'Done'
+        error = error + '<br>Please remove invalid paths'
         raise Exception(error)
 
     total_file_size = total_file_size - 1
@@ -1179,10 +1156,9 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         def calluploadfolder():
             global submitdataprogress
             global submitdatastatus
-            global initial_bfdataset_size
+
             submitdataprogress = "Uploading to dataset '%s \n' " %(bfdataset)
             myds = bf.get_dataset(bfdataset)
-            initial_bfdataset_size = bf_dataset_size()
             for filename in listdir(pathdataset):
                 filepath = join(pathdataset, filename)
                 if isdir(filepath):
@@ -1194,8 +1170,13 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
         submitprintstatus = 'Uploading'
         start_time_bf_upload = time.time()
-        t = threading.Thread(target=calluploadfolder)
-        t.start()
+        initial_bfdataset_size = bf_dataset_size()
+        start_submit = 1
+        #calluploadfolder()
+        gevent.spawn(calluploadfolder)
+        gevent.sleep(0)
+        # t = threading.Thread(target=calluploadfolder)
+        # t.start()
     except Exception as e:
         submitdatastatus = 'Done'
         raise e
@@ -1210,11 +1191,18 @@ def submit_dataset_progress():
     global total_file_size
     global start_time_bf_upload
     global initial_bfdataset_size
+    global start_submit
 
-    uploaded_file_size = bf_dataset_size() - initial_bfdataset_size
-    elapsed_time = time.time() - start_time_bf_upload
-    elapsed_time_formatted = time_format(elapsed_time)
-    elapsed_time_formatted_display = '<br>' + 'Elapsed time: ' + elapsed_time_formatted + '<br>'
+    if start_submit == 1:
+        uploaded_file_size = bf_dataset_size() - initial_bfdataset_size
+        elapsed_time = time.time() - start_time_bf_upload
+        elapsed_time_formatted = time_format(elapsed_time)
+        elapsed_time_formatted_display = '<br>' + 'Elapsed time: ' + elapsed_time_formatted + '<br>'
+    else:
+        uploaded_file_size = 0
+        elapsed_time_formatted = 0
+        elapsed_time_formatted_display = '<br>' + 'Initiating...' + '<br>'
+    #gevent.sleep(0)
     return (submitdataprogress + elapsed_time_formatted_display, submitdatastatus, submitprintstatus, uploaded_file_size, total_file_size, elapsed_time_formatted)
 
 
