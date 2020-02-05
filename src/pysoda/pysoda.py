@@ -525,9 +525,7 @@ def create_dataset(jsonpath, pathdataset):
 
 
 def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetname,\
-        submissionstatus, pathsubmission, datasetdescriptionstatus, pathdescription, \
-        subjectsstatus, pathsubjects, samplesstatus, pathsamples, manifeststatus, \
-        jsonpath, jsondescription):
+        manifeststatus, jsonpath, jsondescription):
     """
     Associated with 'Generate' button in the 'Generate dataset' section of SODA interface
     Checks validity of files / paths / folders and then generates the files and folders
@@ -582,53 +580,6 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             curatestatus = 'Done'
             raise Exception('Error: Please enter a valid name for new dataset folder')
 
-    error, c = '', 0
-    if submissionstatus:
-        if not isfile(pathsubmission):
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid path for submission file<br>'
-            c += 1
-        # Adding check for correct file name
-        elif splitext(basename(pathsubmission))[0] != 'submission':
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid name for submission file<br>'
-            c += 1
-
-    if datasetdescriptionstatus:
-        if not isfile(pathdescription):
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid path for dataset description file<br>'
-            c += 1
-        # Adding check for correct file name
-        elif splitext(basename(pathdescription))[0] != 'dataset_description':
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid name for dataset_description file<br>'
-            c += 1
-
-    if subjectsstatus:
-        if not isfile(pathsubjects):
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid path for subjects file<br>'
-            c += 1
-        # Adding check for correct file name
-        elif splitext(basename(pathsubjects))[0] != 'subjects':
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid name for subjects file<br>'
-            c += 1
-
-    if samplesstatus:
-        if not isfile(pathsamples):
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid path for samples file<br>'
-            c += 1
-        # Adding check for correct file name
-        elif splitext(basename(pathsamples))[0] != 'samples':
-            curatestatus = 'Done'
-            error = error + 'Error: Select valid name for samples file<br>'
-            c += 1
-    if c > 0:
-        raise Exception(error)
-
     # check if path in jsonpath are valid and calculate total dataset size
     error, c = '', 0
     total_dataset_size = 1
@@ -663,13 +614,13 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         raise Exception(error)
 
     total_dataset_size = total_dataset_size - 1
+
     # Add metadata to jsonpath
     userpath = expanduser("~")
     metadatapath = join(userpath, 'SODA', 'SODA_metadata')
     curateprogress = 'Generating metadata'
 
     if manifeststatus:
-        # Creating folder to store manifest file
         try:
             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
             makedirs(metadatapath)
@@ -678,41 +629,18 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             curatestatus = 'Done'
             raise e
 
-    if submissionstatus:
-        jsonpath['main'].append(pathsubmission)
-        total_dataset_size += path_size(pathsubmission)
-
-    if datasetdescriptionstatus:
-        jsonpath['main'].append(pathdescription)
-        total_dataset_size += path_size(pathdescription)
-
-    if subjectsstatus:
-        jsonpath['main'].append(pathsubjects)
-        total_dataset_size += path_size(pathsubjects)
-
-    if samplesstatus:
-        jsonpath['main'].append(pathsamples)
-        total_dataset_size += path_size(pathsamples)
-
     # MODIFY EXISTING
     if destinationdataset == 'modify existing':
         error, c = '', 0
         namefiles = [f for f in listdir(pathdataset) if isfile(join(pathdataset, f))]
-        if ('submission.xlsx' in namefiles or 'submission.csv' in namefiles) and submissionstatus:
-            error = error + 'submission file already present<br>'
-            c += 1
-        if ('dataset_description.xlsx' in namefiles or 'dataset_description.csv' in namefiles) and datasetdescriptionstatus:
-            error = error + 'dataset_description file already present<br>'
-            c += 1
-        if  ('samples.xlsx' in namefiles or 'samples.csv' in namefiles) and samplesstatus:
-            error = error + 'samples file already present<br>'
-            c += 1
-        if  ('subjects.xlsx' in namefiles or 'subjects.csv' in namefiles) and subjectsstatus:
-            error = error + 'subjects file already present<br>'
-            c += 1
+        for filepath in jsonpath['main']:
+            filename = basename(filepath)
+            if (filename in namefiles):
+                error = error + filename + ' file already present in destination folder <br>'
+                c += 1
 
         if c > 0:
-            error = error + '<br>Error: Either delete or select "None" in the SODA interface'
+            error = error + '<br>Error: Either delete file(s) from the destination folder or remove from the Metadata files table'
             curatestatus = 'Done'
             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
             raise Exception(error)
@@ -720,20 +648,13 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         # If no errors, code-block below will execute which will start the data generation process
         else:
             try:
-
                 curateprintstatus = 'Curating'
                 start_time = time.time()
                 open_file(pathdataset)
                 curateprogress = 'Started'
 
-                gevent.sleep(0.1)
-                metadata_files = ['submission', 'dataset_description', 'samples', 'subjects']
                 for filepath in jsonpath['main']:
-                    filepath_parent = abspath(join(filepath, pardir))
-                    if (splitext(basename(filepath))[0] in metadata_files and filepath_parent != pathdataset):
-                        curateprogress = "Copying metadata"
-                        copy2(filepath, pathdataset)
-
+                    copy2(filepath, pathdataset)
 
                 if manifeststatus:
                     curateprogress = "Copying manifest files"
@@ -1000,10 +921,11 @@ def bf_account_list():
             if accountnamenoglobal:
                 for n in accountnamenoglobal:
                     try:
-                        bfn = Blackfynn(n)
+                        bfn = gevent.spawn(Blackfynn, n)
                         accountlist.append(n)
-                    except:
-                        config.remove_section(n)
+                    except Exception as e:
+                        raise e
+                        # config.remove_section(n)
                 with open(configpath, 'w') as configfile:
                     config.write(configfile)
         return accountlist
@@ -1026,7 +948,7 @@ def bf_default_account_load():
             if accountnamenoglobal:
                 for n in accountnamenoglobal:
                     try:
-                        bfn = Blackfynn(n)
+                        bfn = gevent.spawn(Blackfynn, n)
                         accountlist.append(n)
                         break
                     except:
