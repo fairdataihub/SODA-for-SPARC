@@ -561,6 +561,7 @@ curateDatasetBtn.addEventListener('click', () => {
         var curatedSize = res[4]
         var value = (curatedSize / totalCurateSize) * 100
         progressBarCurate.value = value
+        //console.log(value, totalCurateSize, curatedSize)
         if (printstatus === 'Curating') {
           if (res[0].includes('Success: COMPLETED!')){
             document.getElementById("para-please-wait-curate").innerHTML = "";
@@ -645,7 +646,7 @@ bfAccountList.addEventListener('change', () => {
     bfUploadAccountList.value = selectedbfaccount
     showAccountDetails(bfAccountLoadProgress)
   }
-  refreshAllBFDatasetLists()
+  refreshAllBfDatasetLists()
   refreshBfUsersList()
   refreshBfTeamsList(bfListTeams)
 
@@ -669,7 +670,7 @@ bfUploadAccountList.addEventListener('change', () => {
     bfAccountList.value = selectedbfaccount
     showAccountDetails(bfAccountLoadProgressCurate)
   }
-  refreshAllBFDatasetLists()
+  refreshAllBfDatasetLists()
   refreshBfUsersList()
   refreshBfTeamsList(bfListTeams)
 })
@@ -677,16 +678,16 @@ bfUploadAccountList.addEventListener('change', () => {
 // Refresh list of bf dataset list (in case user create it online)
 bfRefreshDatasetBtn.addEventListener('click', () => {
   currentDatasetPermission.innerHTML = ''
-  refreshAllBFDatasetLists()
+  refreshAllBfDatasetLists()
 })
 bfUploadRefreshDatasetBtn.addEventListener('click', () => {
-  refreshAllBFDatasetLists()
+  refreshAllBfDatasetLists()
 })
 bfRefreshDatasetMetadataBtn.addEventListener('click', () => {
-  refreshAllBFDatasetLists()
+  refreshAllBfDatasetLists()
 })
 bfRefreshDatasetPermissionBtn.addEventListener('click', () => {
-  refreshAllBFDatasetLists()
+  refreshAllBfDatasetLists()
 })
 // Add new dataset folder (empty) on bf
 bfCreateNewDatasetBtn.addEventListener('click', () => {
@@ -710,7 +711,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
           bfCreateNewDatasetBtn.disabled = false
         } else {
           bfCreateNewDatasetStatus.innerHTML = 'Success: created dataset' + " '" + bfNewDatasetName.value + "'" + smileyCan
-          refreshAllBFDatasetLists()
+          refreshAllBfDatasetLists()
           currentDatasetPermission.innerHTML = ''
           bfCreateNewDatasetBtn.disabled = false
         }
@@ -1138,7 +1139,7 @@ function refreshBfDatasetList(bfdstlist, bfAccountList){
   }
 }
 
-function refreshAllBFDatasetLists(){
+function refreshAllBfDatasetLists(){
     removeOptions(bfDatasetList)
     removeOptions(bfDatasetListMetadata)
     removeOptions(bfDatasetListPermission)
@@ -1396,7 +1397,7 @@ client.invoke("api_bf_default_account_load", (error, res) => {
         bfUploadAccountList.appendChild(option2)
         showAccountDetails(bfAccountLoadProgress)
         bfAccountLoadProgress.style.display = 'block'
-        refreshAllBFDatasetLists()
+        refreshAllBfDatasetLists()
         refreshBfUsersList()
         refreshBfTeamsList(bfListTeams)
     } else {
@@ -1431,7 +1432,7 @@ function updateBfAccountList(){
         bfUploadSelectAccountStatus.innerHTML = ""
         bfAccountLoadProgressCurate.style.display = 'none'
       }
-    refreshAllBFDatasetLists()
+    refreshAllBfDatasetLists()
     refreshBfUsersList()
     refreshBfTeamsList(bfListTeams)
   }
