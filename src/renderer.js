@@ -1479,7 +1479,7 @@ function updateBfAccountList(){
       bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
     }
 
-    refreshAllBFDatasetLists()
+    refreshAllBfDatasetLists()
 
     refreshBfUsersList()
     refreshBfTeamsList(bfListTeams)
