@@ -4,6 +4,7 @@
 // const $ = require("jquery");
 const zerorpc = require("zerorpc")
 const fs = require("fs")
+const os = require("os")
 const path = require('path')
 const {ipcRenderer} = require('electron')
 const Editor = require('tui-editor')
@@ -30,6 +31,14 @@ client.invoke("echo", "server ready", (error, res) => {
 //////////////////////////////////
 // Get html elements from the user interface //
 //////////////////////////////////
+
+// Metadata Templates
+const downloadSubmission = document.getElementById("a-submission")
+const downloadSamples = document.getElementById("a-samples")
+const downloadSubjects = document.getElementById("a-subjects")
+const downloadDescription = document.getElementById("a-description")
+const homedir = os.homedir()
+const userDownloadFolder = path.join(homedir, "Downloads")
 
 // Organize dataset
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -198,6 +207,39 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 //////////////////////////////////
 // Operations on JavaScript end only
 //////////////////////////////////
+
+// Download Metadata Templates
+
+templateArray = ["submission.xlsx", "subjects.xlsx", "samples.xlsx", "dataset_description.xlsx"]
+const { COPYFILE_EXCL } = fs.constants.COPYFILE_FICLONE;
+function downloadTemplates(templateItem) {
+  // fs.copyFile(path.join("file_templates", templateItem), path.join(userDownloadFolder, templateItem), COPYFILE_EXCL, (error) => {
+  //     if (error) {
+  //       windows.alert("Filename already exists in folder")
+  //     } else {
+  //     console.log('File successfully saved.');
+  // }
+// })
+  var downloadedPath = path.join(userDownloadFolder, templateItem)
+  if (fs.existsSync(downloadedPath)) {
+    window.alert("File already exists in Downloads folder")
+  } else {
+    window.alert("Successfully saved file to your Downloads folder")
+    fs.createReadStream(path.join("file_templates", templateItem)).pipe(fs.createWriteStream(path.join(userDownloadFolder, templateItem)))
+  }
+}
+downloadSubmission.addEventListener('click', (event) => {
+  downloadTemplates(templateArray[0])
+});
+downloadSubjects.addEventListener('click', (event) => {
+  downloadTemplates(templateArray[1])
+});
+downloadSamples.addEventListener('click', (event) => {
+  downloadTemplates(templateArray[2])
+});
+downloadDescription.addEventListener('click', (event) => {
+  downloadTemplates(templateArray[3])
+});
 
 // Select organized dataset folder and populate table
 selectDatasetBtn.addEventListener('click', (event) => {
@@ -561,6 +603,7 @@ curateDatasetBtn.addEventListener('click', () => {
         var curatedSize = res[4]
         var value = (curatedSize / totalCurateSize) * 100
         progressBarCurate.value = value
+        //console.log(value, totalCurateSize, curatedSize)
         if (printstatus === 'Curating') {
           if (res[0].includes('Success: COMPLETED!')){
             document.getElementById("para-please-wait-curate").innerHTML = "";
@@ -645,7 +688,7 @@ bfAccountList.addEventListener('change', () => {
     bfUploadAccountList.value = selectedbfaccount
     showAccountDetails(bfAccountLoadProgress)
   }
-  refreshAllBFDatasetLists()
+  refreshAllBfDatasetLists()
   refreshBfUsersList()
   refreshBfTeamsList(bfListTeams)
 
@@ -669,7 +712,7 @@ bfUploadAccountList.addEventListener('change', () => {
     bfAccountList.value = selectedbfaccount
     showAccountDetails(bfAccountLoadProgressCurate)
   }
-  refreshAllBFDatasetLists()
+  refreshAllBfDatasetLists()
   refreshBfUsersList()
   refreshBfTeamsList(bfListTeams)
 })
@@ -677,16 +720,16 @@ bfUploadAccountList.addEventListener('change', () => {
 // Refresh list of bf dataset list (in case user create it online)
 bfRefreshDatasetBtn.addEventListener('click', () => {
   currentDatasetPermission.innerHTML = ''
-  refreshAllBFDatasetLists()
+  refreshAllBfDatasetLists()
 })
 bfUploadRefreshDatasetBtn.addEventListener('click', () => {
-  refreshAllBFDatasetLists()
+  refreshAllBfDatasetLists()
 })
 bfRefreshDatasetMetadataBtn.addEventListener('click', () => {
-  refreshAllBFDatasetLists()
+  refreshAllBfDatasetLists()
 })
 bfRefreshDatasetPermissionBtn.addEventListener('click', () => {
-  refreshAllBFDatasetLists()
+  refreshAllBfDatasetLists()
 })
 // Add new dataset folder (empty) on bf
 bfCreateNewDatasetBtn.addEventListener('click', () => {
@@ -710,7 +753,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
           bfCreateNewDatasetBtn.disabled = false
         } else {
           bfCreateNewDatasetStatus.innerHTML = 'Success: created dataset' + " '" + bfNewDatasetName.value + "'" + smileyCan
-          refreshAllBFDatasetLists()
+          refreshAllBfDatasetLists()
           currentDatasetPermission.innerHTML = ''
           bfCreateNewDatasetBtn.disabled = false
         }
@@ -1138,7 +1181,7 @@ function refreshBfDatasetList(bfdstlist, bfAccountList){
   }
 }
 
-function refreshAllBFDatasetLists(){
+function refreshAllBfDatasetLists(){
     removeOptions(bfDatasetList)
     removeOptions(bfDatasetListMetadata)
     removeOptions(bfDatasetListPermission)
@@ -1396,7 +1439,7 @@ client.invoke("api_bf_default_account_load", (error, res) => {
         bfUploadAccountList.appendChild(option2)
         showAccountDetails(bfAccountLoadProgress)
         bfAccountLoadProgress.style.display = 'block'
-        refreshAllBFDatasetLists()
+        refreshAllBfDatasetLists()
         refreshBfUsersList()
         refreshBfTeamsList(bfListTeams)
     } else {
@@ -1405,7 +1448,6 @@ client.invoke("api_bf_default_account_load", (error, res) => {
         option.textContent = myitemselect
         option.value = myitemselect
         bfAccountList.appendChild(option)
-        bfAccountLoadProgressCurate.style.display = 'block'
         var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
     }
   }
@@ -1431,10 +1473,15 @@ function updateBfAccountList(){
         bfUploadSelectAccountStatus.innerHTML = ""
         bfAccountLoadProgressCurate.style.display = 'none'
       }
-    refreshAllBFDatasetLists()
+    }
+    if (res[0] === "Select" && res.length === 1) {
+      bfSelectAccountStatus.innerHTML = "No existing accounts to switch. Please add a new account!"
+      bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
+    }
+
+    refreshAllBfDatasetLists()
     refreshBfUsersList()
     refreshBfTeamsList(bfListTeams)
-  }
 })
 }
 
@@ -1521,7 +1568,7 @@ function organizedFolderToJson(pathDatasetVal){
         folderfiles.push(path.join(filepath, fileNameInFolder))
       }
       jsonvar[filename] = folderfiles
-    } 
+    }
   }
   return jsonvar
 }
