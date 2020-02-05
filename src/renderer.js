@@ -646,8 +646,7 @@ bfAccountList.addEventListener('change', () => {
     showAccountDetails(bfAccountLoadProgress)
   }
   refreshAllBFDatasetLists()
-  refreshBfUsersList(bfListUsers)
-  refreshBfUsersListPI(bfListUsersPI)
+  refreshBfUsersList()
   refreshBfTeamsList(bfListTeams)
 
 })
@@ -671,8 +670,7 @@ bfUploadAccountList.addEventListener('change', () => {
     showAccountDetails(bfAccountLoadProgressCurate)
   }
   refreshAllBFDatasetLists()
-  refreshBfUsersList(bfListUsers)
-  refreshBfUsersListPI(bfListUsersPI)
+  refreshBfUsersList()
   refreshBfTeamsList(bfListTeams)
 })
 
@@ -1262,14 +1260,21 @@ function showCurrentLicense(){
  * refreshBfUsersList is a function that refreshes the dropdown list
  * with names of users when an Blackfynn account is selected
  */
-function refreshBfUsersList(UsersList){
-  removeOptions(UsersList)
+function refreshBfUsersList(){
   var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
+
+  removeOptions(bfListUsers)
   var optionUser = document.createElement("option")
   optionUser.textContent = 'Select user'
-  UsersList.appendChild(optionUser)
+  bfListUsers.appendChild(optionUser)
+
+  removeOptions(bfListUsersPI)
+  var optionUserPI = document.createElement("option")
+  optionUserPI.textContent = 'Select PI'
+  bfListUsersPI.appendChild(optionUserPI) 
+
   if (accountSelected !== "Select") {
-    client.invoke("api_bf_get_users", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
+    client.invoke("api_bf_get_users", accountSelected, (error, res) => {
       if (error){
         console.error(error)
       } else{
@@ -1278,40 +1283,14 @@ function refreshBfUsersList(UsersList){
           var optionUser = document.createElement("option")
           optionUser.textContent = myUser
           optionUser.value = myUser
-          UsersList.appendChild(optionUser)
+          bfListUsers.appendChild(optionUser)
+          var optionUser2 = optionUser.cloneNode(true)
+          bfListUsersPI.appendChild(optionUser2) 
         }
       }
     })
   }
 }
-
-/**
- * refreshBfUsersList is a function that refreshes the dropdown list under the "Make PI owner" field
- * with names of users when an Blackfynn account is selected
- */
-function refreshBfUsersListPI(UsersList){
-  removeOptions(UsersList)
-  var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
-  var optionUser = document.createElement("option")
-  optionUser.textContent = 'Select PI'
-  UsersList.appendChild(optionUser)
-  if (accountSelected !== "Select") {
-    client.invoke("api_bf_get_users", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
-      if (error){
-        console.error(error)
-      } else{
-        for ( var myItem in res){
-          var myUser = res[myItem]
-          var optionUser = document.createElement("option")
-          optionUser.textContent = myUser
-          optionUser.value = myUser
-          UsersList.appendChild(optionUser)
-        }
-      }
-    })
-  }
-}
-
 
 /**
  * refreshBfTeamsList is a function that refreshes the dropdown list
@@ -1418,8 +1397,7 @@ client.invoke("api_bf_default_account_load", (error, res) => {
         showAccountDetails(bfAccountLoadProgress)
         bfAccountLoadProgress.style.display = 'block'
         refreshAllBFDatasetLists()
-        refreshBfUsersList(bfListUsers)
-        refreshBfUsersListPI(bfListUsersPI)
+        refreshBfUsersList()
         refreshBfTeamsList(bfListTeams)
     } else {
         var myitemselect = "Select"
@@ -1454,8 +1432,7 @@ function updateBfAccountList(){
         bfAccountLoadProgressCurate.style.display = 'none'
       }
     refreshAllBFDatasetLists()
-    refreshBfUsersList(bfListUsers)
-    refreshBfUsersListPI(bfListUsersPI)
+    refreshBfUsersList()
     refreshBfTeamsList(bfListTeams)
   }
 })
