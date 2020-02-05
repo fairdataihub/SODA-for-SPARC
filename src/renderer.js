@@ -298,7 +298,6 @@ var holderMetadata = document.getElementById('metadata')
 holderMetadata.addEventListener("drop", (event)=> {
    event.preventDefault()
    var myID = holderMetadata.id
-   console.log(myID)
    dropAddToTableMetadata(event, myID)
 })
 
@@ -499,13 +498,8 @@ curateDatasetBtn.addEventListener('click', () => {
 
   var jsonpath = jsonvect[0]
   var jsondescription = jsonvect[1]
-  console.log(jsonpath)
-  console.log(jsondescription)
   var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
   jsonpath['main'] = jsonpathMetadata['metadata']
-
-  console.log(jsonpath)
-  console.log(jsondescription)
 
   var destinationDataset = ''
   var pathDatasetValue = ''
@@ -547,7 +541,6 @@ curateDatasetBtn.addEventListener('click', () => {
       document.getElementById("para-please-wait-curate").innerHTML = "Please wait...";
       progressCurateUpload.style.display = "block";
       console.log('Started curating')
-      console.log(res)
     }
   })
   var countDone = 0
@@ -1420,7 +1413,6 @@ client.invoke("api_bf_default_account_load", (error, res) => {
         var option2 = option.cloneNode(true)
         removeOptions(bfAccountList)
         bfAccountList.appendChild(option)
-        console.log(option2)
         removeOptions(bfUploadAccountList)
         bfUploadAccountList.appendChild(option2)
         showAccountDetails(bfAccountLoadProgress)
