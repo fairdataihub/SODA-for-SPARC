@@ -16,13 +16,12 @@ The code checks the following items:
 7. Check that there are no empty files (completed)
 8. Check that all csv starts at first row and xlsx files start at (0,0) (completed)
 9. Check that all csv files are UTF-8 encoded. (completed)
+10. Check that all csv/xlsx files do not have any blank rows (completed)
+11. Check that the subjects and sample files have the mandatory column headings and they are in the right order (completed)
 
-10. Check that all csv/xlsx files do not have any blank rows (to do)
-
-10. Check that the submission file has all of the required columns (to do)
-11. Check that the dataset_description file has all of the required rows (to do)
-
-
+12. Check that the subjects file has unique IDs, that a folder for each subject exists (to do)
+13. Check that the submission file has all of the required columns (to do)
+14. Check that the dataset_description file has all of the required rows (to do)
 
 definitions:
 a) a terminal folder is one with no further subfolders
@@ -73,6 +72,9 @@ class dictValidator():
 
         self.reqFiles = ['dataset_description', 'subjects', 'samples', 'submission']
 
+        self.subjCols = ['subject_id', 'pool_id', 'experimental group', 'age', 'sex', 'species', 'strain', 'Organism RRID']
+
+        self.samCols = ['subject_id', 'sample_id', 'wasDerivedFromSample', 'pool_id', 'experimental group']
 
     
     def get_files_folders(self,path):
@@ -308,7 +310,7 @@ class dictValidator():
         valOut = 0
         workbook = xlrd.open_workbook(f)
         worksheet = workbook.sheet_by_index(0)   
-        rowCount = sheet.nrows
+        rowCount = worksheet.nrows
         valOut = rowCount - 1 #assume that the first row contains the headings
 
         return valOut
@@ -335,8 +337,8 @@ class dictValidator():
                 #print(fullFilepath)
                 if os.path.isfile(fullFilepath):
                     #print("this is a file")
-                    fileName, fileExtension = os.path.splitext(fullFilepath)
-                    fileName = self.path_leaf(fileName)
+                    fileName1, fileExtension = os.path.splitext(fullFilepath)
+                    fileName = self.path_leaf(fileName1)
                     #print(fileName, fileExtension)
                     if fileName == "dataset_description":
                         #print("found dataset_description")
@@ -519,6 +521,109 @@ class dictValidator():
 
 
 
+    def generic_check_cols(self, cols, fileName, fileExtension):
+        # this is called by check_req_file_cols to do the actual checking
+        # this is checking that there are at least the required number of columns, 
+        # that the required column headings are present and in the right order
+        # check_req_file_cols loops through all existing files and gets file extension
+
+        count = 0
+        empty1stRow = 0
+        colsLenCheck = 0
+        colsCheck = 0
+        colsVec = []
+
+        # if this is a csv file
+        if fileExtension == ".csv":
+            with open(fileName+fileExtension) as csvFile:
+                csvReader = csv.reader(csvFile, delimiter=',')
+                row0 = next(csvReader)
+                if len(row0) == len(cols):
+                    colsLenCheck = 1 
+                    for i in cols:
+                        if i == row0[count]:
+                            subjColsVec.append(1)
+                        else:
+                            subjColsVec.append(0)
+                    count += 1
+                elif len(row0) > len(cols):  #if there are more cols than required that is fine
+                    colsLenCheck = 1 
+                else:
+                    colsLenCheck = 0         #existing cols are LT required = some missing
+
+        # if this is a xlsx file
+        if fileExtension == ".xlsx":
+            workbook = xlrd.open_workbook(fileName+fileExtension)
+            worksheet = workbook.sheet_by_index(0)
+            if worksheet.ncols == len(cols):
+                colsLenCheck = 1 
+                for c in cols:
+                    if c == worksheet.cell_value(count,0):
+                        colsVec.append(1)
+                        count += 1
+                    else:
+                        colsVec.append(0)
+            elif worksheet.ncols > len(cols):  #if there are more cols than required that is fine
+                colsLenCheck = 1 
+            else:
+                colsLenCheck = 0         #existing cols are LT required = some missing
+
+        # collect checking flags and return results
+        m = 0
+        if m in colsVec:
+            colsCheck = 0
+
+        return colsLenCheck, colsCheck
+
+
+
+    def check_req_file_cols(self, fPathList):
+        # checks to that the col headings in the required subjects/samples files are 
+        # present, spelled correctly and in correct order
+        colsCheck = 1
+        subjFlag = 0
+        samFlag = 0
+        subjectsFile = 0 
+        samplesFile = 0
+
+        for f in fPathList:
+            fileNamePath, fileExtension = os.path.splitext(f)
+            fileName = self.path_leaf(fileNamePath)
+            if fileName == 'subjects':
+                cols = self.subjCols
+                subjectsFile = 1
+                subjColsLenCheck, subjColsCheck = self.generic_check_cols(cols, fileNamePath, fileExtension)
+            elif fileName == 'samples':
+                cols = self.samCols
+                samColsLenCheck, samColsCheck = self.generic_check_cols(cols, fileNamePath, fileExtension)
+                samplesFile = 1
+            else:
+                pass
+                
+        # check status flags and return result; only check relevant flags
+        if subjectsFile:
+            if subjColsLenCheck == 0:
+                fatal.append("The subjects file does not contain all of the required columns. Please remediate and revalidate.")
+            if subjColsCheck == 0:
+                fatal.append("The subjects file column headings do not match the required headings or are in the wrong order. Please remediate and revalidate.")
+        if samplesFile:
+            if samColsLenCheck == 0:
+                fatal.append("The samples file does not contain all of the required columns. Please remediate and revalidate.")
+            if samColsCheck == 0:
+                fatal.append("The samples file column headings do not match the required headings or are in the wrong order. Please remediate and revalidate.")
+
+        # set the variables that are not applicable to the current dataset to "NA"
+        if subjectsFile == 0:
+            subjColsLenCheck = "NA"
+            subjColsCheck = "NA"
+        if samplesFile == 0:
+            samColsLenCheck = "NA"
+            samColsCheck = "NA"
+
+        return subjColsLenCheck, subjColsCheck, samColsLenCheck, samColsCheck
+
+
+
 
 def main():
 
@@ -528,7 +633,7 @@ def main():
     fatal = []
 
     #hard code the path to the top-level directory for now; in reality this will be passed in
-    vPath = "/home/karl/Work/SPARC/test_data_new"
+    vPath = "/home/karl/Work/SPARC/test_data_new_xlsx"
 
     validator = dictValidator()
 
@@ -568,6 +673,9 @@ def main():
     #check for skipped rows in csv files
     skipRowCheck = validator.check_skipped_rows(fPathList)
 
+    #check subjects and samples files for required column headings
+    subjColsLenCheck, subjColsCheck, samColsLenCheck, samColsCheck = validator.check_req_file_cols(fPathList)
+
     # print out the status flags
     print("files pass? = "+str(rootFilePass))
     print("folders pass? = "+str(rootFolderPass))
@@ -579,6 +687,8 @@ def main():
     print("CSV files start at row 0 or (0,0)? = "+str(fileStartCheck))
     print("CSV files are UTF-8? = "+str(utf8Check))
     print("Are there any skipped rows in the required files? = "+str(skipRowCheck))
+    print("Are the number of and correct column headings present in the subjects files? = "+str(subjColsLenCheck)+" and "+ str(subjColsCheck))
+    print("Are the number of and correct column headings present in the samples files? = "+str(samColsLenCheck)+" and "+ str(samColsCheck))
 
     # print out summary of warnings and fatal errors
     print("fatal = ")
