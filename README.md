@@ -26,6 +26,8 @@ Please follow the instructions given in [User Manual](docs/SODA_User_manual.pdf)
 
 The software should also work on older versions of OS but no testing has been done on those platforms.
 
+Latest version: 1.0.0
+
 ## Using the Source Code
 If you want to modify SODA to suit your needs better or compile it for an OS not mentioned above, please follow the instructions below.
 #### *Pre-requisites: [Anaconda (Python 3 version)](https://www.anaconda.com/distribution/), [Python 2](https://www.python.org/downloads/)*
