@@ -11,6 +11,7 @@ const Editor = require('tui-editor')
 const remote = require('electron').remote;
 const app = remote.app;
 const imageDataURI = require("image-data-uri");
+const log  = require("electron-log");
 
 var homeDirectory = app.getPath('home')
 
@@ -21,6 +22,7 @@ client.connect("tcp://127.0.0.1:4242")
 
 client.invoke("echo", "server ready", (error, res) => {
   if(error || res !== 'server ready') {
+    log.error(error)
     console.error(error)
   } else {
     console.log("server is ready")
@@ -37,6 +39,7 @@ const downloadSubmission = document.getElementById("a-submission")
 const downloadSamples = document.getElementById("a-samples")
 const downloadSubjects = document.getElementById("a-subjects")
 const downloadDescription = document.getElementById("a-description")
+const downloadManifest = document.getElementById("a-manifest")
 const homedir = os.homedir()
 const userDownloadFolder = path.join(homedir, "Downloads")
 
@@ -212,17 +215,9 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 //////////////////////////////////
 
 // Download Metadata Templates
-
-templateArray = ["submission.xlsx", "subjects.xlsx", "samples.xlsx", "dataset_description.xlsx"]
+templateArray = ["submission.xlsx", "subjects.xlsx", "samples.xlsx", "dataset_description.xlsx", "manifest.xlsx"]
 const { COPYFILE_EXCL } = fs.constants.COPYFILE_FICLONE;
 function downloadTemplates(templateItem) {
-  // fs.copyFile(path.join("file_templates", templateItem), path.join(userDownloadFolder, templateItem), COPYFILE_EXCL, (error) => {
-  //     if (error) {
-  //       windows.alert("Filename already exists in folder")
-  //     } else {
-  //     console.log('File successfully saved.');
-  // }
-// })
   var downloadedPath = path.join(userDownloadFolder, templateItem)
   if (fs.existsSync(downloadedPath)) {
     window.alert("File already exists in Downloads folder")
@@ -242,6 +237,9 @@ downloadSamples.addEventListener('click', (event) => {
 });
 downloadDescription.addEventListener('click', (event) => {
   downloadTemplates(templateArray[3])
+});
+downloadManifest.addEventListener('click', (event) => {
+  downloadTemplates(templateArray[4])
 });
 
 // Select organized dataset folder and populate table
@@ -433,7 +431,7 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
     if (path != null){
       client.invoke("api_save_file_organization", jsonpath, jsondescription, path, (error, res) => {
           if(error) {
-            console.error(error)
+            log.error(error)
             var emessage = userError(error)
             document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           } else {
@@ -460,7 +458,7 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
     }
     client.invoke("api_import_file_organization", path[0], headerNames, (error, res) => {
           if(error) {
-            console.error(error)
+            log.error(error)
             var emessage = userError(error)
             document.getElementById("para-upload-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           } else {
@@ -493,7 +491,7 @@ selectPreviewBtn.addEventListener('click', () => {
   jsonpath['main'] = jsonpathMetadata['metadata']
   client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
       if(error) {
-        console.error(error)
+        log.error(error)
         var emessage = userError(error)
         document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
@@ -525,7 +523,7 @@ selectPreviewMetadataBtn.addEventListener('click', () => {
   jsonpath['main'] = jsonpathMetadata['metadata']
   client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
       if(error) {
-        console.error(error)
+        log.error(error)
         var emessage = userError(error)
         document.getElementById("para-preview-organization-status-metadata").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
@@ -626,7 +624,7 @@ curateDatasetBtn.addEventListener('click', () => {
       progressCurateUpload.style.display = "none"
       progressBarCurate.value = 0;
       err = true
-      console.error(error)
+      log.error(error)
       curateDatasetBtn.disabled = false
       enableform(curationForm)
     } else {
@@ -644,7 +642,7 @@ curateDatasetBtn.addEventListener('click', () => {
       if (error) {
         var emessage = userError(error)
         document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
-        console.error(error)
+        log.error(error)
         document.getElementById("para-curate-progress-bar-status").innerHTML = ''
       } else {
         completionstatus = res[1]
@@ -704,7 +702,7 @@ bfAddAccountBtn.addEventListener('click', () => {
   bfAddAccountStatus.innerHTML = ''
   client.invoke("api_bf_add_account", keyName.value, key.value, secret.value, (error, res) => {
     if(error) {
-      console.error(error)
+      log.error(error)
       var emessage = userError(error)
       bfAddAccountStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
     } else {
@@ -788,7 +786,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
   client.invoke("api_bf_new_dataset_folder", bfNewDatasetName.value, selectedbfaccount, (error, res) => {
     if (error) {
-      console.error(error)
+      log.error(error)
       var emessage = userError(error)
       bfCreateNewDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
       bfCreateNewDatasetBtn.disabled = false
@@ -797,7 +795,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
         client.invoke("api_bf_add_subtitle", selectedbfaccount, bfNewDatasetName.value, inputSubtitle,
         (error, res) => {
         if(error) {
-          console.error(error)
+          log.error(error)
           var emessage = userError(error)
           bfCreateNewDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
           bfCreateNewDatasetBtn.disabled = false
@@ -825,7 +823,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathSubmitDataset.value, (error, res) => {
     if (error) {
       document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
-      console.error(error)
+      log.error(error)
       var emessage = userError(error)
       document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
       progressUploadBf.style.display = "none"
@@ -845,7 +843,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
         if(error) {
           var emessage = userError(error)
           document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
-          console.error(error)
+          log.error(error)
         } else {
           var dataProgress = res[0]
           completionStatus = res[1]
@@ -903,7 +901,7 @@ bfAddSubtitleBtn.addEventListener('click', () => {
   client.invoke("api_bf_add_subtitle", selectedBfAccount, selectedBfDataset, inputSubtitle,
     (error, res) => {
     if(error) {
-      console.error(error)
+      log.error(error)
       var emessage = userError(error)
       datasetSubtitleStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentMetadataProgress.style.display = 'none'
@@ -926,7 +924,7 @@ bfAddDescriptionBtn.addEventListener('click', () => {
   client.invoke("api_bf_add_description", selectedBfAccount, selectedBfDataset, markdownDescription,
     (error, res) => {
     if(error) {
-      console.error(error)
+      log.error(error)
       var emessage = userError(error)
       datasetDescriptionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentMetadataProgress.style.display = 'none'
@@ -1018,7 +1016,7 @@ bfSaveBannerImageBtn.addEventListener('click', (event) => {
           var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
           client.invoke("api_bf_add_banner_image", selectedBfAccount, selectedBfDataset, imagePath, (error, res) => {
             if(error) {
-              console.error(error)
+              log.error(error)
               var emessage = userError(error)
               datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
               bfCurrentMetadataProgress.style.display = 'none'
@@ -1054,7 +1052,7 @@ bfAddLicenseBtn.addEventListener('click', () => {
   client.invoke("api_bf_add_license", selectedBfAccount, selectedBfDataset, selectedLicense,
     (error, res) => {
     if(error) {
-      console.error(error)
+      log.error(error)
       var emessage = userError(error)
       datasetLicenseStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentMetadataProgress.style.display = 'none'
@@ -1096,7 +1094,7 @@ ipcRenderer.on('warning-add-permission-owner-selection-PI', (event, index) => {
     client.invoke("api_bf_add_permission", selectedBfAccount, selectedBfDataset, selectedUser, selectedRole,
     (error, res) => {
     if(error) {
-      console.error(error)
+      log.error(error)
       var emessage = userError(error)
       datasetPermissionStatusPI.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentPermissionProgress.style.display = 'none'
@@ -1128,7 +1126,7 @@ bfAddPermissionCurationTeamBtn.addEventListener('click', () => {
   client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
     (error, res) => {
     if(error) {
-      console.error(error)
+      log.error(error)
       var emessage = userError(error)
       datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentPermissionProgress.style.display = 'none'
@@ -1190,7 +1188,7 @@ bfAddPermissionTeamBtn.addEventListener('click', () => {
   client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
     (error, res) => {
     if(error) {
-      console.error(error)
+      log.error(error)
       var emessage = userError(error)
       datasetPermissionStatusTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentPermissionProgress.style.display = 'none'
@@ -1217,7 +1215,7 @@ function refreshBfDatasetList(bfdstlist, bfAccountList){
   } else {
     client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
       if(error) {
-        console.error(error)
+        log.error(error)
       } else {
         for (myitem in res){
           var myitemselect = res[myitem]
@@ -1250,7 +1248,7 @@ function refreshAllBfDatasetLists(){
     } else {
       client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
         if(error) {
-          console.error(error)
+          log.error(error)
         } else {
           for (myitem in res){
             var myitemselect = res[myitem]
@@ -1280,7 +1278,7 @@ function showCurrentSubtitle(){
     client.invoke("api_bf_get_subtitle", selectedBfAccount, selectedBfDataset,
     (error, res) => {
       if(error) {
-        console.error(error)
+        log.error(error)
       } else {
         bfDatasetSubtitle.value = res
       }
@@ -1297,7 +1295,7 @@ function showCurrentDescription(){
     client.invoke("api_bf_get_description", selectedBfAccount, selectedBfDataset,
     (error, res) => {
       if(error) {
-        console.error(error)
+        log.error(error)
       } else {
         tuiInstance.setMarkdown(res)
       }
@@ -1314,7 +1312,7 @@ function showCurrentBannerImage(){
     client.invoke("api_bf_get_banner_image", selectedBfAccount, selectedBfDataset,
     (error, res) => {
       if(error) {
-        console.error(error)
+        log.error(error)
       } else {
         if (res === 'No banner image'){
           bfCurrentBannerImg.src = 'assets/img/no-banner-image.png'
@@ -1338,7 +1336,7 @@ function showCurrentLicense(){
     client.invoke("api_bf_get_license", selectedBfAccount, selectedBfDataset,
     (error, res) => {
       if(error) {
-        console.error(error)
+        log.error(error)
         bfCurrentMetadataProgress.style.display = 'none'
       } else {
         currentDatasetLicense.innerHTML = res
@@ -1364,12 +1362,12 @@ function refreshBfUsersList(){
   removeOptions(bfListUsersPI)
   var optionUserPI = document.createElement("option")
   optionUserPI.textContent = 'Select PI'
-  bfListUsersPI.appendChild(optionUserPI) 
+  bfListUsersPI.appendChild(optionUserPI)
 
   if (accountSelected !== "Select") {
     client.invoke("api_bf_get_users", accountSelected, (error, res) => {
       if (error){
-        console.error(error)
+        log.error(error)
       } else{
         for ( var myItem in res){
           var myUser = res[myItem]
@@ -1378,7 +1376,7 @@ function refreshBfUsersList(){
           optionUser.value = myUser
           bfListUsers.appendChild(optionUser)
           var optionUser2 = optionUser.cloneNode(true)
-          bfListUsersPI.appendChild(optionUser2) 
+          bfListUsersPI.appendChild(optionUser2)
         }
       }
     })
@@ -1398,7 +1396,7 @@ function refreshBfTeamsList(teamList){
   if (accountSelected !== "Select") {
     client.invoke("api_bf_get_teams", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
       if (error){
-        console.error(error)
+        log.error(error)
       } else{
         for ( var myItem in res){
           var myTeam = res[myItem]
@@ -1423,7 +1421,7 @@ function showCurrentPermission(){
     client.invoke("api_bf_get_permission", selectedBfAccount, selectedBfDataset,
     (error, res) => {
       if(error) {
-        console.error(error)
+        log.error(error)
         bfCurrentPermissionProgress.style.display = 'none'
       } else {
         var permissionList = ''
@@ -1440,7 +1438,7 @@ function showCurrentPermission(){
 function showAccountDetails(bfLoadAccount){
   client.invoke("api_bf_account_details", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
     if(error) {
-      console.error(error)
+      log.error(error)
       bfLoadAccount.style.display = 'none'
     } else {
       bfSelectAccountStatus.innerHTML = res;
@@ -1453,7 +1451,7 @@ function showAccountDetails(bfLoadAccount){
 function showUploadAccountDetails(bfLoadAccount){
   client.invoke("api_bf_account_details", bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text, (error, res) => {
     if(error) {
-      console.error(error)
+      log.error(error)
       bfLoadAccount.style.display = 'none'
     } else {
       bfUploadSelectAccountStatus.innerHTML = res;
@@ -1475,7 +1473,7 @@ function userError(error)
 
 client.invoke("api_bf_default_account_load", (error, res) => {
   if(error) {
-    console.error(error)
+    log.error(error)
   } else {
       if (res.length > 0) {
         var myitemselect = res[0]
@@ -1508,7 +1506,7 @@ function updateBfAccountList(){
   removeOptions(bfUploadAccountList)
   client.invoke("api_bf_account_list", (error, res) => {
   if(error) {
-    console.error(error)
+    log.error(error)
   } else {
       for (myitem in res){
         var myitemselect = res[myitem]
@@ -1974,7 +1972,7 @@ function addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, s
   client.invoke("api_bf_add_permission", selectedBfAccount, selectedBfDataset, selectedUser, selectedRole,
     (error, res) => {
     if(error) {
-      console.error(error)
+      log.error(error)
       var emessage = userError(error)
       datasetPermissionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentPermissionProgress.style.display = 'none'
