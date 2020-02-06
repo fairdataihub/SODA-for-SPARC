@@ -156,6 +156,7 @@
   padding: .4em 1.2em;
   color: inherit;
   background-color: transparent;
+  width: 180px;
 }
 .demo-button:focus {
   outline: none;

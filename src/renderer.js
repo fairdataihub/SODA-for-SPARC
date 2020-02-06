@@ -56,6 +56,9 @@ const selectSaveFileOrganizationBtn = document.getElementById('button-select-sav
 const selectPreviewBtn = document.getElementById('button-preview-file-organization')
 const selectImportFileOrganizationBtn = document.getElementById('button-select-upload-file-organization')
 
+const selectPreviewMetadataBtn = document.getElementById('button-preview-file-organization-metadata')
+
+
 // Generate dataset
 const createNewStatus = document.querySelector('#create-newdataset')
 const modifyExistingStatus = document.querySelector('#existing-dataset')
@@ -347,6 +350,7 @@ holderMetadata.addEventListener("drop", (event)=> {
 //Select files to be added to metadata files table
 const selectMetadataBtn = document.getElementById('button-select-metadata')
 selectMetadataBtn.addEventListener('click', (event) => {
+  document.getElementById("para-preview-organization-status-metadata").innerHTML = ""
   ipcRenderer.send('open-file-dialog-metadata')
 })
 ipcRenderer.on('selected-metadata', (event, path) => {
@@ -473,6 +477,20 @@ selectPreviewBtn.addEventListener('click', () => {
   document.getElementById("para-preview-organization-status").innerHTML = "Please wait..."
   var jsonvect = tableToJsonWithDescription(tableNotOrganized)
   var jsonpath = jsonvect[0]
+  if (manifestStatus.checked){
+    var keyvect = sparcFolderNames.slice()
+    console.log(keyvect)
+    for (var j = 0; j < keyvect.length; j++){
+      var folder = keyvect[j]
+      var folderPaths = jsonpath[folder]
+      if (folderPaths.length>0){
+        folderPaths.push(path.join("file_templates","manifest.xlsx"))
+      }
+    }
+  }
+  var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
+  console.log(jsonpath)
+  jsonpath['main'] = jsonpathMetadata['metadata']
   client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
       if(error) {
         console.error(error)
@@ -480,6 +498,38 @@ selectPreviewBtn.addEventListener('click', () => {
         document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
         document.getElementById("para-preview-organization-status").innerHTML = "Preview folder available in a new file explorer window";
+      }
+  })
+})
+
+selectPreviewMetadataBtn.addEventListener('click', () => {
+  clearStrings()
+  document.getElementById("para-preview-organization-status-metadata").innerHTML = "Please wait..."
+  if (alreadyOrganizedStatus.checked) {
+    var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
+  } else if (organizeDatasetStatus.checked) {
+    var jsonvect = tableToJsonWithDescription(tableNotOrganized)
+  }
+  var jsonpath = jsonvect[0]
+  if (manifestStatus.checked){
+    var keyvect = sparcFolderNames.slice()
+    for (var j = 0; j < keyvect.length; j++){
+      var folder = keyvect[j]
+      var folderPaths = jsonpath[folder]
+      if (folderPaths.length>0){
+        folderPaths.push(path.join("file_templates","manifest.xlsx"))
+      }
+    }
+  }
+  var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
+  jsonpath['main'] = jsonpathMetadata['metadata']
+  client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
+      if(error) {
+        console.error(error)
+        var emessage = userError(error)
+        document.getElementById("para-preview-organization-status-metadata").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
+      } else {
+        document.getElementById("para-preview-organization-status-metadata").innerHTML = "Preview folder available in a new file explorer window";
       }
   })
 })
@@ -1510,6 +1560,7 @@ function clearStrings() {
   document.getElementById("para-preview-organization-status").innerHTML = ""
   document.getElementById("para-save-file-organization-status").innerHTML = ""
   document.getElementById("para-upload-file-organization-status").innerHTML = ""
+  document.getElementById("para-preview-organization-status-metadata").innerHTML = ""
   document.getElementById("para-selected-dataset").innerHTML = ""
 }
 
