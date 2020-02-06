@@ -211,8 +211,31 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 // Operations on JavaScript end only
 //////////////////////////////////
 
-// Download Metadata Templates
+// Check app version and warn for updates
+const appVersion = window.require('electron').remote.app.getVersion()
+console.log("Current SODA version:", appVersion)
 
+const axios = require('axios');
+const url = 'https://github.com/bvhpatel/SODA';
+
+axios.get(url)
+  .then(response => {
+    var str = response.data
+    var firstvariable = "Latest version: "
+    var secondvariable = "<"
+    var scrappedVersion = str.match(new RegExp(firstvariable + "(.*)" + secondvariable))[1]
+    console.log("Latest SODA version:", scrappedVersion)
+    if (appVersion !== scrappedVersion){
+      ipcRenderer.send('warning-new-version')
+    }
+  })
+  .catch(error => {
+    console.log(error);
+  })
+
+
+
+// Download Metadata Templates
 templateArray = ["submission.xlsx", "subjects.xlsx", "samples.xlsx", "dataset_description.xlsx"]
 const { COPYFILE_EXCL } = fs.constants.COPYFILE_FICLONE;
 function downloadTemplates(templateItem) {

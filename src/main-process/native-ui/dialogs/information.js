@@ -36,3 +36,13 @@ ipcMain.on('warning-add-permission-owner-PI', (event) => {
   })
 })
 
+ipcMain.on('warning-new-version', (event) => {
+  const options = {
+    type: 'info',
+    title: 'New version of SODA available',
+    message: "We suggest to uninstall the current version and download the latest version to make sure you are up-to-date with the SPARC curation rules!",
+  }
+  dialog.showMessageBox(options, (index) => {
+    event.sender.send('warning-new-version-showed')
+  })
+})
