@@ -17,13 +17,11 @@ The code checks the following items:
 8. Check that all csv starts at first row and xlsx files start at (0,0) (completed)
 9. Check that all csv files are UTF-8 encoded. (completed)
 10. Check that all csv/xlsx files do not have any blank rows (completed)
-11. Check that the subjects and sample files have the mandatory column headings and they are in the right order (completed) (completed)
+11. Check that the subjects and sample files have the mandatory column headings and they are in the right order (completed)
 
 12. Check that the subjects file has unique IDs, that a folder for each subject exists (to do)
 13. Check that the submission file has all of the required columns (to do)
 14. Check that the dataset_description file has all of the required rows (to do)
-
-
 
 definitions:
 a) a terminal folder is one with no further subfolders
@@ -540,30 +538,35 @@ class dictValidator():
             with open(fileName+fileExtension) as csvFile:
                 csvReader = csv.reader(csvFile, delimiter=',')
                 row0 = next(csvReader)
-                print(row0)
                 if len(row0) == len(cols):
+                    colsLenCheck = 1 
                     for i in cols:
                         if i == row0[count]:
                             subjColsVec.append(1)
                         else:
                             subjColsVec.append(0)
                     count += 1
+                elif len(row0) > len(cols):  #if there are more cols than required that is fine
+                    colsLenCheck = 1 
                 else:
-                    colsLenCheck = 1
+                    colsLenCheck = 0         #existing cols are LT required = some missing
 
         # if this is a xlsx file
         if fileExtension == ".xlsx":
             workbook = xlrd.open_workbook(fileName+fileExtension)
             worksheet = workbook.sheet_by_index(0)
             if worksheet.ncols == len(cols):
+                colsLenCheck = 1 
                 for c in cols:
                     if c == worksheet.cell_value(count,0):
                         colsVec.append(1)
                         count += 1
                     else:
                         colsVec.append(0)
+            elif worksheet.ncols > len(cols):  #if there are more cols than required that is fine
+                colsLenCheck = 1 
             else:
-                colsLenCheck = 1
+                colsLenCheck = 0         #existing cols are LT required = some missing
 
         # collect checking flags and return results
         m = 0
