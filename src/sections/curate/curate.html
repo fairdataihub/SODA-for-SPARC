@@ -162,12 +162,12 @@
               </div>
             </div>
             <div class="demo-controls">
-                <p> Browse and select files/folders: </p>
+                <p> Select files/folders: </p>
               	<button id="button-select-code" class="demo-button">Add files </button>
               	<button id="button-select-code-directory" class="demo-button">Add folders</button>
             </div>
             <hr>
-            <h5> Preview file organization
+            <h5>
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext"> Get a preview of the dataset that will be generated based on the table.
                 <br><br>
@@ -176,7 +176,7 @@
               </div>
             </h5>
             <div class="demo-controls">
-                <button id="button-preview-file-organization" class="demo-button"> Preview </button>
+                <button id="button-preview-file-organization" class="demo-button"> Preview dataset </button>
                 <p id='para-preview-organization-status'> <p>
             </div><br>
             <hr>
@@ -258,7 +258,7 @@
         </button>
         <div id="div-specify-metadata" class="demo-box">
 
-          <h5>Manifest file
+          <h5>Select to generate manifest files automatically
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">
               Select this option to include a manifest file in each of the SPARC folder. The 'filename', 'timestamp', and 'file type' fields will be populated automatically while 'description' will be populated with descriptions (if any) added in the table under 'Specify dataset files' section.
@@ -271,7 +271,7 @@
             <label for="generate-manifest" class="labelradio"> Include manifest files </label>
           </div>
 
-          <h5>High level metadata files </h5>
+          <h5>Add high level metadata files </h5>
             <table id="metadata-table" class = "pathtable">
               <tr class="parent" id='metadata' droppable="true" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondragover="return false">
                 <th class="table-header">metadata file</th>
@@ -279,7 +279,15 @@
             </table>
 
           <h5> </h5>
-          <button id="button-select-metadata" class="demo-button">Add metadata files </button>
+          <div class="demo-controls">
+            <button id="button-select-metadata" class="demo-button">Add metadata files </button>
+          </div><br>
+
+          <div class="demo-controls">
+              <button id="button-preview-file-organization-metadata" class="demo-button"> Preview dataset </button>
+              <p id='para-preview-organization-status-metadata'> <p>
+          </div><br>
+
           <div id="div-specify-metadata-next-step" align="right">
             <h5> </h5>
             <button id="button-specify-metadata-next-step" class="demo-button-next-step"> Next step </button>
