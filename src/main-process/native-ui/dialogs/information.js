@@ -46,3 +46,25 @@ ipcMain.on('warning-new-version', (event) => {
     event.sender.send('warning-new-version-showed')
   })
 })
+
+ipcMain.on('warning-no-internet-connection', (event) => {
+  const options = {
+    type: 'warning',
+    title: 'No internect connection',
+    message: "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Blackfynn and especially none of the features located under the 'Manage Datasets' section.",
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('warning-no-internet-connection-showed')
+  })
+})
+
+ipcMain.on('open-error-file-exist', (event, emessage) => {
+  const options = {
+    type: 'error',
+    title: 'Duplicate file(s) / folder(s)',
+    message: emessage, 
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('error-file-exist-shown')
+  })
+})
