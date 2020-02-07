@@ -25,7 +25,7 @@ client.connect("tcp://127.0.0.1:4242")
 client.invoke("echo", "server ready", (error, res) => {
   if(error || res !== 'server ready') {
     log.error(error)
-    console.log(error)
+    console.error(error)
   } else {
     console.log("server is ready")
     log.info("server is ready")
