@@ -230,7 +230,7 @@ axios.get(url)
     var secondvariable = "<"
     var scrappedVersion = str.match(new RegExp(firstvariable + "(.*)" + secondvariable))[1]
     log.info("Latest SODA version:", scrappedVersion)
-    if (appVersion !== scrappedVersion + "1"){
+    if (appVersion !== scrappedVersion){
       ipcRenderer.send('warning-new-version')
     }
   })
