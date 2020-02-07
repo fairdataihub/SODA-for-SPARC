@@ -13,10 +13,7 @@ const app = remote.app;
 const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
 
-<<<<<<< Updated upstream
-=======
 log.transports.console.level = false
->>>>>>> Stashed changes
 var homeDirectory = app.getPath('home')
 
 // Connect to python server and check
@@ -218,14 +215,15 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 // Operations on JavaScript end only
 //////////////////////////////////
 
-<<<<<<< Updated upstream
-=======
+
 //log user's OS version
 log.info("User OS:", os.type(), os.platform(), "version:", os.release())
+console.log("User OS:", os.type(), os.platform(), "version:", os.release())
 
 // Check app version and warn for updates
 const appVersion = window.require('electron').remote.app.getVersion()
 log.info("Current SODA version:", appVersion)
+console.log("Current SODA version:", appVersion)
 const axios = require('axios');
 const url = 'https://github.com/bvhpatel/SODA';
 
@@ -236,16 +234,15 @@ axios.get(url)
     var secondvariable = "<"
     var scrappedVersion = str.match(new RegExp(firstvariable + "(.*)" + secondvariable))[1]
     log.info("Latest SODA version:", scrappedVersion)
+    console.log("Latest SODA version:", scrappedVersion)
     if (appVersion !== scrappedVersion){
       ipcRenderer.send('warning-new-version')
     }
   })
   .catch(error => {
     log.info(error);
-    console.error(error)
+    console.log(error)
   })
-
->>>>>>> Stashed changes
 // Download Metadata Templates
 templateArray = ["submission.xlsx", "subjects.xlsx", "samples.xlsx", "dataset_description.xlsx", "manifest.xlsx"]
 const { COPYFILE_EXCL } = fs.constants.COPYFILE_FICLONE;
@@ -592,12 +589,8 @@ curateDatasetBtn.addEventListener('click', () => {
       document.getElementById("para-please-wait-curate").innerHTML = "";
       curateDatasetBtn.disabled = false
       enableform(curationForm)
-<<<<<<< Updated upstream
-      console.error('Error')
-=======
-      log.error(emessage)
       console.error(emessage)
->>>>>>> Stashed changes
+      log.error(emessage)
       return
     }
   } else if (organizeDatasetStatus.checked) {
@@ -614,12 +607,8 @@ curateDatasetBtn.addEventListener('click', () => {
       document.getElementById("para-please-wait-curate").innerHTML = "";
       curateDatasetBtn.disabled = false
       enableform(curationForm)
-<<<<<<< Updated upstream
       console.error(emessage)
-=======
       log.error(emessage)
-      console.error(error)
->>>>>>> Stashed changes
       return
     }
     sourceDataset = 'not organized'
