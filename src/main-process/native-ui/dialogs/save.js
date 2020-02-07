@@ -1,4 +1,4 @@
-const {ipcMain, dialog} = require('electron')
+const {ipcMain, dialog, BrowserWindow} = require('electron')
 
 ipcMain.on('save-dialog', (event) => {
   const options = {
@@ -7,7 +7,7 @@ ipcMain.on('save-dialog', (event) => {
       { name: 'Images', extensions: ['jpg', 'png', 'gif'] }
     ]
   }
-  dialog.showSaveDialog(options, (filename) => {
+  dialog.showSaveDialog(BrowserWindow.getFocusedWindow(), options, (filename) => {
     event.sender.send('saved-file', filename)
   })
 })
@@ -19,7 +19,7 @@ ipcMain.on('save-file-dialog-saveorganization', (event) => {
       { name: 'CSV', extensions: ['csv'] }
     ]
   }
-  dialog.showSaveDialog(options, (filename) => {
+  dialog.showSaveDialog(BrowserWindow.getFocusedWindow(), options, (filename) => {
     event.sender.send('selected-saveorganizationfile', filename)
   })
 })
