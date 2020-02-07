@@ -14,7 +14,6 @@ const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
 
 log.transports.console.level = false
-log.transports.console.level = false 
 var homeDirectory = app.getPath('home')
 
 // Connect to python server and check
@@ -25,7 +24,9 @@ client.connect("tcp://127.0.0.1:4242")
 client.invoke("echo", "server ready", (error, res) => {
   if(error || res !== 'server ready') {
     log.error(error)
+    console.log(error)
   } else {
+    console.log("server is ready")
     log.info("server is ready")
   }
 })
@@ -218,8 +219,6 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 //log user's OS version
 log.info("User OS:", os.type(), os.platform(), "version:", os.release())
 console.log("User OS:", os.type(), os.platform(), "version:", os.release())
-//log user's OS version
-log.info("User OS:", os.type(), os.platform(), "version:", os.release())
 
 // Check app version and warn for updates
 const appVersion = window.require('electron').remote.app.getVersion()
@@ -245,7 +244,6 @@ axios.get(url)
   .catch(error => {
     log.info(error);
     console.log(error)
-  })
   })
 
 // Download Metadata Templates
@@ -671,6 +669,7 @@ curateDatasetBtn.addEventListener('click', () => {
       document.getElementById("para-please-wait-curate").innerHTML = "Please wait...";
       progressCurateUpload.style.display = "block";
       log.info('Started curating')
+      console.log('Started curating')
     }
   })
   var countDone = 0
@@ -707,6 +706,7 @@ curateDatasetBtn.addEventListener('click', () => {
       countDone++
       if (countDone > 1){
         log.info('Done curating')
+        console.log('Done curating')
         document.getElementById("para-please-wait-curate").innerHTML = "";
         clearInterval(timerProgress)
         curateDatasetBtn.disabled = false
@@ -878,6 +878,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
       progressUploadBf.style.display = "block"
       log.info('Started uploading')
+      console.log('Started uploading')
     }
   })
 
@@ -907,6 +908,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
         countDone++
         if (countDone > 1){
           log.info('Done uploading')
+          console.log('Done uploading')
           if (!err){
             progressBarUploadBf.value = 100
             document.getElementById("para-progress-bar-status").innerHTML = "Upload completed!" + smileyCan
