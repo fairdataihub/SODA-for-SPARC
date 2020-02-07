@@ -5,7 +5,7 @@ const glob = require('glob')
 const contextMenu = require('electron-context-menu');
 const log  = require("electron-log");
 
-log.transports.console.level = false 
+log.transports.console.level = false
 /*************************************************************
  * Python Process
  *************************************************************/
@@ -102,7 +102,7 @@ function initialize () {
     mainWindow.on('close', (e) => {
     if (app.showExitPrompt) {
         e.preventDefault() // Prevents the window from closing
-        dialog.showMessageBox({
+        dialog.showMessageBox(BrowserWindow.getFocusedWindow(), {
             type: 'question',
             buttons: ['Yes', 'No'],
             title: 'Confirm',

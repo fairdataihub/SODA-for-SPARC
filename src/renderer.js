@@ -691,9 +691,10 @@ curateDatasetBtn.addEventListener('click', () => {
         var curatedSize = res[4]
         var value = (curatedSize / totalCurateSize) * 100
         progressBarCurate.value = value
-        console.log(value, totalCurateSize, curatedSize)
+        // console.log(value, totalCurateSize, curatedSize)
         if (printstatus === 'Curating') {
           if (res[0].includes('Success: COMPLETED!')){
+            progressBarCurate.value = 100
             document.getElementById("para-please-wait-curate").innerHTML = "";
             document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + smileyCan
           } else {
@@ -897,9 +898,9 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
           var uploadedFileSize = res[3]
           var totalFileSize = res[4]
           var value = (uploadedFileSize / totalFileSize) * 100
-          progressBarUploadBf.value = value
-          console.log(value, totalFileSize, uploadedFileSize)
+          // console.log(value, totalFileSize, uploadedFileSize)
           if (completionStatus != 'Done') {
+            progressBarUploadBf.value = value
             document.getElementById("para-progress-bar-status").innerHTML = dataProgress + 'Progress: ' + value.toFixed(2) + '%'
           }
         }
@@ -1339,7 +1340,8 @@ function showCurrentSubtitle(){
         log.error(error)
         console.error(error)
       } else {
-        bfDatasetSubtitle.value = res
+        bfDatasetSubtitle.value = res;
+        countCharacters(bfDatasetSubtitle, bfDatasetSubtitleCharCount)
       }
     })
   }
