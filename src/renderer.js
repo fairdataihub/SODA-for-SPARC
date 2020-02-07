@@ -13,6 +13,7 @@ const app = remote.app;
 const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
 
+log.transports.console.level = false
 log.transports.console.level = false 
 var homeDirectory = app.getPath('home')
 
@@ -216,10 +217,15 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 
 //log user's OS version
 log.info("User OS:", os.type(), os.platform(), "version:", os.release())
+console.log("User OS:", os.type(), os.platform(), "version:", os.release())
+//log user's OS version
+log.info("User OS:", os.type(), os.platform(), "version:", os.release())
 
 // Check app version and warn for updates
 const appVersion = window.require('electron').remote.app.getVersion()
 log.info("Current SODA version:", appVersion)
+console.log("Current SODA version:", appVersion)
+
 const axios = require('axios');
 const url = 'https://github.com/bvhpatel/SODA';
 
@@ -230,12 +236,16 @@ axios.get(url)
     var secondvariable = "<"
     var scrappedVersion = str.match(new RegExp(firstvariable + "(.*)" + secondvariable))[1]
     log.info("Latest SODA version:", scrappedVersion)
+    console.log("Latest SODA version:", scrappedVersion)
+
     if (appVersion !== scrappedVersion){
       ipcRenderer.send('warning-new-version')
     }
   })
   .catch(error => {
     log.info(error);
+    console.log(error)
+  })
   })
 
 // Download Metadata Templates
@@ -457,6 +467,7 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
       client.invoke("api_save_file_organization", jsonpath, jsondescription, path, (error, res) => {
           if(error) {
             log.error(error)
+            console.error(error)
             var emessage = userError(error)
             document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           } else {
@@ -484,6 +495,7 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
     client.invoke("api_import_file_organization", path[0], headerNames, (error, res) => {
           if(error) {
             log.error(error)
+            console.error(error)
             var emessage = userError(error)
             document.getElementById("para-upload-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           } else {
@@ -515,6 +527,7 @@ selectPreviewBtn.addEventListener('click', () => {
   client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
       if(error) {
         log.error(error)
+        console.error(error)
         var emessage = userError(error)
         document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
@@ -547,6 +560,7 @@ selectPreviewMetadataBtn.addEventListener('click', () => {
   client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
       if(error) {
         log.error(error)
+        console.error(error)
         var emessage = userError(error)
         document.getElementById("para-preview-organization-status-metadata").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
@@ -579,6 +593,7 @@ curateDatasetBtn.addEventListener('click', () => {
       document.getElementById("para-please-wait-curate").innerHTML = "";
       curateDatasetBtn.disabled = false
       enableform(curationForm)
+      console.error(emessage)
       log.error(emessage)
       return
     }
@@ -596,6 +611,7 @@ curateDatasetBtn.addEventListener('click', () => {
       document.getElementById("para-please-wait-curate").innerHTML = "";
       curateDatasetBtn.disabled = false
       enableform(curationForm)
+      console.error(emessage)
       log.error(emessage)
       return
     }
@@ -648,6 +664,7 @@ curateDatasetBtn.addEventListener('click', () => {
       progressBarCurate.value = 0;
       err = true
       log.error(error)
+      console.error(error)
       curateDatasetBtn.disabled = false
       enableform(curationForm)
     } else {
@@ -666,6 +683,7 @@ curateDatasetBtn.addEventListener('click', () => {
         var emessage = userError(error)
         document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
         log.error(error)
+        console.error(error)
         document.getElementById("para-curate-progress-bar-status").innerHTML = ''
       } else {
         completionstatus = res[1]
@@ -674,7 +692,7 @@ curateDatasetBtn.addEventListener('click', () => {
         var curatedSize = res[4]
         var value = (curatedSize / totalCurateSize) * 100
         progressBarCurate.value = value
-        //console.log(value, totalCurateSize, curatedSize)
+        console.log(value, totalCurateSize, curatedSize)
         if (printstatus === 'Curating') {
           if (res[0].includes('Success: COMPLETED!')){
             document.getElementById("para-please-wait-curate").innerHTML = "";
@@ -726,6 +744,7 @@ bfAddAccountBtn.addEventListener('click', () => {
   client.invoke("api_bf_add_account", keyName.value, key.value, secret.value, (error, res) => {
     if(error) {
       log.error(error)
+      console.error(error)
       var emessage = userError(error)
       bfAddAccountStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
     } else {
@@ -810,6 +829,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
   client.invoke("api_bf_new_dataset_folder", bfNewDatasetName.value, selectedbfaccount, (error, res) => {
     if (error) {
       log.error(error)
+      console.error(error)
       var emessage = userError(error)
       bfCreateNewDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
       bfCreateNewDatasetBtn.disabled = false
@@ -819,6 +839,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
         (error, res) => {
         if(error) {
           log.error(error)
+          console.error(error)
           var emessage = userError(error)
           bfCreateNewDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
           bfCreateNewDatasetBtn.disabled = false
@@ -847,6 +868,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
     if (error) {
       document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
       log.error(error)
+      console.error(error)
       var emessage = userError(error)
       document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
       progressUploadBf.style.display = "none"
@@ -867,6 +889,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
           var emessage = userError(error)
           document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
           log.error(error)
+          console.error(error)
         } else {
           var dataProgress = res[0]
           completionStatus = res[1]
@@ -874,6 +897,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
           var totalFileSize = res[4]
           var value = (uploadedFileSize / totalFileSize) * 100
           progressBarUploadBf.value = value
+          console.log(value, totalFileSize, uploadedFileSize)
           if (completionStatus != 'Done') {
             document.getElementById("para-progress-bar-status").innerHTML = dataProgress + 'Progress: ' + value.toFixed(2) + '%'
           }
@@ -925,6 +949,7 @@ bfAddSubtitleBtn.addEventListener('click', () => {
     (error, res) => {
     if(error) {
       log.error(error)
+      console.error(error)
       var emessage = userError(error)
       datasetSubtitleStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentMetadataProgress.style.display = 'none'
@@ -948,6 +973,7 @@ bfAddDescriptionBtn.addEventListener('click', () => {
     (error, res) => {
     if(error) {
       log.error(error)
+      console.error(error)
       var emessage = userError(error)
       datasetDescriptionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentMetadataProgress.style.display = 'none'
@@ -1040,6 +1066,7 @@ bfSaveBannerImageBtn.addEventListener('click', (event) => {
           client.invoke("api_bf_add_banner_image", selectedBfAccount, selectedBfDataset, imagePath, (error, res) => {
             if(error) {
               log.error(error)
+              console.error(error)
               var emessage = userError(error)
               datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
               bfCurrentMetadataProgress.style.display = 'none'
@@ -1076,6 +1103,7 @@ bfAddLicenseBtn.addEventListener('click', () => {
     (error, res) => {
     if(error) {
       log.error(error)
+      console.error(error)
       var emessage = userError(error)
       datasetLicenseStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentMetadataProgress.style.display = 'none'
@@ -1118,6 +1146,7 @@ ipcRenderer.on('warning-add-permission-owner-selection-PI', (event, index) => {
     (error, res) => {
     if(error) {
       log.error(error)
+      console.error(error)
       var emessage = userError(error)
       datasetPermissionStatusPI.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentPermissionProgress.style.display = 'none'
@@ -1150,6 +1179,7 @@ bfAddPermissionCurationTeamBtn.addEventListener('click', () => {
     (error, res) => {
     if(error) {
       log.error(error)
+      console.error(error)
       var emessage = userError(error)
       datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentPermissionProgress.style.display = 'none'
@@ -1212,6 +1242,7 @@ bfAddPermissionTeamBtn.addEventListener('click', () => {
     (error, res) => {
     if(error) {
       log.error(error)
+      console.error(error)
       var emessage = userError(error)
       datasetPermissionStatusTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentPermissionProgress.style.display = 'none'
@@ -1239,6 +1270,7 @@ function refreshBfDatasetList(bfdstlist, bfAccountList){
     client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
       if(error) {
         log.error(error)
+        console.error(error)
       } else {
         for (myitem in res){
           var myitemselect = res[myitem]
@@ -1272,6 +1304,7 @@ function refreshAllBfDatasetLists(){
       client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
         if(error) {
           log.error(error)
+          console.error(error)
         } else {
           for (myitem in res){
             var myitemselect = res[myitem]
@@ -1302,6 +1335,7 @@ function showCurrentSubtitle(){
     (error, res) => {
       if(error) {
         log.error(error)
+        console.error(error)
       } else {
         bfDatasetSubtitle.value = res
       }
@@ -1319,6 +1353,7 @@ function showCurrentDescription(){
     (error, res) => {
       if(error) {
         log.error(error)
+        console.error(error)
       } else {
         tuiInstance.setMarkdown(res)
       }
@@ -1336,6 +1371,7 @@ function showCurrentBannerImage(){
     (error, res) => {
       if(error) {
         log.error(error)
+        console.error(error)
       } else {
         if (res === 'No banner image'){
           bfCurrentBannerImg.src = 'assets/img/no-banner-image.png'
@@ -1360,6 +1396,7 @@ function showCurrentLicense(){
     (error, res) => {
       if(error) {
         log.error(error)
+        console.error(error)
         bfCurrentMetadataProgress.style.display = 'none'
       } else {
         currentDatasetLicense.innerHTML = res
@@ -1391,6 +1428,7 @@ function refreshBfUsersList(){
     client.invoke("api_bf_get_users", accountSelected, (error, res) => {
       if (error){
         log.error(error)
+        console.error(error)
       } else{
         for ( var myItem in res){
           var myUser = res[myItem]
@@ -1420,6 +1458,7 @@ function refreshBfTeamsList(teamList){
     client.invoke("api_bf_get_teams", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
       if (error){
         log.error(error)
+        console.error(error)
       } else{
         for ( var myItem in res){
           var myTeam = res[myItem]
@@ -1445,6 +1484,7 @@ function showCurrentPermission(){
     (error, res) => {
       if(error) {
         log.error(error)
+        console.error(error)
         bfCurrentPermissionProgress.style.display = 'none'
       } else {
         var permissionList = ''
@@ -1462,6 +1502,7 @@ function showAccountDetails(bfLoadAccount){
   client.invoke("api_bf_account_details", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
     if(error) {
       log.error(error)
+      console.error(error)
       bfLoadAccount.style.display = 'none'
     } else {
       bfSelectAccountStatus.innerHTML = res;
@@ -1475,6 +1516,7 @@ function showUploadAccountDetails(bfLoadAccount){
   client.invoke("api_bf_account_details", bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text, (error, res) => {
     if(error) {
       log.error(error)
+      console.error(error)
       bfLoadAccount.style.display = 'none'
     } else {
       bfUploadSelectAccountStatus.innerHTML = res;
@@ -1497,6 +1539,7 @@ function userError(error)
 client.invoke("api_bf_default_account_load", (error, res) => {
   if(error) {
     log.error(error)
+    console.error(error)
   } else {
       if (res.length > 0) {
         var myitemselect = res[0]
@@ -1530,6 +1573,7 @@ function updateBfAccountList(){
   client.invoke("api_bf_account_list", (error, res) => {
   if(error) {
     log.error(error)
+    console.error(error)
   } else {
       for (myitem in res){
         var myitemselect = res[myitem]
@@ -1996,6 +2040,7 @@ function addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, s
     (error, res) => {
     if(error) {
       log.error(error)
+      console.error(error)
       var emessage = userError(error)
       datasetPermissionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentPermissionProgress.style.display = 'none'
