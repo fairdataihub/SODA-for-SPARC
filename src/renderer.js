@@ -14,6 +14,7 @@ const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
 
 log.transports.console.level = false
+log.transports.console.level = false 
 var homeDirectory = app.getPath('home')
 
 // Connect to python server and check
@@ -24,9 +25,8 @@ client.connect("tcp://127.0.0.1:4242")
 client.invoke("echo", "server ready", (error, res) => {
   if(error || res !== 'server ready') {
     log.error(error)
-    console.error(error)
   } else {
-    console.log("server is ready")
+    log.info("server is ready")
   }
 })
 
@@ -215,15 +215,17 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 // Operations on JavaScript end only
 //////////////////////////////////
 
-
 //log user's OS version
 log.info("User OS:", os.type(), os.platform(), "version:", os.release())
 console.log("User OS:", os.type(), os.platform(), "version:", os.release())
+//log user's OS version
+log.info("User OS:", os.type(), os.platform(), "version:", os.release())
 
 // Check app version and warn for updates
 const appVersion = window.require('electron').remote.app.getVersion()
 log.info("Current SODA version:", appVersion)
 console.log("Current SODA version:", appVersion)
+
 const axios = require('axios');
 const url = 'https://github.com/bvhpatel/SODA';
 
@@ -235,6 +237,7 @@ axios.get(url)
     var scrappedVersion = str.match(new RegExp(firstvariable + "(.*)" + secondvariable))[1]
     log.info("Latest SODA version:", scrappedVersion)
     console.log("Latest SODA version:", scrappedVersion)
+
     if (appVersion !== scrappedVersion){
       ipcRenderer.send('warning-new-version')
     }
@@ -243,8 +246,11 @@ axios.get(url)
     log.info(error);
     console.log(error)
   })
+  })
+
 // Download Metadata Templates
 templateArray = ["submission.xlsx", "subjects.xlsx", "samples.xlsx", "dataset_description.xlsx", "manifest.xlsx"]
+
 const { COPYFILE_EXCL } = fs.constants.COPYFILE_FICLONE;
 function downloadTemplates(templateItem) {
   var downloadedPath = path.join(userDownloadFolder, templateItem)
@@ -508,7 +514,6 @@ selectPreviewBtn.addEventListener('click', () => {
   var jsonpath = jsonvect[0]
   if (manifestStatus.checked){
     var keyvect = sparcFolderNames.slice()
-    console.log(keyvect)
     for (var j = 0; j < keyvect.length; j++){
       var folder = keyvect[j]
       var folderPaths = jsonpath[folder]
@@ -518,7 +523,6 @@ selectPreviewBtn.addEventListener('click', () => {
     }
   }
   var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
-  console.log(jsonpath)
   jsonpath['main'] = jsonpathMetadata['metadata']
   client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
       if(error) {
@@ -666,7 +670,7 @@ curateDatasetBtn.addEventListener('click', () => {
     } else {
       document.getElementById("para-please-wait-curate").innerHTML = "Please wait...";
       progressCurateUpload.style.display = "block";
-      console.log('Started curating')
+      log.info('Started curating')
     }
   })
   var countDone = 0
@@ -702,7 +706,7 @@ curateDatasetBtn.addEventListener('click', () => {
     if (completionstatus === 'Done'){
       countDone++
       if (countDone > 1){
-        console.log('Done curating')
+        log.info('Done curating')
         document.getElementById("para-please-wait-curate").innerHTML = "";
         clearInterval(timerProgress)
         curateDatasetBtn.disabled = false
@@ -873,7 +877,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
     } else {
       document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
       progressUploadBf.style.display = "block"
-      console.log('Started uploading')
+      log.info('Started uploading')
     }
   })
 
@@ -902,7 +906,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       if (completionStatus === 'Done'){
         countDone++
         if (countDone > 1){
-          console.log('Done uploading')
+          log.info('Done uploading')
           if (!err){
             progressBarUploadBf.value = 100
             document.getElementById("para-progress-bar-status").innerHTML = "Upload completed!" + smileyCan
@@ -1512,6 +1516,7 @@ function showUploadAccountDetails(bfLoadAccount){
   client.invoke("api_bf_account_details", bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text, (error, res) => {
     if(error) {
       log.error(error)
+      console.error(error)
       bfLoadAccount.style.display = 'none'
     } else {
       bfUploadSelectAccountStatus.innerHTML = res;

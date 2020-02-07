@@ -3,7 +3,9 @@ app.showExitPrompt = true
 const path = require('path')
 const glob = require('glob')
 const contextMenu = require('electron-context-menu');
+const log  = require("electron-log");
 
+log.transports.console.level = false 
 /*************************************************************
  * Python Process
  *************************************************************/
@@ -47,6 +49,7 @@ const createPyProc = () => {
 
   if (pyProc != null) {
     console.log('child process success on port ' + port)
+    log.info('child process success on port ' + port)
   }
 }
 
