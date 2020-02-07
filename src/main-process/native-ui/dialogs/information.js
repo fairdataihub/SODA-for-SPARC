@@ -1,4 +1,4 @@
-const {ipcMain, dialog} = require('electron')
+const {ipcMain, dialog, BrowserWindow} = require('electron')
 
 ipcMain.on('warning-clear-table', (event) => {
   const options = {
@@ -7,7 +7,7 @@ ipcMain.on('warning-clear-table', (event) => {
     message: "This will erase all your progress, are you sure you want to continue?",
     buttons: ['Yes', 'No']
   }
-  dialog.showMessageBox(options, (index) => {
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
     event.sender.send('warning-clear-table-selection', index)
   })
 })
@@ -19,7 +19,7 @@ ipcMain.on('warning-add-permission-owner', (event) => {
     message: "This will give owner access to another user (and set you as 'manager'), are you sure you want to continue?",
     buttons: ['Yes', 'No']
   }
-  dialog.showMessageBox(options, (index) => {
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
     event.sender.send('warning-add-permission-owner-selection', index)
   })
 })
@@ -31,7 +31,7 @@ ipcMain.on('warning-add-permission-owner-PI', (event) => {
     message: "This will give owner access to another user (and set you as 'manager'), are you sure you want to continue?",
     buttons: ['Yes', 'No']
   }
-  dialog.showMessageBox(options, (index) => {
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
     event.sender.send('warning-add-permission-owner-selection-PI', index)
   })
 })
@@ -42,7 +42,7 @@ ipcMain.on('warning-new-version', (event) => {
     title: 'New version of SODA available',
     message: "We suggest to uninstall the current version and download the latest version to make sure you are up-to-date with the SPARC curation rules!",
   }
-  dialog.showMessageBox(options, (index) => {
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
     event.sender.send('warning-new-version-showed')
   })
 })

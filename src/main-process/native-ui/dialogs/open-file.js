@@ -1,7 +1,7 @@
-const {ipcMain, dialog} = require('electron')
+const {ipcMain, dialog, BrowserWindow} = require('electron')
 
 ipcMain.on('open-file-dialog-dataset', (event) => {
-  dialog.showOpenDialog({
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openDirectory']
   }, (files) => {
     if (files) {
@@ -12,7 +12,7 @@ ipcMain.on('open-file-dialog-dataset', (event) => {
 
 // SPARC folder
 ipcMain.on('open-file-dialog-code', (event) => {
-  dialog.showOpenDialog({
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openFile', 'multiSelections']
   }, (files) => {
     if (files) {
@@ -22,7 +22,7 @@ ipcMain.on('open-file-dialog-code', (event) => {
 })
 
 ipcMain.on('open-folder-dialog-code', (event) => {
-  dialog.showOpenDialog({
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openDirectory', 'multiSelections']
   }, (files) => {
     if (files) {
@@ -32,7 +32,7 @@ ipcMain.on('open-folder-dialog-code', (event) => {
 })
 
 ipcMain.on('open-file-dialog-uploadorganization', (event) => {
-  dialog.showOpenDialog({
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openFile'],
     filters: [
     { name: 'CSV', extensions: ['csv'] },
@@ -44,15 +44,10 @@ ipcMain.on('open-file-dialog-uploadorganization', (event) => {
   })
 })
 
-
-// Preview
-
-
-
 // Metadata
 
 ipcMain.on('open-file-dialog-metadata', (event) => {
-  dialog.showOpenDialog({
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openFile', 'multiSelections'],
   }, (files) => {
     if (files) {
@@ -63,7 +58,7 @@ ipcMain.on('open-file-dialog-metadata', (event) => {
 
 
 ipcMain.on('open-file-dialog-submission', (event) => {
-  dialog.showOpenDialog({
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openFile'],
     filters: [
     { name: 'Excel', extensions: ['xlsx', 'xls', 'csv'] },
@@ -76,7 +71,7 @@ ipcMain.on('open-file-dialog-submission', (event) => {
 })
 
 ipcMain.on('open-file-dialog-description', (event) => {
-  dialog.showOpenDialog({
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openFile'],
     filters: [
     { name: 'Excel', extensions: ['xlsx', 'xls', 'csv'] },
@@ -89,7 +84,7 @@ ipcMain.on('open-file-dialog-description', (event) => {
 })
 
 ipcMain.on('open-file-dialog-subjects', (event) => {
-  dialog.showOpenDialog({
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openFile'],
     filters: [
     { name: 'Excel', extensions: ['xlsx', 'xls', 'csv'] },
@@ -102,7 +97,7 @@ ipcMain.on('open-file-dialog-subjects', (event) => {
 })
 
 ipcMain.on('open-file-dialog-samples', (event) => {
-  dialog.showOpenDialog({
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openFile'],
     filters: [
     { name: 'Excel', extensions: ['xlsx', 'xls', 'csv'] },
@@ -115,7 +110,7 @@ ipcMain.on('open-file-dialog-samples', (event) => {
 })
 
 ipcMain.on('open-file-dialog-newdataset', (event) => {
-  dialog.showOpenDialog({
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openDirectory']
   }, (files) => {
     if (files) {
@@ -125,7 +120,7 @@ ipcMain.on('open-file-dialog-newdataset', (event) => {
 })
 
 ipcMain.on('open-file-dialog-submit-dataset', (event) => {
-  dialog.showOpenDialog({
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openDirectory']
   }, (files) => {
     if (files) {
@@ -136,7 +131,7 @@ ipcMain.on('open-file-dialog-submit-dataset', (event) => {
  
 // Blackfynn metadata
 ipcMain.on('open-file-dialog-import-banner-image', (event) => {
-  dialog.showOpenDialog({
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openFile'],
     filters: [
     { name: 'Image', extensions: ['jpg', 'png'] },
