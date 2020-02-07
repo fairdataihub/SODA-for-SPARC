@@ -5,6 +5,6 @@ ipcMain.on('open-error-dialog', (event) => {
 })
 
 
-ipcMain.on('open-error-file-exist', (event, emessage) => {
-  dialog.showErrorBox('Duplicate file(s) / folder(s)', emessage)
-})
+// ipcMain.on('open-error-file-exist', (event, emessage) => {
+//   dialog.showErrorBox('Duplicate file(s) / folder(s)', emessage)
+// })

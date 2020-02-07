@@ -220,31 +220,49 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 log.info("User OS:", os.type(), os.platform(), "version:", os.release())
 console.log("User OS:", os.type(), os.platform(), "version:", os.release())
 
-// Check app version and warn for updates
+// Check current app version
 const appVersion = window.require('electron').remote.app.getVersion()
 log.info("Current SODA version:", appVersion)
 console.log("Current SODA version:", appVersion)
 
-const axios = require('axios');
-const url = 'https://github.com/bvhpatel/SODA';
+//check user's internet connection
+require('dns').resolve('www.google.com', function(err) {
+  if (err) {
+     console.error("No internet connection");
+     log.error("No internet connection")
+     ipcRenderer.send('warning-no-internet-connection')
+  } else {
+     console.log("Connected to the internet");
+     log.info("Connected to the internet")
+     //Check new app version
+     checkNewAppVersion()
+     //Load Default/global blackfynn account if available
+     loadDefaultAccount()
+  }
+});
 
-axios.get(url)
-  .then(response => {
-    var str = response.data
-    var firstvariable = "Latest version: "
-    var secondvariable = "<"
-    var scrappedVersion = str.match(new RegExp(firstvariable + "(.*)" + secondvariable))[1]
-    log.info("Latest SODA version:", scrappedVersion)
-    console.log("Latest SODA version:", scrappedVersion)
+// Check lasted app version and warn if newer available
+function checkNewAppVersion() {
+  const axios = require('axios');
+  const url = 'https://github.com/bvhpatel/SODA';
+  axios.get(url)
+    .then(response => {
+      var str = response.data
+      var firstvariable = "Latest version: "
+      var secondvariable = "<"
+      var scrappedVersion = str.match(new RegExp(firstvariable + "(.*)" + secondvariable))[1]
+      log.info("Latest SODA version:", scrappedVersion)
+      console.log("Latest SODA version:", scrappedVersion)
 
-    if (appVersion !== scrappedVersion){
-      ipcRenderer.send('warning-new-version')
-    }
-  })
-  .catch(error => {
-    log.info(error);
-    console.log(error)
-  })
+      if (appVersion !== scrappedVersion){
+        ipcRenderer.send('warning-new-version')
+      }
+    })
+    .catch(error => {
+      log.info(error);
+      console.log(error)
+    })
+}
 
 // Download Metadata Templates
 templateArray = ["submission.xlsx", "subjects.xlsx", "samples.xlsx", "dataset_description.xlsx", "manifest.xlsx"]
@@ -1540,36 +1558,38 @@ function userError(error)
   return myerror
 }
 
-client.invoke("api_bf_default_account_load", (error, res) => {
-  if(error) {
-    log.error(error)
-    console.error(error)
-  } else {
-      if (res.length > 0) {
-        var myitemselect = res[0]
-        var option = document.createElement("option")
-        option.textContent = myitemselect
-        option.value = myitemselect
-        var option2 = option.cloneNode(true)
-        removeOptions(bfAccountList)
-        bfAccountList.appendChild(option)
-        removeOptions(bfUploadAccountList)
-        bfUploadAccountList.appendChild(option2)
-        showAccountDetails(bfAccountLoadProgress)
-        bfAccountLoadProgress.style.display = 'block'
-        refreshAllBfDatasetLists()
-        refreshBfUsersList()
-        refreshBfTeamsList(bfListTeams)
+function loadDefaultAccount() {
+  client.invoke("api_bf_default_account_load", (error, res) => {
+    if(error) {
+      log.error(error)
+      console.error(error)
     } else {
-        var myitemselect = "Select"
-        var option = document.createElement("option")
-        option.textContent = myitemselect
-        option.value = myitemselect
-        bfAccountList.appendChild(option)
-        var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
+        if (res.length > 0) {
+          var myitemselect = res[0]
+          var option = document.createElement("option")
+          option.textContent = myitemselect
+          option.value = myitemselect
+          var option2 = option.cloneNode(true)
+          removeOptions(bfAccountList)
+          bfAccountList.appendChild(option)
+          removeOptions(bfUploadAccountList)
+          bfUploadAccountList.appendChild(option2)
+          showAccountDetails(bfAccountLoadProgress)
+          bfAccountLoadProgress.style.display = 'block'
+          refreshAllBfDatasetLists()
+          refreshBfUsersList()
+          refreshBfTeamsList(bfListTeams)
+      } else {
+          var myitemselect = "Select"
+          var option = document.createElement("option")
+          option.textContent = myitemselect
+          option.value = myitemselect
+          bfAccountList.appendChild(option)
+          var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
+      }
     }
-  }
-})
+  })
+}
 
 function updateBfAccountList(){
   removeOptions(bfAccountList)
