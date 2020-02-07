@@ -744,7 +744,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
 
                 curateprogress = "Uploading to dataset '%s' " %(bfdataset)
                 myds = bf.get_dataset(bfdataset)
-                
+
                 for folder in jsonpath.keys():
                     if jsonpath[folder] != []:
                         if folder != 'main':
@@ -892,18 +892,18 @@ def bf_account_list():
             config = ConfigParser()
             config.read(configpath)
             accountname = config.sections()
-            accountnamenoglobal = [n for n in accountname if n != "global"]
-            if accountnamenoglobal:
-                for n in accountnamenoglobal:
-                    try:
-                        bfn = gevent.spawn(Blackfynn, n)
-                        accountlist.append(n)
-                    except Exception as e:
-                        raise e
-                        # config.remove_section(n)
-                with open(configpath, 'w') as configfile:
-                    config.write(configfile)
+            accountnamenoglobal = [n for n in accountname]
+            # if accountnamenoglobal:
+            for n in accountnamenoglobal:
+                try:
+                    bfn = Blackfynn(n)
+                    accountlist.append(n)
+                except Exception as e:
+                    pass
+            with open(configpath, 'w') as configfile:
+                config.write(configfile)
         return accountlist
+        # My accountlist
 
     except Exception as e:
         raise e
@@ -919,15 +919,15 @@ def bf_default_account_load():
             config = ConfigParser()
             config.read(configpath)
             accountname = config.sections()
-            accountnamenoglobal = [n for n in accountname if n != "global"]
+            accountnamenoglobal = [n for n in accountname]
             if accountnamenoglobal:
                 for n in accountnamenoglobal:
                     try:
-                        bfn = gevent.spawn(Blackfynn, n)
+                        bfn = Blackfynn(n)
                         accountlist.append(n)
                         break
                     except:
-                        config.remove_section(n)
+                        pass
                 with open(configpath, 'w') as configfile:
                     config.write(configfile)
         return accountlist
@@ -1091,7 +1091,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     uploaded_file_size = 0
     submitprintstatus = ' '
     start_time_bf_upload = 0
-    initial_bfdataset_size = 0 
+    initial_bfdataset_size = 0
     start_submit = 0
 
     try:
@@ -1116,7 +1116,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     if c>0:
         raise Exception(error)
-        
+
 
     error, c = '', 0
     total_file_size = 1
