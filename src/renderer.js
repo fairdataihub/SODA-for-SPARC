@@ -12,6 +12,7 @@ const remote = require('electron').remote;
 const app = remote.app;
 const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
+require('v8-compile-cache')
 
 log.transports.console.level = false
 log.transports.file.maxSize = 1024*1024*10

@@ -4,6 +4,7 @@ const path = require('path')
 const glob = require('glob')
 const contextMenu = require('electron-context-menu');
 const log  = require("electron-log");
+require('v8-compile-cache')
 
 log.transports.console.level = false
 /*************************************************************
