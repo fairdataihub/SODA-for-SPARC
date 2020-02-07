@@ -13,6 +13,7 @@ const app = remote.app;
 const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
 
+log.transports.console.level = false 
 var homeDirectory = app.getPath('home')
 
 // Connect to python server and check
@@ -219,7 +220,6 @@ log.info("User OS:", os.type(), os.platform(), "version:", os.release())
 // Check app version and warn for updates
 const appVersion = window.require('electron').remote.app.getVersion()
 log.info("Current SODA version:", appVersion)
-
 const axios = require('axios');
 const url = 'https://github.com/bvhpatel/SODA';
 
