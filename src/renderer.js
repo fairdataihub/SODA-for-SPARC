@@ -1306,12 +1306,12 @@ function refreshBfDatasetList(bfdstlist, bfAccountList){
 }
 
 function refreshAllBfDatasetLists(){
-    removeOptions(bfDatasetList)
-    removeOptions(bfDatasetListMetadata)
-    removeOptions(bfDatasetListPermission)
-    removeOptions(bfUploadDatasetList)
     var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
     if (accountSelected === "Select"){
+      removeOptions(bfDatasetList)
+      removeOptions(bfDatasetListMetadata)
+      removeOptions(bfDatasetListPermission)
+      removeOptions(bfUploadDatasetList)
       var optionSelect = document.createElement("option")
       optionSelect.textContent = 'Select dataset'
       bfDatasetList.appendChild(optionSelect)
@@ -1327,6 +1327,10 @@ function refreshAllBfDatasetLists(){
           log.error(error)
           console.error(error)
         } else {
+          removeOptions(bfDatasetList)
+          removeOptions(bfDatasetListMetadata)
+          removeOptions(bfDatasetListPermission)
+          removeOptions(bfUploadDatasetList)
           for (myitem in res){
             var myitemselect = res[myitem]
             var option = document.createElement("option")
@@ -1525,6 +1529,8 @@ function showAccountDetails(bfLoadAccount){
     if(error) {
       log.error(error)
       console.error(error)
+      bfSelectAccountStatus.innerHTML = "<span style='color: red;'> " + error + "</span>"
+      bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
       bfLoadAccount.style.display = 'none'
     } else {
       bfSelectAccountStatus.innerHTML = res;
@@ -1592,13 +1598,13 @@ function loadDefaultAccount() {
 }
 
 function updateBfAccountList(){
-  removeOptions(bfAccountList)
-  removeOptions(bfUploadAccountList)
   client.invoke("api_bf_account_list", (error, res) => {
   if(error) {
     log.error(error)
     console.error(error)
   } else {
+    removeOptions(bfAccountList)
+    removeOptions(bfUploadAccountList)
       for (myitem in res){
         var myitemselect = res[myitem]
         var option = document.createElement("option")
