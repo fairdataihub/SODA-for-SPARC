@@ -14,6 +14,7 @@ const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
 
 log.transports.console.level = false
+log.transports.file.maxSize = 1024*1024*10
 var homeDirectory = app.getPath('home')
 
 // Connect to python server and check
