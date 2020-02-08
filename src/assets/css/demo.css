@@ -657,6 +657,7 @@ label.input-banner-img{
   border: 1px solid rgba(0, 0, 0, 0.2);
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px rgba(255, 255, 255, 0.1);
   transition: all 0.1s ease-in-out;
+  width: 200px;
 }
 
 .switch-field label:hover {

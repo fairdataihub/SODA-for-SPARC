@@ -31,7 +31,7 @@
           <form id = 'blackfynn-account'>
             <div style = "padding:10px 0px" class="switch-field">
               <input id="addAccount" name="blackfynn-account" type="radio"/>
-              <label for="addAccount" class="labelradio"> Add new account </label>
+              <label for="addAccount" class="labelradio"> Addadd new account </label>
               <input id="selectAccount" name="blackfynn-account" type="radio"/>
               <label for="selectAccount" class="labelradio"> Select existing account </label>
               </div>
@@ -43,16 +43,16 @@
                 <span class="tooltiptext">Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients" style="color:white;"> Blackfynn Help page</a>
                 for generating an API and setting up your Blackfynn account in SODA during your first use. 
                 </span>
-              </div>
-            </h5>
+              </div> 
+            </h5> <br>
             <div> <font color="black"> Api key name: </font> </div>
             <div class="demo-controls">
               <input id="bf-key-name" class="demo-response">
-            </div>
+            </div> <br>
             <div> <font color="black"> Api key: </font> </div>
             <div class="demo-controls">
               <input id="bf-key" class="demo-response">
-            </div>
+            </div> <br>
             <div> <font color="black"> Api secret: </font> </div>
             <div class="demo-controls">
               <input id="bf-secret" class="demo-response">
@@ -137,7 +137,7 @@
           <a style="padding:0px 0px 0px 10px" href="https://www.youtube.com/watch?v=uazpeqYacso" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
-          <div class="demo-meta u-avoid-clicks"> Add subtitle, description, banner image, and license to your dataset
+          <div class="demo-meta u-avoid-clicks"> Add mandatory subtitle, description, banner image, and license to your dataset
           </div>
         </button>
         <div class="demo-box">
@@ -163,47 +163,43 @@
           </div>
 
           <form id = 'bf-add-metadata-form'>
-            <div style = "padding:10px 0px">
-              <input id="add-edit-subtitle" name="blackfynn-add-metadata" type="radio" class="with-style" />
+            <div style = "padding:10px 0px" class="switch-field">
+              <input id="add-edit-subtitle" name="blackfynn-add-metadata" type="radio" />
               <label for="add-edit-subtitle" class="labelradio"> Add/edit subtitle </label>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <!-- <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                   <span class="tooltiptext">Add a short description that explains the content of your dataset.</span>
-                </div>
-            </div>
+                </div> -->
 
-            <div style = "padding:10px 0px">
-              <input id="add-edit-description" name="blackfynn-add-metadata" type="radio" class="with-style" />
+              <input id="add-edit-description" name="blackfynn-add-metadata" type="radio" />
               <label for="add-edit-description" class="labelradio"> Add/edit description </label>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <!-- <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                   <span class="tooltiptext">Provide a detailed description of your dataset.
                   <br>
                   This description will be highly visible once your dataset is published
                   </span>
                 </div>
-            </div>
-
-            <div style = "padding:10px 0px">
-              <input id="add-edit-banner" name="blackfynn-add-metadata" type="radio" class="with-style" />
+ -->
+              <input id="add-edit-banner" name="blackfynn-add-metadata" type="radio" />
               <label for="add-edit-banner" class="labelradio"> Add a banner image </label>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <!-- <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                   <span class="tooltiptext">This image will be associated with the dataset. It will be visible once the dataset is published.
                   <br>
                   <br>
                   This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 1024x1024 px and 2048x2048 px is highly recommended. The final image size must not exceed 5MB as per Blackfynn's restriction.
                   </span>
-                </div>
-            </div>
+                </div> -->
 
-            <div style = "padding:10px 0px">
-              <input id="add-edit-license" name="blackfynn-add-metadata" type="radio" class="with-style" />
+              <input id="add-edit-license" name="blackfynn-add-metadata" type="radio" />
               <label for="add-edit-license" class="labelradio"> Associate a license </label>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <!-- <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                   <span class="tooltiptext">Associate a license with your dataset.
                   <br>
                   Note: SPARC dataset must be licensed under Creative Commons Attribution (CC-BY)
                   </span>
-                </div>
+                </div> -->
+
             </div>
+
           </form>
 
           <div id="div-add-edit-subtitle" class="datasetsaveoption">
@@ -309,7 +305,7 @@
 
             <!-- <h5>  </h5> -->
             <div class="demo-controls">
-              <button id="button-add-license" class="demo-button"> Add Creative Commons Attribution license </button>
+              <button id="button-add-license" class="demo-button"> Add Creative Commons Attribution (CC-BY) license </button>
               <p id = "para-dataset-license-status"> </p>
             </div>
 
