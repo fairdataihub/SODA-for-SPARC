@@ -92,10 +92,10 @@
   margin-top: 1em;
   margin-bottom: 2em;
   border-radius: 6px;
-  /*border: 1px solid var(--color-border);
-  background-color: var(--color-bg);*/
+  /*border: 1px solid var(--color-border);*/
   border: 1px solid hsla(190,60%,36%,1);
-  background-color: transparent;
+  background-color: var(--color-bg);
+  /*background-color: transparent;*/
 }
 .demo-box:before {
   content: "";
@@ -628,4 +628,53 @@ progress.progresstrack[value]::-webkit-progress-value {
 label.input-banner-img{
   padding-left: 10px;
   color: black;
+}
+
+
+.switch-field {
+  display: flex;
+  margin-bottom: 36px;
+  overflow: hidden;
+}
+
+.switch-field input {
+  position: absolute !important;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  width: 1px;
+  border: 0;
+  overflow: hidden;
+}
+
+.switch-field label {
+  background-color: white;
+  color: rgba(0, 0, 0, 0.9);
+  font-size: 16px;
+  line-height: 1;
+  text-align: center;
+  padding: 8px 16px;
+  margin-right: -1px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.1s ease-in-out;
+}
+
+.switch-field label:hover {
+  cursor: pointer;
+  background-color: hsla(190,60%,36%,0.5);
+  color: white;
+}
+
+.switch-field input:checked + label {
+  background-color: hsla(190,60%,36%,1);
+  box-shadow: none;
+  color: white;
+}
+
+.switch-field label:first-of-type {
+  border-radius: 4px 0 0 4px;
+}
+
+.switch-field label:last-of-type {
+  border-radius: 0 4px 4px 0;
 }
