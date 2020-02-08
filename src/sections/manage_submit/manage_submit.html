@@ -157,9 +157,7 @@
             <select class="my_dropdown" id="bfdatasetlist_metadata">
               <option> Select dataset </option>
             </select>
-          </div>
-          <h5></h5>
-          <div class="demo-controls">
+            <p></p>
             <button id="button-refresh-dataset-list-metadata" class="demo-button"> Refresh dataset list </button>
           </div>
 
@@ -234,7 +232,7 @@
             </div>
             <h5> </h5>
             <div class="demo-controls">
-              <button id="button-add-description" class="demo-button"> Add description to dataset </button>
+              <button id="button-add-description" class="demo-button"> Add description </button>
               <p id = "para-dataset-description-status"> </p>
             </div>
           </div>
@@ -257,12 +255,6 @@
 
             <h5> </h5>
             <div class="demo-controls">
-              <button id="save-banner-image" class="demo-button"> Save as banner image </button>
-              <p id = "para-dataset-banner-image-status"> </p>
-            </div>
-
-            <h5> </h5>
-            <div class="demo-controls">
               <form>
                   <label class='input-banner-img' for='form-banner-height'>Cropped height (px):</label>
                   <input id='form-banner-height' type="text" readonly="readonly" size="7">
@@ -280,6 +272,12 @@
                 <div id='banner-preview' class="preview">
                 </div>
               </div>
+            </div>
+
+            <h5> </h5>
+            <div class="demo-controls">
+              <button id="save-banner-image" class="demo-button"> Save as banner image </button>
+              <p id = "para-dataset-banner-image-status"> </p>
             </div>
 
           </div>
@@ -347,9 +345,7 @@
             <select class="my_dropdown" id="bfdatasetlist_permission">
               <option> Select dataset </option>
             </select>
-          </div>
-          <h5></h5>
-          <div class="demo-controls">
+            <p></p>
             <button id="button-refresh-dataset-list-permission" class="demo-button"> Refresh dataset list </button>
           </div>
           <h5> Current permission
@@ -523,8 +519,9 @@
           </div>
           </h5>
           <div class="demo-controls">
-            <button id="button-select-submit-dataset" class="demo-button">Select Dataset Folder </button>
-            <textarea class="demo-response" style="resize: none; height:45px;" id="selected-submit-dataset"></textarea>
+            <textarea class="demo-response-upload" style="resize: none; height:45px;" id="selected-submit-dataset"></textarea>
+            <p></p>
+            <button id="button-select-submit-dataset" class="demo-button">Select Folder </button>
           </div>
 
           <h5> Select Blackfynn dataset for uploading
@@ -536,10 +533,11 @@
             </div>
           </h5>
           <div class="demo-controls">
-            <button id="button-refresh-dataset-list" class="demo-button"> Refresh Dataset List </button>
             <select class="my_dropdown" id="bfdatasetlist">
               <option> Select dataset </option>
             </select>
+            <p></p>
+            <button id="button-refresh-dataset-list" class="demo-button"> Refresh Dataset List </button>
           </div>
 
           <h5> </h5>
