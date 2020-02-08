@@ -24,8 +24,8 @@
 .demo-toggle-button {
   position: relative;
   display: block;
-  margin: 0;
-  padding: .5em 1.5em;
+  margin: 0.5em;
+  padding: 0.5em 1.5em;
   line-height: 1.5;
   font: inherit;
   font-weight: 600;
@@ -36,6 +36,8 @@
   background-color: transparent;
   transition: border-color .12s;
   outline: none;
+  cursor: pointer;
+  /*border: 2px solid black;*/
 }
 
 .demo-toggle-button:before,
@@ -90,8 +92,10 @@
   margin-top: 1em;
   margin-bottom: 2em;
   border-radius: 6px;
-  border: 1px solid var(--color-border);
-  background-color: var(--color-bg);
+  /*border: 1px solid var(--color-border);
+  background-color: var(--color-bg);*/
+  border: 1px solid hsla(190,60%,36%,1);
+  background-color: transparent;
 }
 .demo-box:before {
   content: "";
@@ -145,6 +149,7 @@
   padding: .4em 1.2em;
   color: inherit;
   background-color: transparent;
+  cursor: pointer;
 }
 .demo-button {
   align-self: flex-start;
@@ -157,6 +162,7 @@
   color: inherit;
   background-color: transparent;
   width: 180px;
+  cursor: pointer;
 }
 .demo-button:focus {
   outline: none;
