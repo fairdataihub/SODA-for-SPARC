@@ -2,7 +2,7 @@ const {ipcRenderer} = require('electron')
 
 function showAddAccount(){
   document.getElementById('div-add-account').style.display ='block';
-  document.getElementById('div-select-account').style.display ='block';
+  document.getElementById('div-select-account').style.display ='none';
   document.getElementById('para-add-account-status').innerHTML = ""
 }
 
@@ -23,6 +23,7 @@ document.querySelector('#selectAccount').addEventListener('click', () => {
 //
 // Blackfynn Metadata
 //
+
 function showAddEditSubtitle(){
   document.getElementById('div-add-edit-subtitle').style.display ='block';
   document.getElementById('div-add-edit-description').style.display ='none';
