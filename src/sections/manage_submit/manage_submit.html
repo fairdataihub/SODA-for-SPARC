@@ -27,28 +27,28 @@
         </button>
 
         <div class="demo-box">
-          <p> Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients"> Blackfynn Help page</a>
-          for generating an API and setting up your Blackfynn account in SODA during your first use. </p>
 
           <form id = 'blackfynn-account'>
             <div style = "padding:10px 0px">
               <input id="addAccount" name="blackfynn-account" type="radio" class="with-style" />
               <label for="addAccount" class="labelradio"> Add new account </label>
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Authenticate yourself by using API key and secret</span>
+                  <span class="tooltiptext">Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients" style="color:white;"> Blackfynn Help page</a>
+                  for generating an API and setting up your Blackfynn account in SODA during your first use. 
+                  </span>
                 </div>
             </div>
             <div>
               <input id="selectAccount" name="blackfynn-account" type="radio" class="with-style" />
               <label for="selectAccount" class="labelradio"> Select account </label>
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Added account(s) will be displayed in this drop-down list. Click on 'Load existing account(s)' and select one from the drop-down list before continuing
+                  <span class="tooltiptext">Added account(s) will be displayed in this drop-down list. Default account will be loaded automatically if available. Click on 'Switch Account' and select one from the drop-down list for changing.
                   </span>
                 </div>
             </div>
           </form>
 
-          <div id="div-add-account" class="datasetsaveoption">
+          <div id="div-add-account" class="datasetsaveoption" style="margin-left:20px">
             <h5> Add new account </h5>
             <div> <font color="black"> Api key name: </font> </div>
             <div class="demo-controls">
@@ -64,26 +64,26 @@
             </div>
             <h5> </h5>
             <div class="demo-controls">
-              <button class="demo-button" id="add-bf-account"> Add account </button>
+              <button class="demo-button" id="add-bf-account"> Add Account </button>
             </div>
             <p id="para-add-account-status"></p>
             </div>
 
             <div id="div-select-account" class="datasetsaveoption" style="margin-left:20px"><br>
 
-            <h5> Select Account: </h5>
-            <div class="demo-controls">
-              <select class="my_dropdown" style="width:65%" id="bfaccountlist">
-                <option> Select </option>
-              </select>
-              <p></p>
-              <button id="button-check-bf-account-details" class="demo-button"> Switch Account </button>
-            </div>
+              <h5> Select Account: </h5>
+              <div class="demo-controls">
+                <select class="my_dropdown" style="width:65%" id="bfaccountlist">
+                  <option> Select </option>
+                </select>
+                <p></p>
+                <button id="button-check-bf-account-details" class="demo-button"> Switch Account </button>
+              </div>
 
-            <div id="div-bf-account-load-progress" class="progressdiv">
-              <div class="indeterminatebar"></div>
-            </div>
-            <p id='para-select-account-status'> <p>
+              <div id="div-bf-account-load-progress" class="progressdiv">
+                <div class="indeterminatebar"></div>
+              </div>
+              <p id='para-select-account-status'> <p>
             <!-- <div>
 
             </div> -->
