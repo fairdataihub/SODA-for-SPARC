@@ -1,7 +1,7 @@
 /* Nav */
 
 .nav {
-  width: 280px;
+  width: 250px;
   overflow-x: hidden;
   overflow-y: auto;
   color: var(--color-subtle);
@@ -26,7 +26,7 @@
 
 .nav-title {
   text-align: center;
-  font-weight: 500;
+  font-weight: 350;
   line-height: 1;
   margin: 0;
   color: var(--color-strong-white);
@@ -78,7 +78,7 @@
   display: block;
   width: 100%;
   padding: .5rem;
-  padding-left: calc(2rem + 16px + .5rem); /* padding + icon + magic */
+  padding-left: calc(2rem + 8px + .5rem); /* padding + icon + magic */
   line-height: 2;
   text-align: left;
   font: inherit;
@@ -170,6 +170,6 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
-  height: 70px;
-  width: 210px;
+  height: 65px;
+  width: 195px;
 }
