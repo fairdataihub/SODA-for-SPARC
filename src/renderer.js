@@ -222,6 +222,7 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 document.getElementById("selectAccount").click()
 document.getElementById("add-edit-subtitle").click()
 document.getElementById("pi-owner").click()
+document.getElementById("cloud-dataset").click()
 
 //log user's OS version
 log.info("User OS:", os.type(), os.platform(), "version:", os.release())

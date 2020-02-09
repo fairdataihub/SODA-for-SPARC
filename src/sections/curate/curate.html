@@ -321,46 +321,43 @@
 
         <div id="div-generate-dataset" class="demo-box">
 
-          <h5> New dataset</h5>
+          <div id = "div-existing-dataset" style="display:none">
+            <input id="existing-dataset" name="newdataset" type="radio" class="with-style" />
+            <label id = "label-existing-dataset" for="existing-dataset" class=labelradio> Modify current dataset</label>
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">This will add all changes to the current dataset folder.
+                <br>
+                This option will only be available when 'Dataset already organized' option is selected.
+              </div>
+          </div>
+
           <form id = 'dataset-curate-form'>
-            <div id = "div-existing-dataset">
-              <input id="existing-dataset" name="newdataset" type="radio" class="with-style" />
-              <label id = "label-existing-dataset" for="existing-dataset" class=labelradio> Modify current dataset</label>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">This will add all changes to the current dataset folder.
-                  <br>
-                  This option will only be available when 'Dataset already organized' option is selected.
-                </div>
-            </div>
-            <div style = "padding:10px 0px">
-              <input id="create-newdataset" name="newdataset" type="radio" class="with-style" />
-              <label for="create-newdataset" class=labelradio>Create new dataset locally</label>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">This option will create the dataset at the desired location locally with all requested files</span>
-                </div>
-            </div>
-            <div>
-              <input id="cloud-dataset" name="newdataset" type="radio" class="with-style" />
+            <div style = "padding:10px 0px" class="switch-field">
+            
+              <input id="create-newdataset" name="newdataset" type="radio"/>
+              <label for="create-newdataset" class=labelradio>Create new dataset on computer</label>
+
+              <input id="cloud-dataset" name="newdataset" type="radio"/>
               <label for="cloud-dataset" class="labelradio">Create new dataset directly on Blackfynn</label>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">This option will create the dataset with all requested files directly on your Blackfynn account</span>
-                </div>
+
             </div>
           </form>
+
+          <hr>
 
           <div id="div-create-new" class="datasetsaveoption">
 
             <h5> Select destination folder for new dataset </h5>
             <div class="demo-controls">
-              <textarea class="demo-response-upload" id="selected-new-dataset"></textarea>
-              <p></p>
               <button id="button-select-new-dataset" class="demo-button"> Select Destination </button>
+              <textarea class="demo-response" id="selected-new-dataset"></textarea>
             </div>
 
             <h5> Enter a name for the new dataset  </h5>
               <div class="demo-controls">
                 <textarea class="demo-response" id="new-dataset-name"></textarea>
               </div>
+
           </div>
 
           <div id="div-create-cloud" class="datasetsaveoption">
@@ -384,8 +381,8 @@
             <h5> Select Blackfynn dataset for uploading
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically)
-                <br>
-                Note: You must must be dataset owner, manager, or editor to upload.
+                <br> <br>
+                Note: You must have "owner", "manager" or "editor permission on the dataset to upload. See feature "Manage dataset permissions" of SODA and the associated <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> Blackfynn Help page</a> for more information.
                 </span>
               </div>
             </h5>
@@ -402,7 +399,7 @@
 
           <div id="div-curate-button" class="datasetsaveoption">
 
-            <h5> Apply changes </h5>
+            <h5> Proceed </h5>
             <button id="button-curate-dataset" class="demo-button"> Generate </button>
             <p id="para-please-wait-curate"</p>
           </div>
