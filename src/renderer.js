@@ -218,6 +218,10 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 // Operations on JavaScript end only
 //////////////////////////////////
 
+// Check default radio button option
+document.getElementById("selectAccount").click()
+document.getElementById("add-edit-subtitle").click()
+
 //log user's OS version
 log.info("User OS:", os.type(), os.platform(), "version:", os.release())
 console.log("User OS:", os.type(), os.platform(), "version:", os.release())
@@ -1417,7 +1421,7 @@ function showCurrentLicense(){
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
-    currentDatasetLicense.innerHTML = ''
+    currentDatasetLicense.innerHTML = 'None'
     bfCurrentMetadataProgress.style.display = 'none'
   } else {
     client.invoke("api_bf_get_license", selectedBfAccount, selectedBfDataset,
@@ -1427,6 +1431,7 @@ function showCurrentLicense(){
         console.error(error)
         bfCurrentMetadataProgress.style.display = 'none'
       } else {
+        console.log(res)
         currentDatasetLicense.innerHTML = res
         bfCurrentMetadataProgress.style.display = 'none'
       }

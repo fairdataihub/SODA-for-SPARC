@@ -790,7 +790,8 @@ def curate_dataset_progress():
 
     if start_submit == 1:
         if upload_directly_to_bf == 1:
-            curated_dataset_size = bf_dataset_size() - initial_bfdataset_size
+            # curated_dataset_size = bf_dataset_size() - initial_bfdataset_size
+            curated_dataset_size = 0
         elapsed_time = time.time() - start_time
         elapsed_time_formatted = time_format(elapsed_time)
         elapsed_time_formatted_display = '<br>' + 'Elapsed time: ' + elapsed_time_formatted + '<br>'
@@ -1827,7 +1828,7 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
         if 'license' in list_keys:
             res = dataset_info['content']['license']
         else:
-            res = 'No license is currently associated'
+            res = 'No license is currently assigned to this dataset'
         return res
     except Exception as e:
         raise Exception(e)
