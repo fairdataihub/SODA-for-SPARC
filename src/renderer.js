@@ -218,9 +218,10 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 // Operations on JavaScript end only
 //////////////////////////////////
 
-// Check default radio button option
+// Check default radio buttons
 document.getElementById("selectAccount").click()
 document.getElementById("add-edit-subtitle").click()
+document.getElementById("pi-owner").click()
 
 //log user's OS version
 log.info("User OS:", os.type(), os.platform(), "version:", os.release())

@@ -230,15 +230,8 @@
             </div>
           </div>
 
-
-
-
           <div id="div-add-edit-banner" class="datasetsaveoption">
 
-            <h5> Current banner image </h5>
-            <div class="demo-controls">
-              <img id='current-banner-img'  src=./assets/img/no-banner-image.png />
-            </div>
 
             <h5> Add/edit banner image </h5>
             <div class="demo-controls">
@@ -258,7 +251,7 @@
 
             <h5> </h5>
             <div class="demo-controls">
-              <div id= 'div-img-container' class='img-container'>
+              <div id= 'div-img-container' class='img-container' style="border: 1px solid black">
                 <img id="image-banner" class='banner-img' width="100%" height:'auto'>
               </div>
               <div style="flex:40%">
@@ -271,6 +264,11 @@
             <div class="demo-controls">
               <button id="save-banner-image" class="demo-button"> Save as banner image </button>
               <p id = "para-dataset-banner-image-status"> </p>
+            </div>
+
+            <h5> Current banner image </h5>
+            <div class="demo-controls">
+              <img id='current-banner-img'  src=./assets/img/no-banner-image.png />
             </div>
 
           </div>
@@ -319,14 +317,14 @@
           <a style="padding:0px 0px 0px 10px" href="https://www.youtube.com/watch?v=rw9pampYgqY" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
-          <div class="demo-meta u-avoid-clicks"> Make PI owner, share with the Curation Team for review, give access to other members or teams for collaborating  </div>
+          <div class="demo-meta u-avoid-clicks"> Make PI owner, give access to other members or teams for collaborating, , share with the Curation Team for review  </div>
         </button>
         <div class="demo-box">
           <h5> Select Blackfynn dataset
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permission (sorted alphabetically)
+              <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permissions (sorted alphabetically)
               <br>
-              Note: You must must be dataset owner or manager to edit permission.
+              Note: You must must be dataset owner or manager to edit permissions.
               </span>
             </div>
           </h5>
@@ -347,45 +345,42 @@
           </div>
           <div class="demo-controls">
 
-            <p id = "para-dataset-permission-current"> </p>
+            <p id = "para-dataset-permission-current"> None </p>
           </div>
 
 
+          <h5> Change permissions
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">
+              SPARC curation rules require to set the PI of the SPARC award as "owner" of the dataset before it is shared with the Curation Team for review.
+              <br>
+              <br>
+              Giving permissions to other members and/or team is only necessary if you require them to make changes to the dataset.
+              <br>
+              <br>
+              Sharing with the SPARC Curation Team will assign them "manager" role, which is necessary for them to access and review your dataset.
+              </span>
+            </div>
+          </h5>
+
           <form id = 'blackfynn-permission-form'>
-            <div style = "padding:10px 0px">
-              <input id="pi-owner" name="blackfynn-permission-sharing" type="radio" class="with-style" />
-              <label for="pi-owner" class="labelradio"> Make the PI (of SPARC award) owner of the dataset </label>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Select name of the PI and click on 'Make PI owner'
-                  <br> <br>
-                  Note: SPARC curation rules require to have the PI of the SPARC award as the owner of a dataset before it is shared with the Curation Team</span>
-                </div>
-            </div>
-            <div style = "padding:10px 0px">
-              <input id="curation-team" name="blackfynn-permission-sharing" type="radio" class="with-style" />
+            <div style = "padding:10px 0px" class="switch-field">
+              <input id="pi-owner" name="blackfynn-permission-sharing" type="radio"/>
+              <label for="pi-owner" class="labelradio"> Make PI owner of dataset</label>
+            
+              <input id="user-permission" name="blackfynn-permission-sharing" type="radio"/>
+              <label for="user-permission" class="labelradio"> Add/edit member permissions  </label>
+           
+              <input id="team-permission" name="blackfynn-permission-sharing" type="radio"/>
+              <label for="team-permission" class="labelradio"> Add/edit team permissions </label>
+
+              <input id="curation-team" name="blackfynn-permission-sharing" type="radio"/>
               <label for="curation-team" class="labelradio"> Share with Curation Team </label>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">This button will provide "manager" role to the SPARC Curation Team giving them access for reviewing your dataset
-                  </span>
-                </div>
-            </div>
-            <div style = "padding:10px 0px">
-              <input id="user-permission" name="blackfynn-permission-sharing" type="radio" class="with-style" />
-              <label for="user-permission" class="labelradio"> Add/edit permission for a user (optional) </label>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Select name of user and the role you want to give for the selected dataset and click on 'Add permission for user'
-                  </span>
-                </div>
-            </div>
-            <div style = "padding:10px 0px">
-              <input id="team-permission" name="blackfynn-permission-sharing" type="radio" class="with-style" />
-              <label for="team-permission" class="labelradio"> Add/edit permission for a team (optional) </label>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Select name of team and the role you want to give for the selected dataset and click on 'Add permission for team'
-                  </span>
-                </div>
+
             </div>
           </form>
+
+          <hr>
 
           <div id="div-bf-pi-owner" class="datasetsaveoption">
               <h5>
@@ -398,7 +393,7 @@
 
               <h5>  </h5>
               <div class="demo-controls">
-                <button id="button-add-permission-pi" class="demo-button"> Make PI owner </button>
+                <button id="button-add-permission-pi" class="demo-button" style="width: 250px"> Make PI owner </button>
                 <p id = "para-dataset-permission-status-pi"> </p>
               </div>
           </div>
@@ -408,7 +403,7 @@
               </h5>
               <h5>  </h5>
               <div class="demo-controls">
-                <button id="button-add-permission-curation-team" class="demo-button"> Share with Curation Team </button>
+                <button id="button-add-permission-curation-team" class="demo-button" style="min-width: 250px"> Share with Curation Team </button>
                 <p id = "para-dataset-permission-status-curation-team"> </p>
               </div>
           </div>
@@ -436,7 +431,7 @@
 
               <h5>  </h5>
               <div class="demo-controls">
-                <button id="button-add-permission" class="demo-button"> Add permission for user </button>
+                <button id="button-add-permission" class="demo-button" style="width: 250px"> Add permission for user </button>
                 <p id = "para-dataset-permission-status"> </p>
               </div>
           </div>
@@ -463,7 +458,7 @@
 
             <h5>  </h5>
             <div class="demo-controls">
-              <button id="button-add-permission-team" class="demo-button"> Add permission for team </button>
+              <button id="button-add-permission-team" class="demo-button" style="width: 250px"> Add permission for team </button>
               <p id = "para-dataset-permission-status-team"> </p>
             </div>
           </div>
