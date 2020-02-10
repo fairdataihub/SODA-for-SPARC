@@ -139,6 +139,7 @@
   display: flex;
   align-items: center;
 }
+
 .demo-button-next-step {
   align-self: flex-start;
   margin-right: 1em;
@@ -175,6 +176,28 @@
   background-color: hsla(190,60%,36%,1);
   color: white;
   border-color: var(--color-accent);
+}
+
+
+.demo-button-table {
+  align-self: flex-start;
+  margin-right: 0.5em;
+  margin-left: 0.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  border: 1px solid;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 0.8em;
+  padding: .1em 1.1em;
+  color: grey;
+  background-color: transparent;
+  width: 80px;
+  cursor: pointer;
+}
+
+.demo-button-table.drag{
+  border: 1px dashed;
 }
 
 .demo-input {
@@ -380,6 +403,10 @@ table.pathtable tr td:first-child {
   width: 40%;
   max-width:40%;
   min-width:40%;
+}
+
+table.pathtable tr th:nth-child(2) {
+  width: 50%;
 }
 
 table.pathtable tr td:nth-child(2) {
