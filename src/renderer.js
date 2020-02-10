@@ -193,7 +193,7 @@ const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
 var open = true
 button.addEventListener("click", (event) => {
   if (open) {
-    document.getElementById("main-nav").style.width = "310px";
+    document.getElementById("main-nav").style.width = "270px";
     document.getElementById("SODA-logo").style.display = "block";
     // document.getElementById("content").style.marginLeft = "-250px";
     open = false;

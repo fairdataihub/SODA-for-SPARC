@@ -31,7 +31,7 @@
 .nav-title {
   text-align: center;
   font-weight: 400;
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1;
   margin: 0;
   color: var(--color-strong-white);
@@ -40,7 +40,7 @@
 }
 
 .nav-title strong {
-  font-weight: 600;
+  /* font-weight: 600; */
   color: var(--color-strong-white);
 }
 
@@ -50,7 +50,7 @@
   height: 70px;
   top: 1.3rem; /* magic */
   right: 1.5rem; /* magic */
-  margin-left:-25px
+  /* margin-left:-25px */
 }
 .nav-item {
   padding: .5em 0;
@@ -70,13 +70,6 @@
   margin-bottom:10px;
   vertical-align: middle;
 }
-/* .SODA-can {
-  /* margin-left:12px; */
-  /* width: 45px;
-  height: 40px;
-  position: fixed;
-  bottom: 0; */
-
 
 .hamburger{
   width: 30px;
@@ -259,7 +252,7 @@
 
 .nav-center-logo-image {
   display: block;
-  margin-left: 70px;
+  margin-left: 40px;
   margin-bottom:15px;
   margin-top: 10px;
   /* margin-right: auto; */
