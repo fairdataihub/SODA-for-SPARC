@@ -27,24 +27,31 @@
 
 <body>
 
-  <nav class="nav js-nav">
+  <nav id="main-nav" class="nav js-nav">
 
-    <header class="nav-header">
+    <!-- <header class="nav-header">
       <img class = "nav-center-logo-image" src="assets/img/logo-soda1024-white.png">
       <h1 class="nav-title"><br />
-      <!-- <strong> -->
-      Software for Organizing Data Automatically
+      <! <strong> -->
+      <!-- Software for Organizing Data Automatically -->
       <!-- </strong> -->
-    </header>
+    <!-- </header> -->
 
     <div class="nav-item u-category-windows">
+      <div id="button-hamburger" class="hamburger" onclick="myFunction(this)">
+        <span></span>
+        <span></span>
+        <span></span>
+      <img class = "nav-center-logo-image" src="assets/img/logo-soda1024-white.png">
+      </div>
+      <br><br>
       <button type="button" id="button-getting-started" data-section="getting_started" class="nav-button">
         <img class="nav-icon" src="assets/img/getting-started-white.png">
         Getting Started <em></em>
       </button>
       <button type="button" id="button-crash-hang" data-section="manage_submit" class="nav-button">
         <img class="nav-icon" src="assets/img/manage-white.png">
-        Manage Datasets 
+        Manage Datasets
       </button>
       <button type="button" id="button-prepare-metadata" data-section="prepare_metadata" class="nav-button">
         <img class="nav-icon" src="assets/img/metadata-white.png">
@@ -70,6 +77,11 @@
     require('./assets/nav') // Side navigation menu control
     require('./assets/demo-btns')
     require('./assets/normalize-shortcuts') // For normalizing shortcuts accross OS
+  </script>
+  <script>
+    function myFunction(element) {
+          element.classList.toggle("open");
+    }
   </script>
 
 </body>

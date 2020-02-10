@@ -37,6 +37,8 @@ client.invoke("echo", "server ready", (error, res) => {
 //////////////////////////////////
 // Get html elements from the user interface //
 //////////////////////////////////
+// Navigator button
+const button = document.getElementById("button-hamburger")
 
 // Metadata Templates
 const downloadSubmission = document.getElementById("a-submission")
@@ -186,6 +188,18 @@ const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
 //////////////////////////////////
 // Operations on JavaScript end only
 //////////////////////////////////
+
+/// Sidebar Navigation ///
+button.addEventListener("click", (event) => {
+  if (document.getElementById("main-nav").style.width === "250px") {
+    // toggleSidebar()
+    document.getElementById("main-nav").style.width = "70px";
+    document.getElementById("content").style.marginLeft = "70px";
+  } else {
+    document.getElementById("main-nav").style.width = "250px";
+    document.getElementById("content").style.marginLeft = "250px";
+  }
+})
 
 // Button selection to move on to next step
 document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
