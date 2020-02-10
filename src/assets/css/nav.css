@@ -1,7 +1,7 @@
 /* Nav */
 
 .nav {
-  width: 70px;
+  width: 80px;
   overflow-x: hidden;
   overflow-y: auto;
   color: var(--color-subtle);
@@ -31,6 +31,7 @@
 .nav-title {
   text-align: center;
   font-weight: 400;
+  font-size: 16px;
   line-height: 1;
   margin: 0;
   color: var(--color-strong-white);
@@ -39,34 +40,46 @@
 }
 
 .nav-title strong {
-  /*font-weight: 600;*/
+  font-weight: 600;
   color: var(--color-strong-white);
 }
 
 .nav-header-icon {
   position: absolute;
-  width: 36px;
-  height: 36px;
-  top: 1.5rem; /* magic */
-  right: 1.75rem; /* magic */
+  width: 165px;
+  height: 70px;
+  top: 1.3rem; /* magic */
+  right: 1.5rem; /* magic */
+  margin-left:-25px
 }
 .nav-item {
   padding: .5em 0;
-  font-family: "Open Sans", sans-serif;
+  vertical-align: middle;
 }
 
 .nav-icon {
-  width: 27px;
-  height: 27px;
-  vertical-align: sub;
+  width: 30px;
+  height: 30px;
+  /* vertical-align: sub; */
   /* margin-right: .25rem; */
-  margin-right: 25px;
-  padding-bottom:3px;
-  margin-left: -26px
+  margin-right: 27px;
+  padding-bottom:1px;
+  padding-top:1px;
+  margin-left: -22px;
+  margin-top:10px;
+  margin-bottom:10px;
+  vertical-align: middle;
 }
+/* .SODA-can {
+  /* margin-left:12px; */
+  /* width: 45px;
+  height: 40px;
+  position: fixed;
+  bottom: 0; */
+
 
 .hamburger{
-  width: 26px;
+  width: 30px;
   height: 5px;
   position: relative;
   margin: 9px auto;
@@ -77,10 +90,10 @@
   -moz-transform: rotate(0deg);
   -o-transform: rotate(0deg);
   transform: rotate(0deg);
-  /* -webkit-transition: .5s ease-in-out;
+  -webkit-transition: .5s ease-in-out;
   -moz-transition: .5s ease-in-out;
   -o-transition: .5s ease-in-out;
-  transition: .5s ease-in-out; */
+  transition: .5s ease-in-out;
   cursor: pointer;
 }
 
@@ -97,10 +110,10 @@
   -moz-transform: rotate(0deg);
   -o-transform: rotate(0deg);
   transform: rotate(0deg);
-  -webkit-transition: .25s ease-in-out;
-  -moz-transition: .25s ease-in-out;
-  -o-transition: .25s ease-in-out;
-  transition: .25s ease-in-out;
+  -webkit-transition: .5s ease-in-out;
+  -moz-transition: .5s ease-in-out;
+  -o-transition: .5s ease-in-out;
+  transition: .5s ease-in-out;
 }
 
 #button-hamburger span:nth-child(1) {
@@ -157,8 +170,8 @@
   padding-left: calc(2rem + 8px + .5rem); /* padding + icon + magic */
   line-height: 2;
   text-align: left;
-  font: inherit;
-  font-size: 15px;
+  /* font: inherit; */
+  font-size: 18px;
   color: white;
   border: none;
   background-color: transparent;
@@ -166,6 +179,8 @@
   outline: none;
   opacity: 0.8;
   cursor: pointer;
+  font-family: "Open Sans", sans-serif;
+  vertical-align: center
 }
 .nav-button:hover,
 .nav-button:focus:not(.is-selected) {
@@ -179,7 +194,7 @@
 .nav-button.is-selected,
 .nav-button.is-selected em {
   color: white;
-  font-weight: 600;
+  font-weight: 500;
   opacity: 1;
 }
 .nav-button.is-selected:focus {
@@ -244,10 +259,10 @@
 
 .nav-center-logo-image {
   display: block;
-  margin-left: 50px;
-  margin-bottom:30px;
-  margin-top: 15px;
+  margin-left: 70px;
+  margin-bottom:15px;
+  margin-top: 10px;
   /* margin-right: auto; */
-  height: 50px;
-  width: 150px;
+  height: 55px;
+  width: 165px;
 }

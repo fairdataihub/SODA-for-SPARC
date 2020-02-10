@@ -193,11 +193,13 @@ const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
 var open = true
 button.addEventListener("click", (event) => {
   if (open) {
-    document.getElementById("main-nav").style.width = "250px";
+    document.getElementById("main-nav").style.width = "310px";
+    document.getElementById("SODA-logo").style.display = "block";
     // document.getElementById("content").style.marginLeft = "-250px";
     open = false;
   } else {
     document.getElementById("main-nav").style.width = "70px";
+    document.getElementById("SODA-logo").style.display = "none";
     // document.getElementById("content").style.marginLeft = "70px";
     open = true;
   }
