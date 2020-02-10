@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="assets/css/nav.css">
     <link rel="stylesheet" href="assets/css/section.css">
     <link rel="stylesheet" href="assets/css/demo.css">
+    <link rel="stylesheet" href="assets/css/photon/css/photon.css">
     <link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css">
     <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="node_modules/highlight.js/styles/github.css">
@@ -27,24 +28,36 @@
 
 <body>
 
-  <nav class="nav js-nav">
+  <nav id="main-nav" class="nav js-nav">
 
-    <header class="nav-header">
+    <!-- <header class="nav-header">
       <img class = "nav-center-logo-image" src="assets/img/logo-soda1024-white.png">
       <h1 class="nav-title"><br />
-      <!-- <strong> -->
-      Software for Organizing Data Automatically
+      <! <strong> -->
+      <!-- Software for Organizing Data Automatically -->
       <!-- </strong> -->
-    </header>
+    <!-- </header> -->
 
     <div class="nav-item u-category-windows">
+      <div id="button-hamburger" class="hamburger" onclick="myFunction(this)">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <br>
+      <div style="display:none" id="SODA-logo">
+      <img class = "nav-center-logo-image" src="assets/img/logo-soda1024-white.png">
+      <h3 class="nav-title" >
+      Software for Organizing Data Automatically</h3>
+      </div>
+      <br><br>
       <button type="button" id="button-getting-started" data-section="getting_started" class="nav-button">
         <img class="nav-icon" src="assets/img/getting-started-white.png">
         Getting Started <em></em>
       </button>
       <button type="button" id="button-crash-hang" data-section="manage_submit" class="nav-button">
         <img class="nav-icon" src="assets/img/manage-white.png">
-        Manage Datasets 
+        Manage Datasets
       </button>
       <button type="button" id="button-prepare-metadata" data-section="prepare_metadata" class="nav-button">
         <img class="nav-icon" src="assets/img/metadata-white.png">
@@ -62,7 +75,7 @@
 
   </nav>
 
-  <main class="content js-content"></main>
+  <main id="content" class="content js-content"></main>
 
   <script> // Required js script are imported here
     require('./assets/imports') // Imports html files into app
@@ -70,6 +83,11 @@
     require('./assets/nav') // Side navigation menu control
     require('./assets/demo-btns')
     require('./assets/normalize-shortcuts') // For normalizing shortcuts accross OS
+  </script>
+  <script>
+    function myFunction(element) {
+          element.classList.toggle("open");
+    }
   </script>
 
 </body>

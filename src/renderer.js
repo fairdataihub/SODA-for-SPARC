@@ -37,6 +37,8 @@ client.invoke("echo", "server ready", (error, res) => {
 //////////////////////////////////
 // Get html elements from the user interface //
 //////////////////////////////////
+// Navigator button
+const button = document.getElementById("button-hamburger")
 
 // Metadata Templates
 const downloadSubmission = document.getElementById("a-submission")
@@ -187,6 +189,22 @@ const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
 // Operations on JavaScript end only
 //////////////////////////////////
 
+/// Sidebar Navigation ///
+var open = true
+button.addEventListener("click", (event) => {
+  if (open) {
+    document.getElementById("main-nav").style.width = "310px";
+    document.getElementById("SODA-logo").style.display = "block";
+    // document.getElementById("content").style.marginLeft = "-250px";
+    open = false;
+  } else {
+    document.getElementById("main-nav").style.width = "70px";
+    document.getElementById("SODA-logo").style.display = "none";
+    // document.getElementById("content").style.marginLeft = "70px";
+    open = true;
+  }
+})
+
 // Button selection to move on to next step
 document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
   if (getComputedStyle(document.getElementById('div-file-conversion'), null).display === 'none'){
@@ -195,21 +213,21 @@ document.getElementById('button-organize-next-step').addEventListener('click', (
   }
 })
 document.getElementById('button-file-conversion-next-step').addEventListener('click', (event) => {
+  document.getElementById('button-file-conversion-demo-toggle').click()
   if (getComputedStyle(document.getElementById('div-specify-metadata'), null).display === 'none'){
     document.getElementById('button-specify-metadata-demo-toggle').click()
-    document.getElementById('button-file-conversion-demo-toggle').click()
   }
 })
 document.getElementById('button-specify-metadata-next-step').addEventListener('click', (event) => {
+  document.getElementById('button-specify-metadata-demo-toggle').click()
   if (getComputedStyle(document.getElementById('div-validate-dataset'), null).display === 'none'){
     document.getElementById('button-validate-dataset-demo-toggle').click()
-    document.getElementById('button-specify-metadata-demo-toggle').click()
   }
 })
 document.getElementById('button-validate-dataset-next-step').addEventListener('click', (event) => {
+  document.getElementById('button-validate-dataset-demo-toggle').click()
   if (getComputedStyle(document.getElementById('div-generate-dataset'), null).display === 'none'){
     document.getElementById('button-generate-dataset-demo-toggle').click()
-    document.getElementById('button-validate-dataset-demo-toggle').click()
   }
 })
 

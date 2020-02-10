@@ -249,24 +249,24 @@
 
 /* Download Template Links */
 a.download-metadata{
-  background-color: hsla(190,60%,36%,1);
+  background-color: #FFFAFA;
   /* border: none; */
-  color: white;
+  color: black;
   padding: 8px 10px;
   cursor: pointer;
   font-size: 15px;
   display: inline-block;
-  border: 1px solid;
+  border: 1px solid hsla(192,69%,23%,1);
   border-radius: 4px;
   /* padding:0.3em 1.2em; */
   margin:0 0.3em 0.3em 0;
-  width: 300px;
+  width: 220px;
   height: 45px;
   text-align: center;
   vertical-align: middle;
 }
 a.download-metadata:hover {
-  background-color: hsla(192,69%,23%,1);
+  background-color: hsla(192,69%,23%,0.3);
 }
 
 /* ProTip ----------------------------- */
@@ -710,7 +710,6 @@ label.input-banner-img{
 .switch-field label:last-of-type {
   border-radius: 0 4px 4px 0;
 }
-
 
 .switch {
   position: relative;
