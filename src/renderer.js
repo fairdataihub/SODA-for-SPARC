@@ -223,6 +223,7 @@ document.getElementById("selectAccount").click()
 document.getElementById("add-edit-subtitle").click()
 document.getElementById("pi-owner").click()
 document.getElementById("cloud-dataset").click()
+document.getElementById("organize-dataset").click()
 
 //log user's OS version
 log.info("User OS:", os.type(), os.platform(), "version:", os.release())

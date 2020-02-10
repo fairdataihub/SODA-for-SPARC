@@ -53,7 +53,6 @@ document.querySelector('#cloud-dataset').addEventListener('click', () => {
 function showPreorganizedDataset(){
   document.getElementById('div-pre-organized-dataset').style.display ='block';
   document.getElementById('div-organize-dataset').style.display ='none';
-  document.getElementById('div-smart-organize-dataset').style.display ='none';
   document.getElementById('para-save-file-organization-status').innerHTML = '';
   document.getElementById('div-save-table').style.display ='block';
   document.getElementById('div-smart-organize').style.display ='none';
@@ -64,10 +63,9 @@ function showPreorganizedDataset(){
 function showOrganizeDataset(){
   document.getElementById('div-pre-organized-dataset').style.display ='none';
   document.getElementById('div-organize-dataset').style.display ='block';
-  document.getElementById('div-smart-organize-dataset').style.display ='none';
   document.getElementById('para-save-file-organization-status').innerHTML = '';
   document.getElementById('div-save-table').style.display ='block';
-  document.getElementById('div-smart-organize').style.display ='block';
+  document.getElementById('div-smart-organize').style.display ='none';
   document.getElementById('div-clear-table').style.display ='block';
   document.getElementById('div-existing-dataset').style.display ='none';
 }
