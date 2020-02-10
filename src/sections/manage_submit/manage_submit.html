@@ -19,7 +19,7 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-new-window-login-demo-toggle" class="js-container-target demo-toggle-button">Login to your Blackfynn account
+        <button id="button-new-window-login-demo-toggle" class="js-container-target demo-toggle-button">Connect to your Blackfynn account
           <a style="padding:0px 0px 0px 10px" href="https://www.youtube.com/watch?v=_HZE5rcPSMI" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
@@ -31,17 +31,19 @@
           <form id = 'blackfynn-account'>
             <div style = "padding:10px 0px" class="switch-field">
               <input id="addAccount" name="blackfynn-account" type="radio"/>
-              <label for="addAccount" class="labelradio"> Addadd new account </label>
+              <label for="addAccount" class="labelradio"> Add new account </label>
               <input id="selectAccount" name="blackfynn-account" type="radio"/>
               <label for="selectAccount" class="labelradio"> Select existing account </label>
               </div>
           </form>
 
+          <hr>
+
           <div id="div-add-account" class="datasetsaveoption" style="margin-left:20px">
             <h5> Obtain API key and secret from your Blackfynn account and enter below
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients" style="color:white;"> Blackfynn Help page</a>
-                for generating an API and setting up your Blackfynn account in SODA during your first use. 
+                for generating API key and secret and setting up your Blackfynn account in SODA during your first use. 
                 </span>
               </div> 
             </h5> <br>
@@ -113,7 +115,7 @@
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">Add one or two sentences that explain the content of your dataset. Although optional when creating a new dataset, it is mandatory to add a subtitle before sharing your dataset with the Curation Team for review.
               <br> <br>
-              It could also be added later under the "Add medatata to Blackfynn dataset" feature. </span>
+              It could also be added later under the "Add medatata to Blackfynn dataset" feature of SODA. </span>
             </div>
           </h5>
           <div class="demo-controls">
@@ -133,19 +135,21 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-new-window-metadata-demo-toggle" class="js-container-target demo-toggle-button"> Add metadata to Blackfynn dataset
+        <button id="button-new-window-metadata-demo-toggle" class="js-container-target demo-toggle-button"> Add metadata to datasets on Blackfynn
           <a style="padding:0px 0px 0px 10px" href="https://www.youtube.com/watch?v=uazpeqYacso" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
-          <div class="demo-meta u-avoid-clicks"> Add mandatory subtitle, description, banner image, and license to your dataset
+          <div class="demo-meta u-avoid-clicks"> Add subtitle, description, banner image, and license to your dataset
           </div>
         </button>
         <div class="demo-box">
           <h5> Select Blackfynn dataset
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the Blackfynn dataset you wish to add/edit metadata (sorted alphabetically)
-              <br>
-              Note: You must must be dataset owner or manager to edit metadata.
+              <span class="tooltiptext">Select the Blackfynn dataset for which you wish to add/edit metadata (sorted alphabetically).
+              <br><br>
+              Subtitle, description, banner image and license are mandatory SPARC metadata.
+              <br><br>
+              Note: You must have "owner" or "manager" permission on the dataset to edit metadata. See feature "Manage dataset permissions" of SODA and the associated <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> Blackfynn Help page</a> for more information.
               </span>
             </div>
           </h5>
@@ -166,21 +170,12 @@
             <div style = "padding:10px 0px" class="switch-field">
               <input id="add-edit-subtitle" name="blackfynn-add-metadata" type="radio" />
               <label for="add-edit-subtitle" class="labelradio"> Add/edit subtitle </label>
-                <!-- <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Add a short description that explains the content of your dataset.</span>
-                </div> -->
 
               <input id="add-edit-description" name="blackfynn-add-metadata" type="radio" />
               <label for="add-edit-description" class="labelradio"> Add/edit description </label>
-                <!-- <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Provide a detailed description of your dataset.
-                  <br>
-                  This description will be highly visible once your dataset is published
-                  </span>
-                </div>
- -->
+                
               <input id="add-edit-banner" name="blackfynn-add-metadata" type="radio" />
-              <label for="add-edit-banner" class="labelradio"> Add a banner image </label>
+              <label for="add-edit-banner" class="labelradio"> Upload a banner image </label>
                 <!-- <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                   <span class="tooltiptext">This image will be associated with the dataset. It will be visible once the dataset is published.
                   <br>
@@ -190,20 +185,19 @@
                 </div> -->
 
               <input id="add-edit-license" name="blackfynn-add-metadata" type="radio" />
-              <label for="add-edit-license" class="labelradio"> Associate a license </label>
-                <!-- <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Associate a license with your dataset.
-                  <br>
-                  Note: SPARC dataset must be licensed under Creative Commons Attribution (CC-BY)
-                  </span>
-                </div> -->
+              <label for="add-edit-license" class="labelradio"> Assign a license </label>
 
             </div>
 
           </form>
 
+          <hr>
+
           <div id="div-add-edit-subtitle" class="datasetsaveoption">
-            <h5> View/type subtitle
+            <h5> Enter subtitle below. Any existing subtitle will be displayed.
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">The subtitle is a short description (no more than 256 characters) that explains the content of your dataset.</span>
+              </div>
             </h5>
             <div class="demo-controls">
               <textarea id="bf-dataset-subtitle" class="demo-response" rows="4" maxlength="256"> </textarea>
@@ -219,7 +213,14 @@
           </div>
 
           <div id="div-add-edit-description" class="datasetsaveoption">
-            <h5> Enter description in the text box below </h5>
+            <h5> Enter description below. Any existing description will be displayed.
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">Provide a detailed description of your dataset.
+                <br>
+                This description will be highly visible on the SPARC data portal once your dataset is published so it is recommended to use rich text (bold, italic, enumerated list, etc.)
+                </span>
+              </div>
+            </h5>
             <div id="editorSection">
             </div>
             <h5> </h5>
@@ -229,15 +230,8 @@
             </div>
           </div>
 
-
-
-
           <div id="div-add-edit-banner" class="datasetsaveoption">
 
-            <h5> Current banner image </h5>
-            <div class="demo-controls">
-              <img id='current-banner-img'  src=./assets/img/no-banner-image.png />
-            </div>
 
             <h5> Add/edit banner image </h5>
             <div class="demo-controls">
@@ -257,7 +251,7 @@
 
             <h5> </h5>
             <div class="demo-controls">
-              <div id= 'div-img-container' class='img-container'>
+              <div id= 'div-img-container' class='img-container' style="border: 1px solid black">
                 <img id="image-banner" class='banner-img' width="100%" height:'auto'>
               </div>
               <div style="flex:40%">
@@ -272,40 +266,41 @@
               <p id = "para-dataset-banner-image-status"> </p>
             </div>
 
+            <h5> Current banner image </h5>
+            <div class="demo-controls">
+              <img id='current-banner-img'  src=./assets/img/no-banner-image.png />
+            </div>
+
           </div>
 
 
           <div id="div-add-edit-license" class="datasetsaveoption">
-            <h5> Current License </h5>
-            <div class="demo-controls">
-              <p id = "para-dataset-license-current"> </p>
-            </div>
-
-            <h5> Add license </h5>
+            
             <!-- <div class="demo-controls">
-              <select class="my_dropdown" id="bf-license-list">
-                <option> Select license </option>
-                <optgroup label="Better for data">
-                <option>Community Data License Agreement – Permissive </option>
-                <option>Community Data License Agreement – Sharing </option>
-                <option>Creative Commons Zero 1.0 Universal </option>
-                <option>Creative Commons Attribution </option>
-                <option>Creative Commons Attribution - ShareAlike </option>
-                <option>Open Data Commons Open Database </option>
-                <option>Open Data Commons Attribution </option>
-                <option>Open Data Commons Public Domain Dedication and License </option>
-                <optgroup label="Better for code">
-                <option>Apache 2.0 </option>
-                <option>GNU General Public License v3.0 </option>
-                <option>GNU Lesser General Public License </option>
-                <option>MIT </option>
-                <option>Mozilla Public License 2.0 </option>
-              </select>
+              <p id = "para-dataset-license-current"> None </p>
             </div> -->
 
-            <!-- <h5>  </h5> -->
+            
             <div class="demo-controls">
-              <button id="button-add-license" class="demo-button"> Add Creative Commons Attribution (CC-BY) license </button>
+              <div style="width: 200px; float: left;">
+                <h5> Click to assign license </h5>
+                <button id="button-add-license" class="demo-button" style="width: 300px"> Assign Creative Commons Attribution (CC-BY) license 
+                </button>
+              </div>
+              <div style="margin-left: 220px;">
+                <h5> Current License 
+                </h5>
+                <p id = "para-dataset-license-current"> None </p>
+              </div>
+              <div style="position:absolute; right:30px";>
+                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext">As per SPARC rules, you must assign the Creative Commons Attribution (CC-BY) license to your dataset.
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="demo-controls">
               <p id = "para-dataset-license-status"> </p>
             </div>
 
@@ -322,14 +317,14 @@
           <a style="padding:0px 0px 0px 10px" href="https://www.youtube.com/watch?v=rw9pampYgqY" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
-          <div class="demo-meta u-avoid-clicks"> Make PI owner, share with the Curation Team for review, give access to other members or teams for collaborating  </div>
+          <div class="demo-meta u-avoid-clicks"> Make PI owner, give access to other members or teams for collaborating, , share with the Curation Team for review  </div>
         </button>
         <div class="demo-box">
           <h5> Select Blackfynn dataset
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permission (sorted alphabetically)
-              <br>
-              Note: You must must be dataset owner or manager to edit permission.
+              <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permissions (sorted alphabetically)
+              <br><br>
+              Note: You must have "owner" or "manager" permission on the dataset to manage permissions. See the associated <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> Blackfynn Help page</a> for more information.
               </span>
             </div>
           </h5>
@@ -350,45 +345,42 @@
           </div>
           <div class="demo-controls">
 
-            <p id = "para-dataset-permission-current"> </p>
+            <p id = "para-dataset-permission-current"> None </p>
           </div>
 
 
+          <h5> Change permissions
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">
+              SPARC curation rules require to set the PI of the SPARC award as "owner" of the dataset before it is shared with the Curation Team for review.
+              <br>
+              <br>
+              Giving permissions to other members and/or team is only necessary if you need them to make changes to the dataset.
+              <br>
+              <br>
+              Sharing with the SPARC Curation Team will assign them "manager" role, which is necessary for them to access and review your dataset.
+              </span>
+            </div>
+          </h5>
+
           <form id = 'blackfynn-permission-form'>
-            <div style = "padding:10px 0px">
-              <input id="pi-owner" name="blackfynn-permission-sharing" type="radio" class="with-style" />
-              <label for="pi-owner" class="labelradio"> Make the PI (of SPARC award) owner of the dataset </label>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Select name of the PI and click on 'Make PI owner'
-                  <br> <br>
-                  Note: SPARC curation rules require to have the PI of the SPARC award as the owner of a dataset before it is shared with the Curation Team</span>
-                </div>
-            </div>
-            <div style = "padding:10px 0px">
-              <input id="curation-team" name="blackfynn-permission-sharing" type="radio" class="with-style" />
+            <div style = "padding:10px 0px" class="switch-field">
+              <input id="pi-owner" name="blackfynn-permission-sharing" type="radio"/>
+              <label for="pi-owner" class="labelradio"> Make PI owner of dataset</label>
+            
+              <input id="user-permission" name="blackfynn-permission-sharing" type="radio"/>
+              <label for="user-permission" class="labelradio"> Add/edit member permissions  </label>
+           
+              <input id="team-permission" name="blackfynn-permission-sharing" type="radio"/>
+              <label for="team-permission" class="labelradio"> Add/edit team permissions </label>
+
+              <input id="curation-team" name="blackfynn-permission-sharing" type="radio"/>
               <label for="curation-team" class="labelradio"> Share with Curation Team </label>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">This button will provide "manager" role to the SPARC Curation Team giving them access for reviewing your dataset
-                  </span>
-                </div>
-            </div>
-            <div style = "padding:10px 0px">
-              <input id="user-permission" name="blackfynn-permission-sharing" type="radio" class="with-style" />
-              <label for="user-permission" class="labelradio"> Add/edit permission for a user (optional) </label>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Select name of user and the role you want to give for the selected dataset and click on 'Add permission for user'
-                  </span>
-                </div>
-            </div>
-            <div style = "padding:10px 0px">
-              <input id="team-permission" name="blackfynn-permission-sharing" type="radio" class="with-style" />
-              <label for="team-permission" class="labelradio"> Add/edit permission for a team (optional) </label>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Select name of team and the role you want to give for the selected dataset and click on 'Add permission for team'
-                  </span>
-                </div>
+
             </div>
           </form>
+
+          <hr>
 
           <div id="div-bf-pi-owner" class="datasetsaveoption">
               <h5>
@@ -401,7 +393,7 @@
 
               <h5>  </h5>
               <div class="demo-controls">
-                <button id="button-add-permission-pi" class="demo-button"> Make PI owner </button>
+                <button id="button-add-permission-pi" class="demo-button" style="width: 250px"> Make PI owner </button>
                 <p id = "para-dataset-permission-status-pi"> </p>
               </div>
           </div>
@@ -411,7 +403,7 @@
               </h5>
               <h5>  </h5>
               <div class="demo-controls">
-                <button id="button-add-permission-curation-team" class="demo-button"> Share with Curation Team </button>
+                <button id="button-add-permission-curation-team" class="demo-button" style="min-width: 250px"> Share with Curation Team </button>
                 <p id = "para-dataset-permission-status-curation-team"> </p>
               </div>
           </div>
@@ -439,7 +431,7 @@
 
               <h5>  </h5>
               <div class="demo-controls">
-                <button id="button-add-permission" class="demo-button"> Add permission for user </button>
+                <button id="button-add-permission" class="demo-button" style="width: 250px"> Add permission for user </button>
                 <p id = "para-dataset-permission-status"> </p>
               </div>
           </div>
@@ -466,7 +458,7 @@
 
             <h5>  </h5>
             <div class="demo-controls">
-              <button id="button-add-permission-team" class="demo-button"> Add permission for team </button>
+              <button id="button-add-permission-team" class="demo-button" style="width: 250px"> Add permission for team </button>
               <p id = "para-dataset-permission-status-team"> </p>
             </div>
           </div>
@@ -506,21 +498,19 @@
           <p> </p>
 
           <h5> Select local dataset to submit
-          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+<!--           <div class="tooltipnew"><img class="info" src="assets/img/info.png">
             <span class="tooltiptext">Select the local folder that you want to submit to your Blackfynn account</span>
-          </div>
+          </div> -->
           </h5>
           <div class="demo-controls">
-            <textarea class="demo-response-upload" style="resize: none; height:45px;" id="selected-submit-dataset"></textarea>
-            <p></p>
             <button id="button-select-submit-dataset" class="demo-button">Select Folder </button>
+            <textarea class="demo-response-upload" style="resize: none; height:45px;" id="selected-submit-dataset"></textarea>
           </div>
 
           <h5> Select Blackfynn dataset for uploading
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically)
-              <br>
-              Note: You must must be dataset owner, manager, or editor to upload.
+              <span class="tooltiptext">
+              Note: You must have "owner", "manager" or "editor permission on the dataset to upload. See feature "Manage dataset permissions" of SODA and the associated <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> Blackfynn Help page</a> for more information.
               </span>
             </div>
           </h5>
@@ -538,7 +528,7 @@
           </div> -->
 
           <div>
-            <h5> Submit
+            <h5> Upload
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">
                 Click on 'Submit dataset' to push all the files/folders from the selected local folder into the selected Blackfynn dataset. Local folder structure will be preserved. The progress bar located below will provide a live update on the upload.

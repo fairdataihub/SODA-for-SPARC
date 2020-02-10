@@ -231,10 +231,12 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
   }
 })
 
-
-//////////////////////////////////
-// Operations on JavaScript end only
-//////////////////////////////////
+// Check default radio buttons
+document.getElementById("selectAccount").click()
+document.getElementById("add-edit-subtitle").click()
+document.getElementById("pi-owner").click()
+document.getElementById("cloud-dataset").click()
+document.getElementById("organize-dataset").click()
 
 //log user's OS version
 log.info("User OS:", os.type(), os.platform(), "version:", os.release())
@@ -333,6 +335,8 @@ ipcRenderer.on('selected-dataset', (event, path) => {
 })
 
 //Select files/folders to be added to table for organizing
+
+//code
 const selectCodeBtn = document.getElementById('button-select-code')
 selectCodeBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-code')
@@ -344,8 +348,87 @@ selectCodeDirectoryBtn.addEventListener('click', (event) => {
 })
 
 ipcRenderer.on('selected-code', (event, path) => {
-    insertFileToTable(tableNotOrganized, path)
+    insertFileToTable(tableNotOrganized, path, 'code')
 })
+
+//derivatives
+const selectDerivativesBtn = document.getElementById('button-select-derivatives')
+selectDerivativesBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-file-dialog-derivatives')
+})
+
+const selectDerivativesDirectoryBtn = document.getElementById('button-select-derivatives-directory')
+selectDerivativesDirectoryBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-folder-dialog-derivatives')
+})
+
+ipcRenderer.on('selected-derivatives', (event, path) => {
+    insertFileToTable(tableNotOrganized, path, 'derivatives')
+})
+
+//docs
+const selectDocsBtn = document.getElementById('button-select-docs')
+selectDocsBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-file-dialog-docs')
+})
+
+const selectDocsDirectoryBtn = document.getElementById('button-select-docs-directory')
+selectDocsDirectoryBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-folder-dialog-docs')
+})
+
+ipcRenderer.on('selected-docs', (event, path) => {
+    insertFileToTable(tableNotOrganized, path, 'docs')
+})
+
+//primary
+const selectPrimaryBtn = document.getElementById('button-select-primary')
+selectPrimaryBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-file-dialog-primary')
+})
+
+const selectPrimaryDirectoryBtn = document.getElementById('button-select-primary-directory')
+selectPrimaryDirectoryBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-folder-dialog-primary')
+})
+
+ipcRenderer.on('selected-primary', (event, path) => {
+    insertFileToTable(tableNotOrganized, path, 'primary')
+})
+
+//protocol
+const selectProtocolBtn = document.getElementById('button-select-protocol')
+selectProtocolBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-file-dialog-protocol')
+})
+
+const selectProtocolDirectoryBtn = document.getElementById('button-select-protocol-directory')
+selectProtocolDirectoryBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-folder-dialog-protocol')
+})
+
+ipcRenderer.on('selected-protocol', (event, path) => {
+    insertFileToTable(tableNotOrganized, path, 'protocol')
+})
+
+//source
+const selectSourceBtn = document.getElementById('button-select-source')
+selectSourceBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-file-dialog-source')
+})
+
+const selectSourceDirectoryBtn = document.getElementById('button-select-source-directory')
+selectSourceDirectoryBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-folder-dialog-source')
+})
+
+ipcRenderer.on('selected-source', (event, path) => {
+    insertFileToTable(tableNotOrganized, path, 'source')
+})
+
+
+
+
 
 //Clear table
 clearTableBtn.addEventListener('click', () => {
@@ -364,7 +447,7 @@ ipcRenderer.on('warning-clear-table-selection', (event, index) => {
   }
 })
 
-
+// Click table navigator
 // Drag and drop
 var holderCode = document.getElementById('code')
 holderCode.addEventListener("drop", (event)=> {
@@ -533,10 +616,10 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
             log.error(error)
             console.error(error)
             var emessage = userError(error)
-            document.getElementById("para-upload-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+            document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           } else {
             jsonToTableWithDescription(tableNotOrganized, res)
-            document.getElementById("para-upload-file-organization-status").innerHTML = "Imported!";
+            document.getElementById("para-save-file-organization-status").innerHTML = "Imported!";
           }
     })
   }
@@ -545,7 +628,7 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
 // Action when user click on "Preview" file organization button
 selectPreviewBtn.addEventListener('click', () => {
   clearStrings()
-  document.getElementById("para-preview-organization-status").innerHTML = "Please wait..."
+  document.getElementById("para-save-file-organization-status").innerHTML = "Please wait..."
   var jsonvect = tableToJsonWithDescription(tableNotOrganized)
   var jsonpath = jsonvect[0]
   if (manifestStatus.checked){
@@ -565,9 +648,9 @@ selectPreviewBtn.addEventListener('click', () => {
         log.error(error)
         console.error(error)
         var emessage = userError(error)
-        document.getElementById("para-preview-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
+        document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
-        document.getElementById("para-preview-organization-status").innerHTML = "Preview folder available in a new file explorer window";
+        document.getElementById("para-save-file-organization-status").innerHTML = "Preview folder available in a new file explorer window";
       }
   })
 })
@@ -1435,7 +1518,7 @@ function showCurrentLicense(){
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
-    currentDatasetLicense.innerHTML = ''
+    currentDatasetLicense.innerHTML = 'None'
     bfCurrentMetadataProgress.style.display = 'none'
   } else {
     client.invoke("api_bf_get_license", selectedBfAccount, selectedBfDataset,
@@ -1445,6 +1528,7 @@ function showCurrentLicense(){
         console.error(error)
         bfCurrentMetadataProgress.style.display = 'none'
       } else {
+        console.log(res)
         currentDatasetLicense.innerHTML = res
         bfCurrentMetadataProgress.style.display = 'none'
       }
@@ -1672,17 +1756,13 @@ function enableform(formId) {
 }
 
 function clearStrings() {
-  document.getElementById("para-preview-organization-status").innerHTML = ""
   document.getElementById("para-save-file-organization-status").innerHTML = ""
-  document.getElementById("para-upload-file-organization-status").innerHTML = ""
   document.getElementById("para-preview-organization-status-metadata").innerHTML = ""
   document.getElementById("para-selected-dataset").innerHTML = ""
 }
 
 function clearPermissionsStrings() {
-  document.getElementById("para-preview-organization-status").innerHTML = ""
   document.getElementById("para-save-file-organization-status").innerHTML = ""
-  document.getElementById("para-upload-file-organization-status").innerHTML = ""
   document.getElementById("para-selected-dataset").innerHTML = ""
 }
 
@@ -1797,9 +1877,9 @@ function tableToJsonWithDescriptionOrganized(table){
 }
 
 // Daaset not organized
-function insertFileToTable(table, path){
+function insertFileToTable(table, path, SPARCfolder){
   var i
-  let SPARCfolder = document.querySelector('#SPARCfolderlist').value
+  //let SPARCfolder = document.querySelector('#SPARCfolderlist').value
   var rowcount = document.getElementById(SPARCfolder).rowIndex
   var jsonvar = tableToJson(table)
   var emessage = ''
@@ -1975,7 +2055,7 @@ function tableToJsonWithDescription(table){
 }
 
 function dropAddToTable(e, myID){
-  e.target.style.color = 'inherit';
+  //e.target.style.color = 'inherit';
   e.target.style.backgroundColor = '';
 	var rowcount = document.getElementById(myID).rowIndex
 	var i = 0
@@ -2016,15 +2096,23 @@ function dropAddToTable(e, myID){
 }
 
 function dropAddToTableMetadata(e, myID){
-  e.target.style.color = 'inherit';
+  //e.target.style.color = 'inherit';
   e.target.style.backgroundColor = '';
   var rowcount = document.getElementById(myID).rowIndex
   var i = 0
   var jsonvar = tableToJsonMetadata(tableMetadata)
+  var emessage0 = ''
   var emessage = ''
   var emessage2 = ''
+  var count0 = 0
   var count = 0
   var count2 = 0
+  for (let f of e.dataTransfer.files) {
+    if (fs.lstatSync(f.path).isDirectory()){
+      emessage0 = emessage0 + f.path + ' is a folder ' + "\n"
+      count0 += 1
+    }
+  }
   for (let f of e.dataTransfer.files) {
     if ( jsonvar[myID].indexOf(f.path) > -1 ) {
       emessage = emessage + f.path + ' already added to ' + myID + "\n"
@@ -2038,7 +2126,10 @@ function dropAddToTableMetadata(e, myID){
   }
   if (count > 0) {
     ipcRenderer.send('open-error-file-exist', emessage)
-  } else {
+  } else if (count0 > 0){
+    emessage0 = emessage0 + 'Please select files only' + "\n"
+    ipcRenderer.send('open-error-folder-selected', emessage0)
+  } else{
     for (let f of e.dataTransfer.files) {
       var rownum = rowcount + i + 1
       tableMetadataCount = tableMetadataCount + 1
