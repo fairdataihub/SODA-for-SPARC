@@ -353,7 +353,6 @@ ipcRenderer.on('warning-clear-table-selection', (event, index) => {
   }
 })
 
-
 // Drag and drop
 var holderCode = document.getElementById('code')
 holderCode.addEventListener("drop", (event)=> {

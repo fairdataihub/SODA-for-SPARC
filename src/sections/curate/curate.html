@@ -163,7 +163,7 @@
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext"> Get a preview of the dataset that will be generated based on the table.
                 <br><br>
-                The preview is created in a folder named 'Preview' and located in a 'SODA' folder on the user's computer. The files in the preview are mock files (0 kb) with only name and extension corresponding to the actual files.
+                The preview is created in a folder named 'Preview' and located in a 'SODA' folder on the user's computer. The files in the preview are mock files (0 kb) with only name and extension corresponding to the actual files specified in the tables under 'Specify dataset files' and 'Speficy metadata files' features.
                 </span>
               </div>
             </h5>
@@ -242,7 +242,7 @@
     <div class="demo">
       <div class="demo-wrapper">
         <button id="button-specify-metadata-demo-toggle" class="js-container-target demo-toggle-button">
-        Specify metadata files to be attached
+        Specify metadata files
           <a style="padding:0px 0px 0px 10px" href="https://www.youtube.com/watch?v=ncrR7NV4YnU">
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
@@ -250,20 +250,29 @@
         </button>
         <div id="div-specify-metadata" class="demo-box">
 
-          <h5>Select to generate manifest files automatically
+          <h5>Manifest files
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">
-              Select this option to include a manifest file in each of the SPARC folder. The 'filename', 'timestamp', and 'file type' fields will be populated automatically while 'description' will be populated with descriptions (if any) added in the table under 'Specify dataset files' section.
+              Select this option to include a manifest file in each of the high-level SPARC folder. 
+              <br><br>
+              The 'filename', 'timestamp', and 'file type' fields will be populated automatically while 'description' will be populated with descriptions (if any) added in the table under the 'Specify dataset files' feature.
+              <br><br>
+              Note: If this option is selected, any manifest files specified in the table under the 'Specify dataset files' feature will be ignored when the dataset is generated.
               </span>
             </div>
           </h5>
 
+          <h5></h5>
           <div class="demo-controls">
-            <input id="generate-manifest" name="manifest" type="checkbox" class="with-style"/>
-            <label for="generate-manifest" class="labelradio"> Include manifest files </label>
+            <label class="switch"> 
+              <input id="generate-manifest" name="manifest" type="checkbox" class="with-style-manifest" onclick="updateManifestLabelColor(this)"/>
+              <span class="slider round"></span>
+            </label>
+            <label id="label-manifest" class="labelradio-manifest" style="padding-left:10px"> Include auto-generated manifest files
+            </label>  
           </div>
 
-          <h5>Add high level metadata files </h5>
+          <h5>High-level metadata files </h5>
             <table id="metadata-table" class = "pathtable">
               <tr class="parent" id='metadata' droppable="true" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondragover="return false">
                 <th class="table-header">metadata file</th>
@@ -274,6 +283,14 @@
           <div class="demo-controls">
             <button id="button-select-metadata" class="demo-button">Add metadata files </button>
           </div><br>
+
+          <h5> Preview how your dataset will look once generated
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">
+              The preview is created in a folder named 'Preview' and located in a 'SODA' folder on the user's computer. The files in the preview are mock files (0 kb) with only name and extension corresponding to the actual files specified in the tables under 'Specify dataset files' and 'Speficy metadata files' features.
+              </span>
+            </div>
+          </h5>
 
           <div class="demo-controls">
               <button id="button-preview-file-organization-metadata" class="demo-button"> Preview dataset </button>
@@ -294,7 +311,7 @@
           <!-- <a style="padding:0px 0px 0px 10px" href="https://www.youtube.com/watch?v=T_AHgEUXFAA&feature=youtu.be" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a> -->
-          <div class="demo-meta u-avoid-clicks"> Check that information provided during the previous steps will create a SPARC-approved dataset </div>
+          <div class="demo-meta u-avoid-clicks"> Check that information provided during the previous steps will create a SPARC-approved dataset. Note: this is only a preliminary check before a thorough check by the Curation Team. </div>
         </button>
         <div id="div-validate-dataset" class="demo-box">
           <p> Coming soon... Tentative date: February 2020 </p>
@@ -423,6 +440,15 @@
     </script>
 
     <script type="text/javascript" src="./renderer-process/curate/table-script.js">
+    </script>
+
+    <script type="text/javascript">
+    //Manifest file label color change if checked
+      function updateManifestLabelColor(el){
+        document.getElementById('label-manifest').style.color = el.checked ? "inherit" : "#303030"
+        document.getElementById('label-manifest').style.fontWeight = el.checked ? "bold": "normal"
+        document.getElementById('label-manifest').style.fontSize = el.checked ? "1.1em": "1em"
+      }
     </script>
 
   </section>
