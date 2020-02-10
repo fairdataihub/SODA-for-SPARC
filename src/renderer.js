@@ -190,14 +190,16 @@ const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
 //////////////////////////////////
 
 /// Sidebar Navigation ///
+var open = true
 button.addEventListener("click", (event) => {
-  if (document.getElementById("main-nav").style.width === "250px") {
-    // toggleSidebar()
-    document.getElementById("main-nav").style.width = "70px";
-    document.getElementById("content").style.marginLeft = "70px";
-  } else {
+  if (open) {
     document.getElementById("main-nav").style.width = "250px";
-    document.getElementById("content").style.marginLeft = "250px";
+    // document.getElementById("content").style.marginLeft = "-250px";
+    open = false;
+  } else {
+    document.getElementById("main-nav").style.width = "70px";
+    // document.getElementById("content").style.marginLeft = "70px";
+    open = true;
   }
 })
 
