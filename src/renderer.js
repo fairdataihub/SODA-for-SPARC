@@ -38,7 +38,7 @@ client.invoke("echo", "server ready", (error, res) => {
 // Get html elements from the user interface //
 //////////////////////////////////
 // Navigator button
-const button = document.getElementById("button-hamburger")
+const buttonSidebar = document.getElementById("button-hamburger")
 
 // Metadata Templates
 const downloadSubmission = document.getElementById("a-submission")
@@ -66,7 +66,6 @@ const selectPreviewBtn = document.getElementById('button-preview-file-organizati
 const selectImportFileOrganizationBtn = document.getElementById('button-select-upload-file-organization')
 
 const selectPreviewMetadataBtn = document.getElementById('button-preview-file-organization-metadata')
-
 
 // Generate dataset
 const createNewStatus = document.querySelector('#create-newdataset')
@@ -191,7 +190,7 @@ const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
 
 /// Sidebar Navigation ///
 var open = true
-button.addEventListener("click", (event) => {
+buttonSidebar.addEventListener("click", (event) => {
   if (open) {
     document.getElementById("main-nav").style.width = "270px";
     document.getElementById("SODA-logo").style.display = "block";
@@ -508,7 +507,6 @@ selectMetadataBtn.addEventListener('click', (event) => {
 ipcRenderer.on('selected-metadata', (event, path) => {
     insertFileToMetadataTable(tableMetadata, path)
 })
-
 
 
 const tuiInstance = new Editor({
