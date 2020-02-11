@@ -70,6 +70,17 @@
   margin-bottom:10px;
   vertical-align: middle;
 }
+.nav-icon.logo {
+  width: 45px;
+  height: 45px;
+  /* vertical-align: sub; */
+  /* margin-right: .25rem; */
+  margin-right: 24px;
+  margin-left: 15px;
+  margin-top:10px;
+  margin-bottom:75px;
+  vertical-align: middle;
+}
 
 .hamburger{
   width: 30px;
@@ -103,10 +114,10 @@
   -moz-transform: rotate(0deg);
   -o-transform: rotate(0deg);
   transform: rotate(0deg);
-  -webkit-transition: .5s ease-in-out;
-  -moz-transition: .5s ease-in-out;
-  -o-transition: .5s ease-in-out;
-  transition: .5s ease-in-out;
+  -webkit-transition: .25s ease-in-out;
+  -moz-transition: .25s ease-in-out;
+  -o-transition: .25s ease-in-out;
+  transition: .25s ease-in-out;
 }
 
 #button-hamburger span:nth-child(1) {
