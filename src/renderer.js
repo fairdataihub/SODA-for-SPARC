@@ -38,7 +38,7 @@ client.invoke("echo", "server ready", (error, res) => {
 // Get html elements from the user interface //
 //////////////////////////////////
 // Navigator button
-const button = document.getElementById("button-hamburger")
+const buttonSidebar = document.getElementById("button-hamburger")
 
 // Metadata Templates
 const downloadSubmission = document.getElementById("a-submission")
@@ -191,13 +191,15 @@ const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
 
 /// Sidebar Navigation ///
 var open = true
-button.addEventListener("click", (event) => {
+buttonSidebar.addEventListener("click", (event) => {
   if (open) {
+    ipcRenderer.send('resize-window', 'up')
     document.getElementById("main-nav").style.width = "310px";
     document.getElementById("SODA-logo").style.display = "block";
     // document.getElementById("content").style.marginLeft = "-250px";
     open = false;
   } else {
+    ipcRenderer.send('resize-window', 'down')
     document.getElementById("main-nav").style.width = "70px";
     document.getElementById("SODA-logo").style.display = "none";
     // document.getElementById("content").style.marginLeft = "70px";
@@ -1057,8 +1059,8 @@ bfDatasetListMetadata.addEventListener('change', () => {
   datasetBannerImageStatus.innerHTML = ''
   showCurrentSubtitle()
   showCurrentDescription()
-  showCurrentBannerImage()
   showCurrentLicense()
+  showCurrentBannerImage()
 })
 
 
@@ -1127,6 +1129,7 @@ var cropOptions = {
   zoomOnWheel: false,
   preview: '.preview',
   viewMode: 1,
+  responsive: true,
   crop: function(e) {
       var data = e.detail;
       formBannerHeight.value = Math.round(data.height)
@@ -1458,6 +1461,7 @@ function showCurrentSubtitle(){
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
     bfCurrentMetadataProgress.style.display = 'none'
+    bfDatasetSubtitle.value = "";
   } else {
     client.invoke("api_bf_get_subtitle", selectedBfAccount, selectedBfDataset,
     (error, res) => {
@@ -1477,6 +1481,7 @@ function showCurrentDescription(){
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
     bfCurrentMetadataProgress.style.display = 'none'
+    tuiInstance.setMarkdown("")
   } else {
     client.invoke("api_bf_get_description", selectedBfAccount, selectedBfDataset,
     (error, res) => {
@@ -1495,19 +1500,23 @@ function showCurrentBannerImage(){
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
     bfCurrentMetadataProgress.style.display = 'none'
+    bfCurrentBannerImg.src = 'assets/img/no-banner-image.png'
   } else {
     client.invoke("api_bf_get_banner_image", selectedBfAccount, selectedBfDataset,
     (error, res) => {
       if(error) {
         log.error(error)
         console.error(error)
+        bfCurrentMetadataProgress.style.display = 'none'
       } else {
         if (res === 'No banner image'){
+          console.log(res)
           bfCurrentBannerImg.src = 'assets/img/no-banner-image.png'
         }
         else {
           bfCurrentBannerImg.src = res
         }
+        bfCurrentMetadataProgress.style.display = 'none'
       }
     })
   }
@@ -1528,9 +1537,7 @@ function showCurrentLicense(){
         console.error(error)
         bfCurrentMetadataProgress.style.display = 'none'
       } else {
-        console.log(res)
         currentDatasetLicense.innerHTML = res
-        bfCurrentMetadataProgress.style.display = 'none'
       }
     })
   }
