@@ -653,6 +653,11 @@ progress.progresstrack[value]::-webkit-progress-value {
   flex: 50%;
 }
 
+.demo-controls.banner-image{
+ background-color: gray;
+ background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+}
+
 .img-container img {
   /*display:block;*/
   /* This is important */
@@ -665,6 +670,25 @@ progress.progresstrack[value]::-webkit-progress-value {
   width: 300px;
   height: 300px;
 /*  padding-bottom: 30%;*/
+}
+
+#div-img-container-holder {
+  color: black;
+  text-align:center;
+  font-size:20px;
+  font-weight:bold;
+  vertical-align: middle;
+  text-shadow: 0px -1px 0px rgba(0,0,0,.4); 
+  padding: 0 1em
+}
+
+#div-banner-img-preview-holder{
+  color: black;
+  text-align:center;
+  font-size:20px;
+  font-weight:bold;
+  vertical-align: middle;
+  text-shadow: 0px -1px 0px rgba(0,0,0,.5); 
 }
 
 label.input-banner-img{

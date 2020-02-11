@@ -195,7 +195,7 @@ var open = false
 function openSidebar(buttonElement) {
   if (!open) {
     ipcRenderer.send('resize-window', 'up')
-    document.getElementById("main-nav").style.width = "270px";
+    document.getElementById("main-nav").style.width = "250px";
     document.getElementById("SODA-logo").style.display = "block";
     // document.getElementById("content").style.marginLeft = "-250px";
     buttonSidebarIcon.style.display = "none"
@@ -1171,6 +1171,10 @@ bfImportBannerImageBtn.addEventListener('click', (event) => {
 })
 ipcRenderer.on('selected-banner-image', (event, path) => {
   if (path.length > 0){
+    document.getElementById("div-img-container-holder").style.display="none"
+    document.getElementById("div-banner-img-preview-holder").style.display="none"
+    document.getElementById("div-img-container").style.display="block"
+    document.getElementById("div-banner-img-preview").style.display="block"
     datasetBannerImagePath.innerHTML = path
     imageExtension = path[0].split('.').pop()
     bfViewImportedImage.src = path[0]
@@ -1224,7 +1228,7 @@ bfSaveBannerImageBtn.addEventListener('click', (event) => {
       }
       )
     } else {
-      datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Height and width of selected area must be at least 1024 px" + "</span>"
+      datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Dimensions of cropped area must be at least 1024 px" + "</span>"
     }
   } else {
     datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Please import an image first" + "</span>"
@@ -1513,7 +1517,8 @@ function showCurrentBannerImage(){
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
     bfCurrentMetadataProgress.style.display = 'none'
-    bfCurrentBannerImg.src = 'assets/img/no-banner-image.png'
+    bfCurrentBannerImg.src = ''
+    document.getElementById('para-current-banner-img').innerHTML = 'None'
   } else {
     client.invoke("api_bf_get_banner_image", selectedBfAccount, selectedBfDataset,
     (error, res) => {
@@ -1521,12 +1526,16 @@ function showCurrentBannerImage(){
         log.error(error)
         console.error(error)
         bfCurrentMetadataProgress.style.display = 'none'
+        bfCurrentBannerImg.src = 'assets/img/no-banner-image.png'
+        document.getElementById('para-current-banner-img').innerHTML = 'None'
       } else {
         if (res === 'No banner image'){
           console.log(res)
-          bfCurrentBannerImg.src = 'assets/img/no-banner-image.png'
+          bfCurrentBannerImg.src = ''
+          document.getElementById('para-current-banner-img').innerHTML = 'None'
         }
         else {
+          document.getElementById('para-current-banner-img').innerHTML = ''
           bfCurrentBannerImg.src = res
         }
         bfCurrentMetadataProgress.style.display = 'none'

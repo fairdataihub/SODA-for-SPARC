@@ -31,7 +31,7 @@
 .nav-title {
   text-align: center;
   font-weight: 400;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 1;
   margin: 0;
   color: var(--color-strong-white);
@@ -49,7 +49,7 @@
   width: 165px;
   height: 70px;
   top: 1.3rem; /* magic */
-  right: 1.5rem; /* magic */
+  right: 1.8rem; /* magic */
   /* margin-left:-25px */
 }
 .nav-item {
@@ -171,11 +171,11 @@
   display: block;
   width: 100%;
   padding: .5rem;
-  padding-left: calc(2rem + 8px + .5rem); /* padding + icon + magic */
+  padding-left: calc(2rem + 5px + .5rem); /* padding + icon + magic */
   line-height: 2;
   text-align: left;
   /* font: inherit; */
-  font-size: 18px;
+  font-size: 16px;
   color: white;
   border: none;
   background-color: transparent;
@@ -263,7 +263,7 @@
 
 .nav-center-logo-image {
   display: block;
-  margin-left: 40px;
+  margin-left: 30px;
   margin-bottom:15px;
   margin-top: 10px;
   /* margin-right: auto; */
