@@ -231,7 +231,7 @@
               <img id='current-banner-img'/>
             </div>
 
-            <h5> Add/edit banner image 
+            <h5> Add/edit banner image
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">This image will be associated with the dataset. It will be visible once the dataset is published.
                 <br>
@@ -242,10 +242,10 @@
             </h5>
 
             <div class="demo-controls">
-              <button id="button-import-banner-image" class="demo-button"> Import image </button> 
-              <p id = "para-path-image" style="margin-top:-0.5em"> </p>             
+              <button id="button-import-banner-image" class="demo-button"> Import image </button>
+              <p id = "para-path-image" style="margin-top:-0.5em"> </p>
             </div>
-
+            <br>
 
             <div class="demo-controls banner-image" style="border: 1px solid black; ">
 
@@ -261,7 +261,7 @@
                 </div>
               </div>
 
-              <div id= 'div-img-container' class='img-container' style="display:none"> 
+              <div id= 'div-img-container' class='img-container' style="display:none">
                 <img id="image-banner" class='banner-img' width="100%" height:'auto'>
               </div>
 
@@ -275,16 +275,22 @@
             <div class="demo-controls">
                <form>
                   <label class='input-banner-img' for='form-banner-height'>Cropped dimensions (must be >1024 px):</label>
-                  <input id='form-banner-height' type="text" readonly="readonly" size="7">
-                  <input id='form-banner-width' type="text" readonly="readonly" size="7" style="display:none">
-                  <button id="save-banner-image" class="demo-button" style="margin-left:50px"> Upload </button>
+
+                  <div class="container-cropped-image">
+                    <div classs="banner-image-div" style="width: 110px;text-align: center;" >Cropped Image:</div>
+                    <input classs="banner-image-div input" id="form-banner-height" type="text" readonly="readonly" size="7">
+                    <div classs="banner-image-div" style="width:20px; text-align: center;">px</div>
+                  </div>
+                  <button type="button" id="save-banner-image" class="demo-button" style="margin-left:20px;" > Upload </button>
+
               </form>
             </div>
+            <p></p>
 
             <h5> </h5>
             <div class="demo-controls">
               <p id = "para-dataset-banner-image-status"> </p>
-            </div>          
+            </div>
 
           </div>
 
