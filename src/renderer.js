@@ -195,7 +195,7 @@ var open = false
 function openSidebar(buttonElement) {
   if (!open) {
     ipcRenderer.send('resize-window', 'up')
-    document.getElementById("main-nav").style.width = "270px";
+    document.getElementById("main-nav").style.width = "250px";
     document.getElementById("SODA-logo").style.display = "block";
     // document.getElementById("content").style.marginLeft = "-250px";
     buttonSidebarIcon.style.display = "none"

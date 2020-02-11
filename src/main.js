@@ -183,6 +183,5 @@ ipcMain.on('resize-window', (event, dir) => {
     x = x-1
     y = y-1
   }
-  console.log(x,y)
   mainWindow.setSize(x, y)
 })
