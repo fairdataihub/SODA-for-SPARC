@@ -1718,7 +1718,7 @@ function loadDefaultAccount() {
           refreshBfTeamsList(bfListTeams)
       } else {
           var myitemselect = "Select"
-          var option = document.createElement("option")
+          var option = bfAccountList.options[0]
           option.textContent = myitemselect
           option.value = myitemselect
           bfAccountList.appendChild(option)
