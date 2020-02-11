@@ -144,7 +144,7 @@ const bfViewImportedImage = document.querySelector('#image-banner')
 const bfSaveBannerImageBtn = document.getElementById('save-banner-image')
 const datasetBannerImageStatus = document.querySelector('#para-dataset-banner-image-status')
 const formBannerHeight = document.getElementById('form-banner-height')
-const formBannerWidth = document.getElementById('form-banner-width')
+// const formBannerWidth = document.getElementById('form-banner-width')
 
 const currentDatasetLicense = document.querySelector('#para-dataset-license-current')
 const bfListLicense = document.querySelector('#bf-license-list')
@@ -1146,7 +1146,7 @@ var cropOptions = {
   crop: function(e) {
       var data = e.detail;
       formBannerHeight.value = Math.round(data.height)
-      formBannerWidth.value = Math.round(data.width)
+      // formBannerWidth.value = Math.round(data.width)
   }
   // ready() {
   //   console.log('ready')
