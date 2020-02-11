@@ -667,6 +667,32 @@ progress.progresstrack[value]::-webkit-progress-value {
   background-color: white
 }
 
+.container-cropped-image {
+  display: flex;
+  width: 230px;
+  height: 25px;
+  margin-left: 30px;
+  float:left;
+  background-color: #C0C0C0;
+  color:black;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+}
+.container-cropped-image > .banner-image-size {
+  flex:1;
+}
+.banner-image-size {
+  float: left;
+  width: 230px;
+  height: 25px;
+}
+.banner-image-size.input {
+  width: 90px;
+  height: 25px;
+  padding: 0 0;
+  float:right;
+}
+
 .preview {
   overflow: hidden;
   width: 300px;
@@ -692,12 +718,13 @@ progress.progresstrack[value]::-webkit-progress-value {
   font-size:20px;
   font-weight:bold;
   vertical-align: middle;
-  text-shadow: 0px -1px 0px rgba(0,0,0,.5); 
+  text-shadow: 0px -1px 0px rgba(0,0,0,.5);
 }
 
 label.input-banner-img{
   padding-left: 10px;
   color: black;
+  float:left;
 }
 
 
