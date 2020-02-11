@@ -39,6 +39,8 @@ client.invoke("echo", "server ready", (error, res) => {
 //////////////////////////////////
 // Navigator button
 const buttonSidebar = document.getElementById("button-hamburger")
+const buttonSidebarIcon = document.getElementById("button-soda-icon")
+const buttonSidebarBigIcon = document.getElementById("button-soda-big-icon")
 
 // Metadata Templates
 const downloadSubmission = document.getElementById("a-submission")
@@ -189,19 +191,32 @@ const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
 //////////////////////////////////
 
 /// Sidebar Navigation ///
-var open = true
-buttonSidebar.addEventListener("click", (event) => {
-  if (open) {
+var open = false
+function openSidebar(buttonElement) {
+  if (!open) {
     document.getElementById("main-nav").style.width = "270px";
     document.getElementById("SODA-logo").style.display = "block";
     // document.getElementById("content").style.marginLeft = "-250px";
-    open = false;
+    buttonSidebarIcon.style.display = "none"
+    open = true;
   } else {
     document.getElementById("main-nav").style.width = "70px";
     document.getElementById("SODA-logo").style.display = "none";
     // document.getElementById("content").style.marginLeft = "70px";
-    open = true;
+    buttonSidebarIcon.style.display = "block";
+    // buttonSidebarIcon.style.marginBottom = "75px";
+    open = false;
   }
+}
+
+buttonSidebar.addEventListener('click', (event) => {
+  openSidebar(buttonSidebar)
+})
+buttonSidebarIcon.addEventListener('click', (event) => {
+  buttonSidebar.click()
+})
+buttonSidebarBigIcon.addEventListener('click', (event) => {
+  buttonSidebar.click()
 })
 
 // Button selection to move on to next step
