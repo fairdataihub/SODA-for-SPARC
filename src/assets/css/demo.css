@@ -648,9 +648,11 @@ progress.progresstrack[value]::-webkit-progress-value {
 
 .img-container {
   /* Never limit the container height here */
+  max-width: 50%;
   width: 50%;
   float: left;
   flex: 50%;
+  margin: 0 auto;
 }
 
 .demo-controls.banner-image{
@@ -659,7 +661,7 @@ progress.progresstrack[value]::-webkit-progress-value {
 }
 
 .img-container img {
-  /*display:block;*/
+  display:block;
   /* This is important */
   max-width: 100%;
   background-color: white
@@ -704,8 +706,10 @@ progress.progresstrack[value]::-webkit-progress-value {
   font-size:20px;
   font-weight:bold;
   vertical-align: middle;
-  text-shadow: 0px -1px 0px rgba(0,0,0,.4);
-  padding: 0 1em
+  text-shadow: 0px -1px 0px rgba(0,0,0,.4); 
+  padding: 0 1em;
+  height: 200px;
+  margin-top: 100px;
 }
 
 #div-banner-img-preview-holder{

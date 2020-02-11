@@ -1140,7 +1140,7 @@ var cropOptions = {
   zoomOnTouch: false,
   // Enable to zoom the image by wheeling mouse
   zoomOnWheel: false,
-  preview: '.preview',
+  // preview: '.preview',
   viewMode: 1,
   responsive: true,
   crop: function(e) {
@@ -1172,9 +1172,7 @@ bfImportBannerImageBtn.addEventListener('click', (event) => {
 ipcRenderer.on('selected-banner-image', (event, path) => {
   if (path.length > 0){
     document.getElementById("div-img-container-holder").style.display="none"
-    document.getElementById("div-banner-img-preview-holder").style.display="none"
     document.getElementById("div-img-container").style.display="block"
-    document.getElementById("div-banner-img-preview").style.display="block"
     datasetBannerImagePath.innerHTML = path
     imageExtension = path[0].split('.').pop()
     bfViewImportedImage.src = path[0]
@@ -1182,7 +1180,7 @@ ipcRenderer.on('selected-banner-image', (event, path) => {
     myCropper = new Cropper(bfViewImportedImage, cropOptions)
     }
   })
-
+//
 bfSaveBannerImageBtn.addEventListener('click', (event) => {
   datasetBannerImageStatus.innerHTML = ""
   if (bfViewImportedImage.src.length > 0){

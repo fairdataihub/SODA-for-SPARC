@@ -170,7 +170,7 @@
 .nav-button {
   display: block;
   width: 100%;
-  padding: .5rem;
+  padding: .2rem;
   padding-left: calc(2rem + 5px + .5rem); /* padding + icon + magic */
   line-height: 2;
   text-align: left;
