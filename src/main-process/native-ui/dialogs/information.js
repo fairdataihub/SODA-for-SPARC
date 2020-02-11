@@ -79,3 +79,14 @@ ipcMain.on('open-error-folder-selected', (event, emessage) => {
     event.sender.send('error-fodler-selected-shown')
   })
 })
+
+ipcMain.on('open-error-wrong-file', (event, emessage) => {
+  const options = {
+    type: 'error',
+    title: 'Non-SPARC metadata file selected',
+    message: emessage, 
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('error-fodler-selected-shown')
+  })
+})
