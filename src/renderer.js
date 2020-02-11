@@ -1059,11 +1059,42 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
 })
 
 
+bfUploadDatasetList.addEventListener('change', () => {
+  var listSelectedIndex = bfUploadDatasetList.selectedIndex
+
+  bfDatasetListMetadata.selectedIndex = listSelectedIndex
+  metadataDatasetlistChange()
+  bfDatasetListPermission.selectedIndex = listSelectedIndex
+  permissionDatasetlistChange()
+  bfDatasetList.selectedIndex = listSelectedIndex
+})
+
+bfDatasetList.addEventListener('change', () => {
+  var listSelectedIndex = bfDatasetList.selectedIndex
+
+  bfDatasetListMetadata.selectedIndex = listSelectedIndex
+  metadataDatasetlistChange()
+  bfDatasetListPermission.selectedIndex = listSelectedIndex
+  permissionDatasetlistChange()
+  bfUploadDatasetList.selectedIndex = listSelectedIndex
+})
+
 /**
  * This event tracks change of the selected dataset in the dropdown list
  * under the "Add metadata to Blackfynn dataset" feature
  */
 bfDatasetListMetadata.addEventListener('change', () => {
+  var listSelectedIndex = bfDatasetListMetadata.selectedIndex
+
+  bfDatasetListPermission.selectedIndex = listSelectedIndex
+  permissionDatasetlistChange()
+  bfUploadDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetList.selectedIndex = listSelectedIndex
+
+  metadataDatasetlistChange()
+})
+
+function metadataDatasetlistChange(){
   bfCurrentMetadataProgress.style.display = 'block'
   datasetSubtitleStatus.innerHTML = ''
   datasetLicenseStatus.innerHTML = ''
@@ -1074,8 +1105,7 @@ bfDatasetListMetadata.addEventListener('change', () => {
   showCurrentDescription()
   showCurrentLicense()
   showCurrentBannerImage()
-})
-
+}
 
 bfAddSubtitleBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'
@@ -1263,10 +1293,20 @@ bfAddLicenseBtn.addEventListener('click', () => {
  * under the "Manage dataset permission" feature
  */
 bfDatasetListPermission.addEventListener('change', () => {
-  bfCurrentPermissionProgress.style.display = 'block'
-  showCurrentPermission()
+  var listSelectedIndex = bfDatasetListPermission.selectedIndex
+
+  bfDatasetListMetadata.selectedIndex = listSelectedIndex
+  metadataDatasetlistChange()
+  bfUploadDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetList.selectedIndex = listSelectedIndex
+
+  permissionDatasetlistChange()
 })
 
+function permissionDatasetlistChange(){
+  bfCurrentPermissionProgress.style.display = 'block'
+  showCurrentPermission()
+}
 /**
  * This event listener make PI owener of the selected dataset
  * when user clicks on the "Make PI owner"  button
@@ -1904,19 +1944,33 @@ function tableToJsonWithDescriptionOrganized(table){
 }
 
 // Daaset not organized
-function insertFileToTable(table, path, SPARCfolder){
+function insertFileToTable(table, pathlist, SPARCfolder){
   var i
   //let SPARCfolder = document.querySelector('#SPARCfolderlist').value
   var rowcount = document.getElementById(SPARCfolder).rowIndex
   var jsonvar = tableToJson(table)
   var emessage = ''
   var count = 0
-  for (i = 0; i < path.length; i++) {
-      if ( jsonvar[SPARCfolder].indexOf(path[i]) > -1 ) {
-        emessage = emessage + path[i] + ' already added to ' + SPARCfolder + "\n"
-        count += 1
-      }
+  // for (i = 0; i < path.length; i++) {
+  //     if ( jsonvar[SPARCfolder].indexOf(path[i]) > -1 ) {
+  //       emessage = emessage + path[i] + ' already added to ' + SPARCfolder + "\n"
+  //       count += 1
+  //     }
+  // }
+
+  var listfilePath = []
+  for (let filePath of jsonvar[SPARCfolder]){
+      var fileFull = path.basename(filePath);
+      listfilePath.push(fileFull)
+    }
+  for (i = 0; i < pathlist.length; i++) {
+      var fileFull = path.basename(pathlist[i]);
+    if (listfilePath.indexOf(fileFull) > -1 ) {
+      emessage = emessage + fileFull + ' already added to ' + SPARCfolder + "\n"
+      count += 1
+    }
   }
+
   if (count > 0) {
     ipcRenderer.send('open-error-file-exist', emessage)
   } else {
@@ -1930,42 +1984,69 @@ function insertFileToTable(table, path, SPARCfolder){
          row.className = row.className.replace(/\bopen\b/," ")
       r += 1
     }
-    for (i = 0; i < path.length; i++) {
+    for (i = 0; i < pathlist.length; i++) {
       tableNotOrganizedCount = tableNotOrganizedCount + 1
       var table_len=tableNotOrganizedCount
       var rownum = rowcount + i + 1
-      if (fs.lstatSync(path[i]).isDirectory()) {
-        var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'style='color: #000000;'><td id='name_row"+table_len+"'>"+ path[i]+"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td> <input type='button' value='Delete row' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
+      if (fs.lstatSync(pathlist[i]).isDirectory()) {
+        var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'style='color: #000000;'><td id='name_row"+table_len+"'>"+ pathlist[i]+"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td> <input type='button' value='Delete row' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
       } else {
-        var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'style='color: #000000;'><td id='name_row"+table_len+"'>"+ path[i]+"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit description' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save description' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete row' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
+        var row = table.insertRow(rownum).outerHTML="<tr id='row"+table_len+"'style='color: #000000;'><td id='name_row"+table_len+"'>"+ pathlist[i]+"</td><td id='description_row"+table_len+"'>"+ "" +"</td><td><input type='button' id='edit_button"+table_len+"' value='Edit description' class='edit' onclick='edit_row("+table_len+")'> <input type='button' id='save_button"+table_len+"' value='Save description' class='save' onclick='save_row("+table_len+")'> <input type='button' value='Delete row' class='delete' onclick='delete_row("+table_len+")'></td></tr>";
       }
     }
     return table
   }
 }
 
-function insertFileToMetadataTable(table, path){
+function insertFileToMetadataTable(table, pathlist){
   var i
   var rowcount = 0
   var jsonvar = tableToJsonMetadata(table)
   var emessage = ''
   var count = 0
+  var emessage2 = ''
+  var count2 = 0
   var SPARCfolder = 'metadata'
-  for (i = 0; i < path.length; i++) {
-      if ( jsonvar[SPARCfolder].indexOf(path[i]) > -1 ) {
-        emessage = emessage + path[i] + ' already added to ' + SPARCfolder + "\n"
-        count += 1
-      }
+
+  // for (i = 0; i < path.length; i++) {
+  //     if ( jsonvar[SPARCfolder].indexOf(path[i]) > -1 ) {
+  //       emessage = emessage + path[i] + ' already added to ' + SPARCfolder + "\n"
+  //       count += 1
+  //     }
+  // }
+
+  var listfilePath = []
+  for (let filePath of jsonvar[SPARCfolder]){
+      var extension = path.extname(filePath);
+      var file = path.basename(filePath,extension);
+      listfilePath.push(file)
+    }
+  for (i = 0; i < pathlist.length; i++) {
+      var extension = path.extname(pathlist[i]);
+      var fileFull = path.basename(pathlist[i]);
+      var file = path.basename(pathlist[i],extension);
+    if (allowedMedataFiles.indexOf(fileFull) === -1 ) {
+      emessage2 = emessage2 + file + ' is not an expected SPARC metadata file' + "\n"
+      count2 += 1
+    }
+    if (listfilePath.indexOf(file) > -1 ) {
+      emessage = emessage + 'File ' + file + ' already added to ' + SPARCfolder + "\n"
+      count += 1
+    }
   }
+
   if (count > 0) {
     ipcRenderer.send('open-error-file-exist', emessage)
-  } else {
+  } else if (count2>0) {
+    ipcRenderer.send('open-error-wrong-file', emessage2)
+  }
+  else {
     var myheader = tableNotOrganized.rows[rowcount].cells[0]
-    for (i = 0; i < path.length; i++) {
+    for (i = 0; i < pathlist.length; i++) {
       tableMetadataCount = tableMetadataCount + 1
       var table_len= tableMetadataCount
       var rownum = rowcount + i + 1
-      var row = table.insertRow(rownum).outerHTML="<tr id='row_metadata"+table_len+"'style='color: #000000;'><td id='name_row_metadata"+table_len+"'>"+ path[i] +"</td><td> <input type='button' value='Delete row' class='delete' onclick='delete_row_metadata("+table_len+")'></td></tr>";
+      var row = table.insertRow(rownum).outerHTML="<tr id='row_metadata"+table_len+"'style='color: #000000;'><td id='name_row_metadata"+table_len+"'>"+ pathlist[i] +"</td><td> <input type='button' value='Delete row' class='delete' onclick='delete_row_metadata("+table_len+")'></td></tr>";
       }
     }
     return table
@@ -2089,12 +2170,26 @@ function dropAddToTable(e, myID){
   var jsonvar = tableToJson(tableNotOrganized)
   var emessage = ''
   var count = 0
-  for (let f of e.dataTransfer.files) {
-      if ( jsonvar[myID].indexOf(f.path) > -1 ) {
-        emessage = emessage + f.path + ' already added to ' + myID + "\n"
-        count += 1
-      }
+  // for (let f of e.dataTransfer.files) {
+  //     if ( jsonvar[myID].indexOf(f.path) > -1 ) {
+  //       emessage = emessage + f.path + ' already added to ' + myID + "\n"
+  //       count += 1
+  //     }
+  // }
+
+  var listfilePath = []
+  for (let filePath of jsonvar[myID]){
+    var fileFull = path.basename(filePath);
+    listfilePath.push(fileFull)
   }
+  for (let f of e.dataTransfer.files) {
+      var fileFull = path.basename(f.path);
+    if (listfilePath.indexOf(fileFull) > -1 ) {
+      emessage = emessage + fileFull + ' already added to ' + myID + "\n"
+      count += 1
+    }
+  }
+
   if (count > 0) {
     ipcRenderer.send('open-error-file-exist', emessage)
   } else {
@@ -2122,6 +2217,12 @@ function dropAddToTable(e, myID){
   }
 }
 
+const allowedMedataFiles = ['submission.xlsx', 'submission.csv',
+  'dataset_description.xlsx', 'dataset_description.csv',
+  'subjects.xlsx', 'subjects.csv',
+  'samples.xlsx', 'samples.csv',
+  'README', 'CHANGES']
+
 function dropAddToTableMetadata(e, myID){
   //e.target.style.color = 'inherit';
   e.target.style.backgroundColor = '';
@@ -2134,25 +2235,42 @@ function dropAddToTableMetadata(e, myID){
   var count0 = 0
   var count = 0
   var count2 = 0
+
+  //Check if folder
   for (let f of e.dataTransfer.files) {
     if (fs.lstatSync(f.path).isDirectory()){
       emessage0 = emessage0 + f.path + ' is a folder ' + "\n"
       count0 += 1
     }
   }
-  for (let f of e.dataTransfer.files) {
-    if ( jsonvar[myID].indexOf(f.path) > -1 ) {
-      emessage = emessage + f.path + ' already added to ' + myID + "\n"
-      count += 1
+
+  //Check if file in allowable file list
+
+  //Check if file already in table
+  var listfilePath = []
+  for (let filePath of jsonvar[myID]){
+      var extension = path.extname(filePath);
+      var file = path.basename(filePath,extension);
+      listfilePath.push(file)
     }
-    var validFormat = ['.csv', '.xlsx', '.xls']
-    if (validFormat.indexOf(path.extname(f.path)) === -1 ) {
-      emessage2 = emessage2 + f.path + ' is not a csv or xslx file ' + "\n"
+  for (let f of e.dataTransfer.files) {
+      var extension = path.extname(f.path);
+      var fileFull = path.basename(f.path);
+      var file = path.basename(f.path,extension);
+    if (allowedMedataFiles.indexOf(fileFull) === -1 ) {
+      emessage2 = emessage2 + file + ' is not an expected SPARC metadata file' + "\n"
       count2 += 1
     }
+    if (listfilePath.indexOf(file) > -1 ) {
+      emessage = emessage + 'File ' + file + ' already added to ' + myID + "\n"
+      count += 1
+    }
   }
+
   if (count > 0) {
     ipcRenderer.send('open-error-file-exist', emessage)
+  } else if (count2 > 0){
+    ipcRenderer.send('open-error-wrong-file', emessage2)
   } else if (count0 > 0){
     emessage0 = emessage0 + 'Please select files only' + "\n"
     ipcRenderer.send('open-error-folder-selected', emessage0)
