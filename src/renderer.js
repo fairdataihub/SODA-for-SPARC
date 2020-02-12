@@ -210,7 +210,7 @@ function openSidebar(buttonElement) {
     open = false;
   }
 }
-
+// Open/Close Sidebar effect
 buttonSidebar.addEventListener('click', (event) => {
   openSidebar(buttonSidebar)
 })
@@ -441,8 +441,6 @@ selectSourceDirectoryBtn.addEventListener('click', (event) => {
 ipcRenderer.on('selected-source', (event, path) => {
     insertFileToTable(tableNotOrganized, path, 'source')
 })
-
-
 
 
 
@@ -863,7 +861,6 @@ curateDatasetBtn.addEventListener('click', () => {
 
 // Add existing bf account(s) to dropdown list
 
-
 bfAccountCheckBtn.addEventListener('click', (event) => {
   bfSelectAccountStatus.innerHTML = "Please wait..."
   bfAccountLoadProgress.style.display = 'block'
@@ -924,7 +921,6 @@ bfAccountList.addEventListener('change', () => {
   refreshBfTeamsList(bfListTeams)
 
 })
-
 
 bfUploadAccountList.addEventListener('change', () => {
   bfUploadSelectAccountStatus.innerHTML = "Please wait..."
@@ -1158,7 +1154,6 @@ bfAddDescriptionBtn.addEventListener('click', () => {
     }
   })
 })
-
 
 const Cropper = require('cropperjs')
 var cropOptions = {
@@ -1728,7 +1723,6 @@ function showUploadAccountDetails(bfLoadAccount){
   })
 }
 
-
 // // // // // // // // // //
 // Helper Functions
 // // // // // // // // // //
@@ -1947,7 +1941,7 @@ function tableToJsonWithDescriptionOrganized(table){
   return [jsonvar, jsonvardescription]
 }
 
-// Daaset not organized
+// Dataset not organized
 function insertFileToTable(table, pathlist, SPARCfolder){
   var i
   //let SPARCfolder = document.querySelector('#SPARCfolderlist').value
