@@ -172,8 +172,8 @@
   width: 100%;
   padding: .5rem;
   padding-left: calc(5rem + 5px + .5rem); /* padding + icon + magic */
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
   line-height: 2;
   text-align: left;
   /* font: inherit; */
