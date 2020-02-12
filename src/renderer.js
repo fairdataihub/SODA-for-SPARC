@@ -1678,7 +1678,7 @@ function showCurrentPermission(){
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
-    currentDatasetPermission.innerHTML = ''
+    currentDatasetPermission.innerHTML = 'None'
     bfCurrentPermissionProgress.style.display = 'none'
   } else {
     client.invoke("api_bf_get_permission", selectedBfAccount, selectedBfDataset,

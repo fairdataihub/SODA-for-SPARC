@@ -170,8 +170,10 @@
 .nav-button {
   display: block;
   width: 100%;
-  padding: .2rem;
-  padding-left: calc(2rem + 5px + .5rem); /* padding + icon + magic */
+  padding: .5rem;
+  padding-left: calc(5rem + 5px + .5rem); /* padding + icon + magic */
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
   line-height: 2;
   text-align: left;
   /* font: inherit; */
@@ -184,7 +186,10 @@
   opacity: 0.8;
   cursor: pointer;
   font-family: "Open Sans", sans-serif;
-  vertical-align: center
+  vertical-align: center;
+  background-size: 30px 30px; 
+  background-repeat:no-repeat;
+  background-position: 22px center;
 }
 .nav-button:hover,
 .nav-button:focus:not(.is-selected) {
