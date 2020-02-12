@@ -1,7 +1,7 @@
 //////////////////////////////////
 // Import required modules
 //////////////////////////////////
-// const $ = require("jquery");
+
 const zerorpc = require("zerorpc")
 const fs = require("fs")
 const os = require("os")
@@ -14,35 +14,95 @@ const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
 require('v8-compile-cache')
 
-log.transports.console.level = false
-log.transports.file.maxSize = 1024*1024*10
-var homeDirectory = app.getPath('home')
-
-// Connect to python server and check
+//////////////////////////////////
+// Connect to Python back-end
+//////////////////////////////////
 let client = new zerorpc.Client({ timeout: 300000})
-
 client.connect("tcp://127.0.0.1:4242")
-
 client.invoke("echo", "server ready", (error, res) => {
   if(error || res !== 'server ready') {
     log.error(error)
     console.error(error)
   } else {
-    console.log("server is ready")
-    log.info("server is ready")
+    console.log("Connected to Python back-end successfully")
+    log.info("Connected to Python back-end successfully")
   }
 })
 
+//////////////////////////////////
+// App launch actions
+//////////////////////////////////
+
+// Log file settings //
+log.transports.console.level = false
+log.transports.file.maxSize = 1024*1024*10
+var homeDirectory = app.getPath('home')
+
+// Check default radio buttons //
+document.getElementById("selectAccount").click()
+document.getElementById("add-edit-subtitle").click()
+document.getElementById("pi-owner").click()
+document.getElementById("cloud-dataset").click()
+document.getElementById("organize-dataset").click()
+
+//log user's OS version //
+log.info("User OS:", os.type(), os.platform(), "version:", os.release())
+console.log("User OS:", os.type(), os.platform(), "version:", os.release())
+
+// Check current app version //
+const appVersion = window.require('electron').remote.app.getVersion()
+log.info("Current SODA version:", appVersion)
+console.log("Current SODA version:", appVersion)
+
+//check user's internet connection abd connect to default Blackfynn account //
+require('dns').resolve('www.google.com', function(err) {
+  if (err) {
+     console.error("No internet connection");
+     log.error("No internet connection")
+     ipcRenderer.send('warning-no-internet-connection')
+  } else {
+     console.log("Connected to the internet");
+     log.info("Connected to the internet")
+     //Check new app version
+     checkNewAppVersion()
+     //Load Default/global blackfynn account if available
+     loadDefaultAccount()
+  }
+});
+
+// Check lasted app version and warn if newer available //
+function checkNewAppVersion() {
+  const axios = require('axios');
+  const url = 'https://github.com/bvhpatel/SODA';
+  axios.get(url)
+    .then(response => {
+      var str = response.data
+      var firstvariable = "Latest version: "
+      var secondvariable = "<"
+      var scrappedVersion = str.match(new RegExp(firstvariable + "(.*)" + secondvariable))[1]
+      log.info("Latest SODA version:", scrappedVersion)
+      console.log("Latest SODA version:", scrappedVersion)
+
+      if (appVersion !== scrappedVersion){
+        ipcRenderer.send('warning-new-version')
+      }
+    })
+    .catch(error => {
+      log.info(error);
+      console.log(error)
+    })
+}
 
 //////////////////////////////////
-// Get html elements from the user interface //
+// Get html elements from UI 
 //////////////////////////////////
-// Navigator button
+
+// Navigator button //
 const buttonSidebar = document.getElementById("button-hamburger")
 const buttonSidebarIcon = document.getElementById("button-soda-icon")
 const buttonSidebarBigIcon = document.getElementById("button-soda-big-icon")
 
-// Metadata Templates
+// Metadata Templates //
 const downloadSubmission = document.getElementById("a-submission")
 const downloadSamples = document.getElementById("a-samples")
 const downloadSubjects = document.getElementById("a-subjects")
@@ -51,7 +111,7 @@ const downloadManifest = document.getElementById("a-manifest")
 const homedir = os.homedir()
 const userDownloadFolder = path.join(homedir, "Downloads")
 
-// Organize dataset
+// Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
 const bfUploadAccountCheckBtn = document.getElementById('button-upload-check-bf-account-details')
 const selectDatasetBtn = document.getElementById('button-select-dataset')
@@ -66,10 +126,11 @@ const clearTableBtn = document.getElementById('button-clear-table')
 const selectSaveFileOrganizationBtn = document.getElementById('button-select-save-file-organization')
 const selectPreviewBtn = document.getElementById('button-preview-file-organization')
 const selectImportFileOrganizationBtn = document.getElementById('button-select-upload-file-organization')
-
 const selectPreviewMetadataBtn = document.getElementById('button-preview-file-organization-metadata')
+const tableMetadata = document.getElementById("metadata-table")
+let tableMetadataCount = 0
 
-// Generate dataset
+// Generate dataset //
 const createNewStatus = document.querySelector('#create-newdataset')
 const modifyExistingStatus = document.querySelector('#existing-dataset')
 const bfUploadDirectlyStatus = document.querySelector('#cloud-dataset')
@@ -79,32 +140,25 @@ const manifestStatus = document.querySelector('#generate-manifest')
 const curationForm = document.querySelector('#dataset-curate-form')
 const progressBarCurate = document.getElementById("progress-bar-curate")
 const progressCurateUpload = document.getElementById("div-curate-progress")
-
-const tableMetadata = document.getElementById("metadata-table")
-let tableMetadataCount = 0
-
 const curateDatasetBtn = document.getElementById('button-curate-dataset')
 const bfUploadDatasetBtn = document.getElementById('button-upload-dataset')
 
-// Manage datasets
+// Manage datasets //
 const keyName = document.querySelector('#bf-key-name')
 const key = document.querySelector('#bf-key')
 const secret = document.querySelector('#bf-secret')
 const bfAddAccountBtn = document.getElementById('add-bf-account')
 const bfAddAccountStatus = document.querySelector('#para-add-account-status')
 const bfAddAccountInfo = document.querySelector('#add-account-progress')
-
 const bfAccountList = document.querySelector('#bfaccountlist')
 const bfUploadAccountList = document.querySelector('#bfuploadaccountlist')
 const bfAccountLoadProgress = document.querySelector('#div-bf-account-load-progress')
 const bfAccountLoadProgressCurate = document.querySelector('#div-bf-account-load-progress-curate')
-
 var myitem
 const bfDatasetList = document.querySelector('#bfdatasetlist')
 const bfUploadDatasetList = document.querySelector('#bfuploaddatasetlist')
 const bfSelectAccountStatus = document.getElementById("para-select-account-status")
 const bfUploadSelectAccountStatus = document.getElementById("para-upload-select-account-status")
-
 const bfRefreshDatasetBtn = document.getElementById('button-refresh-dataset-list')
 const bfRefreshDatasetMetadataBtn = document.getElementById('button-refresh-dataset-list-metadata')
 const bfRefreshDatasetPermissionBtn = document.getElementById('button-refresh-dataset-list-permission')
@@ -114,29 +168,22 @@ const bfCreateNewDatasetBtn = document.getElementById('button-create-bf-new-data
 const bfCreateNewDatasetStatus = document.querySelector('#para-add-new-dataset-status')
 const bfNewDatasetSubtitle = document.querySelector('#bf-new-dataset-subtitle')
 const bfNewDatasetSubtitleCharCount = document.querySelector('#para-char-count')
-
 const bfSubmitDatasetBtn = document.getElementById('button-submit-dataset')
 const bfSubmitDatasetInfo = document.querySelector('#progresssubmit')
 const pathSubmitDataset = document.querySelector('#selected-submit-dataset')
 const progressUploadBf = document.getElementById("div-progress-submit")
 const progressBarUploadBf = document.getElementById("progress-bar-upload-bf")
 
-
-// Blackfynn dataset metadata
+// Blackfynn dataset metadata //
 const bfMetadataForm = document.querySelector('#bf-add-metadata-form')
-
 const bfDatasetListMetadata = document.querySelector('#bfdatasetlist_metadata')
 const bfCurrentMetadataProgress = document.querySelector('#div-bf-current-metadata-progress')
-
 const bfDatasetSubtitle = document.querySelector('#bf-dataset-subtitle')
 const bfDatasetSubtitleCharCount = document.querySelector('#para-char-count-metadata')
 const bfAddSubtitleBtn = document.getElementById('button-add-subtitle')
 const datasetSubtitleStatus = document.querySelector('#para-dataset-subtitle-status')
-
 const bfAddDescriptionBtn = document.getElementById('button-add-description')
 const datasetDescriptionStatus = document.querySelector('#para-dataset-description-status')
-
-
 const bfCurrentBannerImg = document.getElementById('current-banner-img')
 const bfImportBannerImageBtn = document.getElementById('button-import-banner-image')
 const datasetBannerImagePath = document.querySelector('#para-path-image')
@@ -144,42 +191,34 @@ const bfViewImportedImage = document.querySelector('#image-banner')
 const bfSaveBannerImageBtn = document.getElementById('save-banner-image')
 const datasetBannerImageStatus = document.querySelector('#para-dataset-banner-image-status')
 const formBannerHeight = document.getElementById('form-banner-height')
-// const formBannerWidth = document.getElementById('form-banner-width')
-
 const currentDatasetLicense = document.querySelector('#para-dataset-license-current')
 const bfListLicense = document.querySelector('#bf-license-list')
 const bfAddLicenseBtn = document.getElementById('button-add-license')
 const datasetLicenseStatus = document.querySelector('#para-dataset-license-status')
 
-
-// Blackfynn dataset permission
+// Blackfynn dataset permission //
 const bfPermissionForm = document.querySelector('#blackfynn-permission-form')
-
 const bfDatasetListPermission = document.querySelector('#bfdatasetlist_permission')
 const currentDatasetPermission = document.querySelector('#para-dataset-permission-current')
 const bfCurrentPermissionProgress = document.querySelector('#div-bf-current-permission-progress')
-
 const bfListUsersPI = document.querySelector('#bf_list_users_pi')
 const bfAddPermissionPIBtn = document.getElementById('button-add-permission-pi')
 const datasetPermissionStatusPI = document.querySelector('#para-dataset-permission-status-pi')
-
 const bfAddPermissionCurationTeamBtn = document.getElementById('button-add-permission-curation-team')
 const datasetPermissionStatusCurationTeam = document.querySelector('#para-dataset-permission-status-curation-team')
-
 const bfListUsers = document.querySelector('#bf_list_users')
 const bfListRoles = document.querySelector('#bf_list_roles')
 const bfAddPermissionBtn = document.getElementById('button-add-permission')
 const datasetPermissionStatus = document.querySelector('#para-dataset-permission-status')
-
 const bfListTeams = document.querySelector('#bf_list_teams')
 const bfListRolesTeam = document.querySelector('#bf_list_roles_team')
 const bfAddPermissionTeamBtn = document.getElementById('button-add-permission-team')
 const datasetPermissionStatusTeam = document.querySelector('#para-dataset-permission-status-team')
 
-
 //////////////////////////////////
 // Constant parameters
 //////////////////////////////////
+
 const blackColor = '#000000'
 const redColor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivatives", "docs", "primary", "protocol", "source"]
@@ -190,23 +229,20 @@ const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
 // Operations on JavaScript end only
 //////////////////////////////////
 
-/// Sidebar Navigation ///
+// Sidebar Navigation //
 var open = false
 function openSidebar(buttonElement) {
   if (!open) {
     ipcRenderer.send('resize-window', 'up')
     document.getElementById("main-nav").style.width = "250px";
     document.getElementById("SODA-logo").style.display = "block";
-    // document.getElementById("content").style.marginLeft = "-250px";
     buttonSidebarIcon.style.display = "none"
     open = true;
   } else {
     ipcRenderer.send('resize-window', 'down')
     document.getElementById("main-nav").style.width = "70px";
     document.getElementById("SODA-logo").style.display = "none";
-    // document.getElementById("content").style.marginLeft = "70px";
     buttonSidebarIcon.style.display = "block";
-    // buttonSidebarIcon.style.marginBottom = "75px";
     open = false;
   }
 }
@@ -221,7 +257,7 @@ buttonSidebarBigIcon.addEventListener('click', (event) => {
   buttonSidebar.click()
 })
 
-// Button selection to move on to next step
+// Button selection to move on to next step under Prepare Dataset //
 document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
   document.getElementById('button-specfy-dataset-demo-toggle').click()
   if (getComputedStyle(document.getElementById('div-file-conversion'), null).display === 'none'){
@@ -247,62 +283,7 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
   }
 })
 
-// Check default radio buttons
-document.getElementById("selectAccount").click()
-document.getElementById("add-edit-subtitle").click()
-document.getElementById("pi-owner").click()
-document.getElementById("cloud-dataset").click()
-document.getElementById("organize-dataset").click()
-
-//log user's OS version
-log.info("User OS:", os.type(), os.platform(), "version:", os.release())
-console.log("User OS:", os.type(), os.platform(), "version:", os.release())
-
-// Check current app version
-const appVersion = window.require('electron').remote.app.getVersion()
-log.info("Current SODA version:", appVersion)
-console.log("Current SODA version:", appVersion)
-
-//check user's internet connection
-require('dns').resolve('www.google.com', function(err) {
-  if (err) {
-     console.error("No internet connection");
-     log.error("No internet connection")
-     ipcRenderer.send('warning-no-internet-connection')
-  } else {
-     console.log("Connected to the internet");
-     log.info("Connected to the internet")
-     //Check new app version
-     checkNewAppVersion()
-     //Load Default/global blackfynn account if available
-     loadDefaultAccount()
-  }
-});
-
-// Check lasted app version and warn if newer available
-function checkNewAppVersion() {
-  const axios = require('axios');
-  const url = 'https://github.com/bvhpatel/SODA';
-  axios.get(url)
-    .then(response => {
-      var str = response.data
-      var firstvariable = "Latest version: "
-      var secondvariable = "<"
-      var scrappedVersion = str.match(new RegExp(firstvariable + "(.*)" + secondvariable))[1]
-      log.info("Latest SODA version:", scrappedVersion)
-      console.log("Latest SODA version:", scrappedVersion)
-
-      if (appVersion !== scrappedVersion){
-        ipcRenderer.send('warning-new-version')
-      }
-    })
-    .catch(error => {
-      log.info(error);
-      console.log(error)
-    })
-}
-
-// Download Metadata Templates
+// Download Metadata Templates //
 templateArray = ["submission.xlsx", "subjects.xlsx", "samples.xlsx", "dataset_description.xlsx", "manifest.xlsx"]
 
 const { COPYFILE_EXCL } = fs.constants.COPYFILE_FICLONE;
@@ -331,7 +312,7 @@ downloadManifest.addEventListener('click', (event) => {
   downloadTemplates(templateArray[4])
 });
 
-// Select organized dataset folder and populate table
+// Select organized dataset folder and populate table //
 selectDatasetBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-dataset')
 })
@@ -350,19 +331,17 @@ ipcRenderer.on('selected-dataset', (event, path) => {
   }
 })
 
-//Select files/folders to be added to table for organizing
+//Select files/folders to be added to table for organizing //
 
 //code
 const selectCodeBtn = document.getElementById('button-select-code')
 selectCodeBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-code')
 })
-
 const selectCodeDirectoryBtn = document.getElementById('button-select-code-directory')
 selectCodeDirectoryBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-folder-dialog-code')
 })
-
 ipcRenderer.on('selected-code', (event, path) => {
     insertFileToTable(tableNotOrganized, path, 'code')
 })
@@ -372,12 +351,10 @@ const selectDerivativesBtn = document.getElementById('button-select-derivatives'
 selectDerivativesBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-derivatives')
 })
-
 const selectDerivativesDirectoryBtn = document.getElementById('button-select-derivatives-directory')
 selectDerivativesDirectoryBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-folder-dialog-derivatives')
 })
-
 ipcRenderer.on('selected-derivatives', (event, path) => {
     insertFileToTable(tableNotOrganized, path, 'derivatives')
 })
@@ -387,12 +364,10 @@ const selectDocsBtn = document.getElementById('button-select-docs')
 selectDocsBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-docs')
 })
-
 const selectDocsDirectoryBtn = document.getElementById('button-select-docs-directory')
 selectDocsDirectoryBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-folder-dialog-docs')
 })
-
 ipcRenderer.on('selected-docs', (event, path) => {
     insertFileToTable(tableNotOrganized, path, 'docs')
 })
@@ -402,12 +377,10 @@ const selectPrimaryBtn = document.getElementById('button-select-primary')
 selectPrimaryBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-primary')
 })
-
 const selectPrimaryDirectoryBtn = document.getElementById('button-select-primary-directory')
 selectPrimaryDirectoryBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-folder-dialog-primary')
 })
-
 ipcRenderer.on('selected-primary', (event, path) => {
     insertFileToTable(tableNotOrganized, path, 'primary')
 })
@@ -417,7 +390,6 @@ const selectProtocolBtn = document.getElementById('button-select-protocol')
 selectProtocolBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-protocol')
 })
-
 const selectProtocolDirectoryBtn = document.getElementById('button-select-protocol-directory')
 selectProtocolDirectoryBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-folder-dialog-protocol')
@@ -432,37 +404,15 @@ const selectSourceBtn = document.getElementById('button-select-source')
 selectSourceBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-source')
 })
-
 const selectSourceDirectoryBtn = document.getElementById('button-select-source-directory')
 selectSourceDirectoryBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-folder-dialog-source')
 })
-
 ipcRenderer.on('selected-source', (event, path) => {
     insertFileToTable(tableNotOrganized, path, 'source')
 })
 
-
-
-//Clear table
-clearTableBtn.addEventListener('click', () => {
-  // Generate warning before continuing
-  ipcRenderer.send('warning-clear-table')
-})
-ipcRenderer.on('warning-clear-table-selection', (event, index) => {
-  if (index === 0) {
-    if (alreadyOrganizedStatus.checked){
-      clearTable(tableOrganized)
-      pathDataset.innerHTML = ""
-    } else if (organizeDatasetStatus.checked) {
-      clearTable(tableNotOrganized)
-      clearStrings()
-    }
-  }
-})
-
-// Click table navigator
-// Drag and drop
+// Drag and drop //
 var holderCode = document.getElementById('code')
 holderCode.addEventListener("drop", (event)=> {
    event.preventDefault()
@@ -505,15 +455,24 @@ holderSource.addEventListener("drop", (event)=> {
    dropAddToTable(event, myID)
 })
 
-var holderMetadata = document.getElementById('metadata')
-holderMetadata.addEventListener("drop", (event)=> {
-   event.preventDefault()
-   var myID = holderMetadata.id
-   dropAddToTableMetadata(event, myID)
+//Clear table //
+clearTableBtn.addEventListener('click', () => {
+  // Generate warning before continuing
+  ipcRenderer.send('warning-clear-table')
+})
+ipcRenderer.on('warning-clear-table-selection', (event, index) => {
+  if (index === 0) {
+    if (alreadyOrganizedStatus.checked){
+      clearTable(tableOrganized)
+      pathDataset.innerHTML = ""
+    } else if (organizeDatasetStatus.checked) {
+      clearTable(tableNotOrganized)
+      clearStrings()
+    }
+  }
 })
 
-
-//Select files to be added to metadata files table
+//Select files to be added to metadata files table //
 const selectMetadataBtn = document.getElementById('button-select-metadata')
 selectMetadataBtn.addEventListener('click', (event) => {
   document.getElementById("para-preview-organization-status-metadata").innerHTML = ""
@@ -522,8 +481,14 @@ selectMetadataBtn.addEventListener('click', (event) => {
 ipcRenderer.on('selected-metadata', (event, path) => {
     insertFileToMetadataTable(tableMetadata, path)
 })
+var holderMetadata = document.getElementById('metadata')
+holderMetadata.addEventListener("drop", (event)=> {
+   event.preventDefault()
+   var myID = holderMetadata.id
+   dropAddToTableMetadata(event, myID)
+})
 
-
+// New instance for description editor
 const tuiInstance = new Editor({
   el: document.querySelector('#editorSection'),
   initialEditType: 'wysiwyg',
@@ -558,7 +523,7 @@ const tuiInstance = new Editor({
   ]
 })
 
-
+// Character count for subtitle //
 function countCharacters(textelement, pelement) {
   var textEntered = textelement.value;
   var counter = (256 - (textEntered.length));
@@ -575,10 +540,10 @@ bfDatasetSubtitle.addEventListener('keyup',  function(){
 
 
 //////////////////////////////////
-// Operations calling to pysoda.py functions //
+// Prepare Dataset
 //////////////////////////////////
 
-// Action when user click on "Save" file organization button
+// Action when user click on "Save" file organization button //
 selectSaveFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('save-file-dialog-saveorganization')
   document.getElementById("para-save-file-organization-status").innerHTML = ""
@@ -610,8 +575,7 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
   }
 })
 
-
-// Action when user click on "Import" button
+// Action when user click on "Import" button //
 selectImportFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-uploadorganization')
     clearStrings()
@@ -638,7 +602,7 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
   }
 })
 
-// Action when user click on "Preview" file organization button
+// Action when user click on "Preview" file organization button //
 selectPreviewBtn.addEventListener('click', () => {
   clearStrings()
   document.getElementById("para-save-file-organization-status").innerHTML = "Please wait..."
@@ -702,10 +666,7 @@ selectPreviewMetadataBtn.addEventListener('click', () => {
 })
 
 
-// // // // // // // // // //
-// Action when user click on Generate Dataset
-// // // // // // // // // //
-
+// Generate dataset //
 curateDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-please-wait-curate").innerHTML = "Please wait..."
   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
@@ -855,12 +816,12 @@ curateDatasetBtn.addEventListener('click', () => {
   }
 })
 
-// // // // // // // // // //
-//MANAGE DATASETS
-// // // // // // // // // //
+//////////////////////////////////
+// Manage Dataset
+//////////////////////////////////
+
 
 // Add existing bf account(s) to dropdown list
-
 bfAccountCheckBtn.addEventListener('click', (event) => {
   bfSelectAccountStatus.innerHTML = "Please wait..."
   bfAccountLoadProgress.style.display = 'block'
@@ -875,7 +836,7 @@ bfUploadAccountCheckBtn.addEventListener('click', (event) => {
   updateBfAccountList()
 })
 
-// Add bf account
+// Add new bf account //
 bfAddAccountBtn.addEventListener('click', () => {
   bfAddAccountBtn.disabled = true
   bfAddAccountStatus.innerHTML = ''
@@ -897,8 +858,7 @@ bfAddAccountBtn.addEventListener('click', () => {
   })
 })
 
-
-// Select bf account from dropdownlist and show existing dataset
+// Select bf account from dropdownlist and show existing dataset //
 bfAccountList.addEventListener('change', () => {
   bfSelectAccountStatus.innerHTML = "Please wait..."
   bfAccountLoadProgress.style.display = 'block'
@@ -919,7 +879,6 @@ bfAccountList.addEventListener('change', () => {
   refreshAllBfDatasetLists()
   refreshBfUsersList()
   refreshBfTeamsList(bfListTeams)
-
 })
 
 bfUploadAccountList.addEventListener('change', () => {
@@ -944,7 +903,7 @@ bfUploadAccountList.addEventListener('change', () => {
   refreshBfTeamsList(bfListTeams)
 })
 
-// Refresh list of bf dataset list (in case user create it online)
+// Refresh lists of bf datasets (in case user create it online) //
 bfRefreshDatasetBtn.addEventListener('click', () => {
   currentDatasetPermission.innerHTML = ''
   refreshAllBfDatasetLists()
@@ -958,7 +917,8 @@ bfRefreshDatasetMetadataBtn.addEventListener('click', () => {
 bfRefreshDatasetPermissionBtn.addEventListener('click', () => {
   refreshAllBfDatasetLists()
 })
-// Add new dataset folder (empty) on bf
+
+// Add new dataset folder (empty) on bf //
 bfCreateNewDatasetBtn.addEventListener('click', () => {
   bfCreateNewDatasetBtn.disabled = true
   bfCreateNewDatasetStatus.innerHTML = 'Adding...'
@@ -991,7 +951,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
   })
 })
 
-// Submit dataset to bf
+// Submit dataset to bf //
 bfSubmitDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
   document.getElementById("para-progress-bar-error-status").innerHTML = ""
@@ -1059,9 +1019,11 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
 })
 
 
+// Change selected dataset from dropdown lists //
+
+// Generate dataset
 bfUploadDatasetList.addEventListener('change', () => {
   var listSelectedIndex = bfUploadDatasetList.selectedIndex
-
   bfDatasetListMetadata.selectedIndex = listSelectedIndex
   metadataDatasetlistChange()
   bfDatasetListPermission.selectedIndex = listSelectedIndex
@@ -1069,9 +1031,9 @@ bfUploadDatasetList.addEventListener('change', () => {
   bfDatasetList.selectedIndex = listSelectedIndex
 })
 
+// Upload local dataset
 bfDatasetList.addEventListener('change', () => {
   var listSelectedIndex = bfDatasetList.selectedIndex
-
   bfDatasetListMetadata.selectedIndex = listSelectedIndex
   metadataDatasetlistChange()
   bfDatasetListPermission.selectedIndex = listSelectedIndex
@@ -1079,18 +1041,13 @@ bfDatasetList.addEventListener('change', () => {
   bfUploadDatasetList.selectedIndex = listSelectedIndex
 })
 
-/**
- * This event tracks change of the selected dataset in the dropdown list
- * under the "Add metadata to Blackfynn dataset" feature
- */
+// Add metadata to Blackfynn dataset
 bfDatasetListMetadata.addEventListener('change', () => {
   var listSelectedIndex = bfDatasetListMetadata.selectedIndex
-
   bfDatasetListPermission.selectedIndex = listSelectedIndex
   permissionDatasetlistChange()
   bfUploadDatasetList.selectedIndex = listSelectedIndex
   bfDatasetList.selectedIndex = listSelectedIndex
-
   metadataDatasetlistChange()
 })
 
@@ -1107,6 +1064,22 @@ function metadataDatasetlistChange(){
   showCurrentBannerImage()
 }
 
+// Manage dataset permission
+bfDatasetListPermission.addEventListener('change', () => {
+  var listSelectedIndex = bfDatasetListPermission.selectedIndex
+  bfDatasetListMetadata.selectedIndex = listSelectedIndex
+  metadataDatasetlistChange()
+  bfUploadDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetList.selectedIndex = listSelectedIndex
+  permissionDatasetlistChange()
+})
+
+function permissionDatasetlistChange(){
+  bfCurrentPermissionProgress.style.display = 'block'
+  showCurrentPermission()
+}
+
+// Add substitle //
 bfAddSubtitleBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'
   datasetSubtitleStatus.innerHTML = 'Please wait...'
@@ -1131,6 +1104,7 @@ bfAddSubtitleBtn.addEventListener('click', () => {
   })
 })
 
+// Add description //
 bfAddDescriptionBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'
   datasetDescriptionStatus.innerHTML = "Please wait..."
@@ -1155,6 +1129,7 @@ bfAddDescriptionBtn.addEventListener('click', () => {
   })
 })
 
+// upload banner image //
 const Cropper = require('cropperjs')
 var cropOptions = {
   aspectRatio: 1,
@@ -1177,21 +1152,8 @@ var cropOptions = {
       formBannerHeight.value = Math.round(data.height)
       // formBannerWidth.value = Math.round(data.width)
   }
-  // ready() {
-  //   console.log('ready')
-  //   console.log(myCropper.getCanvasData().height)
-  //   document.getElementById('banner-preview').style.height = String(myCropper.getCanvasData().height) + 'px'
-  //   console.log(document.getElementById('banner-preview').style.height)
-  //   console.log(String(myCropper.getCanvasData().height) + 'px')
-  // }
-  // minCanvasWidth: 0,
-  // minCanvasHeight: 0,
-  /*minContainerWidth: 400,
-  minContainerHeight: 400,*/
 }
-
 var imageExtension
-
 var myCropper = new Cropper(bfViewImportedImage, cropOptions)
 // Action when user click on "Import image" button for banner image
 bfImportBannerImageBtn.addEventListener('click', (event) => {
@@ -1209,7 +1171,7 @@ ipcRenderer.on('selected-banner-image', (event, path) => {
     myCropper = new Cropper(bfViewImportedImage, cropOptions)
     }
   })
-//
+
 bfSaveBannerImageBtn.addEventListener('click', (event) => {
   datasetBannerImageStatus.innerHTML = ""
   if (bfViewImportedImage.src.length > 0){
@@ -1262,6 +1224,7 @@ bfSaveBannerImageBtn.addEventListener('click', (event) => {
   }
 })
 
+// Add license //
 bfAddLicenseBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'
   datasetLicenseStatus.innerHTML = 'Please wait...'
@@ -1287,29 +1250,8 @@ bfAddLicenseBtn.addEventListener('click', () => {
   })
 })
 
-/**
- * This event tracks change of the selected dataset in the dropdown list
- * under the "Manage dataset permission" feature
- */
-bfDatasetListPermission.addEventListener('change', () => {
-  var listSelectedIndex = bfDatasetListPermission.selectedIndex
 
-  bfDatasetListMetadata.selectedIndex = listSelectedIndex
-  metadataDatasetlistChange()
-  bfUploadDatasetList.selectedIndex = listSelectedIndex
-  bfDatasetList.selectedIndex = listSelectedIndex
-
-  permissionDatasetlistChange()
-})
-
-function permissionDatasetlistChange(){
-  bfCurrentPermissionProgress.style.display = 'block'
-  showCurrentPermission()
-}
-/**
- * This event listener make PI owener of the selected dataset
- * when user clicks on the "Make PI owner"  button
- */
+// Make PI owner //
 bfAddPermissionPIBtn.addEventListener('click', () => {
   datasetPermissionStatusPI.innerHTML = ''
   bfCurrentPermissionProgress.style.display = 'block'
@@ -1344,10 +1286,7 @@ ipcRenderer.on('warning-add-permission-owner-selection-PI', (event, index) => {
   }
 })
 
-/**
- * This event listener add 'manager' permission for the Curation Team
- * when user clicks on the "Share with Curation Team"  button
- */
+// Share with Curation Team //
 bfAddPermissionCurationTeamBtn.addEventListener('click', () => {
   datasetPermissionStatusCurationTeam.innerHTML = ''
   bfCurrentPermissionProgress.style.display = 'block'
@@ -1373,11 +1312,7 @@ bfAddPermissionCurationTeamBtn.addEventListener('click', () => {
   })
 })
 
-
-/**
- * This event listener add permission to the selected dataset
- * when user clicks on the "Add permission for user"  button
- */
+// Add permission for user //
 bfAddPermissionBtn.addEventListener('click', () => {
   datasetPermissionStatus.innerHTML = ''
   bfCurrentPermissionProgress.style.display = 'block'
@@ -1406,11 +1341,7 @@ ipcRenderer.on('warning-add-permission-owner-selection', (event, index) => {
   }
 })
 
-
-/**
- * This event listener add permission to the selected dataset
- * when user clicks on the "Add permission for team"  button
- */
+// Add permission for team
 bfAddPermissionTeamBtn.addEventListener('click', () => {
   datasetPermissionStatusTeam.innerHTML = ''
   bfCurrentPermissionProgress.style.display = 'block'
@@ -1436,9 +1367,51 @@ bfAddPermissionTeamBtn.addEventListener('click', () => {
   })
 })
 
-// // // // // // // // // //
+//////////////////////////////////
 // Helper functions
-// // // // // // // // // //
+//////////////////////////////////
+
+// General //
+
+function removeOptions(selectbox)
+{
+    var i;
+    for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
+    {
+        selectbox.remove(i);
+    }
+}
+
+function disableform(formId) {
+  var f = formId.elements;
+  for (var i=0;i<f.length;i++)
+     f[i].disabled=true
+  }
+
+function enableform(formId) {
+  var f = formId.elements;
+  for (var i=0;i<f.length;i++)
+     f[i].disabled=false
+}
+
+function clearStrings() {
+  document.getElementById("para-save-file-organization-status").innerHTML = ""
+  document.getElementById("para-preview-organization-status-metadata").innerHTML = ""
+  document.getElementById("para-selected-dataset").innerHTML = ""
+}
+
+function clearPermissionsStrings() {
+  document.getElementById("para-save-file-organization-status").innerHTML = ""
+  document.getElementById("para-selected-dataset").innerHTML = ""
+}
+
+function userError(error)
+{
+  var myerror = error.message
+  return myerror
+}
+
+// Manage Datasets //
 
 function refreshBfDatasetList(bfdstlist, bfAccountList){
   removeOptions(bfdstlist)
@@ -1602,11 +1575,6 @@ function showCurrentLicense(){
   }
 }
 
-
-/**
- * refreshBfUsersList is a function that refreshes the dropdown list
- * with names of users when an Blackfynn account is selected
- */
 function refreshBfUsersList(){
   var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
 
@@ -1640,10 +1608,6 @@ function refreshBfUsersList(){
   }
 }
 
-/**
- * refreshBfTeamsList is a function that refreshes the dropdown list
- * with names of teams when an Blackfynn account is selected
- */
 function refreshBfTeamsList(teamList){
   removeOptions(teamList)
   var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
@@ -1694,6 +1658,24 @@ function showCurrentPermission(){
   }
 }
 
+function addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole){
+  client.invoke("api_bf_add_permission", selectedBfAccount, selectedBfDataset, selectedUser, selectedRole,
+    (error, res) => {
+    if(error) {
+      log.error(error)
+      console.error(error)
+      var emessage = userError(error)
+      datasetPermissionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfCurrentPermissionProgress.style.display = 'none'
+      enableform(bfPermissionForm)
+    } else {
+      datasetPermissionStatus.innerHTML = res
+      showCurrentPermission()
+      enableform(bfPermissionForm)
+    }
+  })
+}
+
 function showAccountDetails(bfLoadAccount){
   client.invoke("api_bf_account_details", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
     if(error) {
@@ -1711,7 +1693,8 @@ function showAccountDetails(bfLoadAccount){
 }
 
 function showUploadAccountDetails(bfLoadAccount){
-  client.invoke("api_bf_account_details", bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text, (error, res) => {
+  client.invoke("api_bf_account_details", 
+    bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text, (error, res) => {
     if(error) {
       log.error(error)
       console.error(error)
@@ -1721,16 +1704,6 @@ function showUploadAccountDetails(bfLoadAccount){
       bfLoadAccount.style.display = 'none'
     }
   })
-}
-
-// // // // // // // // // //
-// Helper Functions
-// // // // // // // // // //
-
-function userError(error)
-{
-  var myerror = error.message
-  return myerror
 }
 
 function loadDefaultAccount() {
@@ -1799,44 +1772,8 @@ function updateBfAccountList(){
 })
 }
 
-function removeOptions(selectbox)
-{
-    var i;
-    for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
-    {
-        selectbox.remove(i);
-    }
-}
+// Organize Dataset //
 
-function disableform(formId) {
-  var f = formId.elements;
-  for (var i=0;i<f.length;i++)
-     f[i].disabled=true
-  }
-
-function enableform(formId) {
-  var f = formId.elements;
-  for (var i=0;i<f.length;i++)
-     f[i].disabled=false
-}
-
-function clearStrings() {
-  document.getElementById("para-save-file-organization-status").innerHTML = ""
-  document.getElementById("para-preview-organization-status-metadata").innerHTML = ""
-  document.getElementById("para-selected-dataset").innerHTML = ""
-}
-
-function clearPermissionsStrings() {
-  document.getElementById("para-save-file-organization-status").innerHTML = ""
-  document.getElementById("para-selected-dataset").innerHTML = ""
-}
-
-
-// // // // // // // // // //
-// Helper Functions: Organize dataset
-// // // // // // // // // //
-
-// Dataset Organized
 function checkFolderStruture(pathDatasetFolder){
   var files = fs.readdirSync(pathDatasetFolder)
   var folders = []
@@ -1944,17 +1881,10 @@ function tableToJsonWithDescriptionOrganized(table){
 // Dataset not organized
 function insertFileToTable(table, pathlist, SPARCfolder){
   var i
-  //let SPARCfolder = document.querySelector('#SPARCfolderlist').value
   var rowcount = document.getElementById(SPARCfolder).rowIndex
   var jsonvar = tableToJson(table)
   var emessage = ''
   var count = 0
-  // for (i = 0; i < path.length; i++) {
-  //     if ( jsonvar[SPARCfolder].indexOf(path[i]) > -1 ) {
-  //       emessage = emessage + path[i] + ' already added to ' + SPARCfolder + "\n"
-  //       count += 1
-  //     }
-  // }
 
   var listfilePath = []
   for (let filePath of jsonvar[SPARCfolder]){
@@ -2006,13 +1936,6 @@ function insertFileToMetadataTable(table, pathlist){
   var count2 = 0
   var SPARCfolder = 'metadata'
 
-  // for (i = 0; i < path.length; i++) {
-  //     if ( jsonvar[SPARCfolder].indexOf(path[i]) > -1 ) {
-  //       emessage = emessage + path[i] + ' already added to ' + SPARCfolder + "\n"
-  //       count += 1
-  //     }
-  // }
-
   var listfilePath = []
   for (let filePath of jsonvar[SPARCfolder]){
       var extension = path.extname(filePath);
@@ -2049,7 +1972,6 @@ function insertFileToMetadataTable(table, pathlist){
     }
     return table
   }
-
 
 function tableToJson(table){
   var jsonvar = {}
@@ -2161,19 +2083,12 @@ function tableToJsonWithDescription(table){
 }
 
 function dropAddToTable(e, myID){
-  //e.target.style.color = 'inherit';
   e.target.style.backgroundColor = '';
 	var rowcount = document.getElementById(myID).rowIndex
 	var i = 0
   var jsonvar = tableToJson(tableNotOrganized)
   var emessage = ''
   var count = 0
-  // for (let f of e.dataTransfer.files) {
-  //     if ( jsonvar[myID].indexOf(f.path) > -1 ) {
-  //       emessage = emessage + f.path + ' already added to ' + myID + "\n"
-  //       count += 1
-  //     }
-  // }
 
   var listfilePath = []
   for (let filePath of jsonvar[myID]){
@@ -2242,9 +2157,7 @@ function dropAddToTableMetadata(e, myID){
     }
   }
 
-  //Check if file in allowable file list
-
-  //Check if file already in table
+  //Check if file already in table and in allowale list
   var listfilePath = []
   for (let filePath of jsonvar[myID]){
       var extension = path.extname(filePath);
@@ -2283,7 +2196,6 @@ function dropAddToTableMetadata(e, myID){
   }
 }
 
-//Both organized and not organized options
 function clearTable(table){
   var keyvect = sparcFolderNames.slice()
   clearStrings()
@@ -2316,23 +2228,4 @@ function clearTable(table){
     }
   }
   return table
-}
-
-
-function addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole){
-  client.invoke("api_bf_add_permission", selectedBfAccount, selectedBfDataset, selectedUser, selectedRole,
-    (error, res) => {
-    if(error) {
-      log.error(error)
-      console.error(error)
-      var emessage = userError(error)
-      datasetPermissionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      bfCurrentPermissionProgress.style.display = 'none'
-      enableform(bfPermissionForm)
-    } else {
-      datasetPermissionStatus.innerHTML = res
-      showCurrentPermission()
-      enableform(bfPermissionForm)
-    }
-  })
 }
