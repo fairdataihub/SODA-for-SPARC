@@ -5,6 +5,7 @@ const glob = require('glob')
 const contextMenu = require('electron-context-menu');
 const log  = require("electron-log");
 require('v8-compile-cache')
+const {ipcMain} = require('electron')
 
 log.transports.console.level = false
 /*************************************************************
@@ -170,3 +171,17 @@ function loadDemos () {
 }
 
 initialize()
+
+
+ipcMain.on('resize-window', (event, dir) => {
+  var x = mainWindow.getSize()[0]
+  var y = mainWindow.getSize()[1]
+  if (dir === 'up'){
+    x = x+1
+    y = y+1
+  } else {
+    x = x-1
+    y = y-1
+  }
+  mainWindow.setSize(x, y)
+})

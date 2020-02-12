@@ -139,6 +139,7 @@
   display: flex;
   align-items: center;
 }
+
 .demo-button-next-step {
   align-self: flex-start;
   margin-right: 1em;
@@ -175,6 +176,33 @@
   background-color: hsla(190,60%,36%,1);
   color: white;
   border-color: var(--color-accent);
+}
+
+
+.demo-button-table {
+  align-self: flex-start;
+  margin-right: 0.5em;
+  margin-left: 0.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  border: 1px solid;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 0.8em;
+  padding: .1em 1.1em;
+  color: grey;
+  background-color: transparent;
+  width: 80px;
+  cursor: pointer;
+}
+.demo-button-table:hover {
+  background-color: hsla(0,0%,0%,0.1);
+}
+.demo-button-table.drag{
+  border: 1px dashed;
+}
+.demo-button-table.drag:hover {
+  background-color: transparent
 }
 
 .demo-input {
@@ -225,25 +253,31 @@
 }
 
 /* Download Template Links */
-a.download-metadata{
-  background-color: hsla(190,60%,36%,1);
-  /* border: none; */
+button.download-metadata{
+  background-color: #258193;
+  border: none;
   color: white;
   padding: 8px 10px;
   cursor: pointer;
   font-size: 15px;
   display: inline-block;
-  border: 1px solid;
   border-radius: 4px;
-  /* padding:0.3em 1.2em; */
   margin:0 0.3em 0.3em 0;
-  width: 300px;
+  width: 220px;
   height: 45px;
-  text-align: center;
+  text-align: left;
   vertical-align: middle;
 }
-a.download-metadata:hover {
-  background-color: hsla(192,69%,23%,1);
+
+button.download-metadata:hover {
+  background-color: hsla(192,69%,23%);
+}
+.download-image {
+  border: 0;
+  float: left;
+  margin-right: 15px;
+  width:20px;
+  height:20px
 }
 
 /* ProTip ----------------------------- */
@@ -269,7 +303,6 @@ a.download-metadata:hover {
   font-weight: 600;
 }
 
-
 .labelradio {
   color: #303030;
 }
@@ -281,6 +314,10 @@ input[type=checkbox].with-style:checked ~ label {
     color: inherit;
     margin-top: -1px;
     vertical-align: middle;
+}
+
+.labelradio-manifest {
+  color: #303030;
 }
 
 .datasetsaveoption {
@@ -322,9 +359,9 @@ th {
   background-color: hsla(0,0%,50%,.06);
 }
 
-th:hover {
+/* th:hover {
   background-color: lightblue;
-}
+} */
 
 th,
 td {
@@ -378,6 +415,10 @@ table.pathtable tr td:first-child {
   min-width:40%;
 }
 
+table.pathtable tr th:nth-child(2) {
+  width: 50%;
+}
+
 table.pathtable tr td:nth-child(2) {
   width: 40%;
   max-width:40%;
@@ -428,8 +469,9 @@ height: 80%;
   float: right;
   font-size: 1em;
   font-style: italic;
-  font-weight: bold;
+  /* font-weight: bold; */
   color: black;
+  padding: 8px 12px;
 }
 
 .info {
@@ -606,16 +648,44 @@ progress.progresstrack[value]::-webkit-progress-value {
 
 .img-container {
   /* Never limit the container height here */
+  max-width: 50%;
   width: 50%;
   float: left;
   flex: 50%;
+  margin: 0 auto;
+}
+
+.demo-controls.banner-image{
+ background-color: gray;
+ background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
 }
 
 .img-container img {
-  /*display:block;*/
+  display:block;
   /* This is important */
   max-width: 100%;
   background-color: white
+}
+
+.container-cropped-image {
+  display: flex;
+  width: 270px;
+  height: 25px;
+  float:left;
+  background-color: #C0C0C0;
+  color:black;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+}
+.banner-image-size {
+  float: left;
+  height: 25px;
+  display: -ms-flexbox;
+}
+.banner-image-size.input {
+  height: 25px;
+  float:right;
+  background-clip: padding-box;
 }
 
 .preview {
@@ -625,9 +695,31 @@ progress.progresstrack[value]::-webkit-progress-value {
 /*  padding-bottom: 30%;*/
 }
 
+#div-img-container-holder {
+  color: black;
+  text-align:center;
+  font-size:20px;
+  font-weight:bold;
+  vertical-align: middle;
+  text-shadow: 0px -1px 0px rgba(0,0,0,.4);
+  padding: 0 1em;
+  height: 200px;
+  margin-top: 100px;
+}
+
+#div-banner-img-preview-holder{
+  color: black;
+  text-align:center;
+  font-size:20px;
+  font-weight:bold;
+  vertical-align: middle;
+  text-shadow: 0px -1px 0px rgba(0,0,0,.5);
+}
+
 label.input-banner-img{
   padding-left: 10px;
   color: black;
+  float:left;
 }
 
 
@@ -652,12 +744,13 @@ label.input-banner-img{
   font-size: 16px;
   line-height: 1;
   text-align: center;
-  padding: 8px 16px;
+  padding: 4px 8px;
   margin-right: -1px;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px rgba(255, 255, 255, 0.1);
-  transition: all 0.1s ease-in-out;
+  border: 1.25px solid hsla(190,60%,36%,1);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.3), 0 2px rgba(255, 255, 255, 0.1);
+  transition: all 0.25s ease-in-out;
   width: 200px;
+  /* height: 30px; */
 }
 
 .switch-field label:hover {
@@ -678,4 +771,64 @@ label.input-banner-img{
 
 .switch-field label:last-of-type {
   border-radius: 0 4px 4px 0;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: hsl(190, 60%, 36%);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(22px);
+  -ms-transform: translateX(22px);
+  transform: translateX(22px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 22px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }

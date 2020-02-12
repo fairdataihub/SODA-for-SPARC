@@ -68,3 +68,25 @@ ipcMain.on('open-error-file-exist', (event, emessage) => {
     event.sender.send('error-file-exist-shown')
   })
 })
+
+ipcMain.on('open-error-folder-selected', (event, emessage) => {
+  const options = {
+    type: 'error',
+    title: 'Folder(s) not allowed',
+    message: emessage, 
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('error-fodler-selected-shown')
+  })
+})
+
+ipcMain.on('open-error-wrong-file', (event, emessage) => {
+  const options = {
+    type: 'error',
+    title: 'Non-SPARC metadata file selected',
+    message: emessage, 
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('error-fodler-selected-shown')
+  })
+})

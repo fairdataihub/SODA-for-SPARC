@@ -22,29 +22,49 @@
     <link rel="import" href="sections/curate/curate.html">
     <link rel="import" href="sections/manage_submit/manage_submit.html">
     <link rel="import" href="sections/help/help.html">
+    <link rel="import" href="sections/feedback/feedback.html">
 
   </head>
 
 <body>
 
-  <nav class="nav js-nav">
+  <nav id="main-nav" class="nav js-nav">
 
-    <header class="nav-header">
+    <!-- <header class="nav-header">
       <img class = "nav-center-logo-image" src="assets/img/logo-soda1024-white.png">
       <h1 class="nav-title"><br />
-      <!-- <strong> -->
-      Software for Organizing Data Automatically
+      <! <strong> -->
+      <!-- Software for Organizing Data Automatically -->
       <!-- </strong> -->
-    </header>
+    <!-- </header> -->
 
     <div class="nav-item u-category-windows">
+      <div id="button-hamburger" class="hamburger" onclick="myFunction(this)">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <header class="nav-header">
+        <div style="display:none" id="SODA-logo">
+        <a href="#">
+        <img id="button-soda-big-icon" class = "nav-center-logo-image" src="assets/img/logo-soda1024-white.png">
+        </a>
+        <h1 class="nav-title">
+          <strong>
+        Software for Organizing
+          <br><span>Data Automatically</span>
+        </strong>
+        </div>
+      </header>
+      <a href="#" style="border-bottom: var(--color-bg-plum)"><img src="assets/img/large-logo-can1024.png" id="button-soda-icon" class="nav-icon logo"/></a>
+      <br>
       <button type="button" id="button-getting-started" data-section="getting_started" class="nav-button">
         <img class="nav-icon" src="assets/img/getting-started-white.png">
         Getting Started <em></em>
       </button>
       <button type="button" id="button-crash-hang" data-section="manage_submit" class="nav-button">
         <img class="nav-icon" src="assets/img/manage-white.png">
-        Manage Datasets 
+        Manage Datasets
       </button>
       <button type="button" id="button-prepare-metadata" data-section="prepare_metadata" class="nav-button">
         <img class="nav-icon" src="assets/img/metadata-white.png">
@@ -58,11 +78,15 @@
         <img class="nav-icon" src="assets/img/help-white.png">
         Help
       </button>
+      <button type="button" id="button-feedback" data-section="feedback" class="nav-button">
+        <img class="nav-icon" src="assets/img/help-white.png">
+        Send Feedback
+      </button>
     </div>
 
   </nav>
 
-  <main class="content js-content"></main>
+  <main id="content" class="content js-content"></main>
 
   <script> // Required js script are imported here
     require('./assets/imports') // Imports html files into app
@@ -70,6 +94,11 @@
     require('./assets/nav') // Side navigation menu control
     require('./assets/demo-btns')
     require('./assets/normalize-shortcuts') // For normalizing shortcuts accross OS
+  </script>
+  <script>
+    function myFunction(element) {
+          element.classList.toggle("open");
+    }
   </script>
 
 </body>
