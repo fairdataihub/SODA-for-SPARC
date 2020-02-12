@@ -3,6 +3,7 @@
 .demo:first-of-type {
   margin-top: 2rem;
 }
+
 .demo:last-of-type {
   margin-bottom: 2rem;
 }
@@ -50,20 +51,24 @@
   background-color: hsl(0,0%,88%);
   transition: transform .2s cubic-bezier(.4,.1,0,1);
 }
+
 .demo-toggle-button:before {
   top: 0;
   transform-origin: bottom center;
   transform: translateX(.7em) rotate(-30deg) scale(.75);
 }
+
 .demo-toggle-button:after {
   bottom: 0;
   transform-origin: top center;
   transform: translateX(.7em) rotate(30deg) scale(.75);
 }
+
 .is-open .demo-toggle-button:before,
 .is-open .demo-toggle-button:after {
   transform: rotate(0deg);
 }
+
 .demo-toggle-button:focus:before,
 .demo-toggle-button:focus:after {
   background-color: currentColor;
@@ -78,6 +83,7 @@
   text-transform: uppercase;
   color: var(--color-subtle);
 }
+
 .demo-meta-divider {
   margin: 0 .5em;
 }
@@ -97,6 +103,7 @@
   background-color: var(--color-bg);
   /*background-color: transparent;*/
 }
+
 .demo-box:before {
   content: "";
   position: absolute;
@@ -152,6 +159,7 @@
   background-color: transparent;
   cursor: pointer;
 }
+
 .demo-button {
   align-self: flex-start;
   margin-right: 1em;
@@ -165,13 +173,16 @@
   width: 180px;
   cursor: pointer;
 }
+
 .demo-button:focus {
   outline: none;
   background-color: white;
 }
+
 .demo-button:active {
   border-color: var(--color-border);
 }
+
 .demo-button:hover {
   background-color: hsla(190,60%,36%,1);
   color: white;
@@ -195,12 +206,15 @@
   width: 80px;
   cursor: pointer;
 }
+
 .demo-button-table:hover {
   background-color: hsla(0,0%,0%,0.1);
 }
+
 .demo-button-table.drag{
   border: 1px dashed;
 }
+
 .demo-button-table.drag:hover {
   background-color: transparent
 }
@@ -215,9 +229,10 @@
   color: inherit;
   background-color: transparent;
 }
+
 .demo-input:focus {
   outline: none;
-  border-color: hsl(0,0%,80%);
+  border-color: hsl(0,0%,70%);
   background-color: white;
 }
 
@@ -229,6 +244,7 @@
   border: 1px solid;
   border-radius: 4px;
 }
+
 .demo-response-upload {
   width:70%;
   padding: 8px 12px;
@@ -272,6 +288,7 @@ button.download-metadata{
 button.download-metadata:hover {
   background-color: hsla(192,69%,23%);
 }
+
 .download-image {
   border: 0;
   float: left;
@@ -289,6 +306,7 @@ button.download-metadata:hover {
 		text-align: center;
 		vertical-align: middle;
 }
+
 .demo-protip {
   margin-top: 2rem;
   padding: 1.5rem 2rem 2rem 2rem;
@@ -296,9 +314,11 @@ button.download-metadata:hover {
   border-radius: 6px;
   background: var(--color-accent) linear-gradient(hsla(0,0%,100%,.85), hsla(0,0%,100%,.85));
 }
+
 .demo-protip h2 {
   margin: 0 0 .5rem 0;
 }
+
 .demo-protip strong {
   font-weight: 600;
 }
@@ -340,7 +360,7 @@ textarea.outputprint{
 }
 
 select.my_dropdown {
-    width:70%;
+    width:60%;
     padding: 8px 12px;
     border: 1px solid;
     border-radius: 4px;
@@ -555,6 +575,7 @@ progress.progresstrack[value]::-webkit-progress-value {
 
 .progressdiv .indeterminatebar {
   background-color: var(--color-accent); }
+
 .progressdiv .indeterminatebar:before {
   content: '';
   position: absolute;
@@ -565,6 +586,7 @@ progress.progresstrack[value]::-webkit-progress-value {
   will-change: left, right;
   -webkit-animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
           animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite; }
+
 .progressdiv .indeterminatebar:after {
   content: '';
   position: absolute;
@@ -667,23 +689,34 @@ progress.progresstrack[value]::-webkit-progress-value {
   background-color: white
 }
 
+/* Cropped  Image */
 .container-cropped-image {
   display: flex;
+  font-weight:bold;
   width: 270px;
-  height: 25px;
+  height: 35px;
   float:left;
   background-color: #C0C0C0;
   color:black;
   border: 1px solid #ced4da;
   border-radius: 6px;
 }
+
+.crop-image-text {
+  line-height: 35px;
+}
+
+#form-banner-height {
+  line-height: 35px
+}
+
 .banner-image-size {
   float: left;
-  height: 25px;
+  height: 35px;
   display: -ms-flexbox;
 }
 .banner-image-size.input {
-  height: 25px;
+  height: 34px;
   float:right;
   background-clip: padding-box;
 }
@@ -722,6 +755,28 @@ label.input-banner-img{
   float:left;
 }
 
+/* BF Add Account */
+.font-bf-account {
+  float: left;
+  font-size: 15px;
+  padding-right: 10px;
+  width: 14%;
+  text-align: center
+}
+
+.bf-account-form {
+  float: right;
+  font-weight: 400;
+  background-clip: padding-box;
+  line-height: 1.5;
+  width: 100%;
+  margin-bottom: 8px;
+  border: 2px solid #eee;
+  border-left: 2px solid #258193;
+  border-radius: 5px;
+  transition: #258193 .25s ease-out;
+}
+
 
 .switch-field {
   display: flex;
@@ -729,48 +784,45 @@ label.input-banner-img{
   overflow: hidden;
 }
 
-.switch-field input {
-  position: absolute !important;
-  clip: rect(0, 0, 0, 0);
-  height: 1px;
-  width: 1px;
-  border: 0;
-  overflow: hidden;
+.input-switch {
+ padding-top: 10px;
+ display: none;
+ overflow: hidden;
+ position: absolute;
 }
 
-.switch-field label {
-  background-color: white;
-  color: rgba(0, 0, 0, 0.9);
-  font-size: 16px;
+.label-switch {
+  width: 200px;
+  display: block;
+  float: left;
+  padding: 4px 8px;
+  padding-bottom: 20px;
   line-height: 1;
   text-align: center;
-  padding: 4px 8px;
-  margin-right: -1px;
-  border: 1.25px solid hsla(190,60%,36%,1);
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.3), 0 2px rgba(255, 255, 255, 0.1);
-  transition: all 0.25s ease-in-out;
-  width: 200px;
-  /* height: 30px; */
+  border-bottom: transparent;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  font-weight: bold;
+  font-size: 16px;
+  color: #696969;
 }
 
-.switch-field label:hover {
+.label-switch:hover {
   cursor: pointer;
-  background-color: hsla(190,60%,36%,0.5);
-  color: white;
+  color: #258193;
 }
 
-.switch-field input:checked + label {
-  background-color: hsla(190,60%,36%,1);
+#addAccount:checked ~ #div-add-account,
+#selectAccount:checked ~ #div-select-account {
+  display:block;
+}
+
+.input-switch:checked + label {
+  border-bottom: 2px solid #258193;
+  text-decoration: none;
+  color: #258193;
   box-shadow: none;
-  color: white;
-}
-
-.switch-field label:first-of-type {
-  border-radius: 4px 0 0 4px;
-}
-
-.switch-field label:last-of-type {
-  border-radius: 0 4px 4px 0;
+  font-size: 16px;
 }
 
 .switch {

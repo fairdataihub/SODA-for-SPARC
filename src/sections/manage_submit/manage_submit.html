@@ -27,18 +27,24 @@
         </button>
 
         <div class="demo-box">
-
           <form id = 'blackfynn-account'>
+            <div style = "padding:10px 0px">
+            <input class="input-switch" id="addAccount" type="radio" name="tabs" checked>
+            <label class="label-switch" for="addAccount">Add new account</label>
+            <input class="input-switch" id="selectAccount" type="radio" name="tabs">
+            <label class="label-switch" for="selectAccount">Select existing account</label>
+          </div>
+          </form>
+
+          <!-- <form id = 'blackfynn-account'>
             <div style = "padding:10px 0px" class="switch-field">
               <input id="addAccount" name="blackfynn-account" type="radio"/>
               <label for="addAccount" class="labelradio"> Add new account </label>
               <input id="selectAccount" name="blackfynn-account" type="radio"/>
               <label for="selectAccount" class="labelradio"> Select existing account </label>
               </div>
-          </form>
-
-          <hr>
-
+          </form> -->
+          <br><br><br>
           <div id="div-add-account" class="datasetsaveoption" style="margin-left:20px">
             <h5> Obtain API key and secret from your Blackfynn account and enter below
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -47,7 +53,29 @@
                 </span>
               </div>
             </h5> <br>
-            <div> <font color="black"> Api key name: </font> </div>
+
+              <div class="font-bf-account"><font color="black"> Key name: </font> </div>
+              <div class="demo-controls">
+                <input class="bf-account-form" id="bf-key-name" />
+              </div>
+              <div class="font-bf-account"><font color="black"> API Key: </font> </div>
+              <div class="demo-controls">
+                <input class="bf-account-form" id="bf-key" />
+              </div>
+              <div class="font-bf-account"><font color="black"> API Secret: </font> </div>
+              <div class="demo-controls">
+                <input class="bf-account-form" id="bf-secret" />
+              </div>
+              <p></p>
+              <div class="demo-controls">
+                <button class="demo-button" id="add-bf-account"> Add Account </button>
+              </div>
+              <p id="para-add-account-status"></p>
+            </div>
+
+
+
+            <!-- <div> <font color="black"> Api key name: </font> </div>
             <div class="demo-controls">
               <input id="bf-key-name" class="demo-response">
             </div> <br>
@@ -64,10 +92,10 @@
               <button class="demo-button" id="add-bf-account"> Add Account </button>
             </div>
             <p id="para-add-account-status"></p>
-          </div>
+          </div> -->
 
           <div id="div-select-account" class="datasetsaveoption" style="margin-left:20px">
-            <h5> Select previsouly added account
+            <h5> Select previously added account
              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">Previously added account(s) will be displayed in this drop-down list. Default account (last selected account before app closed) will be loaded automatically at start if available. Click on 'Switch Account' and select one from the drop-down list for changing to another account.
                 </span>
@@ -97,7 +125,7 @@
           <a style="padding:0px 0px 0px 10px" href="https://www.youtube.com/watch?v=6YyRmu1dbE8" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
-          <div class="demo-meta u-avoid-clicks"> Add an empty dataset on the selected Blackfynn account 
+          <div class="demo-meta u-avoid-clicks"> Add an empty dataset on the selected Blackfynn account
           </div>
         </button>
         <div class="demo-box">
@@ -105,7 +133,7 @@
 
           <h5> Enter name:
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Enter desired name for your new dataset. This is the field that will be displayed in public as the title of the dataset. Please make sure that your dataset title is different than your other dataset titles and that it is relatively informative. 
+              <span class="tooltiptext">Enter desired name for your new dataset. This is the field that will be displayed in public as the title of the dataset. Please make sure that your dataset title is different than your other dataset titles and that it is relatively informative.
               </span>
             </div>
           </h5>
@@ -171,28 +199,28 @@
           <div id=div-bf-current-metadata-progress class="progressdiv">
             <div class="indeterminatebar"></div>
           </div>
+          <p></p>
 
           <p></p>
           <h5> Add metadata </h5>
           <form id = 'bf-add-metadata-form'>
             <div style = "padding:10px 0px" class="switch-field">
-              <input id="add-edit-subtitle" name="blackfynn-add-metadata" type="radio" />
-              <label for="add-edit-subtitle" class="labelradio"> Add/edit subtitle </label>
+              <input class="input-switch" id="add-edit-subtitle" name="blackfynn-add-metadata" type="radio" />
+              <label for="add-edit-subtitle" class="label-switch"> Add/edit subtitle </label>
 
-              <input id="add-edit-description" name="blackfynn-add-metadata" type="radio" />
-              <label for="add-edit-description" class="labelradio"> Add/edit description </label>
+              <input class="input-switch" id="add-edit-description" name="blackfynn-add-metadata" type="radio" />
+              <label for="add-edit-description" class="label-switch"> Add/edit description </label>
 
-              <input id="add-edit-banner" name="blackfynn-add-metadata" type="radio" />
-              <label for="add-edit-banner" class="labelradio"> Upload a banner image </label>
+              <input class="input-switch" id="add-edit-banner" name="blackfynn-add-metadata" type="radio" />
+              <label for="add-edit-banner" class="label-switch"> Upload a banner image </label>
 
-              <input id="add-edit-license" name="blackfynn-add-metadata" type="radio" />
-              <label for="add-edit-license" class="labelradio"> Assign a license </label>
+              <input class="input-switch" id="add-edit-license" name="blackfynn-add-metadata" type="radio" />
+              <label for="add-edit-license" class="label-switch"> Assign a license </label>
 
             </div>
-
           </form>
 
-          <hr>
+          <br>
 
           <div id="div-add-edit-subtitle" class="datasetsaveoption">
             <h5> Enter subtitle below. Any existing subtitle will be displayed.
@@ -277,9 +305,9 @@
             <div class="demo-controls">
                <form>
                   <div class="container-cropped-image">
-                    <div class="banner-image-size" style="width:160px;text-align: center;" >Cropped dimensions: </div>
+                    <div class="banner-image-size" style="width:160px;text-align: center;"><span class="crop-image-text">Cropped dimensions: </span></div>
                     <input class="banner-image-size input" style="width:70px;text-align: center" id="form-banner-height" type="text" readonly="readonly" size="7">
-                    <div class="banner-image-size" style="width:30px; text-align: center;">px</div>
+                    <div class="banner-image-size" style="width:30px; text-align: center;"><span class="crop-image-text">px</span></div>
                   </div>
               </form>
               <button type="button" id="save-banner-image" class="demo-button" style="margin-left:40px;" > Upload </button>
@@ -359,6 +387,7 @@
             <p></p>
             <button id="button-refresh-dataset-list-permission" class="demo-button"> Refresh List </button>
           </div>
+          <p></p>
           <h5> Current permission
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">Name of user (First name, Last name) and their current permission ('owner', 'viewer', 'manager', or 'editor') will be shown here for the selected dataset.
@@ -390,26 +419,25 @@
               </span>
             </div>
           </h5>
-
           <form id = 'blackfynn-permission-form'>
             <div style = "padding:10px 0px" class="switch-field">
-              <input id="pi-owner" name="blackfynn-permission-sharing" type="radio"/>
-              <label for="pi-owner" class="labelradio"> Make PI owner of dataset</label>
+              <input class="input-switch" id="pi-owner" name="blackfynn-permission-sharing" type="radio"/>
+              <label for="pi-owner" class="label-switch"> Make PI owner of dataset</label>
 
-              <input id="user-permission" name="blackfynn-permission-sharing" type="radio"/>
-              <label for="user-permission" class="labelradio"> Add/edit member permissions  </label>
+              <input class="input-switch" id="user-permission" name="blackfynn-permission-sharing" type="radio"/>
+              <label for="user-permission" class="label-switch"> Add/edit member permissions  </label>
 
-              <input id="team-permission" name="blackfynn-permission-sharing" type="radio"/>
-              <label for="team-permission" class="labelradio"> Add/edit team permissions </label>
+              <input class="input-switch" id="team-permission" name="blackfynn-permission-sharing" type="radio"/>
+              <label for="team-permission" class="label-switch"> Add/edit team permissions </label>
 
-              <input id="curation-team" name="blackfynn-permission-sharing" type="radio"/>
-              <label for="curation-team" class="labelradio"> Share with Curation Team </label>
+              <input class="input-switch" id="curation-team" name="blackfynn-permission-sharing" type="radio"/>
+              <label for="curation-team" class="label-switch"> Share with Curation Team </label>
 
             </div>
           </form>
 
-          <hr>
-
+        <p></p>
+        <p></p>
           <div id="div-bf-pi-owner" class="datasetsaveoption">
               <h5>
               </h5>
@@ -533,7 +561,7 @@
           </h5>
           <div class="demo-controls">
             <button id="button-select-submit-dataset" class="demo-button">Select Folder </button>
-            <textarea class="demo-response-upload" style="resize: none; height:45px;" id="selected-submit-dataset"></textarea>
+            <textarea class="demo-response-upload" style="resize: none; height:45px;width:58%" id="selected-submit-dataset"></textarea>
           </div>
 
           <p></p>

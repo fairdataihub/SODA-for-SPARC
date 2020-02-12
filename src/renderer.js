@@ -246,7 +246,7 @@ function openSidebar(buttonElement) {
     open = false;
   }
 }
-
+// Open/Close Sidebar effect
 buttonSidebar.addEventListener('click', (event) => {
   openSidebar(buttonSidebar)
 })
@@ -820,7 +820,8 @@ curateDatasetBtn.addEventListener('click', () => {
 // Manage Dataset
 //////////////////////////////////
 
-// Switch Account //
+
+// Add existing bf account(s) to dropdown list
 bfAccountCheckBtn.addEventListener('click', (event) => {
   bfSelectAccountStatus.innerHTML = "Please wait..."
   bfAccountLoadProgress.style.display = 'block'
@@ -846,7 +847,7 @@ bfAddAccountBtn.addEventListener('click', () => {
       var emessage = userError(error)
       bfAddAccountStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
     } else {
-        bfAddAccountStatus.innerHTML = res + smileyCan +". Please select your account below!"
+        bfAddAccountStatus.innerHTML = res + smileyCan +". Please select your account!"
         bfAccountLoadProgress.style.display = 'block'
         updateBfAccountList()
         keyName.value = ''
@@ -879,7 +880,6 @@ bfAccountList.addEventListener('change', () => {
   refreshBfUsersList()
   refreshBfTeamsList(bfListTeams)
 })
-
 
 bfUploadAccountList.addEventListener('change', () => {
   bfUploadSelectAccountStatus.innerHTML = "Please wait..."
@@ -1878,7 +1878,7 @@ function tableToJsonWithDescriptionOrganized(table){
   return [jsonvar, jsonvardescription]
 }
 
-// Daaset not organized
+// Dataset not organized
 function insertFileToTable(table, pathlist, SPARCfolder){
   var i
   var rowcount = document.getElementById(SPARCfolder).rowIndex
