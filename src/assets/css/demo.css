@@ -340,7 +340,7 @@ textarea.outputprint{
 }
 
 select.my_dropdown {
-    width:70%;
+    width:60%;
     padding: 8px 12px;
     border: 1px solid;
     border-radius: 4px;
@@ -721,56 +721,58 @@ label.input-banner-img{
   color: black;
   float:left;
 }
-
-
 .switch-field {
   display: flex;
   margin-bottom: 36px;
   overflow: hidden;
 }
 
-.switch-field input {
-  position: absolute !important;
-  clip: rect(0, 0, 0, 0);
-  height: 1px;
-  width: 1px;
-  border: 0;
-  overflow: hidden;
+.input-switch {
+ padding-top: 10px;
+ display: none;
+ overflow: hidden;
+ position: absolute;
 }
 
-.switch-field label {
-  background-color: white;
-  color: rgba(0, 0, 0, 0.9);
+.label-switch {
+  width: 200px;
+  font-weight: bold;
   font-size: 16px;
+  display: block;
+  float: left;
+  padding: 4px 8px;
+  padding-bottom: 20px;
   line-height: 1;
   text-align: center;
-  padding: 4px 8px;
-  margin-right: -1px;
-  border: 1.25px solid hsla(190,60%,36%,1);
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.3), 0 2px rgba(255, 255, 255, 0.1);
-  transition: all 0.25s ease-in-out;
-  width: 200px;
-  /* height: 30px; */
+  border-bottom: transparent;
+  /* border-radius: 4px; */
+  color: #696969;
+  /* box-shadow: 0 0 3px #888; */
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  /* box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 rgba(255, 255, 255, 0.1); */
 }
 
-.switch-field label:hover {
+.label-switch:hover {
   cursor: pointer;
-  background-color: hsla(190,60%,36%,0.5);
-  color: white;
+  color: #258193;
 }
 
-.switch-field input:checked + label {
-  background-color: hsla(190,60%,36%,1);
+#addAccount:checked ~ #div-add-account,
+#selectAccount:checked ~ #div-select-account {
+  display:block;
+}
+.input-switch:checked + label {
+  /* border-radius: 4px; */
+  /* border-top: 2px solid #258193;
+  border-right: 2px solid #258193;
+  border-left: 2px solid #258193; */
+  border-bottom: 2px solid #258193;
+  /* background-color: #258193; */
+  text-decoration: none;
+  color: #258193;
   box-shadow: none;
-  color: white;
-}
-
-.switch-field label:first-of-type {
-  border-radius: 4px 0 0 4px;
-}
-
-.switch-field label:last-of-type {
-  border-radius: 0 4px 4px 0;
+  font-size: 16px;
 }
 
 .switch {
