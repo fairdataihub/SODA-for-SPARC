@@ -712,10 +712,12 @@ curateDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-please-wait-curate").innerHTML = "Please wait..."
   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
   progressBarCurate.value = 0;
+
   // Disable curate button to prevent multiple clicks
   curateDatasetBtn.disabled = true
   disableform(curationForm)
   var sourceDataset = ''
+
   // Convert table content into json file for transferring to Python
   if (alreadyOrganizedStatus.checked) {
     if (fs.existsSync(pathDataset.innerHTML)) {
@@ -758,12 +760,12 @@ curateDatasetBtn.addEventListener('click', () => {
     enableform(curationForm)
   	return
   }
-
   var jsonpath = jsonvect[0]
   var jsondescription = jsonvect[1]
   var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
   jsonpath['main'] = jsonpathMetadata['metadata']
 
+  //Get dataset destination info (local or Blackfynn)
   var destinationDataset = ''
   var pathDatasetValue = ''
   var newDatasetNameVar = ''
@@ -780,7 +782,7 @@ curateDatasetBtn.addEventListener('click', () => {
     newDatasetNameVar = bfUploadDatasetList.options[bfUploadDatasetList.selectedIndex].text
   }
 
-  // Initiate curation by calling python funtion
+  // Initiate curation by calling Python funtion
   var err = false
   var completionstatus = 'Solving'
   document.getElementById("para-curate-progress-bar-status").innerHTML = "Started generating files ..."
@@ -808,6 +810,8 @@ curateDatasetBtn.addEventListener('click', () => {
       console.log('Started curating')
     }
   })
+
+  // Progress tracking function
   var countDone = 0
   var timerProgress = setInterval(progressfunction, 1000)
   function progressfunction(){

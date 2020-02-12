@@ -142,7 +142,7 @@ def create_folder_level_manifest(datasetpath, jsonpath, jsondescription):
                 # Initialize dataframe where manifest info will be stored
                 df = pd.DataFrame(columns=['filename', 'timestamp', 'description',
                                         'file type', 'Additional Metadata'])
-                # Get list of files/folders in the the folde#
+                # Get list of files/folders in the the folder
                 # Remove manifest file from the list if already exists
                 folderpath = join(datasetpath, folder)
                 allfiles = jsonpath[folder]
@@ -532,14 +532,6 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         destinationdataset: type of destination dataset ('modify existing', 'create new', or 'upload to blackfynn')
         pathdataset: destination path of new dataset if created locally or name of blackfynn account (string)
         newdatasetname: name of the local dataset or name of the dataset on blackfynn (string)
-        submissionstatus: boolean to check if user request submission file
-        pathsubmission: path to the submission file (string)
-        datasetdescriptionstatus: boolean to check if user request dataset_description file
-        pathdescription: path to the dataset_description file (string)
-        subjectsstatus: boolean to check if user request subjects file
-        pathsubjects: path to the subjects file (string)
-        samplesstatus: boolean to check if user request samples file
-        pathsamples: path to the ssamples file (string)
         manifeststatus: boolean to check if user request manifest files
         jsonpath: path of the files to be included in the dataset (dictionary)
         jsondescription: associated description to be included in manifest file (dictionary)
