@@ -28,17 +28,24 @@
 
         <div class="demo-box">
 
-          <form id = 'blackfynn-account'>
+        <form id = 'blackfynn-account'>
+          <div style = "padding:10px 0px">
+          <input class="input-switch" id="addAccount" type="radio" name="tabs" checked>
+          <label class="label-switch" for="addAccount">Add new account</label>
+          <input class="input-switch" id="selectAccount" type="radio" name="tabs">
+          <label class="label-switch" for="selectAccount">Select existing account</label>
+        </div>
+        </form>
+
+          <!-- <form id = 'blackfynn-account'>
             <div style = "padding:10px 0px" class="switch-field">
               <input id="addAccount" name="blackfynn-account" type="radio"/>
               <label for="addAccount" class="labelradio"> Add new account </label>
               <input id="selectAccount" name="blackfynn-account" type="radio"/>
               <label for="selectAccount" class="labelradio"> Select existing account </label>
               </div>
-          </form>
-
-          <hr>
-
+          </form> -->
+          <br><br><br>
           <div id="div-add-account" class="datasetsaveoption" style="margin-left:20px">
             <h5> Obtain API key and secret from your Blackfynn account and enter below
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -165,27 +172,26 @@
           <div id=div-bf-current-metadata-progress class="progressdiv">
             <div class="indeterminatebar"></div>
           </div>
+          <p></p>
 
           <form id = 'bf-add-metadata-form'>
-            <div style = "padding:10px 0px" class="switch-field">
-              <input id="add-edit-subtitle" name="blackfynn-add-metadata" type="radio" />
-              <label for="add-edit-subtitle" class="labelradio"> Add/edit subtitle </label>
+            <div style = "padding:10px 0px">
+              <input class="input-switch" id="add-edit-subtitle" name="blackfynn-add-metadata" type="radio" />
+              <label for="add-edit-subtitle" class="label-switch"> Add/edit subtitle </label>
 
-              <input id="add-edit-description" name="blackfynn-add-metadata" type="radio" />
-              <label for="add-edit-description" class="labelradio"> Add/edit description </label>
+              <input class="input-switch" id="add-edit-description" name="blackfynn-add-metadata" type="radio" />
+              <label for="add-edit-description" class="label-switch"> Add/edit description </label>
 
-              <input id="add-edit-banner" name="blackfynn-add-metadata" type="radio" />
-              <label for="add-edit-banner" class="labelradio"> Upload a banner image </label>
+              <input class="input-switch" id="add-edit-banner" name="blackfynn-add-metadata" type="radio" />
+              <label for="add-edit-banner" class="label-switch"> Upload a banner image </label>
 
-              <input id="add-edit-license" name="blackfynn-add-metadata" type="radio" />
-              <label for="add-edit-license" class="labelradio"> Assign a license </label>
+              <input class="input-switch" id="add-edit-license" name="blackfynn-add-metadata" type="radio" />
+              <label for="add-edit-license" class="label-switch"> Assign a license </label>
 
             </div>
-
           </form>
 
-          <hr>
-
+          <br><br><br>
           <div id="div-add-edit-subtitle" class="datasetsaveoption">
             <h5> Enter subtitle below. Any existing subtitle will be displayed.
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -372,22 +378,22 @@
 
           <form id = 'blackfynn-permission-form'>
             <div style = "padding:10px 0px" class="switch-field">
-              <input id="pi-owner" name="blackfynn-permission-sharing" type="radio"/>
-              <label for="pi-owner" class="labelradio"> Make PI owner of dataset</label>
+              <input class="input-switch" id="pi-owner" name="blackfynn-permission-sharing" type="radio"/>
+              <label for="pi-owner" class="label-switch"> Make PI owner of dataset</label>
 
-              <input id="user-permission" name="blackfynn-permission-sharing" type="radio"/>
-              <label for="user-permission" class="labelradio"> Add/edit member permissions  </label>
+              <input class="input-switch" id="user-permission" name="blackfynn-permission-sharing" type="radio"/>
+              <label for="user-permission" class="label-switch"> Add/edit member permissions  </label>
 
-              <input id="team-permission" name="blackfynn-permission-sharing" type="radio"/>
-              <label for="team-permission" class="labelradio"> Add/edit team permissions </label>
+              <input class="input-switch" id="team-permission" name="blackfynn-permission-sharing" type="radio"/>
+              <label for="team-permission" class="label-switch"> Add/edit team permissions </label>
 
-              <input id="curation-team" name="blackfynn-permission-sharing" type="radio"/>
-              <label for="curation-team" class="labelradio"> Share with Curation Team </label>
+              <input class="input-switch" id="curation-team" name="blackfynn-permission-sharing" type="radio"/>
+              <label for="curation-team" class="label-switch"> Share with Curation Team </label>
 
             </div>
           </form>
 
-          <hr>
+          <br><br><br>
 
           <div id="div-bf-pi-owner" class="datasetsaveoption">
               <h5>
