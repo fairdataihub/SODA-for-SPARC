@@ -27,15 +27,14 @@
         </button>
 
         <div class="demo-box">
-
-        <form id = 'blackfynn-account'>
-          <div style = "padding:10px 0px">
-          <input class="input-switch" id="addAccount" type="radio" name="tabs" checked>
-          <label class="label-switch" for="addAccount">Add new account</label>
-          <input class="input-switch" id="selectAccount" type="radio" name="tabs">
-          <label class="label-switch" for="selectAccount">Select existing account</label>
-        </div>
-        </form>
+          <form id = 'blackfynn-account'>
+            <div style = "padding:10px 0px">
+            <input class="input-switch" id="addAccount" type="radio" name="tabs" checked>
+            <label class="label-switch" for="addAccount">Add new account</label>
+            <input class="input-switch" id="selectAccount" type="radio" name="tabs">
+            <label class="label-switch" for="selectAccount">Select existing account</label>
+          </div>
+          </form>
 
           <!-- <form id = 'blackfynn-account'>
             <div style = "padding:10px 0px" class="switch-field">
@@ -54,7 +53,29 @@
                 </span>
               </div>
             </h5> <br>
-            <div> <font color="black"> Api key name: </font> </div>
+
+              <div class="font-bf-account"><font color="black"> Key name: </font> </div>
+              <div class="demo-controls">
+                <input class="bf-account-form" id="bf-key-name" />
+              </div>
+              <div class="font-bf-account"><font color="black"> API Key: </font> </div>
+              <div class="demo-controls">
+                <input class="bf-account-form" id="bf-key" />
+              </div>
+              <div class="font-bf-account"><font color="black"> API Secret: </font> </div>
+              <div class="demo-controls">
+                <input class="bf-account-form" id="bf-secret" />
+              </div>
+              <p></p>
+              <div class="demo-controls">
+                <button class="demo-button" id="add-bf-account"> Add Account </button>
+              </div>
+              <p id="para-add-account-status"></p>
+            </div>
+
+
+
+            <!-- <div> <font color="black"> Api key name: </font> </div>
             <div class="demo-controls">
               <input id="bf-key-name" class="demo-response">
             </div> <br>
@@ -71,10 +92,10 @@
               <button class="demo-button" id="add-bf-account"> Add Account </button>
             </div>
             <p id="para-add-account-status"></p>
-          </div>
+          </div> -->
 
           <div id="div-select-account" class="datasetsaveoption" style="margin-left:20px">
-            <h5> Select previsouly added account
+            <h5> Select previously added account
              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">Previously added account(s) will be displayed in this drop-down list. Default account (last selected account before app closed) will be loaded automatically at start if available. Click on 'Switch Account' and select one from the drop-down list for changing to another account.
                 </span>

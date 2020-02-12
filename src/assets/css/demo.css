@@ -232,7 +232,7 @@
 
 .demo-input:focus {
   outline: none;
-  border-color: hsl(0,0%,80%);
+  border-color: hsl(0,0%,70%);
   background-color: white;
 }
 
@@ -689,6 +689,7 @@ progress.progresstrack[value]::-webkit-progress-value {
   background-color: white
 }
 
+/* Cropped  Image */
 .container-cropped-image {
   display: flex;
   font-weight:bold;
@@ -753,6 +754,29 @@ label.input-banner-img{
   color: black;
   float:left;
 }
+
+/* BF Add Account */
+.font-bf-account {
+  float: left;
+  font-size: 15px;
+  padding-right: 10px;
+  width: 14%;
+  text-align: center
+}
+
+.bf-account-form {
+  float: right;
+  font-weight: 400;
+  background-clip: padding-box;
+  line-height: 1.5;
+  width: 100%;
+  margin-bottom: 8px;
+  border: 2px solid #eee;
+  border-left: 2px solid #258193;
+  border-radius: 5px;
+  transition: #258193 .25s ease-out;
+}
+
 
 .switch-field {
   display: flex;
