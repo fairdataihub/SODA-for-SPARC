@@ -13,7 +13,7 @@ from time import strftime, localtime
 import shutil
 from shutil import copy2
 from configparser import ConfigParser
-import threading
+# import threading
 import numpy as np
 import collections
 import subprocess
@@ -619,53 +619,6 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         except Exception as e:
             curatestatus = 'Done'
             raise e
-
-    # MODIFY EXISTING
-    if destinationdataset == 'modify existing':
-        error, c = '', 0
-        namefiles = [f for f in listdir(pathdataset) if isfile(join(pathdataset, f))]
-        for filepath in jsonpath['main']:
-            filename = basename(filepath)
-            if (filename in namefiles):
-                error = error + filename + ' file already present in destination folder <br>'
-                c += 1
-
-        if c > 0:
-            error = error + '<br>Error: Either delete file(s) from the destination folder or remove from the Metadata files table'
-            curatestatus = 'Done'
-            shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
-            raise Exception(error)
-
-        # If no errors, code-block below will execute which will start the data generation process
-        else:
-            try:
-                curateprintstatus = 'Curating'
-                start_time = time.time()
-                start_submit = 1
-                open_file(pathdataset)
-                curateprogress = 'Started'
-
-                for filepath in jsonpath['main']:
-                    copy2(filepath, pathdataset)
-
-                if manifeststatus:
-                    curateprogress = "Copying manifest files"
-                    for folder in jsonpath.keys():
-                        if folder != 'main':
-                            for filepath in jsonpath[folder]:
-                                if splitext(basename(filepath))[0] == 'manifest':
-                                    copy2(filepath, join(pathdataset, folder))
-
-                    curateprogress = 'Manifest created'
-
-                curateprogress = 'Success: COMPLETED!'
-                curatestatus = 'Done'
-                shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
-
-            except Exception as e:
-                curatestatus = 'Done'
-                shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
-                raise e
 
     # CREATE NEW
     elif destinationdataset == 'create new':
