@@ -889,7 +889,7 @@ bfAddAccountBtn.addEventListener('click', () => {
       var emessage = userError(error)
       bfAddAccountStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
     } else {
-        bfAddAccountStatus.innerHTML = res + smileyCan +". Please select your account below!"
+        bfAddAccountStatus.innerHTML = res + smileyCan +". Please select your account!"
         bfAccountLoadProgress.style.display = 'block'
         updateBfAccountList()
         keyName.value = ''

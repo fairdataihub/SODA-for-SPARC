@@ -340,7 +340,7 @@ textarea.outputprint{
 }
 
 select.my_dropdown {
-    width:70%;
+    width:60%;
     padding: 8px 12px;
     border: 1px solid;
     border-radius: 4px;
@@ -721,33 +721,41 @@ label.input-banner-img{
   color: black;
   float:left;
 }
+.switch-field {
+  display: flex;
+  margin-bottom: 36px;
+  overflow: hidden;
+}
 
 .input-switch {
  padding-top: 10px;
  display: none;
  overflow: hidden;
- position: absolute
+ position: absolute;
 }
 
 .label-switch {
+  width: 200px;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 16px;
   display: block;
   float: left;
   padding: 4px 8px;
+  padding-bottom: 20px;
   line-height: 1;
   text-align: center;
-  /* border-bottom:2px solid #258193; */
+  border-bottom: transparent;
   /* border-radius: 4px; */
   color: #696969;
   /* box-shadow: 0 0 3px #888; */
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
-  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 rgba(255, 255, 255, 0.1);
+  /* box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 rgba(255, 255, 255, 0.1); */
 }
 
 .label-switch:hover {
   cursor: pointer;
+  color: #258193;
 }
 
 #addAccount:checked ~ #div-add-account,
@@ -756,10 +764,10 @@ label.input-banner-img{
 }
 .input-switch:checked + label {
   /* border-radius: 4px; */
-  border-top: 2px solid #258193;
+  /* border-top: 2px solid #258193;
   border-right: 2px solid #258193;
-  border-left: 2px solid #258193;
-  border-bottom: 1px solid transparent;
+  border-left: 2px solid #258193; */
+  border-bottom: 2px solid #258193;
   /* background-color: #258193; */
   text-decoration: none;
   color: #258193;
