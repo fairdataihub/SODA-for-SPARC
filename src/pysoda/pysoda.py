@@ -621,7 +621,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             raise e
 
     # CREATE NEW
-    elif destinationdataset == 'create new':
+    if destinationdataset == 'create new':
         try:
             pathnewdatasetfolder = join(pathdataset, newdatasetname)
             pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
@@ -675,7 +675,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             role = bf_get_current_user_permission(accountname, bfdataset)
             if role not in ['owner', 'manager', 'editor']:
                 curatestatus = 'Done'
-                error = "Error: You don't have permission for uploading on this Blackfynn dataset"
+                error = "Error: You don't have permission for uploading to this Blackfynn dataset"
                 raise Exception(error)
         except Exception as e:
             raise e
@@ -687,7 +687,6 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                 global curateprogress
                 global curatestatus
 
-                curateprogress = "Uploading to dataset '%s' " %(bfdataset)
                 myds = bf.get_dataset(bfdataset)
 
                 for folder in jsonpath.keys():
@@ -698,8 +697,10 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                             mybffolder = myds
                         for mypath in jsonpath[folder]:
                             if isdir(mypath):
+                                curateprogress = "Uploading folder '%s' to dataset '%s' " %(mypath, bfdataset)
                                 mybffolder.upload(mypath, recursive=True, use_agent=True)
                             else:
+                                curateprogress = "Uploading file '%s' to dataset '%s' " %(mypath, bfdataset)
                                 mybffolder.upload(mypath, use_agent=True)
 
                 curateprogress = 'Success: COMPLETED!'
@@ -710,10 +711,10 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             start_time = time.time()
             initial_bfdataset_size = bf_dataset_size()
             start_submit = 1
-            gevent.spawn(calluploaddirectly)
-            gevent.sleep(0)
-            # t = threading.Thread(target=calluploaddirectly)
-            # t.start()
+            gev = []
+            gev.append(gevent.spawn(calluploaddirectly))
+            gevent.joinall(gev) #wait for gevent to finish before exiting the function
+
         except Exception as e:
             curatestatus = 'Done'
             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
@@ -735,8 +736,7 @@ def curate_dataset_progress():
 
     if start_submit == 1:
         if upload_directly_to_bf == 1:
-            # curated_dataset_size = bf_dataset_size() - initial_bfdataset_size
-            curated_dataset_size = 0
+            curated_dataset_size = bf_dataset_size() - initial_bfdataset_size
         elapsed_time = time.time() - start_time
         elapsed_time_formatted = time_format(elapsed_time)
         elapsed_time_formatted_display = '<br>' + 'Elapsed time: ' + elapsed_time_formatted + '<br>'
@@ -1093,7 +1093,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     role = bf_get_current_user_permission(accountname, bfdataset)
     if role not in ['owner', 'manager', 'editor']:
         submitdatastatus = 'Done'
-        error = "Error: You don't have permission for uploading on this Blackfynn dataset"
+        error = "Error: You don't have permission for uploading to this Blackfynn dataset"
         raise Exception(error)
 
     clear_queue()
