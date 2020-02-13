@@ -165,6 +165,7 @@ def create_folder_level_manifest(datasetpath, jsonpath, jsondescription):
                         alldescription.pop(0)
                         for subdir, dirs, files in os.walk(paths):
                             for file in files:
+                                gevent.sleep(0)
                                 filepath = join(paths,subdir,file) #full local file path
                                 lastmodtime = getmtime(filepath)
                                 timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
@@ -185,6 +186,7 @@ def create_folder_level_manifest(datasetpath, jsonpath, jsondescription):
                                 filetype.append(fileextension)
                                 filedescription.append('')
                     else:
+                        gevent.sleep(0)
                         countpath += 1
                         file = basename(paths)
                         filename.append(file)
@@ -421,12 +423,14 @@ def preview_file_organization(jsonpath):
         raise e
 
     try:
+
         folderrequired = []
         for i in mydict.keys():
             if mydict[i] != []:
                 folderrequired.append(i)
                 if i != 'main':
                     makedirs(join(preview_path, i))
+
 
         for i in folderrequired:
             paths = mydict[i]
@@ -435,7 +439,9 @@ def preview_file_organization(jsonpath):
             else:
                 create_preview_files(paths, join(preview_path, i))
         open_file(preview_path)
+
         return preview_path
+
     except Exception as e:
         raise e
 
