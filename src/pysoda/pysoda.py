@@ -1738,7 +1738,7 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
         image_folder = dirname(banner_image_path)
         if isdir(image_folder) and ('SODA' in image_folder):
             shutil.rmtree(image_folder, ignore_errors=True)
-        return('Saved!')
+        return('Uploaded!')
     except Exception as e:
         raise Exception(e)
 

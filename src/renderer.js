@@ -1176,7 +1176,7 @@ ipcRenderer.on('selected-banner-image', (event, path) => {
 bfSaveBannerImageBtn.addEventListener('click', (event) => {
   datasetBannerImageStatus.innerHTML = ""
   if (bfViewImportedImage.src.length > 0){
-    if (formBannerHeight.value>1023 && formBannerWidth.value>1023){
+    if (formBannerHeight.value>1023){
       bfCurrentMetadataProgress.style.display = 'block'
       datasetBannerImageStatus.innerHTML = 'Please wait...'
       disableform(bfMetadataForm)
@@ -1570,6 +1570,7 @@ function showCurrentLicense(){
         bfCurrentMetadataProgress.style.display = 'none'
       } else {
         currentDatasetLicense.innerHTML = res
+        bfCurrentMetadataProgress.style.display = 'none'
       }
     })
   }
