@@ -677,12 +677,12 @@ curateDatasetBtn.addEventListener('click', () => {
   disableform(curationForm)
   var sourceDataset = ''
 
-  // Convert table content into json file for transferring to Python
+  // Convert table content into json format for transferring to Python
   if (alreadyOrganizedStatus.checked) {
     if (fs.existsSync(pathDataset.innerHTML)) {
       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
       sourceDataset = 'already organized'
-    } else {
+  } else {
       var emessage = 'Error: Select a valid dataset folder'
       document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
       document.getElementById("para-please-wait-curate").innerHTML = "";
@@ -743,7 +743,7 @@ curateDatasetBtn.addEventListener('click', () => {
 
   // Initiate curation by calling Python funtion
   var err = false
-  var completionstatus = 'Solving'
+  var curatestatus = 'Solving'
   document.getElementById("para-curate-progress-bar-status").innerHTML = "Started generating files ..."
   client.invoke("api_curate_dataset",
     sourceDataset, destinationDataset, pathDatasetValue, newDatasetNameVar,
@@ -764,9 +764,8 @@ curateDatasetBtn.addEventListener('click', () => {
       enableform(curationForm)
     } else {
       document.getElementById("para-please-wait-curate").innerHTML = "Please wait...";
-      progressCurateUpload.style.display = "block";
-      log.info('Started curating')
-      console.log('Started curating')
+      log.info('Completed curate function')
+      console.log('Completed curate function')
     }
   })
 
@@ -784,25 +783,26 @@ curateDatasetBtn.addEventListener('click', () => {
         console.error(error)
         document.getElementById("para-curate-progress-bar-status").innerHTML = ''
       } else {
-        completionstatus = res[1]
-        var printstatus = res[2]
-        var totalCurateSize = res[3]
-        var curatedSize = res[4]
-        var value = (curatedSize / totalCurateSize) * 100
-        progressBarCurate.value = value
-        // console.log(value, totalCurateSize, curatedSize)
-        if (printstatus === 'Curating') {
+        curatestatus = res[1]
+        var curateprintstatus = res[2]
+        var totalDatasetSize = res[3]
+        var curatedDatasetSize = res[4]
+        if (curateprintstatus === 'Curating') {
+          progressCurateUpload.style.display = "block";
           if (res[0].includes('Success: COMPLETED!')){
             progressBarCurate.value = 100
             document.getElementById("para-please-wait-curate").innerHTML = "";
             document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + smileyCan
           } else {
+            var value = (curatedDatasetSize / totalDatasetSize) * 100
+            progressBarCurate.value = value
             document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + 'Progress: ' + value.toFixed(2) + '%'
+            // console.log(value, totalDatasetSize, curatedDatasetSize)
           }
         }
       }
     })
-    if (completionstatus === 'Done'){
+    if (curatestatus === 'Done'){
       countDone++
       if (countDone > 1){
         log.info('Done curating')
@@ -814,6 +814,7 @@ curateDatasetBtn.addEventListener('click', () => {
       }
     }
   }
+
 })
 
 //////////////////////////////////
@@ -1540,7 +1541,6 @@ function showCurrentBannerImage(){
         document.getElementById('para-current-banner-img').innerHTML = 'None'
       } else {
         if (res === 'No banner image'){
-          console.log(res)
           bfCurrentBannerImg.src = ''
           document.getElementById('para-current-banner-img').innerHTML = 'None'
         }
