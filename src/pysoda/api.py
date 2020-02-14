@@ -1,5 +1,6 @@
 from __future__ import print_function
 from gevent import monkey; monkey.patch_all()
+import gevent
 from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_organization, \
     import_file_organization, curate_dataset, preview_file_organization, delete_preview_file_organization, \
     bf_add_account, bf_account_list, bf_dataset_account, bf_account_details, \
@@ -10,7 +11,6 @@ from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_o
 
 import sys
 import zerorpc
-from gevent import monkey; monkey.patch_all()
 
 class SodaApi(object):
 

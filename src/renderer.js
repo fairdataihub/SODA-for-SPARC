@@ -314,6 +314,7 @@ downloadManifest.addEventListener('click', (event) => {
 
 // Select organized dataset folder and populate table //
 selectDatasetBtn.addEventListener('click', (event) => {
+  clearStrings()
   ipcRenderer.send('open-file-dialog-dataset')
 })
 ipcRenderer.on('selected-dataset', (event, path) => {
@@ -564,7 +565,6 @@ function enablePrepareDatasetButtons() {
 // Action when user click on "Save" file organization button //
 selectSaveFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('save-file-dialog-saveorganization')
-  document.getElementById("para-save-file-organization-status").innerHTML = ""
   clearStrings()
 })
 ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
@@ -576,7 +576,7 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
     }
     var jsonpath = jsonvect[0]
     var jsondescription = jsonvect[1]
-    document.getElementById("para-save-file-organization-status").innerHTML = ""
+    document.getElementById("para-save-file-organization-status").innerHTML = "Please wait..."
     // Call python to save
     if (path != null){
       disablePrepareDatasetButtons()
@@ -604,7 +604,7 @@ selectImportFileOrganizationBtn.addEventListener('click', (event) => {
 ipcRenderer.on('selected-uploadorganization', (event, path) => {
   if (path.length > 0) {
     disablePrepareDatasetButtons()
-    clearStrings()
+    document.getElementById("para-save-file-organization-status").innerHTML = "Please wait..."
     var headerNames = sparcFolderNames.slice()
     var lennames =  headerNames.length
     for (var i = 0; i < lennames; i++) {
