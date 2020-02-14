@@ -50,6 +50,7 @@ bf = ""
 myds = ""
 initial_bfdataset_size = 0
 upload_directly_to_bf = 0
+initial_bfdataset_size_submit = 0
 
 ### Internal functions
 def open_file(file_path):
@@ -1036,14 +1037,14 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global bf
     global myds
     global start_submit
-    global initial_bfdataset_size
+    global initial_bfdataset_size_submit
 
     submitdataprogress = ' '
     submitdatastatus = ' '
     uploaded_file_size = 0
     submitprintstatus = ' '
     start_time_bf_upload = 0
-    initial_bfdataset_size = 0
+    initial_bfdataset_size_submit = 0
     start_submit = 0
 
     try:
@@ -1069,7 +1070,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     if c>0:
         raise Exception(error)
 
-
     error, c = '', 0
     total_file_size = 1
     try:
@@ -1087,14 +1087,10 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     if c>0:
         submitdatastatus = 'Done'
-        error = error + '<br>Please remove invalid paths'
+        error = error + '<br>Please remove invalid files from your dataset'
         raise Exception(error)
 
     total_file_size = total_file_size - 1
-    # if total_file_size == 0:
-    #     submitdatastatus = 'Done'
-    #     error = 'Error: Please select a non-empty local dataset'
-    #     raise Exception(error)
 
     role = bf_get_current_user_permission(accountname, bfdataset)
     if role not in ['owner', 'manager', 'editor']:
@@ -1109,26 +1105,27 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             global submitdataprogress
             global submitdatastatus
 
-            submitdataprogress = "Uploading to dataset '%s \n' " %(bfdataset)
             myds = bf.get_dataset(bfdataset)
+
             for filename in listdir(pathdataset):
                 filepath = join(pathdataset, filename)
                 if isdir(filepath):
+                    submitdataprogress = "Uploading folder '%s' to dataset '%s \n' " %(filepath, bfdataset)
                     myds.upload(filepath, recursive=True, use_agent=True)
                 else:
+                    submitdataprogress = "Uploading file '%s' to dataset '%s \n' " %(filepath, bfdataset)
                     myds.upload(filepath, use_agent=True)
-            submitdataprogress = 'Upload completed!'
+            submitdataprogress = 'Success: COMPLETED!'
             submitdatastatus = 'Done'
 
         submitprintstatus = 'Uploading'
         start_time_bf_upload = time.time()
-        initial_bfdataset_size = bf_dataset_size()
+        initial_bfdataset_size_submit = bf_dataset_size()
         start_submit = 1
-        #calluploadfolder()
-        gevent.spawn(calluploadfolder)
-        gevent.sleep(0)
-        # t = threading.Thread(target=calluploadfolder)
-        # t.start()
+        gev = []
+        gev.append(gevent.spawn(calluploadfolder))
+        gevent.joinall(gev)
+
     except Exception as e:
         submitdatastatus = 'Done'
         raise e
@@ -1141,12 +1138,13 @@ def submit_dataset_progress():
     global submitdatastatus
     global submitprintstatus
     global total_file_size
+    global uploaded_file_size
     global start_time_bf_upload
-    global initial_bfdataset_size
     global start_submit
+    global initial_bfdataset_size_submit
 
     if start_submit == 1:
-        uploaded_file_size = bf_dataset_size() - initial_bfdataset_size
+        uploaded_file_size = bf_dataset_size() - initial_bfdataset_size_submit
         elapsed_time = time.time() - start_time_bf_upload
         elapsed_time_formatted = time_format(elapsed_time)
         elapsed_time_formatted_display = '<br>' + 'Elapsed time: ' + elapsed_time_formatted + '<br>'
@@ -1155,7 +1153,7 @@ def submit_dataset_progress():
         elapsed_time_formatted = 0
         elapsed_time_formatted_display = '<br>' + 'Initiating...' + '<br>'
     #gevent.sleep(0)
-    return (submitdataprogress + elapsed_time_formatted_display, submitdatastatus, submitprintstatus, uploaded_file_size, total_file_size, elapsed_time_formatted)
+    return (submitdataprogress + elapsed_time_formatted_display, submitdatastatus, submitprintstatus, total_file_size, uploaded_file_size, elapsed_time_formatted)
 
 
 def bf_get_users(selected_bfaccount):
