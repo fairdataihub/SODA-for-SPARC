@@ -744,7 +744,7 @@ curateDatasetBtn.addEventListener('click', () => {
   // Initiate curation by calling Python funtion
   var err = false
   var curatestatus = 'Solving'
-  document.getElementById("para-curate-progress-bar-status").innerHTML = "Started generating files ..."
+  document.getElementById("para-curate-progress-bar-status").innerHTML = "Preparing files ..."
   client.invoke("api_curate_dataset",
     sourceDataset, destinationDataset, pathDatasetValue, newDatasetNameVar,
     manifestStatus.checked, jsonpath, jsondescription,
@@ -956,67 +956,72 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
 bfSubmitDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
   document.getElementById("para-progress-bar-error-status").innerHTML = ""
-  document.getElementById("para-progress-bar-status").innerHTML = ""
-  var err = false
+  progressBarUploadBf.value = 0
   bfSubmitDatasetBtn.disabled = true
+  var err = false
   var completionStatus = 'Solving'
+  document.getElementById("para-progress-bar-status").innerHTML = "Preparing files ..."
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text
   client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathSubmitDataset.value, (error, res) => {
     if (error) {
       document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
-      log.error(error)
-      console.error(error)
       var emessage = userError(error)
       document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
+      document.getElementById("para-progress-bar-status").innerHTML = ""
       progressUploadBf.style.display = "none"
       progressBarUploadBf.value = 0
       err = true
+      log.error(error)
+      console.error(error)
+      bfSubmitDatasetBtn.disabled = false
     } else {
-      document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
-      progressUploadBf.style.display = "block"
-      log.info('Started uploading')
-      console.log('Started uploading')
+      // document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
+      log.info('Completed submit function')
+      console.log('Completed submit function')
     }
   })
 
   var countDone = 0
   var timerProgress = setInterval(progressfunction, 1000)
-    function progressfunction(){
-      client.invoke("api_submit_dataset_progress", (error, res) => {
-        if(error) {
-          var emessage = userError(error)
-          document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
-          log.error(error)
-          console.error(error)
-        } else {
-          var dataProgress = res[0]
-          completionStatus = res[1]
-          var uploadedFileSize = res[3]
-          var totalFileSize = res[4]
-          var value = (uploadedFileSize / totalFileSize) * 100
-          // console.log(value, totalFileSize, uploadedFileSize)
-          if (completionStatus != 'Done') {
-            progressBarUploadBf.value = value
-            document.getElementById("para-progress-bar-status").innerHTML = dataProgress + 'Progress: ' + value.toFixed(2) + '%'
-          }
-        }
-      })
-      if (completionStatus === 'Done'){
-        countDone++
-        if (countDone > 1){
-          log.info('Done uploading')
-          console.log('Done uploading')
-          if (!err){
+  function progressfunction(){
+    client.invoke("api_submit_dataset_progress", (error, res) => {
+      if(error) {
+        var emessage = userError(error)
+        document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
+        log.error(error)
+        console.error(error)
+      } else {
+        completionStatus = res[1]
+        var submitprintstatus = res[2]
+        var totalFileSize = res[3]
+        var uploadedFileSize = res[4]
+        if (submitprintstatus === "Uploading"){
+          progressUploadBf.style.display = "block"
+          if (res[0].includes('Success: COMPLETED!')){
             progressBarUploadBf.value = 100
-            document.getElementById("para-progress-bar-status").innerHTML = "Upload completed!" + smileyCan
             document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
+            document.getElementById("para-progress-bar-status").innerHTML = res[0] + smileyCan
+          }  else {
+            var value = (uploadedFileSize/totalFileSize)*100
+            progressBarUploadBf.value = value
+            document.getElementById("para-progress-bar-status").innerHTML = res[0] + 'Progress: ' + value.toFixed(2) + '%'
+            // console.log(value, totalFileSize, uploadedFileSize)
           }
-          clearInterval(timerProgress)
-          bfSubmitDatasetBtn.disabled = false
         }
       }
+    })
+    if (completionStatus === 'Done'){
+      countDone++
+      if (countDone > 1){
+        log.info('Done uploading')
+        console.log('Done uploading')
+        document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
+        clearInterval(timerProgress)
+        bfSubmitDatasetBtn.disabled = false       
+      }
     }
+  }
 })
 
 
