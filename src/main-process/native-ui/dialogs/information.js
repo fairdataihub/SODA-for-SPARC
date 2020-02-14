@@ -76,7 +76,7 @@ ipcMain.on('open-error-folder-selected', (event, emessage) => {
     message: emessage, 
   }
   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
-    event.sender.send('error-fodler-selected-shown')
+    event.sender.send('error-folder-selected-shown')
   })
 })
 
@@ -87,6 +87,28 @@ ipcMain.on('open-error-wrong-file', (event, emessage) => {
     message: emessage, 
   }
   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
-    event.sender.send('error-fodler-selected-shown')
+    event.sender.send('error-folder-selected-shown')
+  })
+})
+
+ipcMain.on('open-error-metadata-file-exits', (event, emessage) => {
+  const options = {
+    type: 'error',
+    title: 'Metadata file already exists',
+    message: emessage, 
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('error-metadata-file-exists-shown')
+  })
+})
+
+ipcMain.on('open-info-metadata-file-donwloaded', (event, emessage) => {
+  const options = {
+    type: 'info',
+    title: 'Download successful',
+    message: emessage,
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('info-metadata-downloaded-showed')
   })
 })
