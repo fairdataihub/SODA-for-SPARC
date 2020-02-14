@@ -381,23 +381,26 @@ def create_preview_files(paths, folder_path):
     Action:
         Creates folders and empty files at the given 'folder_path'
     """
-    for p in paths:
-        gevent.sleep(0)
-        if isfile(p):
-            file = basename(p)
-            open(join(folder_path, file), 'a').close()
-        else:
-            all_files = listdir(p)
-            all_files_path = []
-            for f in all_files:
-                all_files_path.append(join(p, f))
+    try:
+        for p in paths:
+            gevent.sleep(0)
+            if isfile(p):
+                file = basename(p)
+                open(join(folder_path, file), 'a').close()
+            else:
+                all_files = listdir(p)
+                all_files_path = []
+                for f in all_files:
+                    all_files_path.append(join(p, f))
 
-            pname = basename(p)
-            new_folder_path = join(folder_path, pname)
-            makedirs(new_folder_path)
-            create_preview_files(all_files_path, new_folder_path)
-    return
-
+                pname = basename(p)
+                new_folder_path = join(folder_path, pname)
+                makedirs(new_folder_path)
+                create_preview_files(all_files_path, new_folder_path)
+        return
+    except Exception as e:
+        raise e
+ 
 
 def preview_file_organization(jsonpath):
     """
@@ -432,13 +435,17 @@ def preview_file_organization(jsonpath):
                 if i != 'main':
                     makedirs(join(preview_path, i))
 
-
-        for i in folderrequired:
-            paths = mydict[i]
-            if (i == 'main'):
-                create_preview_files(paths, join(preview_path))
-            else:
-                create_preview_files(paths, join(preview_path, i))
+        def preview_func(folderrequired, preview_path):
+            for i in folderrequired:
+                paths = mydict[i]
+                if (i == 'main'):
+                    create_preview_files(paths, join(preview_path))
+                else:
+                    create_preview_files(paths, join(preview_path, i))
+        output = []
+        output.append(gevent.spawn(preview_func, folderrequired, preview_path))
+        gevent.sleep(0)
+        gevent.joinall(output)
         open_file(preview_path)
 
         return preview_path
@@ -720,6 +727,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             start_submit = 1
             gev = []
             gev.append(gevent.spawn(calluploaddirectly))
+            gevent.sleep(0)
             gevent.joinall(gev) #wait for gevent to finish before exiting the function
 
         except Exception as e:
@@ -1124,6 +1132,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         start_submit = 1
         gev = []
         gev.append(gevent.spawn(calluploadfolder))
+        gevent.sleep(0)
         gevent.joinall(gev)
 
     except Exception as e:
