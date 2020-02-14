@@ -284,33 +284,41 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 })
 
 // Download Metadata Templates //
-templateArray = ["submission.xlsx", "subjects.xlsx", "samples.xlsx", "dataset_description.xlsx", "manifest.xlsx"]
-
-const { COPYFILE_EXCL } = fs.constants.COPYFILE_FICLONE;
-function downloadTemplates(templateItem) {
-  var downloadedPath = path.join(userDownloadFolder, templateItem)
-  if (fs.existsSync(downloadedPath)) {
-    window.alert("File already exists in Downloads folder")
+templateArray = ["submission.xlsx", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx", "manifest.xlsx"]
+function downloadTemplates(templateItem, destinationFolder) {
+  var templatePath = path.join(__dirname, "file_templates", templateItem)
+  var destinationPath = path.join(destinationFolder, templateItem)
+  if (fs.existsSync(destinationPath)) {
+    var emessage = "File " + templateItem +  " already exists in " +  destinationFolder
+    ipcRenderer.send('open-error-metadata-file-exits', emessage)
   } else {
-    window.alert("Successfully saved file to your Downloads folder")
-    fs.createReadStream(path.join("file_templates", templateItem)).pipe(fs.createWriteStream(path.join(userDownloadFolder, templateItem)))
+    fs.createReadStream(templatePath).pipe(fs.createWriteStream(destinationPath))
+    var emessage = "Successfully saved file " + templateItem + " to " + destinationFolder
+    ipcRenderer.send('open-info-metadata-file-donwloaded', emessage)
   }
 }
 downloadSubmission.addEventListener('click', (event) => {
-  downloadTemplates(templateArray[0])
-});
-downloadSubjects.addEventListener('click', (event) => {
-  downloadTemplates(templateArray[1])
-});
-downloadSamples.addEventListener('click', (event) => {
-  downloadTemplates(templateArray[2])
+  ipcRenderer.send('open-folder-dialog-save-metadata', templateArray[0])
 });
 downloadDescription.addEventListener('click', (event) => {
-  downloadTemplates(templateArray[3])
+  ipcRenderer.send('open-folder-dialog-save-metadata', templateArray[1])
+});
+downloadSubjects.addEventListener('click', (event) => {
+  ipcRenderer.send('open-folder-dialog-save-metadata', templateArray[2])
+});
+downloadSamples.addEventListener('click', (event) => {
+  ipcRenderer.send('open-folder-dialog-save-metadata', templateArray[3])
 });
 downloadManifest.addEventListener('click', (event) => {
-  downloadTemplates(templateArray[4])
+  ipcRenderer.send('open-folder-dialog-save-metadata', templateArray[4])
 });
+ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
+  if (path.length > 0) {
+    console.log(path, filename)
+    downloadTemplates(filename, path[0])
+  }
+})
+
 
 // Select organized dataset folder and populate table //
 selectDatasetBtn.addEventListener('click', (event) => {

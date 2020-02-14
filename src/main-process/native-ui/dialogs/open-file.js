@@ -254,3 +254,14 @@ ipcMain.on('open-file-dialog-import-banner-image', (event) => {
     }
   })
 })
+
+// Metadata template download
+ipcMain.on('open-folder-dialog-save-metadata', (event, filename) => {
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ['openDirectory']
+  }, (files) => {
+    if (files) {
+      event.sender.send('selected-metadata-download-folder', files, filename);
+    }
+  })
+})
