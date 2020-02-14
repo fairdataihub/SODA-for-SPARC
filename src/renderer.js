@@ -840,7 +840,16 @@ curateDatasetBtn.addEventListener('click', () => {
           } else {
             var value = (curatedDatasetSize / totalDatasetSize) * 100
             progressBarCurate.value = value
-            document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + 'Progress: ' + value.toFixed(2) + '%'
+            if (totalDatasetSize < 1024){
+              var totalSizePrint = totalDatasetSize.toFixed(2) + ' B'
+            } else if (totalDatasetSize < 1024*1024){
+              var totalSizePrint = (totalDatasetSize/1024).toFixed(2) + ' KB'
+            } else if (totalDatasetSize < 1024*1024*1024){
+              var totalSizePrint = (totalDatasetSize/1024/1024).toFixed(2) + ' MB'
+            } else {
+              var totalSizePrint = (totalDatasetSize/1024/1024/1024).toFixed(2) + ' GB'
+            }
+            document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + 'Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')'
             // console.log(value, totalDatasetSize, curatedDatasetSize)
           }
         }
@@ -1049,7 +1058,16 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
           }  else {
             var value = (uploadedFileSize/totalFileSize)*100
             progressBarUploadBf.value = value
-            document.getElementById("para-progress-bar-status").innerHTML = res[0] + 'Progress: ' + value.toFixed(2) + '%'
+            if (totalFileSize < 1024){
+              var totalSizePrint = totalFileSize.toFixed(2) + ' B'
+            } else if (totalFileSize < 1024*1024){
+              var totalSizePrint = (totalFileSize/1024).toFixed(2) + ' KB'
+            } else if (totalFileSize < 1024*1024*1024){
+              var totalSizePrint = (totalFileSize/1024/1024).toFixed(2) + ' MB'
+            } else {
+              var totalSizePrint = (totalFileSize/1024/1024/1024).toFixed(2) + ' GB'
+            }
+            document.getElementById("para-progress-bar-status").innerHTML = res[0] + 'Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')'
             // console.log(value, totalFileSize, uploadedFileSize)
           }
         }

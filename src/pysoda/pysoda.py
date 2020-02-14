@@ -602,7 +602,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                         mypathsize =  getsize(path)
                         if mypathsize == 0:
                             c += 1
-                            error = error + path + ' is 0kb <br>'
+                            error = error + path + ' is 0 KB <br>'
                         else:
                             total_dataset_size += mypathsize
                     else:
@@ -612,7 +612,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                                 mypathsize =  getsize(fp)
                                 if mypathsize == 0:
                                     c += 1
-                                    error = error + path + ' is 0kb <br>'
+                                    error = error + path + ' is 0 KB <br>'
                                 else:
                                     total_dataset_size += mypathsize
                 else:
@@ -1025,7 +1025,7 @@ def agent_running():
         else:
             raise
     else:
-        raise AgentError("The agent is already running. Please go to your Task Manager/Activity Monitor to stop any running blackfynn_agent processes and try again")
+        raise AgentError("The Blackfynn agent is already running. Please go to your Task Manager/Activity Monitor to stop any running blackfynn_agent processes and try again")
 
     socket_address(listen_port)
 
@@ -1093,7 +1093,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                 mypathsize = getsize(fp)
                 if mypathsize == 0:
                     c += 1
-                    error = error + path + ' is 0kb <br>'
+                    error = error + path + ' is 0 KB <br>'
                 else:
                     total_file_size += mypathsize
     except Exception as e:
