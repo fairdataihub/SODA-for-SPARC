@@ -15,9 +15,9 @@ import zerorpc
 class SodaApi(object):
 
     ### Curate dataset
-    def api_save_file_organization(self, jsonpath, jsondescription, pathsavefileorganization):
+    def api_save_file_organization(self, jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization):
         try:
-            return save_file_organization(jsonpath, jsondescription, pathsavefileorganization)
+            return save_file_organization(jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization)
         except Exception as e:
             raise e
 

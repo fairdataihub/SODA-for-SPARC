@@ -303,7 +303,7 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
 
 
 ### Prepare dataset
-def save_file_organization(jsonpath, jsondescription, pathsavefileorganization):
+def save_file_organization(jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization):
     """
     Associated with 'Save' button in the SODA interface
     Saves the paths and associated descriptions from the interface table to a CSV file for future use
@@ -319,7 +319,9 @@ def save_file_organization(jsonpath, jsondescription, pathsavefileorganization):
     try:
         mydict = jsonpath
         mydict2 = jsondescription
+        mydict3 = jsonpathmetadata
         mydict.update(mydict2)
+        mydict.update(mydict3)
         dictkeys = list(mydict.keys())
         dictkeys.sort()
         df = pd.DataFrame(columns=[dictkeys[0]])
@@ -352,6 +354,7 @@ def import_file_organization(pathuploadfileorganization, headernames):
         df = pd.read_csv(csvsavepath)
         dfnan = df.isnull()
         mydict = {}
+        mydictmetadata ={}
         dictkeys = df.columns
         compare = lambda x, y: collections.Counter(x) == collections.Counter(y)
         if not compare(dictkeys, headernames):
@@ -365,8 +368,11 @@ def import_file_organization(pathuploadfileorganization, headernames):
                     pathvect.append(pathval)
                 else:
                     pathvect.append("")
-            mydict[dictkeys[i]] = pathvect
-        return mydict
+            if dictkeys[i] == 'metadata':
+                mydictmetadata[dictkeys[i]] = pathvect
+            else:
+                mydict[dictkeys[i]] = pathvect
+        return [mydict, mydictmetadata]
     except Exception as e:
         raise e
 

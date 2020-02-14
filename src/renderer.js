@@ -576,11 +576,12 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
     }
     var jsonpath = jsonvect[0]
     var jsondescription = jsonvect[1]
+    var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
     document.getElementById("para-save-file-organization-status").innerHTML = "Please wait..."
     // Call python to save
     if (path != null){
       disablePrepareDatasetButtons()
-      client.invoke("api_save_file_organization", jsonpath, jsondescription, path, (error, res) => {
+      client.invoke("api_save_file_organization", jsonpath, jsondescription, jsonpathMetadata, path, (error, res) => {
           if(error) {
             log.error(error)
             console.error(error)
@@ -610,6 +611,7 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
     for (var i = 0; i < lennames; i++) {
     	headerNames.push(headerNames[i] + "_description")
     }
+    headerNames.push("metadata")
     client.invoke("api_import_file_organization", path[0], headerNames, (error, res) => {
           if(error) {
             log.error(error)
@@ -618,7 +620,10 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
             document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
             enablePrepareDatasetButtons()
           } else {
-            jsonToTableWithDescription(tableNotOrganized, res)
+            var jsonpath = res[0]
+            jsonToTableWithDescription(tableNotOrganized, jsonpath)
+            var jsonpathMetadata = res[1]
+            jsonToTableMetadata(tableMetadata, jsonpathMetadata)
             document.getElementById("para-save-file-organization-status").innerHTML = "Imported!";
             enablePrepareDatasetButtons()
           }
@@ -1999,7 +2004,6 @@ function insertFileToMetadataTable(table, pathlist){
     ipcRenderer.send('open-error-wrong-file', emessage2)
   }
   else {
-    var myheader = tableNotOrganized.rows[rowcount].cells[0]
     for (i = 0; i < pathlist.length; i++) {
       tableMetadataCount = tableMetadataCount + 1
       var table_len= tableMetadataCount
@@ -2042,6 +2046,38 @@ function tableToJsonMetadata(table){
   jsonvar[keyval] = pathlist
   return jsonvar
 }
+
+function jsonToTableMetadata(table, jsonvar){
+  var rowcount = 0
+  var jsontable = tableToJsonMetadata(table)
+  var emessage = ''
+  var count = 0
+  var emessage2 = ''
+  var count2 = 0
+  var SPARCfolder = 'metadata'
+
+  var listfilePath = []
+  
+  for (let filePath of jsontable[SPARCfolder]){
+      var extension = path.extname(filePath);
+      var file = path.basename(filePath,extension);
+      listfilePath.push(file)
+    }
+  var pathlist = jsonvar[SPARCfolder]
+  for (i = 0; i < pathlist.length; i++) {
+      var extension = path.extname(pathlist[i]);
+      var fileFull = path.basename(pathlist[i]);
+      var file = path.basename(pathlist[i],extension);
+    if (allowedMedataFiles.indexOf(fileFull) > -1 && listfilePath.indexOf(file) === -1) {
+      tableMetadataCount = tableMetadataCount + 1
+      var table_len= tableMetadataCount
+      var rownum = rowcount + i + 1
+      var row = table.insertRow(rownum).outerHTML="<tr id='row_metadata"+table_len+"'style='color: #000000;'><td id='name_row_metadata"+table_len+"'>"+ pathlist[i] +"</td><td> <input type='button' value='Delete row' class='delete' onclick='delete_row_metadata("+table_len+")'></td></tr>";
+    }
+  }
+  return table
+}
+
 
 function jsonToTableWithDescription(table, jsonvar){
   var keyvect = Object.keys(jsonvar)
