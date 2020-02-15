@@ -92,11 +92,11 @@
             <h5> Specify files/folders to be included in you dataset under the table located below.
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">
-                  All SPARC datasets must follow the SPARC Dataset Structure. You can accomplish that in SODA by adding files and folders in the table under the corresponding SPARC folder. This table will then be used by SODA to create your dataset when you reach the "Generate dataset" step.
+                  All SPARC datasets must follow the SPARC Dataset Structure. You can accomplish that in SODA by adding files and folders in the table under the corresponding SPARC folder. This table will then be used by SODA to create your dataset when you reach the "Generate dataset" feature. 
                   <br><br>
-                  You could drag/drop files/folders from your computer on the table headers to import them or click on the corresponding buttons to browse files and folders.
+                  The tooltips located in the rows of the table provide information about the expected files in each SPARC folder. At least one of the folders should be non-empty. More details about the dataset structure can be found in the <a href="https://docs.google.com/presentation/d/1EQPn1FmANpPsFt3CguU-JOQVMMlJsNXluQAK_gb2qVg/edit#slide=id.p1" style="color:white;"> SPARC guidelines</a>. 
                   <br><br>
-                  You can then add a description for files, which will be included in the corresponding manifest file if generated with SODA.
+                  You could drag/drop files and folders from your computer on the table headers to import them or click on the corresponding buttons to browse files and folders. You can then add a description for files, which will be included in the corresponding manifest file if generated with SODA.
                   <br><br>
                   Note: If a folder is added, only the path of the selected folder will be displayed in the table but all sub-folders and files will be included when the dataset is generated.
                 </span>
@@ -114,6 +114,10 @@
                       <button id="button-drop-code" class="demo-button-table drag">Drag & drop here </button>
                       <button id="button-select-code" class="demo-button-table">Select files </button>
                       <button id="button-select-code-directory" class="demo-button-table">Select folders</button>
+                      <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext">code: Folder containing all the source code used in the study (e.g., Python, MATLAB, etc.)  
+                        </span>
+                      </div>
                     </th>
                   </tr>
 
@@ -123,15 +127,23 @@
                       <button id="button-drop-derivatives" class="demo-button-table drag">Drag & drop here </button>
                       <button id="button-select-derivatives" class="demo-button-table">Select files </button>
                       <button id="button-select-derivatives-directory" class="demo-button-table">Select folders</button>
+                      <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext">derivatives: Folder containing data files derived from raw data (e.g., processed image stacks that are annotated via the MBF tools, segmentation files, smoothed overlays of current and voltage that demonstrate a particular effect, etc.)
+                        </span>
+                      </div>
                     </th>
                   </tr>
 
                   <tr class="parent" id='docs' droppable="true" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondragover="return false">
-                    <th class="table-header">docs</th>
+                    <th class="table-header">docs</th> 
                     <th>
                       <button id="button-drop-docs" class="demo-button-table drag">Drag & drop here </button>
                       <button id="button-select-docs" class="demo-button-table">Select files </button>
                       <button id="button-select-docs-directory" class="demo-button-table">Select folders</button>
+                      <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext">docs: Folder containing all other supporting files that don't belong to any of the other folders (e.g., a representative image for the dataset, figures, etc.)
+                        </span>
+                      </div>
                     </th>
                   </tr>
 
@@ -141,6 +153,10 @@
                       <button id="button-drop-primary" class="demo-button-table drag">Drag & drop here </button>
                       <button id="button-select-primary" class="demo-button-table">Select files </button>
                       <button id="button-select-primary-directory" class="demo-button-table">Select folders</button>
+                      <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext">primary: Folder containing all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines “raw (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders. 
+                        </span>
+                      </div>
                     </th>
                   </tr>
 
@@ -150,6 +166,10 @@
                       <button id="button-drop-protocol" class="demo-button-table drag">Drag & drop here </button>
                       <button id="button-select-protocol" class="demo-button-table">Select files </button>
                       <button id="button-select-protocol-directory" class="demo-button-table">Select folders</button>
+                      <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext">protocol: Folder containing supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <a href="https://www.protocols.io/groups/sparc" style="color:white;"> Protocols.io/sparc </a>.
+                        </span>
+                      </div>
                     </th>
                   </tr>
 
@@ -159,6 +179,10 @@
                       <button id="button-drop-source" class="demo-button-table drag">Drag & drop here </button>
                       <button id="button-select-source" class="demo-button-table">Select files </button>
                       <button id="button-select-source-directory" class="demo-button-table">Select folders</button>
+                      <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext">source: Folder containing very raw data i.e. raw or untouched files from an experiment. For example, this folder may include the “truly” raw k-space data for an MR image that has not yet been reconstructed (the reconstructed DICOM or NIFTI files, for example, would be found within the primary folder). Another example is the unreconstructed images for a microscopy dataset.
+                        </span>
+                      </div>
                     </th>
                   </tr>
                 </table>
