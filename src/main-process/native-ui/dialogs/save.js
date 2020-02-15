@@ -12,7 +12,7 @@ ipcMain.on('save-dialog', (event) => {
   })
 })
 
-ipcMain.on('save-file-dialog-saveorganization', (event) => {
+ipcMain.on('save-file-dialog-saveorganization', (event, location) => {
   const options = {
     title: 'Save File Organization',
     filters: [
@@ -20,6 +20,6 @@ ipcMain.on('save-file-dialog-saveorganization', (event) => {
     ]
   }
   dialog.showSaveDialog(BrowserWindow.getFocusedWindow(), options, (filename) => {
-    event.sender.send('selected-saveorganizationfile', filename)
+    event.sender.send('selected-saveorganizationfile', filename, location)
   })
 })

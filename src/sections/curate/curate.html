@@ -193,7 +193,7 @@
             <h5>
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">
-                Save Table: Save the table you created in a CSV format file for continuing later.
+                Save Table: Save the tables from "Specify dataset files" and "Specify metadata files" in a CSV format file for continuing later.
                 <br><br>
                 Import Table: Import progress file you saved previously and continue organizing your dataset.
                 <br><br>
@@ -210,6 +210,9 @@
             </div>
 
             <p id='para-save-file-organization-status'> </p>
+            <div id=div-dataset-preview-progress class="progressdiv">
+              <div class="indeterminatebar"></div>
+            </div>
 
           </div>
 
@@ -237,9 +240,9 @@
     <div class="demo">
       <div class="demo-wrapper">
         <button id="button-file-conversion-demo-toggle" class="js-container-target demo-toggle-button"> Handle file format conversion
-         <!--  <a style="padding:0px 0px 0px 10px" href="https://www.youtube.com/watch?v=T_AHgEUXFAA&feature=youtu.be" >
+          <a style="padding:0px 0px 0px 10px" href="https://www.youtube.com/watch?v=T_AHgEUXFAA&feature=youtu.be" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
-          </a> -->
+          </a>
           <div class="demo-meta u-avoid-clicks"> Choose files to be converted to SPARC defined standard formats before generating your dataset  </div>
         </button>
         <div id="div-file-conversion" class="demo-box">
@@ -317,14 +320,20 @@
           <h5> Preview how your dataset will look once generated
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">
+              Save Table: Save the tables from "Specify dataset files" and "Specify metadata files" in a CSV format file for continuing later.
+              <br><br>
               The preview is created in a folder named 'Preview' and located in a 'SODA' folder on the user's computer. The files in the preview are mock files (0 kb) with only name and extension corresponding to the actual files specified in the tables under the 'Specify dataset files' and 'Speficy metadata files' features.
               </span>
             </div>
           </h5>
           <div class="demo-controls">
+              <button id="button-select-save-file-organization-metadata"class="demo-button"> Save Table </button>
               <button id="button-preview-file-organization-metadata" class="demo-button"> Preview</button>
               <p id='para-preview-organization-status-metadata'> <p>
           </div><br>
+          <div id=div-metadata-preview-progress class="progressdiv">
+            <div class="indeterminatebar"></div>
+          </div>
 
           <div id="div-specify-metadata-next-step" align="right">
             <h5> </h5>
@@ -337,9 +346,9 @@
     <div class="demo">
       <div class="demo-wrapper">
         <button id="button-validate-dataset-demo-toggle" class="js-container-target demo-toggle-button"> Validate dataset before generating
-          <!-- <a style="padding:0px 0px 0px 10px" href="https://www.youtube.com/watch?v=T_AHgEUXFAA&feature=youtu.be" >
+          <a style="padding:0px 0px 0px 10px" href="https://www.youtube.com/watch?v=T_AHgEUXFAA&feature=youtu.be" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
-          </a> -->
+          </a>
           <div class="demo-meta u-avoid-clicks"> Check that information provided during the previous steps will create a SPARC-approved dataset. </div>
         </button>
         <div id="div-validate-dataset" class="demo-box">

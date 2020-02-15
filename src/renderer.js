@@ -129,6 +129,9 @@ const selectImportFileOrganizationBtn = document.getElementById('button-select-u
 const selectPreviewMetadataBtn = document.getElementById('button-preview-file-organization-metadata')
 const tableMetadata = document.getElementById("metadata-table")
 let tableMetadataCount = 0
+const previewProgressBar = document.getElementById("div-dataset-preview-progress")
+const previewMetadataProgressBar = document.getElementById("div-metadata-preview-progress")
+const selectSaveFileOrganizationMetadataBtn = document.getElementById('button-select-save-file-organization-metadata')
 
 // Generate dataset //
 const createNewStatus = document.querySelector('#create-newdataset')
@@ -218,7 +221,6 @@ const datasetPermissionStatusTeam = document.querySelector('#para-dataset-permis
 //////////////////////////////////
 // Constant parameters
 //////////////////////////////////
-
 const blackColor = '#000000'
 const redColor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivatives", "docs", "primary", "protocol", "source"]
@@ -467,6 +469,7 @@ holderSource.addEventListener("drop", (event)=> {
 //Clear table //
 clearTableBtn.addEventListener('click', () => {
   // Generate warning before continuing
+  clearStrings()
   ipcRenderer.send('warning-clear-table')
 })
 ipcRenderer.on('warning-clear-table-selection', (event, index) => {
@@ -558,6 +561,7 @@ function disablePrepareDatasetButtons() {
   clearTableBtn.disabled = true
   selectPreviewBtn.disabled = true
   selectPreviewMetadataBtn.disabled = true
+  selectSaveFileOrganizationMetadataBtn.disabled = true
   curateDatasetBtn.disabled = true
 }
 
@@ -567,16 +571,22 @@ function enablePrepareDatasetButtons() {
   clearTableBtn.disabled = false
   selectPreviewBtn.disabled = false
   selectPreviewMetadataBtn.disabled = false
+  selectSaveFileOrganizationMetadataBtn.disabled = false
   curateDatasetBtn.disabled = false
 }
 
 // Action when user click on "Save" file organization button //
 selectSaveFileOrganizationBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('save-file-dialog-saveorganization')
+  ipcRenderer.send('save-file-dialog-saveorganization', 'dataset')
   clearStrings()
 })
-ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
+selectSaveFileOrganizationMetadataBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('save-file-dialog-saveorganization', 'metadata')
+  clearStrings()
+})
+ipcRenderer.on('selected-saveorganizationfile', (event, path, location) => {
   if (path.length > 0){
+    console.log(location)
     if (alreadyOrganizedStatus.checked == true){
       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
     } else {
@@ -585,7 +595,11 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
     var jsonpath = jsonvect[0]
     var jsondescription = jsonvect[1]
     var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
-    document.getElementById("para-save-file-organization-status").innerHTML = "Please wait..."
+    if (location === 'dataset'){
+      document.getElementById("para-save-file-organization-status").innerHTML = "Please wait..."
+    } else if (location === 'metadata'){
+      document.getElementById("para-preview-organization-status-metadata").innerHTML = "Please wait..."
+    }
     // Call python to save
     if (path != null){
       disablePrepareDatasetButtons()
@@ -594,10 +608,18 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
             log.error(error)
             console.error(error)
             var emessage = userError(error)
-            document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+            if (location === 'dataset'){
+              document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+            } else if (location === 'metadata'){
+              document.getElementById("para-preview-organization-status-metadata").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+            }
             enablePrepareDatasetButtons()
           } else {
-            document.getElementById("para-save-file-organization-status").innerHTML = "Saved!"
+            if (location === 'dataset'){
+              document.getElementById("para-save-file-organization-status").innerHTML = "Saved!"
+            } else if (location === 'metadata'){
+              document.getElementById("para-preview-organization-status-metadata").innerHTML = "Saved!"
+            }
             enablePrepareDatasetButtons()
           }
       })
@@ -608,7 +630,7 @@ ipcRenderer.on('selected-saveorganizationfile', (event, path) => {
 // Action when user click on "Import" button //
 selectImportFileOrganizationBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-file-dialog-uploadorganization')
-    clearStrings()
+  clearStrings()
 })
 ipcRenderer.on('selected-uploadorganization', (event, path) => {
   if (path.length > 0) {
@@ -641,6 +663,7 @@ ipcRenderer.on('selected-uploadorganization', (event, path) => {
 
 // Action when user click on "Preview" file organization button //
 selectPreviewBtn.addEventListener('click', () => {
+  previewProgressBar.style.display = 'block'
   disablePrepareDatasetButtons()
   clearStrings()
   document.getElementById("para-save-file-organization-status").innerHTML = "Please wait..."
@@ -665,16 +688,19 @@ selectPreviewBtn.addEventListener('click', () => {
         var emessage = userError(error)
         document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
         enablePrepareDatasetButtons()
+        previewProgressBar.style.display = 'none'
       } else {
         document.getElementById("para-save-file-organization-status").innerHTML = "Preview folder is available in a new file explorer window!";
         selectPreviewBtn.disabled = false
         selectPreviewMetadataBtn.disabled = false
         enablePrepareDatasetButtons()
+        previewProgressBar.style.display = 'none'
       }
   })
 })
 
 selectPreviewMetadataBtn.addEventListener('click', () => {
+  previewMetadataProgressBar.style.display = 'block'
   disablePrepareDatasetButtons()
   clearStrings()
   document.getElementById("para-preview-organization-status-metadata").innerHTML = "Please wait..."
@@ -703,9 +729,11 @@ selectPreviewMetadataBtn.addEventListener('click', () => {
         var emessage = userError(error)
         document.getElementById("para-preview-organization-status-metadata").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
         enablePrepareDatasetButtons()
+        previewMetadataProgressBar.style.display = 'none'
       } else {
         document.getElementById("para-preview-organization-status-metadata").innerHTML = "Preview folder is available in a new file explorer window!";
         enablePrepareDatasetButtons()
+        previewMetadataProgressBar.style.display = 'none'
       }
   })
 })
