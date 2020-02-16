@@ -186,6 +186,11 @@ Creating Debian Installer – https://github.com/electron-userland/electron-inst
 ```
 
 ## Acknowledgements
+* [NIH SPARC Initiative](https://commonfund.nih.gov/sparc)
+* [Blackfynn Team](https://www.blackfynn.com/)
+* [SPARC Dataset Curation Team](https://github.com/SciCrunch/sparc-curation)
+* Our beta testers
+
 
 
 [contributors-shield]: https://img.shields.io/github/contributors/bvhpatel/SODA.svg?style=flat-square
