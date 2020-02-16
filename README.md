@@ -11,10 +11,10 @@
     <img src="/src/assets/app-icon/png/soda_icon.png" alt="Logo" width="100" height="100">
   </a>
 
-  <h3 align="center">Your one-stop tool for curating and submitting SPARC datasets</h3>
+  <h3 align="center">Keep Calm and Curate</h3>
 
   <p align="center">
-    By SPARC investigators, for SPARC investigators
+    Your one-stop tool for curating and submitting SPARC datasets, by SPARC investigators, for SPARC investigators
     <br />
     <br />
     <a href="https://github.com/bvhpatel/SODA/wiki"><strong>Explore our documentation »</strong></a>
