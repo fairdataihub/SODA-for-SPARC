@@ -184,6 +184,8 @@ Creating Debian Installer – https://github.com/electron-userland/electron-inst
   ]
 }
 ```
+## License
+Distributed under the MIT License. See LICENSE for more information.
 
 ## Acknowledgements
 * [NIH SPARC Initiative](https://commonfund.nih.gov/sparc)
