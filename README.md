@@ -32,7 +32,7 @@
 ## Table of Contents
 
 * [About](#about)
-* [Download the application](#Download-soda)
+* [Download SODA](#Download-soda)
 * [Using the Source Code](#Using-the-Source-Code)
 * [Packaging](#Packaging)
 * [Distributing](#Distributing)
