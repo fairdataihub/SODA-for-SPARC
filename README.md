@@ -32,7 +32,7 @@
 ## Table of Contents
 
 * [About](#about)
-* [Download the application](#Download-the-application)
+* [Download the application](#Download-soda)
 * [Using the Source Code](#Using-the-Source-Code)
 * [Packaging](#Packaging)
 * [Distributing](#Distributing)
@@ -56,7 +56,7 @@ SODA is distributed as an easy to install application for Windows, Mac and Linux
 
 For reporting any problems/bugs with the software, please open a new issue on the [Issues tab](https://github.com/bvhpatel/SODA/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea).
 
-## Download the application
+## Download SODA
 SODA is distributed as an easy to install application for:
 *   Windows - Coming soon
 <!--[Click Here](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EaurG6qE7bBBhuF1HWWqfVkB9xJ3x0rfeSGJ9f63WtdoJA?e=Uo2rnk) (Developed & tested on Windows 10) -->
