@@ -202,4 +202,4 @@ Distributed under the MIT License. See LICENSE for more information.
 [issues-shield]: https://img.shields.io/github/issues/bvhpatel/SODA.svg?style=flat-square
 [issues-url]: https://github.com/bvhpatel/SODA/issues
 [license-shield]: https://img.shields.io/github/license/bvhpatel/SODA.svg?style=flat-square
-[license-url]: https://github.com/bvhpatel/SODA/blob/master/LICENSE.txt
+[license-url]: https://github.com/bvhpatel/SODA/blob/master/LICENSE
