@@ -68,7 +68,7 @@ SODA is distributed as an easy to install application for:
 <!--Example datasets can be downloaded from [here](https://3dtholdings-my.sharepoint.com/:f:/g/personal/bpatel_calmi2_org/Eig4sjUjchRCiUtfpeH-ydYBjvql_KYW0ZSE9_Td6bPzrQ?e=ApSOvh). -->
 Please follow the instructions given in [our documentation](https://github.com/bvhpatel/SODA/wiki/Download) if you need help with installing SODA. 
 
-## Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed as well to use Blackfynn related functionalities. 
+#### Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed as well to use Blackfynn related functionalities. 
 
 The software should also work on older OS than those specified above but no testing has been done on those platforms. The sections below here are only necessary to read if you plan on using the source code of SODA. If you are here just for the app, get out of here and enjoy SODA!
 
