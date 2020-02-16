@@ -17,7 +17,7 @@
     By SPARC investigators, for SPARC investigators
     <br />
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore our documentation »</strong></a>
+    <a href="https://github.com/bvhpatel/SODA/wiki"><strong>Explore our documentation »</strong></a>
     <br />
     <br />
     <a href="https://www.youtube.com/channel/UCXLDJT6RNQYIjPSMuXEK6rA/playlists">Watch tutorial videos</a>
@@ -33,7 +33,7 @@
 
 * [About](#about)
 * [Download the application](#Download-the-application)
-* [Using the Source Code](#Using the Source Code)
+* [Using the Source Code](#Using-the-Source-Code)
 * [Packaging](#Packaging)
 * [Distributing](#Distributing)
 * [License](#license)
