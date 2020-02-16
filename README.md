@@ -54,7 +54,7 @@ Software for Organizing Data Automatically (SODA) is a computer program intended
 
 SODA is distributed as an easy to install application for Windows, Mac and Linux platforms. The front-end (Graphical User Interface or GUI) of SODA is built with [Electron](https://electronjs.org/), an open-source framework developed and maintained by GitHub that conveniently combines Node.js, HTML, CSS, and Javascript, while the back-end is developed in Python (v3.6). The application is inspired by a [GitHub repository](https://github.com/fyears/electron-python-example) and a [Medium blog](https://medium.com/@abulka/electron-python-4e8c807bfa5e). All source codes and files are shared with an open source license ([MIT](LICENSE)) to permit user modification without restrictions. Folder structure for the source code is based on the Electron standards and similar to the [Electron Demo Application](https://github.com/electron/electron-api-demos).
 
-For reporting any problems/bugs with the software, please open a new issue on the [Issues tab](https://github.com/bvhpatel/SODA/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently.
+For reporting any problems/bugs with the software, please open a new issue on the [Issues tab](https://github.com/bvhpatel/SODA/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea).
 
 ## Download the application
 SODA is distributed as an easy to install application for:
@@ -66,9 +66,11 @@ SODA is distributed as an easy to install application for:
 <!-- [Click Here](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EQLHAKyyfaZJoDMYDYIwHIQB_jBZWh8mxBE5rRW-g_Oo5w?e=7wLGLI) (Developed & tested on Ubuntu Desktop 18.04) -->
 
 <!--Example datasets can be downloaded from [here](https://3dtholdings-my.sharepoint.com/:f:/g/personal/bpatel_calmi2_org/Eig4sjUjchRCiUtfpeH-ydYBjvql_KYW0ZSE9_Td6bPzrQ?e=ApSOvh). -->
-Please follow the instructions given in [User Manual](docs/SODA_User_manual.pdf) to download, install and use SODA. Especially, the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed to use Blackfynn related functionalities. 
+Please follow the instructions given in [our documentation](https://github.com/bvhpatel/SODA/wiki/Download) if you need help with installing SODA. 
 
-The software should also work on older versions of OS but no testing has been done on those platforms.
+## Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed as well to use Blackfynn related functionalities. 
+
+The software should also work on older OS than those specified above but no testing has been done on those platforms. The sections below here are only necessary to read if you plan on using the source code of SODA. If you are here just for the app, get out of here and enjoy SODA!
 
 Latest version: 1.0.0
 
