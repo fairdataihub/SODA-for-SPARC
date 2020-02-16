@@ -1,4 +1,52 @@
-# <img src="/src/assets/app-icon/png/soda_icon.png" width="60px" align="center" alt="SODA icon"> SODA
+[![Contributors][contributors-shield]][contributors-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+
+
+<!-- HEADER -->
+<br />
+<p align="center">
+  <a href="#">
+    <img src="/src/assets/app-icon/png/soda_icon.png" alt="Logo" width="100" height="100">
+  </a>
+
+  <h3 align="center">Your one-stop tool for curating and submitting SPARC datasets</h3>
+
+  <p align="center">
+    By SPARC investigators, for SPARC investigators
+    <br />
+    <br />
+    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore our documentation »</strong></a>
+    <br />
+    <br />
+    <a href="https://www.youtube.com/channel/UCXLDJT6RNQYIjPSMuXEK6rA/playlists">Watch tutorial videos</a>
+    ·
+    <a href="https://github.com/bvhpatel/SODA/issues">Report Issue</a>
+    ·
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea">Submit feedback </a>
+  </p>
+</p>
+
+<!-- TABLE OF CONTENTS -->
+## Table of Contents
+
+* [About](#about)
+  * [Built With](#built-with)
+* [Getting Started](#getting-started)
+  * [Prerequisites](#prerequisites)
+  * [Installation](#installation)
+* [Usage](#usage)
+* [Roadmap](#roadmap)
+* [Contributing](#contributing)
+* [License](#license)
+* [Contact](#contact)
+* [Acknowledgements](#acknowledgements)
+
+
+
+<!-- ABOUT -->
+## About
 
 Software for Organizing Data Automatically (SODA) is a computer program intended to facilitate the data organization process for [SPARC](https://commonfund.nih.gov/sparc) investigators through interactive tools and automation. Especially, SODA would allow users to:
 
@@ -140,3 +188,12 @@ Creating Debian Installer – https://github.com/electron-userland/electron-inst
   ]
 }
 ```
+
+[contributors-shield]: https://img.shields.io/github/contributors/bvhpatel/SODA.svg?style=flat-square
+[contributors-url]: https://github.com/bvhpatel/SODA/graphs/contributors
+[stars-shield]: https://img.shields.io/github/stars/bvhpatel/SODA.svg?style=flat-square
+[stars-url]: https://github.com/bvhpatel/SODA/stargazers
+[issues-shield]: https://img.shields.io/github/issues/bvhpatel/SODA.svg?style=flat-square
+[issues-url]: https://github.com/bvhpatel/SODA/issues
+[license-shield]: https://img.shields.io/github/license/bvhpatel/SODA.svg?style=flat-square
+[license-url]: https://github.com/bvhpatel/SODA/blob/master/LICENSE.txt
