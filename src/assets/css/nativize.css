@@ -50,6 +50,15 @@ a[href^="https://www.youtube.com"] {
   border-bottom: 0px solid;
 }
 
+.github-wiki-link{
+  text-decoration: none;
+  border:0px !important;
+  outline:none;
+  border-width: 0px;
+  outline-width:0px;
+  border-bottom: none;
+}
+
 a:hover,
 a:focus {
   border-bottom: none;
