@@ -45,20 +45,12 @@
 <!-- ABOUT -->
 ## About
 
-Software for Organizing Data Automatically (SODA) is a computer program intended to facilitate the data organization process for [SPARC](https://commonfund.nih.gov/sparc) investigators through interactive tools and automation. Especially, SODA would allow users to:
-
-*   Conveniently organize datasets following the SPARC folder structure
-*   Convert file format to SPARC defined standards
-*   Generate metadata files with pre-populated fields, some automatically
-*   Validate dataset with the same validator used by the Curation Team
-*   Upload organized dataset directly on Blackfynn to avoid duplicating files locally
-
-SODA is distributed as an easy to install application for Windows, Mac and Linux platforms. The front-end (Graphical User Interface or GUI) of SODA is built with [Electron](https://electronjs.org/), an open-source framework developed and maintained by GitHub that conveniently combines Node.js, HTML, CSS, and Javascript, while the back-end is developed in Python (v3.6). The application is inspired by a [GitHub repository](https://github.com/fyears/electron-python-example) and a [Medium blog](https://medium.com/@abulka/electron-python-4e8c807bfa5e). All source codes and files are shared with an open source license ([MIT](LICENSE)) to permit user modification without restrictions. Folder structure for the source code is based on the Electron standards and similar to the [Electron Demo Application](https://github.com/electron/electron-api-demos).
+Software for Organizing Data Automatically (SODA) is a computer software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators. It is built such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.sparc.science/submit_data.html) rapidly through a single interface. Morevover, requirements have been broken down into easy to perform steps and automation has integrated to reduces users' effort to a bare minimum during each step, sometimes to just a single click.
 
 For reporting any problems/bugs with the software, please open a new issue on the [Issues tab](https://github.com/bvhpatel/SODA/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea).
 
 ## Downloading SODA
-SODA is distributed as an easy to install application for:
+SODA is distributed as an easy to install software for:
 *   Windows - Coming soon
 <!--[Click Here](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EaurG6qE7bBBhuF1HWWqfVkB9xJ3x0rfeSGJ9f63WtdoJA?e=Uo2rnk) (Developed & tested on Windows 10) -->
 *   Mac - Coming soon
@@ -69,14 +61,22 @@ SODA is distributed as an easy to install application for:
 <!--Example datasets can be downloaded from [here](https://3dtholdings-my.sharepoint.com/:f:/g/personal/bpatel_calmi2_org/Eig4sjUjchRCiUtfpeH-ydYBjvql_KYW0ZSE9_Td6bPzrQ?e=ApSOvh). -->
 Please follow the instructions given in [our documentation](https://github.com/bvhpatel/SODA/wiki/Download) if you need help with installing SODA. 
 
-#### Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed as well to use Blackfynn related functionalities. 
+#### Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed to upload datasets to Blackfynn through SODA. 
 
 The software should also work on older OS than those specified above but no testing has been done on those platforms. The sections below here are only necessary to read if you plan on using the source code of SODA. If you are here just for the app, get out of here and enjoy SODA!
 
 Latest version: 1.0.0
 
+
+## Issues and feedback
+For reporting any problems/bugs with the software, please open a new issue on the [Issues tab](https://github.com/bvhpatel/SODA/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea).
+
+
 ## Using the Source Code
-If you want to modify SODA to suit your needs better or compile it for an OS not mentioned above, please follow the instructions below.
+The front-end (Graphical User Interface or GUI) of SODA is built with [Electron](https://electronjs.org/), an open-source framework developed and maintained by GitHub that conveniently combines Node.js, HTML, CSS, and Javascript, while the back-end is developed in Python (v3.6). The application is inspired by a [GitHub repository](https://github.com/fyears/electron-python-example) and a [Medium blog](https://medium.com/@abulka/electron-python-4e8c807bfa5e). All source codes and files are shared with an open source license ([MIT](LICENSE)) to permit user modification without restrictions. Folder structure for the source code is based on the Electron standards and similar to the [Electron Demo Application](https://github.com/electron/electron-api-demos).
+
+If you want to modify SODA to suit your needs better or compile it for an OS not mentioned above, please follow the instructions below. 
+
 #### *Pre-requisites: [Anaconda (Python 3 version)](https://www.anaconda.com/distribution/), [Python 2](https://www.python.org/downloads/)*
 
 ### Download source code from the GitHub repository
