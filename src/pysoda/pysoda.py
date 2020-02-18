@@ -52,6 +52,9 @@ initial_bfdataset_size = 0
 upload_directly_to_bf = 0
 initial_bfdataset_size_submit = 0
 
+forbidden_characters = '<>:"/\|?*'
+forbidden_characters_bf = '\/:*?"<>'
+
 ### Internal functions
 def open_file(file_path):
     """
@@ -231,12 +234,27 @@ def check_forbidden_characters(my_string):
         False: no forbidden character
         True: presence of forbidden character(s)
     """
-    regex = re.compile('[@!#$%^&*()<>?/\|}{~:],')
-    if(regex.search(my_string) == None):
+    regex = re.compile('[' + forbidden_characters + ']')
+    if(regex.search(my_string) == None and "\\" not in r"%r" % my_string):
         return False
     else:
         return True
 
+def check_forbidden_characters_bf(my_string):
+    """
+    Check for forbidden characters in blackfynn file/folder name
+
+    Args:
+        my_string: string with characters (string)
+    Returns:
+        False: no forbidden character
+        True: presence of forbidden character(s)
+    """
+    regex = re.compile('[' + forbidden_characters_bf + ']')
+    if(regex.search(my_string) == None and "\\" not in r"%r" % my_string):
+        return False
+    else:
+        return True
 
 def return_new_path(topath):
     """
@@ -587,9 +605,12 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         if not isdir(pathdataset):
             curatestatus = 'Done'
             raise Exception('Error: Please select a valid folder for new dataset')
-        if (check_forbidden_characters(newdatasetname) or not newdatasetname):
+        if not newdatasetname:
             curatestatus = 'Done'
             raise Exception('Error: Please enter a valid name for new dataset folder')
+        if check_forbidden_characters(newdatasetname):
+            curatestatus = 'Done'
+            raise Exception('Error: A folder name cannot contain any of the following characters ' + forbidden_characters)
 
     # check if path in jsonpath are valid and calculate total dataset size
     error, c = '', 0
@@ -981,8 +1002,8 @@ def bf_new_dataset_folder(datasetname, accountname):
         error, c = '', 0
         datasetname = datasetname.strip()
 
-        if check_forbidden_characters(datasetname):
-            error = error + 'Error: Please enter valid dataset name' + "<br>"
+        if check_forbidden_characters_bf(datasetname):
+            error = error + 'Error: A Blackfynn dataset name cannot contain any of the following characters: ' + forbidden_characters_bf + "<br>"
             c += 1
 
         if (not datasetname):
