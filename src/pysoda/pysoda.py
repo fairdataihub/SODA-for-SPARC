@@ -825,6 +825,22 @@ def bf_add_account(keyname, key, secret):
             if not exists(join(bfpath, 'cache')):
                 mkdir(join(bfpath, 'cache'))
 
+        # Add agent section
+        agentkey = 'agent'
+        if not config.has_section(agentkey):
+            config.add_section(agentkey)
+            config.set(agentkey, 'proxy_local_port', '8080')
+            config.set(agentkey, 'cache_base_path', join(bfpath, 'cache'))
+            config.set(agentkey, 'uploader', 'true')
+            config.set(agentkey, 'cache_hard_cache_size', '10000000000')
+            config.set(agentkey, 'status_port', '11235')
+            config.set(agentkey, 'metrics', 'true')
+            config.set(agentkey, 'cache_page_size', '100000')
+            config.set(agentkey, 'proxy', 'true')
+            config.set(agentkey, 'cache_soft_cache_size', '5000000000')
+            config.set(agentkey, 'timeseries_local_port', '9090')
+            config.set(agentkey, 'timeseries', 'true')
+
         # Add new account
         config.add_section(keyname)
         config.set(keyname, 'api_token', key)
