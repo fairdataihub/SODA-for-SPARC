@@ -885,18 +885,28 @@ def bf_default_account_load():
         if exists(configpath):
             config = ConfigParser()
             config.read(configpath)
-            accountname = config.sections()
-            accountnamenoglobal = [n for n in accountname]
-            if accountnamenoglobal:
-                for n in accountnamenoglobal:
+            keys = config.sections()
+            accountlist = []
+            if "global" in keys:
+                default_acc = config["global"]
+                if "default_profile" in default_acc:
+                    n = default_acc["default_profile"]
                     try:
                         bfn = Blackfynn(n)
                         accountlist.append(n)
-                        break
-                    except:
-                        pass
-                with open(configpath, 'w') as configfile:
-                    config.write(configfile)
+                    except Exception as e:
+                        return accountlist
+            # accountnamenoglobal = [n for n in accountname]
+            # if accountnamenoglobal:
+            #     for n in accountnamenoglobal:
+            #         try:
+            #             bfn = Blackfynn(n)
+            #             accountlist.append(n)
+            #             break
+            #         except:
+            #             pass
+            #     with open(configpath, 'w') as configfile:
+            #         config.write(configfile)
         return accountlist
     except Exception as e:
         raise e
