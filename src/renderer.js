@@ -1323,55 +1323,67 @@ ipcRenderer.on('selected-banner-image', (event, path) => {
     }
   })
 
+function uploadBannerImage(){
+  bfCurrentMetadataProgress.style.display = 'block'
+  datasetBannerImageStatus.innerHTML = 'Please wait...'
+  disableform(bfMetadataForm)
+  //Save cropped image locally and check size
+  var imageFolder = path.join(homeDirectory, 'SODA', 'banner-image')
+  if (!fs.existsSync(imageFolder)){
+    fs.mkdirSync(imageFolder)
+  }
+  if (imageExtension == 'png'){
+    var imageType = 'image/png'
+  } else {
+    var imageType = 'image/jpeg'
+  }
+  var imagePath = path.join(imageFolder, 'banner-image-SODA.' + imageExtension)
+  var croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType)
+  imageDataURI.outputFile(croppedImageDataURI, imagePath).then( function() {
+    if(fs.statSync(imagePath)["size"] < 5*1024*1024) {
+      var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+      var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
+      client.invoke("api_bf_add_banner_image", selectedBfAccount, selectedBfDataset, imagePath, (error, res) => {
+        if(error) {
+          log.error(error)
+          console.error(error)
+          var emessage = userError(error)
+          datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+          bfCurrentMetadataProgress.style.display = 'none'
+          enableform(bfMetadataForm)
+        } else {
+          datasetBannerImageStatus.innerHTML = res
+          showCurrentBannerImage()
+          bfCurrentMetadataProgress.style.display = 'none'
+          enableform(bfMetadataForm)
+        }
+      })
+    } else {
+      datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Final image size must be less than 5 MB" + "</span>"
+    }
+  })
+}
+
 bfSaveBannerImageBtn.addEventListener('click', (event) => {
   datasetBannerImageStatus.innerHTML = ""
   if (bfViewImportedImage.src.length > 0){
-    if (formBannerHeight.value>1023){
-      bfCurrentMetadataProgress.style.display = 'block'
-      datasetBannerImageStatus.innerHTML = 'Please wait...'
-      disableform(bfMetadataForm)
-
-      //Save cropped image locally and check size
-      var imageFolder = path.join(homeDirectory, 'SODA', 'banner-image')
-      if (!fs.existsSync(imageFolder)){
-        fs.mkdirSync(imageFolder)
+    if (formBannerHeight.value>511){
+      if (formBannerHeight.value<1024){
+        ipcRenderer.send('warning-banner-image-below-1024', formBannerHeight.value)
+      } else{
+        uploadBannerImage()
       }
-      if (imageExtension == 'png'){
-        var imageType = 'image/png'
-      } else {
-        var imageType = 'image/jpeg'
-      }
-      var imagePath = path.join(imageFolder, 'banner-image-SODA.' + imageExtension)
-      var croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType)
-      imageDataURI.outputFile(croppedImageDataURI, imagePath).then( function() {
-        if(fs.statSync(imagePath)["size"] < 5*1024*1024) {
-          var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
-          var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
-          client.invoke("api_bf_add_banner_image", selectedBfAccount, selectedBfDataset, imagePath, (error, res) => {
-            if(error) {
-              log.error(error)
-              console.error(error)
-              var emessage = userError(error)
-              datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-              bfCurrentMetadataProgress.style.display = 'none'
-              enableform(bfMetadataForm)
-            } else {
-              datasetBannerImageStatus.innerHTML = res
-              showCurrentBannerImage()
-              bfCurrentMetadataProgress.style.display = 'none'
-              enableform(bfMetadataForm)
-            }
-          })
-        } else {
-          datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Final image size must be less than 5 MB" + "</span>"
-        }
-      }
-      )
     } else {
-      datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Dimensions of cropped area must be at least 1024 px" + "</span>"
+      datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Dimensions of cropped area must be at least 512 px" + "</span>"
     }
   } else {
     datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Please import an image first" + "</span>"
+  }
+})
+
+ipcRenderer.on('warning-add-permission-owner-selection-PI', (event, index) => {
+  if (index === 0) {
+    uploadBannerImage()
   }
 })
 
