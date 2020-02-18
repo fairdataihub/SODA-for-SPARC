@@ -150,7 +150,7 @@
         <div class="demo-box">
           <h5> Select Blackfynn dataset
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the Blackfynn dataset for which you wish to add/edit metadata (sorted alphabetically).
+              <span class="tooltiptext">Select the Blackfynn dataset for which you wish to add/edit metadata (sorted alphabetically). Click on "Refresh List" to update your list of datasets in case you have create an new one in parallel outside of SODA (e.g., from the Blackfynn webpage).
               <br><br>
               Subtitle, description, banner image and license are mandatory SPARC metadata.
               <br><br>
@@ -349,7 +349,7 @@
         <div class="demo-box">
           <h5> Select Blackfynn dataset
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permissions (sorted alphabetically).
+              <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permissions (sorted alphabetically). Click on "Refresh List" to update your list of datasets in case you have create an new one in parallel outside of SODA (e.g., from the Blackfynn webpage).
               <br><br>
               Note: You must have "owner" or "manager" permissions on the dataset to manage permissions. Verify below under "Current permission" after you select a dataset. See the associated <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> Blackfynn Help page</a> for more information.
               </span>
@@ -514,7 +514,7 @@
               <span class="tooltiptext">
               The status of a dataset is used to allow easy communication between SPARC investigators and the SPARC Dataset Curation Team regarding the progress of a dataset through the curation process. There are 12 status options that each SPARC Dataset will go through one by one during the submission and curation process. Each status indicates which team is responsible for the step.
               <br><br>
-              Select the Blackfynn dataset you want change status for (sorted alphabetically).
+              Select the Blackfynn dataset you want change status for (sorted alphabetically). 
               <br><br>
               Note: You must have "owner" or "manager" permissions on the dataset to change data. See feature "Manage dataset permissions" of SODA and the associated <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> Blackfynn Help page</a> for more information.
               </span>
@@ -526,6 +526,8 @@
             <select class="my_dropdown" id="bfdatasetlist_dataset_status">
               <option> Select dataset </option>
             </select>
+            <p></p>
+            <button id="button-refresh-dataset-status" class="demo-button"> Refresh List </button>
           </div>
 
           <div id=div-bf-current-dataset-status-progress class="progressdiv">
@@ -600,7 +602,7 @@
           <p></p>
           <h5> Select Blackfynn dataset for uploading
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically).
+              <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically). Click on "Refresh List" to update your list of datasets in case you have create an new one in parallel outside of SODA (e.g., from the Blackfynn webpage).
               <br> <br>
               Note: You must have "owner", "manager" or "editor" permissions on the dataset to upload. See feature "Manage dataset permissions" of SODA and the associated <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> Blackfynn Help page</a> for more information.
               </span>

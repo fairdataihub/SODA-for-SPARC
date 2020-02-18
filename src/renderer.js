@@ -223,7 +223,7 @@ const bfDatasetListDatasetStatus = document.querySelector('#bfdatasetlist_datase
 const bfCurrentDatasetStatusProgress = document.querySelector('#div-bf-current-dataset-status-progress')
 const bfListDatasetStatus = document.querySelector('#bf_list_dataset_status')
 const datasetStatusStatus = document.querySelector('#para-dataset-status-status')
-
+const bfRefreshDatasetStatusBtn = document.getElementById('button-refresh-dataset-status')
 //////////////////////////////////
 // Constant parameters
 //////////////////////////////////
@@ -1001,6 +1001,10 @@ bfRefreshDatasetMetadataBtn.addEventListener('click', () => {
   refreshAllBfDatasetLists()
 })
 bfRefreshDatasetPermissionBtn.addEventListener('click', () => {
+  refreshAllBfDatasetLists()
+})
+
+bfRefreshDatasetStatusBtn.addEventListener('click', () => {
   refreshAllBfDatasetLists()
 })
 
