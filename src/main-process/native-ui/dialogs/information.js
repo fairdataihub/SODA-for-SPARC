@@ -112,3 +112,16 @@ ipcMain.on('open-info-metadata-file-donwloaded', (event, emessage) => {
     event.sender.send('info-metadata-downloaded-showed')
   })
 })
+
+
+ipcMain.on('warning-banner-image-below-1024', (event, currentSize) => {
+  const options = {
+    type: 'info',
+    title: 'Warning',
+    message: "Although not mandatory, it is highly recommended to upload a banner image with display size of at least 1024 px. Your cropped image is " + currentSize + " px. Would you like to continue?",
+    buttons: ['Yes', 'No']
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('warning-add-permission-owner-selection-PI', index)
+  })
+})

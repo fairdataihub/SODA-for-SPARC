@@ -52,6 +52,9 @@ initial_bfdataset_size = 0
 upload_directly_to_bf = 0
 initial_bfdataset_size_submit = 0
 
+forbidden_characters = '<>:"/\|?*'
+forbidden_characters_bf = '\/:*?"<>'
+
 ### Internal functions
 def open_file(file_path):
     """
@@ -231,12 +234,27 @@ def check_forbidden_characters(my_string):
         False: no forbidden character
         True: presence of forbidden character(s)
     """
-    regex = re.compile('[@!#$%^&*()<>?/\|}{~:],')
-    if(regex.search(my_string) == None):
+    regex = re.compile('[' + forbidden_characters + ']')
+    if(regex.search(my_string) == None and "\\" not in r"%r" % my_string):
         return False
     else:
         return True
 
+def check_forbidden_characters_bf(my_string):
+    """
+    Check for forbidden characters in blackfynn file/folder name
+
+    Args:
+        my_string: string with characters (string)
+    Returns:
+        False: no forbidden character
+        True: presence of forbidden character(s)
+    """
+    regex = re.compile('[' + forbidden_characters_bf + ']')
+    if(regex.search(my_string) == None and "\\" not in r"%r" % my_string):
+        return False
+    else:
+        return True
 
 def return_new_path(topath):
     """
@@ -587,9 +605,12 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         if not isdir(pathdataset):
             curatestatus = 'Done'
             raise Exception('Error: Please select a valid folder for new dataset')
-        if (check_forbidden_characters(newdatasetname) or not newdatasetname):
+        if not newdatasetname:
             curatestatus = 'Done'
             raise Exception('Error: Please enter a valid name for new dataset folder')
+        if check_forbidden_characters(newdatasetname):
+            curatestatus = 'Done'
+            raise Exception('Error: A folder name cannot contain any of the following characters ' + forbidden_characters)
 
     # check if path in jsonpath are valid and calculate total dataset size
     error, c = '', 0
@@ -695,7 +716,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             role = bf_get_current_user_permission(accountname, bfdataset)
             if role not in ['owner', 'manager', 'editor']:
                 curatestatus = 'Done'
-                error = "Error: You don't have permission for uploading to this Blackfynn dataset"
+                error = "Error: You don't have permissions for uploading to this Blackfynn dataset"
                 raise Exception(error)
         except Exception as e:
             raise e
@@ -885,18 +906,28 @@ def bf_default_account_load():
         if exists(configpath):
             config = ConfigParser()
             config.read(configpath)
-            accountname = config.sections()
-            accountnamenoglobal = [n for n in accountname]
-            if accountnamenoglobal:
-                for n in accountnamenoglobal:
+            keys = config.sections()
+            accountlist = []
+            if "global" in keys:
+                default_acc = config["global"]
+                if "default_profile" in default_acc:
+                    n = default_acc["default_profile"]
                     try:
                         bfn = Blackfynn(n)
                         accountlist.append(n)
-                        break
-                    except:
-                        pass
-                with open(configpath, 'w') as configfile:
-                    config.write(configfile)
+                    except Exception as e:
+                        return accountlist
+            # accountnamenoglobal = [n for n in accountname]
+            # if accountnamenoglobal:
+            #     for n in accountnamenoglobal:
+            #         try:
+            #             bfn = Blackfynn(n)
+            #             accountlist.append(n)
+            #             break
+            #         except:
+            #             pass
+            #     with open(configpath, 'w') as configfile:
+            #         config.write(configfile)
         return accountlist
     except Exception as e:
         raise e
@@ -971,8 +1002,8 @@ def bf_new_dataset_folder(datasetname, accountname):
         error, c = '', 0
         datasetname = datasetname.strip()
 
-        if check_forbidden_characters(datasetname):
-            error = error + 'Error: Please enter valid dataset name' + "<br>"
+        if check_forbidden_characters_bf(datasetname):
+            error = error + 'Error: A Blackfynn dataset name cannot contain any of the following characters: ' + forbidden_characters_bf + "<br>"
             c += 1
 
         if (not datasetname):
@@ -1109,7 +1140,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     role = bf_get_current_user_permission(accountname, bfdataset)
     if role not in ['owner', 'manager', 'editor']:
         submitdatastatus = 'Done'
-        error = "Error: You don't have permission for uploading to this Blackfynn dataset"
+        error = "Error: You don't have permissions for uploading to this Blackfynn dataset"
         raise Exception(error)
 
     clear_queue()
@@ -1590,7 +1621,7 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
     try:
         role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
         if role not in ['owner', 'manager']:
-            error = "Error: You don't have permission for editing metadata on this Blackfynn dataset"
+            error = "Error: You don't have permissions for editing metadata on this Blackfynn dataset"
             raise Exception(error)
     except Exception as e:
         raise e
@@ -1664,7 +1695,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
     try:
         role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
         if role not in ['owner', 'manager']:
-            error = "Error: You don't have permission for editing metadata on this Blackfynn dataset"
+            error = "Error: You don't have permissions for editing metadata on this Blackfynn dataset"
             raise Exception(error)
     except Exception as e:
         raise e
@@ -1742,7 +1773,7 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
     try:
         role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
         if role not in ['owner', 'manager']:
-            error = "Error: You don't have permission for editing metadata on this Blackfynn dataset"
+            error = "Error: You don't have permissions for editing metadata on this Blackfynn dataset"
             raise Exception(error)
     except Exception as e:
         raise Exception(error)
@@ -1825,7 +1856,7 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
     try:
         role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
         if role not in ['owner', 'manager']:
-            error = "Error: You don't have permission for editing metadata on this Blackfynn dataset"
+            error = "Error: You don't have permissions for editing metadata on this Blackfynn dataset"
             raise Exception(error)
     except Exception as e:
         raise e
@@ -1854,5 +1885,96 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
         bf._api.datasets._put('/' + str(selected_dataset_id),
                               json=jsonfile)
         return 'License added!'
+    except Exception as e:
+        raise Exception(e)
+
+
+"""
+    Function to get current status for a selected dataset
+
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+    Return:
+        List of available status options for the account (list of string).
+        Current dataset status (string)
+    """
+def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        #get list of available status options
+        organization_id = bf.context.id
+        list_status = bf._api._get('/organizations/' + str(organization_id) + '/dataset-status')
+        #get current status of select dataset
+        selected_dataset_id = myds.id
+        dataset_current_status = bf._api._get('/datasets/' + str(selected_dataset_id))['content']['status']
+        return [list_status, dataset_current_status]
+    except Exception as e:
+        raise Exception(e)
+
+"""
+    Function to get current status for a selected dataset
+
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_status: display name of selected status (string)
+    Return:
+        success message
+    """
+def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        if role not in ['owner', 'manager']:
+            error = "Error: You don't have permissions for changing the status of this Blackfynn dataset"
+            raise Exception(error)
+    except Exception as e:
+        raise e
+
+    try:
+        #find name corresponding to display name or show error message
+        organization_id = bf.context.id
+        list_status = bf._api._get('/organizations/' + str(organization_id) + '/dataset-status')
+        c = 0
+        for option in list_status:
+            if option['displayName'] == selected_status:
+                new_status = option['name']
+                c += 1
+                break
+        if c==0:
+            error = "Error: Selected status is not available for this blackfynn account"
+            raise Exception(error)
+
+        #gchange dataset status
+        selected_dataset_id = myds.id
+        jsonfile = {'status': new_status}
+        bf._api.datasets._put('/' + str(selected_dataset_id), 
+                              json=jsonfile)
+        return "Success: Changed dataset status to " + selected_status
     except Exception as e:
         raise Exception(e)

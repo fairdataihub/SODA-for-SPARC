@@ -88,8 +88,8 @@ function checkNewAppVersion() {
       }
     })
     .catch(error => {
-      log.info(error);
-      console.log(error)
+      log.error(error);
+      console.error(error)
     })
 }
 
@@ -218,6 +218,12 @@ const bfListRolesTeam = document.querySelector('#bf_list_roles_team')
 const bfAddPermissionTeamBtn = document.getElementById('button-add-permission-team')
 const datasetPermissionStatusTeam = document.querySelector('#para-dataset-permission-status-team')
 
+//Blackfynn dataset status
+const bfDatasetListDatasetStatus = document.querySelector('#bfdatasetlist_dataset_status')
+const bfCurrentDatasetStatusProgress = document.querySelector('#div-bf-current-dataset-status-progress')
+const bfListDatasetStatus = document.querySelector('#bf_list_dataset_status')
+const datasetStatusStatus = document.querySelector('#para-dataset-status-status')
+
 //////////////////////////////////
 // Constant parameters
 //////////////////////////////////
@@ -316,7 +322,6 @@ downloadManifest.addEventListener('click', (event) => {
 });
 ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
   if (path.length > 0) {
-    console.log(path, filename)
     downloadTemplates(filename, path[0])
   }
 })
@@ -586,7 +591,6 @@ selectSaveFileOrganizationMetadataBtn.addEventListener('click', (event) => {
 })
 ipcRenderer.on('selected-saveorganizationfile', (event, path, location) => {
   if (path.length > 0){
-    console.log(location)
     if (alreadyOrganizedStatus.checked == true){
       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
     } else {
@@ -1125,6 +1129,8 @@ bfUploadDatasetList.addEventListener('change', () => {
   bfDatasetListPermission.selectedIndex = listSelectedIndex
   permissionDatasetlistChange()
   bfDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
+  datasetStatusListChange()
 })
 
 // Upload local dataset
@@ -1135,6 +1141,8 @@ bfDatasetList.addEventListener('change', () => {
   bfDatasetListPermission.selectedIndex = listSelectedIndex
   permissionDatasetlistChange()
   bfUploadDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
+  datasetStatusListChange()
 })
 
 // Add metadata to Blackfynn dataset
@@ -1145,6 +1153,8 @@ bfDatasetListMetadata.addEventListener('change', () => {
   bfUploadDatasetList.selectedIndex = listSelectedIndex
   bfDatasetList.selectedIndex = listSelectedIndex
   metadataDatasetlistChange()
+  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
+  datasetStatusListChange()
 })
 
 function metadataDatasetlistChange(){
@@ -1168,12 +1178,57 @@ bfDatasetListPermission.addEventListener('change', () => {
   bfUploadDatasetList.selectedIndex = listSelectedIndex
   bfDatasetList.selectedIndex = listSelectedIndex
   permissionDatasetlistChange()
+  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
+  datasetStatusListChange()
 })
 
 function permissionDatasetlistChange(){
   bfCurrentPermissionProgress.style.display = 'block'
   showCurrentPermission()
 }
+
+// Change dataset status
+bfDatasetListDatasetStatus.addEventListener('change', () => {
+  var listSelectedIndex = bfDatasetListDatasetStatus.selectedIndex
+  bfDatasetListMetadata.selectedIndex = listSelectedIndex
+  metadataDatasetlistChange()
+  bfUploadDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetListPermission.selectedIndex = listSelectedIndex
+  permissionDatasetlistChange()
+  datasetStatusListChange()
+})
+
+function datasetStatusListChange(){
+  bfCurrentDatasetStatusProgress.style.display = 'block'
+  showCurrentDatasetStatus()
+}
+
+// Change dataset status option change
+bfListDatasetStatus.addEventListener('change', () => {
+  bfCurrentDatasetStatusProgress.style.display = 'block'
+  datasetStatusStatus.innerHTML = 'Please wait...'
+  selectOptionColor(bfListDatasetStatus)
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListDatasetStatus.options[bfDatasetListDatasetStatus.selectedIndex].text
+  var selectedStatusOption = bfListDatasetStatus.options[bfListDatasetStatus.selectedIndex].text
+  client.invoke("api_bf_change_dataset_status", selectedBfAccount, selectedBfDataset, selectedStatusOption,
+    (error, res) => {
+    if( error) {
+      log.error(error)
+      console.error(error)
+      var emessage = userError(error)
+      function showErrorDatasetStatus(){
+        datasetStatusStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+        bfCurrentDatasetStatusProgress.style.display = 'none'
+      }
+      showCurrentDatasetStatus(showErrorDatasetStatus)
+    } else {
+      bfCurrentDatasetStatusProgress.style.display = 'none'
+      datasetStatusStatus.innerHTML = res
+    }
+  })  
+})
 
 // Add substitle //
 bfAddSubtitleBtn.addEventListener('click', () => {
@@ -1268,55 +1323,67 @@ ipcRenderer.on('selected-banner-image', (event, path) => {
     }
   })
 
+function uploadBannerImage(){
+  bfCurrentMetadataProgress.style.display = 'block'
+  datasetBannerImageStatus.innerHTML = 'Please wait...'
+  disableform(bfMetadataForm)
+  //Save cropped image locally and check size
+  var imageFolder = path.join(homeDirectory, 'SODA', 'banner-image')
+  if (!fs.existsSync(imageFolder)){
+    fs.mkdirSync(imageFolder)
+  }
+  if (imageExtension == 'png'){
+    var imageType = 'image/png'
+  } else {
+    var imageType = 'image/jpeg'
+  }
+  var imagePath = path.join(imageFolder, 'banner-image-SODA.' + imageExtension)
+  var croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType)
+  imageDataURI.outputFile(croppedImageDataURI, imagePath).then( function() {
+    if(fs.statSync(imagePath)["size"] < 5*1024*1024) {
+      var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+      var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
+      client.invoke("api_bf_add_banner_image", selectedBfAccount, selectedBfDataset, imagePath, (error, res) => {
+        if(error) {
+          log.error(error)
+          console.error(error)
+          var emessage = userError(error)
+          datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+          bfCurrentMetadataProgress.style.display = 'none'
+          enableform(bfMetadataForm)
+        } else {
+          datasetBannerImageStatus.innerHTML = res
+          showCurrentBannerImage()
+          bfCurrentMetadataProgress.style.display = 'none'
+          enableform(bfMetadataForm)
+        }
+      })
+    } else {
+      datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Final image size must be less than 5 MB" + "</span>"
+    }
+  })
+}
+
 bfSaveBannerImageBtn.addEventListener('click', (event) => {
   datasetBannerImageStatus.innerHTML = ""
   if (bfViewImportedImage.src.length > 0){
-    if (formBannerHeight.value>1023){
-      bfCurrentMetadataProgress.style.display = 'block'
-      datasetBannerImageStatus.innerHTML = 'Please wait...'
-      disableform(bfMetadataForm)
-
-      //Save cropped image locally and check size
-      var imageFolder = path.join(homeDirectory, 'SODA', 'banner-image')
-      if (!fs.existsSync(imageFolder)){
-        fs.mkdirSync(imageFolder)
+    if (formBannerHeight.value>511){
+      if (formBannerHeight.value<1024){
+        ipcRenderer.send('warning-banner-image-below-1024', formBannerHeight.value)
+      } else{
+        uploadBannerImage()
       }
-      if (imageExtension == 'png'){
-        var imageType = 'image/png'
-      } else {
-        var imageType = 'image/jpeg'
-      }
-      var imagePath = path.join(imageFolder, 'banner-image-SODA.' + imageExtension)
-      var croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType)
-      imageDataURI.outputFile(croppedImageDataURI, imagePath).then( function() {
-        if(fs.statSync(imagePath)["size"] < 5*1024*1024) {
-          var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
-          var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
-          client.invoke("api_bf_add_banner_image", selectedBfAccount, selectedBfDataset, imagePath, (error, res) => {
-            if(error) {
-              log.error(error)
-              console.error(error)
-              var emessage = userError(error)
-              datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-              bfCurrentMetadataProgress.style.display = 'none'
-              enableform(bfMetadataForm)
-            } else {
-              datasetBannerImageStatus.innerHTML = res
-              showCurrentBannerImage()
-              bfCurrentMetadataProgress.style.display = 'none'
-              enableform(bfMetadataForm)
-            }
-          })
-        } else {
-          datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Final image size must be less than 5 MB" + "</span>"
-        }
-      }
-      )
     } else {
-      datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Dimensions of cropped area must be at least 1024 px" + "</span>"
+      datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Dimensions of cropped area must be at least 512 px" + "</span>"
     }
   } else {
     datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + "Please import an image first" + "</span>"
+  }
+})
+
+ipcRenderer.on('warning-add-permission-owner-selection-PI', (event, index) => {
+  if (index === 0) {
+    uploadBannerImage()
   }
 })
 
@@ -1541,15 +1608,18 @@ function refreshAllBfDatasetLists(){
       removeOptions(bfDatasetListMetadata)
       removeOptions(bfDatasetListPermission)
       removeOptions(bfUploadDatasetList)
+      removeOptions(bfDatasetListDatasetStatus)
       var optionSelect = document.createElement("option")
       optionSelect.textContent = 'Select dataset'
       bfDatasetList.appendChild(optionSelect)
       var option2 = optionSelect.cloneNode(true)
       var option3 = optionSelect.cloneNode(true)
       var option4 = optionSelect.cloneNode(true)
+      var option5 = optionSelect.cloneNode(true)
       bfDatasetListMetadata.appendChild(option2)
       bfDatasetListPermission.appendChild(option3)
       bfUploadDatasetList.appendChild(option4)
+      bfDatasetListDatasetStatus.appendChild(option5)
     } else {
       client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
         if(error) {
@@ -1560,6 +1630,7 @@ function refreshAllBfDatasetLists(){
           removeOptions(bfDatasetListMetadata)
           removeOptions(bfDatasetListPermission)
           removeOptions(bfUploadDatasetList)
+          removeOptions(bfDatasetListDatasetStatus)
           for (myitem in res){
             var myitemselect = res[myitem]
             var option = document.createElement("option")
@@ -1569,10 +1640,11 @@ function refreshAllBfDatasetLists(){
             var option2 = option.cloneNode(true)
             var option3 = option.cloneNode(true)
             var option4 = option.cloneNode(true)
+            var option5 = option.cloneNode(true)
             bfDatasetListMetadata.appendChild(option2)
             bfDatasetListPermission.appendChild(option3)
             bfUploadDatasetList.appendChild(option4)
-
+            bfDatasetListDatasetStatus.appendChild(option5)
         }
       }
     })
@@ -1770,6 +1842,51 @@ function addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, s
       enableform(bfPermissionForm)
     }
   })
+}
+
+
+function showCurrentDatasetStatus(callback){
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListDatasetStatus.options[bfDatasetListDatasetStatus.selectedIndex].text
+  if (selectedBfDataset === 'Select dataset'){
+    bfCurrentDatasetStatusProgress.style.display = 'none'
+    datasetStatusStatus.innerHTML = ""
+    removeOptions(bfListDatasetStatus)
+    bfListDatasetStatus.style.color = 'black'
+  } else {
+    datasetStatusStatus.innerHTML = 'Please wait...'
+    client.invoke("api_bf_get_dataset_status", selectedBfAccount, selectedBfDataset,
+    (error, res) => {
+      if(error) {
+        log.error(error)
+        console.error(error)
+        var emessage = userError(error)
+        datasetStatusStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+        bfCurrentDatasetStatusProgress.style.display = 'none'
+      } else {
+        var myitemselect = []
+        removeOptions(bfListDatasetStatus)
+        for (var item in res[0]){
+          var option = document.createElement("option")
+          option.textContent = res[0][item]['displayName']
+          option.value = res[0][item]['name']
+          option.style.color = res[0][item]['color']
+          bfListDatasetStatus.appendChild(option)
+        }
+        bfListDatasetStatus.value = res[1]
+        selectOptionColor(bfListDatasetStatus)
+        bfCurrentDatasetStatusProgress.style.display = 'none'
+        datasetStatusStatus.innerHTML = ""
+        if (callback !== undefined){
+          callback()
+        }
+      }
+    })
+  }
+}
+
+function selectOptionColor(mylist){
+  mylist.style.color = mylist.options[mylist.selectedIndex].style.color
 }
 
 function showAccountDetails(bfLoadAccount){
