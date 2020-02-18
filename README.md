@@ -57,13 +57,14 @@ SODA is distributed as an easy to install software for:
 *   Linux - Coming soon
 <!-- [Click Here](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EQLHAKyyfaZJoDMYDYIwHIQB_jBZWh8mxBE5rRW-g_Oo5w?e=7wLGLI) (Developed & tested on Ubuntu Desktop 18.04) -->
 
+Latest version: 1.0.0
+
 <!--Example datasets can be downloaded from [here](https://3dtholdings-my.sharepoint.com/:f:/g/personal/bpatel_calmi2_org/Eig4sjUjchRCiUtfpeH-ydYBjvql_KYW0ZSE9_Td6bPzrQ?e=ApSOvh). -->
 Please follow the instructions given in [our documentation](https://github.com/bvhpatel/SODA/wiki/Download) if you need help with installing SODA. 
 
 #### Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed to upload datasets to Blackfynn through SODA. 
 
 The software should also work on older OS than those specified above but no testing has been done on those platforms.
-Latest version: 1.0.0
 
 
 ## Issues and feedback
