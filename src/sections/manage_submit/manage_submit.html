@@ -502,7 +502,7 @@
     <div class="demo">
       <div class="demo-wrapper">
         <button id="button-new-window-dataset-status-demo-toggle" class="js-container-target demo-toggle-button"> Change dataset status
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Annotate-dataset" >
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Change-dataset-status" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
           <div class="demo-meta u-avoid-clicks"> Modify and track the status of your dataset as it moves throught the curation process </div>
@@ -511,7 +511,10 @@
 
           <h5> Select Blackfynn dataset
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the Blackfynn dataset you want change status for (sorted alphabetically).
+              <span class="tooltiptext">
+              The status of a dataset is used to allow easy communication between SPARC investigators and the SPARC Dataset Curation Team regarding the progress of a dataset through the curation process. There are 12 status options that each SPARC Dataset will go through one by one during the submission and curation process. Each status indicates which team is responsible for the step.
+              <br><br>
+              Select the Blackfynn dataset you want change status for (sorted alphabetically).
               <br><br>
               Note: You must have "owner" or "manager" permissions on the dataset to change data. See feature "Manage dataset permissions" of SODA and the associated <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> Blackfynn Help page</a> for more information.
               </span>
@@ -530,6 +533,18 @@
           </div>
 
           <h5> View/change status
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">
+              Investigators should only have to change dataset status to one of the following options:
+                <ul>
+                  <li>"2. Work in Progress (Investigator)": Select to indicate that you are working on your dataset </li>
+                  <li> "3. Ready for Curation (Investigator)": Select to inform the SPARC Dataset Curation Team that your dataset is ready to be reviewed. You dataset will be added to the curation queue. Please note that the SPARC Dataset Curation Team will not look into your dataset until you change the status to this option. </li>
+                  <li> "11. Complete, Under Embargo (Investigator)": Select to share your dataset with the SPARC Consortium. This will give viewer permissions to the SPARC Embargoed Data Sharing Group and will therefore allow any SPARC investigator who has signed the SPARC Non-disclosure form to see your data. </li>
+                  <li> "12. Published (Investigator)": Select this option once you have published your dataset. One year after the initial upload of your dataset, you must publish your dataset to Blackfynn Discover, which populates the SPARC Portal. To do this, open the dataset of interest on the Blackfynn webpage, click on the Settings tab on the left, and select Publish Dataset. </li>
+                </ul> 
+              To find out more about dataset status, please visit the <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> docs.sparc.science </a>.
+              </span>
+            </div>
           </h5>
           <br/>
           <div class="demo-controls">
