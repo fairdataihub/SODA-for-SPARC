@@ -154,7 +154,7 @@
               <br><br>
               Subtitle, description, banner image and license are mandatory SPARC metadata.
               <br><br>
-              Note: You must have "owner" or "manager" permission on the dataset to edit metadata. See feature "Manage dataset permissions" of SODA and the associated <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> Blackfynn Help page</a> for more information.
+              Note: You must have "owner" or "manager" permissions on the dataset to edit metadata. See feature "Manage dataset permissions" of SODA and the associated <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> Blackfynn Help page</a> for more information.
               </span>
             </div>
           </h5>
@@ -351,7 +351,7 @@
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permissions (sorted alphabetically).
               <br><br>
-              Note: You must have "owner" or "manager" permission on the dataset to manage permissions. Verify below under "Current permission" after you select a dataset. See the associated <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> Blackfynn Help page</a> for more information.
+              Note: You must have "owner" or "manager" permissions on the dataset to manage permissions. Verify below under "Current permission" after you select a dataset. See the associated <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> Blackfynn Help page</a> for more information.
               </span>
             </div>
           </h5>
@@ -501,6 +501,51 @@
 
     <div class="demo">
       <div class="demo-wrapper">
+        <button id="button-new-window-dataset-status-demo-toggle" class="js-container-target demo-toggle-button"> Change dataset status
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Annotate-dataset" >
+            <img class="nav-video" src="assets/img/play-video-icon.png">
+          </a>
+          <div class="demo-meta u-avoid-clicks"> Modify and track the status of your dataset as it moves throught the curation process </div>
+        </button>
+        <div class="demo-box">
+
+          <h5> Select Blackfynn dataset
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">Select the Blackfynn dataset you want change status for (sorted alphabetically).
+              <br><br>
+              Note: You must have "owner" or "manager" permissions on the dataset to change data. See feature "Manage dataset permissions" of SODA and the associated <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> Blackfynn Help page</a> for more information.
+              </span>
+            </div>
+          </h5>
+          <br/>
+
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bfdatasetlist_dataset_status">
+              <option> Select dataset </option>
+            </select>
+          </div>
+
+          <div id=div-bf-current-dataset-status-progress class="progressdiv">
+            <div class="indeterminatebar"></div>
+          </div>
+
+          <h5> View/change status
+          </h5>
+          <br/>
+          <div class="demo-controls">
+            <select class="my_dropdown" id="bf_list_dataset_status">
+              <option>  </option>
+            </select>
+          </div>
+
+           <p id = "para-dataset-status-status"> </p>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
         <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button"> Annotate dataset
           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Annotate-dataset" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
@@ -542,7 +587,7 @@
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically).
               <br> <br>
-              Note: You must have "owner", "manager" or "editor" permission on the dataset to upload. See feature "Manage dataset permissions" of SODA and the associated <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> Blackfynn Help page</a> for more information.
+              Note: You must have "owner", "manager" or "editor" permissions on the dataset to upload. See feature "Manage dataset permissions" of SODA and the associated <a href="https://help.blackfynn.com/en/articles/2614125-dataset-permissions" style="color:white;"> Blackfynn Help page</a> for more information.
               </span>
             </div>
           </h5>
