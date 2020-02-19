@@ -49,7 +49,7 @@
 Software for Organizing Data Automatically (SODA) is a computer software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators. It is built such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.sparc.science/submit_data.html) rapidly through a single interface. Moreover, requirements have been broken down into easy to perform steps and automation has been integrated to reduces users' effort to a bare minimum during each step, often to just few clicks.
 
 <p align="center">
-   <img src="/docs/SODA-interface.PNG" alt="interface" width="400">
+   <img src="/docs/SODA-interface.PNG" alt="interface" width="600">
  </p> 
 
 ## Downloading SODA
@@ -74,6 +74,10 @@ The software should also work on older OS than those specified above but no test
 ## Issues and feedback
 For reporting any problems/bugs with the software, please open a new issue on the [Issues tab](https://github.com/bvhpatel/SODA/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could also use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea). The feedback form is also accessible directly from SODA.
 
+<p align="center">
+   <img src="/docs/SODA-feedback-form.PNG" alt="interface" width="600">
+ </p> 
+ 
 The sections below here are only necessary to read if you plan on using the source code of SODA. If you are here just for the software, get out of here and enjoy SODA!
 
 ## Using the Source Code
