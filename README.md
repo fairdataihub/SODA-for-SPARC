@@ -34,6 +34,7 @@
 
 * [About](#about)
 * [Downloading SODA](#Downloading-soda)
+* [Using SODA](#Using-SODA)
 * [Issues and feedback](#Issues-and-feedback)
 * [Using the Source Code](#Using-the-Source-Code)
 * [Packaging](#Packaging)
@@ -42,15 +43,14 @@
 * [Acknowledgements](#acknowledgements)
 
 
-
 <!-- ABOUT -->
 ## About
 
 Software for Organizing Data Automatically (SODA) is a computer software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators. It is built such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.sparc.science/submit_data.html) rapidly through a single interface. Moreover, requirements have been broken down into easy to perform steps and automation has been integrated to reduces users' effort to a bare minimum during each step, often to just few clicks.
 
 <p align="center">
-   <img src="/docs/SODA-interface.PNG" alt="interface" width="600">
- </p> 
+  <img src="/docs/SODA-interface.PNG" alt="interface" width="600">
+</p> 
 
 ## Downloading SODA
 SODA is distributed as an easy to install software for:
@@ -63,9 +63,13 @@ SODA is distributed as an easy to install software for:
 
 Latest version: 1.0.0
 
-<!--Example datasets can be downloaded from [here](https://3dtholdings-my.sharepoint.com/:f:/g/personal/bpatel_calmi2_org/Eig4sjUjchRCiUtfpeH-ydYBjvql_KYW0ZSE9_Td6bPzrQ?e=ApSOvh). -->
-Please follow the instructions given in [our documentation](https://github.com/bvhpatel/SODA/wiki/Download) if you need help with installing SODA. 
+#### Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed to upload datasets to Blackfynn through SODA.
 
+<!--Example datasets can be downloaded from [here](https://3dtholdings-my.sharepoint.com/:f:/g/personal/bpatel_calmi2_org/Eig4sjUjchRCiUtfpeH-ydYBjvql_KYW0ZSE9_Td6bPzrQ?e=ApSOvh). -->
+Please follow the instructions given in [our documentation](https://github.com/bvhpatel/SODA/wiki/Download) if you need help with installing/uninstalling SODA. The software should also work on older OS versions than those specified above but no testing has been done on those platforms.
+
+
+## Using SODA
 Click on the image below and watch our video to familiarize yourself quickly with the user interface of SODA:
 
 <p align="center">
@@ -74,10 +78,15 @@ Click on the image below and watch our video to familiarize yourself quickly wit
 </a>
 </p>
 
-#### Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed to upload datasets to Blackfynn through SODA. 
+You can click on the image below and follow our tutorial video to learn how to easily organize and submit your SPARC dataset with SODA in 8 steps:
 
-The software should also work on older OS versions than those specified above but no testing has been done on those platforms.
+<p align="center">
+<a href="https://www.youtube.com/watch?v=CKI6KMI4fPQ" target="_blank">
+<img src="https://img.youtube.com/vi/CKI6KMI4fPQ/0.jpg" />
+</a>
+</p>
 
+Although we would highly encourage you to use SODA for the entire organization and submission process of your dataset, SODA is designed such that you are not bound to using the software for all of the steps: you can perform desired steps from SODA and others outside. 
 
 ## Issues and feedback
 For reporting any problems/bugs with the software, please open a new issue on the [Issues tab](https://github.com/bvhpatel/SODA/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could also use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea). The feedback form is also accessible directly from SODA.
@@ -86,13 +95,8 @@ For reporting any problems/bugs with the software, please open a new issue on th
    <img src="/docs/SODA-feedback-form.PNG" alt="interface" width="600">
  </p> 
  
-The sections below here are only necessary to read if you plan on using the source code of SODA. If you are here just for the software, get out of here and enjoy SODA! You can click on the image below and follow our tutorial video to learn how to easily organize and submit your SPARC dataset with SODA in 8 steps:
+The sections below here are only necessary to read if you plan on using the source code of SODA. If you are here just for the software, get out of here and enjoy SODA! 
 
-<p align="center">
-<a href="https://www.youtube.com/watch?v=CKI6KMI4fPQ" target="_blank">
-<img src="https://img.youtube.com/vi/CKI6KMI4fPQ/0.jpg" />
-</a>
-</p>
 
 ## Using the Source Code
 The front-end (Graphical User Interface or GUI) of SODA is built with [Electron](https://electronjs.org/), an open-source framework developed and maintained by GitHub that conveniently combines Node.js, HTML, CSS, and Javascript, while the back-end is developed in Python (v3.6). The application is inspired by a [GitHub repository](https://github.com/fyears/electron-python-example) and a [Medium blog](https://medium.com/@abulka/electron-python-4e8c807bfa5e). All source codes and files are shared with an open source license ([MIT](LICENSE)) to permit user modification without restrictions. Folder structure for the source code is based on the Electron standards and similar to the [Electron Demo Application](https://github.com/electron/electron-api-demos).
