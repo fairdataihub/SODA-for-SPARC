@@ -100,13 +100,10 @@ For reporting any issues with the software, suggesting improvements, or requesti
   <i> A screenshot of our feeback form in the user interface of SODA. </i>
   </img>
  </p> 
- 
-The sections below here are only necessary to read if you plan on using the source code of SODA. If you are here just for the software, get out of here and enjoy SODA! 
-
 
 ## Using the Source Code
 
-If you want to modify SODA to suit your needs better or compile it for an OS not mentioned above, please follow the instructions provided in the [developer guidelines](https://github.com/bvhpatel/SODA/wiki/Using-the-Source-Code) of our documentation. 
+If you want to modify SODA to suit your needs better or compile it for an operating system not mentioned above, please follow the instructions provided in the [developer guidelines](https://github.com/bvhpatel/SODA/wiki/Using-the-Source-Code) of our documentation. 
 
 ## License
 Distributed under the MIT License. See [LICENSE](https://github.com/bvhpatel/SODA/blob/master/LICENSE) for more information.
