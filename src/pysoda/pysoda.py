@@ -830,7 +830,7 @@ def bf_add_account(keyname, key, secret):
         if not config.has_section(agentkey):
             config.add_section(agentkey)
             config.set(agentkey, 'proxy_local_port', '8080')
-            config.set(agentkey, 'cache_base_path', join(bfpath, 'cache'))
+            # config.set(agentkey, 'cache_base_path', join(bfpath, 'cache'))
             config.set(agentkey, 'uploader', 'true')
             config.set(agentkey, 'cache_hard_cache_size', '10000000000')
             config.set(agentkey, 'status_port', '11235')
