@@ -66,9 +66,17 @@ Latest version: 1.0.0
 <!--Example datasets can be downloaded from [here](https://3dtholdings-my.sharepoint.com/:f:/g/personal/bpatel_calmi2_org/Eig4sjUjchRCiUtfpeH-ydYBjvql_KYW0ZSE9_Td6bPzrQ?e=ApSOvh). -->
 Please follow the instructions given in [our documentation](https://github.com/bvhpatel/SODA/wiki/Download) if you need help with installing SODA. 
 
+Click on the image below and watch our video to familiarize yourself quickly with the user interface of SODA:
+
+<p align="center">
+<a href="https://www.youtube.com/watch?v=CKI6KMI4fPQ" target="_blank">
+<img src="https://img.youtube.com/vi/CKI6KMI4fPQ/0.jpg" />
+</a>
+</p>
+
 #### Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed to upload datasets to Blackfynn through SODA. 
 
-The software should also work on older OS than those specified above but no testing has been done on those platforms.
+The software should also work on older OS versions than those specified above but no testing has been done on those platforms.
 
 
 ## Issues and feedback
@@ -78,7 +86,13 @@ For reporting any problems/bugs with the software, please open a new issue on th
    <img src="/docs/SODA-feedback-form.PNG" alt="interface" width="600">
  </p> 
  
-The sections below here are only necessary to read if you plan on using the source code of SODA. If you are here just for the software, get out of here and enjoy SODA!
+The sections below here are only necessary to read if you plan on using the source code of SODA. If you are here just for the software, get out of here and enjoy SODA! You can click on the image below and follow our tutorial video to learn how to easily organize and submit your SPARC dataset with SODA in 8 steps:
+
+<p align="center">
+<a href="https://www.youtube.com/watch?v=CKI6KMI4fPQ" target="_blank">
+<img src="https://img.youtube.com/vi/CKI6KMI4fPQ/0.jpg" />
+</a>
+</p>
 
 ## Using the Source Code
 The front-end (Graphical User Interface or GUI) of SODA is built with [Electron](https://electronjs.org/), an open-source framework developed and maintained by GitHub that conveniently combines Node.js, HTML, CSS, and Javascript, while the back-end is developed in Python (v3.6). The application is inspired by a [GitHub repository](https://github.com/fyears/electron-python-example) and a [Medium blog](https://medium.com/@abulka/electron-python-4e8c807bfa5e). All source codes and files are shared with an open source license ([MIT](LICENSE)) to permit user modification without restrictions. Folder structure for the source code is based on the Electron standards and similar to the [Electron Demo Application](https://github.com/electron/electron-api-demos).
