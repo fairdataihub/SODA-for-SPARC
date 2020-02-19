@@ -149,7 +149,7 @@ $ npm start
 *   Run: `python -m PyInstaller pysoda/api.py --distpath pysodadist`
 
 Optional
-*   Edit spec file as needed (e.g. exclude PyQt5, tkinter)
+*   Edit spec file as needed (e.g. exclude PyQt5, tkinter). Especially, adding the following may be required on Windows: `hiddenimports=['pkg_resources.py2_warn']`
 *   To generate exe, Run: `python -m PyInstaller --noconsole api.spec`
 *   for electron packaging, build and pysoda folder (with the .py files) could be deleted or ignored
 
