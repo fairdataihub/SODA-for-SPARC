@@ -56,7 +56,7 @@ Software for Organizing Data Automatically (SODA) is a computer software intende
 </p>
 
 ## Downloading SODA
-SODA is distributed as an easy to install software for:
+SODA is distributed as an easy to install software. Use the links below to download the version suitable for your operating system:
 *   Windows (developed and tested on Windows 10) - Coming soon
 <!--[Click Here](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EaurG6qE7bBBhuF1HWWqfVkB9xJ3x0rfeSGJ9f63WtdoJA?e=Uo2rnk) (Developed & tested on Windows 10) -->
 *   Mac  (developed and tested on Mojave 10.14) - Coming soon
@@ -69,7 +69,7 @@ Latest version: 1.0.0
 #### Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed to upload datasets to Blackfynn through SODA.
 
 <!--Example datasets can be downloaded from [here](https://3dtholdings-my.sharepoint.com/:f:/g/personal/bpatel_calmi2_org/Eig4sjUjchRCiUtfpeH-ydYBjvql_KYW0ZSE9_Td6bPzrQ?e=ApSOvh). -->
-Please follow the instructions given in [our documentation](https://github.com/bvhpatel/SODA/wiki/Download) if you need help with installing/uninstalling SODA. The software should also work on older OS versions than those specified above but no testing has been done on those platforms.
+Please follow the instructions given in [our documentation](https://github.com/bvhpatel/SODA/wiki/Download) if you need help with installing/uninstalling SODA. The software may work on older operating system versions than those specified above but no testing has been done on those platforms.
 
 
 ## Using SODA
