@@ -1,6 +1,6 @@
 ---
 name: Report issue
-about: Create a report to help us improve
+about: Let us know of any issue you encounter while using SODA
 title: ''
 labels: ''
 assignees: ''
