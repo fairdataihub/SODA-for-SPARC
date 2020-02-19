@@ -216,7 +216,12 @@ Distributed under the MIT License. See [LICENSE](https://github.com/bvhpatel/SOD
 * [NIH SPARC Initiative](https://commonfund.nih.gov/sparc)
 * [Blackfynn Team](https://www.blackfynn.com/)
 * [SPARC Dataset Curation Team](https://github.com/SciCrunch/sparc-curation)
-* Our beta testers
+* Our beta testers, including:
+  * Natalia Biscola (Icahn School of Medicine at Mount Sinai)
+  * Scott John (UCLA)
+  * Muriel Larauche (Vatche and Tamar Manoukian Division of Digestive Diseases, Department of Medicine, UCLA)
+  * Kun-Han Lu (Weldon School of Biomedical Engineering, Purdue University)
+  * Alison Moss (Thomas Jefferson University)
 
 
 
