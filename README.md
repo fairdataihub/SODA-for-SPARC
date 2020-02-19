@@ -49,8 +49,11 @@
 Software for Organizing Data Automatically (SODA) is a computer software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators and thus promote the [FAIR Data Principles](https://www.go-fair.org/fair-principles/). It is built such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.sparc.science/submit_data.html) rapidly through a single interface. Moreover, requirements have been broken down into easy to perform steps and automation has been integrated to reduces users' effort to a bare minimum during each step, often to just few clicks.
 
 <p align="center">
-  <img src="/docs/SODA-interface.PNG" alt="interface" width="600">
-</p> 
+  <img src="/docs/SODA-interface.PNG" alt="interface" width="600"> 
+  <br/> 
+  <i> A screenshot of the user interface of SODA. </i>
+  </img>
+</p>
 
 ## Downloading SODA
 SODA is distributed as an easy to install software for:
@@ -89,10 +92,13 @@ You can click on the image below and follow our tutorial video to learn how to e
 Although we would highly encourage you to use SODA for the entire organization and submission process of your dataset, SODA is designed such that you are not bound to using the software for all of the steps: you can perform desired steps from SODA and others outside. 
 
 ## Issues and feedback
-For reporting any issues with the software, suggesting improvements, or requesting a new feature, please open a new issue via the [Issues tab](https://github.com/bvhpatel/SODA/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could also use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea). The feedback form is also accessible directly from the user interface in SODA.
+For reporting any issues with the software, suggesting improvements, or requesting a new feature, please open a new issue via the [Issues tab](https://github.com/bvhpatel/SODA/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could also use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea). The feedback form is also accessible directly in the user interface in SODA.
 
 <p align="center">
    <img src="/docs/SODA-feedback-form.PNG" alt="interface" width="600">
+  <br/> 
+  <i> A screenshot of our feeback form in the user interface of SODA. </i>
+  </img>
  </p> 
  
 The sections below here are only necessary to read if you plan on using the source code of SODA. If you are here just for the software, get out of here and enjoy SODA! 
