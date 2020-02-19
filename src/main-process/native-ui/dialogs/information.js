@@ -125,3 +125,14 @@ ipcMain.on('warning-banner-image-below-1024', (event, currentSize) => {
     event.sender.send('warning-add-permission-owner-selection-PI', index)
   })
 })
+
+ipcMain.on('open-info-upload-limitations', (event) => {
+  const options = {
+    type: 'info',
+    title: 'Potential upload issues',
+    message: 'We have encountered issues with the Blackfynn agent to upload certain datasets and are working with the Blackfynn Team to solve them. If you encounter any issues, please report to us using our feedback form (provide information such as operating system, dataset size, screenshot of error, etc.) and it will help us greatly in fixing the issues.'
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('info-upload-limitations-shown')
+  })
+})

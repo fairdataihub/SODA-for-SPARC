@@ -815,6 +815,7 @@ curateDatasetBtn.addEventListener('click', () => {
     destinationDataset = 'upload to blackfynn'
     pathDatasetValue = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
     newDatasetNameVar = bfUploadDatasetList.options[bfUploadDatasetList.selectedIndex].text
+    ipcRenderer.send('open-info-upload-limitations')
   }
 
   // Initiate curation by calling Python funtion
@@ -1052,6 +1053,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-progress-bar-status").innerHTML = "Preparing files ..."
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text
+  ipcRenderer.send('open-info-upload-limitations')
   client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathSubmitDataset.value, (error, res) => {
     if (error) {
       document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
