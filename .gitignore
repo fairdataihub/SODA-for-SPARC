@@ -6,3 +6,6 @@ node_modules
 
 *.pyc
 src/package-lock.json
+src/.DS_Store
+api.spec
+.DS_Store
