@@ -37,8 +37,6 @@
 * [Using SODA](#Using-SODA)
 * [Issues and feedback](#Issues-and-feedback)
 * [Using the Source Code](#Using-the-Source-Code)
-* [Packaging](#Packaging)
-* [Distributing](#Distributing)
 * [License](#license)
 * [Acknowledgements](#acknowledgements)
 
