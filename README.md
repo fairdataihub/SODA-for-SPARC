@@ -81,7 +81,7 @@ Click on the image below and watch our video to familiarize yourself quickly wit
 </a>
 </p>
 
-You can click on the image below and follow our tutorial video to learn how to easily organize and submit your SPARC dataset with SODA in 8 steps:
+We also suggest watching our tutorial video to learn how to easily organize and submit your SPARC dataset with SODA in 8 steps:
 
 <p align="center">
 <a href="https://www.youtube.com/watch?v=CKI6KMI4fPQ" target="_blank">
