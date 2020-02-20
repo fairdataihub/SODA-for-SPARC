@@ -106,7 +106,7 @@ For reporting any issues with the software, suggesting improvements, or requesti
 If you want to modify SODA to suit your needs better or compile it for an operating system not mentioned above, please follow the instructions provided in the [developer guidelines](https://github.com/bvhpatel/SODA/wiki/Using-the-Source-Code) of our documentation. 
 
 ## License
-Distributed under the MIT License. See [LICENSE](https://github.com/bvhpatel/SODA/blob/master/LICENSE) for more information.
+SODA is distributed under the MIT License. See [LICENSE](https://github.com/bvhpatel/SODA/blob/master/LICENSE) for more information.
 
 ## Acknowledgements
 * [NIH SPARC Initiative](https://commonfund.nih.gov/sparc)
