@@ -46,7 +46,7 @@
 <!-- ABOUT -->
 ## About
 
-Software for Organizing Data Automatically (SODA) is a computer software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators and thus promote the [FAIR Data Principles](https://www.go-fair.org/fair-principles/). It is built such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.sparc.science/submit_data.html) rapidly through a single interface. Moreover, requirements have been broken down into easy to perform steps and automation has been integrated to reduces users' effort to a bare minimum during each step, often to just a few clicks.
+Software for Organizing Data Automatically (SODA) is a computer software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators and thus promote the [FAIR Data Principles](https://www.go-fair.org/fair-principles/). It is built such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.sparc.science/submit_data.html) rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduces users' effort to a bare minimum during each step, often to just a few clicks.
 
 <p align="center">
   <img src="/docs/SODA-interface.PNG" alt="interface" width="600"> 
@@ -56,7 +56,7 @@ Software for Organizing Data Automatically (SODA) is a computer software intende
 </p>
 
 ## Downloading SODA
-SODA is distributed as an easy to install software. Use the links below to download the version suitable for your operating system:
+SODA is distributed as an easy-to-install software. Use the links below to download the version suitable for your operating system:
 *   Windows (developed and tested on Windows 10) - Coming soon
 <!--[Click Here](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EaurG6qE7bBBhuF1HWWqfVkB9xJ3x0rfeSGJ9f63WtdoJA?e=Uo2rnk) (Developed & tested on Windows 10) -->
 *   Mac  (developed and tested on Mojave 10.14) - Coming soon
@@ -73,7 +73,7 @@ Please follow the instructions given in [our documentation](https://github.com/b
 
 
 ## Using SODA
-Click on the image below and watch our video to familiarize yourself quickly with the user interface of SODA:
+Click on the image below and watch our video to quickly familiarize yourself with the user interface of SODA:
 
 <p align="center">
 <a href="https://www.youtube.com/watch?v=CKI6KMI4fPQ" target="_blank">
@@ -92,7 +92,7 @@ We also suggest watching our tutorial video to learn how to easily organize and 
 Although we would highly encourage you to use SODA for the entire organization and submission process of your dataset, SODA is designed such that you are not bound to using the software for all of the steps: you can perform desired steps from SODA and others outside. 
 
 ## Issues and feedback
-For reporting any issues with the software, suggesting improvements, or requesting a new feature, please open a new issue via the [Issues tab](https://github.com/bvhpatel/SODA/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could also use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea). The feedback form is also accessible directly in the user interface of SODA.
+To report any issues with the software, suggest improvements, or request a new feature, please open a new issue via the [Issues tab](https://github.com/bvhpatel/SODA/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could also use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea). The feedback form is also accessible directly in the user interface of SODA.
 
 <p align="center">
    <img src="/docs/SODA-feedback-form.PNG" alt="interface" width="600">
@@ -103,7 +103,7 @@ For reporting any issues with the software, suggesting improvements, or requesti
 
 ## Using the Source Code
 
-If you want to modify SODA to suit your needs better or compile it for an operating system not mentioned above, please follow the instructions provided in the [developer guidelines](https://github.com/bvhpatel/SODA/wiki/Using-the-Source-Code) of our documentation. 
+If you want to modify SODA to better suit your needs or compile it for an operating system not mentioned above, please follow the instructions provided in the [developer guidelines](https://github.com/bvhpatel/SODA/wiki/Using-the-Source-Code) of our documentation. 
 
 ## License
 SODA is distributed under the MIT License. See [LICENSE](https://github.com/bvhpatel/SODA/blob/master/LICENSE) for more information.
