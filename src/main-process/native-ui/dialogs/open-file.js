@@ -246,7 +246,7 @@ ipcMain.on('open-file-dialog-import-banner-image', (event) => {
   dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openFile'],
     filters: [
-    { name: 'Image', extensions: ['jpg', 'png'] },
+    { name: 'Image', extensions: ['jpg', 'png', 'jpeg'] },
   ]
   }, (files) => {
     if (files) {
