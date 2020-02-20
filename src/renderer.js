@@ -679,7 +679,7 @@ selectPreviewBtn.addEventListener('click', () => {
       var folder = keyvect[j]
       var folderPaths = jsonpath[folder]
       if (folderPaths.length>0){
-        folderPaths.push(path.join("file_templates","manifest.xlsx"))
+        folderPaths.push(path.join(__dirname, "file_templates","manifest.xlsx"))
       }
     }
   }
@@ -720,7 +720,7 @@ selectPreviewMetadataBtn.addEventListener('click', () => {
       var folder = keyvect[j]
       var folderPaths = jsonpath[folder]
       if (folderPaths.length>0){
-        folderPaths.push(path.join("file_templates","manifest.xlsx"))
+        folderPaths.push(path.join(__dirname, "file_templates","manifest.xlsx"))
       }
     }
   }
