@@ -76,16 +76,16 @@ Please follow the instructions given in [our documentation](https://github.com/b
 Click on the image below and watch our video to quickly familiarize yourself with the user interface of SODA:
 
 <p align="center">
-<a href="https://www.youtube.com/watch?v=CKI6KMI4fPQ" target="_blank">
-<img src="https://img.youtube.com/vi/CKI6KMI4fPQ/0.jpg" />
+<a href="https://www.youtube.com/watch?v=zpR37m8hjm4" target="_blank">
+<img src="https://img.youtube.com/vi/zpR37m8hjm4/0.jpg" />
 </a>
 </p>
 
 We also suggest watching our tutorial video to learn how to easily organize and submit your SPARC dataset with SODA in 8 steps:
 
 <p align="center">
-<a href="https://www.youtube.com/watch?v=CKI6KMI4fPQ" target="_blank">
-<img src="https://img.youtube.com/vi/CKI6KMI4fPQ/0.jpg" />
+<a href="https://www.youtube.com/watch?v=qy2oDGfejEs" target="_blank">
+<img src="https://img.youtube.com/vi/qy2oDGfejEs/0.jpg" />
 </a>
 </p>
 
