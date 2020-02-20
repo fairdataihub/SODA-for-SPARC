@@ -97,7 +97,7 @@ To report any issues with the software, suggest improvements, or request a new f
 <p align="center">
    <img src="/docs/SODA-feedback-form.PNG" alt="interface" width="600">
   <br/> 
-  <i> A screenshot of our feeback form in the user interface of SODA. </i>
+  <i> A screenshot of our feedback form in the user interface of SODA. </i>
   </img>
  </p> 
 
