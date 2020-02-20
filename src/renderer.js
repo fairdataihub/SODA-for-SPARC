@@ -1336,7 +1336,7 @@ function uploadBannerImage(){
   //Save cropped image locally and check size
   var imageFolder = path.join(homeDirectory, 'SODA', 'banner-image')
   if (!fs.existsSync(imageFolder)){
-    fs.mkdirSync(imageFolder)
+    fs.mkdirSync(imageFolder, {recursive: true})
   }
   if (imageExtension == 'png'){
     var imageType = 'image/png'
