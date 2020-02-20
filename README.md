@@ -77,7 +77,7 @@ Click on the image below and watch our video to quickly familiarize yourself wit
 
 <p align="center">
 <a href="https://www.youtube.com/watch?v=zpR37m8hjm4" target="_blank">
-<img src="https://img.youtube.com/vi/zpR37m8hjm4/2.jpg" />
+<img src="https://img.youtube.com/vi/zpR37m8hjm4/0.jpg" />
 </a>
 </p>
 
