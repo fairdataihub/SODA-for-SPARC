@@ -725,28 +725,35 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         try:
             agent_running()
             def calluploaddirectly():
-                global curateprogress
-                global curatestatus
 
-                myds = bf.get_dataset(bfdataset)
+                try:
+                    global curateprogress
+                    global curatestatus
 
-                for folder in jsonpath.keys():
-                    if jsonpath[folder] != []:
-                        if folder != 'main':
-                            mybffolder = myds.create_collection(folder)
-                        else:
-                            mybffolder = myds
-                        for mypath in jsonpath[folder]:
-                            if isdir(mypath):
-                                curateprogress = "Uploading folder '%s' to dataset '%s' " %(mypath, bfdataset)
-                                mybffolder.upload(mypath, recursive=True, use_agent=True)
+                    myds = bf.get_dataset(bfdataset)
+
+                    for folder in jsonpath.keys():
+                        if jsonpath[folder] != []:
+                            if folder != 'main':
+                                mybffolder = myds.create_collection(folder)
                             else:
-                                curateprogress = "Uploading file '%s' to dataset '%s' " %(mypath, bfdataset)
-                                mybffolder.upload(mypath, use_agent=True)
+                                mybffolder = myds
+                            for mypath in jsonpath[folder]:
+                                if isdir(mypath):
+                                    curateprogress = "Uploading folder '%s' to dataset '%s' " %(mypath, bfdataset)
+                                    mybffolder.upload(mypath, recursive=True, use_agent=True)
+                                else:
+                                    curateprogress = "Uploading file '%s' to dataset '%s' " %(mypath, bfdataset)
+                                    mybffolder.upload(mypath, use_agent=True)
 
-                curateprogress = 'Success: COMPLETED!'
-                curatestatus = 'Done'
-                shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
+                    curateprogress = 'Success: COMPLETED!'
+                    curatestatus = 'Done'
+                    shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
+
+                except Exception as e:
+                    shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
+                    raise e
+
 
             curateprintstatus = 'Curating'
             start_time = time.time()
@@ -756,6 +763,12 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             gev.append(gevent.spawn(calluploaddirectly))
             gevent.sleep(0)
             gevent.joinall(gev) #wait for gevent to finish before exiting the function
+            curatestatus = 'Done'
+            
+            try:
+                return gev[0].get()
+            except Exception as e:
+                raise e
 
         except Exception as e:
             curatestatus = 'Done'
@@ -1163,21 +1176,27 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     try:
         agent_running()
         def calluploadfolder():
-            global submitdataprogress
-            global submitdatastatus
 
-            myds = bf.get_dataset(bfdataset)
+            try: 
 
-            for filename in listdir(pathdataset):
-                filepath = join(pathdataset, filename)
-                if isdir(filepath):
-                    submitdataprogress = "Uploading folder '%s' to dataset '%s \n' " %(filepath, bfdataset)
-                    myds.upload(filepath, recursive=True, use_agent=True)
-                else:
-                    submitdataprogress = "Uploading file '%s' to dataset '%s \n' " %(filepath, bfdataset)
-                    myds.upload(filepath, use_agent=True)
-            submitdataprogress = 'Success: COMPLETED!'
-            submitdatastatus = 'Done'
+                global submitdataprogress
+                global submitdatastatus
+
+                myds = bf.get_dataset(bfdataset)
+
+                for filename in listdir(pathdataset):
+                    filepath = join(pathdataset, filename)
+                    if isdir(filepath):
+                        submitdataprogress = "Uploading folder '%s' to dataset '%s \n' " %(filepath, bfdataset)
+                        myds.upload(filepath, recursive=True, use_agent=True)
+                    else:
+                        submitdataprogress = "Uploading file '%s' to dataset '%s \n' " %(filepath, bfdataset)
+                        myds.upload(filepath, use_agent=True)
+                submitdataprogress = 'Success: COMPLETED!'
+                submitdatastatus = 'Done'
+
+            except Exception as e:
+                raise e
 
         submitprintstatus = 'Uploading'
         start_time_bf_upload = time.time()
@@ -1187,6 +1206,12 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         gev.append(gevent.spawn(calluploadfolder))
         gevent.sleep(0)
         gevent.joinall(gev)
+        submitdatastatus = 'Done'
+
+        try:
+            return gev[0].get()
+        except Exception as e:
+            raise e
 
     except Exception as e:
         submitdatastatus = 'Done'

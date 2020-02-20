@@ -891,8 +891,8 @@ curateDatasetBtn.addEventListener('click', () => {
     if (curatestatus === 'Done'){
       countDone++
       if (countDone > 1){
-        log.info('Done curating')
-        console.log('Done curating')
+        log.info('Done curate track')
+        console.log('Done curate track')
         document.getElementById("para-please-wait-curate").innerHTML = "";
         clearInterval(timerProgress)
         curateDatasetBtn.disabled = false
@@ -1070,6 +1070,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       // document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
       log.info('Completed submit function')
       console.log('Completed submit function')
+      console.log(res)
     }
   })
 
@@ -1114,8 +1115,8 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
     if (completionStatus === 'Done'){
       countDone++
       if (countDone > 1){
-        log.info('Done uploading')
-        console.log('Done uploading')
+        log.info('Done submit track')
+        console.log('Done submit track')
         document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
         clearInterval(timerProgress)
         bfSubmitDatasetBtn.disabled = false       
