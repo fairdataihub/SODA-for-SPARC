@@ -112,6 +112,7 @@ SODA is distributed under the MIT License. See [LICENSE](https://github.com/bvhp
 * [SPARC Dataset Curation Team](https://github.com/SciCrunch/sparc-curation)
 * Our beta testers, including:
   * Natalia Biscola (Icahn School of Medicine at Mount Sinai)
+  * John Dawson (UC Davis)
   * Scott John (UCLA)
   * Muriel Larauche (Vatche and Tamar Manoukian Division of Digestive Diseases, Department of Medicine, UCLA)
   * [Kun-Han Lu](https://scholar.google.com/citations?user=lo1TkqwAAAAJ&hl=en&oi=ao) (Weldon School of Biomedical Engineering, Purdue University)
