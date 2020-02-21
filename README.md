@@ -59,7 +59,7 @@ SODA is distributed as an easy-to-install software. Use the links below to downl
 <!--[Click Here](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EaurG6qE7bBBhuF1HWWqfVkB9xJ3x0rfeSGJ9f63WtdoJA?e=Uo2rnk) (Developed & tested on Windows 10) -->
 *   Mac  (developed and tested on Mojave 10.14) - Coming soon
 <!-- [Click Here](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EeJQbemo2MtDmEJumGbu7moByRrcw3xyC-A5-pD2EdjVRw?e=Gcd3lX) (Developed & tested on Mac OS High Sierra and Mojave) -->
-*   Linux (developed and tested on Ubuntu 18.04.2 LTS) - Coming soon
+*   Linux (developed and tested on Ubuntu 18.04.2 LTS) -  [Click here](https://github.com/bvhpatel/SODA/releases/download/1.0.0-Ubuntu/SODA-v1.0.0-Ubuntu.zip)
 <!-- [Click Here](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EQLHAKyyfaZJoDMYDYIwHIQB_jBZWh8mxBE5rRW-g_Oo5w?e=7wLGLI) (Developed & tested on Ubuntu Desktop 18.04) -->
 
 Latest version: 1.0.0
