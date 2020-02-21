@@ -44,7 +44,7 @@
 <!-- ABOUT -->
 ## About
 
-Software for Organizing Data Automatically (SODA) is a computer software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators and thus promote the [FAIR Data Principles](https://www.go-fair.org/fair-principles/). It is built such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.sparc.science/submit_data.html) rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduces users' effort to a bare minimum during each step, often to just a few clicks.
+Software for Organizing Data Automatically (SODA) is a computer software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators and thus promote the [FAIR Data Principles](https://www.go-fair.org/fair-principles/). It is designed such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.sparc.science/submit_data.html) rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduce users' effort to a bare minimum during each step, often to just a few clicks.
 
 <p align="center">
   <img src="/docs/SODA-interface.PNG" alt="interface" width="600"> 
