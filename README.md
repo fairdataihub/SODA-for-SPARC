@@ -67,7 +67,7 @@ Latest version: 1.0.0
 #### Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed to upload datasets to Blackfynn through SODA.
 
 <!--Example datasets can be downloaded from [here](https://3dtholdings-my.sharepoint.com/:f:/g/personal/bpatel_calmi2_org/Eig4sjUjchRCiUtfpeH-ydYBjvql_KYW0ZSE9_Td6bPzrQ?e=ApSOvh). -->
-Please follow the instructions given in [our documentation](https://github.com/bvhpatel/SODA/wiki/Download) if you need help with installing/uninstalling SODA. The software may work on older operating system versions than those specified above but no testing has been done on those platforms.
+Please follow the instructions given in [our documentation](https://github.com/bvhpatel/SODA/wiki/Download) if you need help with installing/uninstalling SODA. The software may work on older operating system versions than those specified above but no testing has been done on those platforms. All our releases are accessible in the [releases tab](https://github.com/bvhpatel/SODA/releases).
 
 
 ## Using SODA
