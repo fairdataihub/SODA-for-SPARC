@@ -1388,6 +1388,12 @@ bfSaveBannerImageBtn.addEventListener('click', (event) => {
   }
 })
 
+ipcRenderer.on('show-banner-image-below-1024', (event, index) => {
+  if (index === 0) {
+    uploadBannerImage()
+  }
+})
+
 // Add license //
 bfAddLicenseBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'

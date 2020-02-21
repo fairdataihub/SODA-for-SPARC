@@ -122,7 +122,7 @@ ipcMain.on('warning-banner-image-below-1024', (event, currentSize) => {
     buttons: ['Yes', 'No']
   }
   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
-    event.sender.send('warning-add-permission-owner-selection-PI', index)
+    event.sender.send('show-banner-image-below-1024', index)
   })
 })
 
