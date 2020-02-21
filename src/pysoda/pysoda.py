@@ -1418,7 +1418,7 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
         selected_bfaccount: name of selected Blackfynn acccount (string)
         selected_bfdataset: name of selected Blackfynn dataset (string)
         selected_user: name (first name -- last name) of selected Blackfynn user (string)
-        selected_role: desired role ('manager', 'viewer', 'editor', 'remove current permission') (string)
+        selected_role: desired role ('manager', 'viewer', 'editor', 'remove current permissions') (string)
     Return:
         success or error message (string)
     """
@@ -1452,7 +1452,7 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
     except Exception as e:
         raise e
 
-    if selected_role not in ['manager', 'viewer', 'editor', 'owner', 'remove current permission']:
+    if selected_role not in ['manager', 'viewer', 'editor', 'owner', 'remove current permissions']:
         error = error + 'Error: Please select a valid role' + '<br>'
         c += 1
 
@@ -1488,7 +1488,7 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
             if (c == 0):
                 raise Exception('Error: you must be dataset owner or manager to change its permissions')
 
-            if (selected_role == 'remove current permission'):
+            if (selected_role == 'remove current permissions'):
 
                 bf._api.datasets._del('/' + str(selected_dataset_id) + '/collaborators/users'.format(dataset_id = selected_dataset_id),
                               json={'id': selected_user_id})
@@ -1517,7 +1517,7 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
         selected_bfaccount: name of selected Blackfynn acccount (string)
         selected_bfdataset: name of selected Blackfynn dataset (string)
         selected_team: name of selected Blackfynn team (string)
-        selected_role: desired role ('manager', 'viewer', 'editor', 'remove current permission') (string)
+        selected_role: desired role ('manager', 'viewer', 'editor', 'remove current permissions') (string)
     Return:
         success or error message (string)
     """
@@ -1560,7 +1560,7 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
     except Exception as e:
         raise e
 
-    if selected_role not in ['manager', 'viewer', 'editor', 'remove current permission']:
+    if selected_role not in ['manager', 'viewer', 'editor', 'remove current permissions']:
         error = error + 'Error: Please select a valid role' + '<br>'
         c += 1
 
@@ -1590,7 +1590,7 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
         if (c == 0):
             raise Exception('Error: you must be dataset owner or manager to change its permissions')
 
-        if (selected_role == 'remove current permission'):
+        if (selected_role == 'remove current permissions'):
 
             bf._api.datasets._del('/' + str(selected_dataset_id) + '/collaborators/teams'.format(dataset_id = selected_dataset_id),
                           json={'id': selected_team_id})
