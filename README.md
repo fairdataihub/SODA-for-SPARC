@@ -54,7 +54,7 @@ Software for Organizing Data Automatically (SODA) is a computer software intende
 </p>
 
 ## Downloading SODA
-SODA is distributed as an easy-to-install software. Use the links below to download the version suitable for your operating system:
+SODA is distributed as an easy-to-install application. Use the links below to download the version suitable for your operating system:
 *   Windows (developed and tested on Windows 10) - [Click here](https://github.com/bvhpatel/SODA/releases/download/1.0.0-Windows/SODA-v1.0.0-Windows.zip)
 <!--[Click Here](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EaurG6qE7bBBhuF1HWWqfVkB9xJ3x0rfeSGJ9f63WtdoJA?e=Uo2rnk) (Developed & tested on Windows 10) -->
 *   Mac  (developed and tested on Mojave 10.14) - [Click here](https://github.com/bvhpatel/SODA/releases/download/1.0.0-MAC/SODA-v1.0.0-MAC.dmg.zip)
