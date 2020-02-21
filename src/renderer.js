@@ -1388,12 +1388,6 @@ bfSaveBannerImageBtn.addEventListener('click', (event) => {
   }
 })
 
-ipcRenderer.on('warning-add-permission-owner-selection-PI', (event, index) => {
-  if (index === 0) {
-    uploadBannerImage()
-  }
-})
-
 // Add license //
 bfAddLicenseBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'
