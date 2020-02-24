@@ -113,6 +113,7 @@ SODA is distributed under the MIT License. See [LICENSE](https://github.com/bvhp
 * Our beta testers, including:
   * Natalia Biscola (Icahn School of Medicine at Mount Sinai)
   * John Dawson (UC Davis)
+  * Clara Huesing (Pennington Biomedical Research Center)
   * Scott John (UCLA)
   * Muriel Larauche (Vatche and Tamar Manoukian Division of Digestive Diseases, Department of Medicine, UCLA)
   * Madelyn Lorenz (Washington University in St. Louis)
