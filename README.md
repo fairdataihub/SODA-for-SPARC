@@ -62,12 +62,12 @@ SODA is distributed as an easy-to-install application. Use the links below to do
 *   Linux (developed and tested on Ubuntu 18.04.2 LTS) -  [Click here](https://github.com/bvhpatel/SODA/releases/download/1.0.0-Ubuntu/SODA-v1.0.0-Ubuntu.zip)
 <!-- [Click Here](https://3dtholdings-my.sharepoint.com/:u:/g/personal/bpatel_calmi2_org/EQLHAKyyfaZJoDMYDYIwHIQB_jBZWh8mxBE5rRW-g_Oo5w?e=7wLGLI) (Developed & tested on Ubuntu Desktop 18.04) -->
 
-Latest version: 1.0.0
+All our releases are accessible in the [releases tab](https://github.com/bvhpatel/SODA/releases). Latest version: 1.0.0
 
 #### Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed to upload datasets to Blackfynn through SODA.
 
 <!--Example datasets can be downloaded from [here](https://3dtholdings-my.sharepoint.com/:f:/g/personal/bpatel_calmi2_org/Eig4sjUjchRCiUtfpeH-ydYBjvql_KYW0ZSE9_Td6bPzrQ?e=ApSOvh). -->
-Please follow the instructions given in [our documentation](https://github.com/bvhpatel/SODA/wiki/Download) if you need help with installing/uninstalling SODA. The software may work on older operating system versions than those specified above but no testing has been done on those platforms. All our releases are accessible in the [releases tab](https://github.com/bvhpatel/SODA/releases).
+Please follow the instructions given in [our documentation](https://github.com/bvhpatel/SODA/wiki/Download) if you need help with installing/uninstalling SODA. The software may work on older operating system versions than those specified above but no testing has been done on those platforms. 
 
 
 ## Using SODA
