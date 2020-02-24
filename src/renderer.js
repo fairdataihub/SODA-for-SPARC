@@ -12,6 +12,7 @@ const remote = require('electron').remote;
 const app = remote.app;
 const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
+var Airtable = require('airtable');
 require('v8-compile-cache')
 
 //////////////////////////////////
@@ -94,7 +95,7 @@ function checkNewAppVersion() {
 }
 
 //////////////////////////////////
-// Get html elements from UI 
+// Get html elements from UI
 //////////////////////////////////
 
 // Navigator button //
@@ -110,6 +111,12 @@ const downloadDescription = document.getElementById("a-description")
 const downloadManifest = document.getElementById("a-manifest")
 const homedir = os.homedir()
 const userDownloadFolder = path.join(homedir, "Downloads")
+
+// Prepare Submission File
+const awardArray = document.getElementById("awardlist");
+// const milestoneArray = document.getElementById("select-milestone");
+// const alreadyExistMilestone = document.querySelector('#input-choose-existing-milestone')
+// const newMilestone = document.querySelector('#input-new-milestone')
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -291,6 +298,9 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
   }
 })
 
+///////////////////// Prepare Metadata Section ////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 // Download Metadata Templates //
 templateArray = ["submission.xlsx", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx", "manifest.xlsx"]
 function downloadTemplates(templateItem, destinationFolder) {
@@ -325,6 +335,46 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
     downloadTemplates(filename, path[0])
   }
 })
+
+// Function to add options to dropdown list
+var addOption = function(selectbox, text, value) {
+    var opt = document.createElement("OPTION");
+    opt.text = text;
+    opt.value = value;
+    selectbox.options.add(opt);
+}
+
+// Load SPARC airtable data
+Airtable.configure({
+    endpointUrl: 'https://api.airtable.com',
+    apiKey: 'keyCDx02PhX2XnwEC'
+});
+
+var base = Airtable.base('appiYd1Tz9Sv857GZ');
+const table_airtable = base('sparc_members')
+
+// Construct table from data
+table_airtable.select({
+    view: 'Grid view'
+}).eachPage(function page(records, fetchNextPage) {
+    var awardResultArray = [];
+    records.forEach(function(record) {
+      item = record.get('SPARC_Award_#').concat(": ", record.get('Project_title'));
+      awardResultArray.push(item);
+    }),
+
+  fetchNextPage();
+  awardSet = [...new Set(awardResultArray)];
+  for (var i = 0; i < awardSet.length; i++) {
+      var opt = awardSet[i];
+      addOption(awardArray, opt, opt)
+  };
+},
+function done(err) {
+    if (err) {
+      console.error(err); return;
+    }
+});
 
 
 // Select organized dataset folder and populate table //
@@ -1119,7 +1169,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
         console.log('Done submit track')
         document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
         clearInterval(timerProgress)
-        bfSubmitDatasetBtn.disabled = false       
+        bfSubmitDatasetBtn.disabled = false
       }
     }
   }
@@ -1234,7 +1284,7 @@ bfListDatasetStatus.addEventListener('change', () => {
       bfCurrentDatasetStatusProgress.style.display = 'none'
       datasetStatusStatus.innerHTML = res
     }
-  })  
+  })
 })
 
 // Add substitle //
@@ -1913,7 +1963,7 @@ function showAccountDetails(bfLoadAccount){
 }
 
 function showUploadAccountDetails(bfLoadAccount){
-  client.invoke("api_bf_account_details", 
+  client.invoke("api_bf_account_details",
     bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text, (error, res) => {
     if(error) {
       log.error(error)
@@ -2235,7 +2285,7 @@ function jsonToTableMetadata(table, jsonvar){
   var SPARCfolder = 'metadata'
 
   var listfilePath = []
-  
+
   for (let filePath of jsontable[SPARCfolder]){
       var extension = path.extname(filePath);
       var file = path.basename(filePath,extension);

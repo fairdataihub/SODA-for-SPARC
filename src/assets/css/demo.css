@@ -363,9 +363,9 @@ select.my_dropdown {
     width:60%;
     padding: 8px 12px;
     border: 1px solid;
-    border-radius: 4px;
+    border-radius: 5px;
     background-color: #ffffff;
-    font: inherit
+    font: inherit;
 }
 
 table {
@@ -758,16 +758,45 @@ label.input-banner-img{
   float:left;
 }
 
-/* BF Add Account */
-.font-bf-account {
-  float: left;
-  font-size: 15px;
-  padding-right: 10px;
-  width: 14%;
-  text-align: center
+/* submission file preparation */
+.my_dropdown_metadata {
+  float: right;
+  background-clip: padding-box;
+  width: 100%;
+  /* width:60%; */
+  padding: 6px 8px;
+  margin-bottom: 10px;
+  border: 2px solid #eee;
+  border-radius: 5px;
+  background-color: #ffffff;
+  font: inherit;
 }
 
-.bf-account-form {
+/* BF Add Account */
+.form-container {
+  float: left;
+  font-size: 15px;
+  /* padding-right: 10px; */
+  padding: 4px 6px;
+  width: 20%;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.form-container-input {
+  float: right;
+  font-weight: 400;
+  /* background-clip: padding-box; */
+  line-height: 2;
+  width: 100%;
+  border: 2px solid #eee;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  transition: #258193 .25s ease-out;
+  padding: 4px 6px;
+}
+/* BF Add account */
+.form-container-input-bf {
   float: right;
   font-weight: 400;
   background-clip: padding-box;
@@ -778,6 +807,7 @@ label.input-banner-img{
   border-left: 2px solid #258193;
   border-radius: 5px;
   transition: #258193 .25s ease-out;
+  padding: 4px 6px;
 }
 
 
