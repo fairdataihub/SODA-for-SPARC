@@ -61,7 +61,7 @@
         <div class="demo-box">
           <div class="form-container"><font color="black">Award Number: </font> </div>
             <div class="demo-controls">
-              <select id="award-list-presaved" class="my_dropdown_metadata">
+              <select id="presaved-award-list" class="my-dropdown-metadata">
                 <option>Select your award</option>
               </select>
             </div>
@@ -77,7 +77,7 @@
             <h5></h5>
             <div align="right">
               <button class="demo-button" id="save-milestone-info"> Save </button>
-              <p id='para-save-milestone-info'></p>
+              <p style="display:none" id='para-save-milestone-info'></p>
             </div>
         </div>
       </div>
@@ -95,7 +95,7 @@
 
             <div class="form-container"><font color="black">Award Number: </font> </div>
               <div class="demo-controls">
-                <select id="award-list" class="my_dropdown_metadata">
+                <select id="award-list" class="my-dropdown-metadata">
                   <option>Select your award</option>
                 </select>
               </div>
@@ -109,9 +109,9 @@
                 <input id="selected-milestone-date" name="milestonedate" type="date" class="form-container-input" style="font:inherit"></input>
               </div>
             <h5></h5>
-            <div align="right">
-              <button class="demo-button" id="generate-submission"> Generate </button>
+            <div class="demo-controls" style="align:right">
               <p id='para-save-submission-status'></p>
+              <button class="demo-button" id="generate-submission"> Generate </button>
             </div>
           </div>
         </div>

@@ -113,6 +113,7 @@ const homedir = os.homedir()
 const userDownloadFolder = path.join(homedir, "Downloads")
 
 // Prepare Submission File
+const presavedAwardArray = document.getElementById("presaved-award-list")
 const awardArray = document.getElementById("award-list")
 const generateSubmissionBtn = document.getElementById("generate-submission")
 
@@ -367,6 +368,7 @@ table_airtable.select({
       var opt = awardSet[i];
       var value = awardSet[i].slice(0,awardSet[i].indexOf("("))
       addOption(awardArray, opt, value)
+      addOption(presavedAwardArray, opt, value)
   };
 },
 function done(err) {
@@ -395,7 +397,8 @@ ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
             console.error(error)
           }
           else {
-            document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Done!</span>"
+            document.getElementById("para-save-submission-status").display = "block";
+            document.getElementById("para-save-submission-status").innerHTML = "<span style='color: blue;'>Done!</span>"
           }
         })
      }}

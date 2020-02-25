@@ -359,7 +359,7 @@ textarea.outputprint{
     resize: vertical;
 }
 
-select.my_dropdown {
+select.my-dropdown {
     width:60%;
     padding: 8px 12px;
     border: 1px solid;
@@ -759,7 +759,7 @@ label.input-banner-img{
 }
 
 /* submission file preparation */
-.my_dropdown_metadata {
+.my-dropdown-metadata {
   float: right;
   background-clip: padding-box;
   width: 100%;

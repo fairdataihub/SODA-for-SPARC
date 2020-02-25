@@ -322,6 +322,18 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     shutil.copystat(src, dst)
     return dst
 
+### save metadata info
+HOMEPATH = expanduser("~")
+SAVED_INFO_PATH = join(HOMEPATH, "SODA", "METADATA")
+MILESTONE_FILEPATH = join(SAVED_INFO_PATH, "milestones.json")
+
+def save_metadata(json_str, filepath):
+    directory = dirname(filepath)
+    if not exists(directory):
+        makedirs(directory)
+    with open(filepath, "w") as f:
+        f.write(json_str)
+
 ### Prepare submission file
 def save_submission_file(filepath, json_str):
     source = join(dirname( __file__ ), "..", "file_templates", "submission.xlsx")
