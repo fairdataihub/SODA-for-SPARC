@@ -112,6 +112,9 @@ const downloadManifest = document.getElementById("a-manifest")
 const homedir = os.homedir()
 const userDownloadFolder = path.join(homedir, "Downloads")
 
+// Save grant information
+const saveMilestoneBtn = document.getElementById("save-milestone-info")
+
 // Prepare Submission File
 const presavedAwardArray = document.getElementById("presaved-award-list")
 const awardArray = document.getElementById("award-list")
@@ -335,6 +338,39 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
   }
 })
 
+// Save milestone information
+saveMilestoneBtn.addEventListener('click', function(){
+  var award = presavedAwardArray.options[presavedAwardArray.selectedIndex].value;
+  var milestone = document.getElementById("presaved-milestone").value;
+  var date = document.getElementById("presaved-milestone-date").value;
+  var json_arr = [];
+  json_arr.push(award);
+  json_arr.push(milestone);
+  json_arr.push(date);
+  json_str = JSON.stringify(json_arr);
+  client.invoke("api_save_milestones", json_str, (error, res) => {
+       if(error) {
+         console.error(error)
+         var emessage = userError(error)
+         document.getElementById("para-save-milestone-info").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+     } else {
+         document.getElementById("para-save-milestone-info").innerHTML = "<span style='color: blue;'>Saved!</span>"
+       }
+   });
+});
+
+// Load milestone info
+client.invoke("api_load_milestones", (error, res) => {
+  if(error) {
+    console.error(error)
+  } else {
+      var result = JSON.parse(res);
+      removeOptions(milestoneArray);
+      for (var i = 0; i < result.length; i++) {
+         addOption(milestoneArray, result[i]['milestone'], result[i]['milestone'])}
+     }
+});
+
 // Function to add options to dropdown list
 var addOption = function(selectbox, text, value) {
     var opt = document.createElement("OPTION");
@@ -366,7 +402,7 @@ table_airtable.select({
   awardSet = [...new Set(awardResultArray)];
   for (var i = 0; i < awardSet.length; i++) {
       var opt = awardSet[i];
-      var value = awardSet[i].slice(0,awardSet[i].indexOf("("))
+      var value = awardSet[i].slice(0,awardSet[i].indexOf(" ("))
       addOption(awardArray, opt, value)
       addOption(presavedAwardArray, opt, value)
   };
@@ -398,7 +434,7 @@ ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
           }
           else {
             document.getElementById("para-save-submission-status").display = "block";
-            document.getElementById("para-save-submission-status").innerHTML = "<span style='color: blue;'>Done!</span>"
+            document.getElementById("para-save-submission-status").innerHTML = "<span style='color: blue ;'>Done!</span>"
           }
         })
      }}

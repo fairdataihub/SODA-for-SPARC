@@ -30,6 +30,8 @@ from urllib.request import urlopen
 import json
 
 from openpyxl import load_workbook
+from openpyxl import Workbook
+from openpyxl.styles import Font
 
 ### Global variables
 curateprogress = ' '
@@ -325,14 +327,43 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
 ### save metadata info
 HOMEPATH = expanduser("~")
 SAVED_INFO_PATH = join(HOMEPATH, "SODA", "METADATA")
-MILESTONE_FILEPATH = join(SAVED_INFO_PATH, "milestones.json")
+MILESTONE_FILEPATH = join(SAVED_INFO_PATH, "milestones.xlsx")
 
 def save_metadata(json_str, filepath):
-    directory = dirname(filepath)
-    if not exists(directory):
-        makedirs(directory)
-    with open(filepath, "w") as f:
-        f.write(json_str)
+    destination = dirname(filepath)
+    if not exists(destination):
+        makedirs(destination)
+
+    if exists(filepath):
+        wb = load_workbook(filepath)
+    else:
+        wb = Workbook()
+
+    val_arr = json.loads(json_str)
+    # write to excel file
+    ws = update_sheet(wb, val_arr)
+    ws["A1"] = "Milestone"
+    ws["A1"].font = Font(bold=True)
+    ws["B1"] = "Tentative completion date"
+    ws["B1"].font = Font(bold=True)
+    append_milestone_info(ws, val_arr)
+    wb.save(filepath)
+
+### function to append new data to sheet
+def append_milestone_info(worksheet, val_arr):
+    worksheet.append((val_arr[1], val_arr[2]))
+
+## function to update an existing excel sheet
+def update_sheet(workbook, value_array):
+    sheet_arr = workbook.sheetnames
+    if value_array[0] in sheet_arr:
+        ws = workbook[value_array[0]]
+    else:
+        ws = workbook.create_sheet(title=value_array[0])
+    return ws
+
+def save_milestones(json_str):
+    return save_metadata(json_str, MILESTONE_FILEPATH)
 
 ### Prepare submission file
 def save_submission_file(filepath, json_str):
