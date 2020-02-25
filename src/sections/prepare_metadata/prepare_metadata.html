@@ -24,14 +24,6 @@
 
         <div class="demo-box">
           <div class="div-list-metadata">
-            <!-- <div class="div1">
-              <button type="submit" class="download-metadata-button" style="border: 0; background: transparent">
-                <img src="assets/img/download-white.png" width="20" height="20" alt="submit" />
-              </button>
-              <div class="metadata-templates" title="submission.xlsx">
-                <span>submission.xlsx</span>
-                <span class="download-icon-text">6kb</span>
-              -->
                 <h5></h5>
                 <div>
                   <button id="a-submission" class="download-metadata">submission.xlsx
@@ -59,38 +51,37 @@
           </div>
     </div>
 
-    <!-- Presaved Milestone Information -->
-    <!-- <div class="demo">
+<!-- Save information for later -->
+    <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-prepare-metadata-demo-toggle" class="js-container-target demo-toggle-button"> Save Milestone Information
-          <div class="demo-meta u-avoid-clicks"> Edit and Save Information regarding Grant Number, Contributors, and Milestones for future use
-          </div>
+        <button id="button-new-window-login-demo-toggle" class="js-container-target demo-toggle-button">Save grant information
+          <div class="demo-meta u-avoid-clicks"> Save information about your grant number and milestones for later use </div>
         </button>
 
-        <div id="div-add-metadata" class="demo-box">
-          <div style = "padding:10px 0px">
-            <input id="input-add-milestone" name="add-metadata" type="radio" class="with-style" />
-            <label for="input-add-milestone" class="labelradio"> Add milestones </label>
-              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                <span class="tooltiptext">Select this option to add and save Sparc Milestones of your dataset
-                </span>
-              </div>
-          </div>
-          <div id="div-add-milestone" style= "display: none" align="center">
-            <h5> View/Edit Milestone Information
-            </h5>
-            <div id="div-milestone-spreadsheet" style="width:80%" >
-            </div>
-            <h5> </h5>
+        <div class="demo-box">
+          <div class="form-container"><font color="black">Award Number: </font> </div>
             <div class="demo-controls">
-              <button id="button-add-milestone" type="button" style="font-size: 1em; margin-left: 80px" class="demo-button">Add Milestone</button>
-              <button id="button-save-milestone" type="button" style="font-size: 1em;" class="demo-button">Save</button>
-              <p id='para-save-milestone-status'> <p>
+              <select id="award-list-presaved" class="my_dropdown_metadata">
+                <option>Select your award</option>
+              </select>
             </div>
-          </div>
+          <div class="form-container"><font color="black"> Milestone: </font> </div>
+            <div class="demo-controls">
+              <input id="presaved-milestone" class="form-container-input" placeholder="Enter milestone..."/>
+            </div>
+            <!-- <h5></h5> -->
+          <div class="form-container"><font color="black"> Milestone Date: </font> </div>
+            <div class="demo-controls">
+              <input id="presaved-milestone-date" name="milestonedate" type="date" class="form-container-input" style="font:inherit"></input>
+            </div>
+            <h5></h5>
+            <div align="right">
+              <button class="demo-button" id="save-milestone-info"> Save </button>
+              <p id='para-save-milestone-info'></p>
+            </div>
         </div>
       </div>
-    </div> -->
+    </div>
 
     <!-- Prepare submission file -->
     <div class="demo">
@@ -98,27 +89,32 @@
           <button id="button-submission-demo-toggle" class="js-container-target demo-toggle-button"> Prepare your Submission file
             <div class="demo-meta u-avoid-clicks"> Edit/Save the submission file to include in your dataset  </div>
           </button>
-          <div id="div-generate-submission-file" class="demo-box">
+          <div id="div-generate-submission-file" class="demo-box" style="width:100%">
               <h5> Please populate the items below to generate submission file</h5>
             <h5></h5>
 
             <div class="form-container"><font color="black">Award Number: </font> </div>
               <div class="demo-controls">
-                <select class="my_dropdown_metadata" style="width:65%; line-height:2;" id="awardlist">
-                  <option> Select your award... </option>
+                <select id="award-list" class="my_dropdown_metadata">
+                  <option>Select your award</option>
                 </select>
               </div>
             <div class="form-container"><font color="black"> Milestone: </font> </div>
               <div class="demo-controls">
-                <input class="form-container-input" style="width:65%" id="milestone" />
+                <input id="selected-milestone" class="form-container-input" placeholder="Enter milestone..."/>
               </div>
               <!-- <h5></h5> -->
             <div class="form-container"><font color="black"> Milestone Date: </font> </div>
               <div class="demo-controls">
-                <input id="selected-milestone-date" name="milestonedate" type="date" class="form-container-input" style="width:65%; font:inherit"></input>
+                <input id="selected-milestone-date" name="milestonedate" type="date" class="form-container-input" style="font:inherit"></input>
               </div>
+            <h5></h5>
+            <div align="right">
+              <button class="demo-button" id="generate-submission"> Generate </button>
+              <p id='para-save-submission-status'></p>
             </div>
           </div>
+        </div>
 
 
               <!-- <h5> Award/Funding Number </h5>

@@ -27,6 +27,9 @@ from blackfynn.log import get_logger
 from blackfynn.api.agent import agent_cmd
 from blackfynn.api.agent import AgentError, check_port, socket_address
 from urllib.request import urlopen
+import json
+
+from openpyxl import load_workbook
 
 ### Global variables
 curateprogress = ' '
@@ -319,6 +322,22 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     shutil.copystat(src, dst)
     return dst
 
+### Prepare submission file
+def save_submission_file(filepath, json_str):
+    source = join(dirname( __file__ ), "..", "file_templates", "submission.xlsx")
+    # source = r"..\file_templates\submission.xlsx"
+    destination = filepath
+    shutil.copyfile(source, destination)
+    # json array to python list
+    val_arr = json.loads(json_str)
+    # write to excel file
+    wb = load_workbook(destination)
+    ws1 = wb['Sheet1']
+    ws1["C2"] = val_arr[0]
+    ws1["C3"] = val_arr[1]
+    ws1["C4"] = val_arr[2]
+
+    wb.save(destination)
 
 ### Prepare dataset
 def save_file_organization(jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization):
@@ -424,7 +443,7 @@ def create_preview_files(paths, folder_path):
         return
     except Exception as e:
         raise e
- 
+
 
 def preview_file_organization(jsonpath):
     """
@@ -764,7 +783,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             gevent.sleep(0)
             gevent.joinall(gev) #wait for gevent to finish before exiting the function
             curatestatus = 'Done'
-            
+
             try:
                 return gev[0].get()
             except Exception as e:
@@ -1177,7 +1196,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         agent_running()
         def calluploadfolder():
 
-            try: 
+            try:
 
                 global submitdataprogress
                 global submitdatastatus
@@ -2014,7 +2033,7 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
         #gchange dataset status
         selected_dataset_id = myds.id
         jsonfile = {'status': new_status}
-        bf._api.datasets._put('/' + str(selected_dataset_id), 
+        bf._api.datasets._put('/' + str(selected_dataset_id),
                               json=jsonfile)
         return "Success: Changed dataset status to " + selected_status
     except Exception as e:

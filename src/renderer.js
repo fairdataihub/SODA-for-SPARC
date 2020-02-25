@@ -113,10 +113,8 @@ const homedir = os.homedir()
 const userDownloadFolder = path.join(homedir, "Downloads")
 
 // Prepare Submission File
-const awardArray = document.getElementById("awardlist");
-// const milestoneArray = document.getElementById("select-milestone");
-// const alreadyExistMilestone = document.querySelector('#input-choose-existing-milestone')
-// const newMilestone = document.querySelector('#input-new-milestone')
+const awardArray = document.getElementById("award-list")
+const generateSubmissionBtn = document.getElementById("generate-submission")
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -359,7 +357,7 @@ table_airtable.select({
 }).eachPage(function page(records, fetchNextPage) {
     var awardResultArray = [];
     records.forEach(function(record) {
-      item = record.get('SPARC_Award_#').concat(": ", record.get('Project_title'));
+      item = record.get('SPARC_Award_#').concat(" (", record.get('Project_title'), ")");
       awardResultArray.push(item);
     }),
 
@@ -367,7 +365,8 @@ table_airtable.select({
   awardSet = [...new Set(awardResultArray)];
   for (var i = 0; i < awardSet.length; i++) {
       var opt = awardSet[i];
-      addOption(awardArray, opt, opt)
+      var value = awardSet[i].slice(0,awardSet[i].indexOf("("))
+      addOption(awardArray, opt, value)
   };
 },
 function done(err) {
@@ -376,6 +375,31 @@ function done(err) {
     }
 });
 
+/// Generate submission file
+generateSubmissionBtn.addEventListener('click', (event) => {
+        ipcRenderer.send('save-file-dialog-submission')
+});
+ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
+  if (path.length > 0) {
+    var award = awardArray.options[awardArray.selectedIndex].value;
+    var milestone = document.getElementById("selected-milestone").value;
+    var date = document.getElementById("selected-milestone-date").value;
+    var json_arr = [];
+    json_arr.push(award);
+    json_arr.push(milestone);
+    json_arr.push(date);
+    json_str = JSON.stringify(json_arr)
+    if (path != null){
+      client.invoke("api_save_submission_file", path, json_str, (error, res) => {
+          if(error) {
+            console.error(error)
+          }
+          else {
+            document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Done!</span>"
+          }
+        })
+     }}
+});
 
 // Select organized dataset folder and populate table //
 selectDatasetBtn.addEventListener('click', (event) => {
