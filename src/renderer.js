@@ -344,12 +344,12 @@ saveMilestoneBtn.addEventListener('click', function(){
   var award = presavedAwardArray.options[presavedAwardArray.selectedIndex].value;
   var milestone = document.getElementById("presaved-milestone").value;
   var date = document.getElementById("presaved-milestone-date").value;
-  var json_arr = [];
-  json_arr.push(award);
-  json_arr.push(milestone);
-  json_arr.push(date);
-  json_str = JSON.stringify(json_arr);
-  client.invoke("api_save_milestones", json_str, (error, res) => {
+  var jsonArr = [];
+  jsonArr.push(award);
+  jsonArr.push(milestone);
+  jsonArr.push(date);
+  jsonStr = JSON.stringify(jsonArr);
+  client.invoke("api_save_milestones", jsonStr, (error, res) => {
        if(error) {
          console.error(error)
          var emessage = userError(error)
@@ -377,12 +377,9 @@ awardArray.addEventListener('change', function() {
         tupleArray.push([res[i][0],res[i][1]])
       };
       milestoneArray.innerHTML = data;
-      console.log(typeof data)
-      console.log(tupleArray);
       // populate milestone date based on selected milestone
       document.getElementById("selected-milestone").addEventListener('change', () => {
         selectedOpt = document.getElementById("selected-milestone").value;
-        console.log(selectedOpt);
         for (var i = 0; i< tupleArray.length; i++) {
           if (tupleArray[i][0] === selectedOpt) {
             document.getElementById("selected-milestone-date").value = tupleArray[i][1]
@@ -406,7 +403,6 @@ Airtable.configure({
     endpointUrl: 'https://api.airtable.com',
     apiKey: 'keyCDx02PhX2XnwEC'
 });
-
 var base = Airtable.base('appiYd1Tz9Sv857GZ');
 const table_airtable = base('sparc_members')
 
