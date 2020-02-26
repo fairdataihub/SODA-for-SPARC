@@ -388,6 +388,7 @@ td {
   text-align: center;
   border: 1px solid hsla(0,0%,0%,.08);
   border-width: 1px 0 0 1px;
+  padding: 10px;
 }
 
 th.table-header {
@@ -462,6 +463,28 @@ input[type='text'].inputpath
 
 table.pathtable tr.open {
   display : none;
+}
+
+table.table-save-metadata {
+  margin: auto;
+  width: 70%;
+  max-width:100%;
+  min-width:100%;
+  font:inherit;
+  word-break: break-word;
+  border-collapse: collapse;
+  border: 1px solid #fff;
+  border-style: hidden;
+  text-align: left;
+}
+
+.table-header-metadata {
+  /* text-indent: 10%; */
+  text-align: left;
+  cursor: pointer;
+  font-size: 15px;
+  width: 70%;
+
 }
 
 /* YouTube video frames */
@@ -775,10 +798,10 @@ label.input-banner-img{
 /* BF Add Account */
 .form-container {
   float: left;
-  font-size: 15px;
+  font-size: 14px;
   /* padding-right: 10px; */
   padding: 4px 6px;
-  width: 10%;
+  width: 150px;
   text-align: center;
   vertical-align: middle;
 }

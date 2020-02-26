@@ -54,31 +54,41 @@
 <!-- Save information for later -->
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-new-window-login-demo-toggle" class="js-container-target demo-toggle-button">Save grant information
-          <div class="demo-meta u-avoid-clicks"> Save information about your grant number and milestones for later use </div>
+        <button id="button-save-grant-info-demo-toggle" class="js-container-target demo-toggle-button">Provide grant information
+          <div class="demo-meta u-avoid-clicks"> Provide information about your grant number and milestones for later use </div>
         </button>
 
-        <div class="demo-box">
-          <div class="form-container"><font color="black">Award Number: </font> </div>
+      <div class="demo-box">
+          <form id = 'grant-information'>
+            <div style = "padding:10px 0px">
+              <input class="input-switch" id="addGrant" type="radio" name="tabs" checked>
+              <label class="label-switch" style="font-size:15px;padding-top: 6px;" for="addGrant">Add new grant</label>
+              <input class="input-switch" id="selectGrant" type="radio" name="tabs">
+              <label class="label-switch" style="font-size:15px;padding-top: 6px;"for="selectGrant">Edit existing grant</label>
+            </div>
+         </form>
+
+          <div id="div-add-new-grant" class="datasetsaveoption" style="display:block;margin-top:70px">
+            <h5> Add a new grant number: </h5>
             <div class="demo-controls">
-              <select id="presaved-award-list" class="my-dropdown-metadata">
-                <option>Select your award</option>
+              <select id="select-grant-info-list" class="my-dropdown-metadata" style="width:60%;float:left;padding:6px 8px;margin-top:15px">
+                <option>Select</option>
               </select>
+              <button id="button-add-award" class="demo-button" style="width:140px;margin-left:10px; margin-top:15px">Add</button>
+              <p id="para-save-award-info"></p>
             </div>
-          <div class="form-container"><font color="black"> Milestone: </font> </div>
-            <div class="demo-controls">
-              <input id="presaved-milestone" class="form-container-input" placeholder="Enter milestone..."/>
-            </div>
-            <!-- <h5></h5> -->
-          <div class="form-container"><font color="black"> Milestone Date: </font> </div>
-            <div class="demo-controls">
-              <input id="presaved-milestone-date" name="milestonedate" type="date" class="form-container-input" style="font:inherit"></input>
-            </div>
-            <h5></h5>
-            <div class="demo-controls">
-              <button class="demo-button" id="save-milestone-info"> Save </button>
-              <p id='para-save-milestone-info'></p>
-            </div>
+          </div>
+
+          <div id="div-select-existing-grant" class="datasetsaveoption" style="display:none;margin-top:70px;margin-left:10px">
+            <h5> Specify grant number to edit milestone information: </h5>
+            <div class="demo-controls" style="margin-top:20px">
+              <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:65%; padding: 6px 8px; font-size:14px">
+                <option>Select</option>
+              </select>
+               <div id="div-show-milestone-info"></div>
+           </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -95,14 +105,14 @@
 
             <div class="form-container"><font color="black">Award Number: </font> </div>
               <div class="demo-controls">
-                <select id="award-list" class="my-dropdown-metadata">
+                <select id="presaved-award-list" class="my-dropdown-metadata">
                   <option>Select your award</option>
                 </select>
               </div>
             <div class="form-container"><font color="black"> Milestone: </font> </div>
               <div class="demo-controls">
                 <input id="selected-milestone" class="form-container-input" list="milestone-list" placeholder="Enter milestone..."/>
-                <datalist id="milestone-list">
+                <datalist id="loaded-milestone-list">
                   <option> </option>
                 </datalist>
               </div>
@@ -119,66 +129,29 @@
           </div>
         </div>
 
+        <!-- Prepare dataset-description file -->
+        <div class="demo">
+            <div class="demo-wrapper">
+              <button id="button-ds-description-demo-toggle" class="js-container-target demo-toggle-button"> Prepare your Dataset Description file
+                <div class="demo-meta u-avoid-clicks"> Edit/Save the dataset description file to include in your dataset  </div>
+              </button>
+              <div id="div-generate-ds-description-file" class="demo-box" style="width:100%">
+                  <h5> Please populate the items below to generate submission file</h5>
+                <h5></h5>
 
-              <!-- <h5> Award/Funding Number </h5>
-              <h6> </h6>
-              <div class="demo-controls">
-                <select class="my_dropdown" style="width:65%" id="awardlist">
-                  <option> Select </option>
-                </select>
-                <p></p>
-                <button id="awardListButton" class="demo-button"> Refresh List </button>
+
               </div>
+            </div>
 
-              <h5> Milestone </h5>
-
-                <form id = 'milestone-list'>
-                  <div style = "padding:10px 0px">
-                  <input class="input-switch" style="padding-top: 2px;" id="addMilestone" type="radio" name="tabs" checked>
-                  <label class="label-switch" style="font-size: 13px;width: 100px;" for="addMilestone">Add new milestone</label>
-                  <input class="input-switch" style="padding-top: 2px;" id="selectMilestone" type="radio" name="tabs">
-                  <label class="label-switch" style="font-size: 13px;width: 130px;" for="selectMilestone">Select presaved milestone</label>
-                  </div>
-                </form>
-              </div> -->
-
-              <!-- <form id='form-submission-2'>
-                <div>
-                  <input id="input-choose-existing-milestone" name="milestone-option" type="radio" class="with-style" value="existing" />
-                  <label for="input-choose-existing-milestone" class="labelradio">Choose from existing</label>
-                </div>
-                <div id="div-existing-milestone" style= "display: none">
-                  <div class="demo-controls" style="margin-left: 20px">
-                    <select id="select-milestone" class="submission">
-                      <option>Choose Milestone</option>
-                    </select>
-                  </div>
-                </div> -->
-                <!-- <div>
-                  <input id="input-new-milestone" name="milestone-option" type="radio" class="with-style" value="new" />
-                  <label for="input-new-milestone" class="labelradio"> Add Milestone</label>
-                </div>
-                <div id="div-new-milestone" style= "display: none">
-                  <div class="demo-controls" style="margin-left: 20px">
-                    <input id="input-selected-milestone" placeholder="Enter Milestone" class="add-new-info"></input>
-                  </div>
-                </div>
-              </form> -->
-
-              <!-- <h5> Milestone Completion Date </h5>
-              <form id='form-submission-3'style="margin-left: 10px">
-                <div class="demo-controls">
-                  <input id="selected-milestone-date" name="dateofbirth" type="date" class="add-new-info"></input>
-                </div>
-              </form>
-              <div class="demo-controls" align="right">
-                <button id="button-save-submission" type="button" class="demo-button" style="margin-left: 430px">Generate Submission File</button>
-                <p id='para-save-submission-status'></p>
-              </div> -->
 
           </div>
         </div>
       </div>
+
+      <script type="text/javascript">
+        require('./renderer-process/native-ui/dialogs/save')
+        require('./renderer-process/prepare-metadata/save-information')
+      </script>
 
   </section>
 </template>
