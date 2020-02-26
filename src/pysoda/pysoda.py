@@ -342,18 +342,18 @@ def save_metadata(json_str, filepath):
     val_arr = json.loads(json_str)
     # write to excel file
     ws = update_sheet(wb, val_arr)
-    ws["A1"] = "Milestone"
+    ws["A1"] = "Milestones"
     ws["A1"].font = Font(bold=True)
     ws["B1"] = "Tentative completion date"
     ws["B1"].font = Font(bold=True)
     append_milestone_info(ws, val_arr)
     wb.save(filepath)
 
-### function to append new data to sheet
+### Append new data to sheet
 def append_milestone_info(worksheet, val_arr):
     worksheet.append((val_arr[1], val_arr[2]))
 
-## function to update an existing excel sheet
+## Update an existing excel sheet or create sheet
 def update_sheet(workbook, value_array):
     sheet_arr = workbook.sheetnames
     if value_array[0] in sheet_arr:
@@ -364,6 +364,24 @@ def update_sheet(workbook, value_array):
 
 def save_milestones(json_str):
     return save_metadata(json_str, MILESTONE_FILEPATH)
+
+## Load milestone info
+def load_milestones(sheetname):
+    with open(MILESTONE_FILEPATH, errors="ignore") as f:
+        f.read()
+    ## get data from a worksheet
+    wb = load_workbook(MILESTONE_FILEPATH)
+    sheet = wb[sheetname]
+    max_row=sheet.max_row
+    data = []
+
+    for i in range(2,max_row+1):
+        milestone=sheet.cell(row=i,column=1)
+        date=sheet.cell(row=i,column=2)
+        data.append((milestone.value, date.value))
+
+    return data
+
 
 ### Prepare submission file
 def save_submission_file(filepath, json_str):

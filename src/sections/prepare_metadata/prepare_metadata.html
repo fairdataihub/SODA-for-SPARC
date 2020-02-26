@@ -75,7 +75,7 @@
               <input id="presaved-milestone-date" name="milestonedate" type="date" class="form-container-input" style="font:inherit"></input>
             </div>
             <h5></h5>
-            <div align="right">
+            <div class="demo-controls">
               <button class="demo-button" id="save-milestone-info"> Save </button>
               <p id='para-save-milestone-info'></p>
             </div>
@@ -101,17 +101,20 @@
               </div>
             <div class="form-container"><font color="black"> Milestone: </font> </div>
               <div class="demo-controls">
-                <input id="selected-milestone" class="form-container-input" placeholder="Enter milestone..."/>
+                <input id="selected-milestone" class="form-container-input" list="milestone-list" placeholder="Enter milestone..."/>
+                <datalist id="milestone-list">
+                  <option> </option>
+                </datalist>
               </div>
               <!-- <h5></h5> -->
             <div class="form-container"><font color="black"> Milestone Date: </font> </div>
               <div class="demo-controls">
-                <input id="selected-milestone-date" name="milestonedate" type="date" class="form-container-input" style="font:inherit"></input>
+                <input id="selected-milestone-date" name="milestonedate" type="date" placeholder="YYYY-MM-DD" class="form-container-input" style="font:inherit"></input>
               </div>
             <h5></h5>
-            <div class="demo-controls" style="align:right">
-              <p id='para-save-submission-status'></p>
+            <div class="demo-controls">
               <button class="demo-button" id="generate-submission"> Generate </button>
+              <p id='para-save-submission-status'></p>
             </div>
           </div>
         </div>

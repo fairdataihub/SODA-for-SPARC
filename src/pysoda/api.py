@@ -8,7 +8,7 @@ from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_o
     bf_get_teams, bf_add_permission_team, bf_add_subtitle, bf_get_subtitle, bf_get_description, \
     bf_add_description, bf_get_banner_image, bf_add_banner_image, bf_get_license, bf_add_license, \
     bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load, save_submission_file, \
-    save_metadata, save_milestones
+    save_metadata, save_milestones, load_milestones
 
 import sys
 import zerorpc
@@ -18,6 +18,10 @@ class SodaApi(object):
     ### save milestone info
     def api_save_milestones(self, json_str):
         return save_milestones(json_str)
+
+    ### load milestone info
+    def api_load_milestones(self, sheet):
+        return load_milestones(sheet)
 
     ### Save Submission file
     def api_save_submission_file(self, filepath, val_arr):

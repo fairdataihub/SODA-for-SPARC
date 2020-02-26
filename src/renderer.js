@@ -114,6 +114,7 @@ const userDownloadFolder = path.join(homedir, "Downloads")
 
 // Save grant information
 const saveMilestoneBtn = document.getElementById("save-milestone-info")
+const milestoneArray = document.getElementById("milestone-list")
 
 // Prepare Submission File
 const presavedAwardArray = document.getElementById("presaved-award-list")
@@ -354,21 +355,42 @@ saveMilestoneBtn.addEventListener('click', function(){
          var emessage = userError(error)
          document.getElementById("para-save-milestone-info").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
      } else {
-         document.getElementById("para-save-milestone-info").innerHTML = "<span style='color: blue;'>Saved!</span>"
+         document.getElementById("para-save-milestone-info").innerHTML = "<span style='color: black;'>Saved!</span>"
        }
    });
 });
 
 // Load milestone info
-client.invoke("api_load_milestones", (error, res) => {
-  if(error) {
-    console.error(error)
+awardArray.addEventListener('change', function() {
+  document.getElementById("selected-milestone-date").value = "";
+  document.getElementById("selected-milestone").value = "";
+  opt = awardArray.options[awardArray.selectedIndex].value;
+  sheet = JSON.stringify(opt)
+  client.invoke("api_load_milestones", opt, (error, res) => {
+    if(error) {
+      console.error(error)
   } else {
-      var result = JSON.parse(res);
-      removeOptions(milestoneArray);
-      for (var i = 0; i < result.length; i++) {
-         addOption(milestoneArray, result[i]['milestone'], result[i]['milestone'])}
-     }
+      var data = '';
+      var tupleArray = [];
+      for (var i = 0; i < res.length; i++) {
+        data += '<option value="'+ res[i][0] + '" />';
+        tupleArray.push([res[i][0],res[i][1]])
+      };
+      milestoneArray.innerHTML = data;
+      console.log(typeof data)
+      console.log(tupleArray);
+      // populate milestone date based on selected milestone
+      document.getElementById("selected-milestone").addEventListener('change', () => {
+        selectedOpt = document.getElementById("selected-milestone").value;
+        console.log(selectedOpt);
+        for (var i = 0; i< tupleArray.length; i++) {
+          if (tupleArray[i][0] === selectedOpt) {
+            document.getElementById("selected-milestone-date").value = tupleArray[i][1]
+          }
+        }
+      })
+    }
+  })
 });
 
 // Function to add options to dropdown list
@@ -429,14 +451,15 @@ ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
     json_str = JSON.stringify(json_arr)
     if (path != null){
       client.invoke("api_save_submission_file", path, json_str, (error, res) => {
-          if(error) {
-            console.error(error)
-          }
-          else {
-            document.getElementById("para-save-submission-status").display = "block";
-            document.getElementById("para-save-submission-status").innerHTML = "<span style='color: blue ;'>Done!</span>"
-          }
-        })
+        if(error) {
+          var emessage = userError(error)
+          console.error(error)
+          document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+        }
+        else {
+          document.getElementById("para-save-submission-status").innerHTML = "<span style='color: black ;'>Done!</span>"
+        }
+      })
      }}
 });
 
