@@ -329,29 +329,30 @@ HOMEPATH = expanduser("~")
 SAVED_INFO_PATH = join(HOMEPATH, "SODA", "METADATA")
 MILESTONE_FILEPATH = join(SAVED_INFO_PATH, "milestones.xlsx")
 
-def save_metadata(json_str, filepath):
-    destination = dirname(filepath)
+def save_awards(json_str):
+    destination = dirname(MILESTONE_FILEPATH)
     if not exists(destination):
         makedirs(destination)
 
-    if exists(filepath):
-        wb = load_workbook(filepath)
+    val_arr = json.loads(json_str)
+    if exists(MILESTONE_FILEPATH):
+        wb = load_workbook(MILESTONE_FILEPATH)
     else:
         wb = Workbook()
-
-    val_arr = json.loads(json_str)
     # write to excel file
     ws = update_sheet(wb, val_arr)
     ws["A1"] = "Milestones"
     ws["A1"].font = Font(bold=True)
     ws["B1"] = "Tentative completion date"
     ws["B1"].font = Font(bold=True)
-    append_milestone_info(ws, val_arr)
-    wb.save(filepath)
+    wb.save(MILESTONE_FILEPATH)
 
-### Append new data to sheet
-def append_milestone_info(worksheet, val_arr):
-    worksheet.append((val_arr[1], val_arr[2]))
+def save_milestones(json_str):
+    val_arr = json.loads(json_str)
+    wb = load_workbook(MILESTONE_FILEPATH)
+    ws = wb[val_arr[0]]
+    ws.append((val_arr[1], val_arr[2]))
+    wb.save(MILESTONE_FILEPATH)
 
 ## Update an existing excel sheet or create sheet
 def update_sheet(workbook, value_array):
@@ -361,9 +362,6 @@ def update_sheet(workbook, value_array):
     else:
         ws = workbook.create_sheet(title=value_array[0])
     return ws
-
-def save_milestones(json_str):
-    return save_metadata(json_str, MILESTONE_FILEPATH)
 
 ## Load milestone info
 def load_milestones(sheetname):

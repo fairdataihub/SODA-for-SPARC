@@ -367,10 +367,19 @@ addAwardBtn.addEventListener('click', function() {
   opt = awardArray.options[awardArray.selectedIndex].text;
   value = awardArray.options[awardArray.selectedIndex].value;
   addOption(presavedAwardArray1, opt, value);
-  // var array = [...new Set(presavedAwardArray1)];
-  // presavedAwardArray1 = array;
-  document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Award added!" + smileyCan + "</span>";
-  return [...new Set(presavedAwardArray1)];
+  var award = value;
+  var jsonArr = [];
+  jsonArr.push(award);
+  jsonStr = JSON.stringify(jsonArr);
+  client.invoke("api_save_awards", jsonStr, (error, res) => {
+       if(error) {
+         console.error(error)
+         var emessage = userError(error)
+         document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+     } else {
+         document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Award added!" + smileyCan + "</span>";
+       }
+   });
 })
 
 awardArray.addEventListener('change', function() {
