@@ -117,7 +117,9 @@ const userDownloadFolder = path.join(homedir, "Downloads")
 const awardArray = document.getElementById("select-grant-info-list")
 const presavedAwardArray1 = document.getElementById("select-presaved-grant-info-list")
 const addAwardBtn = document.getElementById("button-add-award")
-const deleteAwardBtn = document.getElementById("button-delete-award")
+const deleteMilestoneBtn = document.getElementById("button-delete-milestone")
+const saveMilestoneBtn = document.getElementById("button-save-milestone")
+const addMilestoneBtn = document.getElementById("button-add-milestone")
 
 // Prepare Submission File
 const presavedAwardArray2 = document.getElementById("presaved-award-list")
@@ -366,7 +368,6 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
 addAwardBtn.addEventListener('click', function() {
   opt = awardArray.options[awardArray.selectedIndex].text;
   value = awardArray.options[awardArray.selectedIndex].value;
-  addOption(presavedAwardArray1, opt, value);
   var award = value;
   var jsonArr = [];
   jsonArr.push(award);
@@ -377,14 +378,36 @@ addAwardBtn.addEventListener('click', function() {
          var emessage = userError(error)
          document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
      } else {
-         document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Award added!" + smileyCan + "</span>";
-       }
+         var optionStr = "";
+         var i;
+         for (i = 0; i < presavedAwardArray1.length; i++) {
+          optionStr = optionStr + presavedAwardArray1.options[i].value;
+      }
+         if (optionStr.indexOf(value) > -1) {
+          document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'> " + "Award already added!" + "</span>";
+      } else {
+          addOption(presavedAwardArray1, opt, value);
+          document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Award added!" + smileyCan + "</span>";
+          }
+        }
    });
 })
+
+// function to create milestone tables from excel datasheet
 
 awardArray.addEventListener('change', function() {
   document.getElementById("para-save-award-info").innerHTML = "";
 })
+presavedAwardArray1.addEventListener('change', function() {
+  document.getElementById("div-show-milestone-info").style.display = "block";
+})
+
+// addMilestoneBtn.addEventListener('click', function() {
+//   var table = document.getElementById("table-milestones");
+//   var row = table.insertRow(1);
+//   var cell1 = row.insertCell(0);
+//   var cell2 = row.insertCell(1);
+// })
 
 // Load milestone info
 presavedAwardArray2.addEventListener('change', function() {

@@ -85,8 +85,24 @@
               <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:65%; padding: 6px 8px; font-size:14px">
                 <option>Select</option>
               </select>
-               <div id="div-show-milestone-info"></div>
-           </div>
+            </div>
+            <p></p>
+            <div class="demo-controls" align="center">
+               <div id="div-show-milestone-info" class="pathtable" style="display:none;width:65%;border-radius:5px;">
+               <table id="table-milestones">
+                 <tr>
+                   <th style="width:50%">Milestone</th>
+                   <th style="width:25%">Completion Date</th>
+                   <th style="width:25%"></th>
+                </tr>
+                <tr>
+                   <td><input class="form-container-input" placeholder="Enter milestone..."/></td>
+                   <td><input type="date" placeholder="YYYY-MM-DD" class="form-container-input"/></td>
+                   <td><input id="button-save-milestone" type='button' value='Save' class="demo-button-table" style="font-size:13px">
+                   <input id="button-delete-milestone" type='button' value='Delete' class='demo-button-table' style="float:left;font-size:13px"></td>
+               </table>
+               </div>
+            </div>
           </div>
 
         </div>
