@@ -113,12 +113,12 @@ const homedir = os.homedir()
 const userDownloadFolder = path.join(homedir, "Downloads")
 
 // Save grant information
-// const milestoneArray = document.getElementById("milestone-list")
+const milestoneArray = document.getElementById("table-milestones")
 const awardArray = document.getElementById("select-grant-info-list")
 const presavedAwardArray1 = document.getElementById("select-presaved-grant-info-list")
 const addAwardBtn = document.getElementById("button-add-award")
 const deleteMilestoneBtn = document.getElementById("button-delete-milestone")
-const saveMilestoneBtn = document.getElementById("button-save-milestone")
+const editMilestoneBtn = document.getElementById("button-edit-milestone")
 const addMilestoneBtn = document.getElementById("button-add-milestone")
 
 // Prepare Submission File
@@ -409,32 +409,76 @@ presavedAwardArray1.addEventListener('change', function() {
 //   var cell2 = row.insertCell(1);
 // })
 
+Editable milestone info
+function editMilestone(elements) {
+   // elements = document.querySelectorAll('.demo-button-table.milestone');
+      elements.forEach((element,key) => {
+        if (element.value = 'Edit') {
+          element.value = 'Save';
+          var rowIndex = element.rowIndex;
+          milestoneArray.rows[rowIndex].cells[1].contentEditable = true;
+          milestoneArray.rows[rowIndex].cells[0].contentEditable = true;
+      } else {
+          milestoneArray.deleteRow(rowIndex)
+      }
+   })
+}
+
+var editDelButton = document.querySelectorAll('.demo-button-table.milestone');
+console.log(editDelButton)
+
+editMilestone(editDelButton)
+
 // Load milestone info
-presavedAwardArray2.addEventListener('change', function() {
-  document.getElementById("selected-milestone-date").value = "";
-  document.getElementById("selected-milestone").value = "";
-  opt = awardArray.options[awardArray.selectedIndex].value;
+presavedAwardArray1.addEventListener('change', function() {
+  opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
   sheet = JSON.stringify(opt)
   client.invoke("api_load_milestones", opt, (error, res) => {
     if(error) {
       console.error(error)
   } else {
-      var data = '';
-      var tupleArray = [];
-      for (var i = 0; i < res.length; i++) {
-        data += '<option value="'+ res[i][0] + '" />';
-        tupleArray.push([res[i][0],res[i][1]])
-      };
-      milestoneArray.innerHTML = data;
-      // populate milestone date based on selected milestone
-      document.getElementById("selected-milestone").addEventListener('change', () => {
-        selectedOpt = document.getElementById("selected-milestone").value;
-        for (var i = 0; i< tupleArray.length; i++) {
-          if (tupleArray[i][0] === selectedOpt) {
-            document.getElementById("selected-milestone-date").value = tupleArray[i][1]
-          }
+      // var data = '';
+      // var tupleArray = [];
+      // for (var i = 0; i < res.length; i++) {
+      //   // data += '<option value="'+ res[i][0] + '" />';
+      //   tupleArray.push([res[i][0],res[i][1]])
+      // };
+      if (res.length > 0) {
+        for (i = 0; i < res.length; i++) {
+            var row = milestoneArray.insertRow(1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var buttonEdit = document.getElementById("button-edit-milestone");
+            buttonEdit.value = "Edit"
+            var buttonDel = document.getElementById("button-delete-milestone");
+            buttonDel.style.display = "block";
+            var cloneEdit = buttonEdit.cloneNode(true);
+            var cloneDel = buttonDel.cloneNode(true);
+            cell3.appendChild(cloneEdit);
+            cell3.appendChild(cloneDel);
+            console.log(cell3);
+            cell1.innerHTML = res[i][0];
+            cell2.innerHTML = res[i][1];
+            cell1.style.color = "black";
+            cell2.style.color = "black";
+            // cell1.className = "form-container-input"
+            console.log([cell1.innerHTML, cell2.innerHTML])
         }
-      })
+          var row = milestoneArray.insertRow(-1);
+          row = document.getElementById("first-milestone-row");
+      }
+        return milestoneArray
+
+      // // populate milestone date based on selected milestone
+      // document.getElementById("selected-milestone").addEventListener('change', () => {
+      //   selectedOpt = document.getElementById("selected-milestone").value;
+      //   for (var i = 0; i< tupleArray.length; i++) {
+      //     if (tupleArray[i][0] === selectedOpt) {
+      //       document.getElementById("selected-milestone-date").value = tupleArray[i][1]
+      //     }
+      //   }
+      // })
     }
   })
 });
