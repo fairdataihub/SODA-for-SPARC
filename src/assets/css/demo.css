@@ -362,7 +362,7 @@ textarea.outputprint{
 select.my-dropdown {
     width:60%;
     padding: 8px 12px;
-    border: 1px solid;
+    border: 1px solid black;
     border-radius: 5px;
     background-color: #ffffff;
     font: inherit;
@@ -789,7 +789,7 @@ label.input-banner-img{
   /* width:60%; */
   padding: 6px 8px;
   margin-bottom: 10px;
-  border: 2px solid #eee;
+  border: 1px solid black;
   border-radius: 5px;
   background-color: #ffffff;
   font: inherit;
@@ -815,7 +815,7 @@ label.input-banner-img{
   /* background-clip: padding-box; */
   line-height: 2;
   width: 100%;
-  border: 2px solid #eee;
+  border: 1px solid #C0C0C0;
   margin-bottom: 10px;
   border-radius: 5px;
   transition: #258193 .25s ease-out;
@@ -829,7 +829,7 @@ label.input-banner-img{
   line-height: 1.5;
   width: 100%;
   margin-bottom: 8px;
-  border: 2px solid #eee;
+  border: 1px solid #C0C0C0;
   border-left: 2px solid #258193;
   border-radius: 5px;
   transition: #258193 .25s ease-out;

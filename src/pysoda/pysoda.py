@@ -380,6 +380,13 @@ def load_milestones(sheetname):
 
     return data
 
+def delete_awards(json_str):
+    val_arr = json.loads(json_str)
+    wb = load_workbook(MILESTONE_FILEPATH)
+    ws = wb[val_arr[0]]
+    wb.remove_sheet(wb[ws])
+
+    wb.save(MILESTONE_FILEPATH)
 
 ### Prepare submission file
 def save_submission_file(filepath, json_str):

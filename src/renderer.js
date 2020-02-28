@@ -120,6 +120,8 @@ const addAwardBtn = document.getElementById("button-add-award")
 const deleteMilestoneBtn = document.getElementById("button-delete-milestone")
 const editMilestoneBtn = document.getElementById("button-edit-milestone")
 const addMilestoneBtn = document.getElementById("button-add-milestone")
+var rowIndex
+const deleteAwardBtn = document.getElementById("button-delete-award")
 
 // Prepare Submission File
 const presavedAwardArray2 = document.getElementById("presaved-award-list")
@@ -393,11 +395,25 @@ addAwardBtn.addEventListener('click', function() {
    });
 })
 
+// Delete award
+deleteAwardBtn.addEventListener('click', function() {
+  opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+  json_str = JSON.stringify(opt);
+  presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
+  document.getElementById("div-show-milestone-info").style.display = "none";
+  client.invoke("api_delete_awards", json_str, (error, res) => {
+    if(error) {
+      console.error(error)
+    }
+  })
+})
+
 // function to create milestone tables from excel datasheet
 
 awardArray.addEventListener('change', function() {
   document.getElementById("para-save-award-info").innerHTML = "";
 })
+
 presavedAwardArray1.addEventListener('change', function() {
   document.getElementById("div-show-milestone-info").style.display = "block";
 })
@@ -459,38 +475,46 @@ presavedAwardArray1.addEventListener('change', function() {
       //   // data += '<option value="'+ res[i][0] + '" />';
       //   tupleArray.push([res[i][0],res[i][1]])
       // };
+      // var rowcount = 0;
+      var count = 0;
+      var rowcount = milestoneArray.rowIndex;
       if (res.length > 0) {
         for (i = 0; i < res.length; i++) {
-            var row = milestoneArray.insertRow(1);
-            var cell1 = row.insertCell(0);
-            var cell2 = row.insertCell(1);
-            var cell3 = row.insertCell(2);
-            cell1.innerHTML = res[i][0];
-            cell2.innerHTML = res[i][1];
-            cell1.style.color = "black";
-            cell2.style.color = "black";
-            var buttonEdit = document.createElement("input");
-            buttonEdit.type = "button";
-            buttonEdit.className = "demo-button-table milestone";
-            buttonEdit.onclick = function() {
-              console.log(milestoneArray.rows[i].cells[1].rowIndex);
-              milestoneArray.rows[i].cells[1].contentEditable = true;
-              milestoneArray.rows[i].cells[0].contentEditable = true;
-            };
-            // buttonEdit.className = ("demo-button-table.milestone");
-            buttonEdit.value = "Edit";
-            var buttonDel = document.createElement("input");
-            buttonDel.type = "button";
-            buttonDel.value = "Delete";
-            buttonDel.className = ("demo-button-table milestone");
-            buttonDel.onclick =function() {
-               milestoneArray.deleteRow(1);
-            };
-            cell3.appendChild(buttonEdit);
-            cell3.appendChild(buttonDel);
-            // cell1.className = "form-container-input"
-            console.log([cell1.innerHTML, cell2.innerHTML])
-        }
+          rowIndex = rowIndex + 1;
+          var arrayLen = rowIndex;
+          var rownum = rowcount + i + 1;
+          var row = milestoneArray.insertRow(rownum).outerHTML="<tr id='row-milestone"+arrayLen+"'style='color: #000000;'><td id='name-row-milestone"+arrayLen+"'>"+ res[i][0]+"</td><td id='name-row-date"+arrayLen+"'>"+ res[i][1]+"</td><td><input type='button' id='edit-milestone-button"+arrayLen+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+arrayLen+")'> <input type='button' id='save-milestone-button"+arrayLen+"' value='Save' class='demo-button-table' onclick='save_milestone("+arrayLen+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+arrayLen+")'></td></tr>";
+
+        //   var row = milestoneArray.insertRow(1);
+        //   var cell1 = row.insertCell(0);
+        //   var cell2 = row.insertCell(1);
+        //   var cell3 = row.insertCell(2);
+        //   cell1.innerHTML = res[i][0];
+        //   cell2.innerHTML = res[i][1];
+        //   cell1.style.color = "black";
+        //   cell2.style.color = "black";
+        //   var buttonEdit = document.createElement("input");
+        //   buttonEdit.type = "button";
+        //   buttonEdit.className = "demo-button-table milestone";
+        //   buttonEdit.onclick = function() {
+        //     console.log(milestoneArray.rows[i].cells[1].rowIndex);
+        //     milestoneArray.rows[i].cells[1].contentEditable = true;
+        //     milestoneArray.rows[i].cells[0].contentEditable = true;
+        //   };
+        //   // buttonEdit.className = ("demo-button-table.milestone");
+        //   buttonEdit.value = "Edit";
+        //   var buttonDel = document.createElement("input");
+        //   buttonDel.type = "button";
+        //   buttonDel.value = "Delete";
+        //   buttonDel.className = ("demo-button-table milestone");
+        //   buttonDel.onclick =function() {
+        //      milestoneArray.deleteRow(1);
+        //     };
+        //     cell3.appendChild(buttonEdit);
+        //     cell3.appendChild(buttonDel);
+        //     // cell1.className = "form-container-input"
+        //     console.log([cell1.innerHTML, cell2.innerHTML])
+        // }
           // var row = milestoneArray.insertRow(-1);
           // row = document.getElementById("default-milestone-row");
       }
@@ -506,6 +530,7 @@ presavedAwardArray1.addEventListener('change', function() {
       //   }
       // })
     }
+  }
   })
 });
 
