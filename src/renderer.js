@@ -408,26 +408,42 @@ presavedAwardArray1.addEventListener('change', function() {
 //   var cell1 = row.insertCell(0);
 //   var cell2 = row.insertCell(1);
 // })
+//
+// function editMilestone(element) {
+//    // elements = document.querySelectorAll('.demo-button-table.milestone');
+//         if (element.value = 'Edit') {
+//           element.value = 'Save';
+//           var rowIndex = element.rowIndex;
+//           milestoneArray.rows[rowIndex].cells[1].contentEditable = true;
+//           milestoneArray.rows[rowIndex].cells[0].contentEditable = true;
+//       } else {
+//           milestoneArray.deleteRow(rowIndex)
+//       }
+// }
+//
+// var milestoneTableBtns = document.querySelectorAll('.demo-button-table.milestone');
+//
+// for (var i = 0; i < milestoneTableBtns.length; i++) {
+//   milestoneTableBtns[i].addEventListener("click", function() {
+//     console.log(milestoneTableBtns[i]);
+//     editMilestone(milestoneTableBtns[i])
+//   })
+// }
 
-Editable milestone info
-function editMilestone(elements) {
-   // elements = document.querySelectorAll('.demo-button-table.milestone');
-      elements.forEach((element,key) => {
-        if (element.value = 'Edit') {
-          element.value = 'Save';
-          var rowIndex = element.rowIndex;
-          milestoneArray.rows[rowIndex].cells[1].contentEditable = true;
-          milestoneArray.rows[rowIndex].cells[0].contentEditable = true;
-      } else {
-          milestoneArray.deleteRow(rowIndex)
-      }
-   })
-}
+// var buttonEdit = document.getElementById("edit-button");
+// buttonEdit.addEventListener("click", function() {
+//     buttonEdit.value = 'Save';
+//     var rowIndex = buttonEdit.cellIndex;
+//     console.log(rowIndex);
+//     milestoneArray.rows[rowIndex].cells[1].contentEditable = true;
+//     milestoneArray.rows[rowIndex].cells[0].contentEditable = true;
+// })
 
-var editDelButton = document.querySelectorAll('.demo-button-table.milestone');
-console.log(editDelButton)
-
-editMilestone(editDelButton)
+// var buttonDel = document.getElementById("del-button");
+// buttonDel.addEventListener("click", function() {
+//     var rowIndex = buttonDel.rowIndex;
+//     milestoneArray.deleteRow(rowIndex);
+// })
 
 // Load milestone info
 presavedAwardArray1.addEventListener('change', function() {
@@ -449,24 +465,34 @@ presavedAwardArray1.addEventListener('change', function() {
             var cell1 = row.insertCell(0);
             var cell2 = row.insertCell(1);
             var cell3 = row.insertCell(2);
-            var buttonEdit = document.getElementById("button-edit-milestone");
-            buttonEdit.value = "Edit"
-            var buttonDel = document.getElementById("button-delete-milestone");
-            buttonDel.style.display = "block";
-            var cloneEdit = buttonEdit.cloneNode(true);
-            var cloneDel = buttonDel.cloneNode(true);
-            cell3.appendChild(cloneEdit);
-            cell3.appendChild(cloneDel);
-            console.log(cell3);
             cell1.innerHTML = res[i][0];
             cell2.innerHTML = res[i][1];
             cell1.style.color = "black";
             cell2.style.color = "black";
+            var buttonEdit = document.createElement("input");
+            buttonEdit.type = "button";
+            buttonEdit.className = "demo-button-table milestone";
+            buttonEdit.onclick = function() {
+              console.log(milestoneArray.rows[i].cells[1].rowIndex);
+              milestoneArray.rows[i].cells[1].contentEditable = true;
+              milestoneArray.rows[i].cells[0].contentEditable = true;
+            };
+            // buttonEdit.className = ("demo-button-table.milestone");
+            buttonEdit.value = "Edit";
+            var buttonDel = document.createElement("input");
+            buttonDel.type = "button";
+            buttonDel.value = "Delete";
+            buttonDel.className = ("demo-button-table milestone");
+            buttonDel.onclick =function() {
+               milestoneArray.deleteRow(1);
+            };
+            cell3.appendChild(buttonEdit);
+            cell3.appendChild(buttonDel);
             // cell1.className = "form-container-input"
             console.log([cell1.innerHTML, cell2.innerHTML])
         }
-          var row = milestoneArray.insertRow(-1);
-          row = document.getElementById("first-milestone-row");
+          // var row = milestoneArray.insertRow(-1);
+          // row = document.getElementById("default-milestone-row");
       }
         return milestoneArray
 

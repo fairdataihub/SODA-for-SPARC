@@ -85,6 +85,8 @@
               <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:65%; padding: 6px 8px; font-size:14px">
                 <option>Select</option>
               </select>
+              <br>
+              <button id="button-delete-award" class="demo-button" style="font-size:15px;width:140px;margin-left:10px">Delete award</button>
             </div>
             <p></p>
             <div class="demo-controls">
@@ -97,13 +99,26 @@
                    <th style="width:25%">Completion Date</th>
                    <th style="width:25%"></th>
                 </tr>
-                <tr id="first-milestone-row">
+                <tr id="default-milestone-row">
                    <td><input class="form-container-input" placeholder="Add a milestone..." style="text-align:center"/></td>
-                   <td><input type="date" name="date" class="form-container-input" style="margin-left:10px"/></td>
+                   <td><input type="date" name="date" style="text-align:center;font:inherit" class="form-container-input"/></td>
+                   <td><input id="button-default-save-milestone" type='button' value='Save' class="demo-button-table milestone" style="font-size:13px">
+                   <!-- <input id="button-delete-milestone" type='button' value='Delete' class='demo-button-table milestone' style="display:none;float:left;font-size:13px"></td> -->
+                </tr>
+                <tr id="first-milestone-row" style="display:none">
+                   <td></td>
+                   <td></td>
                    <td><input id="button-edit-milestone" type='button' value='Save' class="demo-button-table milestone" style="font-size:13px">
-                   <input id="button-delete-milestone" type='button' value='Delete' class='demo-button-table milestone' style="display:none;float:left;font-size:13px"></td>
+                   <input id="button-delete-milestone" type='button' value='Delete' class='demo-button-table milestone' style="float:left;font-size:13px"></td>
+                </tr>
                </table>
+               <h5></h5>
+               <div class="demo-controls" align="right">
+                 <button class="demo-button" id="button-save-milestone"> Save Information </button>
+                 <p id='para-save-milestone-status'></p>
+              </div>
                </div>
+
             </div>
           </div>
 
@@ -117,8 +132,8 @@
           <button id="button-submission-demo-toggle" class="js-container-target demo-toggle-button"> Prepare your Submission file
             <div class="demo-meta u-avoid-clicks"> Edit/Save the submission file to include in your dataset  </div>
           </button>
-          <div id="div-generate-submission-file" class="demo-box" style="width:100%">
-              <h5> Please populate the items below to generate submission file</h5>
+          <div id="div-generate-submission-file" class="demo-box" style="width:100%;margin-left:10px">
+              <h5> Populate the items below to generate submission file</h5>
             <h5></h5>
 
             <div class="form-container"><font color="black">Award Number: </font> </div>

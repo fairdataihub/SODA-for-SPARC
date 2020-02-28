@@ -802,8 +802,11 @@ label.input-banner-img{
   /* padding-right: 10px; */
   padding: 4px 6px;
   width: 150px;
-  text-align: center;
+  text-align: left;
   vertical-align: middle;
+  color: #A0A0A0;
+  font: bold;
+  font-weight: 500;
 }
 
 .form-container-input {
@@ -851,9 +854,9 @@ label.input-banner-img{
   width: 200px;
   display: block;
   float: left;
-  padding: 4px 8px;
+  padding: 8px 4px;
   padding-bottom: 20px;
-  margin-right: 10px;
+  margin-right: 20px;
   margin-left: 10px;
   line-height: 1;
   text-align: center;
