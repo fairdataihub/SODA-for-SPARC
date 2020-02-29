@@ -120,7 +120,6 @@ const addAwardBtn = document.getElementById("button-add-award")
 const deleteMilestoneBtn = document.getElementById("button-delete-milestone")
 const editMilestoneBtn = document.getElementById("button-edit-milestone")
 const addMilestoneBtn = document.getElementById("button-add-milestone")
-var rowIndex
 const deleteAwardBtn = document.getElementById("button-delete-award")
 
 // Prepare Submission File
@@ -469,22 +468,19 @@ presavedAwardArray1.addEventListener('change', function() {
     if(error) {
       console.error(error)
   } else {
-      // var data = '';
-      // var tupleArray = [];
-      // for (var i = 0; i < res.length; i++) {
-      //   // data += '<option value="'+ res[i][0] + '" />';
-      //   tupleArray.push([res[i][0],res[i][1]])
-      // };
-      // var rowcount = 0;
-      var count = 0;
-      var rowcount = milestoneArray.rowIndex;
-      if (res.length > 0) {
-        for (i = 0; i < res.length; i++) {
-          rowIndex = rowIndex + 1;
-          var arrayLen = rowIndex;
-          var rownum = rowcount + i + 1;
-          var row = milestoneArray.insertRow(rownum).outerHTML="<tr id='row-milestone"+arrayLen+"'style='color: #000000;'><td id='name-row-milestone"+arrayLen+"'>"+ res[i][0]+"</td><td id='name-row-date"+arrayLen+"'>"+ res[i][1]+"</td><td><input type='button' id='edit-milestone-button"+arrayLen+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+arrayLen+")'> <input type='button' id='save-milestone-button"+arrayLen+"' value='Save' class='demo-button-table' onclick='save_milestone("+arrayLen+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+arrayLen+")'></td></tr>";
+      data = JSON.parse(res);
 
+      /// clear old table's rows before loading new entries
+      while (milestoneArray.length>2) {
+        milestoneArray.deleteRow(1)
+      }
+
+      var rowcount = milestoneArray.rowIndex;
+      if (data.length > 0) {
+        // start at 1 to skip the header
+        var rowIndex = 1;
+        for (i = 0; i < data.length; i++) {
+          var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ data[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ data[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' class='demo-button-table' onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
         //   var row = milestoneArray.insertRow(1);
         //   var cell1 = row.insertCell(0);
         //   var cell2 = row.insertCell(1);
@@ -517,6 +513,7 @@ presavedAwardArray1.addEventListener('change', function() {
         // }
           // var row = milestoneArray.insertRow(-1);
           // row = document.getElementById("default-milestone-row");
+          rowIndex++;
       }
         return milestoneArray
 

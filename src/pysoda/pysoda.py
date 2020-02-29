@@ -28,6 +28,7 @@ from blackfynn.api.agent import agent_cmd
 from blackfynn.api.agent import AgentError, check_port, socket_address
 from urllib.request import urlopen
 import json
+from datetime import datetime
 
 from openpyxl import load_workbook
 from openpyxl import Workbook
@@ -365,8 +366,6 @@ def update_sheet(workbook, value_array):
 
 ## Load milestone info
 def load_milestones(sheetname):
-    with open(MILESTONE_FILEPATH, errors="ignore") as f:
-        f.read()
     ## get data from a worksheet
     wb = load_workbook(MILESTONE_FILEPATH)
     sheet = wb[sheetname]
@@ -376,9 +375,10 @@ def load_milestones(sheetname):
     for i in range(2,max_row+1):
         milestone=sheet.cell(row=i,column=1)
         date=sheet.cell(row=i,column=2)
-        data.append((milestone.value, date.value))
-
-    return data
+        date_val=date.value
+        data.append({"milestone": milestone.value, "date": date_val.strftime("%Y-%m-%d")})
+    json_str = json.dumps(data)
+    return json_str
 
 def delete_awards(json_str):
     val_arr = json.loads(json_str)
