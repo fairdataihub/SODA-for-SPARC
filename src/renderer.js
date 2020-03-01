@@ -121,6 +121,7 @@ const deleteMilestoneBtn = document.getElementById("button-delete-milestone")
 const editMilestoneBtn = document.getElementById("button-edit-milestone")
 const addMilestoneBtn = document.getElementById("button-add-milestone")
 const deleteAwardBtn = document.getElementById("button-delete-award")
+const addNewMilestoneBtn = document.getElementById("button-default-save-milestone")
 
 // Prepare Submission File
 const presavedAwardArray2 = document.getElementById("presaved-award-list")
@@ -480,41 +481,11 @@ presavedAwardArray1.addEventListener('change', function() {
         // start at 1 to skip the header
         var rowIndex = 1;
         for (i = 0; i < data.length; i++) {
-          var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ data[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ data[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' class='demo-button-table' onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
-        //   var row = milestoneArray.insertRow(1);
-        //   var cell1 = row.insertCell(0);
-        //   var cell2 = row.insertCell(1);
-        //   var cell3 = row.insertCell(2);
-        //   cell1.innerHTML = res[i][0];
-        //   cell2.innerHTML = res[i][1];
-        //   cell1.style.color = "black";
-        //   cell2.style.color = "black";
-        //   var buttonEdit = document.createElement("input");
-        //   buttonEdit.type = "button";
-        //   buttonEdit.className = "demo-button-table milestone";
-        //   buttonEdit.onclick = function() {
-        //     console.log(milestoneArray.rows[i].cells[1].rowIndex);
-        //     milestoneArray.rows[i].cells[1].contentEditable = true;
-        //     milestoneArray.rows[i].cells[0].contentEditable = true;
-        //   };
-        //   // buttonEdit.className = ("demo-button-table.milestone");
-        //   buttonEdit.value = "Edit";
-        //   var buttonDel = document.createElement("input");
-        //   buttonDel.type = "button";
-        //   buttonDel.value = "Delete";
-        //   buttonDel.className = ("demo-button-table milestone");
-        //   buttonDel.onclick =function() {
-        //      milestoneArray.deleteRow(1);
-        //     };
-        //     cell3.appendChild(buttonEdit);
-        //     cell3.appendChild(buttonDel);
-        //     // cell1.className = "form-container-input"
-        //     console.log([cell1.innerHTML, cell2.innerHTML])
-        // }
-          // var row = milestoneArray.insertRow(-1);
-          // row = document.getElementById("default-milestone-row");
+          var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ data[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ data[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
           rowIndex++;
-      }
+        }
+        milestoneArray.insertRow(-1).outerHTML="<tr id='row-default"+-1+"'style='color: #000000;'><td> <input type='text' id='default-row-name"+-1+"'/>"+ +"</td><td><input type='date' id='default-row-date"+-1+"'/>"+ +"</td><td><input type='button' id='edit-default-button"+-1+"' value='Edit' style=\'display:none\' class='demo-button-table' onclick='edit_milestone("+-1+")'> <input type='button' id='save-default-button"+-1+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+-1+")'> <input type='button' value='Delete row' class='demo-button-table' style=\'display:none\' onclick='delete_milestone("+-1+")'></td></tr>";
+
         return milestoneArray
 
       // // populate milestone date based on selected milestone
