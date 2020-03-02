@@ -344,6 +344,8 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
   }
 })
 
+
+
 //Save grant information
 addAwardBtn.addEventListener('click', function() {
   opt = awardArray.options[awardArray.selectedIndex].text;
@@ -367,6 +369,23 @@ addAwardBtn.addEventListener('click', function() {
           document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'> " + "Award already added!" + "</span>";
       } else {
           addOption(presavedAwardArray1, opt, value);
+
+          // create empty milestone json files for newly added award
+          var myPath = path.join(homeDirectory,"SODA", "METADATA");
+          var fileName = "milestone" + "-" + award + ".json";
+          var destinationPath = path.join(myPath, fileName);
+
+          try {
+            fs.mkdirSync(myPath, { recursive: true } );
+          } catch (error) {
+              console.log(error)
+          }
+          fs.appendFileSync(destinationPath, "", (err) => {
+              if (error) {
+                console.log(error)
+              }
+        })
+        }
           document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Award added!" + smileyCan + "</span>";
           }
         }
@@ -426,29 +445,41 @@ presavedAwardArray1.addEventListener('change', function() {
 saveInformationBtn.addEventListener("click", function() {
   var rowcount = milestoneArray.rows.length;
   opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-  jsonObj = {};
-  var key = opt;
-  jsonObj[key] = []
+  // jsonObj = {};
+  var milestoneObj = [];
   for (i=1; i<rowcount-1; i++) {
     var myMilestone = {"milestone": document.getElementById("name-row-milestone"+i).innerHTML,
                         "date": document.getElementById("name-row-date"+i).innerHTML};
-    jsonObj[key].push(myMilestone);
+    milestoneObj.push(myMilestone);
   }
+
+  var key = opt;
+  // jsonObj[key] = milestoneObj;
+  jsonStr = JSON.stringify(milestoneObj);
+
   var myPath = path.join(homeDirectory,"SODA", "METADATA");
-  var fileName = "milestones.json";
-  var destinationPath = path.join(myPath, fileName)
-  try {
-    fs.mkdirSync(myPath, { recursive: true } );
-  } catch (error) {
-      console.log(error);
+  var fileName = "milestone" + "-" + key + ".json";
+  var destinationPath = path.join(myPath, fileName);
+
+  if (fs.existsSync(destinationPath)) {
+    rawData = fs.writeFileSync(destinationPath, jsonStr);
   }
-  fs.appendFileSync(destinationPath, JSON.stringify(jsonObj), (err) => {
-      if (err) throw err;
+  else {
+    try {
+      fs.mkdirSync(myPath, { recursive: true } );
+    } catch (error) {
+        console.log(error)
+    }
+    fs.appendFileSync(destinationPath, jsonStr, (err) => {
+        if (error) {
+          console.log(error)
+        }
+  })
+}
       // TODO: check if key exists, then update keys
       // or create a seperate json file for each award number
-      }
-  });
 })
+
 
 // Function to add options to dropdown list
 var addOption = function(selectbox, text, value) {
