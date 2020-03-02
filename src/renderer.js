@@ -464,13 +464,14 @@ presavedAwardArray1.addEventListener('change', function() {
 // Load milestone info
 presavedAwardArray1.addEventListener('change', function() {
   opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-  sheet = JSON.stringify(opt)
+  // sheet = JSON.stringify(opt)
+  // console.log(sheet);
+  // console.log(typeof sheet);
   client.invoke("api_load_milestones", opt, (error, res) => {
     if(error) {
       console.error(error)
   } else {
-      data = JSON.parse(res);
-
+      data = res;
       /// clear old table's rows before loading new entries
       while (milestoneArray.length>2) {
         milestoneArray.deleteRow(1)
@@ -484,7 +485,7 @@ presavedAwardArray1.addEventListener('change', function() {
           var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ data[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ data[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
           rowIndex++;
         }
-        milestoneArray.insertRow(-1).outerHTML="<tr id='row-default"+-1+"'style='color: #000000;'><td> <input type='text' id='default-row-name"+-1+"'/>"+ +"</td><td><input type='date' id='default-row-date"+-1+"'/>"+ +"</td><td><input type='button' id='edit-default-button"+-1+"' value='Edit' style=\'display:none\' class='demo-button-table' onclick='edit_milestone("+-1+")'> <input type='button' id='save-default-button"+-1+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+-1+")'> <input type='button' value='Delete row' class='demo-button-table' style=\'display:none\' onclick='delete_milestone("+-1+")'></td></tr>";
+        // milestoneArray.insertRow(-1).outerHTML="<tr id='row-default"+-1+"'style='color: #000000;'><td> <input type='text' id='default-row-name"+-1+"'/>"+ +"</td><td><input type='date' id='default-row-date"+-1+"'/>"+ +"</td><td><input type='button' id='edit-default-button"+-1+"' value='Edit' style=\'display:none\' class='demo-button-table' onclick='edit_milestone("+-1+")'> <input type='button' id='save-default-button"+-1+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+-1+")'> <input type='button' value='Delete row' class='demo-button-table' style=\'display:none\' onclick='delete_milestone("+-1+")'></td></tr>";
 
         return milestoneArray
 

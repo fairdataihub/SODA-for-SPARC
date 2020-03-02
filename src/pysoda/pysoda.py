@@ -346,6 +346,7 @@ def save_awards(json_str):
     ws["A1"].font = Font(bold=True)
     ws["B1"] = "Tentative completion date"
     ws["B1"].font = Font(bold=True)
+
     wb.save(MILESTONE_FILEPATH)
 
 def save_milestones(json_str):
@@ -353,6 +354,7 @@ def save_milestones(json_str):
     wb = load_workbook(MILESTONE_FILEPATH)
     ws = wb[val_arr[0]]
     ws.append((val_arr[1], val_arr[2]))
+
     wb.save(MILESTONE_FILEPATH)
 
 ## Update an existing excel sheet or create sheet
@@ -373,12 +375,13 @@ def load_milestones(sheetname):
     data = []
 
     for i in range(2,max_row+1):
-        milestone=sheet.cell(row=i,column=1)
-        date=sheet.cell(row=i,column=2)
-        date_val=date.value
-        data.append({"milestone": milestone.value, "date": date_val.strftime("%Y-%m-%d")})
-    json_str = json.dumps(data)
-    return json_str
+        milestone = sheet.cell(row=i,column=1).value
+        date = sheet.cell(row=i,column=2).value
+        # date_val = date.value
+        data.append({"milestone": milestone, "date": date.strftime("%Y-%m-%d")})
+        #datetime.strptime(date, "%Y-%m-%d")
+    # json_str = json.dumps(data)
+    return data
 
 def delete_awards(json_str):
     val_arr = json.loads(json_str)
