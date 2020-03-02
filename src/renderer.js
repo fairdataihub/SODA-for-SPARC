@@ -109,8 +109,6 @@ const downloadSamples = document.getElementById("a-samples")
 const downloadSubjects = document.getElementById("a-subjects")
 const downloadDescription = document.getElementById("a-description")
 const downloadManifest = document.getElementById("a-manifest")
-const homedir = os.homedir()
-const userDownloadFolder = path.join(homedir, "Downloads")
 
 // Save grant information
 const milestoneArray = document.getElementById("table-milestones")
@@ -122,6 +120,7 @@ const editMilestoneBtn = document.getElementById("button-edit-milestone")
 const addMilestoneBtn = document.getElementById("button-add-milestone")
 const deleteAwardBtn = document.getElementById("button-delete-award")
 const addNewMilestoneBtn = document.getElementById("button-default-save-milestone")
+const saveInformationBtn = document.getElementById("button-save-milestone")
 
 // Prepare Submission File
 const presavedAwardArray2 = document.getElementById("presaved-award-list")
@@ -345,27 +344,6 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
   }
 })
 
-// Save milestone information
-// saveMilestoneBtn.addEventListener('click', function(){
-//   var award = presavedAwardArray.options[presavedAwardArray.selectedIndex].value;
-//   var milestone = document.getElementById("presaved-milestone").value;
-//   var date = document.getElementById("presaved-milestone-date").value;
-//   var jsonArr = [];
-//   jsonArr.push(award);
-//   jsonArr.push(milestone);
-//   jsonArr.push(date);
-//   jsonStr = JSON.stringify(jsonArr);
-//   client.invoke("api_save_milestones", jsonStr, (error, res) => {
-//        if(error) {
-//          console.error(error)
-//          var emessage = userError(error)
-//          document.getElementById("para-save-milestone-info").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-//      } else {
-//          document.getElementById("para-save-milestone-info").innerHTML = "<span style='color: black;'>Saved!</span>"
-//        }
-//    });
-// });
-
 //Save grant information
 addAwardBtn.addEventListener('click', function() {
   opt = awardArray.options[awardArray.selectedIndex].text;
@@ -409,7 +387,6 @@ deleteAwardBtn.addEventListener('click', function() {
 })
 
 // function to create milestone tables from excel datasheet
-
 awardArray.addEventListener('change', function() {
   document.getElementById("para-save-award-info").innerHTML = "";
 })
@@ -418,55 +395,9 @@ presavedAwardArray1.addEventListener('change', function() {
   document.getElementById("div-show-milestone-info").style.display = "block";
 })
 
-// addMilestoneBtn.addEventListener('click', function() {
-//   var table = document.getElementById("table-milestones");
-//   var row = table.insertRow(1);
-//   var cell1 = row.insertCell(0);
-//   var cell2 = row.insertCell(1);
-// })
-//
-// function editMilestone(element) {
-//    // elements = document.querySelectorAll('.demo-button-table.milestone');
-//         if (element.value = 'Edit') {
-//           element.value = 'Save';
-//           var rowIndex = element.rowIndex;
-//           milestoneArray.rows[rowIndex].cells[1].contentEditable = true;
-//           milestoneArray.rows[rowIndex].cells[0].contentEditable = true;
-//       } else {
-//           milestoneArray.deleteRow(rowIndex)
-//       }
-// }
-//
-// var milestoneTableBtns = document.querySelectorAll('.demo-button-table.milestone');
-//
-// for (var i = 0; i < milestoneTableBtns.length; i++) {
-//   milestoneTableBtns[i].addEventListener("click", function() {
-//     console.log(milestoneTableBtns[i]);
-//     editMilestone(milestoneTableBtns[i])
-//   })
-// }
-
-// var buttonEdit = document.getElementById("edit-button");
-// buttonEdit.addEventListener("click", function() {
-//     buttonEdit.value = 'Save';
-//     var rowIndex = buttonEdit.cellIndex;
-//     console.log(rowIndex);
-//     milestoneArray.rows[rowIndex].cells[1].contentEditable = true;
-//     milestoneArray.rows[rowIndex].cells[0].contentEditable = true;
-// })
-
-// var buttonDel = document.getElementById("del-button");
-// buttonDel.addEventListener("click", function() {
-//     var rowIndex = buttonDel.rowIndex;
-//     milestoneArray.deleteRow(rowIndex);
-// })
-
 // Load milestone info
 presavedAwardArray1.addEventListener('change', function() {
   opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-  // sheet = JSON.stringify(opt)
-  // console.log(sheet);
-  // console.log(typeof sheet);
   client.invoke("api_load_milestones", opt, (error, res) => {
     if(error) {
       console.error(error)
@@ -477,7 +408,7 @@ presavedAwardArray1.addEventListener('change', function() {
         milestoneArray.deleteRow(1)
       }
 
-      var rowcount = milestoneArray.rowIndex;
+      // var rowcount = milestoneArray.rowIndex;
       if (data.length > 0) {
         // start at 1 to skip the header
         var rowIndex = 1;
@@ -486,22 +417,38 @@ presavedAwardArray1.addEventListener('change', function() {
           rowIndex++;
         }
         // milestoneArray.insertRow(-1).outerHTML="<tr id='row-default"+-1+"'style='color: #000000;'><td> <input type='text' id='default-row-name"+-1+"'/>"+ +"</td><td><input type='date' id='default-row-date"+-1+"'/>"+ +"</td><td><input type='button' id='edit-default-button"+-1+"' value='Edit' style=\'display:none\' class='demo-button-table' onclick='edit_milestone("+-1+")'> <input type='button' id='save-default-button"+-1+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+-1+")'> <input type='button' value='Delete row' class='demo-button-table' style=\'display:none\' onclick='delete_milestone("+-1+")'></td></tr>";
-
         return milestoneArray
-
-      // // populate milestone date based on selected milestone
-      // document.getElementById("selected-milestone").addEventListener('change', () => {
-      //   selectedOpt = document.getElementById("selected-milestone").value;
-      //   for (var i = 0; i< tupleArray.length; i++) {
-      //     if (tupleArray[i][0] === selectedOpt) {
-      //       document.getElementById("selected-milestone-date").value = tupleArray[i][1]
-      //     }
-      //   }
-      // })
-    }
-  }
+  }}
   })
 });
+
+// Function to save milestone information to a presaved information sheet
+saveInformationBtn.addEventListener("click", function() {
+  var rowcount = milestoneArray.rows.length;
+  opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+  jsonObj = {};
+  var key = opt;
+  jsonObj[key] = []
+  for (i=1; i<rowcount-1; i++) {
+    var myMilestone = {"milestone": document.getElementById("name-row-milestone"+i).innerHTML,
+                        "date": document.getElementById("name-row-date"+i).innerHTML};
+    jsonObj[key].push(myMilestone);
+  }
+  var myPath = path.join(homeDirectory,"SODA", "METADATA");
+  var fileName = "milestones.json";
+  var destinationPath = path.join(myPath, fileName)
+  try {
+    fs.mkdirSync(myPath, { recursive: true } );
+  } catch (error) {
+      console.log(error);
+  }
+  fs.appendFileSync(destinationPath, JSON.stringify(jsonObj), (err) => {
+      if (err) throw err;
+      // TODO: check if key exists, then update keys
+      // or create a seperate json file for each award number
+      }
+  });
+})
 
 // Function to add options to dropdown list
 var addOption = function(selectbox, text, value) {
@@ -552,7 +499,6 @@ ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
     var award = awardArray.options[awardArray.selectedIndex].value;
     var milestone = document.getElementById("selected-milestone").value;
     var date = document.getElementById("selected-milestone-date").value;
-    console.log(date);
     var json_arr = [];
     json_arr.push(award);
     json_arr.push(milestone);

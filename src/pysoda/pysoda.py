@@ -394,7 +394,6 @@ def delete_awards(json_str):
 ### Prepare submission file
 def save_submission_file(filepath, json_str):
     source = join(dirname( __file__ ), "..", "file_templates", "submission.xlsx")
-    # source = r"..\file_templates\submission.xlsx"
     destination = filepath
     shutil.copyfile(source, destination)
     # json array to python list
@@ -402,9 +401,11 @@ def save_submission_file(filepath, json_str):
     # write to excel file
     wb = load_workbook(destination)
     ws1 = wb['Sheet1']
+    date_obj = datetime.strptime(val_arr[2], "%Y-%m-%d")
+    date_new = date_obj.strftime("%m-%d-%Y")
     ws1["C2"] = val_arr[0]
     ws1["C3"] = val_arr[1]
-    ws1["C4"] = val_arr[2]
+    ws1["C4"] = date_new
 
     wb.save(destination)
 
