@@ -344,24 +344,23 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
   }
 })
 
+var awardsPath = path.join(homeDirectory,"SODA", "METADATA");
+var awardFileName = "awards.json";
+var destinationPath = path.join(awardsPath, awardFileName);
+
 // Auto load existing awards
 function loadAwards() {
-  filePath = path.join(homeDirectory,"SODA", "METADATA", "awards.json")
-  var rawData = fs.readFile(filePath, "utf8", function(error, contents) {
+  var rawData = fs.readFile(destinationPath, "utf8", function(error, contents) {
     if (error) {
       console.log(error)
     } else {
       awards = JSON.parse(contents);
-      console.log(awards);
       for (var i=0;i<awards.length;i++) {
         var valuePair = awards[i];
-        console.log(valuePair);
-        // for(var item in valuePair) {
-        //   var value = valuePair[item];
-        //   var key = item;
         var key = Object.keys(awards[i]);
+        // Add to existing award array (dropdown's text=value, dropdown's value = key)
         addOption(presavedAwardArray1, eval(JSON.stringify(valuePair[key])), JSON.stringify(key[0]));
-        console.log(key);
+        addOption(presavedAwardArray2, eval(JSON.stringify(valuePair[key])), JSON.stringify(key[0]));
       }
     }
   })
@@ -373,11 +372,8 @@ addAwardBtn.addEventListener('click', function() {
   var opt = awardArray.options[awardArray.selectedIndex].text;
   var awardNumber = awardArray.options[awardArray.selectedIndex].value;
   // create empty milestone json files for newly added award
-  var myPath = path.join(homeDirectory,"SODA", "METADATA");
-  var fileName = "awards.json";
-  var destinationPath = path.join(myPath, fileName);
   try {
-    fs.mkdirSync(myPath, { recursive: true } );
+    fs.mkdirSync(awardsPath, { recursive: true } );
   } catch (error) {
       console.log(error)
   }
@@ -390,6 +386,7 @@ addAwardBtn.addEventListener('click', function() {
   }
   var found = false;
   for (var i=0; i<awardsJson.length; i++) {
+
     if (Object.keys(awardsJson[i])[0] === awardNumber) {
       found = true;
       break
@@ -409,15 +406,27 @@ addAwardBtn.addEventListener('click', function() {
 
 // Delete award
 deleteAwardBtn.addEventListener('click', function() {
-  opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-  json_str = JSON.stringify(opt);
-  presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
-  document.getElementById("div-show-milestone-info").style.display = "none";
-  client.invoke("api_delete_awards", json_str, (error, res) => {
-    if(error) {
-      console.error(error)
+  value = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+  // json_str = JSON.stringify(opt);
+  try {
+    var content = fs.readFileSync(destinationPath);
+    awardsJson = JSON.parse(content);
+  } catch (error) {
+    console.log(error);
+  }
+  // Loop through list of awards
+  for (var i=0; i<awardsJson.length; i++) {
+    var valuePair = awardsJson[i];
+    var key = Object.keys(awardsJson[i]);
+    if (JSON.stringify(key[0])===value) {
+      delete awardsJson[i];
+      break
     }
-  })
+  }
+  fs.writeFileSync(destinationPath, JSON.stringify(awardsJson));
+  presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
+  presavedAwardArray2.remove(presavedAwardArray2.selectedIndex);
+  document.getElementById("div-show-milestone-info").style.display = "none";
 })
 
 // function to create milestone tables from excel datasheet
@@ -429,31 +438,47 @@ presavedAwardArray1.addEventListener('change', function() {
   document.getElementById("div-show-milestone-info").style.display = "block";
 })
 
-// Load milestone info
-presavedAwardArray1.addEventListener('change', function() {
-  opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-  client.invoke("api_load_milestones", opt, (error, res) => {
-    if(error) {
-      console.error(error)
+addNewMilestoneBtn.addEventListener("click", function() {
+  milestoneVal = document.getElementById("input-milestone-new").value;
+  dateVal = document.getElementById("input-date-new").value;
+    // start at 1 to skip the header
+  var rowcount = milestoneArray.rows.length;
+  if (rowcount===2) {
+    var rowIndex = 1;
   } else {
-      data = res;
-      /// clear old table's rows before loading new entries
-      while (milestoneArray.length>2) {
-        milestoneArray.deleteRow(1)
-      }
-      // var rowcount = milestoneArray.rowIndex;
-      if (data.length > 0) {
-        // start at 1 to skip the header
-        var rowIndex = 1;
-        for (i = 0; i < data.length; i++) {
-          var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ data[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ data[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
-          rowIndex++;
-        }
-        // milestoneArray.insertRow(-1).outerHTML="<tr id='row-default"+-1+"'style='color: #000000;'><td> <input type='text' id='default-row-name"+-1+"'/>"+ +"</td><td><input type='date' id='default-row-date"+-1+"'/>"+ +"</td><td><input type='button' id='edit-default-button"+-1+"' value='Edit' style=\'display:none\' class='demo-button-table' onclick='edit_milestone("+-1+")'> <input type='button' id='save-default-button"+-1+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+-1+")'> <input type='button' value='Delete row' class='demo-button-table' style=\'display:none\' onclick='delete_milestone("+-1+")'></td></tr>";
-        return milestoneArray
-  }}
-  })
-});
+    var rowIndex = rowcount-1;
+  }
+  var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneVal +"</td><td id='name-row-date"+rowIndex+"'>"+ dateVal+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
+  document.getElementById("input-milestone-new").value = "";
+  document.getElementById("input-date-new").value = "";
+})
+
+
+// Load milestone info
+// presavedAwardArray1.addEventListener('change', function() {
+//   opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+//   client.invoke("api_load_milestones", opt, (error, res) => {
+//     if(error) {
+//       console.error(error)
+//   } else {
+//       data = res;
+//       /// clear old table's rows before loading new entries
+//       while (milestoneArray.length>2) {
+//         milestoneArray.deleteRow(1)
+//       }
+//       // var rowcount = milestoneArray.rowIndex;
+//       if (data.length > 0) {
+//         // start at 1 to skip the header
+//         var rowIndex = 1;
+//         for (i = 0; i < data.length; i++) {
+//           var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ data[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ data[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
+//           rowIndex++;
+//         }
+//         // milestoneArray.insertRow(-1).outerHTML="<tr id='row-default"+-1+"'style='color: #000000;'><td> <input type='text' id='default-row-name"+-1+"'/>"+ +"</td><td><input type='date' id='default-row-date"+-1+"'/>"+ +"</td><td><input type='button' id='edit-default-button"+-1+"' value='Edit' style=\'display:none\' class='demo-button-table' onclick='edit_milestone("+-1+")'> <input type='button' id='save-default-button"+-1+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+-1+")'> <input type='button' value='Delete row' class='demo-button-table' style=\'display:none\' onclick='delete_milestone("+-1+")'></td></tr>";
+//         return milestoneArray
+//   }}
+//   })
+// });
 
 // Function to save milestone information to a presaved information sheet
 // saveInformationBtn.addEventListener("click", function() {
