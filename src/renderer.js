@@ -566,17 +566,51 @@ function done(err) {
     }
 });
 
+/// function to populate Submission file fields from presaved information
+presavedAwardArray2.addEventListener('change', function() {
+  award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
+  try {
+    var content = fs.readFileSync(milestonePath);
+    var informationJson = JSON.parse(content);
+  } catch (error) {
+    console.log(error);
+  }
+  var milestoneInput = document.getElementById("selected-milestone");
+  var dateInput = document.getElementById("selected-milestone-date");
+  var options = '';
+  for (var i=0;i<informationJson.length; i++) {
+    if (Object.keys(informationJson[i])[0] === award) {
+      var valuePair = informationJson[i];
+      var keyAward = Object.keys(informationJson[i]);
+      var milestoneObj = valuePair[keyAward];
+      // Load milestone values once users choose an award number
+      for (var i=0;i<milestoneObj.length; i++) {
+        options += '<option value="'+ milestoneObj[i]["milestone"]+'" />';
+      }
+      document.getElementById('submission-milestone-list').innerHTML = options;
+      // populate date field based on milestone selected
+      milestoneInput.addEventListener('input', function() {
+        for (var i=0;i<milestoneObj.length; i++) {
+          if (milestoneObj[i]["milestone"] === milestoneInput.value) {
+            dateInput.value = milestoneObj[i]["date"]
+        }
+      }
+      })
+    }
+  };    // addOption(document.getElementById("loaded-milestone-list"), milestoneObj[i]["milestone"], milestoneObj[i]["milestone"])
+})
+
 /// Generate submission file
 generateSubmissionBtn.addEventListener('click', (event) => {
         ipcRenderer.send('save-file-dialog-submission')
 });
 ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
   if (path.length > 0) {
-    var award = awardArray.options[awardArray.selectedIndex].value;
+    var award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
     var milestone = document.getElementById("selected-milestone").value;
     var date = document.getElementById("selected-milestone-date").value;
     var json_arr = [];
-    json_arr.push(award);
+    json_arr.push(eval(award));
     json_arr.push(milestone);
     json_arr.push(date);
     json_str = JSON.stringify(json_arr)
