@@ -361,50 +361,42 @@ loadAwards()
 
 //Save grant information
 addAwardBtn.addEventListener('click', function() {
-  opt = awardArray.options[awardArray.selectedIndex].text;
-  value = awardArray.options[awardArray.selectedIndex].value;
-  var jsonArr = [];
-  var jsonArr1 = {};
-  var jsonArr2 = [];
-  jsonArr1[value] = opt;
-  jsonArr2.push(value);
-  jsonArr.push(jsonArr1);
-  jsonStr1 = JSON.stringify(jsonArr);
-  jsonStr2 = JSON.stringify(jsonArr2);
-  client.invoke("api_save_awards", jsonStr2, (error, res) => {
-       if(error) {
-         console.error(error)
-         var emessage = userError(error)
-         document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-     } else {
-         var optionStr = "";
-         var i;
-         for (i = 0; i < presavedAwardArray1.length; i++) {
-          optionStr = optionStr + presavedAwardArray1.options[i].value;
-      }
-         if (optionStr.indexOf(value) > -1) {
-          document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'> " + "Award already added!" + "</span>";
-      } else {
-          addOption(presavedAwardArray1, opt, value);
-          // create empty milestone json files for newly added award
-          var myPath = path.join(homeDirectory,"SODA", "METADATA");
-          var fileName = "awards.json";
-          var destinationPath = path.join(myPath, fileName);
+  var opt = awardArray.options[awardArray.selectedIndex].text;
+  var awardNumber = awardArray.options[awardArray.selectedIndex].value;
+  // create empty milestone json files for newly added award
+  var myPath = path.join(homeDirectory,"SODA", "METADATA");
+  var fileName = "awards.json";
+  var destinationPath = path.join(myPath, fileName);
+  try {
+    fs.mkdirSync(myPath, { recursive: true } );
+  } catch (error) {
+      console.log(error)
+  }
+  var awardsJson = [];
+  try {
+    var content = fs.readFileSync(destinationPath);
+    awardsJson = JSON.parse(content);
+  } catch (error) {
+    console.log(error);
+  }
+  var found = false;
+  for (var i=0; i<awardsJson.length; i++) {
+    if (Object.keys(awardsJson[i])[0] === awardNumber) {
+      found = true;
+      break
+    }
+  }
+  console.log(awardNumber);
+  if (!found) {
+    var award = {};
+    award[awardNumber] = opt;
+    awardsJson.push(award);
+    fs.writeFileSync(destinationPath, JSON.stringify(awardsJson));
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Award added!" + smileyCan + "</span>";
+  } else {
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Award already added!</span>";
+  }
 
-          try {
-            fs.mkdirSync(myPath, { recursive: true } );
-          } catch (error) {
-              console.log(error)
-          }
-          fs.appendFileSync(destinationPath, jsonStr1, (err) => {
-              if (error) {
-                console.log(error)
-              }
-        })
-        }
-          document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Award added!" + smileyCan + "</span>";
-          }
-   });
 })
 
 // Delete award
