@@ -344,17 +344,34 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
   }
 })
 
+// Auto load existing awards
+function loadAwards() {
+  filePath = path.join(homeDirectory,"SODA", "METADATA", "awards.json")
+  var rawData = fs.readFile(filePath, "utf8", function(error, contents) {
+    if (error) {
+      console.log(error)
+    } else {
+      addOption(presavedAwardArray1, contents, contents);
+      console.log(contents.length)
+    }
 
+  })
+}
+loadAwards()
 
 //Save grant information
 addAwardBtn.addEventListener('click', function() {
   opt = awardArray.options[awardArray.selectedIndex].text;
   value = awardArray.options[awardArray.selectedIndex].value;
-  var award = value;
   var jsonArr = [];
-  jsonArr.push(award);
-  jsonStr = JSON.stringify(jsonArr);
-  client.invoke("api_save_awards", jsonStr, (error, res) => {
+  var jsonArr1 = {};
+  var jsonArr2 = [];
+  jsonArr1[value] = opt;
+  jsonArr2.push(value);
+  jsonArr.push(jsonArr1);
+  jsonStr1 = JSON.stringify(jsonArr);
+  jsonStr2 = JSON.stringify(jsonArr2);
+  client.invoke("api_save_awards", jsonStr2, (error, res) => {
        if(error) {
          console.error(error)
          var emessage = userError(error)
@@ -369,10 +386,9 @@ addAwardBtn.addEventListener('click', function() {
           document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'> " + "Award already added!" + "</span>";
       } else {
           addOption(presavedAwardArray1, opt, value);
-
           // create empty milestone json files for newly added award
           var myPath = path.join(homeDirectory,"SODA", "METADATA");
-          var fileName = "milestone" + "-" + award + ".json";
+          var fileName = "awards.json";
           var destinationPath = path.join(myPath, fileName);
 
           try {
@@ -380,7 +396,7 @@ addAwardBtn.addEventListener('click', function() {
           } catch (error) {
               console.log(error)
           }
-          fs.appendFileSync(destinationPath, "", (err) => {
+          fs.appendFileSync(destinationPath, jsonStr1, (err) => {
               if (error) {
                 console.log(error)
               }
@@ -388,7 +404,6 @@ addAwardBtn.addEventListener('click', function() {
         }
           document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Award added!" + smileyCan + "</span>";
           }
-        }
    });
 })
 
