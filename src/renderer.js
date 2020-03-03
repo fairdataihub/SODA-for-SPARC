@@ -351,10 +351,19 @@ function loadAwards() {
     if (error) {
       console.log(error)
     } else {
-      addOption(presavedAwardArray1, contents, contents);
-      console.log(contents.length)
+      awards = JSON.parse(contents);
+      console.log(awards);
+      for (var i=0;i<awards.length;i++) {
+        var valuePair = awards[i];
+        console.log(valuePair);
+        // for(var item in valuePair) {
+        //   var value = valuePair[item];
+        //   var key = item;
+        var key = Object.keys(awards[i]);
+        addOption(presavedAwardArray1, eval(JSON.stringify(valuePair[key])), JSON.stringify(key[0]));
+        console.log(key);
+      }
     }
-
   })
 }
 loadAwards()
@@ -386,17 +395,16 @@ addAwardBtn.addEventListener('click', function() {
       break
     }
   }
-  console.log(awardNumber);
   if (!found) {
     var award = {};
     award[awardNumber] = opt;
     awardsJson.push(award);
     fs.writeFileSync(destinationPath, JSON.stringify(awardsJson));
+    addOption(presavedAwardArray1, opt, awardNumber);
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Award added!" + smileyCan + "</span>";
   } else {
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Award already added!</span>";
   }
-
 })
 
 // Delete award
@@ -433,7 +441,6 @@ presavedAwardArray1.addEventListener('change', function() {
       while (milestoneArray.length>2) {
         milestoneArray.deleteRow(1)
       }
-
       // var rowcount = milestoneArray.rowIndex;
       if (data.length > 0) {
         // start at 1 to skip the header
@@ -449,43 +456,42 @@ presavedAwardArray1.addEventListener('change', function() {
 });
 
 // Function to save milestone information to a presaved information sheet
-saveInformationBtn.addEventListener("click", function() {
-  var rowcount = milestoneArray.rows.length;
-  opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-  // jsonObj = {};
-  var milestoneObj = [];
-  for (i=1; i<rowcount-1; i++) {
-    var myMilestone = {"milestone": document.getElementById("name-row-milestone"+i).innerHTML,
-                        "date": document.getElementById("name-row-date"+i).innerHTML};
-    milestoneObj.push(myMilestone);
-  }
-
-  var key = opt;
-  // jsonObj[key] = milestoneObj;
-  jsonStr = JSON.stringify(milestoneObj);
-
-  var myPath = path.join(homeDirectory,"SODA", "METADATA");
-  var fileName = "milestone" + "-" + key + ".json";
-  var destinationPath = path.join(myPath, fileName);
-
-  if (fs.existsSync(destinationPath)) {
-    rawData = fs.writeFileSync(destinationPath, jsonStr);
-  }
-  else {
-    try {
-      fs.mkdirSync(myPath, { recursive: true } );
-    } catch (error) {
-        console.log(error)
-    }
-    fs.appendFileSync(destinationPath, jsonStr, (err) => {
-        if (error) {
-          console.log(error)
-        }
-  })
-}
-      // TODO: check if key exists, then update keys
-      // or create a seperate json file for each award number
-})
+// saveInformationBtn.addEventListener("click", function() {
+//   var rowcount = milestoneArray.rows.length;
+//   opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+//   // jsonObj = {};
+//   var milestoneObj = [];
+//   for (i=1; i<rowcount-1; i++) {
+//     var myMilestone = {"milestone": document.getElementById("name-row-milestone"+i).innerHTML,
+//                         "date": document.getElementById("name-row-date"+i).innerHTML};
+//     milestoneObj.push(myMilestone);
+//   }
+//   var key = opt;
+//   // jsonObj[key] = milestoneObj;
+//   jsonStr = JSON.stringify(milestoneObj);
+//
+//   var myPath = path.join(homeDirectory,"SODA", "METADATA");
+//   var fileName = "milestone" + "-" + key + ".json";
+//   var destinationPath = path.join(myPath, fileName);
+//
+//   if (fs.existsSync(destinationPath)) {
+//     rawData = fs.writeFileSync(destinationPath, jsonStr);
+//   }
+//   else {
+//     try {
+//       fs.mkdirSync(myPath, { recursive: true } );
+//     } catch (error) {
+//         console.log(error)
+//     }
+//     fs.appendFileSync(destinationPath, jsonStr, (err) => {
+//         if (error) {
+//           console.log(error)
+//         }
+//   })
+// }
+//       // TODO: check if key exists, then update keys
+//       // or create a seperate json file for each award number
+// })
 
 
 // Function to add options to dropdown list
