@@ -356,13 +356,11 @@ function loadAwards() {
     if (error) {
       console.log(error)
     } else {
-      awards = JSON.parse(contents);
-      for (var i=0;i<awards.length;i++) {
-        var valuePair = awards[i];
-        var key = Object.keys(awards[i]);
+      var awards = JSON.parse(contents);
+      for (var key in awards) {
         // Add to existing award array (dropdown's text=value, dropdown's value = key)
-        addOption(presavedAwardArray1, eval(JSON.stringify(valuePair[key])), JSON.stringify(key[0]));
-        addOption(presavedAwardArray2, eval(JSON.stringify(valuePair[key])), JSON.stringify(key[0]));
+        addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
+        addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
       }
     }
   })
@@ -379,53 +377,49 @@ addAwardBtn.addEventListener('click', function() {
   } catch (error) {
       console.log(error)
   }
-  var awardsJson = [];
+  var awardsJson = {};
   try {
     var content = fs.readFileSync(awardPath);
     awardsJson = JSON.parse(content);
   } catch (error) {
     console.log(error);
   }
-  var found = false;
-  for (var i=0; i<awardsJson.length; i++) {
-    if (Object.keys(awardsJson[i])[0] === awardNumber) {
-      found = true;
-      break
-    }
-  }
-  if (!found) {
-    var award = {};
-    award[awardNumber] = opt;
-    awardsJson.push(award);
+  if (awardNumber in awardsJson) {
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Award already added!</span>";
+  } else {
+    awardsJson[awardNumber] = opt;
     fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
     addOption(presavedAwardArray1, opt, awardNumber);
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Added!" + smileyCan + "</span>";
-  } else {
-    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Award already added!</span>";
   }
 })
 
 // Delete award
 deleteAwardBtn.addEventListener('click', function() {
   value = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-  // json_str = JSON.stringify(opt);
   try {
     var content = fs.readFileSync(awardPath);
     awardsJson = JSON.parse(content);
   } catch (error) {
     console.log(error);
   }
-  // Loop through list of awards
-  for (var i=0; i<awardsJson.length; i++) {
-    var valuePair = awardsJson[i];
-    var key = Object.keys(awardsJson[i]);
-    if (JSON.stringify(key[0])===value) {
-      delete awardsJson[i];
-      break
-    }
+  try {
+    var content = fs.readFileSync(milestonePath);
+    milestoneJson = JSON.parse(content);
+  } catch (error) {
+    console.log(error);
   }
+  // check if award is in list
+  if (value in awardsJson) {
+    delete awardsJson[value];
+    }
+  // check if award is in list of milestones
+  if (value in milestoneJson) {
+    delete milestoneJson[value];
+    }
   fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
   presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
+  fs.writeFileSync(milestonePath, JSON.stringify(milestoneJson));
   presavedAwardArray2.remove(presavedAwardArray2.selectedIndex);
   document.getElementById("div-show-milestone-info").style.display = "none";
 })
@@ -473,9 +467,7 @@ presavedAwardArray1.addEventListener('change', function() {
   } catch (error) {
     console.log(error);
   }
-  console.log(informationJson);
   for (var keyAward in informationJson) {
-    console.log(keyAward);
     if (informationJson.hasOwnProperty(keyAward) && keyAward === opt) {
       var milestoneObj = informationJson[keyAward];
       // start at 1 to skip the header
@@ -515,19 +507,7 @@ saveInformationBtn.addEventListener("click", function() {
                         "date": document.getElementById("name-row-date"+i).innerHTML};
     milestoneInfo.push(myMilestone);
   };
-  // TODO: check for award numbers with existing milestones
-  // var indexDup;
-  // for (var i=0; i<informationJson.length; i++) {
-  //   if (Object.keys(informationJson[i])[0] === opt) {
-  //     console.log(informationJson[i]);
-  //     indexDup = i
-  //   }
-  // }
-  // if (indexDup!==) {
-  //
-  // }
-  // var awardValue = {};
-  // awardValue[opt] = milestoneInfo;
+
   informationJson[opt] = milestoneInfo;
   fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
   document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: black;'>Saved!</span>"
