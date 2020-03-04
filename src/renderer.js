@@ -309,7 +309,7 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 ///////////////////// Prepare Metadata Section ////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-// Download Metadata Templates //
+/////////////////////// Download Metadata Templates ////////////////////////////
 templateArray = ["submission.xlsx", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx", "manifest.xlsx"]
 function downloadTemplates(templateItem, destinationFolder) {
   var templatePath = path.join(__dirname, "file_templates", templateItem)
@@ -344,13 +344,46 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
   }
 })
 
+///////// Provide Grant Information section /////////////////////////////////
+
 var metadataPath = path.join(homeDirectory,"SODA", "METADATA");
 var awardFileName = "awards.json";
 var milestoneFileName = "milestones.json";
 var awardPath = path.join(metadataPath, awardFileName);
 var milestonePath = path.join(metadataPath, milestoneFileName);
 
-// Auto load existing awards
+awardArray.addEventListener('change', function() {
+  document.getElementById("para-save-award-info").innerHTML = "";
+})
+
+presavedAwardArray1.addEventListener('change', function() {
+  document.getElementById("div-show-milestone-info").style.display = "block";
+  document.getElementById("para-save-milestone-status").innerHTML = "";
+  document.getElementById("para-delete-award-status").innerHTML = ""
+})
+
+// function to load and parse json file
+function parseJson(path) {
+  try {
+    var content = fs.readFileSync(path);
+    contentJson = JSON.parse(content);
+    return contentJson
+  } catch (error) {
+    console.log(error);
+    return {}
+  }
+}
+
+// function to make directory if metadata path does not exist
+function createMetadataDir() {
+  try {
+  fs.mkdirSync(metadataPath, { recursive: true } );
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// Function to auto load existing awards
 function loadAwards() {
   var rawData = fs.readFile(awardPath, "utf8", function(error, contents) {
     if (error) {
@@ -358,7 +391,7 @@ function loadAwards() {
     } else {
       var awards = JSON.parse(contents);
       for (var key in awards) {
-        // Add to existing award array (dropdown's text=value, dropdown's value = key)
+        // Add options to dropdown lists
         addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
         addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
       }
@@ -367,23 +400,22 @@ function loadAwards() {
 }
 loadAwards()
 
-//Save grant information
+// Function to add options to dropdown list
+var addOption = function(selectbox, text, value) {
+    var opt = document.createElement("OPTION");
+    opt.text = text;
+    opt.value = value;
+    selectbox.options.add(opt);
+}
+
+// Save grant information
 addAwardBtn.addEventListener('click', function() {
   var opt = awardArray.options[awardArray.selectedIndex].text;
   var awardNumber = awardArray.options[awardArray.selectedIndex].value;
   // create empty milestone json files for newly added award
-  try {
-    fs.mkdirSync(metadataPath, { recursive: true } );
-  } catch (error) {
-      console.log(error)
-  }
+  createMetadataDir();
   var awardsJson = {};
-  try {
-    var content = fs.readFileSync(awardPath);
-    awardsJson = JSON.parse(content);
-  } catch (error) {
-    console.log(error);
-  }
+  awardsJson = parseJson(awardPath);
   if (awardNumber in awardsJson) {
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Award already added!</span>";
   } else {
@@ -394,43 +426,35 @@ addAwardBtn.addEventListener('click', function() {
   }
 })
 
-// Delete award
+/////// Delete an Award
 deleteAwardBtn.addEventListener('click', function() {
+//   /// TODO: Confirm deleting award number
+//     ipcRenderer.send('warning-delete-award')
+// });
+// ipcRenderer.on('warning-delete-award-selection', (event, index) => {
+//   console.log("1");
+//   if (index === 0) {
   value = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-  try {
-    var content = fs.readFileSync(awardPath);
-    awardsJson = JSON.parse(content);
-  } catch (error) {
-    console.log(error);
+  if (value==="Select") {
+    document.getElementById("para-delete-award-status").innerHTML = "<span style='color: red;'>Please select an award number to delete</span>"
+  } else {
+    var milestoneJson = parseJson(milestonePath);
+    var awardsJson = parseJson(awardPath)
+    // check if award is in list
+    if (value in awardsJson) {
+      delete awardsJson[value];
+      }
+    // check if award is in list of milestones
+    if (value in milestoneJson) {
+      delete milestoneJson[value];
+      }
+    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
+    presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
+    fs.writeFileSync(milestonePath, JSON.stringify(milestoneJson));
+    presavedAwardArray2.remove(presavedAwardArray2.selectedIndex);
+    document.getElementById("div-show-milestone-info").style.display = "none";
+    document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black;'> " + "Deleted award number: " + value + "!" + "</span>"
   }
-  try {
-    var content = fs.readFileSync(milestonePath);
-    milestoneJson = JSON.parse(content);
-  } catch (error) {
-    console.log(error);
-  }
-  // check if award is in list
-  if (value in awardsJson) {
-    delete awardsJson[value];
-    }
-  // check if award is in list of milestones
-  if (value in milestoneJson) {
-    delete milestoneJson[value];
-    }
-  fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
-  presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
-  fs.writeFileSync(milestonePath, JSON.stringify(milestoneJson));
-  presavedAwardArray2.remove(presavedAwardArray2.selectedIndex);
-  document.getElementById("div-show-milestone-info").style.display = "none";
-})
-
-awardArray.addEventListener('change', function() {
-  document.getElementById("para-save-award-info").innerHTML = "";
-})
-
-presavedAwardArray1.addEventListener('change', function() {
-  document.getElementById("div-show-milestone-info").style.display = "block";
-  document.getElementById("para-save-milestone-status").innerHTML = "";
 })
 
 addNewMilestoneBtn.addEventListener("click", function() {
@@ -441,11 +465,12 @@ addNewMilestoneBtn.addEventListener("click", function() {
     document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: red;'>Please fill in both fields to add!</span>"
   }
   else {
-    // start at 1 to skip the header
     var rowcount = milestoneArray.rows.length;
     if (rowcount===2) {
+      // start at 1 to skip the header
       var rowIndex = 1;
     } else {
+      /// append row to table from the bottom
       var rowIndex = rowcount-1;
     }
     var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneVal +"</td><td id='name-row-date"+rowIndex+"'>"+ dateVal+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
@@ -454,55 +479,37 @@ addNewMilestoneBtn.addEventListener("click", function() {
   }
 })
 
-// Load milestone info
+/////// Load Milestone info
 presavedAwardArray1.addEventListener('change', function() {
   opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-  /// clear old table's rows before loading new entries
+  /// clear old table before loading new entries
   while (milestoneArray.rows.length>2) {
     milestoneArray.deleteRow(1)
   };
-  try {
-    var content = fs.readFileSync(milestonePath);
-    var informationJson = JSON.parse(content);
-  } catch (error) {
-    console.log(error);
-  }
-  for (var keyAward in informationJson) {
-    if (informationJson.hasOwnProperty(keyAward) && keyAward === opt) {
-      var milestoneObj = informationJson[keyAward];
-      // start at 1 to skip the header
-      var rowIndex = 1;
-      for (var i=0;i<milestoneObj.length; i++) {
-        var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneObj[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ milestoneObj[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
-        rowIndex++;
+  var informationJson = parseJson(milestonePath);
+  if (opt in informationJson) {
+    var milestoneObj = informationJson[opt];
+    // start at 1 to skip the header
+    var rowIndex = 1;
+    for (var i=0;i<milestoneObj.length; i++) {
+      var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneObj[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ milestoneObj[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
+      rowIndex++;
       }
     }
-  }
   return milestoneArray
 });
 
-// Function to save milestone information to a presaved information sheet
+/////// Save Milestone Info to a JSON file
 saveInformationBtn.addEventListener("click", function() {
   var opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
   // make folder if folder does not exist
-  try {
-    fs.mkdirSync(metadataPath, { recursive: true } );
-  } catch (error) {
-      console.log(error)
-  }
+  createMetadataDir();
   // read existing milestone information and edit
   var informationJson = {};
-  try {
-    var content = fs.readFileSync(milestonePath);
-    var informationJson = JSON.parse(content);
-  } catch (error) {
-    console.log(error);
-  }
-  // save the current updated milestone table to json file
+  informationJson = parseJson(milestonePath);
   var rowcount = milestoneArray.rows.length;
   var milestoneInfo = [];
   for (i=1; i<rowcount-1; i++) {
-    console.log(document.getElementById("name-row-milestone"+i))
     var myMilestone = {"milestone": document.getElementById("name-row-milestone"+i).innerHTML,
                         "date": document.getElementById("name-row-date"+i).innerHTML};
     milestoneInfo.push(myMilestone);
@@ -513,16 +520,7 @@ saveInformationBtn.addEventListener("click", function() {
   document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: black;'>Saved!</span>"
 });
 
-
-// Function to add options to dropdown list
-var addOption = function(selectbox, text, value) {
-    var opt = document.createElement("OPTION");
-    opt.text = text;
-    opt.value = value;
-    selectbox.options.add(opt);
-}
-
-// Load SPARC airtable data
+/////// Load SPARC airtable data
 Airtable.configure({
     endpointUrl: 'https://api.airtable.com',
     apiKey: 'keyCDx02PhX2XnwEC'
@@ -541,6 +539,7 @@ table_airtable.select({
     }),
 
   fetchNextPage();
+  // create set to remove duplicates
   awardSet = [...new Set(awardResultArray)];
   for (var i = 0; i < awardSet.length; i++) {
       var opt = awardSet[i];
@@ -554,18 +553,13 @@ function done(err) {
     }
 });
 
-/// function to populate Submission file fields from presaved information
+/////// Populate Submission file fields from presaved information
 presavedAwardArray2.addEventListener('change', function() {
   document.getElementById("selected-milestone").value = "";
   document.getElementById("selected-milestone-date").value = "";
   document.getElementById('submission-milestone-list').innerHTML = "";
   award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
-  try {
-    var content = fs.readFileSync(milestonePath);
-    var informationJson = JSON.parse(content);
-  } catch (error) {
-    console.log(error);
-  }
+  var informationJson = parseJson(milestonePath);
   var milestoneInput = document.getElementById("selected-milestone");
   var dateInput = document.getElementById("selected-milestone-date");
   var options = '';
@@ -597,7 +591,7 @@ ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
     var milestone = document.getElementById("selected-milestone").value;
     var date = document.getElementById("selected-milestone-date").value;
     var json_arr = [];
-    json_arr.push(eval(award));
+    json_arr.push(award);
     json_arr.push(milestone);
     json_arr.push(date);
     json_str = JSON.stringify(json_arr)
