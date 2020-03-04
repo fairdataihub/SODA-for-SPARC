@@ -399,7 +399,7 @@ addAwardBtn.addEventListener('click', function() {
     awardsJson.push(award);
     fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
     addOption(presavedAwardArray1, opt, awardNumber);
-    document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Award added!" + smileyCan + "</span>";
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Added!" + smileyCan + "</span>";
   } else {
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Award already added!</span>";
   }
@@ -439,18 +439,24 @@ presavedAwardArray1.addEventListener('change', function() {
 })
 
 addNewMilestoneBtn.addEventListener("click", function() {
+  document.getElementById("para-save-milestone-status").innerHTML = "";
   milestoneVal = document.getElementById("input-milestone-new").value;
   dateVal = document.getElementById("input-date-new").value;
-    // start at 1 to skip the header
-  var rowcount = milestoneArray.rows.length;
-  if (rowcount===2) {
-    var rowIndex = 1;
-  } else {
-    var rowIndex = rowcount-1;
+  if (milestoneVal===''||dateVal==='') {
+    document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: red;'>Please fill in both fields to add!</span>"
   }
-  var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneVal +"</td><td id='name-row-date"+rowIndex+"'>"+ dateVal+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
-  document.getElementById("input-milestone-new").value = "";
-  document.getElementById("input-date-new").value = "";
+  else {
+    // start at 1 to skip the header
+    var rowcount = milestoneArray.rows.length;
+    if (rowcount===2) {
+      var rowIndex = 1;
+    } else {
+      var rowIndex = rowcount-1;
+    }
+    var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneVal +"</td><td id='name-row-date"+rowIndex+"'>"+ dateVal+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
+    document.getElementById("input-milestone-new").value = "";
+    document.getElementById("input-date-new").value = "";
+  }
 })
 
 // Load milestone info
@@ -504,6 +510,7 @@ saveInformationBtn.addEventListener("click", function() {
   var rowcount = milestoneArray.rows.length;
   var milestoneInfo = [];
   for (i=1; i<rowcount-1; i++) {
+    console.log(document.getElementById("name-row-milestone"+i))
     var myMilestone = {"milestone": document.getElementById("name-row-milestone"+i).innerHTML,
                         "date": document.getElementById("name-row-date"+i).innerHTML};
     milestoneInfo.push(myMilestone);
@@ -523,6 +530,7 @@ saveInformationBtn.addEventListener("click", function() {
   awardValue[opt] = milestoneInfo;
   informationJson.push(awardValue);
   fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
+  document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: black;'>Saved!</span>"
 });
 
 
