@@ -436,6 +436,7 @@ awardArray.addEventListener('change', function() {
 
 presavedAwardArray1.addEventListener('change', function() {
   document.getElementById("div-show-milestone-info").style.display = "block";
+  document.getElementById("para-save-milestone-status").innerHTML = "";
 })
 
 addNewMilestoneBtn.addEventListener("click", function() {
@@ -472,15 +473,14 @@ presavedAwardArray1.addEventListener('change', function() {
   } catch (error) {
     console.log(error);
   }
-  for (var i=0;i<informationJson.length; i++) {
-    if (Object.keys(informationJson[i])[0] === opt) {
-      var valuePair = informationJson[i];
-      var keyAward = Object.keys(informationJson[i]);
-      var milestoneObj = valuePair[keyAward];
-
+  console.log(informationJson);
+  for (var keyAward in informationJson) {
+    console.log(keyAward);
+    if (informationJson.hasOwnProperty(keyAward) && keyAward === opt) {
+      var milestoneObj = informationJson[keyAward];
+      // start at 1 to skip the header
+      var rowIndex = 1;
       for (var i=0;i<milestoneObj.length; i++) {
-        // start at 1 to skip the header
-        var rowIndex = 1;
         var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneObj[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ milestoneObj[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
         rowIndex++;
       }
@@ -499,7 +499,7 @@ saveInformationBtn.addEventListener("click", function() {
       console.log(error)
   }
   // read existing milestone information and edit
-  var informationJson = [];
+  var informationJson = {};
   try {
     var content = fs.readFileSync(milestonePath);
     var informationJson = JSON.parse(content);
@@ -526,9 +526,9 @@ saveInformationBtn.addEventListener("click", function() {
   // if (indexDup!==) {
   //
   // }
-  var awardValue = {};
-  awardValue[opt] = milestoneInfo;
-  informationJson.push(awardValue);
+  // var awardValue = {};
+  // awardValue[opt] = milestoneInfo;
+  informationJson[opt] = milestoneInfo;
   fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
   document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: black;'>Saved!</span>"
 });
