@@ -556,6 +556,9 @@ function done(err) {
 
 /// function to populate Submission file fields from presaved information
 presavedAwardArray2.addEventListener('change', function() {
+  document.getElementById("selected-milestone").value = "";
+  document.getElementById("selected-milestone-date").value = "";
+  document.getElementById('submission-milestone-list').innerHTML = "";
   award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
   try {
     var content = fs.readFileSync(milestonePath);
@@ -566,26 +569,22 @@ presavedAwardArray2.addEventListener('change', function() {
   var milestoneInput = document.getElementById("selected-milestone");
   var dateInput = document.getElementById("selected-milestone-date");
   var options = '';
-  for (var i=0;i<informationJson.length; i++) {
-    if (Object.keys(informationJson[i])[0] === award) {
-      var valuePair = informationJson[i];
-      var keyAward = Object.keys(informationJson[i]);
-      var milestoneObj = valuePair[keyAward];
-      // Load milestone values once users choose an award number
+  if (award in informationJson) {
+    var milestoneObj = informationJson[award];
+    // Load milestone values once users choose an award number
+    for (var i=0;i<milestoneObj.length; i++) {
+      options += '<option value="'+ milestoneObj[i]["milestone"]+'" />';
+    };
+    document.getElementById('submission-milestone-list').innerHTML = options;
+    // populate date field based on milestone selected
+    milestoneInput.addEventListener('input', function() {
       for (var i=0;i<milestoneObj.length; i++) {
-        options += '<option value="'+ milestoneObj[i]["milestone"]+'" />';
-      }
-      document.getElementById('submission-milestone-list').innerHTML = options;
-      // populate date field based on milestone selected
-      milestoneInput.addEventListener('input', function() {
-        for (var i=0;i<milestoneObj.length; i++) {
-          if (milestoneObj[i]["milestone"] === milestoneInput.value) {
-            dateInput.value = milestoneObj[i]["date"]
+        if (milestoneObj[i]["milestone"] === milestoneInput.value) {
+          dateInput.value = milestoneObj[i]["date"]
         }
       }
       })
     }
-  };    // addOption(document.getElementById("loaded-milestone-list"), milestoneObj[i]["milestone"], milestoneObj[i]["milestone"])
 })
 
 /// Generate submission file
