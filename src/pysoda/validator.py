@@ -17,19 +17,25 @@ The code checks the following items:
 8. Check that all csv starts at first row and xlsx files start at (0,0) (completed)
 9. Check that all csv files are UTF-8 encoded. (completed)
 10. Check that all csv/xlsx files do not have any blank rows (completed)
-11. Check that the subjects and sample files have the mandatory column headings and they are in the right order (completed)
+11. Check that the subjects and sample files have the mandatory column headings and they are in the 
+    right order (completed)
+12. Check that mandatory fields are populated for each subject/sample (completed)
+13. Check that the number of samples is the same in the dataset_description and samples files
+    and that those numbers match the actual number of folders (completed)
 
-12. Check that the subjects file has unique IDs, that a folder for each subject exists (to do)
-13. Check that the submission file has all of the required columns (to do)
-14. Check that the dataset_description file has all of the required rows (to do)
+14. Check that the subjects/samples files have unique IDs (to do)
+15. Check that the submission file has all of the required columns (to do) and are populated (to do)
+16. Check that the dataset_description file has all of the required rows (to do) and are populated (to do)
 
 definitions:
 a) a terminal folder is one with no further subfolders
 
 variables:
-fPathList - list of the files including the path
+fPathList - list of the files including the path and extension
 fList - list of the filenames only
 dPathList - list of directories including the path
+fullFilePath - the filename with path, but without the extension
+fileExtension - the file extension
 
 code I/O:
 input: path to the folder selected by the user
@@ -37,8 +43,9 @@ output: list of fatal errors and/or warnings, flags that signal whether the
         folder organization and naming, file naming, and position of manifest
         files is correct.
 
-ver 0.1 2020-01-13
-ver 0.2 2020-01-31
+ver 0.1 2020-01-13 (start)
+ver 0.2 2020-01-31 (1-9 checks)
+ver 0.3 2020-03-05 (1-13 checks)
 
 Karl G. Helmer
 Martinos Center for Biomedical Imaging
@@ -51,6 +58,7 @@ import xlrd
 import csv
 import ntpath
 import chardet
+import re
 
 class dictValidator():
 
@@ -168,8 +176,9 @@ class dictValidator():
         if not rd:
             warnings.append("This dataset is missing an optional README and CHANGES file in the root folder. Will check in sub-folders...")
 
+        # check that that there is at least the minimum number of files
         checksumRootFiles = dd+subj+sam+subm
-        if checksumRootFiles >= 3:  # check for req files
+        if checksumRootFiles >= 3:  
             rootFilePass = 1
 
         return rootFilePass, man, dd  #pass back if a manifest file is in the root directory as well
@@ -333,27 +342,27 @@ class dictValidator():
             #print(numSubjFolders)
             allContents = os.listdir(rootFolder)
             for c in allContents:
-                fullFilepath = rootFolder+"/"+c
-                #print(fullFilepath)
-                if os.path.isfile(fullFilepath):
-                    #print("this is a file")
-                    fileName1, fileExtension = os.path.splitext(fullFilepath)
+                fullFilePath = rootFolder+"/"+c
+                #print("Inside check_num_subjects: "+fullFilePath)
+                if os.path.isfile(fullFilePath):
+                    #print("{} is a file".format(fullFilePath))
+                    fileName1, fileExtension = os.path.splitext(fullFilePath)
                     fileName = self.path_leaf(fileName1)
                     #print(fileName, fileExtension)
                     if fileName == "dataset_description":
-                        #print("found dataset_description")
+                        #print("...found dataset_description file")
                         if fileExtension == ".csv":
-                            numSubjDD = self.read_row_1value_csv(fullFilepath, toCheck)
+                            numSubjDD = self.read_row_1value_csv(fullFilePath, toCheck)
                             #print(numSubjDD)
                         if fileExtension == ".xlsx":
-                            numSubjDD = self.read_row_1value_xlsx(fullFilepath, toCheck)
+                            numSubjDD = self.read_row_1value_xlsx(fullFilePath, toCheck)
                     if fileName == "subjects":
-                        #print("found subjects")
+                        #print("...found subjects file")
                         if fileExtension == ".csv":
-                            numSubjS = self.find_num_rows_csv(fullFilepath)
+                            numSubjS = self.find_num_rows_csv(fullFilePath)
                             #print(numSubjS)
                         if fileExtension == ".xlsx":
-                            numSubjS = self.find_num_rows_xlsx(fullFilepath)
+                            numSubjS = self.find_num_rows_xlsx(fullFilePath)
                     
         if numSubjDD == numSubjFolders:
             checkNumSubjDD = 1
@@ -361,11 +370,11 @@ class dictValidator():
             fatal.append("The # of subjects in dataset_description doesn't match the # of subject folders")
 
         if numSubjS  == numSubjFolders:
-            checkNumSubj = 1
+            checkNumSubjS = 1
         else:
             fatal.append("The # of subjects in subjects file doesn't match the # of subject folders")
 
-        return checkNumSubjDD, checkNumSubj
+        return checkNumSubjDD, checkNumSubjS, numSubjDD, numSubjS, numSubjFolders
 
 
 
@@ -521,11 +530,11 @@ class dictValidator():
 
 
 
-    def generic_check_cols(self, cols, fileName, fileExtension):
+    def generic_check_cols(self, cols, fileNamePath, fileExtension):
         # this is called by check_req_file_cols to do the actual checking
         # this is checking that there are at least the required number of columns, 
         # that the required column headings are present and in the right order
-        # check_req_file_cols loops through all existing files and gets file extension
+        # check_req_file_cols loops through all existing files and gets the file extension
 
         count = 0
         empty1stRow = 0
@@ -535,7 +544,7 @@ class dictValidator():
 
         # if this is a csv file
         if fileExtension == ".csv":
-            with open(fileName+fileExtension) as csvFile:
+            with open(fileNamePath+fileExtension) as csvFile:
                 csvReader = csv.reader(csvFile, delimiter=',')
                 row0 = next(csvReader)
                 if len(row0) == len(cols):
@@ -553,7 +562,7 @@ class dictValidator():
 
         # if this is a xlsx file
         if fileExtension == ".xlsx":
-            workbook = xlrd.open_workbook(fileName+fileExtension)
+            workbook = xlrd.open_workbook(fileNamePath+fileExtension)
             worksheet = workbook.sheet_by_index(0)
             if worksheet.ncols == len(cols):
                 colsLenCheck = 1 
@@ -577,9 +586,65 @@ class dictValidator():
 
 
 
+    def check_row_values(self, cols, fileNamePath, fileExtension):
+        # this is called by check_req_file_cols to do the actual checking 
+        # this is checking that the required columns have values in req columns for each subject 
+
+        rowsValCheck = 0
+        rowVals = []
+        colsVec = []
+
+        # here I use the number of subject folders as the gold standard.  I've
+        # already checked whether the 3 places where the number of subjects is 
+        # recorded are the same or not. Problem is that each can be wrong, so have
+        # to choose something.  
+
+        # if this is a csv file
+        if fileExtension == ".csv":
+            with open(fileNamePath+fileExtension) as csvFile:
+                csvReader = csv.reader(csvFile, delimiter=',')
+                numRows = self.find_num_rows_csv(fileNamePath+fileExtension)
+                numReqCols = len(cols)
+                for row in csvReader:  #this will only work is row is a list CHECK
+                    #print("current row = {}".format(row))
+                    if len(row) >= numReqCols:
+                        rowVals.append(1)
+                    else:
+                        rowVals.append(0)
+
+                b = 0
+                if b in rowVals:
+                    rowsValCheck = 0  #existing cols are LT the number required
+                    warning.append("The file {} is missing row values in required columns.".format(fileNamePath+fileExtension))
+                else:
+                    rowsValCheck = 1  # all rows are ok
+
+        # if this is a xlsx file
+        # checking the rectangle formed by number of req cols and number of subjects
+        if fileExtension == ".xlsx":
+            workbook = xlrd.open_workbook(fileNamePath+fileExtension)
+            worksheet = workbook.sheet_by_index(0)
+            for c in range(worksheet.ncols):
+                for r in range(worksheet.nrows): #FIX this should really be num of subjects, but which?
+                    if worksheet.cell_value(r,c):  #CHECK is this (row, col) order?
+                        colsVec.append(1)  # we don't care what the value is, just that it's there 
+                    else:
+                        colsVec.append(0)
+                        warning.append("The file {} is missing row values in required columns.".format(fileNamePath+fileExtension))
+        # collect checking flags and return results
+        m = 0
+        if m in colsVec:
+            rowsValCheck = 0
+
+        return rowsValCheck
+
+
+
     def check_req_file_cols(self, fPathList):
-        # checks to that the col headings in the required subjects/samples files are 
+        # Checks to that the col headings in the required subjects/samples files are 
         # present, spelled correctly and in correct order
+        # Then checks that mandatory fields are populated for each subject
+        # Files can be either in csv or xlsx format.
         colsCheck = 1
         subjFlag = 0
         samFlag = 0
@@ -593,10 +658,11 @@ class dictValidator():
                 cols = self.subjCols
                 subjectsFile = 1
                 subjColsLenCheck, subjColsCheck = self.generic_check_cols(cols, fileNamePath, fileExtension)
+                rowsValCheck = self.check_row_values(cols, fileNamePath, fileExtension)
             elif fileName == 'samples':
                 cols = self.samCols
-                samColsLenCheck, samColsCheck = self.generic_check_cols(cols, fileNamePath, fileExtension)
                 samplesFile = 1
+                samColsLenCheck, samColsCheck = self.generic_check_cols(cols, fileNamePath, fileExtension)
             else:
                 pass
                 
@@ -620,7 +686,186 @@ class dictValidator():
             samColsLenCheck = "NA"
             samColsCheck = "NA"
 
-        return subjColsLenCheck, subjColsCheck, samColsLenCheck, samColsCheck
+        return subjColsLenCheck, subjColsCheck, samColsLenCheck, samColsCheck, rowsValCheck
+
+
+
+    def read_samples_file(self,filePath):
+        # this reads the samples file and finds the number of samples folders per subjects folder
+        # used in check_num_samples; compare the results found here from the samples file
+        # with the number found from the number of folders
+        subjects = []
+        samples = []
+        # dict of number of samples for each subject; can't use a list 
+        # since using set to find unique subjects and that's unordered
+        numSamFile = {}  
+        fileNamePath, fileExtension = os.path.splitext(filePath)
+
+        # open file and find put 0th (subject_id) and 1st (sample_id) values in a list 
+        if fileExtension == ".csv":
+            with open(filePath) as csvFile:
+                csvReader = csv.reader(csvFile, delimiter=',')
+                for row in csvReader:
+                    subjects.append(row[0])
+                    samples.append(row[1])
+
+        if fileExtension == ".xlsx":
+            workbook = xlrd.open_workbook(filePath)
+            worksheet = workbook.sheet_by_index(0)
+            for row in range(worksheet.nrows):
+                subjects.append(worksheet.cell_value(row,0))
+                samples.append(worksheet.cell_value(row,1))
+                    
+        # find how many samples per subject
+        # discard the column headings, which are first item in list
+        subjects.pop(0)
+        samples.pop(0)
+
+        # put the number of unique subject names into a list
+        uniSubj = set(subjects)
+
+        # then find the number of samples that correspond to each subject name
+        for sb in uniSubj:
+            count = 0
+            for s in subjects:
+                if sb == s:
+                    count += 1
+            numSamFile[sb] = count
+        #print("numSamFile = {}".format(numSamFile))
+
+        return numSamFile
+
+
+    def find_num_sample_folders(self, rootFolder):
+        # This module goes into each subject folder and finds the number of sample
+        # folders within. Returns a dict in which each element is the number 
+        # of sample folders (value) for each subject folder (key)
+
+        # find number of subject directories in the primary folder
+        # go into each sub# folder and determine how many sam# folders there are
+        # calculate the total number of sample folders; return dict with key = subj
+        # and value = number
+
+        subjFolders = []
+        numSamFolders = {} 
+
+        # check to see if there is a samples file, which means that there 
+        # should be samples sub-folders 
+        allContents = os.listdir(rootFolder)
+        # continue only if there is a samples file
+        if "samples.xlsx" or "samples.csv" in allContents:
+            # continue only if there is a primary folder
+            if "primary" in allContents:
+                pPath = rootFolder+'/'+"primary"+'/'
+                primaryContents = os.listdir(pPath)
+                #print("primaryContents = {}".format(primaryContents))
+                for p in primaryContents:
+                    if os.path.isdir(pPath+p) and "sub" in p:
+                        subjFolders.append(pPath+p)
+
+                #print("subjFolders = {}".format(subjFolders))
+                numSubjFolders = len(subjFolders)  #just in case I need this
+
+                for sf in subjFolders:
+                    folderName = self.path_leaf(sf)
+                    subjContents = os.listdir(sf)
+                    #print(subjContents)
+                    count = 0
+                    for sc in subjContents:
+                        #print(sf+'/'+sc)
+                        if os.path.isdir(sf+'/'+sc) and "sam" in sc:
+                            count += 1
+                    numSamFolders[folderName] = count
+                #print("numSamFolders = {}".format(numSamFolders))
+            else:
+                fatal.append("No primary folder found in top-level directory.")
+        else:
+            warning.append("No samples file found. If this is incorrect, please check filename and revalidate.")
+
+        return numSamFolders
+
+
+
+    def check_num_samples(self, rootFolder, rootDD):
+
+        # There are 3 places that gives the number of samples/subject
+        # 1) the samples file (read_samples_file module)
+        # 2) the number of sam# folders inside each sub# folder (find_num_samples_folders module)
+        # 3) the dataset description file
+
+        # this module finds the number of samples from the dataset description file and then
+        # calls read_samples_file and find_num_samples_folders to get the dicts that contain 
+        # the number of samples/subject and then compares each of those instances
+
+        numSamDD = 0
+        numSamFile = {}
+        numSamFolders = {}
+        toCheck = "Number of samples"
+
+        checkSamFolDD = 0
+        checkSamFilDD = 0
+        checkSamFilFol = 0
+
+        if rootDD: # if dataset_decription file exists
+            allContents = os.listdir(rootFolder)
+            for c in allContents:
+                fullFilePath = rootFolder+"/"+c
+                if os.path.isfile(fullFilePath):
+                    # pull off the file extension
+                    fileName1, fileExtension = os.path.splitext(fullFilePath)
+                    # find the filename w/o path or extension
+                    fileName = self.path_leaf(fileName1)
+                    # find the number of samples from the dataset description file
+                    # I'm assuming that the number of samples given in the DD file  
+                    # is the TOTAL number of samples
+                    if fileName == "dataset_description":
+                        if fileExtension == ".csv":
+                            numSamDD = self.read_row_1value_csv(fullFilePath, toCheck)
+                        if fileExtension == ".xlsx":
+                            numSamDD = self.read_row_1value_xlsx(fullFilePath, toCheck)
+
+                    # if there is a samples file, find a dict for num samples/subject
+                    if fileName == "samples":
+                        #print("...found samples file!")
+                        numSamFile = self.read_samples_file(fullFilePath)
+
+            numSamFolders = self.find_num_sample_folders(rootFolder)
+
+            #print("numSamDD = {}".format(numSamDD))
+
+            # find the total number of samples from the dict of samples/subject from actual folders
+            if numSamFolders:
+                totalFol = 0
+                for k in numSamFolders.keys():
+                    totalFol += numSamFolders[k]
+
+            # find the total number of samples from the dict of samples/subject from samples file
+            if numSamFile:
+                totalFil = 0
+                for k in numSamFile.keys():
+                    totalFil += numSamFile[k]
+
+            # now check each combination for consistency
+            if numSamDD == totalFol:
+                checkSamFolDD = 1
+            else:
+                fatal.append("The # of samples reported in the dataset_description file doesn't match the # of sample folders")
+
+            if numSamDD == totalFil:
+                checkSamFilDD = 1
+            else:
+                fatal.append("The # of samples reported in the dataset_description file doesn't match the # of samples reported in the samples file")
+
+            if totalFil == totalFol:
+                checkSamFilFol = 1
+            else:
+                fatal.append("The # of samples reported in the samples file doesn't match the # of sample folders")
+
+
+        else:
+            fatal.append("Checking number of samples, no dataset_description file found.")
+
+        return checkSamFolDD, checkSamFilDD, checkSamFilFol
 
 
 
@@ -633,6 +878,7 @@ def main():
     fatal = []
 
     #hard code the path to the top-level directory for now; in reality this will be passed in
+    #vPath = "/home/karl/Work/SPARC/test_data_new"
     vPath = "/home/karl/Work/SPARC/test_data_new_xlsx"
 
     validator = dictValidator()
@@ -645,54 +891,62 @@ def main():
 
     # check the root folder for require files
     rootFilePass, rootMan, rootDD = validator.check_for_req_files(rootFolder)
+    print("Does this dataset contain the required files? = "+str(rootFilePass))
 
     # check the root folder for required and optional folders
     rootFolderPass, numSubjFolders = validator.check_for_req_folders(rootFolder)
+    print("Does this dataset contain the required folders? = "+str(rootFolderPass))
 
     # check that the manifest files exist and have the right number
     manPass, numManifest = validator.check_manifest(fList, fPathList, rootMan, terminal)
+    print("Does this dataset contain a master manifest file or one manifest in each terminal folder? = "+str(manPass))
 
     #check that the number of subjects agrees
-    checkNumSubjDD, checkNumSubj = validator.check_num_subjects(numSubjFolders, rootFolder, rootDD)
+    checkNumSubjDD, checkNumSubjS, numSubjDD, numSubjS, numSubjFolders = validator.check_num_subjects(numSubjFolders, rootFolder, rootDD)
+    print("Does the number of subjects folders match the numbers given in the dataset_description and subjects files? = "+ str(checkNumSubjDD)+" and "+str(checkNumSubjS))
 
     #check for empty folders
     emptyFolderPass = validator.check_empty_folders(dPathList)
+    print("Does this dataset contain empty folders? = "+str(emptyFolderPass))
 
     #check for empty files
     fileSizeCheck = validator.check_file_size(fPathList)
+    print("Does this dataset contain empty files? = "+str(fileSizeCheck))
 
     #check for DS.STORE files 
     dsStoreCheck = validator.check_ds_store(fPathList)
+    print("Does this dataset contain a DS.STORE file? = "+str(dsStoreCheck))
 
     #check for starting on row 0 or (0,0)
     fileStartCheck = validator.check_file_start(fPathList)
+    print("Do files start at row 0 (csv) or (0,0) (xlsx)? = "+str(fileStartCheck))
 
     #check for CSV files for UTF-* encoding
     utf8Check = validator.check_csv_utf8(fPathList)
+    print("Are CSV files encoded in UTF-8? = "+str(utf8Check))
 
     #check for skipped rows in csv files
     skipRowCheck = validator.check_skipped_rows(fPathList)
+    print("Are there any skipped rows in the required files? = "+str(skipRowCheck))
 
     #check subjects and samples files for required column headings
-    subjColsLenCheck, subjColsCheck, samColsLenCheck, samColsCheck = validator.check_req_file_cols(fPathList)
+    subjColsLenCheck, subjColsCheck, samColsLenCheck, samColsCheck, rowsValCheck = validator.check_req_file_cols(fPathList)
+    print("Are there the correct number of column headings in the subjects files and are they named correctly? = "+str(subjColsLenCheck)+" and "+ str(subjColsCheck))
+    print("Are there the correct number of column headings in the samples files and are they named correctly? = "+str(samColsLenCheck)+" and "+ str(samColsCheck))
+    print("Are there values in the required columns in the subjects file? = "+str(rowsValCheck))
 
-    # print out the status flags
-    print("files pass? = "+str(rootFilePass))
-    print("folders pass? = "+str(rootFolderPass))
-    print("manifest pass? = "+str(manPass))
-    print("consistent number of subjects? = "+ str(checkNumSubjDD)+" and "+str(checkNumSubj))
-    print("empty folders? = "+str(emptyFolderPass))
-    print("empty files? = "+str(fileSizeCheck))
-    print("DS.STORE file exists? = "+str(dsStoreCheck))
-    print("CSV files start at row 0 or (0,0)? = "+str(fileStartCheck))
-    print("CSV files are UTF-8? = "+str(utf8Check))
-    print("Are there any skipped rows in the required files? = "+str(skipRowCheck))
-    print("Are the number of and correct column headings present in the subjects files? = "+str(subjColsLenCheck)+" and "+ str(subjColsCheck))
-    print("Are the number of and correct column headings present in the samples files? = "+str(samColsLenCheck)+" and "+ str(samColsCheck))
+    #check that the number of samples match between dataset description, samples, and actual folders
+    checkSamFolDD, checkSamFilDD, checkSamFilFol = validator.check_num_samples(rootFolder, rootDD)
+    print("Does the number of samples in dataset_description match the number of sample folders? = "+str(checkSamFolDD))
+    print("Does the number of samples in dataset_description file match the number in the samples file? = "+str(checkSamFilDD))
+    print("Does the number of sample folders match the number in the samples file? = "+str(checkSamFilFol))
 
     # print out summary of warnings and fatal errors
+    print("\n")
+    print("Fatal Errors and Warnings")
     print("fatal = ")
     print(fatal)
+    print("\n")
     print("warnings = ")
     print(warnings)
 
