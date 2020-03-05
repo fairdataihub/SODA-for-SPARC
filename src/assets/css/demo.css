@@ -219,6 +219,34 @@
   background-color: transparent
 }
 
+.demo-button-prev-next {
+  align-self: flex-start;
+  margin-right: 1em;
+  margin-bottom: 1em;
+  margin-top: 1em;
+  border: 2px solid;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 1.1em;
+  padding: .4em 1.2em;
+  color: inherit;
+  background-color: transparent;
+  width: 110px;
+  cursor: pointer;
+}
+
+.demo-button-prev-next:hover {
+  background-color: hsla(190,60%,36%,1);
+  color: white;
+  border-color: var(--color-accent);
+}
+
+.demo-button-prev-next:active {
+  outline: none;
+  /* background-color: white; */
+  /* color: hsla(190,60%,36%,1) */
+}
+
 .demo-input {
   flex: 1;
   border: 2px solid var(--color-border);
@@ -359,6 +387,7 @@ textarea.outputprint{
     resize: vertical;
 }
 
+/* Dropdowns */
 select.my-dropdown {
     width:60%;
     padding: 8px 12px;
@@ -465,6 +494,7 @@ table.pathtable tr.open {
   display : none;
 }
 
+/* Metadata table */
 table.table-save-metadata {
   margin: auto;
   width: 70%;
@@ -484,7 +514,6 @@ table.table-save-metadata {
   cursor: pointer;
   font-size: 15px;
   width: 70%;
-
 }
 
 /* YouTube video frames */
@@ -781,7 +810,7 @@ label.input-banner-img{
   float:left;
 }
 
-/* submission file preparation */
+/* Submission file Preparation */
 .my-dropdown-metadata {
   float: right;
   background-clip: padding-box;
@@ -795,7 +824,7 @@ label.input-banner-img{
   font: inherit;
 }
 
-/* BF Add Account */
+/* Submission file container */
 .form-container {
   float: left;
   font-size: 14px;
@@ -821,6 +850,25 @@ label.input-banner-img{
   transition: #258193 .25s ease-out;
   padding: 4px 6px;
 }
+
+.form-container-textarea {
+  float: right;
+  font-weight: 400;
+  /* background-clip: padding-box; */
+  /* line-height: 2; */
+  font: inherit;
+  width: 100%;
+  border: 1px solid #C0C0C0;
+  border-left: 2px solid #258193;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  transition: #258193 .25s ease-out;
+  padding: 4px 6px;
+  min-height:60px;
+  max-height:60px;
+  resize: vertical;
+}
+
 /* BF Add account */
 .form-container-input-bf {
   float: right;
@@ -836,6 +884,69 @@ label.input-banner-img{
   padding: 4px 6px;
 }
 
+/* Dataset Description file container */
+.form-container-ds{
+  float: left;
+  font-size: 14px;
+  /* padding-right: 10px; */
+  padding: 4px 6px;
+  width: 180px;
+  text-align: left;
+  vertical-align: middle;
+  color: #A0A0A0;
+  font: bold;
+  font-weight: 500;
+}
+
+/* Dataset Description file container */
+/* #form-datasetdescription { */
+  /* background-color: ; */
+  /* margin: 100px auto; */
+  /* padding: 20px; */
+  /* width: 70%; */
+  /* min-width: 300px; */
+/* } */
+
+/* Style the input fields */
+/* .ds-tabs input{
+  padding: 10px;
+  width: 100%;
+  font-size: 13px;
+  font-family: Raleway;
+  border: 1px solid #aaaaaa;
+} */
+
+/* Mark input boxes that gets an error on validation: */
+/* .ds-tabs input.invalid {
+  background-color: #ffdddd;
+} */
+
+/* Hide all steps by default: */
+.ds-tabs {
+  display: none;
+}
+
+/* Make circles that indicate the steps of the form: */
+.ds-step {
+  height: 12px;
+  width: 12px;
+  margin: 0 2px;
+  background-color: blue;
+  border: none;
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.5;
+}
+
+/* Mark the active step: */
+.ds-step.active {
+  opacity: 1;
+}
+
+/* Mark the steps that are finished and valid: */
+.ds-step.finish {
+  background-color: #4CAF50;
+}
 
 .switch-field {
   display: flex;
