@@ -422,6 +422,7 @@ addAwardBtn.addEventListener('click', function() {
     awardsJson[awardNumber] = opt;
     fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
     addOption(presavedAwardArray1, opt, awardNumber);
+    addOption(presavedAwardArray2, opt, awardNumber);
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Added!" + smileyCan + "</span>";
   }
 })
