@@ -94,6 +94,14 @@ function checkNewAppVersion() {
     })
 }
 
+/////// SPARC airtable data
+Airtable.configure({
+    endpointUrl: 'https://api.airtable.com',
+    apiKey: 'keyCDx02PhX2XnwEC'
+});
+var base = Airtable.base('appiYd1Tz9Sv857GZ');
+const table_airtable = base('sparc_members')
+
 //////////////////////////////////
 // Get html elements from UI
 //////////////////////////////////
@@ -125,6 +133,9 @@ const saveInformationBtn = document.getElementById("button-save-milestone")
 // Prepare Submission File
 const presavedAwardArray2 = document.getElementById("presaved-award-list")
 const generateSubmissionBtn = document.getElementById("generate-submission")
+
+// Prepare dataset description file
+const dsDescriptionAward = document.getElementById('select-award-ds-description')
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -392,8 +403,10 @@ function loadAwards() {
       var awards = JSON.parse(contents);
       for (var key in awards) {
         // Add options to dropdown lists
-        addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
-        addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
+        awardText = eval(JSON.stringify(awards[key]));
+        addOption(presavedAwardArray1, awardText, key);
+        addOption(presavedAwardArray2, awardText, key);
+        addOption(dsDescriptionAward, awardText, key);
       }
     }
   })
@@ -421,6 +434,7 @@ addAwardBtn.addEventListener('click', function() {
   } else {
     awardsJson[awardNumber] = opt;
     fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
+    addOption(dsDescriptionAward, opt, awardNumber);
     addOption(presavedAwardArray1, opt, awardNumber);
     addOption(presavedAwardArray2, opt, awardNumber);
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Added!" + smileyCan + "</span>";
@@ -521,30 +535,26 @@ saveInformationBtn.addEventListener("click", function() {
   document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: black;'>Saved!</span>"
 });
 
-/////// Load SPARC airtable data
-Airtable.configure({
-    endpointUrl: 'https://api.airtable.com',
-    apiKey: 'keyCDx02PhX2XnwEC'
-});
-var base = Airtable.base('appiYd1Tz9Sv857GZ');
-const table_airtable = base('sparc_members')
-
-// Construct table from data
+// Construct award table from data
 table_airtable.select({
     view: 'Grid view'
 }).eachPage(function page(records, fetchNextPage) {
     var awardResultArray = [];
+    var conAwardArray = [];
     records.forEach(function(record) {
       item = record.get('SPARC_Award_#').concat(" (", record.get('Project_title'), ")");
       awardResultArray.push(item);
+      //the below array is used to retrieve contributor info
+      itemCon = record.get('SPARC_Award_#');
+      conAwardArray.push(itemCon);
     }),
-
   fetchNextPage();
   // create set to remove duplicates
-  awardSet = [...new Set(awardResultArray)];
-  for (var i = 0; i < awardSet.length; i++) {
-      var opt = awardSet[i];
-      var value = awardSet[i].slice(0,awardSet[i].indexOf(" ("))
+  awardResultSet = [...new Set(awardResultArray)];
+  awardSet = [...new Set(conAwardArray)];
+  for (var i = 0; i < awardResultSet.length; i++) {
+      var opt = awardResultSet[i];
+      var value = awardResultSet[i].slice(0,awardResultSet[i].indexOf(" ("))
       addOption(awardArray, opt, value)
   };
 },
@@ -553,6 +563,15 @@ function done(err) {
       console.error(err); return;
     }
 });
+
+// retrieve contributor info for each award
+// dsDescriptionAward.addEventListener('change', function() {
+//   award = dsDescriptionAward.options[dsDescriptionAward.selectedIndex].value;
+//   // var conArray = [];
+//   // table_airtable.select({
+//   //   filterByFormula: 'SPARC_Award_#'
+//   console.log(award)
+// })
 
 /////// Populate Submission file fields from presaved information
 presavedAwardArray2.addEventListener('change', function() {

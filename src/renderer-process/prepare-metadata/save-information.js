@@ -61,3 +61,23 @@ document.querySelector('#ds-misc-info').addEventListener('click', () => {
 document.querySelector('#ds-optional-info').addEventListener('click', () => {
     showOptionalInfo()
 })
+
+document.querySelector('#button-next-ds-contributor').addEventListener('click', () => {
+    document.querySelector('#ds-contributor-info').click()
+})
+document.querySelector('#button-next-contributor-misc').addEventListener('click', () => {
+    document.querySelector('#ds-misc-info').click()
+})
+document.querySelector('#button-next-misc-optional').addEventListener('click', () => {
+    document.querySelector('#ds-optional-info').click()
+})
+
+document.querySelector('#button-prev-contributor-ds').addEventListener('click', () => {
+    document.querySelector('#ds-dataset-info').click()
+})
+document.querySelector('#button-prev-misc-contributor').addEventListener('click', () => {
+    document.querySelector('#ds-contributor-info').click()
+})
+document.querySelector('#button-prev-optional-misc').addEventListener('click', () => {
+    document.querySelector('#ds-misc-info').click()
+})

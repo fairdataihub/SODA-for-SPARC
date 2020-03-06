@@ -145,7 +145,7 @@
             <td><font color="black">Award Number: </font></td>
             <td>
               <div class="demo-controls">
-              <select id="presaved-award-list" class="my-dropdown-metadata" style="border: 1px solid #C0C0C0">
+              <select id="presaved-award-list" class="form-container-input-bf" style="line-height: 2;">
                 <option>Select your award</option>
               </select>
             </div>
@@ -155,7 +155,7 @@
             <td><font color="black">Milestone: </font></td>
             <td>
               <div class="demo-controls">
-                <input style="border: 1px solid #C0C0C0" id="selected-milestone" class="form-container-input" list="submission-milestone-list" placeholder="Enter milestone..."/>
+                <input id="selected-milestone" class="form-container-input-bf" list="submission-milestone-list" placeholder="Enter milestone..."/>
                 <datalist id="submission-milestone-list">
                   <option> </option>
                 </datalist>
@@ -166,7 +166,7 @@
               <td><font color="black">Milestone Completion Date: </font></td>
               <td>
                 <div class="demo-controls">
-                  <input  style="border: 1px solid #C0C0C0;font:inherit" id="selected-milestone-date" name="milestonedate" type="date" placeholder="YYYY-MM-DD" class="form-container-input"></input>
+                  <input  style="font:inherit" id="selected-milestone-date" name="milestonedate" type="date" placeholder="YYYY-MM-DD" class="form-container-input-bf"></input>
                 </div>
               </td>
            </tr>
@@ -198,21 +198,30 @@
             <li>Optional Info</li>
           </ul> -->
             <form id = 'ds-description-sections'>
-              <div style = "padding:10px 0px" class="switch-field">
-                <input class="input-switch" id="ds-dataset-info" type="radio" name="tabs" checked>
-                <label class="label-switch" style="width:230px;" for="ds-dataset-info">Dataset Info</label>
-                <input class="input-switch" id="ds-contributor-info" type="radio" name="tabs">
-                <label class="label-switch" style="width:230px;" for="ds-contributor-info">Contributor Info</label>
-                <input class="input-switch" id="ds-misc-info" type="radio" name="tabs">
-                <label class="label-switch" style="width:230px;" for="ds-misc-info">Other Info</label>
-                <input class="input-switch" id="ds-optional-info" type="radio" name="tabs">
-                <label class="label-switch" style="width:230px;" for="ds-optional-info">Optional Info</label>
+              <div style="width:60%;margin:0 auto;">
+                <ul class="ds-dataset-progressbar">
+                  <li>
+                    <input class="input-switch" id="ds-dataset-info" type="radio" name="tabs" checked>
+                    <label class="label-switch" style="border-bottom:transparent;width:100%;margin-right:0;margin-left: 0;" for="ds-dataset-info">Dataset Info</label>
+                  </li>
+                  <li>
+                    <input class="input-switch" id="ds-contributor-info" type="radio" name="tabs">
+                    <label class="label-switch" style="border-bottom:transparent;width:100%;margin-right:0;margin-left: 0" for="ds-contributor-info">Contributor Info</label>
+                  </li>
+                  <li>
+                    <input class="input-switch" id="ds-misc-info" type="radio" name="tabs">
+                    <label class="label-switch" style="border-bottom:transparent;width:100%;margin-right:0;margin-left: 0" for="ds-misc-info">Other Info</label>
+                  </li>
+                  <li>
+                    <input class="input-switch" id="ds-optional-info" type="radio" name="tabs">
+                    <label class="label-switch" style="border-bottom:transparent;width:100%;margin-right:0;margin-left: 0" for="ds-optional-info">Optional Info</label>
+                  </li>
               </div>
            </form>
 
-          <div style="display:block"id="div-ds-dataset-info" class="datasetsaveoption">
-            <h5></h5>
-            <p><h5>Populate the fields below with information about your dataset: </h5></p>
+          <div style="display:block" id="div-ds-dataset-info" class="datasetsaveoption">
+            <br><br>
+            <p><h5 style="margin-top:80px" align="center">Populate the fields below with information about your dataset: </h5></p>
             <div class="form-container-ds"><font color="black"> Name: </font> </div>
             <div class="demo-controls">
               <input class="form-container-input-bf"/>
@@ -235,29 +244,68 @@
             </div>
             <br>
             <div align="right">
-              <button class="demo-button-prev-next">Next</button>
+              <button id="button-next-ds-contributor" class="demo-button-prev-next">Next</button>
             </div>
           </div>
-          <div id="div-ds-contributor-info" class="datasetsaveoption">
+
+          <div id="div-ds-contributor-info" style="width:100%;display:none">
+            <div>
             <h5></h5>
-            <p><h5>Populate the fields below with information about the contributors: </h5></p>
+            <p><h5 style="margin-top:110px" align="center">Populate the fields below with information about the contributors: </h5></p>
+            <div class="form-container-ds" ><font color="black"> Award/Funding: </font> </div>
+            <div class="demo-controls">
+              <select id="select-award-ds-description" style="line-height: 2;"class="form-container-input-bf">
+              <option>Select an option</option>
+              </select>
+            </div>
+            <div class="form-container-ds"><font color="black"> Acknowledgments: </font> </div>
+            <div class="demo-controls">
+              <textarea class="form-container-textarea"> </textarea>
+            </div>
+            <h5></h5>
+            <p><h5 style="margin-top:30px" align="center">Contributor Information: </h5></p>
             <div class="form-container-ds"><font color="black"> Contributor: </font> </div>
             <div class="demo-controls">
-              <input class="form-container-input-bf"/>
+              <select id="select-contributor-ds-description" style="line-height: 2;" class="form-container-input-bf">
+                <option>Select an option</option>
+              </select>
             </div>
             <div class="form-container-ds"><font color="black"> ORCID ID: </font> </div>
             <div class="demo-controls">
               <input class="form-container-input-bf">
             </div>
-            <br>
-            <div align="right">
-              <button class="demo-button-prev-next">Previous</button>
-              <button class="demo-button-prev-next">Next</button>
+            <div class="form-container-ds"><font color="black"> Contributor Affiliation: </font> </div>
+            <div class="demo-controls">
+              <input class="form-container-input-bf"/>
             </div>
+            <div class="form-container-ds"><font color="black"> Contributor Role: </font> </div>
+            <div class="demo-controls">
+              <input class="form-container-input-bf"/>
+            </div>
+            <div class="form-container-ds"><font color="black"> Is contact person: </font> </div>
+            <div class="demo-controls">
+            <label class="switch">
+              <input id="input-contact-person" name="contact-person" type="checkbox" onclick=""></input>
+              <span class="slider round"></span>
+            </label>
           </div>
+            <br><br>
+            <div align="right">
+              <button id="button-add-contributor" class="demo-button-prev-next">Add</button>
+            </div>
+          <div>
+            <p><h5 style="margin-top:10px">Current Contributors: </h5></p>
+          </div>
+          </div>
+          <br><br>
+        <div align="right">
+          <button id="button-prev-contributor-ds" class="demo-button-prev-next">Previous</button>
+          <button id="button-next-contributor-misc" class="demo-button-prev-next">Next</button>
+        </div>
+        </div>
           <div id="div-ds-misc-info" class="datasetsaveoption">
             <h5></h5>
-            <p><h5>Populate the fields below:</h5></p>
+            <p><h5 style="margin-top:120px" align="center">Populate the fields below:</h5></p>
             <div class="form-container-ds"><font color="black"> Originating Article DOI: </font> </div>
             <div class="demo-controls">
               <input class="form-container-input-bf" />
@@ -276,13 +324,13 @@
             </div>
           <br>
             <div align="right">
-              <button class="demo-button-prev-next">Previous</button>
-              <button class="demo-button-prev-next">Next</button>
+              <button id="button-prev-misc-contributor" class="demo-button-prev-next">Previous</button>
+              <button id="button-next-misc-optional" class="demo-button-prev-next">Next</button>
             </div>
           </div>
           <div id="div-ds-optional-info" class="datasetsaveoption">
             <h5></h5>
-            <p><h5>Populate the fields below:</h5></p>
+            <p><h5 style="margin-top:120px" align="center">Populate the fields below:</h5></p>
             <div class="form-container-ds"><font color="black"> Completeness of dataset: </font> </div>
             <div class="demo-controls">
               <select class="my-dropdown-metadata" style="border: 1px solid #C0C0C0;border-left: 2px solid #258193;">
@@ -301,14 +349,15 @@
             </div>
             <div class="form-container-ds"><font color="black"> Metadata Version: </font> </div>
             <div class="demo-controls">
-              <select class="my-dropdown-metadata" style="border-left: 2px solid #258193;">
+              <select class="form-container-input-bf">
+              <option>Select an option</option>
               <option>1.2.3</option>
             </select>
             </div>
             <br>
             <div align="right">
-              <button class="demo-button-prev-next" style="margin-right:6px">Previous</button>
-              <button class="demo-button-prev-next">Generate</button>
+              <button id="button-prev-optional-misc" class="demo-button-prev-next">Previous</button>
+              <button id="button-ds-description-generate" class="demo-button-prev-next">Generate</button>
             </div>
           </div>
 
