@@ -198,15 +198,24 @@
             <li>Optional Info</li>
           </ul> -->
             <form id = 'ds-description-sections'>
-              <div style = "padding:10px 0px" class="switch-field">
-                <input class="input-switch" id="ds-dataset-info" type="radio" name="tabs" checked>
+              <div style = "padding:10px 0px;width:100%" class="switch-field">
+                <ul class="ds-dataset-progressbar" style="counter-reset:step">
+                  <li>
+                <input class="input-switch" id="ds-dataset-info" type="button" name="tabs">
                 <label class="label-switch" style="width:230px;" for="ds-dataset-info">Dataset Info</label>
-                <input class="input-switch" id="ds-contributor-info" type="radio" name="tabs">
+                </li>
+                <li>
+                <input class="input-switch" id="ds-contributor-info" type="button" name="tabs">
                 <label class="label-switch" style="width:230px;" for="ds-contributor-info">Contributor Info</label>
-                <input class="input-switch" id="ds-misc-info" type="radio" name="tabs">
+              </li>
+              <li>
+                <input class="input-switch" id="ds-misc-info" type="button" name="tabs">
                 <label class="label-switch" style="width:230px;" for="ds-misc-info">Other Info</label>
-                <input class="input-switch" id="ds-optional-info" type="radio" name="tabs">
+              </li>
+              <li>
+                <input class="input-switch" id="ds-optional-info" type="button" name="tabs">
                 <label class="label-switch" style="width:230px;" for="ds-optional-info">Optional Info</label>
+              </li>
               </div>
            </form>
 
@@ -235,7 +244,7 @@
             </div>
             <br>
             <div align="right">
-              <button class="demo-button-prev-next">Next</button>
+              <button id="button-next-ds-contributor"class="demo-button-prev-next">Next</button>
             </div>
           </div>
           <div id="div-ds-contributor-info" class="datasetsaveoption">
@@ -251,8 +260,8 @@
             </div>
             <br>
             <div align="right">
-              <button class="demo-button-prev-next">Previous</button>
-              <button class="demo-button-prev-next">Next</button>
+              <button id="button-prev-contributor-ds" class="demo-button-prev-next">Previous</button>
+              <button id="button-next-contributor-misc" class="demo-button-prev-next">Next</button>
             </div>
           </div>
           <div id="div-ds-misc-info" class="datasetsaveoption">
@@ -276,8 +285,8 @@
             </div>
           <br>
             <div align="right">
-              <button class="demo-button-prev-next">Previous</button>
-              <button class="demo-button-prev-next">Next</button>
+              <button id="button-prev-misc-contributor" class="demo-button-prev-next">Previous</button>
+              <button id="button-next-misc-optional" class="demo-button-prev-next">Next</button>
             </div>
           </div>
           <div id="div-ds-optional-info" class="datasetsaveoption">
@@ -285,7 +294,7 @@
             <p><h5>Populate the fields below:</h5></p>
             <div class="form-container-ds"><font color="black"> Completeness of dataset: </font> </div>
             <div class="demo-controls">
-              <select class="my-dropdown-metadata" style="border: 1px solid #C0C0C0;border-left: 2px solid #258193;">
+              <select class="my-dropdown-metadata ds" style="border: 1px solid #C0C0C0;border-left: 2px solid #258193;">
                 <option>Select an option</option>
                 <option>hasChild</option>
                 <option>hasNext</option>
@@ -301,14 +310,15 @@
             </div>
             <div class="form-container-ds"><font color="black"> Metadata Version: </font> </div>
             <div class="demo-controls">
-              <select class="my-dropdown-metadata" style="border-left: 2px solid #258193;">
+              <select class="my-dropdown-metadata ds" style="border: 1px solid #C0C0C0;border-left: 2px solid #258193;">
+              <option>Select an option</option>
               <option>1.2.3</option>
             </select>
             </div>
             <br>
             <div align="right">
-              <button class="demo-button-prev-next" style="margin-right:6px">Previous</button>
-              <button class="demo-button-prev-next">Generate</button>
+              <button id="button-prev-optional-misc" class="demo-button-prev-next">Previous</button>
+              <button id="button-generate-ds-description" class="demo-button-prev-next">Generate</button>
             </div>
           </div>
 

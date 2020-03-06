@@ -48,7 +48,6 @@ function showOptionalInfo(){
   document.getElementById('div-ds-optional-info').style.display ='block';
   document.getElementById('para-save-award-info').innerHTML = ""
 }
-
 document.querySelector('#ds-dataset-info').addEventListener('click', () => {
     showDSInfo()
 })
@@ -60,4 +59,29 @@ document.querySelector('#ds-misc-info').addEventListener('click', () => {
 })
 document.querySelector('#ds-optional-info').addEventListener('click', () => {
     showOptionalInfo()
+})
+document.querySelector('#ds-optional-info').addEventListener('click', () => {
+    showOptionalInfo()
+})
+
+///prev buttons
+document.querySelector('#button-prev-contributor-ds').addEventListener('click', () => {
+    document.querySelector('#ds-dataset-info').click()
+})
+document.querySelector('#button-prev-misc-contributor').addEventListener('click', () => {
+    document.querySelector('#ds-contributor-info').click()
+})
+document.querySelector('#button-prev-optional-misc').addEventListener('click', () => {
+    document.querySelector('#ds-misc-info').click()
+})
+
+//next buttons
+document.querySelector('#button-next-ds-contributor').addEventListener('click', () => {
+    document.querySelector('#ds-contributor-info').click()
+})
+document.querySelector('#button-next-contributor-misc').addEventListener('click', () => {
+    document.querySelector('#ds-misc-info').click()
+})
+document.querySelector('#button-next-misc-optional').addEventListener('click', () => {
+    document.querySelector('#ds-optional-info').click()
 })
