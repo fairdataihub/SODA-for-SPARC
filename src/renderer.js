@@ -136,6 +136,7 @@ const generateSubmissionBtn = document.getElementById("generate-submission")
 
 // Prepare dataset description file
 const dsDescriptionAward = document.getElementById('select-award-ds-description')
+const dsDescriptionContributor = document.getElementById('select-contributor-ds-description')
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -564,14 +565,37 @@ function done(err) {
     }
 });
 
+function parse(str) {
+    var args = [].slice.call(arguments, 1),
+        i = 0;
+    return str.replace(/%s/g, () => args[i++]);
+}
+
 // retrieve contributor info for each award
-// dsDescriptionAward.addEventListener('change', function() {
-//   award = dsDescriptionAward.options[dsDescriptionAward.selectedIndex].value;
-//   // var conArray = [];
-//   // table_airtable.select({
-//   //   filterByFormula: 'SPARC_Award_#'
-//   console.log(award)
-// })
+dsDescriptionAward.addEventListener('change', function() {
+  award = dsDescriptionAward.options[dsDescriptionAward.selectedIndex].value;
+  // look for award in Airtable datasheet and return corresponding contributors
+  var conArray = [];
+  table_airtable.select({
+    filterByFormula: parse("{SPARC_Award_#}= '%s'",award)
+  }).eachPage(function page(records, fetchNextPage) {
+      records.forEach(function(record) {
+        item = record.get('Name');
+        conArray.push(item)
+      });
+    fetchNextPage();
+    for (var i = 0; i < conArray.length; i++) {
+        var opt = conArray[i];
+        addOption(dsDescriptionContributor, opt, opt)
+    };
+  function done(err) {
+      if (err) {
+        console.error(err);
+        return;
+      }
+  };
+})
+})
 
 /////// Populate Submission file fields from presaved information
 presavedAwardArray2.addEventListener('change', function() {

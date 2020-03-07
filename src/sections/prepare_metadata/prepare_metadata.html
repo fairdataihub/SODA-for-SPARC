@@ -278,17 +278,35 @@
             <div class="demo-controls">
               <input class="form-container-input-bf"/>
             </div>
-            <div class="form-container-ds"><font color="black"> Contributor Role: </font> </div>
+            <div class="form-container-ds" style="margin-bottom:5px"><font color="black"> Contributor Role: </font> </div>
             <div class="demo-controls">
-              <input class="form-container-input-bf"/>
-            </div>
+            <select id="select-contributor-role-ds-description" style="line-height: 2;"class="form-container-input-bf">
+              <option>Select an option</option>
+              <option>Collaborator</option>
+              <option>Consultant</option>
+              <option>Co-Investigator</option>
+              <option>Data Wrangler</option>
+              <option>Data Analyst</option>
+              <option>Engineer</option>
+              <option>Graduate student</option>
+              <option>MPI</option>
+              <option>MPI Contact</option>
+              <option>PI</option>
+              <option>Postdoc</option>
+              <option>Project Director</option>
+              <option>Project Manager</option>
+              <option>Project Scientist</option>
+              <option>Research Assistance</option>
+              <option>Research Technician</option>
+              <option>Staff</option>
+              <option>Subaward PI</option>
+            </select>
+          </div>
             <div class="form-container-ds"><font color="black"> Is contact person: </font> </div>
-            <div class="demo-controls">
             <label class="switch">
               <input id="input-contact-person" name="contact-person" type="checkbox" onclick=""></input>
               <span class="slider round"></span>
             </label>
-          </div>
             <br><br>
             <div align="right">
               <button id="button-add-contributor" class="demo-button-prev-next">Add</button>
@@ -298,8 +316,8 @@
           </div>
           </div>
           <br><br>
-        <div align="right">
-          <button id="button-prev-contributor-ds" class="demo-button-prev-next">Previous</button>
+        <div align="right" style="margin-top:10px">
+          <button style="margin-right:8px" id="button-prev-contributor-ds" class="demo-button-prev-next">Previous</button>
           <button id="button-next-contributor-misc" class="demo-button-prev-next">Next</button>
         </div>
         </div>
@@ -323,8 +341,8 @@
               <input class="form-container-input-bf" />
             </div>
           <br>
-            <div align="right">
-              <button id="button-prev-misc-contributor" class="demo-button-prev-next">Previous</button>
+            <div align="right"style="margin-top:10px">
+              <button style="margin-right:8px" id="button-prev-misc-contributor" class="demo-button-prev-next">Previous</button>
               <button id="button-next-misc-optional" class="demo-button-prev-next">Next</button>
             </div>
           </div>
@@ -355,8 +373,8 @@
             </select>
             </div>
             <br>
-            <div align="right">
-              <button id="button-prev-optional-misc" class="demo-button-prev-next">Previous</button>
+            <div align="right" style="margin-top:10px">
+              <button style="margin-right:8px" id="button-prev-optional-misc" class="demo-button-prev-next">Previous</button>
               <button id="button-ds-description-generate" class="demo-button-prev-next">Generate</button>
             </div>
           </div>
