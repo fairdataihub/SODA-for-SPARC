@@ -94,6 +94,14 @@ function checkNewAppVersion() {
     })
 }
 
+/////// Load SPARC airtable data
+Airtable.configure({
+    endpointUrl: 'https://api.airtable.com',
+    apiKey: 'keyCDx02PhX2XnwEC'
+});
+var base = Airtable.base('appiYd1Tz9Sv857GZ');
+const table_airtable = base('sparc_members')
+
 //////////////////////////////////
 // Get html elements from UI
 //////////////////////////////////
@@ -125,6 +133,11 @@ const saveInformationBtn = document.getElementById("button-save-milestone")
 // Prepare Submission File
 const presavedAwardArray2 = document.getElementById("presaved-award-list")
 const generateSubmissionBtn = document.getElementById("generate-submission")
+
+// Prepare Dataset Description File
+const dsAwardArray = document.getElementById("ds-description-award-list")
+const dsContributorArray = document.getElementById("ds-description-contributor-list")
+const addCurrentContributorsBtn = document.getElementById("button-ds-add-award")
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -394,6 +407,7 @@ function loadAwards() {
         // Add options to dropdown lists
         addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
         addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
+        addOption(dsAwardArray, eval(JSON.stringify(awards[key])), key);
       }
     }
   })
@@ -423,11 +437,23 @@ addAwardBtn.addEventListener('click', function() {
     fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
     addOption(presavedAwardArray1, opt, awardNumber);
     addOption(presavedAwardArray2, opt, awardNumber);
+    addOption(dsAwardArray, opt, awardNumber);
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Added!" + smileyCan + "</span>";
   }
 })
 
 /////// Delete an Award
+// function to delete a selected value in a dropdown
+function getOptionByValue (dropdown, value) {
+    var options = dropdown.options;
+    for (var i = 0; i < options.length; i++) {
+        if (options[i].value === value) {
+            return options[i]
+        }
+    }
+    return null
+}
+
 deleteAwardBtn.addEventListener('click', function() {
 //   /// TODO: Confirm deleting award number
 //     ipcRenderer.send('warning-delete-award')
@@ -435,24 +461,28 @@ deleteAwardBtn.addEventListener('click', function() {
 // ipcRenderer.on('warning-delete-award-selection', (event, index) => {
 //   console.log("1");
 //   if (index === 0) {
-  value = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+  award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
   if (value==="Select") {
     document.getElementById("para-delete-award-status").innerHTML = "<span style='color: red;'>Please select an award number to delete</span>"
   } else {
     var milestoneJson = parseJson(milestonePath);
     var awardsJson = parseJson(awardPath)
     // check if award is in list
-    if (value in awardsJson) {
-      delete awardsJson[value];
+    if (award in awardsJson) {
+      delete awardsJson[award];
       }
     // check if award is in list of milestones
-    if (value in milestoneJson) {
-      delete milestoneJson[value];
+    if (award in milestoneJson) {
+      delete milestoneJson[award];
       }
     fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
     presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
     fs.writeFileSync(milestonePath, JSON.stringify(milestoneJson));
-    presavedAwardArray2.remove(presavedAwardArray2.selectedIndex);
+    // delete award in the next two award arrays
+    var award1 = getOptionByValue(presavedAwardArray2,award);
+    var award2 = getOptionByValue(dsAwardArray,award);
+    presavedAwardArray2.remove(award1);
+    dsAwardArray.remove(award2);
     document.getElementById("div-show-milestone-info").style.display = "none";
     document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black;'> " + "Deleted award number: " + value + "!" + "</span>"
   }
@@ -521,15 +551,7 @@ saveInformationBtn.addEventListener("click", function() {
   document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: black;'>Saved!</span>"
 });
 
-/////// Load SPARC airtable data
-Airtable.configure({
-    endpointUrl: 'https://api.airtable.com',
-    apiKey: 'keyCDx02PhX2XnwEC'
-});
-var base = Airtable.base('appiYd1Tz9Sv857GZ');
-const table_airtable = base('sparc_members')
-
-// Construct table from data
+///// Construct table from data
 table_airtable.select({
     view: 'Grid view'
 }).eachPage(function page(records, fetchNextPage) {
@@ -538,7 +560,6 @@ table_airtable.select({
       item = record.get('SPARC_Award_#').concat(" (", record.get('Project_title'), ")");
       awardResultArray.push(item);
     }),
-
   fetchNextPage();
   // create set to remove duplicates
   awardSet = [...new Set(awardResultArray)];
@@ -553,6 +574,96 @@ function done(err) {
       console.error(err); return;
     }
 });
+
+/////////Submission File///////////////////
+
+/// load Airtable Contributor data
+dsAwardArray.addEventListener("change", function(e) {
+  document.getElementById("input-con-ID").value = "";
+  document.getElementById("input-con-role").value = "";
+  document.getElementById("input-con-affiliation").value = "";
+
+  removeOptions(dsContributorArray)
+  addOption(dsContributorArray, "Select", "Select an option")
+  var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+  table_airtable.select({
+    filterByFormula: `({SPARC_Award_#} = "${awardVal}")`
+  }).eachPage(function page(records, fetchNextPage) {
+      var awardValArray = [];
+      records.forEach(function(record) {
+        var item = record.get('Name');
+        awardValArray.push(item);
+      }),
+    fetchNextPage();
+    for (var i = 0; i < awardValArray.length; i++) {
+        var opt = awardValArray[i];
+        addOption(dsContributorArray, opt, opt)
+    }
+  }),
+  function done(err) {
+      if (err) {
+        console.error(err); return;
+      }
+  };
+})
+
+/// Auto populate once a contributor is selected
+dsContributorArray.addEventListener("change", function(e) {
+  document.getElementById("input-con-ID").value = '';
+  document.getElementById("input-con-role").value = '';
+  document.getElementById("input-con-affiliation").value = '';
+
+  var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
+  table_airtable.select({
+    filterByFormula: `({Name} = "${contributorVal}")`
+  }).eachPage(function page(records, fetchNextPage) {
+      var conInfoObj = {};
+      records.forEach(function(record) {
+        // {"John, Scott": {"ORCID ID": "123", ""}}
+        conInfoObj["ID"] = record.get('ORCID');
+        conInfoObj["Role"] = record.get('Project_Role');
+        conInfoObj["Affiliation"] = record.get('Institution');
+      }),
+    fetchNextPage();
+    document.getElementById("input-con-affiliation").value = conInfoObj["Affiliation"];
+    document.getElementById("input-con-role").value = conInfoObj["Role"];
+    if (conInfoObj["ID"]!==undefined) {
+      document.getElementById("input-con-ID").value = conInfoObj["ID"];
+      console.log(conInfoObj["ID"])
+    } else {
+      document.getElementById("input-con-ID").innerHTML = ''
+    }
+  }),
+  function done(err) {
+      if (err) {
+        console.error(err); return;
+      }
+  };
+})
+
+// Show current contributors
+function createTable() {
+  // start at 1 to skip the header
+  var rowIndex = 1;
+  for (var i=0;i<milestoneObj.length; i++) {
+    var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneObj[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ milestoneObj[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
+    rowIndex++;
+    }
+}
+
+// addCurrentContributorsBtn.addEventListener("click", function() {
+//   tableCon = document.getElementById("table-current-contributors")
+//   var rowcount = tableCon.rows.length;
+//   if (rowcount===2) {
+//     // start at 1 to skip the header
+//     var rowIndex = 1;
+//   } else {
+//     /// append row to table from the bottom
+//     var rowIndex = rowcount-1;
+//   }
+//   var rowIndex = -1;
+//   var row = tableCon.insertRow(rowIndex).outerHTML="<tr id='row-current-cons"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneObj[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ milestoneObj[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
+// })
 
 /////// Populate Submission file fields from presaved information
 presavedAwardArray2.addEventListener('change', function() {

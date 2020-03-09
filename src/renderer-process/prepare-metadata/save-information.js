@@ -48,20 +48,33 @@ function showOptionalInfo(){
   document.getElementById('div-ds-optional-info').style.display ='block';
   document.getElementById('para-save-award-info').innerHTML = ""
 }
+
+function removeClasses(elemSet, className) {
+  elemSet.forEach(elem => {
+    elem.classList.remove(className);
+  });
+};
+
 document.querySelector('#ds-dataset-info').addEventListener('click', () => {
-    showDSInfo()
+    showDSInfo();
+    removeClasses(document.querySelectorAll(`.multisteps-form__progress-btn`), 'js-active');
+    document.querySelector('#ds-dataset-info').classList.add('js-active')
 })
+
 document.querySelector('#ds-contributor-info').addEventListener('click', () => {
     showContributorInfo()
+    removeClasses(document.querySelectorAll(`.multisteps-form__progress-btn`), 'js-active');
+    document.querySelector('#ds-contributor-info').classList.add('js-active')
 })
 document.querySelector('#ds-misc-info').addEventListener('click', () => {
     showMiscInfo()
+    removeClasses(document.querySelectorAll(`.multisteps-form__progress-btn`), 'js-active');
+    document.querySelector('#ds-misc-info').classList.add('js-active')
 })
 document.querySelector('#ds-optional-info').addEventListener('click', () => {
     showOptionalInfo()
-})
-document.querySelector('#ds-optional-info').addEventListener('click', () => {
-    showOptionalInfo()
+    removeClasses(document.querySelectorAll(`.multisteps-form__progress-btn`), 'js-active');
+    document.querySelector('#ds-optional-info').classList.add('js-active')
 })
 
 ///prev buttons
