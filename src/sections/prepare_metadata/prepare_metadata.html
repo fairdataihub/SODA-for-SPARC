@@ -71,7 +71,7 @@
           <div id="div-add-new-grant" class="datasetsaveoption" style="display:block;margin-top:70px">
             <h5> Add a new grant number: </h5>
             <div class="demo-controls">
-              <select id="select-grant-info-list" class="my-dropdown-metadata" style="width:60%;float:left;padding:6px 8px;margin-top:15px">
+              <select id="select-grant-info-list" class="my-dropdown-metadata" style="width:90%;float:left;padding:6px 8px;margin-top:15px">
                 <option>Select</option>
               </select>
               <button id="button-add-award" class="demo-button" style="height:35px;width:150px;padding:0 0;margin-left:10px;margin-top:15px">Add</button>
@@ -84,7 +84,7 @@
           <div id="div-select-existing-grant" class="datasetsaveoption" style="display:none;margin-top:70px;margin-left:10px">
             <h5> Specify grant number to edit milestone information: </h5>
             <div class="demo-controls" style="margin-top:20px">
-              <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:65%; padding: 6px 8px; font-size:14px">
+              <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:100%; padding: 6px 8px; font-size:14px">
                 <option>Select</option>
               </select>
               <br>
@@ -95,14 +95,14 @@
             </div>
             <p></p>
             <div class="demo-controls">
-               <div id="div-show-milestone-info" class="pathtable" style="display:none;width:65%;border-radius:5px;">
-                 <h5 align="left"> Add/Edit milestone information: </h5>
+               <div id="div-show-milestone-info" class="pathtable" style="display:none;width:90%;border-radius:5px;margin:0 auto">
+                 <h5 align="center"> Add/Edit milestone information: </h5>
                  <h5></h5>
                <table id="table-milestones">
                  <tr>
                    <th style="width:50%">Milestone</th>
-                   <th style="width:25%">Completion Date</th>
-                   <th style="width:25%"></th>
+                   <th style="width:35%">Completion Date</th>
+                   <th style="width:15%"></th>
                 </tr>
                 <tr id="default-milestone-row">
                    <td><input id="input-milestone-new" class="form-container-input" placeholder="Add a milestone..." style="text-align:center"/></td>
@@ -112,12 +112,11 @@
                 </tr>
                </table>
                <h5></h5>
-               <div class="demo-controls" align="right">
-                 <button class="demo-button" id="button-save-milestone"> Save Information </button>
-                 <p id='para-save-milestone-status' style="height:35px"></p>
+               <div align="right">
+                 <button class="demo-button" style="margin-right:0;width:160px;float:right" id="button-save-milestone"> Save Information </button>
+                 <p id='para-save-milestone-status'style="float:right;padding-top:0;margin-bottom:0"></p>
               </div>
                </div>
-
             </div>
           </div>
 
@@ -132,25 +131,26 @@
           <div class="demo-meta u-avoid-clicks"> Edit/Save the submission file to include in your dataset  </div>
         </button>
       <div class="demo-box">
-        <div id="div-generate-submission-file" class="pathtable" style="width:70%;margin-left:10px">
-          <h5 align="left"> Populate the items below to generate submission file</h5>
+        <div class="demo-controls">
+        <div id="div-generate-submission-file" class="pathtable" style="width:100%;">
+          <h5 align="center"> Populate the items below to generate submission file</h5>
           <h5></h5>
           <br>
           <table>
             <tr>
               <th style="width:30%">Submission Items</th>
               <th style="width:70%">Value</th>
-           </tr>
-           <tr>
-            <td><font color="black">Award Number: </font></td>
-            <td>
-              <div class="demo-controls">
-              <select id="presaved-award-list" class="my-dropdown-metadata" style="border: 1px solid #C0C0C0">
-                <option>Select your award</option>
-              </select>
-            </div>
-            </td>
-          </tr>
+            </tr>
+            <tr>
+              <td><font color="black">Award Number: </font></td>
+              <td>
+                <div class="demo-controls">
+                <select id="presaved-award-list" class="my-dropdown-metadata" style="border: 1px solid #C0C0C0">
+                  <option value="Select">Select your award</option>
+                </select>
+              </div>
+              </td>
+            </tr>
            <tr>
             <td><font color="black">Milestone: </font></td>
             <td>
@@ -160,22 +160,23 @@
                   <option> </option>
                 </datalist>
               </div>
-            </td>
-           </tr>
-           <tr>
-              <td><font color="black">Milestone Completion Date: </font></td>
-              <td>
-                <div class="demo-controls">
-                  <input  style="border: 1px solid #C0C0C0;font:inherit" id="selected-milestone-date" name="milestonedate" type="date" placeholder="YYYY-MM-DD" class="form-container-input"></input>
-                </div>
               </td>
            </tr>
+           <tr>
+            <td><font color="black">Milestone Completion Date: </font></td>
+            <td>
+              <div class="demo-controls">
+                <input  style="border: 1px solid #C0C0C0;font:inherit" id="selected-milestone-date" name="milestonedate" type="date" placeholder="YYYY-MM-DD" class="form-container-input"></input>
+              </div>
+            </td>
+           </tr>
           </table>
-          <h5></h5>
-            <div class="demo-controls">
-            <button class="demo-button" id="generate-submission"> Generate </button>
-            <p id='para-save-submission-status'></p>
+          <br>
+          <div align="right">
+            <button class="demo-button" style="margin-right:0;width:160px;float:right" id="generate-submission"> Generate </button>
+            <p id='para-save-submission-status' style="float:right;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p>
           </div>
+        </div>
         </div>
         </div>
       </div>
@@ -258,7 +259,7 @@
             </div>
             <div class="form-container-ds"><font color="black"> Acknowlegdments: </font> </div>
             <div class="demo-controls">
-              <textarea class="form-container-textarea"> </textarea>
+              <textarea id="ds-description-acknowlegdment" class="form-container-textarea"> </textarea>
             </div>
             <p><h5>Contributor Information: </h5></p>
             <div class="form-container-ds"><font color="black"> Contributor: </font> </div>
@@ -300,6 +301,7 @@
                </tr>
               </table> -->
             </div>
+            <br>
             <div align="right">
               <button id="button-prev-contributor-ds" class="demo-button-prev-next">Previous</button>
               <button id="button-next-contributor-misc" class="demo-button-prev-next">Next</button>
@@ -309,19 +311,19 @@
             <h5></h5>
             <div class="form-container-ds"><font color="black"> Originating Article DOI: </font> </div>
             <div class="demo-controls">
-              <input class="form-container-input-bf" />
+              <input id="input-misc-DOI" class="form-container-input-bf" />
             </div>
             <div class="form-container-ds"><font color="black"> Protocol URL or DOI: </font> </div>
             <div class="demo-controls">
-              <input class="form-container-input-bf" />
+              <input id="input-misc-protocol" class="form-container-input-bf" />
             </div>
             <div class="form-container-ds"><font color="black"> Additional Links: </font> </div>
             <div class="demo-controls">
-              <input class="form-container-input-bf" />
+              <input id="input-misc-addl-links" class="form-container-input-bf" />
             </div>
             <div class="form-container-ds"><font color="black"> Link Description: </font> </div>
             <div class="demo-controls">
-              <input class="form-container-input-bf" />
+              <input id="input-misc-link-description" class="form-container-input-bf" />
             </div>
           <br>
             <div align="right">
@@ -333,7 +335,7 @@
             <h5></h5>
             <div class="form-container-ds"><font color="black"> Completeness of dataset: </font> </div>
             <div class="demo-controls">
-              <select class="my-dropdown-metadata ds" style="border: 1px solid #C0C0C0;border-left: 2px solid #258193;">
+              <select id = "input-completeness" class="my-dropdown-metadata ds" style="border: 1px solid #C0C0C0;border-left: 2px solid #258193;">
                 <option>Select an option</option>
                 <option>hasChild</option>
                 <option>hasNext</option>
@@ -341,16 +343,16 @@
             </div>
             <div class="form-container-ds"><font color="black"> Parent dataset ID: </font> </div>
             <div class="demo-controls">
-              <input class="form-container-input-bf" />
+              <input id="input-parent-ds" class="form-container-input-bf" />
             </div>
             <div class="form-container-ds"><font color="black"> Title for complete dataset: </font> </div>
             <div class="demo-controls">
-              <input class="form-container-input-bf" />
+              <input id="input-completeds-title" class="form-container-input-bf" />
             </div>
             <div class="form-container-ds"><font color="black"> Metadata Version: </font> </div>
             <div class="demo-controls">
-              <select class="my-dropdown-metadata ds" style="border: 1px solid #C0C0C0;border-left: 2px solid #258193;">
-              <option>Select an option</option>
+              <select id = "input-metadata-ver" class="my-dropdown-metadata ds" style="border: 1px solid #C0C0C0;border-left: 2px solid #258193;">
+              <option value="Select">Select an option</option>
               <option>1.2.3</option>
             </select>
             </div>

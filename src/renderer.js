@@ -577,21 +577,12 @@ function done(err) {
 
 /////////Submission File///////////////////
 
-function removeClasses(elemSet, className) {
-  elemSet.forEach(elem => {
-    elem.classList.remove(className);
-  });
-};
-
-//// function to check if all fields have been filled
-function checkFields(div, fieldArray) {
-  for (var field in fieldArray) {
-    if (field.value.length!==0 || field.value!=="Select") {
-      continue
-    }
-  }
-  document.querySelector(div).className = ('multisteps-form__progress-btn visited');
-}
+// /// Create tag input for Keyword textarea
+// var tagInput = new TagsInput({
+//     selector: 'ds-keywords',
+//     duplicate: true
+// });
+//
 
 /// load Airtable Contributor data
 dsAwardArray.addEventListener("change", function(e) {
@@ -711,7 +702,14 @@ presavedAwardArray2.addEventListener('change', function() {
 
 /// Generate submission file
 generateSubmissionBtn.addEventListener('click', (event) => {
-        ipcRenderer.send('save-file-dialog-submission')
+  awardVal = document.getElementById("presaved-award-list").value;
+  milestoneVal = document.getElementById("selected-milestone").value;
+  dateVal = document.getElementById("selected-milestone-date").value;
+  if (milestoneVal===''|| dateVal==='' || awardVal==='Select') {
+    document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Please fill in all fields to generate!</span>"
+  } else {
+    ipcRenderer.send('save-file-dialog-submission')
+  }
 });
 ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
   if (path.length > 0) {
@@ -731,11 +729,19 @@ ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
           document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
         }
         else {
-          document.getElementById("para-save-submission-status").innerHTML = "<span style='color: black ;'>Done!</span>"
+          document.getElementById("para-save-submission-status").innerHTML = "<span style='color: black ;'>" + "Done!" + smileyCan + "</span>"
         }
       })
      }}
 });
+
+//////////////// submission file ///////////////////////
+
+
+                  // contributor: [document.getElementById('ds-description-award-list'), document.getElementById("ds-description-acknowlegdment"),
+                  //               document.getElementById('ds-description-contributor-list'),document.getElementById('input-con-ID'),
+                  //               document.getElementById('input-con-affiliation'),document.getElementById('input-con-role')]
+// checkFields("ds-contributor-info", )
 
 // Select organized dataset folder and populate table //
 selectDatasetBtn.addEventListener('click', (event) => {

@@ -54,13 +54,26 @@ function removeClasses(elemSet, className) {
     elem.classList.remove(className);
   });
 };
+var domStrings = {dataset: [document.getElementById('ds-name'), document.getElementById('ds-description'),
+                            document.getElementById('ds-keywords'),document.getElementById('ds-samples-no'),
+                            document.getElementById('ds-subjects-no')],
+                  misc: [document.getElementById('input-misc-DOI'), document.getElementById('input-misc-protocol'),
+                        document.getElementById('input-misc-addl-links'), document.getElementById('input-misc-link-description')],
+                  optional: [document.getElementById("input-completeness"),document.getElementById("input-parent-ds"),
+                            document.getElementById('input-completeds-title'),document.getElementById('input-metadata-ver')]
+                  }
+//// check if all fields have been filled
 function checkFields(div, fieldArray) {
+  var empty = false
   for (let field of fieldArray) {
-    if (field.value.length!==0 && field.value!=="Select") {
-      continue
+    if (field.value.length===0 || field.value==="Select") {
+      empty = true
+      break
     }
   }
-  document.getElementById(div).className = 'multisteps-form__progress-btn js-active2';
+  if (!empty) {
+    document.getElementById(div).className = 'multisteps-form__progress-btn js-active2';
+  }
 }
 
 document.querySelector('#ds-dataset-info').addEventListener('click', () => {
@@ -88,24 +101,27 @@ document.querySelector('#ds-optional-info').addEventListener('click', () => {
 ///prev buttons
 document.querySelector('#button-prev-contributor-ds').addEventListener('click', () => {
     document.querySelector('#ds-dataset-info').click()
+    checkFields("ds-contributor-info", domStrings.contributor)
 })
 document.querySelector('#button-prev-misc-contributor').addEventListener('click', () => {
     document.querySelector('#ds-contributor-info').click()
+    checkFields("ds-misc-info", domStrings.misc)
 })
 document.querySelector('#button-prev-optional-misc').addEventListener('click', () => {
     document.querySelector('#ds-misc-info').click()
+    checkFields("ds-optional-info", domStrings.optional)
 })
 
 //next buttons
 document.querySelector('#button-next-ds-contributor').addEventListener('click', () => {
     document.querySelector('#ds-contributor-info').click();
-    var fieldArray = [document.getElementById("ds-name"), document.getElementById("ds-description")]
-    console.log(fieldArray)
-    checkFields("ds-dataset-info", fieldArray)
+    checkFields("ds-dataset-info", domStrings.dataset)
 })
 document.querySelector('#button-next-contributor-misc').addEventListener('click', () => {
     document.querySelector('#ds-misc-info').click()
+    // checkFields("ds-misc-info", domStrings.misc)
 })
 document.querySelector('#button-next-misc-optional').addEventListener('click', () => {
     document.querySelector('#ds-optional-info').click()
+    checkFields("ds-misc-info", domStrings.misc)
 })
