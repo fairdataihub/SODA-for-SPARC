@@ -54,27 +54,35 @@ function removeClasses(elemSet, className) {
     elem.classList.remove(className);
   });
 };
+function checkFields(div, fieldArray) {
+  for (let field of fieldArray) {
+    if (field.value.length!==0 && field.value!=="Select") {
+      continue
+    }
+  }
+  document.getElementById(div).className = 'multisteps-form__progress-btn js-active2';
+}
 
 document.querySelector('#ds-dataset-info').addEventListener('click', () => {
     showDSInfo();
-    removeClasses(document.querySelectorAll(`.multisteps-form__progress-btn`), 'js-active');
-    document.querySelector('#ds-dataset-info').classList.add('js-active')
+    removeClasses(document.querySelectorAll(`.multisteps-form__progress-btn`), 'js-active1');
+    document.querySelector('#ds-dataset-info').classList.add('js-active1')
 })
 
 document.querySelector('#ds-contributor-info').addEventListener('click', () => {
     showContributorInfo()
-    removeClasses(document.querySelectorAll(`.multisteps-form__progress-btn`), 'js-active');
-    document.querySelector('#ds-contributor-info').classList.add('js-active')
+    removeClasses(document.querySelectorAll(`.multisteps-form__progress-btn`), 'js-active1');
+    document.querySelector('#ds-contributor-info').classList.add('js-active1')
 })
 document.querySelector('#ds-misc-info').addEventListener('click', () => {
     showMiscInfo()
-    removeClasses(document.querySelectorAll(`.multisteps-form__progress-btn`), 'js-active');
-    document.querySelector('#ds-misc-info').classList.add('js-active')
+    removeClasses(document.querySelectorAll(`.multisteps-form__progress-btn`), 'js-active1');
+    document.querySelector('#ds-misc-info').classList.add('js-active1')
 })
 document.querySelector('#ds-optional-info').addEventListener('click', () => {
     showOptionalInfo()
-    removeClasses(document.querySelectorAll(`.multisteps-form__progress-btn`), 'js-active');
-    document.querySelector('#ds-optional-info').classList.add('js-active')
+    removeClasses(document.querySelectorAll(`.multisteps-form__progress-btn`), 'js-active1');
+    document.querySelector('#ds-optional-info').classList.add('js-active1')
 })
 
 ///prev buttons
@@ -90,7 +98,10 @@ document.querySelector('#button-prev-optional-misc').addEventListener('click', (
 
 //next buttons
 document.querySelector('#button-next-ds-contributor').addEventListener('click', () => {
-    document.querySelector('#ds-contributor-info').click()
+    document.querySelector('#ds-contributor-info').click();
+    var fieldArray = [document.getElementById("ds-name"), document.getElementById("ds-description")]
+    console.log(fieldArray)
+    checkFields("ds-dataset-info", fieldArray)
 })
 document.querySelector('#button-next-contributor-misc').addEventListener('click', () => {
     document.querySelector('#ds-misc-info').click()

@@ -577,6 +577,22 @@ function done(err) {
 
 /////////Submission File///////////////////
 
+function removeClasses(elemSet, className) {
+  elemSet.forEach(elem => {
+    elem.classList.remove(className);
+  });
+};
+
+//// function to check if all fields have been filled
+function checkFields(div, fieldArray) {
+  for (var field in fieldArray) {
+    if (field.value.length!==0 || field.value!=="Select") {
+      continue
+    }
+  }
+  document.querySelector(div).className = ('multisteps-form__progress-btn visited');
+}
+
 /// load Airtable Contributor data
 dsAwardArray.addEventListener("change", function(e) {
   document.getElementById("input-con-ID").value = "";
