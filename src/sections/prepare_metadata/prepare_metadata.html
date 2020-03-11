@@ -134,46 +134,43 @@
         <div class="demo-controls">
         <div id="div-generate-submission-file" class="pathtable" style="width:100%;">
           <h5 align="center"> Populate the items below to generate submission file</h5>
-          <h5></h5>
           <br>
-          <table>
-            <tr>
-              <th style="width:30%">Submission Items</th>
-              <th style="width:70%">Value</th>
-            </tr>
-            <tr>
-              <td><font color="black">Award Number: </font></td>
-              <td>
-                <div class="demo-controls">
-                <select id="presaved-award-list" class="my-dropdown-metadata" style="border: 1px solid #C0C0C0">
-                  <option value="Select">Select your award</option>
-                </select>
-              </div>
-              </td>
-            </tr>
-           <tr>
-            <td><font color="black">Milestone: </font></td>
-            <td>
-              <div class="demo-controls">
-                <input style="border: 1px solid #C0C0C0" id="selected-milestone" class="form-container-input" list="submission-milestone-list" placeholder="Enter milestone..."/>
-                <datalist id="submission-milestone-list">
-                  <option> </option>
-                </datalist>
-              </div>
-              </td>
-           </tr>
-           <tr>
-            <td><font color="black">Milestone Completion Date: </font></td>
-            <td>
-              <div class="demo-controls">
-                <input  style="border: 1px solid #C0C0C0;font:inherit" id="selected-milestone-date" name="milestonedate" type="date" placeholder="YYYY-MM-DD" class="form-container-input"></input>
-              </div>
-            </td>
-           </tr>
-          </table>
+          <div class="form-container-ds"><font color="black"> SPARC Award Number: </font> </div>
+          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+            <span class="tooltiptext" style="width: 250px;">
+              Grant number supporting the milestone
+            </span>
+          </div>
+          <div class="demo-controls">
+          <select id="presaved-award-list" class="form-container-input-bf" style="line-height: 2;height:28px">
+            <option value="Select">Select an option</option>
+          </select>
+          </div>
+          <div class="form-container-ds"><font color="black"> Milestone: </font> </div>
+          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+            <span class="tooltiptext" style="width: 250px;">
+              From milestones supplied to NIH
+            </span>
+          </div>
+          <div class="demo-controls">
+            <input id="selected-milestone" class="form-container-input-bf" list="submission-milestone-list" placeholder="Enter milestone..."/>
+            <datalist id="submission-milestone-list">
+              <option> </option>
+            </datalist>
+          </div>
+          <div class="form-container-ds"><font color="black"> Completion Date: </font> </div>
+          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+            <span class="tooltiptext" style="width: 250px;">
+              Date of milestone completion. This date starts the countdown for submission (30 days after completion),
+              length of embargo and publication date (12 months from completion of milestone)
+            </span>
+          </div>
+          <div class="demo-controls">
+            <input style="font:inherit;height:28px" id="selected-milestone-date" name="milestonedate" type="date"class="form-container-input-bf"></input>
+          </div>
           <br>
           <div align="right">
-            <button class="demo-button" style="margin-right:0;width:160px;float:right" id="generate-submission"> Generate </button>
+            <button class="demo-button" style="margin-right:0;width:140px;float:right" id="generate-submission"> Generate </button>
             <p id='para-save-submission-status' style="float:right;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p>
           </div>
         </div>
@@ -336,8 +333,8 @@
               <button id="button-ds-add-contributor" class="demo-button-prev-next">Add</button>
             </div>
             <br><br>
-            <div id="div-current-contributors" style="width:90%;display:none;">
-              <h5>Current Contributors</h5>
+            <div id="div-current-contributors" style="width:100%;display:none;">
+              <h5 align="center">Current Contributors</h5>
               <table id="table-current-contributors">
                 <tr>
                   <th style="width:25%">Current Contributors</th>

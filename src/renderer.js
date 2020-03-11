@@ -444,13 +444,14 @@ addAwardBtn.addEventListener('click', function() {
   }
 })
 
-/////// Delete an Award
+/////// Delete an Award///////////
+
 // function to delete a selected value in a dropdown
 function getOptionByValue (dropdown, value) {
-    var options = dropdown.options;
-    for (var i = 0; i < options.length; i++) {
-        if (options[i].value === value) {
-            return options[i]
+    // var options = dropdown.options;
+    for (var i = 0; i < dropdown.length; i++) {
+        if (dropdown.options[i].value === value) {
+            dropdown.remove(i)
         }
     }
     return null
@@ -464,7 +465,7 @@ deleteAwardBtn.addEventListener('click', function() {
 //   console.log("1");
 //   if (index === 0) {
   award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-  if (value==="Select") {
+  if (award==="Select") {
     document.getElementById("para-delete-award-status").innerHTML = "<span style='color: red;'>Please select an award number to delete</span>"
   } else {
     var milestoneJson = parseJson(milestonePath);
@@ -481,12 +482,13 @@ deleteAwardBtn.addEventListener('click', function() {
     presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
     fs.writeFileSync(milestonePath, JSON.stringify(milestoneJson));
     // delete award in the next two award arrays
-    var award1 = getOptionByValue(presavedAwardArray2,award);
-    var award2 = getOptionByValue(dsAwardArray,award);
-    presavedAwardArray2.remove(award1);
-    dsAwardArray.remove(award2);
+    getOptionByValue(presavedAwardArray2,award);
+    getOptionByValue(dsAwardArray,award);
+    // presavedAwardArray2.remove(presavedAwardArray2, award);
+    // console.log(award1)
+    // dsAwardArray.remove(dsAwardArray.award2);
     document.getElementById("div-show-milestone-info").style.display = "none";
-    document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black;'> " + "Deleted award number: " + value + "!" + "</span>"
+    document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black;'> " + "Deleted award number: " + award + "!" + "</span>"
   }
 })
 
@@ -622,7 +624,7 @@ dsContributorArray.addEventListener("change", function(e) {
   document.getElementById("input-con-role").value = '';
   document.getElementById("input-con-affiliation").value = '';
   contactPerson.checked = false;
-  
+
   var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
   table_airtable.select({
     filterByFormula: `({Name} = "${contributorVal}")`
