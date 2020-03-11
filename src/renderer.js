@@ -13,7 +13,8 @@ const app = remote.app;
 const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
 var Airtable = require('airtable');
-require('v8-compile-cache')
+require('v8-compile-cache');
+var Tagify = require('@yaireo/tagify');
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -140,6 +141,7 @@ const dsContributorArray = document.getElementById("ds-description-contributor-l
 const addCurrentContributorsBtn = document.getElementById("button-ds-add-contributor")
 const contactPerson = document.getElementById("ds-contact-person")
 const currentConTable = document.getElementById("table-current-contributors")
+const generateDSBtn = document.getElementById("button-generate-ds-description")
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -359,7 +361,8 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
   }
 })
 
-///////// Provide Grant Information section /////////////////////////////////
+//////////////// Provide Grant Information section /////////////////////////////////
+//////////////// //////////////// //////////////// //////////////// ////////////////
 
 var metadataPath = path.join(homeDirectory,"SODA", "METADATA");
 var awardFileName = "awards.json";
@@ -578,8 +581,123 @@ function done(err) {
       console.error(err); return;
     }
 });
+//////////////// //////////////// //////////////// ////////////////
+//////////////// Submission file //////////////// ////////////////
 
-/////////Submission File///////////////////
+/////// Populate Submission file fields from presaved information
+presavedAwardArray2.addEventListener('change', function() {
+  document.getElementById("selected-milestone").value = "";
+  document.getElementById("selected-milestone-date").value = "";
+  document.getElementById('submission-milestone-list').innerHTML = "";
+  award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
+  var informationJson = parseJson(milestonePath);
+  var milestoneInput = document.getElementById("selected-milestone");
+  var dateInput = document.getElementById("selected-milestone-date");
+  var options = '';
+  if (award in informationJson) {
+    var milestoneObj = informationJson[award];
+    // Load milestone values once users choose an award number
+    for (var i=0;i<milestoneObj.length; i++) {
+      options += '<option value="'+ milestoneObj[i]["milestone"]+'" />';
+    };
+    document.getElementById('submission-milestone-list').innerHTML = options;
+    // populate date field based on milestone selected
+    milestoneInput.addEventListener('input', function() {
+      for (var i=0;i<milestoneObj.length; i++) {
+        if (milestoneObj[i]["milestone"] === milestoneInput.value) {
+          dateInput.value = milestoneObj[i]["date"]
+        }
+      }
+      })
+    }
+})
+
+/// Generate submission file
+generateSubmissionBtn.addEventListener('click', (event) => {
+  awardVal = document.getElementById("presaved-award-list").value;
+  milestoneVal = document.getElementById("selected-milestone").value;
+  dateVal = document.getElementById("selected-milestone-date").value;
+  if (milestoneVal===''|| dateVal==='' || awardVal==='Select') {
+    document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Please fill in all fields to generate!</span>"
+  } else {
+    ipcRenderer.send('save-file-dialog-submission')
+  }
+});
+ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
+  if (path.length > 0) {
+    var award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
+    var milestone = document.getElementById("selected-milestone").value;
+    var date = document.getElementById("selected-milestone-date").value;
+    var json_arr = [];
+    json_arr.push(award);
+    json_arr.push(milestone);
+    json_arr.push(date);
+    json_str = JSON.stringify(json_arr)
+    if (path != null){
+      client.invoke("api_save_submission_file", path, json_str, (error, res) => {
+        if(error) {
+          var emessage = userError(error)
+          console.error(error)
+          document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+        }
+        else {
+          document.getElementById("para-save-submission-status").innerHTML = "<span style='color: black ;'>" + "Done!" + smileyCan + "</span>"
+        }
+      })
+     }}
+});
+
+//////////////// Dataset description file ///////////////////////
+//////////////// //////////////// //////////////// ////////////////
+
+// Show current contributors
+function createTable(table) {
+  var name = dsContributorArray.options[dsContributorArray.selectedIndex].value
+  var id = document.getElementById("input-con-ID").value
+  var affiliation = document.getElementById("input-con-affiliation").value
+  var role = document.getElementById("input-con-role").value
+  var contactPersonStatus = ""
+  if (contactPerson.checked) {
+    var contactPersonStatus = "Yes"
+  }
+  /// Construct table
+  var rowcount = table.rows.length;
+  if (rowcount===1) {
+    // start at 1 to skip the header
+    var rowIndex = 1;
+  } else {
+    /// append row to table from the bottom
+    var rowIndex = rowcount;
+  }
+  var duplicate = false
+  for (var i=0; i<rowcount;i++){
+    if (table.rows[i].cells[0].innerHTML===name) {
+      duplicate = true
+      break
+    }
+  } if (!duplicate) {
+    var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='name-row"+rowIndex+"'>"+ id +"</td><td id='name-row"+rowIndex+"'>"+ affiliation +"</td><td id='name-row"+rowIndex+"'>"+ role+"</td><td id='name-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+    return table
+  } else {
+    document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contributor already added!</span>"
+  }
+}
+
+//// When users click on "Add" to current contributors table
+addCurrentContributorsBtn.addEventListener("click", function() {
+  createTable(currentConTable);
+  document.getElementById("div-current-contributors").style.display = "block"
+})
+
+/// Create tags input for multi-answer fields
+function createTagsInput(field) {
+    return new Tagify(field)
+}
+
+var keywordInput = createTagsInput(document.getElementById('ds-keywords'));
+var doiInput = createTagsInput(document.getElementById('input-misc-DOI'));
+var urlInput = createTagsInput(document.getElementById('input-misc-protocol'));
+var addlLinks = createTagsInput(document.getElementById("input-misc-addl-links"));
 
 /// load Airtable Contributor data
 dsAwardArray.addEventListener("change", function(e) {
@@ -657,44 +775,32 @@ dsContributorArray.addEventListener("change", function(e) {
   }
 })
 
-/////// Populate Submission file fields from presaved information
-presavedAwardArray2.addEventListener('change', function() {
-  document.getElementById("selected-milestone").value = "";
-  document.getElementById("selected-milestone-date").value = "";
-  document.getElementById('submission-milestone-list').innerHTML = "";
-  award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
-  var informationJson = parseJson(milestonePath);
-  var milestoneInput = document.getElementById("selected-milestone");
-  var dateInput = document.getElementById("selected-milestone-date");
-  var options = '';
-  if (award in informationJson) {
-    var milestoneObj = informationJson[award];
-    // Load milestone values once users choose an award number
-    for (var i=0;i<milestoneObj.length; i++) {
-      options += '<option value="'+ milestoneObj[i]["milestone"]+'" />';
-    };
-    document.getElementById('submission-milestone-list').innerHTML = options;
-    // populate date field based on milestone selected
-    milestoneInput.addEventListener('input', function() {
-      for (var i=0;i<milestoneObj.length; i++) {
-        if (milestoneObj[i]["milestone"] === milestoneInput.value) {
-          dateInput.value = milestoneObj[i]["date"]
-        }
-      }
-      })
-    }
-})
+///// Generate ds description file
+generateDSBtn.addEventListener('click', (event) => {
+  /// grab entries from dataset info section
+  var name = document.getElementById("ds-name").value;
+  var description = document.getElementById("ds-description").value;
+  var keywordArray = keywordInput
+  var samplesNo = document.getElementById("ds-samples-no").value;
+  var subjectsNo = document.getElementById("ds-subjects-no").value;
+  /// grab entries from contributor info section -- table (TODO)
+  /// grab entries from other misc info section
+  var originatingDOIArray = doiInput
+  var protocolURLArray = urlInput
+  var additionalLinkArray = addlLinks
+  var miscLinkDescription = document.getElementById("input-misc-link-description").value;
 
-/// Generate submission file
-generateSubmissionBtn.addEventListener('click', (event) => {
-  awardVal = document.getElementById("presaved-award-list").value;
-  milestoneVal = document.getElementById("selected-milestone").value;
-  dateVal = document.getElementById("selected-milestone-date").value;
-  if (milestoneVal===''|| dateVal==='' || awardVal==='Select') {
-    document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Please fill in all fields to generate!</span>"
-  } else {
-    ipcRenderer.send('save-file-dialog-submission')
-  }
+  /// grab entries from other misc info section
+  var completeness = document.getElementById("input-completeness").options[document.getElementById("input-completeness").selectedIndex].value;
+  var parentDS = document.getElementById("input-parent-ds").value;
+  var completeDSTitle = document.getElementById("input-completeds-title").value;
+  var metadataVer = document.getElementById("input-metadata-ver").options[document.getElementById("input-metadata-ver").selectedIndex].value;
+
+  // if (milestoneVal===''|| dateVal==='' || awardVal==='Select') {
+  //   document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Please fill in all fields to generate!</span>"
+  // } else {
+  //   ipcRenderer.send('save-file-dialog-submission')
+  // }
 });
 ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
   if (path.length > 0) {
@@ -720,48 +826,8 @@ ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
      }}
 });
 
-//////////////// Submission file ///////////////////////
-
-// Show current contributors
-function createTable(table) {
-  var name = dsContributorArray.options[dsContributorArray.selectedIndex].value
-  var id = document.getElementById("input-con-ID").value
-  var affiliation = document.getElementById("input-con-affiliation").value
-  var role = document.getElementById("input-con-role").value
-  var contactPersonStatus = ""
-  if (contactPerson.checked) {
-    var contactPersonStatus = "Yes"
-  }
-  /// Construct table
-  var rowcount = table.rows.length;
-  if (rowcount===1) {
-    // start at 1 to skip the header
-    var rowIndex = 1;
-  } else {
-    /// append row to table from the bottom
-    var rowIndex = rowcount;
-  }
-  var duplicate = false
-  for (var i=0; i<rowcount;i++){
-    if (table.rows[i].cells[0].innerHTML===name) {
-      duplicate = true
-      break
-    }
-  } if (!duplicate) {
-    var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='name-row"+rowIndex+"'>"+ id +"</td><td id='name-row"+rowIndex+"'>"+ affiliation +"</td><td id='name-row"+rowIndex+"'>"+ role+"</td><td id='name-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
-    return table
-  } else {
-    document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contributor already added!</span>"
-  }
-}
-
-//// When users click on "Add" to current contributors table
-addCurrentContributorsBtn.addEventListener("click", function() {
-  createTable(currentConTable);
-  document.getElementById("div-current-contributors").style.display = "block"
-})
-
 //////////////////////////End of Ds description section ///////////////////////
+//////////////// //////////////// //////////////// //////////////// ////////////////
 
 // Select organized dataset folder and populate table //
 selectDatasetBtn.addEventListener('click', (event) => {
