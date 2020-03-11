@@ -617,11 +617,12 @@ dsAwardArray.addEventListener("change", function(e) {
 
 /// Auto populate once a contributor is selected
 dsContributorArray.addEventListener("change", function(e) {
+  ///clear old entries once a contributor option is changed
   document.getElementById("input-con-ID").value = '';
   document.getElementById("input-con-role").value = '';
   document.getElementById("input-con-affiliation").value = '';
   contactPerson.checked = false;
-
+  
   var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
   table_airtable.select({
     filterByFormula: `({Name} = "${contributorVal}")`
@@ -713,13 +714,38 @@ ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
      }}
 });
 
-//////////////// submission file ///////////////////////
+//////////////// Submission file ///////////////////////
 
+// Show current contributors
+function createTable(table) {
+  var name = dsContributorArray.options[dsContributorArray.selectedIndex].value
+  var id = document.getElementById("input-con-ID").value
+  var affiliation = document.getElementById("input-con-affiliation").value
+  var role = document.getElementById("input-con-role").value
+  var contactPersonStatus = ""
+  if (contactPerson.checked) {
+    var contactPersonStatus = "Yes"
+  }
+  /// Construct table
+  var rowcount = table.rows.length;
+  if (rowcount===1) {
+    // start at 1 to skip the header
+    var rowIndex = 1;
+  } else {
+    /// append row to table from the bottom
+    var rowIndex = rowcount;
+  }
+  var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='name-row"+rowIndex+"'>"+ id +"</td><td id='name-row"+rowIndex+"'>"+ affiliation +"</td><td id='name-row"+rowIndex+"'>"+ role+"</td><td id='name-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+  return table
+}
 
-                  // contributor: [document.getElementById('ds-description-award-list'), document.getElementById("ds-description-acknowlegdment"),
-                  //               document.getElementById('ds-description-contributor-list'),document.getElementById('input-con-ID'),
-                  //               document.getElementById('input-con-affiliation'),document.getElementById('input-con-role')]
-// checkFields("ds-contributor-info", )
+//// When users click on "Add" to current contributors table
+addCurrentContributorsBtn.addEventListener("click", function() {
+  createTable(currentConTable);
+  document.getElementById("div-current-contributors").style.display = "block"
+})
+
+//////////////////////////End of Ds description section ///////////////////////
 
 // Select organized dataset folder and populate table //
 selectDatasetBtn.addEventListener('click', (event) => {
