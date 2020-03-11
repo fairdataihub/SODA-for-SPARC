@@ -969,6 +969,7 @@ label.input-banner-img{
 .multisteps-form__progress {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  margin-bottom:30px;
 }
 
 .multisteps-form__progress-btn {

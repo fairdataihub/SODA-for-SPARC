@@ -137,7 +137,9 @@ const generateSubmissionBtn = document.getElementById("generate-submission")
 // Prepare Dataset Description File
 const dsAwardArray = document.getElementById("ds-description-award-list")
 const dsContributorArray = document.getElementById("ds-description-contributor-list")
-const addCurrentContributorsBtn = document.getElementById("button-ds-add-award")
+const addCurrentContributorsBtn = document.getElementById("button-ds-add-contributor")
+const contactPerson = document.getElementById("ds-contact-person")
+const currentConTable = document.getElementById("table-current-contributors")
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -523,7 +525,7 @@ presavedAwardArray1.addEventListener('change', function() {
     // start at 1 to skip the header
     var rowIndex = 1;
     for (var i=0;i<milestoneObj.length; i++) {
-      var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneObj[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ milestoneObj[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
+      var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneObj[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ milestoneObj[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
       rowIndex++;
       }
     }
@@ -577,18 +579,17 @@ function done(err) {
 
 /////////Submission File///////////////////
 
-// /// Create tag input for Keyword textarea
-// var tagInput = new TagsInput({
-//     selector: 'ds-keywords',
-//     duplicate: true
-// });
-//
-
 /// load Airtable Contributor data
 dsAwardArray.addEventListener("change", function(e) {
   document.getElementById("input-con-ID").value = "";
   document.getElementById("input-con-role").value = "";
   document.getElementById("input-con-affiliation").value = "";
+  contactPerson.checked = false;
+
+  /// delete old table
+  while (currentConTable.rows.length>1) {
+    currentConTable.deleteRow(1)
+  };
 
   removeOptions(dsContributorArray)
   addOption(dsContributorArray, "Select", "Select an option")
@@ -619,6 +620,7 @@ dsContributorArray.addEventListener("change", function(e) {
   document.getElementById("input-con-ID").value = '';
   document.getElementById("input-con-role").value = '';
   document.getElementById("input-con-affiliation").value = '';
+  contactPerson.checked = false;
 
   var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
   table_airtable.select({
@@ -647,30 +649,6 @@ dsContributorArray.addEventListener("change", function(e) {
       }
   };
 })
-
-// Show current contributors
-function createTable() {
-  // start at 1 to skip the header
-  var rowIndex = 1;
-  for (var i=0;i<milestoneObj.length; i++) {
-    var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneObj[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ milestoneObj[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
-    rowIndex++;
-    }
-}
-
-// addCurrentContributorsBtn.addEventListener("click", function() {
-//   tableCon = document.getElementById("table-current-contributors")
-//   var rowcount = tableCon.rows.length;
-//   if (rowcount===2) {
-//     // start at 1 to skip the header
-//     var rowIndex = 1;
-//   } else {
-//     /// append row to table from the bottom
-//     var rowIndex = rowcount-1;
-//   }
-//   var rowIndex = -1;
-//   var row = tableCon.insertRow(rowIndex).outerHTML="<tr id='row-current-cons"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneObj[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ milestoneObj[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
-// })
 
 /////// Populate Submission file fields from presaved information
 presavedAwardArray2.addEventListener('change', function() {

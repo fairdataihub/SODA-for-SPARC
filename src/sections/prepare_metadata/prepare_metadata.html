@@ -189,11 +189,11 @@
         </button>
         <div class="demo-box" style="width:100%">
 
-          <div class="multisteps-form__progress" style="margin-top:10px">
-            <button id="ds-dataset-info" style="margin-bottom:20px;" class="multisteps-form__progress-btn js-active1" type="button" title="User Info"><b>Dataset Info</b></button>
-            <button id="ds-contributor-info" style="margin-bottom:20px;"class="multisteps-form__progress-btn" type="button" title="Address"><b>Contributor Info</b></button>
-            <button id="ds-misc-info" style="margin-bottom:20px;"class="multisteps-form__progress-btn" type="button" title="Order Info"><b>Other Info</b></button>
-            <button id="ds-optional-info" style="margin-bottom:20px;" class="multisteps-form__progress-btn" type="button" title="Comments"><b>Optional Info</b></button>
+          <div class="multisteps-form__progress" style="margin-top:20px">
+            <button id="ds-dataset-info" class="multisteps-form__progress-btn js-active1" type="button" title="User Info"><b>Dataset Info</b></button>
+            <button id="ds-contributor-info"class="multisteps-form__progress-btn" type="button" title="Address"><b>Contributor Info</b></button>
+            <button id="ds-misc-info"class="multisteps-form__progress-btn" type="button" title="Order Info"><b>Other Info</b></button>
+            <button id="ds-optional-info" class="multisteps-form__progress-btn" type="button" title="Comments"><b>Optional Info</b></button>
           </div>
 
 
@@ -219,27 +219,56 @@
               </div>
            </form> -->
 
-          <div style="display:block"id="div-ds-dataset-info" class="datasetsaveoption">
+          <div style="display:block" id="div-ds-dataset-info" class="datasetsaveoption">
 
             <!-- <h5 align="center">Populate the fields below with information about your dataset: </h5> -->
             <br>
             <div class="form-container-ds"><font color="black"> Name: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">
+                Descriptive title for the data set. Equivalent to the title of a scientific paper.
+                The metadata associated with the published version of this dataset does not currently make use of this field.
+              </span>
+            </div>
             <div class="demo-controls">
               <input id="ds-name" class="form-container-input-bf"/>
             </div>
             <div class="form-container-ds"><font color="black"> Description: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">
+                NOTE: This field is not currently used when publishing a SPARC dataset. Brief description of the study and the data set.
+                Equivalent to the abstract of a scientific paper.
+                <br>
+                Include the rationale for the approach, the types of data collected, the techniques used, formats and number of files and an approximate size. The metadata associated with the published version of this dataset does not currently make use of this field.
+              </span>
+            </div>
             <div class="demo-controls">
               <textarea id="ds-description" class="form-container-textarea"> </textarea>
             </div>
             <div class="form-container-ds"><font color="black"> Keywords: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">
+                A set of 3-5 keywords other than the above that will aid in search
+              </span>
+            </div>
             <div class="demo-controls">
               <textarea id="ds-keywords" class="form-container-textarea"> </textarea>
             </div>
             <div class="form-container-ds"><font color="black"> Number of samples: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">
+                Number of unique samples in this dataset, should match samples metadata file. Set to zero if there are no samples.
+              </span>
+            </div>
             <div class="demo-controls">
               <input id="ds-samples-no" class="form-container-input-bf"/>
             </div>
             <div class="form-container-ds"><font color="black"> Number of subjects: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">
+                Number of unique subjects in this dataset, should match subjects metadata file.
+              </span>
+            </div>
             <div class="demo-controls">
               <input id="ds-subjects-no" class="form-container-input-bf"/>
             </div>
@@ -249,79 +278,143 @@
             </div>
           </div>
           <div id="div-ds-contributor-info" class="datasetsaveoption">
-            <!-- <h5 align="center">Populate the fields below with information about the contributors: </h5> -->
             <br>
+          <h5 align="center">Award Information </h5>
+          <br>
+            <!-- <h5 align="center">Populate the fields below with information about the contributors: </h5> -->
             <div class="form-container-ds"><font color="black"> Award/Funding: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 200px;">
+                Funding sources
+              </span>
+            </div>
             <div class="demo-controls">
             <select id="ds-description-award-list" class="form-container-input-bf">
-              <option>Select an option</option>
+              <option value="Select">Select an option</option>
             </select>
             </div>
             <div class="form-container-ds"><font color="black"> Acknowlegdments: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 300px;">
+                Acknowledgements beyond funding and contributors
+              </span>
+            </div>
             <div class="demo-controls">
               <textarea id="ds-description-acknowlegdment" class="form-container-textarea"> </textarea>
             </div>
-            <p><h5>Contributor Information: </h5></p>
+            <p><h5 align="center">Contributor Information </h5></p>
             <div class="form-container-ds"><font color="black"> Contributor: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 300px;">
+                Name of any contributors to the dataset. These individuals need not have been authors on any publications describing the data,
+                but should be acknowledged for their role in producing and publishing the data set.
+                If more than one, add each contributor in a new column.
+              </span>
+            </div>
             <div class="demo-controls">
             <select id="ds-description-contributor-list" class="form-container-input-bf">
               <option>Select an option</option>
             </select>
             </div>
             <div class="form-container-ds"><font color="black"> ORCID ID: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 300px;">
+                ORCID ID. If you don't have an ORCID, we suggest you sign up for one at "https://orcid.org/"
+              </span>
+            </div>
             <div class="demo-controls">
               <input id="input-con-ID" class="form-container-input-bf">
             </div>
             <div class="form-container-ds"><font color="black"> Contributor Affiliation: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 300px;">
+                Institutional affiliation for contributors
+              </span>
+            </div>
             <div class="demo-controls">
               <input id="input-con-affiliation" class="form-container-input-bf"/>
             </div>
             <div class="form-container-ds"><font color="black"> Contributor Role: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 300px;">
+                Contributor role, e.g., PrincipleInvestigator, Creator, CoInvestigator, ContactPerson, DataCollector, DataCurator, DataManager, Distributor, Editor, Producer, ProjectLeader, ProjectManager, ProjectMember, RelatedPerson, Researcher, ResearchGroup, Sponsor, Supervisor, WorkPackageLeader, Other.
+                <br>
+                These roles are provided by the Data Cite schema. If more than one, add additional columns.
+              </span>
+            </div>
             <div class="demo-controls">
               <input id="input-con-role" class="form-container-input-bf"/>
             </div>
             <div class="form-container-ds"><font color="black"> Is Contact person? </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 300px;">
+                Yes or No if the contributor is a contact person for the dataset
+              </span>
+            </div>
             <div class="demo-controls">
               <label class="switch">
-                <input id="sd-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"/>
+                <input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"/>
                 <span class="slider round"></span>
               </label>
             </div>
             <div align="right">
-              <button id="button-ds-add-award" class="demo-button-prev-next">Add</button>
+              <button id="button-ds-add-contributor" class="demo-button-prev-next">Add</button>
             </div>
-            <br>
-            <div id="div-current-contributors" style="width:50%">
-              <h5>Current Contributors: </h5>
-              <!-- <table id="table-current-contributors">
+            <br><br>
+            <div id="div-current-contributors" style="width:90%;display:none;">
+              <h5>Current Contributors</h5>
+              <table id="table-current-contributors">
                 <tr>
+                  <th style="width:25%">Current Contributors</th>
+                  <th style="width:15%">ORCID ID</th>
+                  <th style="width:25%">Affiliation</th>
+                  <th style="width:15%">Role</th>
+                  <th style="width:10%">Contact Person</th>
                   <th style="width:10%"></th>
-                  <th style="width:70%">Current Contributors</th>
-                  <th style="width:20%"></th>
                </tr>
-              </table> -->
+              </table>
             </div>
-            <br>
+            <br><br>
             <div align="right">
               <button id="button-prev-contributor-ds" class="demo-button-prev-next">Previous</button>
               <button id="button-next-contributor-misc" class="demo-button-prev-next">Next</button>
             </div>
           </div>
           <div id="div-ds-misc-info" class="datasetsaveoption">
-            <h5></h5>
+            <br>
             <div class="form-container-ds"><font color="black"> Originating Article DOI: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 300px;">
+                DOIs of published articles that were generated from this dataset
+              </span>
+            </div>
             <div class="demo-controls">
               <input id="input-misc-DOI" class="form-container-input-bf" />
             </div>
             <div class="form-container-ds"><font color="black"> Protocol URL or DOI: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 300px;">
+                URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset
+              </span>
+            </div>
             <div class="demo-controls">
               <input id="input-misc-protocol" class="form-container-input-bf" />
             </div>
             <div class="form-container-ds"><font color="black"> Additional Links: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 300px;">
+                URLs of additional resources used by this dataset (e.g., a link to a code repository)
+              </span>
+            </div>
             <div class="demo-controls">
               <input id="input-misc-addl-links" class="form-container-input-bf" />
             </div>
             <div class="form-container-ds"><font color="black"> Link Description: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 300px;">
+                Short description of URL content, you do not need to fill this in for Originating Article DOI or Protocol URL or DOI
+              </span>
+            </div>
             <div class="demo-controls">
               <input id="input-misc-link-description" class="form-container-input-bf" />
             </div>
@@ -332,8 +425,13 @@
             </div>
           </div>
           <div id="div-ds-optional-info" class="datasetsaveoption">
-            <h5></h5>
+            <br>
             <div class="form-container-ds"><font color="black"> Completeness of dataset: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 300px;">
+                Is the data set as uploaded complete or is it part of an ongoing study.  Use "hasNext" to indicate that you expect more data on different subjects as a continuation of this study. Use “hasChildren” to indicate that you expect more data on the same subjects or samples derived from those subjects.
+              </span>
+            </div>
             <div class="demo-controls">
               <select id = "input-completeness" class="my-dropdown-metadata ds" style="border: 1px solid #C0C0C0;border-left: 2px solid #258193;">
                 <option>Select an option</option>
@@ -342,14 +440,29 @@
               </select>
             </div>
             <div class="form-container-ds"><font color="black"> Parent dataset ID: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 300px;">
+                If this is a part of a larger data set, or refereces subjects or samples from a parent dataset, what was the accession number of the prior batch.  You need only give us the number of the last batch, not all batches. If samples and subjects are from multiple parent datasets please create a comma separated list of all parent ids.
+              </span>
+            </div>
             <div class="demo-controls">
               <input id="input-parent-ds" class="form-container-input-bf" />
             </div>
             <div class="form-container-ds"><font color="black"> Title for complete dataset: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 300px;">
+                Please give us a provisional title for the entire data set.
+              </span>
+            </div>
             <div class="demo-controls">
               <input id="input-completeds-title" class="form-container-input-bf" />
             </div>
             <div class="form-container-ds"><font color="black"> Metadata Version: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 300px;">
+                DO NOT CHANGE: 1.2.3
+              </span>
+            </div>
             <div class="demo-controls">
               <select id = "input-metadata-ver" class="my-dropdown-metadata ds" style="border: 1px solid #C0C0C0;border-left: 2px solid #258193;">
               <option value="Select">Select an option</option>

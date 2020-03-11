@@ -76,6 +76,25 @@ function checkFields(div, fieldArray) {
   }
 }
 
+/// check if at least one contributor is added
+function checkFieldsContributors() {
+  var div = 'ds-contributor-info';
+  var award = document.getElementById('ds-description-award-list').options[document.getElementById('ds-description-award-list').selectedIndex]
+  var acknowlegdment = document.getElementById("ds-description-acknowlegdment")
+  var tableCurrentCon = document.getElementById("table-current-contributors")
+  var fieldArray = [award,acknowlegdment]
+  var empty = false
+  for (let field of fieldArray) {
+    if (field.value==="" || field.value==="Select") {
+      empty = true
+      break
+    }
+  }
+  if (!empty && tableCurrentCon.rows.length>1) {
+    document.getElementById(div).className = 'multisteps-form__progress-btn js-active2';
+  }
+}
+
 document.querySelector('#ds-dataset-info').addEventListener('click', () => {
     showDSInfo();
     removeClasses(document.querySelectorAll(`.multisteps-form__progress-btn`), 'js-active1');
@@ -101,7 +120,7 @@ document.querySelector('#ds-optional-info').addEventListener('click', () => {
 ///prev buttons
 document.querySelector('#button-prev-contributor-ds').addEventListener('click', () => {
     document.querySelector('#ds-dataset-info').click()
-    checkFields("ds-contributor-info", domStrings.contributor)
+    checkFieldsContributors()
 })
 document.querySelector('#button-prev-misc-contributor').addEventListener('click', () => {
     document.querySelector('#ds-contributor-info').click()
@@ -118,10 +137,10 @@ document.querySelector('#button-next-ds-contributor').addEventListener('click', 
     checkFields("ds-dataset-info", domStrings.dataset)
 })
 document.querySelector('#button-next-contributor-misc').addEventListener('click', () => {
-    document.querySelector('#ds-misc-info').click()
-    // checkFields("ds-misc-info", domStrings.misc)
+    document.querySelector('#ds-misc-info').click();
+    checkFieldsContributors()
 })
 document.querySelector('#button-next-misc-optional').addEventListener('click', () => {
-    document.querySelector('#ds-optional-info').click()
+    document.querySelector('#ds-optional-info').click();
     checkFields("ds-misc-info", domStrings.misc)
 })
