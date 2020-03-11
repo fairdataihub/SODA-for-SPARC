@@ -617,9 +617,19 @@ dsAwardArray.addEventListener("change", function(e) {
   };
 })
 
+//// function to leave fields empty if no data is found on Airtable
+function leaveFieldsEmpty(field, element) {
+  if (field!==undefined) {
+    element.value = field;
+  } else {
+    element.innerHTML = ''
+  }
+}
+
 /// Auto populate once a contributor is selected
 dsContributorArray.addEventListener("change", function(e) {
   ///clear old entries once a contributor option is changed
+  document.getElementById("para-save-contributor-status").innerHTML = '';
   document.getElementById("input-con-ID").value = '';
   document.getElementById("input-con-role").value = '';
   document.getElementById("input-con-affiliation").value = '';
@@ -631,26 +641,20 @@ dsContributorArray.addEventListener("change", function(e) {
   }).eachPage(function page(records, fetchNextPage) {
       var conInfoObj = {};
       records.forEach(function(record) {
-        // {"John, Scott": {"ORCID ID": "123", ""}}
         conInfoObj["ID"] = record.get('ORCID');
         conInfoObj["Role"] = record.get('Project_Role');
         conInfoObj["Affiliation"] = record.get('Institution');
       }),
     fetchNextPage();
-    document.getElementById("input-con-affiliation").value = conInfoObj["Affiliation"];
-    document.getElementById("input-con-role").value = conInfoObj["Role"];
-    if (conInfoObj["ID"]!==undefined) {
-      document.getElementById("input-con-ID").value = conInfoObj["ID"];
-      console.log(conInfoObj["ID"])
-    } else {
-      document.getElementById("input-con-ID").innerHTML = ''
-    }
+    leaveFieldsEmpty(conInfoObj["ID"],document.getElementById("input-con-ID"));
+    leaveFieldsEmpty(conInfoObj["Affiliation"],document.getElementById("input-con-affiliation"));
+    leaveFieldsEmpty(conInfoObj["Role"],document.getElementById("input-con-role"))
   }),
   function done(err) {
       if (err) {
         console.error(err); return;
       }
-  };
+  }
 })
 
 /////// Populate Submission file fields from presaved information
@@ -737,8 +741,18 @@ function createTable(table) {
     /// append row to table from the bottom
     var rowIndex = rowcount;
   }
-  var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='name-row"+rowIndex+"'>"+ id +"</td><td id='name-row"+rowIndex+"'>"+ affiliation +"</td><td id='name-row"+rowIndex+"'>"+ role+"</td><td id='name-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
-  return table
+  var duplicate = false
+  for (var i=0; i<rowcount;i++){
+    if (table.rows[i].cells[0].innerHTML===name) {
+      duplicate = true
+      break
+    }
+  } if (!duplicate) {
+    var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='name-row"+rowIndex+"'>"+ id +"</td><td id='name-row"+rowIndex+"'>"+ affiliation +"</td><td id='name-row"+rowIndex+"'>"+ role+"</td><td id='name-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+    return table
+  } else {
+    document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contributor already added!</span>"
+  }
 }
 
 //// When users click on "Add" to current contributors table
