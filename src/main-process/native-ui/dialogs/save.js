@@ -31,7 +31,19 @@ ipcMain.on('save-file-dialog-submission', (event) => {
       { name: 'Excel', extensions: ['xlsx'] }
     ]
   }
-  dialog.showSaveDialog(options, (filename) => {
+  dialog.showSaveDialog(BrowserWindow.getFocusedWindow(), options, (filename) => {
     event.sender.send('selected-savesubmissionfile', filename)
+  })
+})
+
+ipcMain.on('save-file-dialog-ds-description', (event) => {
+  const options = {
+    title: 'Saving your dataset-description.xlsx',
+    filters: [
+      { name: 'Excel', extensions: ['xlsx'] }
+    ]
+  }
+  dialog.showSaveDialog(BrowserWindow.getFocusedWindow(), options, (filename) => {
+    event.sender.send('selected-savedsdescriptionfile', filename)
   })
 })

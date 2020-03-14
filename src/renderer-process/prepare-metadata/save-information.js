@@ -80,15 +80,12 @@ function checkFields(div, fieldArray) {
 function checkFieldsContributors() {
   var div = 'ds-contributor-info';
   var award = document.getElementById('ds-description-award-list').options[document.getElementById('ds-description-award-list').selectedIndex]
-  var acknowlegdment = document.getElementById("ds-description-acknowlegdment")
+  var acknowledgment = document.getElementById("ds-description-acknowlegdment")
   var tableCurrentCon = document.getElementById("table-current-contributors")
-  var fieldArray = [award,acknowlegdment]
   var empty = false
-  for (let field of fieldArray) {
-    if (field.value==="" || field.value==="Select") {
-      empty = true
-      break
-    }
+  /// check for empty acknowlegdment box (value.length===1, and not 0 for some reason)
+  if (acknowledgment.value.length === 1 || award.value==="Select") {
+    empty = true
   }
   if (!empty && tableCurrentCon.rows.length>1) {
     document.getElementById(div).className = 'multisteps-form__progress-btn js-active2';

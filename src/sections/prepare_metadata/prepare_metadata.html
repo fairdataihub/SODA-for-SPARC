@@ -187,17 +187,17 @@
         <div class="demo-box" style="width:100%">
 
           <div class="multisteps-form__progress" style="margin-top:20px">
-            <button id="ds-dataset-info" class="multisteps-form__progress-btn js-active1" type="button" title="User Info"><b>Dataset Info</b></button>
-            <button id="ds-contributor-info"class="multisteps-form__progress-btn" type="button" title="Address"><b>Contributor Info</b></button>
-            <button id="ds-misc-info"class="multisteps-form__progress-btn" type="button" title="Order Info"><b>Other Info</b></button>
-            <button id="ds-optional-info" class="multisteps-form__progress-btn" type="button" title="Comments"><b>Optional Info</b></button>
+            <button id="ds-dataset-info" class="multisteps-form__progress-btn js-active1" type="button" title="Dataset Info"><b>Dataset Info</b></button>
+            <button id="ds-contributor-info"class="multisteps-form__progress-btn" type="button" title="Con Info"><b>Contributor Info</b></button>
+            <button id="ds-misc-info"class="multisteps-form__progress-btn" type="button" title="Other Info"><b>Other Info</b></button>
+            <button id="ds-optional-info" class="multisteps-form__progress-btn" type="button" title="Optional Info"><b>Optional Info</b></button>
           </div>
 
           <div style="display:block" id="div-ds-dataset-info" class="datasetsaveoption">
             <br>
             <div class="form-container-ds"><font color="black"> Name: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">
+              <span class="tooltiptext" style="width: 200px;">
                 Descriptive title for the data set. Equivalent to the title of a scientific paper.
                 The metadata associated with the published version of this dataset does not currently make use of this field.
               </span>
@@ -207,7 +207,7 @@
             </div>
             <div class="form-container-ds"><font color="black"> Description: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">
+              <span class="tooltiptext" style="width: 200px;z-index:4">
                 NOTE: This field is not currently used when publishing a SPARC dataset. Brief description of the study and the data set.
                 Equivalent to the abstract of a scientific paper.
                 <br>
@@ -219,7 +219,7 @@
             </div>
             <div class="form-container-ds"><font color="black"> Keywords: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">
+              <span class="tooltiptext" style="width: 200px;">
                 A set of 3-5 keywords other than the above that will aid in search
               </span>
             </div>
@@ -228,7 +228,7 @@
             </div>
             <div class="form-container-ds"><font color="black"> Number of samples: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">
+              <span class="tooltiptext" style="width: 200px;">
                 Number of unique samples in this dataset, should match samples metadata file. Set to zero if there are no samples.
               </span>
             </div>
@@ -237,7 +237,7 @@
             </div>
             <div class="form-container-ds"><font color="black"> Number of subjects: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">
+              <span class="tooltiptext" style="width: 200px;">
                 Number of unique subjects in this dataset, should match subjects metadata file.
               </span>
             </div>
@@ -315,7 +315,7 @@
               </span>
             </div>
             <div class="demo-controls">
-              <input id="input-con-role" class="form-container-input-bf"/>
+              <textarea id="input-con-role" class="form-container-textarea"></textarea>
             </div>
             <div class="form-container-ds"><font color="black"> Is Contact person? </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -445,7 +445,8 @@
             <br>
             <div align="right">
               <button id="button-prev-optional-misc" class="demo-button-prev-next">Previous</button>
-              <button id="button-generate-ds-description" class="demo-button-prev-next">Generate</button>
+              <button id="button-generate-ds-description" style="float:right;" class="demo-button-prev-next">Generate</button>
+              <p id='para-generate-description-status' style="float:right;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p>
             </div>
           </div>
           </div>

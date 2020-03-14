@@ -655,7 +655,11 @@ function createTable(table) {
   var name = dsContributorArray.options[dsContributorArray.selectedIndex].value
   var id = document.getElementById("input-con-ID").value
   var affiliation = document.getElementById("input-con-affiliation").value
-  var role = document.getElementById("input-con-role").value
+  var role = currentContributortagify.value
+  var roleVal = []
+  for (var i=0;i<role.length;i++) {
+    roleVal.push(role[i].value)
+  }
   var contactPersonStatus = ""
   if (contactPerson.checked) {
     var contactPersonStatus = "Yes"
@@ -676,7 +680,7 @@ function createTable(table) {
       break
     }
   } if (!duplicate) {
-    var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='name-row"+rowIndex+"'>"+ id +"</td><td id='name-row"+rowIndex+"'>"+ affiliation +"</td><td id='name-row"+rowIndex+"'>"+ role+"</td><td id='name-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+    var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='name-row"+rowIndex+"'>"+ id +"</td><td id='name-row"+rowIndex+"'>"+ affiliation +"</td><td id='name-row"+rowIndex+"'>"+ roleVal+"</td><td id='name-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
     return table
   } else {
     document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contributor already added!</span>"
@@ -698,12 +702,24 @@ var keywordInput = createTagsInput(document.getElementById('ds-keywords'));
 var doiInput = createTagsInput(document.getElementById('input-misc-DOI'));
 var urlInput = createTagsInput(document.getElementById('input-misc-protocol'));
 var addlLinks = createTagsInput(document.getElementById("input-misc-addl-links"));
+var contributorRoles = document.getElementById("input-con-role"),
+  currentContributortagify = new Tagify(contributorRoles, {
+        whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "ContactPerson", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+        dropdown : {
+            classname : "color-blue",
+            enabled   : 0,         // show the dropdown immediately on focus
+            maxItems  : 25,
+            // position  : "text",    // place the dropdown near the typed text
+            closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+        }
+});
 
 /// load Airtable Contributor data
 dsAwardArray.addEventListener("change", function(e) {
   document.getElementById("input-con-ID").value = "";
   document.getElementById("input-con-role").value = "";
   document.getElementById("input-con-affiliation").value = "";
+  currentContributortagify.removeAllTags();
   contactPerson.checked = false;
 
   /// delete old table
@@ -749,8 +765,8 @@ dsContributorArray.addEventListener("change", function(e) {
   ///clear old entries once a contributor option is changed
   document.getElementById("para-save-contributor-status").innerHTML = '';
   document.getElementById("input-con-ID").value = '';
-  document.getElementById("input-con-role").value = '';
   document.getElementById("input-con-affiliation").value = '';
+  currentContributortagify.removeAllTags();
   contactPerson.checked = false;
 
   var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
@@ -760,13 +776,12 @@ dsContributorArray.addEventListener("change", function(e) {
       var conInfoObj = {};
       records.forEach(function(record) {
         conInfoObj["ID"] = record.get('ORCID');
-        conInfoObj["Role"] = record.get('Project_Role');
+        // conInfoObj["Role"] = record.get('Project_Role');
         conInfoObj["Affiliation"] = record.get('Institution');
       }),
     fetchNextPage();
     leaveFieldsEmpty(conInfoObj["ID"],document.getElementById("input-con-ID"));
     leaveFieldsEmpty(conInfoObj["Affiliation"],document.getElementById("input-con-affiliation"));
-    leaveFieldsEmpty(conInfoObj["Role"],document.getElementById("input-con-role"))
   }),
   function done(err) {
       if (err) {
