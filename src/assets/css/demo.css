@@ -934,7 +934,7 @@ label.input-banner-img{
   transition: #258193 .25s ease-out;
   padding: 4px 6px;
   min-height:60px;
-  max-height:60px;
+  /* max-height:60px; */
   resize: vertical;
 }
 

@@ -698,10 +698,15 @@ function createTagsInput(field) {
     return new Tagify(field)
 }
 
-var keywordInput = createTagsInput(document.getElementById('ds-keywords'));
 var doiInput = createTagsInput(document.getElementById('input-misc-DOI'));
 var urlInput = createTagsInput(document.getElementById('input-misc-protocol'));
 var addlLinks = createTagsInput(document.getElementById("input-misc-addl-links"));
+
+var keywordInput = document.getElementById('ds-keywords'),
+  keywordTagify = new Tagify(keywordInput, {
+    duplicates: false,
+    maxTags  : 5
+})
 var contributorRoles = document.getElementById("input-con-role"),
   currentContributortagify = new Tagify(contributorRoles, {
         whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "ContactPerson", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
@@ -711,7 +716,8 @@ var contributorRoles = document.getElementById("input-con-role"),
             maxItems  : 25,
             // position  : "text",    // place the dropdown near the typed text
             closeOnSelect : true, // keep the dropdown open after selecting a suggestion
-        }
+        },
+        duplicates: false
 });
 
 /// load Airtable Contributor data
