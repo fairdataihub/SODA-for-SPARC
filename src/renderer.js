@@ -142,6 +142,7 @@ const addCurrentContributorsBtn = document.getElementById("button-ds-add-contrib
 const contactPerson = document.getElementById("ds-contact-person")
 const currentConTable = document.getElementById("table-current-contributors")
 const generateDSBtn = document.getElementById("button-generate-ds-description")
+const addAdditionalLinkBtn = document.getElementById("button-ds-add-link")
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -651,7 +652,7 @@ ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
 //////////////// //////////////// //////////////// ////////////////
 
 // Show current contributors
-function createTable(table) {
+function createCurrentConTable(table) {
   var name = dsContributorArray.options[dsContributorArray.selectedIndex].value
   var id = document.getElementById("input-con-ID").value
   var affiliation = document.getElementById("input-con-affiliation").value
@@ -660,7 +661,7 @@ function createTable(table) {
   for (var i=0;i<role.length;i++) {
     roleVal.push(role[i].value)
   }
-  var contactPersonStatus = ""
+  var contactPersonStatus = "No"
   if (contactPerson.checked) {
     var contactPersonStatus = "Yes"
   }
@@ -687,9 +688,42 @@ function createTable(table) {
   }
 }
 
+// Show additional links and desciption
+function createAdditionalLinksTable() {
+  var myTable = document.getElementById("table-addl-links")
+  var link = document.getElementById("input-misc-addl-links").value
+  var description = document.getElementById("input-misc-link-description").value
+  /// Construct table
+  var rowcount = myTable.rows.length;
+  if (rowcount===1) {
+    // start at 1 to skip the header
+    var rowIndex = 1;
+  } else {
+    /// append row to table from the bottom
+    var rowIndex = rowcount;
+  }
+  var duplicate = false
+  for (var i=0; i<rowcount;i++){
+    if (myTable.rows[i].cells[0].innerHTML===link) {
+      duplicate = true
+      break
+    }
+  } if (!duplicate) {
+    var row = myTable.insertRow(rowIndex).outerHTML="<tr id='row-current-link"+rowIndex+"'style='color: #000000;'><td id='link-row"+rowIndex+"'>"+ link+"</td><td id='link-description-row"+rowIndex+"'>"+ description +"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_link("+rowIndex+")'></td></tr>";
+    return myTable
+  } else {
+    document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>Link is already added!</span>"
+  }
+}
+
+addAdditionalLinkBtn.addEventListener("click", function() {
+  document.getElementById("div-current-additional-links").style.display = "block";
+  createAdditionalLinksTable()
+})
+
 //// When users click on "Add" to current contributors table
 addCurrentContributorsBtn.addEventListener("click", function() {
-  createTable(currentConTable);
+  createCurrentConTable(currentConTable);
   document.getElementById("div-current-contributors").style.display = "block"
 })
 
@@ -700,7 +734,6 @@ function createTagsInput(field) {
 
 var doiInput = createTagsInput(document.getElementById('input-misc-DOI'));
 var urlInput = createTagsInput(document.getElementById('input-misc-protocol'));
-var addlLinks = createTagsInput(document.getElementById("input-misc-addl-links"));
 
 var keywordInput = document.getElementById('ds-keywords'),
   keywordTagify = new Tagify(keywordInput, {
@@ -798,50 +831,60 @@ dsContributorArray.addEventListener("change", function(e) {
 
 ///// Generate ds description file
 generateDSBtn.addEventListener('click', (event) => {
-  /// grab entries from dataset info section
-  var name = document.getElementById("ds-name").value;
-  var description = document.getElementById("ds-description").value;
-  var keywordArray = keywordInput
-  var samplesNo = document.getElementById("ds-samples-no").value;
-  var subjectsNo = document.getElementById("ds-subjects-no").value;
-  /// grab entries from contributor info section -- table (TODO)
-  /// grab entries from other misc info section
-  var originatingDOIArray = doiInput
-  var protocolURLArray = urlInput
-  var additionalLinkArray = addlLinks
-  var miscLinkDescription = document.getElementById("input-misc-link-description").value;
+  ipcRenderer.send('save-file-dialog-ds-description')
+})
 
-  /// grab entries from other misc info section
-  var completeness = document.getElementById("input-completeness").options[document.getElementById("input-completeness").selectedIndex].value;
-  var parentDS = document.getElementById("input-parent-ds").value;
-  var completeDSTitle = document.getElementById("input-completeds-title").value;
-  var metadataVer = document.getElementById("input-metadata-ver").options[document.getElementById("input-metadata-ver").selectedIndex].value;
-
-  // if (milestoneVal===''|| dateVal==='' || awardVal==='Select') {
-  //   document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Please fill in all fields to generate!</span>"
-  // } else {
-  //   ipcRenderer.send('save-file-dialog-submission')
-  // }
-});
-ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
+ipcRenderer.on('selected-savedsdescriptionfile', (event, path) => {
   if (path.length > 0) {
-    var award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
-    var milestone = document.getElementById("selected-milestone").value;
-    var date = document.getElementById("selected-milestone-date").value;
-    var json_arr = [];
-    json_arr.push(award);
-    json_arr.push(milestone);
-    json_arr.push(date);
-    json_str = JSON.stringify(json_arr)
+    /// grab entries from dataset info section
+    var name = document.getElementById("ds-name").value;
+    var description = document.getElementById("ds-description").value;
+    var keywordArray = keywordInput.value;
+    var samplesNo = document.getElementById("ds-samples-no").value;
+    var subjectsNo = document.getElementById("ds-subjects-no").value;
+    var dsSectionArray = [];
+    for (let elementDS of [name,description,keywordArray,samplesNo,subjectsNo]) {
+      dsSectionArray.push(elementDS)
+    }
+    console.log(dsSectionArray)
+
+    /// TODO: grab entries from contributor info section -- table
+
+    /// grab entries from other misc info section
+    var originatingDOIArray = doiInput.value
+    var protocolURLArray = urlInput.value
+    // var additionalLinkArray = addlLinks.value
+    // var miscLinkDescription = document.getElementById("input-misc-link-description").value;
+    var miscSectionArray = [];
+    for (let elementLink of [originatingDOIArray,protocolURLArray]) {
+      miscSectionArray.push(elementLink)
+    }
+    console.log(miscSectionArray)
+    /// grab entries from other misc info section
+    var completeness = document.getElementById("input-completeness").options[document.getElementById("input-completeness").selectedIndex].value;
+    var parentDS = document.getElementById("input-parent-ds").value;
+    var completeDSTitle = document.getElementById("input-completeds-title").value;
+    var metadataVer = document.getElementById("input-metadata-ver").value;
+    var optionalSectionArray = [];
+    for (let elementOptional of [completeness,parentDS,completeDSTitle,metadataVer]) {
+      optionalSectionArray.push(elementOptional)
+    }
+    console.log(optionalSectionArray)
+    //// stringiy arrays
+    json_str_ds = JSON.stringify(dsSectionArray);
+    json_str_misc = JSON.stringify(miscSectionArray);
+    json_str_optional = JSON.stringify(optionalSectionArray);
+
+    /// call python function to save file
     if (path != null){
-      client.invoke("api_save_submission_file", path, json_str, (error, res) => {
+      client.invoke("api_save_ds_description_file", path, json_str_ds, json_str_misc, json_str_optional, (error, res) => {
         if(error) {
           var emessage = userError(error)
           console.error(error)
-          document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+          document.getElementById("para-generate-description-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
         }
         else {
-          document.getElementById("para-save-submission-status").innerHTML = "<span style='color: black ;'>" + "Done!" + smileyCan + "</span>"
+          document.getElementById("para-generate-description-status").innerHTML = "<span style='color: black ;'>" + "Done!" + smileyCan + "</span>"
         }
       })
      }}

@@ -357,7 +357,7 @@
             <br>
             <div class="form-container-ds"><font color="black"> Originating Article DOI: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext" style="width: 300px;">
+              <span class="tooltiptext" style="width: 300px;z-index:3">
                 DOIs of published articles that were generated from this dataset
               </span>
             </div>
@@ -366,16 +366,19 @@
             </div>
             <div class="form-container-ds"><font color="black"> Protocol URL or DOI: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext" style="width: 300px;">
+              <span class="tooltiptext" style="width: 300px;z-index:3">
                 URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset
               </span>
             </div>
             <div class="demo-controls">
               <input id="input-misc-protocol" class="form-container-input-bf" />
             </div>
-            <div class="form-container-ds"><font color="black"> Additional Links: </font> </div>
+            <p></p>
+
+            <h5 align="center"> Add additional links: </h5>
+            <div class="form-container-ds"><font color="black"> Link: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext" style="width: 300px;">
+              <span class="tooltiptext" style="width: 300px;z-index:3">
                 URLs of additional resources used by this dataset (e.g., a link to a code repository)
               </span>
             </div>
@@ -389,9 +392,24 @@
               </span>
             </div>
             <div class="demo-controls">
-              <input id="input-misc-link-description" class="form-container-input-bf" />
+              <textarea id="input-misc-link-description" class="form-container-textarea"></textarea>
+            </div>
+            <div align="right">
+              <button id="button-ds-add-link" class="demo-button-prev-next" style="float:right">Add</button>
+              <p id='para-save-link-status' style="float:right;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p>
             </div>
           <br>
+          <div id="div-current-additional-links" style="width:100%;display:none">
+            <h5 align="center">Additional Links:</h5>
+            <table id="table-addl-links">
+              <tr>
+                <th style="width:30%">Links</th>
+                <th style="width:60%">Description</th>
+                <th style="width:10%"></th>
+             </tr>
+            </table>
+          </div>
+          <br><br><br>
             <div align="right">
               <button id="button-prev-misc-contributor" class="demo-button-prev-next">Previous</button>
               <button id="button-next-misc-optional" class="demo-button-prev-next">Next</button>
@@ -437,10 +455,7 @@
               </span>
             </div>
             <div class="demo-controls">
-              <select id = "input-metadata-ver" class="my-dropdown-metadata ds" style="border: 1px solid #C0C0C0;border-left: 2px solid #258193;">
-              <option value="Select">Select an option</option>
-              <option>1.2.3</option>
-            </select>
+              <input id="input-metadata-ver" value="1.2.3" disabled class="form-container-input-bf"/>
             </div>
             <br>
             <div align="right">
