@@ -343,6 +343,40 @@ def save_submission_file(filepath, json_str):
 
     wb.save(destination)
 
+### Prepare dataset-description file
+def save_ds_description_file(filepath, dataset_str, misc_str, optional_str):
+    source = join(dirname( __file__ ), "..", "file_templates", "dataset_description.xlsx")
+    destination = filepath
+    shutil.copyfile(source, destination)
+    # json array to python list
+    val_arr_ds = json.loads(dataset_str)
+    # val_arr_con = json.loads(dataset_str)
+    val_ar_misc = json.loads(misc_str)
+    val_ar_optional = json.loads(optional_str)
+    # write to excel file
+    wb = load_workbook(destination)
+    ws1 = wb['Sheet1']
+    ## name, description, keywords, samples, subjects
+    ws1["D2"] = val_arr_ds[0]
+    ws1["D3"] = val_arr_ds[1]
+    ws1["D4"] = ", ".join(val_arr_ds[2])
+    ws1["D16"] = val_arr_ds[3]
+    ws1["D17"] = val_arr_ds[4]
+
+    ## DOI URLs
+    ## originating DOI, Protocol DOI
+    # ws1["D2"] = val_ar_misc[0]
+    # ws1["D3"] = val_ar_misc[1]
+    # ws1["D4"] = ", ".join(val_ar_misc[2])
+
+    ## Optional Info
+    ## Completeness, parent dataset ID, title Respectively
+    ws1["D18"] = val_ar_optional[0]
+    ws1["D19"] = val_ar_optional[1]
+    ws1["D20"] = val_ar_optional[2]
+
+    wb.save(destination)
+
 ### Prepare dataset
 def save_file_organization(jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization):
     """

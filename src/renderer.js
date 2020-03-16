@@ -734,7 +734,6 @@ function createTagsInput(field) {
 
 var doiInput = createTagsInput(document.getElementById('input-misc-DOI'));
 var urlInput = createTagsInput(document.getElementById('input-misc-protocol'));
-
 var keywordInput = document.getElementById('ds-keywords'),
   keywordTagify = new Tagify(keywordInput, {
     duplicates: false,
@@ -839,14 +838,17 @@ ipcRenderer.on('selected-savedsdescriptionfile', (event, path) => {
     /// grab entries from dataset info section
     var name = document.getElementById("ds-name").value;
     var description = document.getElementById("ds-description").value;
-    var keywordArray = keywordInput.value;
+    var keywordArray = keywordTagify.value;
+    var keywordVal = []
+    for (var i=0;i<keywordArray.length;i++) {
+      keywordVal.push(keywordArray[i].value)
+    }
     var samplesNo = document.getElementById("ds-samples-no").value;
     var subjectsNo = document.getElementById("ds-subjects-no").value;
     var dsSectionArray = [];
-    for (let elementDS of [name,description,keywordArray,samplesNo,subjectsNo]) {
+    for (let elementDS of [name,description,keywordVal,samplesNo,subjectsNo]) {
       dsSectionArray.push(elementDS)
     }
-    console.log(dsSectionArray)
 
     /// TODO: grab entries from contributor info section -- table
 
@@ -859,7 +861,6 @@ ipcRenderer.on('selected-savedsdescriptionfile', (event, path) => {
     for (let elementLink of [originatingDOIArray,protocolURLArray]) {
       miscSectionArray.push(elementLink)
     }
-    console.log(miscSectionArray)
     /// grab entries from other misc info section
     var completeness = document.getElementById("input-completeness").options[document.getElementById("input-completeness").selectedIndex].value;
     var parentDS = document.getElementById("input-parent-ds").value;
@@ -869,7 +870,6 @@ ipcRenderer.on('selected-savedsdescriptionfile', (event, path) => {
     for (let elementOptional of [completeness,parentDS,completeDSTitle,metadataVer]) {
       optionalSectionArray.push(elementOptional)
     }
-    console.log(optionalSectionArray)
     //// stringiy arrays
     json_str_ds = JSON.stringify(dsSectionArray);
     json_str_misc = JSON.stringify(miscSectionArray);
