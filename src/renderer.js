@@ -681,7 +681,7 @@ function createCurrentConTable(table) {
       break
     }
   } if (!duplicate) {
-    var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='name-row"+rowIndex+"'>"+ id +"</td><td id='name-row"+rowIndex+"'>"+ affiliation +"</td><td id='name-row"+rowIndex+"'>"+ roleVal+"</td><td id='name-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+    var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
     return table
   } else {
     document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contributor already added!</span>"
@@ -849,16 +849,39 @@ ipcRenderer.on('selected-savedsdescriptionfile', (event, path) => {
     for (let elementDS of [name,description,keywordVal,samplesNo,subjectsNo]) {
       dsSectionArray.push(elementDS)
     }
+    /// grab entries from contributor info section -- table
+    var rowcountCon = currentConTable.rows.length;
+    var currentConInfo = [];
+    for (i=1; i<rowcountCon; i++) {
+      var myCurrentCon = {"conName":document.getElementById("name-row"+i).innerHTML,
+                          "conID": document.getElementById("orcid-id-row"+i).innerHTML,
+                          "conAffliation": document.getElementById("affiliation-row"+i).innerHTML,
+                          "conRole": document.getElementById("role-row"+i).innerHTML,
+                          "conContact": document.getElementById("contact-person-row"+i).innerHTML}
+      currentConInfo.push(myCurrentCon);
+    };
+    var acknowlegdment = document.getElementById("ds-description-acknowlegdment").value;
+    var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+    contributorObj = {}
+    contributorObj["acknowlegdment"] = acknowlegdment
+    contributorObj["funding"] = funding
+    contributorObj["contributors"] = currentConInfo
 
-    /// TODO: grab entries from contributor info section -- table
+    console.log(contributorObj)
 
     /// grab entries from other misc info section
     var originatingDOIArray = doiInput.value
     var protocolURLArray = urlInput.value
-    // var additionalLinkArray = addlLinks.value
-    // var miscLinkDescription = document.getElementById("input-misc-link-description").value;
+    /// Additional link description
+    var rowcountLink = document.getElementById("table-addl-links").rows.length;
+    var addlLinkInfo = [];
+    for (i=1; i<rowcountLink; i++) {
+      var addlLink = {"link": document.getElementById("link-row"+i).innerHTML,
+                      "description": document.getElementById("link-description-row"+i).innerHTML}
+      addlLinkInfo.push(addlLink)
+    }
     var miscSectionArray = [];
-    for (let elementLink of [originatingDOIArray,protocolURLArray]) {
+    for (let elementLink of [originatingDOIArray,protocolURLArray,addlLinkInfo]) {
       miscSectionArray.push(elementLink)
     }
     /// grab entries from other misc info section
@@ -870,14 +893,16 @@ ipcRenderer.on('selected-savedsdescriptionfile', (event, path) => {
     for (let elementOptional of [completeness,parentDS,completeDSTitle,metadataVer]) {
       optionalSectionArray.push(elementOptional)
     }
+
     //// stringiy arrays
     json_str_ds = JSON.stringify(dsSectionArray);
     json_str_misc = JSON.stringify(miscSectionArray);
     json_str_optional = JSON.stringify(optionalSectionArray);
+    json_str_con = JSON.stringify(contributorObj);
 
     /// call python function to save file
     if (path != null){
-      client.invoke("api_save_ds_description_file", path, json_str_ds, json_str_misc, json_str_optional, (error, res) => {
+      client.invoke("api_save_ds_description_file", path, json_str_ds, json_str_misc, json_str_optional, json_str_con, (error, res) => {
         if(error) {
           var emessage = userError(error)
           console.error(error)

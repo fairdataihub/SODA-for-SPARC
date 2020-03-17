@@ -343,16 +343,30 @@ def save_submission_file(filepath, json_str):
 
     wb.save(destination)
 
+from string import ascii_uppercase
+import itertools
+
+
+def excel_columns():
+    """
+    NOTE: does not support more than 699 contributors
+    """
+    # start with column D not A
+    single_letter = list(ascii_uppercase[3:])
+    two_letter = [a + b for a,b in itertools.product(ascii_uppercase, ascii_uppercase)]
+    return single_letter + two_letter
+
+
 ### Prepare dataset-description file
-def save_ds_description_file(filepath, dataset_str, misc_str, optional_str):
+def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_str):
     source = join(dirname( __file__ ), "..", "file_templates", "dataset_description.xlsx")
     destination = filepath
     shutil.copyfile(source, destination)
     # json array to python list
     val_arr_ds = json.loads(dataset_str)
-    # val_arr_con = json.loads(dataset_str)
-    val_ar_misc = json.loads(misc_str)
-    val_ar_optional = json.loads(optional_str)
+    val_arr_con = json.loads(con_str)
+    val_arr_misc = json.loads(misc_str)
+    val_arr_optional = json.loads(optional_str)
     # write to excel file
     wb = load_workbook(destination)
     ws1 = wb['Sheet1']
@@ -363,14 +377,24 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str):
     ws1["D16"] = val_arr_ds[3]
     ws1["D17"] = val_arr_ds[4]
 
+    ## contributor info
+    ws1["D10"] = val_arr_con["acknowlegdment"]
+    ws1["D11"] = val_arr_con["funding"]
+    for contributor, column in zip(val_arr_con['contributors'], excel_columns()):
+        ws1[column + "5"] = contributor["conName"]
+        ws1[column + "6"] = contributor["conID"]
+        ws1[column + "7"] = contributor["conAffliation"]
+        ws1[column + "8"] = contributor["conRole"]
+        ws1[column + "9"] = contributor["conContact"]
+
     ## DOI URLs
     ## originating DOI, Protocol DOI
-    # ws1["D2"] = val_ar_misc[0]
-    # ws1["D3"] = val_ar_misc[1]
-    # ws1["D4"] = ", ".join(val_ar_misc[2])
+    ws1["D2"] = val_ar_misc[0]
+    ws1["D3"] = val_ar_misc[1]
+    ws1["D4"] = ", ".join(val_ar_misc[2])
 
     ## Optional Info
-    ## Completeness, parent dataset ID, title Respectively
+    ## completeness, parent dataset ID, title Respectively
     ws1["D18"] = val_ar_optional[0]
     ws1["D19"] = val_ar_optional[1]
     ws1["D20"] = val_ar_optional[2]
