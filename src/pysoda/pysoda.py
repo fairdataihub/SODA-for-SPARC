@@ -367,9 +367,11 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
     val_arr_con = json.loads(con_str)
     val_arr_misc = json.loads(misc_str)
     val_arr_optional = json.loads(optional_str)
+
     # write to excel file
     wb = load_workbook(destination)
     ws1 = wb['Sheet1']
+
     ## name, description, keywords, samples, subjects
     ws1["D2"] = val_arr_ds[0]
     ws1["D3"] = val_arr_ds[1]
@@ -389,15 +391,17 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
 
     ## DOI URLs
     ## originating DOI, Protocol DOI
-    ws1["D2"] = val_ar_misc[0]
-    ws1["D3"] = val_ar_misc[1]
-    ws1["D4"] = ", ".join(val_ar_misc[2])
+    ws1["D12"] = ", ".join(val_arr_misc["doi"])
+    ws1["D13"] = ", ".join(val_arr_misc["url"])
+    for link, column in zip(val_arr_misc['additional links'], excel_columns()):
+        ws1[column + "14"] = link["link"]
+        ws1[column + "15"] = link["description"]
 
     ## Optional Info
     ## completeness, parent dataset ID, title Respectively
-    ws1["D18"] = val_ar_optional[0]
-    ws1["D19"] = val_ar_optional[1]
-    ws1["D20"] = val_ar_optional[2]
+    ws1["D18"] = val_arr_optional[0]
+    ws1["D19"] = val_arr_optional[1]
+    ws1["D20"] = val_arr_optional[2]
 
     wb.save(destination)
 

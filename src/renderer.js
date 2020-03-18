@@ -867,11 +867,18 @@ ipcRenderer.on('selected-savedsdescriptionfile', (event, path) => {
     contributorObj["funding"] = funding
     contributorObj["contributors"] = currentConInfo
 
-    console.log(contributorObj)
-
     /// grab entries from other misc info section
+    var miscObj = {}
     var originatingDOIArray = doiInput.value
+    doiArray = [];
+    for (var i=0;i<originatingDOIArray.length;i++) {
+      doiArray.push(originatingDOIArray[i].value)
+    }
+    urlArray = [];
     var protocolURLArray = urlInput.value
+    for (var i=0;i<protocolURLArray.length;i++) {
+      urlArray.push(protocolURLArray[i].value)
+    }
     /// Additional link description
     var rowcountLink = document.getElementById("table-addl-links").rows.length;
     var addlLinkInfo = [];
@@ -880,11 +887,11 @@ ipcRenderer.on('selected-savedsdescriptionfile', (event, path) => {
                       "description": document.getElementById("link-description-row"+i).innerHTML}
       addlLinkInfo.push(addlLink)
     }
-    var miscSectionArray = [];
-    for (let elementLink of [originatingDOIArray,protocolURLArray,addlLinkInfo]) {
-      miscSectionArray.push(elementLink)
-    }
-    /// grab entries from other misc info section
+    miscObj["doi"] = doiArray;
+    miscObj["url"] = urlArray;
+    miscObj["additional links"] = addlLinkInfo;
+
+    /// grab entries from other optional info section
     var completeness = document.getElementById("input-completeness").options[document.getElementById("input-completeness").selectedIndex].value;
     var parentDS = document.getElementById("input-parent-ds").value;
     var completeDSTitle = document.getElementById("input-completeds-title").value;
@@ -896,7 +903,7 @@ ipcRenderer.on('selected-savedsdescriptionfile', (event, path) => {
 
     //// stringiy arrays
     json_str_ds = JSON.stringify(dsSectionArray);
-    json_str_misc = JSON.stringify(miscSectionArray);
+    json_str_misc = JSON.stringify(miscObj);
     json_str_optional = JSON.stringify(optionalSectionArray);
     json_str_con = JSON.stringify(contributorObj);
 
