@@ -462,37 +462,37 @@ function getOptionByValue (dropdown, value) {
 }
 
 deleteAwardBtn.addEventListener('click', function() {
-//   /// TODO: Confirm deleting award number
-//     ipcRenderer.send('warning-delete-award')
-// });
-// ipcRenderer.on('warning-delete-award-selection', (event, index) => {
-//   console.log("1");
-//   if (index === 0) {
-  award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-  if (award==="Select") {
-    document.getElementById("para-delete-award-status").innerHTML = "<span style='color: red;'>Please select an award number to delete</span>"
-  } else {
-    var milestoneJson = parseJson(milestonePath);
-    var awardsJson = parseJson(awardPath)
-    // check if award is in list
-    if (award in awardsJson) {
-      delete awardsJson[award];
+  /// TODO: Confirm deleting award number
+  ipcRenderer.send('warning-delete-award')
+});
+ipcRenderer.on('warning-delete-award-selection', (event, index) => {
+  if (index === 0) {
+    award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+    if (award==="Select") {
+      document.getElementById("para-delete-award-status").innerHTML = "<span style='color: red;'>Please select an award number to delete</span>"
+    } else {
+      var milestoneJson = parseJson(milestonePath);
+      var awardsJson = parseJson(awardPath)
+      // check if award is in list
+      if (award in awardsJson) {
+        delete awardsJson[award];
+        }
+      // check if award is in list of milestones
+      if (award in milestoneJson) {
+        delete milestoneJson[award];
       }
-    // check if award is in list of milestones
-    if (award in milestoneJson) {
-      delete milestoneJson[award];
-      }
-    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
-    presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
-    fs.writeFileSync(milestonePath, JSON.stringify(milestoneJson));
-    // delete award in the next two award arrays
-    getOptionByValue(presavedAwardArray2,award);
-    getOptionByValue(dsAwardArray,award);
-    // presavedAwardArray2.remove(presavedAwardArray2, award);
-    // console.log(award1)
-    // dsAwardArray.remove(dsAwardArray.award2);
-    document.getElementById("div-show-milestone-info").style.display = "none";
-    document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black;'> " + "Deleted award number: " + award + "!" + "</span>"
+      fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
+      presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
+      fs.writeFileSync(milestonePath, JSON.stringify(milestoneJson));
+      // delete award in the next two award arrays
+      getOptionByValue(presavedAwardArray2,award);
+      getOptionByValue(dsAwardArray,award);
+      // presavedAwardArray2.remove(presavedAwardArray2, award);
+      // console.log(award1)
+      // dsAwardArray.remove(dsAwardArray.award2);
+      document.getElementById("div-show-milestone-info").style.display = "none";
+      document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black;'> " + "Deleted award number: " + award + "!" + "</span>"
+    }
   }
 })
 
@@ -690,6 +690,7 @@ function createCurrentConTable(table) {
 
 // Show additional links and desciption
 function createAdditionalLinksTable() {
+  document.getElementById("para-save-link-status").innerHTML = ""
   var myTable = document.getElementById("table-addl-links")
   var link = document.getElementById("input-misc-addl-links").value
   var description = document.getElementById("input-misc-link-description").value
@@ -702,22 +703,20 @@ function createAdditionalLinksTable() {
     /// append row to table from the bottom
     var rowIndex = rowcount;
   }
-  var duplicate = false
-  for (var i=0; i<rowcount;i++){
-    if (myTable.rows[i].cells[0].innerHTML===link) {
-      duplicate = true
-      break
-    }
-  } if (!duplicate) {
+  var empty = false
+  if (link==="" && description==="") {
+    empty = true
+  }
+  if (!empty) {
     var row = myTable.insertRow(rowIndex).outerHTML="<tr id='row-current-link"+rowIndex+"'style='color: #000000;'><td id='link-row"+rowIndex+"'>"+ link+"</td><td id='link-description-row"+rowIndex+"'>"+ description +"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_link("+rowIndex+")'></td></tr>";
+    document.getElementById("div-current-additional-links").style.display = "block";
     return myTable
   } else {
-    document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>Link is already added!</span>"
+    document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>Please fill in the fields!</span>"
   }
 }
 
 addAdditionalLinkBtn.addEventListener("click", function() {
-  document.getElementById("div-current-additional-links").style.display = "block";
   createAdditionalLinksTable()
 })
 
