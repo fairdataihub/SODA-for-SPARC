@@ -1042,14 +1042,15 @@ label.input-banner-img{
 .multisteps-form__progress-btn.js-active2 {
   color: #258193;
 }
+
 .multisteps-form__progress-btn.js-active1:before {
   -webkit-transform: translateX(-50%) scale(1.2);
-  transform: translateX(-50%) scale(1.2);
+  transform: translateX(-50%) scale(1.5);
   background-color: #258193;
 }
 .multisteps-form__progress-btn.js-active2:before {
   -webkit-transform: translateX(-50%) scale(1.2);
-  transform: translateX(-50%) scale(1.2);
+  transform: translateX(-50%) scale(1.5);
   background-color: #258193;
 }
 
