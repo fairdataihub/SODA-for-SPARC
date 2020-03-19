@@ -173,7 +173,7 @@
   width: 180px;
   cursor: pointer;
 }
-/* 
+/*
 .demo-button.delete:hover {
   background-color: rgba(220,20,60,0.9);
   color: white;
@@ -859,22 +859,6 @@ label.input-banner-img{
   border-radius: 5px;
   background-color: #ffffff;
   font: inherit;
-}
-
-.my-dropdown-metadata.ds option{
-  /* background-color: rgb(37, 129, 147,0); */
-  position: absolute;
-  background-color: #FFFAFA;
-  /* border-style: solid; */
-  padding: 8px 16px;
-  border: 1px solid transparent;
-  border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
-  cursor: pointer;
-  user-select: none;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 99;
 }
 
 .my-dropdown-metadata.ds:focus {
