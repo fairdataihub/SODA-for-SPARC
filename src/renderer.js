@@ -341,6 +341,7 @@ function downloadTemplates(templateItem, destinationFolder) {
     ipcRenderer.send('open-info-metadata-file-donwloaded', emessage)
   }
 }
+
 downloadSubmission.addEventListener('click', (event) => {
   ipcRenderer.send('open-folder-dialog-save-metadata', templateArray[0])
 });
@@ -402,6 +403,14 @@ function createMetadataDir() {
   }
 }
 
+// Function to add options to dropdown list
+var addOption = function(selectbox, text, value) {
+    var opt = document.createElement("OPTION");
+    opt.text = text;
+    opt.value = value;
+    selectbox.options.add(opt);
+}
+
 // Function to auto load existing awards
 function loadAwards() {
   var rawData = fs.readFile(awardPath, "utf8", function(error, contents) {
@@ -420,13 +429,19 @@ function loadAwards() {
 }
 loadAwards()
 
-// Function to add options to dropdown list
-var addOption = function(selectbox, text, value) {
-    var opt = document.createElement("OPTION");
-    opt.text = text;
-    opt.value = value;
-    selectbox.options.add(opt);
+/// function to grab row index
+function getRowIndex(table) {
+  var rowcount = table.rows.length;
+  if (rowcount===2) {
+    // start at 1 to skip the header
+    var rowIndex = 1;
+  } else {
+    /// append row to table from the bottom
+    var rowIndex = rowcount-1;
+  }
+  return rowIndex
 }
+
 
 // Save grant information
 addAwardBtn.addEventListener('click', function() {
@@ -449,7 +464,6 @@ addAwardBtn.addEventListener('click', function() {
 })
 
 /////// Delete an Award///////////
-
 // function to delete a selected value in a dropdown
 function getOptionByValue (dropdown, value) {
     // var options = dropdown.options;
@@ -462,7 +476,6 @@ function getOptionByValue (dropdown, value) {
 }
 
 deleteAwardBtn.addEventListener('click', function() {
-  /// TODO: Confirm deleting award number
   ipcRenderer.send('warning-delete-award')
 });
 ipcRenderer.on('warning-delete-award-selection', (event, index) => {
@@ -487,9 +500,6 @@ ipcRenderer.on('warning-delete-award-selection', (event, index) => {
       // delete award in the next two award arrays
       getOptionByValue(presavedAwardArray2,award);
       getOptionByValue(dsAwardArray,award);
-      // presavedAwardArray2.remove(presavedAwardArray2, award);
-      // console.log(award1)
-      // dsAwardArray.remove(dsAwardArray.award2);
       document.getElementById("div-show-milestone-info").style.display = "none";
       document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black;'> " + "Deleted award number: " + award + "!" + "</span>"
     }
@@ -504,14 +514,7 @@ addNewMilestoneBtn.addEventListener("click", function() {
     document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: red;'>Please fill in both fields to add!</span>"
   }
   else {
-    var rowcount = milestoneArray.rows.length;
-    if (rowcount===2) {
-      // start at 1 to skip the header
-      var rowIndex = 1;
-    } else {
-      /// append row to table from the bottom
-      var rowIndex = rowcount-1;
-    }
+    rowIndex = getRowIndex(milestoneArray);
     var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneVal +"</td><td id='name-row-date"+rowIndex+"'>"+ dateVal+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
     document.getElementById("input-milestone-new").value = "";
     document.getElementById("input-date-new").value = "";
@@ -651,6 +654,26 @@ ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
 //////////////// Dataset description file ///////////////////////
 //////////////// //////////////// //////////////// ////////////////
 
+var doiInput = createTagsInput(document.getElementById('input-misc-DOI'));
+var urlInput = createTagsInput(document.getElementById('input-misc-protocol'));
+var keywordInput = document.getElementById('ds-keywords'),
+  keywordTagify = new Tagify(keywordInput, {
+    duplicates: false,
+    maxTags  : 5
+})
+var contributorRoles = document.getElementById("input-con-role"),
+  currentContributortagify = new Tagify(contributorRoles, {
+    whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "ContactPerson", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+    dropdown : {
+        classname : "color-blue",
+        enabled   : 0,         // show the dropdown immediately on focus
+        maxItems  : 25,
+        // position  : "text",    // place the dropdown near the typed text
+        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+    },
+    duplicates: false
+});
+
 // Show current contributors
 function createCurrentConTable(table) {
   var name = dsContributorArray.options[dsContributorArray.selectedIndex].value
@@ -716,6 +739,21 @@ function createAdditionalLinksTable() {
   }
 }
 
+//// function to leave fields empty if no data is found on Airtable
+function leaveFieldsEmpty(field, element) {
+  if (field!==undefined) {
+    element.value = field;
+  } else {
+    element.innerHTML = ''
+  }
+}
+
+/// Create tags input for multi-answer fields
+function createTagsInput(field) {
+    return new Tagify(field)
+}
+
+//// When users click on adding description for each additional link
 addAdditionalLinkBtn.addEventListener("click", function() {
   createAdditionalLinksTable()
 })
@@ -725,31 +763,6 @@ addCurrentContributorsBtn.addEventListener("click", function() {
   createCurrentConTable(currentConTable);
   document.getElementById("div-current-contributors").style.display = "block"
 })
-
-/// Create tags input for multi-answer fields
-function createTagsInput(field) {
-    return new Tagify(field)
-}
-
-var doiInput = createTagsInput(document.getElementById('input-misc-DOI'));
-var urlInput = createTagsInput(document.getElementById('input-misc-protocol'));
-var keywordInput = document.getElementById('ds-keywords'),
-  keywordTagify = new Tagify(keywordInput, {
-    duplicates: false,
-    maxTags  : 5
-})
-var contributorRoles = document.getElementById("input-con-role"),
-  currentContributortagify = new Tagify(contributorRoles, {
-        whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "ContactPerson", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
-        dropdown : {
-            classname : "color-blue",
-            enabled   : 0,         // show the dropdown immediately on focus
-            maxItems  : 25,
-            // position  : "text",    // place the dropdown near the typed text
-            closeOnSelect : true, // keep the dropdown open after selecting a suggestion
-        },
-        duplicates: false
-});
 
 /// load Airtable Contributor data
 dsAwardArray.addEventListener("change", function(e) {
@@ -787,15 +800,6 @@ dsAwardArray.addEventListener("change", function(e) {
       }
   };
 })
-
-//// function to leave fields empty if no data is found on Airtable
-function leaveFieldsEmpty(field, element) {
-  if (field!==undefined) {
-    element.value = field;
-  } else {
-    element.innerHTML = ''
-  }
-}
 
 /// Auto populate once a contributor is selected
 dsContributorArray.addEventListener("change", function(e) {

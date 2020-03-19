@@ -349,19 +349,19 @@ import itertools
 
 def excel_columns():
     """
-    NOTE: does not support more than 699 contributors
+    NOTE: does not support more than 699 contributors/links
     """
     # start with column D not A
     single_letter = list(ascii_uppercase[3:])
     two_letter = [a + b for a,b in itertools.product(ascii_uppercase, ascii_uppercase)]
     return single_letter + two_letter
 
-
 ### Prepare dataset-description file
 def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_str):
     source = join(dirname( __file__ ), "..", "file_templates", "dataset_description.xlsx")
     destination = filepath
     shutil.copyfile(source, destination)
+
     # json array to python list
     val_arr_ds = json.loads(dataset_str)
     val_arr_con = json.loads(con_str)
@@ -389,7 +389,6 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
         ws1[column + "8"] = contributor["conRole"]
         ws1[column + "9"] = contributor["conContact"]
 
-    ## DOI URLs
     ## originating DOI, Protocol DOI
     ws1["D12"] = ", ".join(val_arr_misc["doi"])
     ws1["D13"] = ", ".join(val_arr_misc["url"])
@@ -397,7 +396,6 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
         ws1[column + "14"] = link["link"]
         ws1[column + "15"] = link["description"]
 
-    ## Optional Info
     ## completeness, parent dataset ID, title Respectively
     ws1["D18"] = val_arr_optional[0]
     ws1["D19"] = val_arr_optional[1]
