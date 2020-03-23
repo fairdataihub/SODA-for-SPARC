@@ -384,6 +384,9 @@ presavedAwardArray1.addEventListener('change', function() {
 
 // function to load and parse json file
 function parseJson(path) {
+  if (!fs.existsSync(path)) {
+    return {}
+  }
   try {
     var content = fs.readFileSync(path);
     contentJson = JSON.parse(content);
@@ -414,6 +417,9 @@ var addOption = function(selectbox, text, value) {
 // Function to auto load existing awards
 function loadAwards() {
   var rawData = fs.readFile(awardPath, "utf8", function(error, contents) {
+    if (!fs.existsSync(awardPath)) {
+      return {}
+    }
     if (error) {
       console.log(error)
     } else {
