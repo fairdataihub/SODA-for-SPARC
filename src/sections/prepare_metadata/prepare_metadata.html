@@ -93,22 +93,9 @@
             <div>
             <p id='para-delete-award-status'></p>
             </div>
-            <!-- <p></p> -->
+            <p></p>
             <div class="demo-controls">
-              <div id="div-show-milestone-info" class="pathtable">
-                <form method="post">
-                  <h5> Import your Data Deliverables document: </h5>
-                  <h5></h5>
-                  <div class="container-milestone-upload" style="display:flex;width:100%">
-                    <!-- <button type="button" style="width:40%;float:left" class="button-milestone-upload">Select a file</button> -->
-                    <input class="milestone-upload-text" id="input-milestone-select" style="width:70%;text-align:center" type="text" readonly placeholder="Select a file">
-                    <button type="button" style="width:30%" class="button-milestone-upload"><b>Upload</b></button>
-                    <p id="para-milestone-document-info" style="float:right;margin-top:0;margin-bottom:0; margin-left:10px"></p>
-                  </div>
-                </form>
-              </div>
-
-               <!-- <div id="div-show-milestone-info" class="pathtable" style="display:none;width:90%;border-radius:5px;margin:0 auto">
+               <div id="div-show-milestone-info" class="pathtable" style="display:none;width:90%;border-radius:5px;margin:0 auto">
                  <h5 align="center"> Add/Edit milestone information: </h5>
                  <h5></h5>
                <table id="table-milestones">
@@ -130,7 +117,7 @@
                  <p id='para-save-milestone-status'style="float:right;padding-top:0;margin-bottom:0"></p>
               </div>
                </div>
-            <! </div> -->
+            </div>
           </div>
 
         </div>
@@ -166,9 +153,10 @@
             </span>
           </div>
           <div class="demo-controls">
-            <select id="selected-milestone" class="form-container-input-bf">
-              <option value="Select">Select an option</option>
-            </select>
+            <input id="selected-milestone" class="form-container-input-bf" list="submission-milestone-list" placeholder="Enter milestone..."/>
+            <datalist id="submission-milestone-list">
+              <option> </option>
+            </datalist>
           </div>
           <div class="form-container-ds"><font color="black"> Completion Date: </font> </div>
           <div class="tooltipnew"><img class="info" src="assets/img/info.png">

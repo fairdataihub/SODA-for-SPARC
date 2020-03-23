@@ -32,7 +32,7 @@ from datetime import datetime
 
 from openpyxl import load_workbook
 from openpyxl import Workbook
-from docx import Document
+from openpyxl.styles import Font
 
 ### Global variables
 curateprogress = ' '
@@ -324,31 +324,6 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
                 mycopyfileobj(fsrc, fdst)
     shutil.copystat(src, dst)
     return dst
-
-### Import Milestone document
-def import_milestone(filepath):
-    doc = Document(filepath)
-    table = doc.tables[0]
-    data = []
-    keys = None
-    for i, row in enumerate(table.rows):
-        text = (cell.text for cell in row.cells)
-        # headers will become the keys of our dictionary
-        if i == 0:
-            keys = tuple(text)
-            continue
-        # Construct a dictionary for this row, mapping
-        # keys to values for this row
-        row_data = dict(zip(keys, text))
-        data.append(row_data)
-    return data
-
-def extract_milestone_info(datalist):
-    milestone_info = {}
-    for i in range(len(datalist)):
-        if datalist[i]["Related milestone, aim, or task"] not in milestone_info.keys():
-            milestone_info[datalist[i]["Related milestone, aim, or task"]] = datalist[i]["Expected date of completion"]
-    return milestone_info
 
 ### Prepare submission file
 def save_submission_file(filepath, json_str):
