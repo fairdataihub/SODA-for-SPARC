@@ -397,9 +397,9 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
         ws1[column + "15"] = link["description"]
 
     ## completeness, parent dataset ID, title Respectively
-    ws1["D18"] = val_arr_optional[0]
-    ws1["D19"] = val_arr_optional[1]
-    ws1["D20"] = val_arr_optional[2]
+    ws1["D18"] = val_arr_optional["completeness"]
+    ws1["D19"] = val_arr_optional["parentDS"]
+    ws1["D20"] = val_arr_optional["completeDSTitle"]
 
     wb.save(destination)
 

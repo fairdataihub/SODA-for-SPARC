@@ -592,7 +592,7 @@ function done(err) {
     }
 });
 //////////////// //////////////// //////////////// ////////////////
-//////////////// Submission file //////////////// ////////////////
+//////////////////////Submission file //////////////// ////////////////
 
 /////// Populate Submission file fields from presaved information
 presavedAwardArray2.addEventListener('change', function() {
@@ -630,31 +630,38 @@ generateSubmissionBtn.addEventListener('click', (event) => {
   if (milestoneVal===''|| dateVal==='' || awardVal==='Select') {
     document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Please fill in all fields to generate!</span>"
   } else {
-    ipcRenderer.send('save-file-dialog-submission')
+    ipcRenderer.send('open-folder-dialog-save-submission', "submission.xlsx")
   }
 });
-ipcRenderer.on('selected-savesubmissionfile', (event, path) => {
-  if (path.length > 0) {
-    var award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
-    var milestone = document.getElementById("selected-milestone").value;
-    var date = document.getElementById("selected-milestone-date").value;
-    var json_arr = [];
-    json_arr.push(award);
-    json_arr.push(milestone);
-    json_arr.push(date);
-    json_str = JSON.stringify(json_arr)
-    if (path != null){
-      client.invoke("api_save_submission_file", path, json_str, (error, res) => {
-        if(error) {
-          var emessage = userError(error)
-          console.error(error)
-          document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
-        }
-        else {
-          document.getElementById("para-save-submission-status").innerHTML = "<span style='color: black ;'>" + "Done!" + smileyCan + "</span>"
-        }
-      })
-     }}
+ipcRenderer.on('selected-metadata-submission', (event, dirpath, filename) => {
+  if (dirpath.length > 0) {
+    var destinationPath = path.join(dirpath[0], filename)
+    if (fs.existsSync(destinationPath)) {
+      var emessage = "File " + filename +  " already exists in " +  dirpath[0]
+      ipcRenderer.send('open-error-metadata-file-exits', emessage)
+    }
+    else {
+      var award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
+      var milestone = document.getElementById("selected-milestone").value;
+      var date = document.getElementById("selected-milestone-date").value;
+      var json_arr = [];
+      json_arr.push(award);
+      json_arr.push(milestone);
+      json_arr.push(date);
+      json_str = JSON.stringify(json_arr)
+      if (path != null){
+        client.invoke("api_save_submission_file", path, json_str, (error, res) => {
+          if(error) {
+            var emessage = userError(error)
+            console.error(error)
+            document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+          }
+          else {
+            document.getElementById("para-save-submission-status").innerHTML = "<span style='color: black ;'>" + "Done!" + smileyCan + "</span>"
+          }
+        })
+    }
+  }}
 });
 
 //////////////// Dataset description file ///////////////////////
@@ -839,96 +846,110 @@ dsContributorArray.addEventListener("change", function(e) {
 
 ///// Generate ds description file
 generateDSBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('save-file-dialog-ds-description')
+  ipcRenderer.send('open-folder-dialog-save-ds-description',"dataset_description.xlsx")
 })
 
-ipcRenderer.on('selected-savedsdescriptionfile', (event, path) => {
-  if (path.length > 0) {
-    /// grab entries from dataset info section
-    var name = document.getElementById("ds-name").value;
-    var description = document.getElementById("ds-description").value;
-    var keywordArray = keywordTagify.value;
-    var keywordVal = []
-    for (var i=0;i<keywordArray.length;i++) {
-      keywordVal.push(keywordArray[i].value)
-    }
-    var samplesNo = document.getElementById("ds-samples-no").value;
-    var subjectsNo = document.getElementById("ds-subjects-no").value;
-    var dsSectionArray = [];
-    for (let elementDS of [name,description,keywordVal,samplesNo,subjectsNo]) {
-      dsSectionArray.push(elementDS)
-    }
-    /// grab entries from contributor info section -- table
-    var rowcountCon = currentConTable.rows.length;
-    var currentConInfo = [];
-    for (i=1; i<rowcountCon; i++) {
-      var myCurrentCon = {"conName":document.getElementById("name-row"+i).innerHTML,
-                          "conID": document.getElementById("orcid-id-row"+i).innerHTML,
-                          "conAffliation": document.getElementById("affiliation-row"+i).innerHTML,
-                          "conRole": document.getElementById("role-row"+i).innerHTML,
-                          "conContact": document.getElementById("contact-person-row"+i).innerHTML}
-      currentConInfo.push(myCurrentCon);
-    };
-    var acknowlegdment = document.getElementById("ds-description-acknowlegdment").value;
-    var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
-    contributorObj = {}
-    contributorObj["acknowlegdment"] = acknowlegdment
-    contributorObj["funding"] = funding
-    contributorObj["contributors"] = currentConInfo
+ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) => {
+  if (dirpath.length > 0) {
+    var destinationPath = path.join(dirpath[0],filename)
+    if (fs.existsSync(destinationPath)) {
+      var emessage = "File " + filename +  " already exists in " +  dirpath[0]
+      ipcRenderer.send('open-error-metadata-file-exits', emessage)
+    } else {
+      /// grab entries from dataset info section
+      var name = document.getElementById("ds-name").value;
+      var description = document.getElementById("ds-description").value;
+      var keywordArray = keywordTagify.value;
+      var keywordVal = []
+      for (var i=0;i<keywordArray.length;i++) {
+        keywordVal.push(keywordArray[i].value)
+      }
+      var samplesNo = document.getElementById("ds-samples-no").value;
+      var subjectsNo = document.getElementById("ds-subjects-no").value;
+      var dsSectionArray = [];
+      for (let elementDS of [name,description,keywordVal,samplesNo,subjectsNo]) {
+        dsSectionArray.push(elementDS)
+      }
+      /// grab entries from contributor info section -- table
+      var rowcountCon = currentConTable.rows.length;
+      var currentConInfo = [];
+      for (i=1; i<rowcountCon; i++) {
+        var myCurrentCon = {"conName":document.getElementById("name-row"+i).innerHTML,
+                            "conID": document.getElementById("orcid-id-row"+i).innerHTML,
+                            "conAffliation": document.getElementById("affiliation-row"+i).innerHTML,
+                            "conRole": document.getElementById("role-row"+i).innerHTML,
+                            "conContact": document.getElementById("contact-person-row"+i).innerHTML}
+        currentConInfo.push(myCurrentCon);
+      };
+      var acknowlegdment = document.getElementById("ds-description-acknowlegdment").value;
+      var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+      var contributorObj = {}
+      if (funding==="Select") {
+        contributorObj["funding"] = "N/A"
+      } else {
+        contributorObj["funding"] = funding
+      }
+      contributorObj["acknowlegdment"] = acknowlegdment
+      contributorObj["contributors"] = currentConInfo
 
-    /// grab entries from other misc info section
-    var miscObj = {}
-    var originatingDOIArray = doiInput.value
-    doiArray = [];
-    for (var i=0;i<originatingDOIArray.length;i++) {
-      doiArray.push(originatingDOIArray[i].value)
-    }
-    urlArray = [];
-    var protocolURLArray = urlInput.value
-    for (var i=0;i<protocolURLArray.length;i++) {
-      urlArray.push(protocolURLArray[i].value)
-    }
-    /// Additional link description
-    var rowcountLink = document.getElementById("table-addl-links").rows.length;
-    var addlLinkInfo = [];
-    for (i=1; i<rowcountLink; i++) {
-      var addlLink = {"link": document.getElementById("link-row"+i).innerHTML,
-                      "description": document.getElementById("link-description-row"+i).innerHTML}
-      addlLinkInfo.push(addlLink)
-    }
-    miscObj["doi"] = doiArray;
-    miscObj["url"] = urlArray;
-    miscObj["additional links"] = addlLinkInfo;
+      /// grab entries from other misc info section
+      var miscObj = {}
+      var originatingDOIArray = doiInput.value
+      doiArray = [];
+      for (var i=0;i<originatingDOIArray.length;i++) {
+        doiArray.push(originatingDOIArray[i].value)
+      }
+      urlArray = [];
+      var protocolURLArray = urlInput.value
+      for (var i=0;i<protocolURLArray.length;i++) {
+        urlArray.push(protocolURLArray[i].value)
+      }
+      /// Additional link description
+      var rowcountLink = document.getElementById("table-addl-links").rows.length;
+      var addlLinkInfo = [];
+      for (i=1; i<rowcountLink; i++) {
+        var addlLink = {"link": document.getElementById("link-row"+i).innerHTML,
+                        "description": document.getElementById("link-description-row"+i).innerHTML}
+        addlLinkInfo.push(addlLink)
+      }
+      miscObj["doi"] = doiArray;
+      miscObj["url"] = urlArray;
+      miscObj["additional links"] = addlLinkInfo;
 
-    /// grab entries from other optional info section
-    var completeness = document.getElementById("input-completeness").options[document.getElementById("input-completeness").selectedIndex].value;
-    var parentDS = document.getElementById("input-parent-ds").value;
-    var completeDSTitle = document.getElementById("input-completeds-title").value;
-    var metadataVer = document.getElementById("input-metadata-ver").value;
-    var optionalSectionArray = [];
-    for (let elementOptional of [completeness,parentDS,completeDSTitle,metadataVer]) {
-      optionalSectionArray.push(elementOptional)
+      /// grab entries from other optional info section
+      var completeness = document.getElementById("input-completeness").options[document.getElementById("input-completeness").selectedIndex].value;
+      var parentDS = document.getElementById("input-parent-ds").value;
+      var completeDSTitle = document.getElementById("input-completeds-title").value;
+      var optionalSectionObj = {};
+      if (completeness==="Select") {
+        optionalSectionObj["completeness"] = "N/A"
+      } else {
+        optionalSectionObj["completeness"] = completeness
+      }
+      optionalSectionObj["parentDS"] = parentDS;
+      optionalSectionObj["completeDSTitle"] = completeDSTitle;
+
+      //// stringiy arrays
+      json_str_ds = JSON.stringify(dsSectionArray);
+      json_str_misc = JSON.stringify(miscObj);
+      json_str_optional = JSON.stringify(optionalSectionObj);
+      json_str_con = JSON.stringify(contributorObj);
+
+      /// call python function to save file
+      if (dirpath != null){
+        client.invoke("api_save_ds_description_file", destinationPath, json_str_ds, json_str_misc, json_str_optional, json_str_con, (error, res) => {
+          if(error) {
+            var emessage = userError(error)
+            console.error(error)
+            document.getElementById("para-generate-description-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+          }
+          else {
+            document.getElementById("para-generate-description-status").innerHTML = "<span style='color: black ;'>" + "Done!" + smileyCan + "</span>"
+          }
+        })
+       }
+     }
     }
-
-    //// stringiy arrays
-    json_str_ds = JSON.stringify(dsSectionArray);
-    json_str_misc = JSON.stringify(miscObj);
-    json_str_optional = JSON.stringify(optionalSectionArray);
-    json_str_con = JSON.stringify(contributorObj);
-
-    /// call python function to save file
-    if (path != null){
-      client.invoke("api_save_ds_description_file", path, json_str_ds, json_str_misc, json_str_optional, json_str_con, (error, res) => {
-        if(error) {
-          var emessage = userError(error)
-          console.error(error)
-          document.getElementById("para-generate-description-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
-        }
-        else {
-          document.getElementById("para-generate-description-status").innerHTML = "<span style='color: black ;'>" + "Done!" + smileyCan + "</span>"
-        }
-      })
-     }}
 });
 
 //////////////////////////End of Ds description section ///////////////////////
