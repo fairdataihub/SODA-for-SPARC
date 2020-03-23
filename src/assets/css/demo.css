@@ -196,39 +196,6 @@
   border-color: var(--color-accent);
 }
 
-/* .demo-arrow-button {
-  box-sizing: border-box;
-  position: relative;
-  display: block;
-  width: 22px;
-  height: 22px;
-  border: 2px solid;
-  transform: scale(var(--ggs,1));
-  border-radius: 4px
-}
-.demo-arrow-button::after,
-.demo-arrow-button::before {
-    content: "";
-    display: block;
-    box-sizing: border-box;
-    position: absolute;
-    right: 4px
-}
-.demo-arrow-button::after {
-    width: 6px;
-    height: 6px;
-    border-top: 2px solid;
-    border-right: 2px solid;
-    transform: rotate(45deg);
-    bottom: 6px
-}
-.demo-arrow-button::before {
-    width: 10px;
-    height: 2px;
-    bottom: 8px;
-    background: currentColor
-} */
-
 .demo-button-table {
   align-self: flex-start;
   margin-right: 0.5em;
@@ -352,6 +319,37 @@ button.download-metadata{
 
 button.download-metadata:hover {
   background-color: hsla(192,69%,23%);
+}
+
+.milestone-upload-text {
+  width:200px;
+  height:34px;
+  float:left;
+  text-align:center;
+  outline:none;
+  box-shadow:none;
+  border:none;
+  border-color:#258193;
+  background-clip:border-box;
+}
+
+.button-milestone-upload {
+  width:60px;
+  height:34px;
+  float:right;
+  border-radius:0;
+  padding: 0 0 0 0;
+  margin:0 0 0 0;
+  background-color:#258193;
+  color:white;
+  box-sizing: none;
+  cursor: pointer;
+  background-clip:none;
+  border:none;
+}
+
+.button-milestone-upload:active {
+  transform: scale(1.1);
 }
 
 .download-image {

@@ -97,7 +97,6 @@ ipcMain.on('open-folder-dialog-primary', (event) => {
   })
 })
 
-
 //protocol
 ipcMain.on('open-file-dialog-protocol', (event) => {
   dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
@@ -221,6 +220,20 @@ ipcMain.on('open-file-dialog-samples', (event) => {
   })
 })
 
+////// milestone document
+ipcMain.on('open-file-dialog-milestone-doc', (event) => {
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ['openFile'],
+    filters: [
+    { name: 'DOCX', extensions: ['docx'] },
+  ]
+  }, (files) => {
+    if (files) {
+      event.sender.send('selected-milestonedoc', files);
+    }
+  })
+})
+
 ipcMain.on('open-file-dialog-newdataset', (event) => {
   dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openDirectory']
@@ -240,7 +253,7 @@ ipcMain.on('open-file-dialog-submit-dataset', (event) => {
     }
   })
 })
- 
+
 // Blackfynn metadata
 ipcMain.on('open-file-dialog-import-banner-image', (event) => {
   dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {

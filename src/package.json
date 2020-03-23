@@ -47,6 +47,7 @@
     "airtable": "^0.8.1",
     "axios": "^0.19.2",
     "cropperjs": "^1.5.6",
+    "docx": "^5.0.2",
     "electron-context-menu": "^0.13.0",
     "electron-log": "^4.0.6",
     "electron-settings": "^3.2.0",
