@@ -120,7 +120,7 @@ const downloadDescription = document.getElementById("a-description")
 const downloadManifest = document.getElementById("a-manifest")
 
 // Save grant information
-const milestoneArray = document.getElementById("table-milestones")
+const milestoneArray = document.getElementById("table-current-milestones")
 const awardArray = document.getElementById("select-grant-info-list")
 const presavedAwardArray1 = document.getElementById("select-presaved-grant-info-list")
 const addAwardBtn = document.getElementById("button-add-award")
@@ -371,13 +371,15 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
 
 ////////////////////////Import Milestone Info//////////////////////////////////
 
-
-function selectFileMilestone() {
+document.getElementById("input-milestone-select").addEventListener("click", function() {
   ipcRenderer.send('open-file-dialog-milestone-doc')
-}
+})
 ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
   if (filepath.length > 0) {
     if (filepath != null){
+      document.getElementById("input-milestone-select").placeholder = path.basename(filepath[0]);
+      //// when users click on "Upload" button
+      document.getElementById("button-import-milestone").addEventListener("click", function() {
         var award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
         client.invoke("api_extract_milestone_info", filepath[0], (error, res) => {
         if(error) {
@@ -393,12 +395,43 @@ ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
           informationJson[award] = milestoneObj;
           fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
           document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: black ;'>" + "Imported!</span>"
+
+          //// after saving data to json file, load the table right after.
+          /// clear old table before loading new entries
+          while (milestoneArray.rows.length>1) {
+            milestoneArray.deleteRow(1)
+          };
+          var informationJson = parseJson(milestonePath);
+          if (award in informationJson) {
+            document.getElementById("para-current-milestones").style.display = "none";
+            // document.getElementById("import-or-replace").innerHTML = "Replace existing";
+            // document.getElementById("div-show-current-milestones").style.display = "block";
+            var milestoneObj = informationJson[award];
+            // start at 1 to skip the header
+            var rowIndex = 1;
+            var keys = Object.keys(milestoneObj);
+            for (var i=0;i<keys.length;i++) {
+              var dateStrings = milestoneObj[keys[i]].toString()
+              /// Strip linebreaks out of date strings if applicable
+              var newDate = dateStrings.replace(/(\r\n|\n|\r)/gm,"");
+              //// convert mm/yyyy to HTML allowed format yyyy-mm
+              // var returnDate = newDate.split("/").reverse().join("-");
+              var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ keys[i]+"</td><td id='name-row-date"+rowIndex+"'>"+ newDate +"</td></tr>"
+              rowIndex++;
+              }
+            document.getElementById("table-current-milestones").style.display = "block";
+            return milestoneArray
+          }
         }
+        });
       })
-  }
- }
-})
-document.getElementById("input-milestone-select").onclick = selectFileMilestone;
+      }
+    }
+  })
+
+//  }
+// })
+// document.getElementById("input-milestone-select").onclick = selectFileMilestone;
 
 /////// Save and load award and milestone info
 
@@ -413,7 +446,7 @@ awardArray.addEventListener('change', function() {
 })
 
 presavedAwardArray1.addEventListener('change', function() {
-  document.getElementById("div-show-milestone-info").style.display = "block";
+  document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
   // document.getElementById("para-save-milestone-status").innerHTML = "";
   document.getElementById("para-delete-award-status").innerHTML = ""
 })
@@ -534,7 +567,9 @@ ipcRenderer.on('warning-delete-award-selection', (event, index) => {
       // delete award in the next two award arrays
       getOptionByValue(presavedAwardArray2,award);
       getOptionByValue(dsAwardArray,award);
-      document.getElementById("div-show-milestone-info").style.display = "none";
+      document.getElementById("div-show-milestone-info-no-existing").style.display = "none";
+      document.getElementById("div-show-current-milestones").style.display = "none";
+
       document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black;'> " + "Deleted award number: " + award + "!" + "</span>"
     }
   }
@@ -555,25 +590,43 @@ ipcRenderer.on('warning-delete-award-selection', (event, index) => {
 //   }
 // })
 
-/////// Load Milestone info
-// presavedAwardArray1.addEventListener('change', function() {
-//   opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-//   /// clear old table before loading new entries
-//   while (milestoneArray.rows.length>2) {
-//     milestoneArray.deleteRow(1)
-//   };
-//   var informationJson = parseJson(milestonePath);
-//   if (opt in informationJson) {
-//     var milestoneObj = informationJson[opt];
-//     // start at 1 to skip the header
-//     var rowIndex = 1;
-//     for (var i=0;i<milestoneObj.length; i++) {
-//       var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneObj[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ milestoneObj[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
-//       rowIndex++;
-//       }
-//     }
-//   return milestoneArray
-// });
+///// Load Milestone info
+presavedAwardArray1.addEventListener('change', function() {
+  opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+  /// clear old table before loading new entries
+  while (milestoneArray.rows.length>1) {
+    milestoneArray.deleteRow(1)
+  };
+  var informationJson = parseJson(milestonePath);
+  if (opt in informationJson) {
+    document.getElementById("import-or-replace").innerHTML = "Replace existing";
+    document.getElementById("div-show-current-milestones").style.display = "block";
+    document.getElementById("table-current-milestones").style.display = "block";
+    document.getElementById("para-current-milestones").style.display = "none";
+
+    var milestoneObj = informationJson[opt];
+    // start at 1 to skip the header
+    var rowIndex = 1;
+    var keys = Object.keys(milestoneObj);
+    for (var i=0;i<keys.length;i++) {
+      var dateStrings = milestoneObj[keys[i]].toString()
+      /// Strip linebreaks out of date strings if applicable
+      var newDate = dateStrings.replace(/(\r\n|\n|\r)/gm,"");
+      //// convert mm/yyyy to HTML allowed format yyyy-mm
+      // var returnDate = newDate.split("/").reverse().join("-");
+      var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ keys[i]+"</td><td id='name-row-date"+rowIndex+"'>"+ newDate +"</td></tr>"
+      rowIndex++;
+      }
+    return milestoneArray
+  } else {
+    document.getElementById("import-or-replace").innerHTML = "Import your"
+    document.getElementById("div-show-current-milestones").style.display = "block";
+    document.getElementById("table-current-milestones").style.display = "none";
+    document.getElementById("para-current-milestones").style.display = "block";
+    document.getElementById("para-current-milestones").innerHTML = "There is no existing milestone information. Please import your data deliverable document!";
+  }
+
+});
 
 /////// Save Milestone Info to a JSON file
 // saveInformationBtn.addEventListener("click", function() {

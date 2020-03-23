@@ -68,7 +68,7 @@
             </div>
          </form>
 
-          <div id="div-add-new-grant" class="datasetsaveoption" style="display:block;margin-top:70px">
+          <div id="div-add-new-grant" class="datasetsaveoption" style="display:block;margin-top:70px;margin-left:10px">
             <h5> Add a new grant number: </h5>
             <div class="demo-controls">
               <select id="select-grant-info-list" class="my-dropdown-metadata" style="width:90%;float:left;padding:6px 8px;margin-top:15px">
@@ -76,13 +76,13 @@
               </select>
               <button id="button-add-award" class="demo-button" style="height:35px;width:150px;padding:0 0;margin-left:10px;margin-top:15px">Add</button>
             </div>
-            <div style="height:20px;margin-top:7px">
+            <div style="height:20px;margin-top:7px;margin-bottom:7px">
               <p id="para-save-award-info"></p>
             </div>
           </div>
 
           <div id="div-select-existing-grant" class="datasetsaveoption" style="display:none;margin-top:70px;margin-left:10px">
-            <h5> Specify grant number to edit milestone information: </h5>
+            <h5> Specify a grant number: </h5>
             <div class="demo-controls" style="margin-top:20px">
               <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:100%; padding: 6px 8px; font-size:14px">
                 <option>Select</option>
@@ -91,21 +91,34 @@
               <button id="button-delete-award" class="demo-button" style="height:35px;width:150px;padding:0 0;margin-left:10px">Delete award</button>
             </div>
             <div>
-            <p id='para-delete-award-status'></p>
+            <p id='para-delete-award-status' style="margin:10px 0px"></p>
             </div>
             <!-- <p></p> -->
             <div class="demo-controls">
-              <div id="div-show-milestone-info" class="pathtable" style="display:none;width:70%">
+              <div id="div-show-milestone-info-no-existing" class="pathtable" style="display:none;width:100%">
                 <!-- <form method="post" style="width:100%"> -->
-                  <h5> Import your Data Deliverables document: </h5>
+                  <h5> <span id="import-or-replace">Import your </span> Data Deliverables document: </h5>
                   <h5></h5>
                   <div class="container-milestone-upload" style="display:flex;">
                     <!-- <button type="button" style="width:40%;float:left" class="button-milestone-upload">Select a file</button> -->
-                    <input class="milestone-upload-text" id="input-milestone-select" style="width:60%;text-align:center" type="text" readonly placeholder="Select a file">
-                    <button type="button" style="width:20%" class="button-milestone-upload"><b>Upload</b></button>
+                    <input class="milestone-upload-text" id="input-milestone-select" style="width:40%;text-align:center" type="text" readonly placeholder="Select a file">
+                    <button id="button-import-milestone" type="button" style="width:20%" class="button-milestone-upload"><b>Upload</b></button>
                     <p id="para-milestone-document-info" style="float:right;margin-top:0;margin-left:7px;text-align:center;vertical-align:middle;"></p>
                   </div>
                 <!-- </form> -->
+              </div>
+            </div>
+              <br>
+              <div id="div-show-current-milestones" style="display:none;width:100%">
+                <h5>Current Milestone Information: </h5>
+                <h5></h5>
+                <p style="display:none" id="para-current-milestones"></p>
+                <table id="table-current-milestones">
+                  <tr>
+                    <th style="width:70%">Milestones</th>
+                    <th style="width:30%">Completion Date</th>
+                 </tr>
+                </table>
               </div>
 
                <!-- <div id="div-show-milestone-info" class="pathtable" style="display:none;width:90%;border-radius:5px;margin:0 auto">
