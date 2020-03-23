@@ -15,7 +15,6 @@ const log  = require("electron-log");
 var Airtable = require('airtable');
 require('v8-compile-cache');
 var Tagify = require('@yaireo/tagify');
-const docx = require("docx");
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -371,19 +370,37 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
 //////////////// //////////////// //////////////// //////////////// ////////////////
 
 ////////////////////////Import Milestone Info//////////////////////////////////
-const docDocx = new Document()
 
-// Action when user click on "Import" button //
-// importMilestoneDocBtn.addEventListener('click', (event) => {
-//   ipcRenderer.send('open-file-dialog-milestone-doc')
-//   // clearStrings()
-// })
-// ipcRenderer.on('selected-milestonedoc', (event, path) => {
-//   if (path.length > 0) {
-//
-//   }
-// })
 
+function selectFileMilestone() {
+  ipcRenderer.send('open-file-dialog-milestone-doc')
+}
+ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null){
+        var award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+        client.invoke("api_extract_milestone_info", filepath[0], (error, res) => {
+        if(error) {
+          var emessage = userError(error)
+          console.error(error)
+          document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+        }
+        else {
+          milestoneObj = res;
+          createMetadataDir();
+          var informationJson = {};
+          informationJson = parseJson(milestonePath);
+          informationJson[award] = milestoneObj;
+          fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
+          document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: black ;'>" + "Imported!</span>"
+        }
+      })
+  }
+ }
+})
+document.getElementById("input-milestone-select").onclick = selectFileMilestone;
+
+/////// Save and load award and milestone info
 
 var metadataPath = path.join(homeDirectory,"SODA", "METADATA");
 var awardFileName = "awards.json";
@@ -461,7 +478,6 @@ function getRowIndex(table) {
   return rowIndex
 }
 
-
 // Save grant information
 addAwardBtn.addEventListener('click', function() {
   var opt = awardArray.options[awardArray.selectedIndex].text;
@@ -483,7 +499,6 @@ addAwardBtn.addEventListener('click', function() {
 })
 
 /////// Delete an Award///////////
-// function to delete a selected value in a dropdown
 function getOptionByValue (dropdown, value) {
     // var options = dropdown.options;
     for (var i = 0; i < dropdown.length; i++) {
@@ -581,34 +596,6 @@ ipcRenderer.on('warning-delete-award-selection', (event, index) => {
 //   document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: black;'>Saved!</span>"
 // });
 
-function selectFileMilestone() {
-  ipcRenderer.send('open-file-dialog-milestone-doc')
-}
-ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null){
-        var award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-        client.invoke("api_extract_milestone_info", filepath[0], (error, res) => {
-        if(error) {
-          var emessage = userError(error)
-          console.error(error)
-          document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
-        }
-        else {
-          milestoneObj = res;
-          createMetadataDir();
-          var informationJson = {};
-          informationJson = parseJson(milestonePath);
-          informationJson[award] = milestoneObj;
-          fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-          document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: black ;'>" + "Imported and saved!" + smileyCan + "</span>"
-        }
-      })
-  }
- }
-})
-document.getElementById("input-milestone-select").onclick = selectFileMilestone;
-
 ///// Construct table from data
 table_airtable.select({
     view: 'Grid view'
@@ -632,8 +619,8 @@ function done(err) {
       console.error(err); return;
     }
 });
-//////////////// //////////////// //////////////// ////////////////
-//////////////// Submission file //////////////// ////////////////
+///////////////// //////////////// //////////////// ////////////////
+///////////////////////Submission file //////////////// ////////////////
 
 /////// Populate Submission file fields from presaved information
 presavedAwardArray2.addEventListener('change', function() {
@@ -644,24 +631,26 @@ presavedAwardArray2.addEventListener('change', function() {
   var informationJson = parseJson(milestonePath);
   var milestoneInput = document.getElementById("selected-milestone");
   var dateInput = document.getElementById("selected-milestone-date");
-  // var options = '';
   if (award in informationJson) {
     var milestoneObj = informationJson[award];
     // Load milestone values once users choose an award number
     // console.log(milestoneObj)
     var keys = Object.keys(milestoneObj);
-    console.log(keys)
     for (var i=0;i<keys.length;i++) {
       addOption(document.getElementById('selected-milestone'), keys[i], keys[i]);
     }
-    // document.getElementById('submission-milestone-list').innerHTML = options;
     // populate date field based on milestone selected
     milestoneInput.addEventListener('input', function() {
       var keys = Object.keys(milestoneObj);
       for (var i=0;i<keys.length; i++) {
         if (keys[i] === milestoneInput.value) {
-          console.log(milestoneObj[keys[i]])
-          dateInput.value = milestoneObj[keys[i]]
+          //// stringify date object
+          var dateStrings = milestoneObj[keys[i]].toString()
+          /// Strip linebreaks out of date strings if applicable
+          var newDate = dateStrings.replace(/(\r\n|\n|\r)/gm,"");
+          //// convert mm/yyyy to HTML allowed format yyyy-mm
+          var returnDate = newDate.split("/").reverse().join("-");
+          dateInput.value = returnDate
         }
       }
       })

@@ -360,8 +360,8 @@ def save_submission_file(filepath, json_str):
     # write to excel file
     wb = load_workbook(destination)
     ws1 = wb['Sheet1']
-    date_obj = datetime.strptime(val_arr[2], "%Y-%m-%d")
-    date_new = date_obj.strftime("%m-%d-%Y")
+    date_obj = datetime.strptime(val_arr[2], "%Y-%m")
+    date_new = date_obj.strftime("%m-%Y")
     ws1["C2"] = val_arr[0]
     ws1["C3"] = val_arr[1]
     ws1["C4"] = date_new
