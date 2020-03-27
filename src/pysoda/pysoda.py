@@ -344,11 +344,14 @@ def import_milestone(filepath):
     return data
 
 def extract_milestone_info(datalist):
+    milestone_arr = []
     milestone_info = {}
     for i in range(len(datalist)):
-        if datalist[i]["Related milestone, aim, or task"] not in milestone_info.keys():
-            milestone_info[datalist[i]["Related milestone, aim, or task"]] = datalist[i]["Expected date of completion"]
-    return milestone_info
+        milestone_info = {"Milestone": datalist[i]["Related milestone, aim, or task"],
+                          "Description": datalist[i]["Description of data"],
+                          "Date": datalist[i]["Expected date of completion"]}
+        milestone_arr.append(milestone_info)
+    return milestone_arr
 
 ### Prepare submission file
 def save_submission_file(filepath, json_str):
@@ -422,9 +425,9 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
         ws1[column + "15"] = link["description"]
 
     ## completeness, parent dataset ID, title Respectively
-    ws1["D18"] = val_arr_optional[0]
-    ws1["D19"] = val_arr_optional[1]
-    ws1["D20"] = val_arr_optional[2]
+    ws1["D18"] = val_arr_optional["completeness"]
+    ws1["D19"] = val_arr_optional["parentDS"]
+    ws1["D20"] = val_arr_optional["completeDSTitle"]
 
     wb.save(destination)
 

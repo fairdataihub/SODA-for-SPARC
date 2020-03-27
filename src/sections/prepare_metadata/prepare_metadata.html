@@ -25,11 +25,9 @@
         <div class="demo-box">
           <div class="div-list-metadata">
                 <h5></h5>
-                <div>
-                  <button id="a-submission" class="download-metadata">submission.xlsx
-                    <img class="download-image" src="assets/img/download-white.png"></img>
-                  </button>
-                </div>
+                <button id="a-submission" class="download-metadata">submission.xlsx
+                  <img class="download-image" src="assets/img/download-white.png"></img>
+                </button>
                 <h5></h5>
                 <button id="a-description" href="#" class="download-metadata">dataset_description.xlsx
                   <img class="download-image" src="assets/img/download-white.png"></img>
@@ -115,8 +113,9 @@
                 <p style="display:none" id="para-current-milestones"></p>
                 <table id="table-current-milestones">
                   <tr>
-                    <th style="width:70%">Milestones</th>
-                    <th style="width:30%">Completion Date</th>
+                    <th style="width:40%">Milestones</th>
+                    <th style="width:40%">Description of data</th>
+                    <th style="width:20%">Completion Date</th>
                  </tr>
                 </table>
               </div>
@@ -180,6 +179,17 @@
           </div>
           <div class="demo-controls">
             <select id="selected-milestone" class="form-container-input-bf">
+              <option value="Select">Select an option</option>
+            </select>
+          </div>
+          <div class="form-container-ds"><font color="black"> Description of Data: </font> </div>
+          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+            <span class="tooltiptext" style="width: 250px;">
+              Description of data
+            </span>
+          </div>
+          <div class="demo-controls">
+            <select id="selected-description-data" class="form-container-input-bf">
               <option value="Select">Select an option</option>
             </select>
           </div>
