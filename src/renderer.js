@@ -396,7 +396,6 @@ ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
           fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
           document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: black ;'>" + "Imported!</span>"
 
-
           //// after saving data to json file, load the table right after.
           /// clear old table before loading new entries
           while (milestoneArray.rows.length>1) {
@@ -404,6 +403,8 @@ ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
           };
           if (award in informationJson) {
             document.getElementById("para-current-milestones").style.display = "none";
+            /// check how many data description rows there are for each milestone (to set number of rowspans)
+
             var rowIndex = 1;
             for (var i=0;i<milestoneObj.length;i++){
               var milestone = milestoneObj[i]["Milestone"];
@@ -422,38 +423,6 @@ ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
     }
   }
 })
-  //
-  //
-  //         if (award in informationJson) {
-  //           document.getElementById("para-current-milestones").style.display = "none";
-  //           // document.getElementById("import-or-replace").innerHTML = "Replace existing";
-  //           // document.getElementById("div-show-current-milestones").style.display = "block";
-  //           var milestoneObj = informationJson[award];
-  //           // start at 1 to skip the header
-  //           var rowIndex = 1;
-  //           var keys = Object.keys(milestoneObj);
-  //           for (var i=0;i<keys.length;i++) {
-  //             var dateStrings = milestoneObj[keys[i]].toString()
-  //             /// Strip linebreaks out of date strings if applicable
-  //             var newDate = dateStrings.replace(/(\r\n|\n|\r)/gm,"");
-  //             //// convert mm/yyyy to HTML allowed format yyyy-mm
-  //             // var returnDate = newDate.split("/").reverse().join("-");
-  //             var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ keys[i]+"</td><td id='name-row-date"+rowIndex+"'>"+ newDate +"</td></tr>"
-  //             rowIndex++;
-  //             }
-  //           document.getElementById("table-current-milestones").style.display = "block";
-  //           return milestoneArray
-  //         }
-  //       }
-  //       });
-  //     })
-  //     }
-  //   }
-  // })
-
-//  }
-// })
-// document.getElementById("input-milestone-select").onclick = selectFileMilestone;
 
 /////// Save and load award and milestone info
 
@@ -603,21 +572,6 @@ ipcRenderer.on('warning-delete-award-selection', (event, index) => {
   }
 })
 
-// addNewMilestoneBtn.addEventListener("click", function() {
-//   document.getElementById("para-save-milestone-status").innerHTML = "";
-//   milestoneVal = document.getElementById("input-milestone-new").value;
-//   dateVal = document.getElementById("input-date-new").value;
-//   if (milestoneVal===''||dateVal==='') {
-//     document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: red;'>Please fill in both fields to add!</span>"
-//   }
-//   else {
-//     rowIndex = getRowIndex(milestoneArray);
-//     var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneVal +"</td><td id='name-row-date"+rowIndex+"'>"+ dateVal+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
-//     document.getElementById("input-milestone-new").value = "";
-//     document.getElementById("input-date-new").value = "";
-//   }
-// })
-
 ///// Load Milestone info
 presavedAwardArray1.addEventListener('change', function() {
   opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
@@ -641,36 +595,10 @@ presavedAwardArray1.addEventListener('change', function() {
       var dateStrings = milestoneObj[i]["Date"].toString()
       /// Strip linebreaks out of date strings if applicable
       var newDate = dateStrings.replace(/(\r\n|\n|\r)/gm,"");
-      //// convert mm/yyyy to HTML allowed format yyyy-mm
-      // var returnDate = newDate.split("/").reverse().join("-");
-      // var span = 1
-      // var previousRow;
-      // var previousRowIndex;
-      // if (i > 0 && milestone === milestoneObj[i-1]["Milestone"]) {
-      //   // modify previous row
-      //   previousRow = milestoneObj[i-1]["Milestone"]
-      //   previousRowIndex = rowIndex - 1;
-      //   previousRow.innerHTML += "<td id='name-row-milestone"+previousRowIndex+"'>"+ milestone +"</td><td id='name-row-description"+previousRowIndex+"'>"+ description +"</td><td id='name-row-date"+previousRowIndex+"'>"+ newDate +"</td>";
-      //   span += 1
-      // } else {
-        // add new row
       var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestone +"</td><td id='name-row-description"+rowIndex+"'>"+ description +"</td><td id='name-row-date"+rowIndex+"'>"+ newDate +"</td></tr>"
         // span = 1;
       rowIndex++;
       }
-    // var span = 1
-    // var wall = 1
-    // for (var index=0;index<milestoneArray.rows.length;index++) {
-    //   if (milestoneArray.rows[index].cells[0].innerHTML === milestoneArray.rows[index + 1].cells[0].innerHTML) {
-    //     // span multiple rows across a common first cell
-    //     span += 1
-    //   } else {
-    //     // start a new row
-    //     milestoneArray.rows[wall].cells[0].rowSpan = span
-    //     wall = index + 1
-    //     span = 1
-    //   }
-    // }
     return milestoneArray
   } else {
     document.getElementById("import-or-replace").innerHTML = "Import your"
@@ -680,27 +608,6 @@ presavedAwardArray1.addEventListener('change', function() {
     document.getElementById("para-current-milestones").innerHTML = "There is no existing milestone information. Please import your data deliverable document!";
   }
 });
-
-/////// Save Milestone Info to a JSON file
-// saveInformationBtn.addEventListener("click", function() {
-//   var opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-//   // make folder if folder does not exist
-//   createMetadataDir();
-//   // read existing milestone information and edit
-//   var informationJson = {};
-//   informationJson = parseJson(milestonePath);
-//   var rowcount = milestoneArray.rows.length;
-//   var milestoneInfo = [];
-//   for (i=1; i<rowcount-1; i++) {
-//     var myMilestone = {"milestone": document.getElementById("name-row-milestone"+i).innerHTML,
-//                         "date": document.getElementById("name-row-date"+i).innerHTML};
-//     milestoneInfo.push(myMilestone);
-//   };
-//
-//   informationJson[opt] = milestoneInfo;
-//   fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-//   document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: black;'>Saved!</span>"
-// });
 
 ///// Construct table from data
 table_airtable.select({
@@ -732,6 +639,11 @@ function done(err) {
 presavedAwardArray2.addEventListener('change', function() {
   document.getElementById("selected-milestone").value = "";
   document.getElementById("selected-milestone-date").value = "";
+  document.getElementById("selected-description-data").value = "";
+  removeOptions(document.getElementById("selected-milestone"))
+  removeOptions(document.getElementById("selected-description-data"))
+  addOption(document.getElementById('selected-milestone'), "Select an option", "Select")
+  addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
   // document.getElementById('submission-milestone-list').innerHTML = "";
   award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
   var informationJson = parseJson(milestonePath);
@@ -741,35 +653,41 @@ presavedAwardArray2.addEventListener('change', function() {
   if (award in informationJson) {
     var milestoneObj = informationJson[award];
     // Load milestone values once users choose an award number
-    // console.log(milestoneObj)
-    for (var i=0;i<milestoneObj.length;i++) {
-      addOption(document.getElementById('selected-milestone'), milestoneObj[i]["Milestone"], milestoneObj[i]["Milestone"]);
+    var milestoneKey = Object.keys(milestoneObj)
+    for (var i=0;i<milestoneKey.length;i++) {
+      addOption(document.getElementById('selected-milestone'), milestoneKey[i], milestoneKey[i]);
     }
-    // milestoneSet = new document.getElementById('selected-milestone').options
     // populate description field based on milestone selected
     milestoneInput.addEventListener('input', function() {
-      for (var i=0;i<milestoneObj.length; i++) {
-        if (milestoneObj[i]["Milestone"] === milestoneInput.value) {
+    removeOptions(descriptionInput);
+    addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
+      for (var i=0;i<milestoneKey.length; i++) {
+        if (milestoneKey[i] === milestoneInput.value) {
           //// Add description data to dropdowns
-          addOption(descriptionInput, milestoneObj[i]["Description"], milestoneObj[i]["Description"])
+          for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
+            addOption(descriptionInput, milestoneObj[milestoneKey[i]][j]["Description of data"], milestoneObj[milestoneKey[i]][j]["Description of data"])
+          }
         }
       }
     });
     //// populate date field
     descriptionInput.addEventListener('input', function() {
-      for (var i=0;i<milestoneObj.length; i++) {
-        if (milestoneObj[i]["Description"] === descriptionInput.value) {
-          //// stringify date object
-          var dateStrings = milestoneObj[i]["Date"].toString()
-          /// Strip linebreaks out of date strings if applicable
-          var newDate = dateStrings.replace(/(\r\n|\n|\r)/gm,"");
-          //// convert mm/yyyy to HTML allowed format yyyy-mm
-          var returnDate = newDate.split("/").reverse().join("-");
-          dateInput.value = returnDate
+      document.getElementById("selected-milestone-date").value = "";
+      for (var i=0;i<milestoneKey.length; i++) {
+        for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
+          if (milestoneObj[milestoneKey[i]][j]["Description of data"] === descriptionInput.value) {
+            //// stringify date object
+            var dateStrings = milestoneObj[milestoneKey[i]][j]["Expected date of completion"].toString()
+            // /// Strip linebreaks out of date strings if applicable
+            // var newDate = dateStrings.replace(/(\r\n|\n|\r)/gm,"");
+            // //// convert mm/yyyy to HTML allowed format yyyy-mm
+            // var returnDate = newDate.split("/").reverse().join("-");
+            dateInput.value = dateStrings
         }
       }
-    })
-  }
+    }
+  })
+}
 })
 
 /// Generate submission file

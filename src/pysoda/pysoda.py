@@ -15,7 +15,7 @@ from shutil import copy2
 from configparser import ConfigParser
 # import threading
 import numpy as np
-import collections
+from collections import defaultdict
 import subprocess
 from websocket import create_connection
 import socket
@@ -344,14 +344,13 @@ def import_milestone(filepath):
     return data
 
 def extract_milestone_info(datalist):
-    milestone_arr = []
-    milestone_info = {}
-    for i in range(len(datalist)):
-        milestone_info = {"Milestone": datalist[i]["Related milestone, aim, or task"],
-                          "Description": datalist[i]["Description of data"],
-                          "Date": datalist[i]["Expected date of completion"]}
-        milestone_arr.append(milestone_info)
-    return milestone_arr
+    milestone = defaultdict(list)
+    milestone_key = "Related milestone, aim, or task"
+    other_keys = ["Description of data", "Expected date of completion"]
+    for row in datalist:
+        key = row[milestone_key]
+        milestone[key].append({key: row[key] for key in other_keys})
+    return milestone
 
 ### Prepare submission file
 def save_submission_file(filepath, json_str):
@@ -363,11 +362,11 @@ def save_submission_file(filepath, json_str):
     # write to excel file
     wb = load_workbook(destination)
     ws1 = wb['Sheet1']
-    date_obj = datetime.strptime(val_arr[2], "%Y-%m")
-    date_new = date_obj.strftime("%m-%Y")
+    # date_obj = datetime.strptime(val_arr[2], "%Y-%m")
+    # date_new = date_obj.strftime("%m-%Y")
     ws1["C2"] = val_arr[0]
     ws1["C3"] = val_arr[1]
-    ws1["C4"] = date_new
+    ws1["C4"] = val_arr[2]
 
     wb.save(destination)
 
