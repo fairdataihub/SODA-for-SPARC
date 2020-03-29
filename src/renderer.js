@@ -406,15 +406,22 @@ ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
             /// check how many data description rows there are for each milestone (to set number of rowspans)
 
             var rowIndex = 1;
-            for (var i=0;i<milestoneObj.length;i++){
-              var milestone = milestoneObj[i]["Milestone"];
-              var description = milestoneObj[i]["Description"];
-              var dateStrings = milestoneObj[i]["Date"].toString()
-              var newDate = dateStrings.replace(/(\r\n|\n|\r)/gm,"");
-              var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ keys[i]+"</td><td id='name-row-date"+rowIndex+"'>"+ newDate +"</td></tr>"
+            var milestoneKey = Object.keys(milestoneObj)
+            for (var i=0;i<milestoneKey.length;i++){
+              var milestone = milestoneObj[milestoneKey[i]];
+              // var span = milestoneObj[milestoneKey[i]].length
+              for (var j=0;j<milestone.length;j++) {
+                var description = milestone[j]["Description of data"]
+                var date = milestone[j]["Expected date of completion"]
+                var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneKey[i] +"</td><td id='name-row-description"+rowIndex+"'>"+ description +"</td><td id='name-row-date"+rowIndex+"'>"+ date +"</td></tr>"
+              }
               rowIndex++;
-          }
+            }
           document.getElementById("table-current-milestones").style.display = "block";
+          document.getElementById("presaved-award-list").value = "Select"
+          removeOptions(document.getElementById("selected-milestone"));
+          removeOptions(document.getElementById("selected-description-data"));
+          document.getElementById("selected-milestone-date").value = ""
           return milestoneArray
         }
       }
@@ -574,6 +581,8 @@ ipcRenderer.on('warning-delete-award-selection', (event, index) => {
 
 ///// Load Milestone info
 presavedAwardArray1.addEventListener('change', function() {
+  document.getElementById("para-milestone-document-info").innerHTML = ""
+  document.getElementById("input-milestone-select").placeholder = "Select a file"
   opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
   /// clear old table before loading new entries
   while (milestoneArray.rows.length>1) {
@@ -589,14 +598,16 @@ presavedAwardArray1.addEventListener('change', function() {
     var milestoneObj = informationJson[opt];
     // start at 1 to skip the header
     var rowIndex = 1;
-    for (var i=0;i<milestoneObj.length;i++){
-      var milestone = milestoneObj[i]["Milestone"];
-      var description = milestoneObj[i]["Description"];
-      var dateStrings = milestoneObj[i]["Date"].toString()
-      /// Strip linebreaks out of date strings if applicable
-      var newDate = dateStrings.replace(/(\r\n|\n|\r)/gm,"");
-      var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestone +"</td><td id='name-row-description"+rowIndex+"'>"+ description +"</td><td id='name-row-date"+rowIndex+"'>"+ newDate +"</td></tr>"
-        // span = 1;
+    var milestoneKey = Object.keys(milestoneObj)
+    for (var i=0;i<milestoneKey.length;i++){
+      var milestone = milestoneObj[milestoneKey[i]];
+      // var span = milestoneObj[milestoneKey[i]].length
+      for (var j=0;j<milestone.length;j++) {
+        // console.log(milestoneObj[milestoneKey[i]])
+        var description = milestone[j]["Description of data"]
+        var date = milestone[j]["Expected date of completion"]
+        var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneKey[i] +"</td><td id='name-row-description"+rowIndex+"'>"+ description +"</td><td id='name-row-date"+rowIndex+"'>"+ date +"</td></tr>"
+      }
       rowIndex++;
       }
     return milestoneArray
@@ -660,6 +671,7 @@ presavedAwardArray2.addEventListener('change', function() {
     // populate description field based on milestone selected
     milestoneInput.addEventListener('input', function() {
     removeOptions(descriptionInput);
+    document.getElementById("selected-milestone-date").value = "";
     addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
       for (var i=0;i<milestoneKey.length; i++) {
         if (milestoneKey[i] === milestoneInput.value) {

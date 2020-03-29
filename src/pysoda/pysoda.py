@@ -28,7 +28,6 @@ from blackfynn.api.agent import agent_cmd
 from blackfynn.api.agent import AgentError, check_port, socket_address
 from urllib.request import urlopen
 import json
-from datetime import datetime
 
 from openpyxl import load_workbook
 from openpyxl import Workbook
