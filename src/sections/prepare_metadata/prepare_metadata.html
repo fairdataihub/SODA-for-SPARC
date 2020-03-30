@@ -69,7 +69,7 @@
           <div id="div-add-new-grant" class="datasetsaveoption" style="display:block;margin-top:70px;margin-left:10px">
             <h5> Add a new grant number: </h5>
             <div class="demo-controls">
-              <select id="select-grant-info-list" class="my-dropdown-metadata" style="width:90%;float:left;padding:6px 8px;margin-top:15px">
+              <select id="select-grant-info-list" class="my-dropdown-metadata" style="width:90%;float:left;height:35px;line-height:2;padding:6px 8px;margin-top:15px">
                 <option>Select</option>
               </select>
               <button id="button-add-award" class="demo-button" style="height:35px;width:150px;padding:0 0;margin-left:10px;margin-top:15px">Add</button>
@@ -82,7 +82,7 @@
           <div id="div-select-existing-grant" class="datasetsaveoption" style="display:none;margin-top:70px;margin-left:10px">
             <h5> Specify a grant number: </h5>
             <div class="demo-controls" style="margin-top:20px">
-              <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:100%; padding: 6px 8px; font-size:14px">
+              <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:100%; height:35px;line-height:2;padding: 6px 8px; font-size:14px">
                 <option>Select</option>
               </select>
               <br>
@@ -120,29 +120,6 @@
                 </table>
               </div>
 
-               <!-- <div id="div-show-milestone-info" class="pathtable" style="display:none;width:90%;border-radius:5px;margin:0 auto">
-                 <h5 align="center"> Add/Edit milestone information: </h5>
-                 <h5></h5>
-               <table id="table-milestones">
-                 <tr>
-                   <th style="width:50%">Milestone</th>
-                   <th style="width:35%">Completion Date</th>
-                   <th style="width:15%"></th>
-                </tr>
-                <tr id="default-milestone-row">
-                   <td><input id="input-milestone-new" class="form-container-input" placeholder="Add a milestone..." style="text-align:center"/></td>
-                   <td><input id="input-date-new" type="date" name="date" style="text-align:center;font:inherit" class="form-container-input"/></td>
-                   <td><input id="button-default-save-milestone" type='button' value='Save' class="demo-button-table milestone" style="font-size:13px">
-                   <input id="button-delete-milestone" type='button' value='Delete' class='demo-button-table milestone' style="display:none;float:left;font-size:13px"></td>
-                </tr>
-               </table>
-               <h5></h5>
-               <div align="right">
-                 <button class="demo-button" style="margin-right:0;width:160px;float:right" id="button-save-milestone"> Save Information </button>
-                 <p id='para-save-milestone-status'style="float:right;padding-top:0;margin-bottom:0"></p>
-              </div>
-               </div>
-            <! </div> -->
           </div>
 
         </div>
@@ -178,7 +155,7 @@
             </span>
           </div>
           <div class="demo-controls">
-            <select id="selected-milestone" class="form-container-input-bf">
+            <select id="selected-milestone" class="form-container-input-bf" style="line-height: 2;height:28px">
               <option value="Select">Select an option</option>
             </select>
           </div>
@@ -189,7 +166,7 @@
             </span>
           </div>
           <div class="demo-controls">
-            <select id="selected-description-data" class="form-container-input-bf">
+            <select id="selected-description-data" class="form-container-input-bf"  style="line-height: 2;height:28px">
               <option value="Select">Select an option</option>
             </select>
           </div>
@@ -296,7 +273,7 @@
               </span>
             </div>
             <div class="demo-controls">
-            <select id="ds-description-award-list" class="form-container-input-bf">
+            <select id="ds-description-award-list" class="form-container-input-bf" style="line-height:2;height:28px">
               <option value="Select">Select an option</option>
             </select>
             </div>
@@ -319,7 +296,7 @@
               </span>
             </div>
             <div class="demo-controls">
-            <select id="ds-description-contributor-list" class="form-container-input-bf">
+            <select id="ds-description-contributor-list" class="form-container-input-bf" style="line-height: 2;height:28px">
               <option>Select an option</option>
             </select>
             </div>
@@ -451,30 +428,30 @@
             </div>
           </div>
           <div id="div-ds-optional-info" style="width:90%;margin: 0 auto" class="datasetsaveoption">
-            <br>
-            <div class="form-container-ds"><font color="black"> Completeness of dataset: </font> </div>
+            <br><br><br>
+            <div class="form-container-ds" style="width:230px"><font color="black"> Completeness of dataset: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px;">
                 Is the data set as uploaded complete or is it part of an ongoing study.  Use "hasNext" to indicate that you expect more data on different subjects as a continuation of this study. Use “hasChildren” to indicate that you expect more data on the same subjects or samples derived from those subjects.
               </span>
             </div>
             <div class="demo-controls">
-              <select id = "input-completeness" class="my-dropdown-metadata ds" style="border: 1px solid #C0C0C0;border-left: 2px solid #258193;">
+              <select id = "input-completeness" class="form-container-input-bf" style="border: 1px solid #C0C0C0;border-left: 2px solid #258193;height:28px;line-height:2;">
                 <option>Select an option</option>
                 <option>hasChild</option>
                 <option>hasNext</option>
               </select>
             </div>
-            <div class="form-container-ds"><font color="black"> Parent dataset ID: </font> </div>
+            <div class="form-container-ds" style="width:230px"><font color="black"> Parent dataset ID: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px;">
                 If this is a part of a larger data set, or refereces subjects or samples from a parent dataset, what was the accession number of the prior batch.  You need only give us the number of the last batch, not all batches. If samples and subjects are from multiple parent datasets please create a comma separated list of all parent ids.
               </span>
             </div>
             <div class="demo-controls">
-              <input id="input-parent-ds" class="form-container-input-bf" />
+              <input id="input-parent-ds" class="form-container-input-bf"  style="line-height: 2;height:28px"/>
             </div>
-            <div class="form-container-ds"><font color="black"> Title for complete dataset: </font> </div>
+            <div class="form-container-ds" style="width:230px"><font color="black"> Title for complete dataset: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px;">
                 Please give us a provisional title for the entire data set.
@@ -483,14 +460,14 @@
             <div class="demo-controls">
               <input id="input-completeds-title" class="form-container-input-bf" />
             </div>
-            <div class="form-container-ds"><font color="black"> Metadata Version: </font> </div>
+            <div class="form-container-ds" style="width:230px"><font color="black"> Metadata Version: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px;">
                 DO NOT CHANGE: 1.2.3
               </span>
             </div>
             <div class="demo-controls">
-              <input id="input-metadata-ver" value="1.2.3" disabled class="form-container-input-bf"/>
+              <input id="input-metadata-ver" value="1.2.3" disabled class="form-container-input-bf"  style="line-height: 2;height:28px"/>
             </div>
             <br>
             <div>
