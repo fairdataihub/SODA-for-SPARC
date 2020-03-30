@@ -7,12 +7,21 @@ from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_o
     bf_submit_dataset, bf_new_dataset_folder, bf_add_permission, bf_get_users, bf_get_permission, \
     bf_get_teams, bf_add_permission_team, bf_add_subtitle, bf_get_subtitle, bf_get_description, \
     bf_add_description, bf_get_banner_image, bf_add_banner_image, bf_get_license, bf_add_license, \
-    bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load
+    bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load, save_submission_file, \
+    save_ds_description_file
 
 import sys
 import zerorpc
 
 class SodaApi(object):
+
+    ### Save Submission file
+    def api_save_submission_file(self, filepath, val_arr):
+        return save_submission_file(filepath, val_arr)
+
+    ### Save Description file
+    def api_save_ds_description_file(self, filepath, val_arr1, val_arr2, val_arr3, val_arr4):
+        return save_ds_description_file(filepath, val_arr1, val_arr2, val_arr3, val_arr4)
 
     ### Curate dataset
     def api_save_file_organization(self, jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization):

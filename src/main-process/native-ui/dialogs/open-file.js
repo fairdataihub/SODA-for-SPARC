@@ -240,7 +240,7 @@ ipcMain.on('open-file-dialog-submit-dataset', (event) => {
     }
   })
 })
- 
+
 // Blackfynn metadata
 ipcMain.on('open-file-dialog-import-banner-image', (event) => {
   dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
@@ -262,6 +262,28 @@ ipcMain.on('open-folder-dialog-save-metadata', (event, filename) => {
   }, (files) => {
     if (files) {
       event.sender.send('selected-metadata-download-folder', files, filename);
+    }
+  })
+})
+
+// Metadata submission download
+ipcMain.on('open-folder-dialog-save-submission', (event, filename) => {
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ['openDirectory']
+  }, (files) => {
+    if (files) {
+      event.sender.send('selected-metadata-submission', files, filename);
+    }
+  })
+})
+
+// Metadata ds description download
+ipcMain.on('open-folder-dialog-save-ds-description', (event, filename) => {
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ['openDirectory']
+  }, (files) => {
+    if (files) {
+      event.sender.send('selected-metadata-ds-description', files, filename);
     }
   })
 })

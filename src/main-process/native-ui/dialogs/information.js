@@ -1,5 +1,17 @@
 const {ipcMain, dialog, BrowserWindow} = require('electron')
 
+ipcMain.on('warning-delete-award', (event) => {
+  const options = {
+    type: 'info',
+    title: 'Warning',
+    message: "This will delete all presaved information regarding the award number, are you sure you want to continue?",
+    buttons: ['Yes', 'No']
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('warning-delete-award-selection', index)
+  })
+})
+
 ipcMain.on('warning-clear-table', (event) => {
   const options = {
     type: 'info',
@@ -62,7 +74,7 @@ ipcMain.on('open-error-file-exist', (event, emessage) => {
   const options = {
     type: 'error',
     title: 'Duplicate file(s) / folder(s)',
-    message: emessage, 
+    message: emessage,
   }
   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
     event.sender.send('error-file-exist-shown')
@@ -73,7 +85,7 @@ ipcMain.on('open-error-folder-selected', (event, emessage) => {
   const options = {
     type: 'error',
     title: 'Folder(s) not allowed',
-    message: emessage, 
+    message: emessage,
   }
   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
     event.sender.send('error-folder-selected-shown')
@@ -84,7 +96,7 @@ ipcMain.on('open-error-wrong-file', (event, emessage) => {
   const options = {
     type: 'error',
     title: 'Non-SPARC metadata file selected',
-    message: emessage, 
+    message: emessage,
   }
   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
     event.sender.send('error-folder-selected-shown')
@@ -95,7 +107,7 @@ ipcMain.on('open-error-metadata-file-exits', (event, emessage) => {
   const options = {
     type: 'error',
     title: 'Metadata file already exists',
-    message: emessage, 
+    message: emessage,
   }
   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
     event.sender.send('error-metadata-file-exists-shown')

@@ -12,7 +12,9 @@ const remote = require('electron').remote;
 const app = remote.app;
 const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
-require('v8-compile-cache')
+var Airtable = require('airtable');
+require('v8-compile-cache');
+var Tagify = require('@yaireo/tagify');
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -93,8 +95,16 @@ function checkNewAppVersion() {
     })
 }
 
+/////// Load SPARC airtable data
+Airtable.configure({
+    endpointUrl: 'https://api.airtable.com',
+    apiKey: 'keyCDx02PhX2XnwEC'
+});
+var base = Airtable.base('appiYd1Tz9Sv857GZ');
+const table_airtable = base('sparc_members')
+
 //////////////////////////////////
-// Get html elements from UI 
+// Get html elements from UI
 //////////////////////////////////
 
 // Navigator button //
@@ -108,8 +118,31 @@ const downloadSamples = document.getElementById("a-samples")
 const downloadSubjects = document.getElementById("a-subjects")
 const downloadDescription = document.getElementById("a-description")
 const downloadManifest = document.getElementById("a-manifest")
-const homedir = os.homedir()
-const userDownloadFolder = path.join(homedir, "Downloads")
+
+// Save grant information
+const milestoneArray = document.getElementById("table-milestones")
+const awardArray = document.getElementById("select-grant-info-list")
+const presavedAwardArray1 = document.getElementById("select-presaved-grant-info-list")
+const addAwardBtn = document.getElementById("button-add-award")
+const deleteMilestoneBtn = document.getElementById("button-delete-milestone")
+const editMilestoneBtn = document.getElementById("button-edit-milestone")
+const addMilestoneBtn = document.getElementById("button-add-milestone")
+const deleteAwardBtn = document.getElementById("button-delete-award")
+const addNewMilestoneBtn = document.getElementById("button-default-save-milestone")
+const saveInformationBtn = document.getElementById("button-save-milestone")
+
+// Prepare Submission File
+const presavedAwardArray2 = document.getElementById("presaved-award-list")
+const generateSubmissionBtn = document.getElementById("generate-submission")
+
+// Prepare Dataset Description File
+const dsAwardArray = document.getElementById("ds-description-award-list")
+const dsContributorArray = document.getElementById("ds-description-contributor-list")
+const addCurrentContributorsBtn = document.getElementById("button-ds-add-contributor")
+const contactPerson = document.getElementById("ds-contact-person")
+const currentConTable = document.getElementById("table-current-contributors")
+const generateDSBtn = document.getElementById("button-generate-ds-description")
+const addAdditionalLinkBtn = document.getElementById("button-ds-add-link")
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -291,7 +324,10 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
   }
 })
 
-// Download Metadata Templates //
+///////////////////// Prepare Metadata Section ////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+/////////////////////// Download Metadata Templates ////////////////////////////
 templateArray = ["submission.xlsx", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx", "manifest.xlsx"]
 function downloadTemplates(templateItem, destinationFolder) {
   var templatePath = path.join(__dirname, "file_templates", templateItem)
@@ -305,6 +341,7 @@ function downloadTemplates(templateItem, destinationFolder) {
     ipcRenderer.send('open-info-metadata-file-donwloaded', emessage)
   }
 }
+
 downloadSubmission.addEventListener('click', (event) => {
   ipcRenderer.send('open-folder-dialog-save-metadata', templateArray[0])
 });
@@ -326,12 +363,604 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
   }
 })
 
+//////////////// Provide Grant Information section /////////////////////////////////
+//////////////// //////////////// //////////////// //////////////// ////////////////
+
+var metadataPath = path.join(homeDirectory,"SODA", "METADATA");
+var awardFileName = "awards.json";
+var milestoneFileName = "milestones.json";
+var awardPath = path.join(metadataPath, awardFileName);
+var milestonePath = path.join(metadataPath, milestoneFileName);
+
+awardArray.addEventListener('change', function() {
+  document.getElementById("para-save-award-info").innerHTML = "";
+})
+
+presavedAwardArray1.addEventListener('change', function() {
+  document.getElementById("div-show-milestone-info").style.display = "block";
+  document.getElementById("para-save-milestone-status").innerHTML = "";
+  document.getElementById("para-delete-award-status").innerHTML = ""
+})
+
+// function to load and parse json file
+function parseJson(path) {
+  if (!fs.existsSync(path)) {
+    return {}
+  }
+  try {
+    var content = fs.readFileSync(path);
+    contentJson = JSON.parse(content);
+    return contentJson
+  } catch (error) {
+    console.log(error);
+    return {}
+  }
+}
+
+// function to make directory if metadata path does not exist
+function createMetadataDir() {
+  try {
+  fs.mkdirSync(metadataPath, { recursive: true } );
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// Function to add options to dropdown list
+var addOption = function(selectbox, text, value) {
+    var opt = document.createElement("OPTION");
+    opt.text = text;
+    opt.value = value;
+    selectbox.options.add(opt);
+}
+
+// Function to auto load existing awards
+function loadAwards() {
+  var rawData = fs.readFile(awardPath, "utf8", function(error, contents) {
+    if (!fs.existsSync(awardPath)) {
+      return {}
+    }
+    if (error) {
+      console.log(error)
+    } else {
+      var awards = JSON.parse(contents);
+      for (var key in awards) {
+        // Add options to dropdown lists
+        addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
+        addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
+        addOption(dsAwardArray, eval(JSON.stringify(awards[key])), key);
+      }
+    }
+  })
+}
+loadAwards()
+
+/// function to grab row index
+function getRowIndex(table) {
+  var rowcount = table.rows.length;
+  if (rowcount===2) {
+    // start at 1 to skip the header
+    var rowIndex = 1;
+  } else {
+    /// append row to table from the bottom
+    var rowIndex = rowcount-1;
+  }
+  return rowIndex
+}
+
+
+// Save grant information
+addAwardBtn.addEventListener('click', function() {
+  var opt = awardArray.options[awardArray.selectedIndex].text;
+  var awardNumber = awardArray.options[awardArray.selectedIndex].value;
+  // create empty milestone json files for newly added award
+  createMetadataDir();
+  var awardsJson = {};
+  awardsJson = parseJson(awardPath);
+  if (awardNumber in awardsJson) {
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Award already added!</span>";
+  } else {
+    awardsJson[awardNumber] = opt;
+    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
+    addOption(presavedAwardArray1, opt, awardNumber);
+    addOption(presavedAwardArray2, opt, awardNumber);
+    addOption(dsAwardArray, opt, awardNumber);
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Added!" + smileyCan + "</span>";
+  }
+})
+
+/////// Delete an Award///////////
+// function to delete a selected value in a dropdown
+function getOptionByValue (dropdown, value) {
+    // var options = dropdown.options;
+    for (var i = 0; i < dropdown.length; i++) {
+        if (dropdown.options[i].value === value) {
+            dropdown.remove(i)
+        }
+    }
+    return null
+}
+
+deleteAwardBtn.addEventListener('click', function() {
+  ipcRenderer.send('warning-delete-award')
+});
+ipcRenderer.on('warning-delete-award-selection', (event, index) => {
+  if (index === 0) {
+    award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+    if (award==="Select") {
+      document.getElementById("para-delete-award-status").innerHTML = "<span style='color: red;'>Please select an award number to delete</span>"
+    } else {
+      var milestoneJson = parseJson(milestonePath);
+      var awardsJson = parseJson(awardPath)
+      // check if award is in list
+      if (award in awardsJson) {
+        delete awardsJson[award];
+        }
+      // check if award is in list of milestones
+      if (award in milestoneJson) {
+        delete milestoneJson[award];
+      }
+      fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
+      presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
+      fs.writeFileSync(milestonePath, JSON.stringify(milestoneJson));
+      // delete award in the next two award arrays
+      getOptionByValue(presavedAwardArray2,award);
+      getOptionByValue(dsAwardArray,award);
+      document.getElementById("div-show-milestone-info").style.display = "none";
+      document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black;'> " + "Deleted award number: " + award + "!" + "</span>"
+    }
+  }
+})
+
+addNewMilestoneBtn.addEventListener("click", function() {
+  document.getElementById("para-save-milestone-status").innerHTML = "";
+  milestoneVal = document.getElementById("input-milestone-new").value;
+  dateVal = document.getElementById("input-date-new").value;
+  if (milestoneVal===''||dateVal==='') {
+    document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: red;'>Please fill in both fields to add!</span>"
+  }
+  else {
+    rowIndex = getRowIndex(milestoneArray);
+    var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneVal +"</td><td id='name-row-date"+rowIndex+"'>"+ dateVal+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
+    document.getElementById("input-milestone-new").value = "";
+    document.getElementById("input-date-new").value = "";
+  }
+})
+
+/////// Load Milestone info
+presavedAwardArray1.addEventListener('change', function() {
+  opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+  /// clear old table before loading new entries
+  while (milestoneArray.rows.length>2) {
+    milestoneArray.deleteRow(1)
+  };
+  var informationJson = parseJson(milestonePath);
+  if (opt in informationJson) {
+    var milestoneObj = informationJson[opt];
+    // start at 1 to skip the header
+    var rowIndex = 1;
+    for (var i=0;i<milestoneObj.length; i++) {
+      var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneObj[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ milestoneObj[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
+      rowIndex++;
+      }
+    }
+  return milestoneArray
+});
+
+/////// Save Milestone Info to a JSON file
+saveInformationBtn.addEventListener("click", function() {
+  var opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+  // make folder if folder does not exist
+  createMetadataDir();
+  // read existing milestone information and edit
+  var informationJson = {};
+  informationJson = parseJson(milestonePath);
+  var rowcount = milestoneArray.rows.length;
+  var milestoneInfo = [];
+  for (i=1; i<rowcount-1; i++) {
+    var myMilestone = {"milestone": document.getElementById("name-row-milestone"+i).innerHTML,
+                        "date": document.getElementById("name-row-date"+i).innerHTML};
+    milestoneInfo.push(myMilestone);
+  };
+
+  informationJson[opt] = milestoneInfo;
+  fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
+  document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: black;'>Saved!</span>"
+});
+
+///// Construct table from data
+table_airtable.select({
+    view: 'Grid view'
+}).eachPage(function page(records, fetchNextPage) {
+    var awardResultArray = [];
+    records.forEach(function(record) {
+      item = record.get('SPARC_Award_#').concat(" (", record.get('Project_title'), ")");
+      awardResultArray.push(item);
+    }),
+  fetchNextPage();
+  // create set to remove duplicates
+  awardSet = [...new Set(awardResultArray)];
+  for (var i = 0; i < awardSet.length; i++) {
+      var opt = awardSet[i];
+      var value = awardSet[i].slice(0,awardSet[i].indexOf(" ("))
+      addOption(awardArray, opt, value)
+  };
+},
+function done(err) {
+    if (err) {
+      console.error(err); return;
+    }
+});
+//////////////// //////////////// //////////////// ////////////////
+//////////////////////Submission file //////////////// ////////////////
+
+/////// Populate Submission file fields from presaved information
+presavedAwardArray2.addEventListener('change', function() {
+  document.getElementById("selected-milestone").value = "";
+  document.getElementById("selected-milestone-date").value = "";
+  document.getElementById('submission-milestone-list').innerHTML = "";
+  award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
+  var informationJson = parseJson(milestonePath);
+  var milestoneInput = document.getElementById("selected-milestone");
+  var dateInput = document.getElementById("selected-milestone-date");
+  var options = '';
+  if (award in informationJson) {
+    var milestoneObj = informationJson[award];
+    // Load milestone values once users choose an award number
+    for (var i=0;i<milestoneObj.length; i++) {
+      options += '<option value="'+ milestoneObj[i]["milestone"]+'" />';
+    };
+    document.getElementById('submission-milestone-list').innerHTML = options;
+    // populate date field based on milestone selected
+    milestoneInput.addEventListener('input', function() {
+      for (var i=0;i<milestoneObj.length; i++) {
+        if (milestoneObj[i]["milestone"] === milestoneInput.value) {
+          dateInput.value = milestoneObj[i]["date"]
+        }
+      }
+      })
+    }
+})
+
+/// Generate submission file
+generateSubmissionBtn.addEventListener('click', (event) => {
+  awardVal = document.getElementById("presaved-award-list").value;
+  milestoneVal = document.getElementById("selected-milestone").value;
+  dateVal = document.getElementById("selected-milestone-date").value;
+  if (milestoneVal===''|| dateVal==='' || awardVal==='Select') {
+    document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Please fill in all fields to generate!</span>"
+  } else {
+    ipcRenderer.send('open-folder-dialog-save-submission', "submission.xlsx")
+  }
+});
+ipcRenderer.on('selected-metadata-submission', (event, dirpath, filename) => {
+  if (dirpath.length > 0) {
+    var destinationPath = path.join(dirpath[0], filename)
+    if (fs.existsSync(destinationPath)) {
+      var emessage = "File " + filename +  " already exists in " +  dirpath[0]
+      ipcRenderer.send('open-error-metadata-file-exits', emessage)
+    }
+    else {
+      var award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
+      var milestone = document.getElementById("selected-milestone").value;
+      var date = document.getElementById("selected-milestone-date").value;
+      var json_arr = [];
+      json_arr.push(award);
+      json_arr.push(milestone);
+      json_arr.push(date);
+      json_str = JSON.stringify(json_arr)
+      if (path != null){
+        client.invoke("api_save_submission_file", path, json_str, (error, res) => {
+          if(error) {
+            var emessage = userError(error)
+            console.error(error)
+            document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+          }
+          else {
+            document.getElementById("para-save-submission-status").innerHTML = "<span style='color: black ;'>" + "Done!" + smileyCan + "</span>"
+          }
+        })
+    }
+  }}
+});
+
+//////////////// Dataset description file ///////////////////////
+//////////////// //////////////// //////////////// ////////////////
+
+var doiInput = createTagsInput(document.getElementById('input-misc-DOI'));
+var urlInput = createTagsInput(document.getElementById('input-misc-protocol'));
+var keywordInput = document.getElementById('ds-keywords'),
+  keywordTagify = new Tagify(keywordInput, {
+    duplicates: false,
+    maxTags  : 5
+})
+var contributorRoles = document.getElementById("input-con-role"),
+  currentContributortagify = new Tagify(contributorRoles, {
+    whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "ContactPerson", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+    dropdown : {
+        classname : "color-blue",
+        enabled   : 0,         // show the dropdown immediately on focus
+        maxItems  : 25,
+        // position  : "text",    // place the dropdown near the typed text
+        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+    },
+    duplicates: false
+});
+
+// Show current contributors
+function createCurrentConTable(table) {
+  var name = dsContributorArray.options[dsContributorArray.selectedIndex].value
+  var id = document.getElementById("input-con-ID").value
+  var affiliation = document.getElementById("input-con-affiliation").value
+  var role = currentContributortagify.value
+  var roleVal = []
+  for (var i=0;i<role.length;i++) {
+    roleVal.push(role[i].value)
+  }
+  var contactPersonStatus = "No"
+  if (contactPerson.checked) {
+    var contactPersonStatus = "Yes"
+  }
+  /// Construct table
+  var rowcount = table.rows.length;
+  if (rowcount===1) {
+    // start at 1 to skip the header
+    var rowIndex = 1;
+  } else {
+    /// append row to table from the bottom
+    var rowIndex = rowcount;
+  }
+  var duplicate = false
+  for (var i=0; i<rowcount;i++){
+    if (table.rows[i].cells[0].innerHTML===name) {
+      duplicate = true
+      break
+    }
+  } if (!duplicate) {
+    var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+    return table
+  } else {
+    document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contributor already added!</span>"
+  }
+}
+
+// Show additional links and desciption
+function createAdditionalLinksTable() {
+  document.getElementById("para-save-link-status").innerHTML = ""
+  var myTable = document.getElementById("table-addl-links")
+  var link = document.getElementById("input-misc-addl-links").value
+  var description = document.getElementById("input-misc-link-description").value
+  /// Construct table
+  var rowcount = myTable.rows.length;
+  if (rowcount===1) {
+    // start at 1 to skip the header
+    var rowIndex = 1;
+  } else {
+    /// append row to table from the bottom
+    var rowIndex = rowcount;
+  }
+  var empty = false
+  if (link==="" && description==="") {
+    empty = true
+  }
+  if (!empty) {
+    var row = myTable.insertRow(rowIndex).outerHTML="<tr id='row-current-link"+rowIndex+"'style='color: #000000;'><td id='link-row"+rowIndex+"'>"+ link+"</td><td id='link-description-row"+rowIndex+"'>"+ description +"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_link("+rowIndex+")'></td></tr>";
+    document.getElementById("div-current-additional-links").style.display = "block";
+    return myTable
+  } else {
+    document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>Please fill in the fields!</span>"
+  }
+}
+
+//// function to leave fields empty if no data is found on Airtable
+function leaveFieldsEmpty(field, element) {
+  if (field!==undefined) {
+    element.value = field;
+  } else {
+    element.innerHTML = ''
+  }
+}
+
+/// Create tags input for multi-answer fields
+function createTagsInput(field) {
+    return new Tagify(field)
+}
+
+//// When users click on adding description for each additional link
+addAdditionalLinkBtn.addEventListener("click", function() {
+  createAdditionalLinksTable()
+})
+
+//// When users click on "Add" to current contributors table
+addCurrentContributorsBtn.addEventListener("click", function() {
+  createCurrentConTable(currentConTable);
+  document.getElementById("div-current-contributors").style.display = "block"
+})
+
+/// load Airtable Contributor data
+dsAwardArray.addEventListener("change", function(e) {
+  document.getElementById("input-con-ID").value = "";
+  document.getElementById("input-con-role").value = "";
+  document.getElementById("input-con-affiliation").value = "";
+  currentContributortagify.removeAllTags();
+  contactPerson.checked = false;
+
+  /// delete old table
+  while (currentConTable.rows.length>1) {
+    currentConTable.deleteRow(1)
+  };
+
+  removeOptions(dsContributorArray)
+  addOption(dsContributorArray, "Select", "Select an option")
+  var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+  table_airtable.select({
+    filterByFormula: `({SPARC_Award_#} = "${awardVal}")`
+  }).eachPage(function page(records, fetchNextPage) {
+      var awardValArray = [];
+      records.forEach(function(record) {
+        var item = record.get('Name');
+        awardValArray.push(item);
+      }),
+    fetchNextPage();
+    for (var i = 0; i < awardValArray.length; i++) {
+        var opt = awardValArray[i];
+        addOption(dsContributorArray, opt, opt)
+    }
+  }),
+  function done(err) {
+      if (err) {
+        console.error(err); return;
+      }
+  };
+})
+
+/// Auto populate once a contributor is selected
+dsContributorArray.addEventListener("change", function(e) {
+  ///clear old entries once a contributor option is changed
+  document.getElementById("para-save-contributor-status").innerHTML = '';
+  document.getElementById("input-con-ID").value = '';
+  document.getElementById("input-con-affiliation").value = '';
+  currentContributortagify.removeAllTags();
+  contactPerson.checked = false;
+
+  var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
+  table_airtable.select({
+    filterByFormula: `({Name} = "${contributorVal}")`
+  }).eachPage(function page(records, fetchNextPage) {
+      var conInfoObj = {};
+      records.forEach(function(record) {
+        conInfoObj["ID"] = record.get('ORCID');
+        // conInfoObj["Role"] = record.get('Project_Role');
+        conInfoObj["Affiliation"] = record.get('Institution');
+      }),
+    fetchNextPage();
+    leaveFieldsEmpty(conInfoObj["ID"],document.getElementById("input-con-ID"));
+    leaveFieldsEmpty(conInfoObj["Affiliation"],document.getElementById("input-con-affiliation"));
+  }),
+  function done(err) {
+      if (err) {
+        console.error(err); return;
+      }
+  }
+})
+
+///// Generate ds description file
+generateDSBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-folder-dialog-save-ds-description',"dataset_description.xlsx")
+})
+
+ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) => {
+  if (dirpath.length > 0) {
+    var destinationPath = path.join(dirpath[0],filename)
+    if (fs.existsSync(destinationPath)) {
+      var emessage = "File " + filename +  " already exists in " +  dirpath[0]
+      ipcRenderer.send('open-error-metadata-file-exits', emessage)
+    } else {
+      /// grab entries from dataset info section
+      var name = document.getElementById("ds-name").value;
+      var description = document.getElementById("ds-description").value;
+      var keywordArray = keywordTagify.value;
+      var keywordVal = []
+      for (var i=0;i<keywordArray.length;i++) {
+        keywordVal.push(keywordArray[i].value)
+      }
+      var samplesNo = document.getElementById("ds-samples-no").value;
+      var subjectsNo = document.getElementById("ds-subjects-no").value;
+      var dsSectionArray = [];
+      for (let elementDS of [name,description,keywordVal,samplesNo,subjectsNo]) {
+        dsSectionArray.push(elementDS)
+      }
+      /// grab entries from contributor info section -- table
+      var rowcountCon = currentConTable.rows.length;
+      var currentConInfo = [];
+      for (i=1; i<rowcountCon; i++) {
+        var myCurrentCon = {"conName":document.getElementById("name-row"+i).innerHTML,
+                            "conID": document.getElementById("orcid-id-row"+i).innerHTML,
+                            "conAffliation": document.getElementById("affiliation-row"+i).innerHTML,
+                            "conRole": document.getElementById("role-row"+i).innerHTML,
+                            "conContact": document.getElementById("contact-person-row"+i).innerHTML}
+        currentConInfo.push(myCurrentCon);
+      };
+      var acknowlegdment = document.getElementById("ds-description-acknowlegdment").value;
+      var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+      var contributorObj = {}
+      if (funding==="Select") {
+        contributorObj["funding"] = "N/A"
+      } else {
+        contributorObj["funding"] = funding
+      }
+      contributorObj["acknowlegdment"] = acknowlegdment
+      contributorObj["contributors"] = currentConInfo
+
+      /// grab entries from other misc info section
+      var miscObj = {}
+      var originatingDOIArray = doiInput.value
+      doiArray = [];
+      for (var i=0;i<originatingDOIArray.length;i++) {
+        doiArray.push(originatingDOIArray[i].value)
+      }
+      urlArray = [];
+      var protocolURLArray = urlInput.value
+      for (var i=0;i<protocolURLArray.length;i++) {
+        urlArray.push(protocolURLArray[i].value)
+      }
+      /// Additional link description
+      var rowcountLink = document.getElementById("table-addl-links").rows.length;
+      var addlLinkInfo = [];
+      for (i=1; i<rowcountLink; i++) {
+        var addlLink = {"link": document.getElementById("link-row"+i).innerHTML,
+                        "description": document.getElementById("link-description-row"+i).innerHTML}
+        addlLinkInfo.push(addlLink)
+      }
+      miscObj["doi"] = doiArray;
+      miscObj["url"] = urlArray;
+      miscObj["additional links"] = addlLinkInfo;
+
+      /// grab entries from other optional info section
+      var completeness = document.getElementById("input-completeness").options[document.getElementById("input-completeness").selectedIndex].value;
+      var parentDS = document.getElementById("input-parent-ds").value;
+      var completeDSTitle = document.getElementById("input-completeds-title").value;
+      var optionalSectionObj = {};
+      if (completeness==="Select") {
+        optionalSectionObj["completeness"] = "N/A"
+      } else {
+        optionalSectionObj["completeness"] = completeness
+      }
+      optionalSectionObj["parentDS"] = parentDS;
+      optionalSectionObj["completeDSTitle"] = completeDSTitle;
+
+      //// stringiy arrays
+      json_str_ds = JSON.stringify(dsSectionArray);
+      json_str_misc = JSON.stringify(miscObj);
+      json_str_optional = JSON.stringify(optionalSectionObj);
+      json_str_con = JSON.stringify(contributorObj);
+
+      /// call python function to save file
+      if (dirpath != null){
+        client.invoke("api_save_ds_description_file", destinationPath, json_str_ds, json_str_misc, json_str_optional, json_str_con, (error, res) => {
+          if(error) {
+            var emessage = userError(error)
+            console.error(error)
+            document.getElementById("para-generate-description-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+          }
+          else {
+            document.getElementById("para-generate-description-status").innerHTML = "<span style='color: black ;'>" + "Done!" + smileyCan + "</span>"
+          }
+        })
+       }
+     }
+    }
+});
+
+//////////////////////////End of Ds description section ///////////////////////
+//////////////// //////////////// //////////////// //////////////// ////////////////
 
 // Select organized dataset folder and populate table //
 selectDatasetBtn.addEventListener('click', (event) => {
   clearStrings()
   ipcRenderer.send('open-file-dialog-dataset')
 })
+
 ipcRenderer.on('selected-dataset', (event, path) => {
   if (path.length > 0) {
     clearTable(tableOrganized)
@@ -1119,7 +1748,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
         console.log('Done submit track')
         document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
         clearInterval(timerProgress)
-        bfSubmitDatasetBtn.disabled = false       
+        bfSubmitDatasetBtn.disabled = false
       }
     }
   }
@@ -1234,7 +1863,7 @@ bfListDatasetStatus.addEventListener('change', () => {
       bfCurrentDatasetStatusProgress.style.display = 'none'
       datasetStatusStatus.innerHTML = res
     }
-  })  
+  })
 })
 
 // Add substitle //
@@ -1913,7 +2542,7 @@ function showAccountDetails(bfLoadAccount){
 }
 
 function showUploadAccountDetails(bfLoadAccount){
-  client.invoke("api_bf_account_details", 
+  client.invoke("api_bf_account_details",
     bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text, (error, res) => {
     if(error) {
       log.error(error)
@@ -2235,7 +2864,7 @@ function jsonToTableMetadata(table, jsonvar){
   var SPARCfolder = 'metadata'
 
   var listfilePath = []
-  
+
   for (let filePath of jsontable[SPARCfolder]){
       var extension = path.extname(filePath);
       var file = path.basename(filePath,extension);
