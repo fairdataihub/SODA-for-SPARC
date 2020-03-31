@@ -651,11 +651,13 @@ presavedAwardArray2.addEventListener('change', function() {
   document.getElementById("selected-milestone").value = "";
   document.getElementById("selected-milestone-date").value = "";
   document.getElementById("selected-description-data").value = "";
+  document.getElementById("para-save-submission-status").innerHTML = "";
+
   removeOptions(document.getElementById("selected-milestone"))
   removeOptions(document.getElementById("selected-description-data"))
   addOption(document.getElementById('selected-milestone'), "Select an option", "Select")
   addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
-  // document.getElementById('submission-milestone-list').innerHTML = "";
+
   award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
   var informationJson = parseJson(milestonePath);
   var milestoneInput = document.getElementById("selected-milestone");
@@ -706,8 +708,9 @@ presavedAwardArray2.addEventListener('change', function() {
 generateSubmissionBtn.addEventListener('click', (event) => {
   awardVal = document.getElementById("presaved-award-list").value;
   milestoneVal = document.getElementById("selected-milestone").value;
+  descriptionVal = document.getElementById("selected-description-data").value;
   dateVal = document.getElementById("selected-milestone-date").value;
-  if (milestoneVal===''|| dateVal==='' || awardVal==='Select') {
+  if (descriptionVal==='Select'|| dateVal==='' || awardVal==='Select' || milestoneVal==='Select') {
     document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Please fill in all fields to generate!</span>"
   } else {
     ipcRenderer.send('save-file-dialog-submission')
@@ -812,16 +815,29 @@ function createAdditionalLinksTable() {
     /// append row to table from the bottom
     var rowIndex = rowcount;
   }
+  /// Check for empty entry before adding to table
   var empty = false
   if (link==="" && description==="") {
     empty = true
   }
+  /// Check for duplicate links
+  var duplicate = false
+  for (var i=0; i<rowcount;i++){
+    if (myTable.rows[i].cells[0].innerHTML===link) {
+      duplicate = true
+      break
+    }
+  }
   if (!empty) {
-    var row = myTable.insertRow(rowIndex).outerHTML="<tr id='row-current-link"+rowIndex+"'style='color: #000000;'><td id='link-row"+rowIndex+"'>"+ link+"</td><td id='link-description-row"+rowIndex+"'>"+ description +"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_link("+rowIndex+")'></td></tr>";
-    document.getElementById("div-current-additional-links").style.display = "block";
-    return myTable
+    if (!duplicate) {
+      var row = myTable.insertRow(rowIndex).outerHTML="<tr id='row-current-link"+rowIndex+"'style='color: #000000;'><td id='link-row"+rowIndex+"'>"+ link+"</td><td id='link-description-row"+rowIndex+"'>"+ description +"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_link("+rowIndex+")'></td></tr>";
+      document.getElementById("div-current-additional-links").style.display = "block";
+      return myTable
+    } else {
+      document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>The link already exists below!</span>"
+    }
   } else {
-    document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>Please fill in the fields!</span>"
+    document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>Please fill in at least 1 field to add!</span>"
   }
 }
 
