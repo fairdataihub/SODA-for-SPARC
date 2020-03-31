@@ -229,7 +229,7 @@ const bfRefreshDatasetStatusBtn = document.getElementById('button-refresh-datase
 //////////////////////////////////
 const blackColor = '#000000'
 const redColor = '#ff1a1a'
-const sparcFolderNames = ["code", "derivatives", "docs", "primary", "protocol", "source"]
+const sparcFolderNames = ["code", "derivative", "docs", "primary", "protocol", "source"]
 const smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">'
 const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
 
@@ -362,17 +362,17 @@ ipcRenderer.on('selected-code', (event, path) => {
     insertFileToTable(tableNotOrganized, path, 'code')
 })
 
-//derivatives
-const selectDerivativesBtn = document.getElementById('button-select-derivatives')
-selectDerivativesBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-file-dialog-derivatives')
+//derivative
+const selectderivativeBtn = document.getElementById('button-select-derivative')
+selectderivativeBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-file-dialog-derivative')
 })
-const selectDerivativesDirectoryBtn = document.getElementById('button-select-derivatives-directory')
-selectDerivativesDirectoryBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-folder-dialog-derivatives')
+const selectderivativeDirectoryBtn = document.getElementById('button-select-derivative-directory')
+selectderivativeDirectoryBtn.addEventListener('click', (event) => {
+  ipcRenderer.send('open-folder-dialog-derivative')
 })
-ipcRenderer.on('selected-derivatives', (event, path) => {
-    insertFileToTable(tableNotOrganized, path, 'derivatives')
+ipcRenderer.on('selected-derivative', (event, path) => {
+    insertFileToTable(tableNotOrganized, path, 'derivative')
 })
 
 //docs
@@ -436,10 +436,10 @@ holderCode.addEventListener("drop", (event)=> {
    dropAddToTable(event, myID)
 })
 
-var holderDerivatives = document.getElementById('derivatives')
-holderDerivatives.addEventListener("drop", (event)=> {
+var holderderivative = document.getElementById('derivative')
+holderderivative.addEventListener("drop", (event)=> {
    event.preventDefault()
-   var myID = holderDerivatives.id
+   var myID = holderderivative.id
    dropAddToTable(event, myID)
 })
 

@@ -33,23 +33,23 @@ ipcMain.on('open-folder-dialog-code', (event) => {
   })
 })
 
-//derivatives
-ipcMain.on('open-file-dialog-derivatives', (event) => {
+//derivative
+ipcMain.on('open-file-dialog-derivative', (event) => {
   dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openFile', 'multiSelections']
   }, (files) => {
     if (files) {
-      event.sender.send('selected-derivatives', files);
+      event.sender.send('selected-derivative', files);
     }
   })
 })
 
-ipcMain.on('open-folder-dialog-derivatives', (event) => {
+ipcMain.on('open-folder-dialog-derivative', (event) => {
   dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openDirectory', 'multiSelections']
   }, (files) => {
     if (files) {
-      event.sender.send('selected-derivatives', files);
+      event.sender.send('selected-derivative', files);
     }
   })
 })
