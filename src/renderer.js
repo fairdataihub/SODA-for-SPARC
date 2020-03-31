@@ -729,8 +729,8 @@ ipcRenderer.on('selected-metadata-submission', (event, dirpath, filename) => {
       json_arr.push(milestone);
       json_arr.push(date);
       json_str = JSON.stringify(json_arr)
-      if (path != null){
-        client.invoke("api_save_submission_file", path, json_str, (error, res) => {
+      if (dirpath != null){
+        client.invoke("api_save_submission_file", destinationPath, json_str, (error, res) => {
           if(error) {
             var emessage = userError(error)
             console.error(error)
