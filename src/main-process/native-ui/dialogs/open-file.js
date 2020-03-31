@@ -97,7 +97,6 @@ ipcMain.on('open-folder-dialog-primary', (event) => {
   })
 })
 
-
 //protocol
 ipcMain.on('open-file-dialog-protocol', (event) => {
   dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
@@ -217,6 +216,20 @@ ipcMain.on('open-file-dialog-samples', (event) => {
   }, (files) => {
     if (files) {
       event.sender.send('selected-samples', files)
+    }
+  })
+})
+
+////// milestone document
+ipcMain.on('open-file-dialog-milestone-doc', (event) => {
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ['openFile'],
+    filters: [
+    { name: 'DOCX', extensions: ['docx'] },
+  ]
+  }, (files) => {
+    if (files) {
+      event.sender.send('selected-milestonedoc', files);
     }
   })
 })
