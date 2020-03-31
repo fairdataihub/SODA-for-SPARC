@@ -268,12 +268,6 @@ buttonSidebarBigIcon.addEventListener('click', (event) => {
 // Button selection to move on to next step under Prepare Dataset //
 document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
   document.getElementById('button-specfy-dataset-demo-toggle').click()
-  if (getComputedStyle(document.getElementById('div-file-conversion'), null).display === 'none'){
-    document.getElementById('button-file-conversion-demo-toggle').click()
-  }
-})
-document.getElementById('button-file-conversion-next-step').addEventListener('click', (event) => {
-  document.getElementById('button-file-conversion-demo-toggle').click()
   if (getComputedStyle(document.getElementById('div-specify-metadata'), null).display === 'none'){
     document.getElementById('button-specify-metadata-demo-toggle').click()
   }
