@@ -9,7 +9,7 @@
 }
 @media (min-width: 940px) {
   .demo:last-of-type {
-    margin-bottom: 4rem;
+    margin-bottom: 4rem
   }
 }
 
@@ -173,6 +173,13 @@
   width: 180px;
   cursor: pointer;
 }
+/*
+.demo-button.delete:hover {
+  background-color: rgba(220,20,60,0.9);
+  color: white;
+  outline: none;
+  border: none;
+} */
 
 .demo-button:focus {
   outline: none;
@@ -188,7 +195,6 @@
   color: white;
   border-color: var(--color-accent);
 }
-
 
 .demo-button-table {
   align-self: flex-start;
@@ -217,6 +223,32 @@
 
 .demo-button-table.drag:hover {
   background-color: transparent
+}
+
+.demo-button-prev-next {
+  align-self: flex-start;
+  padding: 4px 4px 4px 4px;
+  border: 2px solid;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 1.1em;
+  color: inherit;
+  background-color: transparent;
+  width: 90px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.demo-button-prev-next:hover {
+  background-color: hsla(190,60%,36%,1);
+  color: white;
+  border-color: var(--color-accent);
+}
+
+.demo-button-prev-next:active {
+  outline: none;
+  /* background-color: white; */
+  /* color: hsla(190,60%,36%,1) */
 }
 
 .demo-input {
@@ -289,6 +321,37 @@ button.download-metadata:hover {
   background-color: hsla(192,69%,23%);
 }
 
+.milestone-upload-text {
+  width:200px;
+  height:34px;
+  float:left;
+  text-align:center;
+  outline:none;
+  box-shadow:none;
+  border:none;
+  border-color:#258193;
+  background-clip:border-box;
+}
+
+.button-milestone-upload {
+  width:60px;
+  height:34px;
+  float:right;
+  border-radius:0;
+  padding: 0 0 0 0;
+  margin:0 0 0 0;
+  background-color:#258193;
+  color:white;
+  box-sizing: none;
+  cursor: pointer;
+  background-clip:none;
+  border:none;
+}
+
+.button-milestone-upload:active {
+  transform: scale(1.1);
+}
+
 .download-image {
   border: 0;
   float: left;
@@ -359,13 +422,14 @@ textarea.outputprint{
     resize: vertical;
 }
 
-select.my_dropdown {
+/* Dropdowns */
+select.my-dropdown {
     width:60%;
     padding: 8px 12px;
-    border: 1px solid;
-    border-radius: 4px;
+    border: 1px solid black;
+    border-radius: 5px;
     background-color: #ffffff;
-    font: inherit
+    font: inherit;
 }
 
 table {
@@ -388,6 +452,7 @@ td {
   text-align: center;
   border: 1px solid hsla(0,0%,0%,.08);
   border-width: 1px 0 0 1px;
+  padding: 10px;
 }
 
 th.table-header {
@@ -462,6 +527,28 @@ input[type='text'].inputpath
 
 table.pathtable tr.open {
   display : none;
+}
+
+/* Metadata table */
+table.table-save-metadata {
+  margin: auto;
+  width: 70%;
+  max-width:100%;
+  min-width:100%;
+  font:inherit;
+  word-break: break-word;
+  border-collapse: collapse;
+  border: 1px solid #fff;
+  border-style: hidden;
+  text-align: left;
+}
+
+.table-header-metadata {
+  /* text-indent: 10%; */
+  text-align: left;
+  cursor: pointer;
+  font-size: 15px;
+  width: 70%;
 }
 
 /* YouTube video frames */
@@ -758,28 +845,306 @@ label.input-banner-img{
   float:left;
 }
 
-/* BF Add Account */
-.font-bf-account {
-  float: left;
-  font-size: 15px;
-  padding-right: 10px;
-  width: 14%;
-  text-align: center
+/* Submission file Preparation */
+.my-dropdown-metadata {
+  float: right;
+  background-clip: padding-box;
+  width: 100%;
+  /* width:60%; */
+  padding: 6px 8px;
+  margin-bottom: 10px;
+  border: 1px solid black;
+  border-radius: 5px;
+  background-color: #ffffff;
+  font: inherit;
 }
 
-.bf-account-form {
+.my-dropdown-metadata.ds:focus {
+	border-color: black;
+  border-radius: 5px;
+  background-color: #FFFAFA;
+	/* box-shadow: 0 0 1px 3px rgba(59, 153, 252, .7); */
+	/* box-shadow: 0 0 0 3px -moz-mac-focusring; */
+	/* color: #222; */
+	outline: none;
+}
+
+.tagify {
+  border: 1px solid #C0C0C0 !important;
+  border-left: 2px solid #258193 !important;
+  border-radius: 5px !important;
+  background-color: white !important;
+}
+
+.tagify.tagify--focus {
+  outline-color: rgb(229, 151, 0) !important;
+  /* outline: none !important; */
+  background-color: rgb(255, 250, 250) !important;
+}
+
+/* Submission file container */
+.form-container {
+  float: left;
+  font-size: 14px;
+  /* padding-right: 10px; */
+  padding: 4px 6px;
+  width: 150px;
+  text-align: left;
+  vertical-align: middle;
+  color: #A0A0A0;
+  font: bold;
+  font-weight: 500;
+}
+
+.form-container-input {
+  float: right;
+  font-weight: 400;
+  /* background-clip: padding-box; */
+  line-height: 2;
+  width: 100%;
+  border: 1px solid #C0C0C0;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  transition: #258193 .25s ease-out;
+  padding: 4px 6px;
+}
+
+.form-container-input-bf:focus {
+  background-color: #FFFAFA;
+  border-left: 2px solid #C0C0C0;
+  border-radius: 0;
+}
+
+.form-container-textarea {
+  float: right;
+  font-weight: 400;
+  /* background-clip: padding-box; */
+  /* line-height: 2; */
+  font: inherit;
+  width: 100%;
+  border: 1px solid #C0C0C0;
+  border-left: 2px solid #258193;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  transition: #258193 .25s ease-out;
+  padding: 4px 6px;
+  min-height:60px;
+  /* max-height:60px; */
+  resize: vertical;
+}
+
+.form-container-textarea:focus {
+  background-color: #FFFAFA;
+  border-left: 2px solid #C0C0C0;
+  border-radius: 0;
+}
+
+/* BF Add account */
+.form-container-input-bf {
   float: right;
   font-weight: 400;
   background-clip: padding-box;
   line-height: 1.5;
   width: 100%;
-  margin-bottom: 8px;
-  border: 2px solid #eee;
+  margin-bottom: 10px;
+  border: 1px solid #C0C0C0;
   border-left: 2px solid #258193;
   border-radius: 5px;
   transition: #258193 .25s ease-out;
+  padding: 4px 6px;
 }
 
+/* Dataset Description file container */
+.form-container-ds{
+  float: left;
+  font-size: 14px;
+  /* padding-right: 10px; */
+  padding: 4px 6px;
+  width: 180px;
+  text-align: left;
+  vertical-align: middle;
+  color: #A0A0A0;
+  font: bold;
+  font-weight: 500;
+}
+
+.multisteps-form__progress {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  margin-bottom:30px;
+}
+
+.multisteps-form__progress-btn {
+  transition-property: all;
+  transition-duration: 0.15s;
+  transition-timing-function: linear;
+  transition-delay: 0s;
+  position: relative;
+  padding-top: 20px;
+  color: #258193;
+  text-indent: -9999px;
+  border: none;
+  background-color: transparent;
+  outline: none !important;
+  cursor: pointer;
+}
+
+@media (min-width: 500px) {
+  .multisteps-form__progress-btn {
+    text-indent: 0;
+  }
+}
+.multisteps-form__progress-btn:before {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: block;
+  width: 15px;
+  height: 15px;
+  content: '';
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  transition: all 0.15s linear 0s, -webkit-transform 0.15s cubic-bezier(0.05, 1.09, 0.16, 1.4) 0s;
+  transition: all 0.15s linear 0s, transform 0.15s cubic-bezier(0.05, 1.09, 0.16, 1.4) 0s;
+  transition: all 0.15s linear 0s, transform 0.15s cubic-bezier(0.05, 1.09, 0.16, 1.4) 0s, -webkit-transform 0.15s cubic-bezier(0.05, 1.09, 0.16, 1.4) 0s;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  background-color: #fff;
+  box-sizing: border-box;
+  z-index: 3;
+}
+.multisteps-form__progress-btn:after {
+  position: absolute;
+  top: 5px;
+  left: calc(-50% - 13px / 2);
+  transition-property: all;
+  transition-duration: 0.15s;
+  transition-timing-function: linear;
+  transition-delay: 0s;
+  display: block;
+  width: 100%;
+  height: 2px;
+  content: '';
+  background-color: currentColor;
+  z-index: 1;
+}
+.multisteps-form__progress-btn:first-child:after {
+  display: none;
+}
+.multisteps-form__progress-btn.js-active1 {
+  color: #258193;
+}
+.multisteps-form__progress-btn.js-active2 {
+  color: #258193;
+}
+
+.multisteps-form__progress-btn.js-active1:before {
+  -webkit-transform: translateX(-50%) scale(1.2);
+  transform: translateX(-50%) scale(1.5);
+  background-color: #258193;
+}
+.multisteps-form__progress-btn.js-active2:before {
+  -webkit-transform: translateX(-50%) scale(1.2);
+  transform: translateX(-50%) scale(1.5);
+  background-color: #258193;
+}
+
+/* .ds-dataset-progressbar li {
+  list-style-type: none;
+  float:left;
+  width: 25%;
+  position:relative;
+  text-align:center;
+}
+
+.ds-dataset-progressbar li:before {
+  content:counter(step);
+  counter-increment: step;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  border: 1px solid #f1f1f1;
+  display: block;
+  text-align: center;
+  margin: 0 auto 10px auto;
+  border-radius: 50%;
+  background-color: #f1f1f1;
+}
+
+.ds-dataset-progressbar li::after {
+  content:'';
+  position: absolute;
+  width:100%;
+  height:1px;
+  background-color: #f1f1f1;
+  top:15px;
+  left: -50%;
+  z-index:-1;
+  border-color: yellow;
+}
+
+.ds-dataset-progressbar li:first-child:after{
+  content: none;
+} */
+/* .ds-dataset-progressbar li:active{
+  background-color: #258193;
+} */
+/* .ds-dataset-progressbar li:active:before{
+  /* border-color: #258193; */
+/* } */
+/* .ds-dataset-progressbar li:active + li:after{
+  border-color: #258193; */
+/* }  */
+
+/* Dataset Description file container */
+/* #form-datasetdescription { */
+  /* background-color: ; */
+  /* margin: 100px auto; */
+  /* padding: 20px; */
+  /* width: 70%; */
+  /* min-width: 300px; */
+/* } */
+
+/* Style the input fields */
+/* .ds-tabs input{
+  padding: 10px;
+  width: 100%;
+  font-size: 13px;
+  font-family: Raleway;
+  border: 1px solid #aaaaaa;
+} */
+
+/* Mark input boxes that gets an error on validation: */
+/* .ds-tabs input.invalid {
+  background-color: #ffdddd;
+} */
+
+/* Hide all steps by default: */
+.ds-tabs {
+  display: none;
+}
+
+/* Make circles that indicate the steps of the form: */
+.ds-step {
+  height: 12px;
+  width: 12px;
+  margin: 0 2px;
+  background-color: blue;
+  border: none;
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.5;
+}
+
+/* Mark the active step: */
+.ds-step.active {
+  opacity: 1;
+}
+
+/* Mark the steps that are finished and valid: */
+.ds-step.finish {
+  background-color: #4CAF50;
+}
 
 .switch-field {
   display: flex;
@@ -798,9 +1163,9 @@ label.input-banner-img{
   width: 200px;
   display: block;
   float: left;
-  padding: 4px 8px;
+  padding: 8px 4px;
   padding-bottom: 20px;
-  margin-right: 10px;
+  margin-right: 20px;
   margin-left: 10px;
   line-height: 1;
   text-align: center;

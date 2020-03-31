@@ -92,9 +92,9 @@
             <h5> Specify files/folders to be included in you dataset under the table located below.
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">
-                  All SPARC datasets must follow the SPARC Dataset Structure. You can accomplish that in SODA by adding files and folders in the table under the corresponding SPARC folder. This table will then be used by SODA to create your dataset when you reach the "Generate dataset" feature. 
+                  All SPARC datasets must follow the SPARC Dataset Structure. You can accomplish that in SODA by adding files and folders in the table under the corresponding SPARC folder. This table will then be used by SODA to create your dataset when you reach the "Generate dataset" feature.
                   <br><br>
-                  The tooltips located in the rows of the table provide information about the expected files in each SPARC folder. At least one of the folders should be non-empty. More details about the dataset structure can be found in the <a href="https://docs.google.com/presentation/d/1EQPn1FmANpPsFt3CguU-JOQVMMlJsNXluQAK_gb2qVg/edit#slide=id.p1" style="color:white;"> SPARC guidelines</a>. 
+                  The tooltips located in the rows of the table provide information about the expected files in each SPARC folder. At least one of the folders should be non-empty. More details about the dataset structure can be found in the <a href="https://docs.google.com/presentation/d/1EQPn1FmANpPsFt3CguU-JOQVMMlJsNXluQAK_gb2qVg/edit#slide=id.p1" style="color:white;"> SPARC guidelines</a>.
                   <br><br>
                   You could drag/drop files and folders from your computer on the table headers to import them or click on the corresponding buttons to browse files and folders. You can then add a description for files, which will be included in the corresponding manifest file if generated with SODA. Click on a header of the table to collapse the corresponding file/folder paths if you want a cleaner looking workspace.
                   <br><br>
@@ -115,7 +115,7 @@
                       <button id="button-select-code" class="demo-button-table">Select files </button>
                       <button id="button-select-code-directory" class="demo-button-table">Select folders</button>
                       <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                        <span class="tooltiptext">code: Folder containing all the source code used in the study (e.g., Python, MATLAB, etc.)  
+                        <span class="tooltiptext">code: Folder containing all the source code used in the study (e.g., Python, MATLAB, etc.)
                         </span>
                       </div>
                     </th>
@@ -135,7 +135,7 @@
                   </tr>
 
                   <tr class="parent" id='docs' droppable="true" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondragover="return false">
-                    <th class="table-header">docs</th> 
+                    <th class="table-header">docs</th>
                     <th>
                       <button id="button-drop-docs" class="demo-button-table drag">Drag & drop here </button>
                       <button id="button-select-docs" class="demo-button-table">Select files </button>
@@ -154,7 +154,7 @@
                       <button id="button-select-primary" class="demo-button-table">Select files </button>
                       <button id="button-select-primary-directory" class="demo-button-table">Select folders</button>
                       <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                        <span class="tooltiptext">primary: Folder containing all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines “raw (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders. 
+                        <span class="tooltiptext">primary: Folder containing all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines “raw (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders.
                         </span>
                       </div>
                     </th>
@@ -279,7 +279,7 @@
               <br><br>
               The "submission" and "dataset_description" files are mandatory for all datasets. Requirement of "samples" and/or "subjects" files is dataset-specific. All these files must be in xlsx or cvs formats. Visit the "Prepare Metadata" section of SODA to download templates of these files as provided by the Curation Team.
               <br><br>
-              Other authorized metadata files are "README" and "CHANGES". 
+              Other authorized metadata files are "README" and "CHANGES".
               <br><br>
               No other files are allowed.
               </span>
@@ -398,7 +398,7 @@
             <!-- <button id="button-upload-check-bf-account-details" class="demo-button"> Load existing account(s) </button> -->
             <h5> Select account </h5>
             <div class="demo-controls">
-              <select id="bfuploadaccountlist" style="width:58%" class="my_dropdown">
+              <select id="bfuploadaccountlist" style="width:58%" class="my-dropdown">
                 <option> Select </option>
               </select>
               <p id="para-account-details"></p>
@@ -412,14 +412,14 @@
 
 
             <h5> Select Blackfynn dataset for uploading
-              <div class="tooltipnew"><img class="info" src="assets/img/info.png"> 
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically). Click on "Refresh List" to update your list of datasets in case you have create an new one in parallel outside of SODA (e.g., from the Blackfynn webpage).
                 <br> <br>
                 Note: You must have "owner", "manager" or "editor" permissions on the dataset to upload. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
               </div>
             </h5>
             <div class="demo-controls">
-              <select class="my_dropdown" id="bfuploaddatasetlist">
+              <select class="my-dropdown" id="bfuploaddatasetlist">
                 <option> Select dataset </option>
               </select>
               <p></p>

@@ -7,14 +7,12 @@ function edit_row_org(no){
 	var description_data=description.innerHTML
 
 	description.innerHTML="<input type='text' id='description_text_org"+no+"' value='"+description_data+"'>"
-
 }
 
 function save_row_org(no){
 	var description_val=document.getElementById("description_text_org"+no).value
 
 	document.getElementById("description_row_org"+no).innerHTML=description_val
-
 	document.getElementById("edit_button_org"+no).style.display="inline"
 	document.getElementById("save_button_org"+no).style.display="none"
 }
