@@ -57,10 +57,8 @@ function removeClasses(elemSet, className) {
 var domStrings = {dataset: [document.getElementById('ds-name'), document.getElementById('ds-description'),
                             document.getElementById('ds-keywords'),document.getElementById('ds-samples-no'),
                             document.getElementById('ds-subjects-no')],
-                  misc: [document.getElementById('input-misc-DOI'), document.getElementById('input-misc-protocol'),
-                        document.getElementById('input-misc-addl-links'), document.getElementById('input-misc-link-description')],
                   optional: [document.getElementById("input-completeness"),document.getElementById("input-parent-ds"),
-                            document.getElementById('input-completeds-title'),document.getElementById('input-metadata-ver')]
+                            document.getElementById('input-completeds-title')]
                   }
 //// check if all fields have been filled
 function checkFields(div, fieldArray) {
@@ -92,6 +90,16 @@ function checkFieldsContributors() {
   }
 }
 
+/// check if other info section is all populated
+function checkOtherInfoFields() {
+  var div = 'ds-misc-info';
+  var originatingDOI = document.getElementById('input-misc-DOI').value.length
+  var protocolDOI = document.getElementById("input-misc-protocol").value.length
+  var tableCurrentLinks = document.getElementById("table-addl-links")
+  if ((originatingDOI>1) && (protocolDOI>1) && (tableCurrentLinks.rows.length>1)) {
+    document.getElementById(div).className = 'multisteps-form__progress-btn js-active2';
+  }
+}
 document.querySelector('#ds-dataset-info').addEventListener('click', () => {
     showDSInfo();
     removeClasses(document.querySelectorAll(`.multisteps-form__progress-btn`), 'js-active1');
@@ -121,7 +129,7 @@ document.querySelector('#button-prev-contributor-ds').addEventListener('click', 
 })
 document.querySelector('#button-prev-misc-contributor').addEventListener('click', () => {
     document.querySelector('#ds-contributor-info').click()
-    checkFields("ds-misc-info", domStrings.misc)
+    checkOtherInfoFields()
 })
 document.querySelector('#button-prev-optional-misc').addEventListener('click', () => {
     document.querySelector('#ds-misc-info').click()
@@ -139,5 +147,5 @@ document.querySelector('#button-next-contributor-misc').addEventListener('click'
 })
 document.querySelector('#button-next-misc-optional').addEventListener('click', () => {
     document.querySelector('#ds-optional-info').click();
-    checkFields("ds-misc-info", domStrings.misc)
+    checkOtherInfoFields()
 })
