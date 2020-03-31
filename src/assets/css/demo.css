@@ -822,6 +822,11 @@ label.input-banner-img{
   display:block;
 }
 
+#createDataset:checked ~ #div-create-dataset,
+#renameDataset:checked ~ #div-rename-dataset {
+  display:block;
+}
+
 .input-switch:checked + label {
   border-bottom: 2px solid #258193;
   text-decoration: none;

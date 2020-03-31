@@ -4,7 +4,7 @@ import gevent
 from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_organization, \
     import_file_organization, curate_dataset, preview_file_organization, delete_preview_file_organization, \
     bf_add_account, bf_account_list, bf_dataset_account, bf_account_details, \
-    bf_submit_dataset, bf_new_dataset_folder, bf_add_permission, bf_get_users, bf_get_permission, \
+    bf_submit_dataset, bf_new_dataset_folder, bf_rename_dataset, bf_add_permission, bf_get_users, bf_get_permission, \
     bf_get_teams, bf_add_permission_team, bf_add_subtitle, bf_get_subtitle, bf_get_description, \
     bf_add_description, bf_get_banner_image, bf_add_banner_image, bf_get_license, bf_add_license, \
     bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load
@@ -88,6 +88,12 @@ class SodaApi(object):
     def api_bf_new_dataset_folder(self, datasetname, accountname):
         try:
             return bf_new_dataset_folder(datasetname, accountname)
+        except Exception as e:
+            raise e
+
+    def api_bf_rename_dataset(self, accountname, current_dataset_name, renamed_dataset_name):
+        try:
+            return bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name)
         except Exception as e:
             raise e
 

@@ -92,46 +92,69 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-new-window-create-demo-toggle" class="js-container-target demo-toggle-button"> Create new empty dataset
+        <button id="button-new-window-create-demo-toggle" class="js-container-target demo-toggle-button"> Handle datasets
           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Create-new-empty-dataset" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
-          <div class="demo-meta u-avoid-clicks"> Add an empty dataset on the selected Blackfynn account
+          <div class="demo-meta u-avoid-clicks"> Create an empty dataset or rename an existing one
           </div>
         </button>
         <div class="demo-box">
-          <p> </p>
 
-          <h5> Enter name:
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Enter desired name for your new dataset. This is the field that will be displayed in public as the title of the dataset. Please make sure that your dataset title is different than your other dataset titles and that it is relatively informative.
-              </span>
+          <form id = 'blackfynn-dataset'>
+            <div style = "padding:10px 0px">
+              <input class="input-switch" id="createDataset" type="radio" name="tabs" checked>
+              <label class="label-switch" for="createDataset">Create empty dataset </label>
+              <input class="input-switch" id="renameDataset" type="radio" name="tabs">
+              <label class="label-switch" for="renameDataset">Rename existing dataset</label>
             </div>
-          </h5>
-          <div class="demo-controls">
-            <input id="bf-new-dataset-name" class="demo-response"> </input>
+          </form>
+
+          <br><br><br>
+          <div id="div-create-dataset" class="datasetsaveoption" style="margin-left:20px">
+        
+            <h5> Enter name:
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">Enter desired name for your new dataset. This is the field that will be displayed in public as the title of the dataset. Please make sure that your dataset title is different than your other dataset titles and that it is relatively informative.
+                </span>
+              </div>
+            </h5>
+            <div class="demo-controls">
+              <input id="bf-new-dataset-name" class="demo-response"> </input>
+            </div>
+
+            <h5> </h5>
+            <div class="demo-controls">
+              <button id="button-create-bf-new-dataset" class="demo-button"> Create </button>
+              <p id='para-add-new-dataset-status' style="margin-top:-5px"></p>
+            </div>
+
           </div>
 
-          <h5> Enter subtitle (optional):
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Add two or three sentences (limit of 256 characters) that describe the content of your dataset such that it is possible to differente it from other datasets. This field will become the short description visible immediately under the title of your dataset once it is published.
-              <br><br>
-              Although optional when creating a new dataset, it is mandatory to add a subtitle before sharing your dataset with the Curation Team for review.
-              <br> <br>
-              It could also be added later under the "Add medatata to Blackfynn dataset" feature of SODA. </span>
+          <div id="div-rename-dataset" class="datasetsaveoption" style="margin-left:20px">
+            <h5> </h5>
+            <div class="demo-controls">
+              <select class="my_dropdown" id="bfdatasetlist_renamedataset">
+                <option> Select dataset </option>
+              </select>
+              <p></p>
+              <button id="button-refresh-dataset-renamedataset-list" class="demo-button"> Refresh List </button>
             </div>
-          </h5>
-          <div class="demo-controls">
-            <textarea id="bf-new-dataset-subtitle" class="demo-response" rows="4" maxlength="256"> </textarea>
+
+            <h5> Enter new name:
+            </h5>
+            <div class="demo-controls">
+              <input id="bf-rename-dataset-name" class="demo-response"> </input>
+            </div>
+
+            <h5> </h5>
+            <div class="demo-controls">
+              <button id="button-rename-dataset" class="demo-button"> Rename </button>
+              <p id='para-rename-dataset-status' style="margin-top:-5px"></p>
+            </div>
+
           </div>
-          <div>
-            <p><span id="para-char-count"> 256 characters left </span></p>
-          </div>
-          <h5> </h5>
-          <div class="demo-controls">
-            <button id="button-create-bf-new-dataset" class="demo-button"> Create </button>
-            <p id='para-add-new-dataset-status' style="margin-top:-5px"></p>
-          </div>
+
 
         <p></p>
         </div>
@@ -296,7 +319,6 @@
               <p id = "para-dataset-license-current"> None </p>
             </div> -->
 
-
             <div class="demo-controls" style="margin-top:-30px">
               <div style="width: 200px; float: left;">
                 <h5> Click to assign license </h5>
@@ -318,6 +340,7 @@
                   </div>
                 </h5>
               </div>
+
             </div>
 
             <div class="demo-controls">

@@ -40,6 +40,7 @@ var homeDirectory = app.getPath('home')
 
 // Check default radio buttons //
 document.getElementById("selectAccount").click()
+document.getElementById("createDataset").click()
 document.getElementById("add-edit-subtitle").click()
 document.getElementById("pi-owner").click()
 document.getElementById("cloud-dataset").click()
@@ -169,13 +170,16 @@ const bfUploadRefreshDatasetBtn = document.getElementById('button-upload-refresh
 const bfNewDatasetName = document.querySelector('#bf-new-dataset-name')
 const bfCreateNewDatasetBtn = document.getElementById('button-create-bf-new-dataset')
 const bfCreateNewDatasetStatus = document.querySelector('#para-add-new-dataset-status')
-const bfNewDatasetSubtitle = document.querySelector('#bf-new-dataset-subtitle')
-const bfNewDatasetSubtitleCharCount = document.querySelector('#para-char-count')
 const bfSubmitDatasetBtn = document.getElementById('button-submit-dataset')
 const bfSubmitDatasetInfo = document.querySelector('#progresssubmit')
 const pathSubmitDataset = document.querySelector('#selected-submit-dataset')
 const progressUploadBf = document.getElementById("div-progress-submit")
 const progressBarUploadBf = document.getElementById("progress-bar-upload-bf")
+const bfDatasetListRenameDataset = document.querySelector('#bfdatasetlist_renamedataset')
+const bfRenameDatasetBtn = document.getElementById('button-rename-dataset')
+const bfRefreshDatasetRenameDatasetBtn = document.getElementById('button-refresh-dataset-renamedataset-list')
+const renameDatasetName = document.querySelector('#bf-rename-dataset-name')
+const bfRenameDatasetStatus = document.getElementById('para-rename-dataset-status')
 
 // Blackfynn dataset metadata //
 const bfMetadataForm = document.querySelector('#bf-add-metadata-form')
@@ -540,10 +544,6 @@ function countCharacters(textelement, pelement) {
   var counter = (256 - (textEntered.length));
   pelement.innerHTML = counter + ' characters remaining'
 }
-
-bfNewDatasetSubtitle.addEventListener('keyup',  function(){
-  countCharacters(bfNewDatasetSubtitle, bfNewDatasetSubtitleCharCount)
-})
 
 bfDatasetSubtitle.addEventListener('keyup',  function(){
   countCharacters(bfDatasetSubtitle, bfDatasetSubtitleCharCount)
@@ -1003,6 +1003,11 @@ bfRefreshDatasetStatusBtn.addEventListener('click', () => {
   refreshAllBfDatasetLists()
 })
 
+bfRefreshDatasetRenameDatasetBtn.addEventListener('click', () => {
+  renameDatasetName.value = ""
+  refreshAllBfDatasetLists()
+})
+
 // Add new dataset folder (empty) on bf //
 bfCreateNewDatasetBtn.addEventListener('click', () => {
   bfCreateNewDatasetBtn.disabled = true
@@ -1016,7 +1021,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
       bfCreateNewDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
       bfCreateNewDatasetBtn.disabled = false
     } else {
-        var inputSubtitle = bfNewDatasetSubtitle.value
+        var inputSubtitle = ""
         client.invoke("api_bf_add_subtitle", selectedbfaccount, bfNewDatasetName.value, inputSubtitle,
         (error, res) => {
         if(error) {
@@ -1034,6 +1039,35 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
       })
     }
   })
+})
+
+// Rename dataset on bf //
+bfRenameDatasetBtn.addEventListener('click', () => {
+  var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var currentDatasetName = bfDatasetListRenameDataset.options[bfDatasetListRenameDataset.selectedIndex].text
+  var renamedDatasetName = renameDatasetName.value
+  console.log(currentDatasetName)
+  if (currentDatasetName ==='Select dataset'){
+    emessage = 'Please select a validate dataset'
+    bfRenameDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
+  } else {
+    bfRenameDatasetBtn.disabled = true
+    bfRenameDatasetStatus.innerHTML = 'Renaming...'
+    client.invoke("api_bf_rename_dataset", selectedbfaccount, currentDatasetName, renamedDatasetName, (error, res) => {
+      if (error) {
+        log.error(error)
+        console.error(error)
+        var emessage = userError(error)
+        bfRenameDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
+        bfRenameDatasetBtn.disabled = false
+      } else {
+        refreshAllBfDatasetLists()
+        renameDatasetName.value = ""
+        bfRenameDatasetStatus.innerHTML = 'Success: renamed dataset' + " '" + currentDatasetName + "'" + ' to' + " '" + renamedDatasetName + "'" + smileyCan
+        bfRenameDatasetBtn.disabled = false
+      }
+    })
+  }
 })
 
 // Submit dataset to bf //
@@ -1132,6 +1166,8 @@ bfUploadDatasetList.addEventListener('change', () => {
   bfDatasetList.selectedIndex = listSelectedIndex
   bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
   datasetStatusListChange()
+  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
+  renameDatasetlistChange()
 })
 
 // Upload local dataset
@@ -1144,7 +1180,33 @@ bfDatasetList.addEventListener('change', () => {
   bfUploadDatasetList.selectedIndex = listSelectedIndex
   bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
   datasetStatusListChange()
+  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
+  renameDatasetlistChange()
 })
+
+// Rename dataset
+bfDatasetListRenameDataset.addEventListener('change', () => {
+  renameDatasetlistChange()
+  var listSelectedIndex = bfDatasetListRenameDataset.selectedIndex
+  bfDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetListMetadata.selectedIndex = listSelectedIndex
+  metadataDatasetlistChange()
+  bfDatasetListPermission.selectedIndex = listSelectedIndex
+  permissionDatasetlistChange()
+  bfUploadDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
+  datasetStatusListChange()
+})
+
+function renameDatasetlistChange(){
+  //bfCurrentMetadataProgress.style.display = 'block'
+  if (bfDatasetListRenameDataset.value === 'Select dataset'){
+    renameDatasetName.value = ""
+  } else{
+    renameDatasetName.value = bfDatasetListRenameDataset.value
+  }
+}
+
 
 // Add metadata to Blackfynn dataset
 bfDatasetListMetadata.addEventListener('change', () => {
@@ -1156,6 +1218,8 @@ bfDatasetListMetadata.addEventListener('change', () => {
   metadataDatasetlistChange()
   bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
   datasetStatusListChange()
+  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
+  renameDatasetlistChange()
 })
 
 function metadataDatasetlistChange(){
@@ -1181,6 +1245,8 @@ bfDatasetListPermission.addEventListener('change', () => {
   permissionDatasetlistChange()
   bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
   datasetStatusListChange()
+  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
+  renameDatasetlistChange()
 })
 
 function permissionDatasetlistChange(){
@@ -1198,6 +1264,8 @@ bfDatasetListDatasetStatus.addEventListener('change', () => {
   bfDatasetListPermission.selectedIndex = listSelectedIndex
   permissionDatasetlistChange()
   datasetStatusListChange()
+  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
+  renameDatasetlistChange()
 })
 
 function datasetStatusListChange(){
@@ -1610,6 +1678,7 @@ function refreshAllBfDatasetLists(){
       removeOptions(bfDatasetListPermission)
       removeOptions(bfUploadDatasetList)
       removeOptions(bfDatasetListDatasetStatus)
+      removeOptions(bfDatasetListRenameDataset)
       var optionSelect = document.createElement("option")
       optionSelect.textContent = 'Select dataset'
       bfDatasetList.appendChild(optionSelect)
@@ -1617,10 +1686,12 @@ function refreshAllBfDatasetLists(){
       var option3 = optionSelect.cloneNode(true)
       var option4 = optionSelect.cloneNode(true)
       var option5 = optionSelect.cloneNode(true)
+      var option6 = optionSelect.cloneNode(true)
       bfDatasetListMetadata.appendChild(option2)
       bfDatasetListPermission.appendChild(option3)
       bfUploadDatasetList.appendChild(option4)
       bfDatasetListDatasetStatus.appendChild(option5)
+      bfDatasetListRenameDataset.appendChild(option6)
     } else {
       client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
         if(error) {
@@ -1632,6 +1703,7 @@ function refreshAllBfDatasetLists(){
           removeOptions(bfDatasetListPermission)
           removeOptions(bfUploadDatasetList)
           removeOptions(bfDatasetListDatasetStatus)
+          removeOptions(bfDatasetListRenameDataset)
           for (myitem in res){
             var myitemselect = res[myitem]
             var option = document.createElement("option")
@@ -1642,10 +1714,12 @@ function refreshAllBfDatasetLists(){
             var option3 = option.cloneNode(true)
             var option4 = option.cloneNode(true)
             var option5 = option.cloneNode(true)
+            var option6 = option.cloneNode(true)
             bfDatasetListMetadata.appendChild(option2)
             bfDatasetListPermission.appendChild(option3)
             bfUploadDatasetList.appendChild(option4)
             bfDatasetListDatasetStatus.appendChild(option5)
+            bfDatasetListRenameDataset.appendChild(option6)
         }
       }
     })

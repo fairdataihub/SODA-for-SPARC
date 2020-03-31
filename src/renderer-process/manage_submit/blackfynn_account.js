@@ -13,11 +13,32 @@ function showSelectAccount(){
 }
 
 document.querySelector('#addAccount').addEventListener('click', () => {
-    showAddAccount()
+  showAddAccount()
 })
 
 document.querySelector('#selectAccount').addEventListener('click', () => {
-    showSelectAccount()
+  showSelectAccount()
+})
+
+//Blackfynn manage datasets
+function showCreateDataset(){
+  document.getElementById('div-create-dataset').style.display ='block';
+  document.getElementById('div-rename-dataset').style.display ='none';
+  document.getElementById('para-add-new-dataset-status').innerHTML = ""
+}
+
+function showRenameDataset(){
+  document.getElementById('div-create-dataset').style.display ='none';
+  document.getElementById('div-rename-dataset').style.display ='block';
+  document.getElementById('para-rename-dataset-status').innerHTML = ""
+}
+
+document.querySelector('#createDataset').addEventListener('click', () => {
+  showCreateDataset()
+})
+
+document.querySelector('#renameDataset').addEventListener('click', () => {
+  showRenameDataset()
 })
 
 //

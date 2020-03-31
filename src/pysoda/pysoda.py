@@ -1063,11 +1063,66 @@ def bf_new_dataset_folder(datasetname, accountname):
     except Exception as e:
         raise e
 
+
+def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
+    """
+    Args:
+        accountname: account in which the dataset needs to be created (string)
+        current_dataset_name: current name of the dataset
+        renamed_dataset_name: new name of the dataset
+
+    Action:
+        Creates dataset for the account specified
+    """
+    error, c = '', 0
+    datasetname = renamed_dataset_name.strip()
+
+    if check_forbidden_characters_bf(datasetname):
+        error = error + 'Error: A Blackfynn dataset name cannot contain any of the following characters: ' + forbidden_characters_bf + "<br>"
+        c += 1
+
+    if (not datasetname):
+        error = error + 'Error: Please enter valid new dataset name' + "<br>"
+        c += 1
+
+    if (datasetname.isspace()):
+        error = error + 'Error: Please enter valid new dataset name' + "<br>"
+        c += 1
+
+    try:
+        bf = Blackfynn(accountname)
+    except Exception as e:
+        error = error + 'Error: Please select a valid Blackfynn account' + "<br>"
+        c += 1
+
+    if c>0:
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(current_dataset_name)
+    except Exception as e:
+        error = error + 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    dataset_list = []
+    for ds in bf.datasets():
+        dataset_list.append(ds.name)
+    if datasetname in dataset_list:
+        raise Exception('Error: Dataset name already exists')
+    else:
+        myds = bf.get_dataset(current_dataset_name)
+        selected_dataset_id = myds.id
+        jsonfile = {'name': datasetname}
+        bf._api.datasets._put('/' + str(selected_dataset_id), 
+            json=jsonfile)
+
+
 def clear_queue():
     command = [agent_cmd(), "upload-status", "--cancel-all"]
 
     proc = subprocess.run(command, check=True)   # env=agent_env(?settings?)
     return proc
+
 
 def agent_running():
     logger = get_logger('blackfynn.agent')
