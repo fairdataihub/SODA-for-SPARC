@@ -29,11 +29,9 @@ from blackfynn.api.agent import AgentError, check_port, socket_address
 from urllib.request import urlopen
 import json
 
-from docx import Document
-
 from openpyxl import load_workbook
 from openpyxl import Workbook
-from openpyxl.styles import Font
+from docx import Document
 
 ### Global variables
 curateprogress = ' '
