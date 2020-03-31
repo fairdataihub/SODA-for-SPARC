@@ -15,7 +15,7 @@ from shutil import copy2
 from configparser import ConfigParser
 # import threading
 import numpy as np
-import collections
+from collections import defaultdict
 import subprocess
 from websocket import create_connection
 import socket
@@ -28,7 +28,8 @@ from blackfynn.api.agent import agent_cmd
 from blackfynn.api.agent import AgentError, check_port, socket_address
 from urllib.request import urlopen
 import json
-from datetime import datetime
+
+from docx import Document
 
 from openpyxl import load_workbook
 from openpyxl import Workbook
@@ -325,6 +326,33 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     shutil.copystat(src, dst)
     return dst
 
+### Import Milestone document
+def import_milestone(filepath):
+    doc = Document(filepath)
+    table = doc.tables[0]
+    data = []
+    keys = None
+    for i, row in enumerate(table.rows):
+        text = (cell.text for cell in row.cells)
+        # headers will become the keys of our dictionary
+        if i == 0:
+            keys = tuple(text)
+            continue
+        # Construct a dictionary for this row, mapping
+        # keys to values for this row
+        row_data = dict(zip(keys, text))
+        data.append(row_data)
+    return data
+
+def extract_milestone_info(datalist):
+    milestone = defaultdict(list)
+    milestone_key = "Related milestone, aim, or task"
+    other_keys = ["Description of data", "Expected date of completion"]
+    for row in datalist:
+        key = row[milestone_key]
+        milestone[key].append({key: row[key] for key in other_keys})
+    return milestone
+
 ### Prepare submission file
 def save_submission_file(filepath, json_str):
     source = join(dirname( __file__ ), "..", "file_templates", "submission.xlsx")
@@ -335,11 +363,11 @@ def save_submission_file(filepath, json_str):
     # write to excel file
     wb = load_workbook(destination)
     ws1 = wb['Sheet1']
-    date_obj = datetime.strptime(val_arr[2], "%Y-%m-%d")
-    date_new = date_obj.strftime("%m-%d-%Y")
+    # date_obj = datetime.strptime(val_arr[2], "%Y-%m")
+    # date_new = date_obj.strftime("%m-%Y")
     ws1["C2"] = val_arr[0]
     ws1["C3"] = val_arr[1]
-    ws1["C4"] = date_new
+    ws1["C4"] = val_arr[2]
 
     wb.save(destination)
 

@@ -120,7 +120,7 @@ const downloadDescription = document.getElementById("a-description")
 const downloadManifest = document.getElementById("a-manifest")
 
 // Save grant information
-const milestoneArray = document.getElementById("table-milestones")
+const milestoneArray = document.getElementById("table-current-milestones")
 const awardArray = document.getElementById("select-grant-info-list")
 const presavedAwardArray1 = document.getElementById("select-presaved-grant-info-list")
 const addAwardBtn = document.getElementById("button-add-award")
@@ -366,6 +366,70 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
 //////////////// Provide Grant Information section /////////////////////////////////
 //////////////// //////////////// //////////////// //////////////// ////////////////
 
+////////////////////////Import Milestone Info//////////////////////////////////
+
+document.getElementById("input-milestone-select").addEventListener("click", function() {
+  ipcRenderer.send('open-file-dialog-milestone-doc')
+})
+ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null){
+      document.getElementById("input-milestone-select").placeholder = path.basename(filepath[0]);
+      //// when users click on "Upload" button
+      document.getElementById("button-import-milestone").addEventListener("click", function() {
+        var award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+        client.invoke("api_extract_milestone_info", filepath[0], (error, res) => {
+        if(error) {
+          var emessage = userError(error)
+          console.error(error)
+          document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+        }
+        else {
+          milestoneObj = res;
+          createMetadataDir();
+          var informationJson = {};
+          informationJson = parseJson(milestonePath);
+          informationJson[award] = milestoneObj;
+          fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
+          document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: black ;'>" + "Imported!</span>"
+
+          //// after saving data to json file, load the table right after.
+          /// clear old table before loading new entries
+          while (milestoneArray.rows.length>1) {
+            milestoneArray.deleteRow(1)
+          };
+          if (award in informationJson) {
+            document.getElementById("para-current-milestones").style.display = "none";
+            /// check how many data description rows there are for each milestone (to set number of rowspans)
+
+            var rowIndex = 1;
+            var milestoneKey = Object.keys(milestoneObj)
+            for (var i=0;i<milestoneKey.length;i++){
+              var milestone = milestoneObj[milestoneKey[i]];
+              // var span = milestoneObj[milestoneKey[i]].length
+              for (var j=0;j<milestone.length;j++) {
+                var description = milestone[j]["Description of data"]
+                var date = milestone[j]["Expected date of completion"]
+                var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneKey[i] +"</td><td id='name-row-description"+rowIndex+"'>"+ description +"</td><td id='name-row-date"+rowIndex+"'>"+ date +"</td></tr>"
+              }
+              rowIndex++;
+            }
+          document.getElementById("table-current-milestones").style.display = "block";
+          document.getElementById("presaved-award-list").value = "Select"
+          removeOptions(document.getElementById("selected-milestone"));
+          removeOptions(document.getElementById("selected-description-data"));
+          document.getElementById("selected-milestone-date").value = ""
+          return milestoneArray
+        }
+      }
+      });
+    })
+    }
+  }
+})
+
+/////// Save and load award and milestone info
+
 var metadataPath = path.join(homeDirectory,"SODA", "METADATA");
 var awardFileName = "awards.json";
 var milestoneFileName = "milestones.json";
@@ -377,8 +441,8 @@ awardArray.addEventListener('change', function() {
 })
 
 presavedAwardArray1.addEventListener('change', function() {
-  document.getElementById("div-show-milestone-info").style.display = "block";
-  document.getElementById("para-save-milestone-status").innerHTML = "";
+  document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
+  // document.getElementById("para-save-milestone-status").innerHTML = "";
   document.getElementById("para-delete-award-status").innerHTML = ""
 })
 
@@ -448,7 +512,6 @@ function getRowIndex(table) {
   return rowIndex
 }
 
-
 // Save grant information
 addAwardBtn.addEventListener('click', function() {
   var opt = awardArray.options[awardArray.selectedIndex].text;
@@ -470,7 +533,6 @@ addAwardBtn.addEventListener('click', function() {
 })
 
 /////// Delete an Award///////////
-// function to delete a selected value in a dropdown
 function getOptionByValue (dropdown, value) {
     // var options = dropdown.options;
     for (var i = 0; i < dropdown.length; i++) {
@@ -506,66 +568,53 @@ ipcRenderer.on('warning-delete-award-selection', (event, index) => {
       // delete award in the next two award arrays
       getOptionByValue(presavedAwardArray2,award);
       getOptionByValue(dsAwardArray,award);
-      document.getElementById("div-show-milestone-info").style.display = "none";
+      document.getElementById("div-show-milestone-info-no-existing").style.display = "none";
+      document.getElementById("div-show-current-milestones").style.display = "none";
+
       document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black;'> " + "Deleted award number: " + award + "!" + "</span>"
     }
   }
 })
 
-addNewMilestoneBtn.addEventListener("click", function() {
-  document.getElementById("para-save-milestone-status").innerHTML = "";
-  milestoneVal = document.getElementById("input-milestone-new").value;
-  dateVal = document.getElementById("input-date-new").value;
-  if (milestoneVal===''||dateVal==='') {
-    document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: red;'>Please fill in both fields to add!</span>"
-  }
-  else {
-    rowIndex = getRowIndex(milestoneArray);
-    var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneVal +"</td><td id='name-row-date"+rowIndex+"'>"+ dateVal+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete row' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
-    document.getElementById("input-milestone-new").value = "";
-    document.getElementById("input-date-new").value = "";
-  }
-})
-
-/////// Load Milestone info
+///// Load Milestone info
 presavedAwardArray1.addEventListener('change', function() {
+  document.getElementById("para-milestone-document-info").innerHTML = ""
+  document.getElementById("input-milestone-select").placeholder = "Select a file"
   opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
   /// clear old table before loading new entries
-  while (milestoneArray.rows.length>2) {
+  while (milestoneArray.rows.length>1) {
     milestoneArray.deleteRow(1)
   };
   var informationJson = parseJson(milestonePath);
   if (opt in informationJson) {
+    document.getElementById("import-or-replace").innerHTML = "Replace existing";
+    document.getElementById("div-show-current-milestones").style.display = "block";
+    document.getElementById("table-current-milestones").style.display = "block";
+    document.getElementById("para-current-milestones").style.display = "none";
+
     var milestoneObj = informationJson[opt];
     // start at 1 to skip the header
     var rowIndex = 1;
-    for (var i=0;i<milestoneObj.length; i++) {
-      var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneObj[i]["milestone"]+"</td><td id='name-row-date"+rowIndex+"'>"+ milestoneObj[i]["date"]+"</td><td><input type='button' id='edit-milestone-button"+rowIndex+"' value='Edit' class='demo-button-table' onclick='edit_milestone("+rowIndex+")'> <input type='button' id='save-milestone-button"+rowIndex+"' value='Save' style=\'display:none\' class=\'demo-button-table'\ onclick='save_milestone("+rowIndex+")'> <input type='button' value='Delete' class='demo-button-table' onclick='delete_milestone("+rowIndex+")'></td></tr>";
+    var milestoneKey = Object.keys(milestoneObj)
+    for (var i=0;i<milestoneKey.length;i++){
+      var milestone = milestoneObj[milestoneKey[i]];
+      // var span = milestoneObj[milestoneKey[i]].length
+      for (var j=0;j<milestone.length;j++) {
+        // console.log(milestoneObj[milestoneKey[i]])
+        var description = milestone[j]["Description of data"]
+        var date = milestone[j]["Expected date of completion"]
+        var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneKey[i] +"</td><td id='name-row-description"+rowIndex+"'>"+ description +"</td><td id='name-row-date"+rowIndex+"'>"+ date +"</td></tr>"
+      }
       rowIndex++;
       }
-    }
-  return milestoneArray
-});
-
-/////// Save Milestone Info to a JSON file
-saveInformationBtn.addEventListener("click", function() {
-  var opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-  // make folder if folder does not exist
-  createMetadataDir();
-  // read existing milestone information and edit
-  var informationJson = {};
-  informationJson = parseJson(milestonePath);
-  var rowcount = milestoneArray.rows.length;
-  var milestoneInfo = [];
-  for (i=1; i<rowcount-1; i++) {
-    var myMilestone = {"milestone": document.getElementById("name-row-milestone"+i).innerHTML,
-                        "date": document.getElementById("name-row-date"+i).innerHTML};
-    milestoneInfo.push(myMilestone);
-  };
-
-  informationJson[opt] = milestoneInfo;
-  fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-  document.getElementById("para-save-milestone-status").innerHTML = "<span style='color: black;'>Saved!</span>"
+    return milestoneArray
+  } else {
+    document.getElementById("import-or-replace").innerHTML = "Import your"
+    document.getElementById("div-show-current-milestones").style.display = "block";
+    document.getElementById("table-current-milestones").style.display = "none";
+    document.getElementById("para-current-milestones").style.display = "block";
+    document.getElementById("para-current-milestones").innerHTML = "There is no existing milestone information. Please import your data deliverable document!";
+  }
 });
 
 ///// Construct table from data
@@ -591,43 +640,74 @@ function done(err) {
       console.error(err); return;
     }
 });
-//////////////// //////////////// //////////////// ////////////////
-//////////////////////Submission file //////////////// ////////////////
+///////////////// //////////////// //////////////// ////////////////
+///////////////////////Submission file //////////////// ////////////////
 
 /////// Populate Submission file fields from presaved information
 presavedAwardArray2.addEventListener('change', function() {
   document.getElementById("selected-milestone").value = "";
   document.getElementById("selected-milestone-date").value = "";
-  document.getElementById('submission-milestone-list').innerHTML = "";
+  document.getElementById("selected-description-data").value = "";
+  document.getElementById("para-save-submission-status").innerHTML = "";
+
+  removeOptions(document.getElementById("selected-milestone"))
+  removeOptions(document.getElementById("selected-description-data"))
+  addOption(document.getElementById('selected-milestone'), "Select an option", "Select")
+  addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
+
   award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
   var informationJson = parseJson(milestonePath);
   var milestoneInput = document.getElementById("selected-milestone");
+  var descriptionInput = document.getElementById("selected-description-data");
   var dateInput = document.getElementById("selected-milestone-date");
-  var options = '';
   if (award in informationJson) {
     var milestoneObj = informationJson[award];
     // Load milestone values once users choose an award number
-    for (var i=0;i<milestoneObj.length; i++) {
-      options += '<option value="'+ milestoneObj[i]["milestone"]+'" />';
-    };
-    document.getElementById('submission-milestone-list').innerHTML = options;
-    // populate date field based on milestone selected
+    var milestoneKey = Object.keys(milestoneObj)
+    for (var i=0;i<milestoneKey.length;i++) {
+      addOption(document.getElementById('selected-milestone'), milestoneKey[i], milestoneKey[i]);
+    }
+    // populate description field based on milestone selected
     milestoneInput.addEventListener('input', function() {
-      for (var i=0;i<milestoneObj.length; i++) {
-        if (milestoneObj[i]["milestone"] === milestoneInput.value) {
-          dateInput.value = milestoneObj[i]["date"]
+    removeOptions(descriptionInput);
+    document.getElementById("selected-milestone-date").value = "";
+    addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
+      for (var i=0;i<milestoneKey.length; i++) {
+        if (milestoneKey[i] === milestoneInput.value) {
+          //// Add description data to dropdowns
+          for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
+            addOption(descriptionInput, milestoneObj[milestoneKey[i]][j]["Description of data"], milestoneObj[milestoneKey[i]][j]["Description of data"])
+          }
         }
       }
-      })
+    });
+    //// populate date field
+    descriptionInput.addEventListener('input', function() {
+      document.getElementById("selected-milestone-date").value = "";
+      for (var i=0;i<milestoneKey.length; i++) {
+        for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
+          if (milestoneObj[milestoneKey[i]][j]["Description of data"] === descriptionInput.value) {
+            //// stringify date object
+            var dateStrings = milestoneObj[milestoneKey[i]][j]["Expected date of completion"].toString()
+            // /// Strip linebreaks out of date strings if applicable
+            // var newDate = dateStrings.replace(/(\r\n|\n|\r)/gm,"");
+            // //// convert mm/yyyy to HTML allowed format yyyy-mm
+            // var returnDate = newDate.split("/").reverse().join("-");
+            dateInput.value = dateStrings
+        }
+      }
     }
+  })
+}
 })
 
 /// Generate submission file
 generateSubmissionBtn.addEventListener('click', (event) => {
   awardVal = document.getElementById("presaved-award-list").value;
   milestoneVal = document.getElementById("selected-milestone").value;
+  descriptionVal = document.getElementById("selected-description-data").value;
   dateVal = document.getElementById("selected-milestone-date").value;
-  if (milestoneVal===''|| dateVal==='' || awardVal==='Select') {
+  if (descriptionVal==='Select'|| dateVal==='' || awardVal==='Select' || milestoneVal==='Select') {
     document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Please fill in all fields to generate!</span>"
   } else {
     ipcRenderer.send('open-folder-dialog-save-submission', "submission.xlsx")
@@ -739,16 +819,29 @@ function createAdditionalLinksTable() {
     /// append row to table from the bottom
     var rowIndex = rowcount;
   }
+  /// Check for empty entry before adding to table
   var empty = false
   if (link==="" && description==="") {
     empty = true
   }
+  /// Check for duplicate links
+  var duplicate = false
+  for (var i=0; i<rowcount;i++){
+    if (myTable.rows[i].cells[0].innerHTML===link) {
+      duplicate = true
+      break
+    }
+  }
   if (!empty) {
-    var row = myTable.insertRow(rowIndex).outerHTML="<tr id='row-current-link"+rowIndex+"'style='color: #000000;'><td id='link-row"+rowIndex+"'>"+ link+"</td><td id='link-description-row"+rowIndex+"'>"+ description +"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_link("+rowIndex+")'></td></tr>";
-    document.getElementById("div-current-additional-links").style.display = "block";
-    return myTable
+    if (!duplicate) {
+      var row = myTable.insertRow(rowIndex).outerHTML="<tr id='row-current-link"+rowIndex+"'style='color: #000000;'><td id='link-row"+rowIndex+"'>"+ link+"</td><td id='link-description-row"+rowIndex+"'>"+ description +"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_link("+rowIndex+")'></td></tr>";
+      document.getElementById("div-current-additional-links").style.display = "block";
+      return myTable
+    } else {
+      document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>The link already exists below!</span>"
+    }
   } else {
-    document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>Please fill in the fields!</span>"
+    document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>Please fill in at least 1 field to add!</span>"
   }
 }
 
