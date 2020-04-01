@@ -60,6 +60,14 @@ initial_bfdataset_size_submit = 0
 forbidden_characters = '<>:"/\|?*'
 forbidden_characters_bf = '\/:*?"<>'
 
+DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
+
+# once pysoda has been packaged with pyinstaller
+# it becomes nested into the pysodadist/api directory
+PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
+TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
+
+
 ### Internal functions
 def open_file(file_path):
     """
@@ -353,7 +361,7 @@ def extract_milestone_info(datalist):
 
 ### Prepare submission file
 def save_submission_file(filepath, json_str):
-    source = join(dirname( __file__ ), "..", "file_templates", "submission.xlsx")
+    source = join(TEMPLATE_PATH, "submission.xlsx")
     destination = filepath
     shutil.copyfile(source, destination)
     # json array to python list
@@ -384,7 +392,7 @@ def excel_columns():
 
 ### Prepare dataset-description file
 def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_str):
-    source = join(dirname( __file__ ), "..", "file_templates", "dataset_description.xlsx")
+    source = join(TEMPLATE_PATH, "dataset_description.xlsx")
     destination = filepath
     shutil.copyfile(source, destination)
 
