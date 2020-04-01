@@ -154,3 +154,25 @@ document.querySelector('#user-permission').addEventListener('click', () => {
 document.querySelector('#team-permission').addEventListener('click', () => {
     showTeamPermission()
 })
+
+
+// Post curation tasks
+function showReserveNewDOI(){
+  document.getElementById('div-reserve-doi').style.display ='block';
+  document.getElementById('div-publish-dataset').style.display ='none';
+  document.getElementById('para-reserve-doi-status').innerHTML = ""
+}
+
+function showPublishDataset(){
+  document.getElementById('div-reserve-doi').style.display ='none';
+  document.getElementById('div-publish-dataset').style.display ='block';
+  document.getElementById('para-publish-dataset-status').innerHTML = ""
+}
+
+document.querySelector('#reserveDOI').addEventListener('click', () => {
+  showReserveNewDOI()
+})
+
+document.querySelector('#publishDataset').addEventListener('click', () => {
+  showPublishDataset()
+})

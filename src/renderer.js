@@ -47,6 +47,7 @@ document.getElementById("add-edit-subtitle").click()
 document.getElementById("pi-owner").click()
 document.getElementById("cloud-dataset").click()
 document.getElementById("organize-dataset").click()
+document.getElementById("reserveDOI").click()
 
 //log user's OS version //
 log.info("User OS:", os.type(), os.platform(), "version:", os.release())
@@ -261,6 +262,18 @@ const bfCurrentDatasetStatusProgress = document.querySelector('#div-bf-current-d
 const bfListDatasetStatus = document.querySelector('#bf_list_dataset_status')
 const datasetStatusStatus = document.querySelector('#para-dataset-status-status')
 const bfRefreshDatasetStatusBtn = document.getElementById('button-refresh-dataset-status')
+
+//Blackfynn dataset status
+const bfPostCurationForm = document.querySelector('#blackfynn-post-curation')
+const bfDatasetListPostCuration = document.querySelector('#bfdatasetlist_postcuration')
+const bfPostCurationProgress = document.querySelector('#div-bf-post-curation-progress')
+const bfReserveDOIBtn = document.querySelector('#button-reserve-doi')
+const currentDOI = document.querySelector('#input-current-doi')
+const reserveDOIStatus = document.querySelector('#para-reserve-doi-status')
+
+const bfPublishDatasetBtn = document.querySelector('#publishDataset')
+const publishDatasetStatus = document.querySelector('#para-publish-dataset-status')
+
 //////////////////////////////////
 // Constant parameters
 //////////////////////////////////
@@ -1730,6 +1743,7 @@ bfRefreshDatasetRenameDatasetBtn.addEventListener('click', () => {
   refreshAllBfDatasetLists()
 })
 
+
 // Add new dataset folder (empty) on bf //
 bfCreateNewDatasetBtn.addEventListener('click', () => {
   bfCreateNewDatasetBtn.disabled = true
@@ -1890,6 +1904,8 @@ bfUploadDatasetList.addEventListener('change', () => {
   datasetStatusListChange()
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
+  bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+  postCurationListChange()
 })
 
 // Upload local dataset
@@ -1904,6 +1920,8 @@ bfDatasetList.addEventListener('change', () => {
   datasetStatusListChange()
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
+  bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+  postCurationListChange()
 })
 
 // Rename dataset
@@ -1942,6 +1960,8 @@ bfDatasetListMetadata.addEventListener('change', () => {
   datasetStatusListChange()
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
+  bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+  postCurationListChange()
 })
 
 function metadataDatasetlistChange(){
@@ -1969,6 +1989,8 @@ bfDatasetListPermission.addEventListener('change', () => {
   datasetStatusListChange()
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
+  bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+  postCurationListChange()
 })
 
 function permissionDatasetlistChange(){
@@ -1988,12 +2010,38 @@ bfDatasetListDatasetStatus.addEventListener('change', () => {
   datasetStatusListChange()
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
+  bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+  postCurationListChange()
 })
 
 function datasetStatusListChange(){
   bfCurrentDatasetStatusProgress.style.display = 'block'
   showCurrentDatasetStatus()
 }
+
+// Post-curation
+bfDatasetListPostCuration.addEventListener('change', () => {
+  var listSelectedIndex = bfDatasetListPostCuration.selectedIndex
+  bfDatasetListMetadata.selectedIndex = listSelectedIndex
+  metadataDatasetlistChange()
+  bfUploadDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetListPermission.selectedIndex = listSelectedIndex
+  permissionDatasetlistChange()
+  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
+  datasetStatusListChange()
+  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
+  renameDatasetlistChange()
+  postCurationListChange()
+})
+
+function postCurationListChange(){
+  reserveDOIStatus.innerHTML = ""
+  publishDatasetStatus.innerHTML = ""
+  showCurrentDOI()
+}
+
+
 
 // Change dataset status option change
 bfListDatasetStatus.addEventListener('change', () => {
@@ -2321,6 +2369,33 @@ bfAddPermissionTeamBtn.addEventListener('click', () => {
   })
 })
 
+// Reserve DOI
+bfReserveDOIBtn.addEventListener('click', () => {
+  disableform(bfPostCurationForm)
+  reserveDOIStatus.innerHTML = "Please wait..."
+  bfPostCurationProgress.style.display = 'block'
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  client.invoke("api_bf_reserve_doi", selectedBfAccount, selectedBfDataset,
+    (error, res) => {
+    if(error) {
+      log.error(error)
+      console.error(error)
+      var emessage = userError(error)
+      reserveDOIStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfPostCurationProgress.style.display = 'none'
+      enableform(bfPostCurationForm)
+    } else {
+      reserveDOIStatus.innerHTML = res
+      showCurrentDOI()
+      enableform(bfPostCurationForm)
+    }
+  })
+})
+
+// Publish dataset
+
+
 //////////////////////////////////
 // Helper functions
 //////////////////////////////////
@@ -2401,6 +2476,7 @@ function refreshAllBfDatasetLists(){
       removeOptions(bfUploadDatasetList)
       removeOptions(bfDatasetListDatasetStatus)
       removeOptions(bfDatasetListRenameDataset)
+      removeOptions(bfDatasetListPostCuration)
       var optionSelect = document.createElement("option")
       optionSelect.textContent = 'Select dataset'
       bfDatasetList.appendChild(optionSelect)
@@ -2409,11 +2485,13 @@ function refreshAllBfDatasetLists(){
       var option4 = optionSelect.cloneNode(true)
       var option5 = optionSelect.cloneNode(true)
       var option6 = optionSelect.cloneNode(true)
+      var option7 = optionSelect.cloneNode(true)
       bfDatasetListMetadata.appendChild(option2)
       bfDatasetListPermission.appendChild(option3)
       bfUploadDatasetList.appendChild(option4)
       bfDatasetListDatasetStatus.appendChild(option5)
       bfDatasetListRenameDataset.appendChild(option6)
+      bfDatasetListPostCuration.appendChild(option7)
     } else {
       client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
         if(error) {
@@ -2426,6 +2504,7 @@ function refreshAllBfDatasetLists(){
           removeOptions(bfUploadDatasetList)
           removeOptions(bfDatasetListDatasetStatus)
           removeOptions(bfDatasetListRenameDataset)
+          removeOptions(bfDatasetListPostCuration)
           for (myitem in res){
             var myitemselect = res[myitem]
             var option = document.createElement("option")
@@ -2437,11 +2516,13 @@ function refreshAllBfDatasetLists(){
             var option4 = option.cloneNode(true)
             var option5 = option.cloneNode(true)
             var option6 = option.cloneNode(true)
+            var option7 = option.cloneNode(true)
             bfDatasetListMetadata.appendChild(option2)
             bfDatasetListPermission.appendChild(option3)
             bfUploadDatasetList.appendChild(option4)
             bfDatasetListDatasetStatus.appendChild(option5)
             bfDatasetListRenameDataset.appendChild(option6)
+            bfDatasetListPostCuration.appendChild(option7)
         }
       }
     })
@@ -2781,6 +2862,30 @@ function updateBfAccountList(){
     refreshBfTeamsList(bfListTeams)
 })
 }
+
+function showCurrentDOI(){
+  currentDOI.value = "Please wait..."
+  bfPostCurationProgress.style.display = 'block'
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  if (selectedBfDataset === 'Select dataset'){
+    currentDOI.value = 'None'
+    bfPostCurationProgress.style.display = 'none'
+  } else {
+    client.invoke("api_bf_get_doi", selectedBfAccount, selectedBfDataset,
+    (error, res) => {
+      if(error) {
+        log.error(error)
+        console.error(error)
+        bfCurrentPermissionProgress.style.display = 'none'
+      } else {
+        currentDOI.value = res
+        bfPostCurationProgress.style.display = 'none'
+      }
+    })
+  }
+}
+
 
 // Organize Dataset //
 

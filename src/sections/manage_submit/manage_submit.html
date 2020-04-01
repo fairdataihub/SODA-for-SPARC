@@ -96,7 +96,7 @@ my-dropdown<!DOCTYPE html>
           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Create-new-empty-dataset" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
-          <div class="demo-meta u-avoid-clicks"> Create an empty dataset or rename an existing one
+          <div class="demo-meta u-avoid-clicks"> Create an new dataset or rename an existing one
           </div>
         </button>
         <div class="demo-box">
@@ -132,17 +132,22 @@ my-dropdown<!DOCTYPE html>
           </div>
 
           <div id="div-rename-dataset" class="datasetsaveoption" style="margin-left:20px">
-            <h5> </h5>
+            <h5> 
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">
+              Note: You must have "owner" or "manager" permissions on the dataset to change its name. Verify below under "Current permissions" after you select a dataset. See our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+              </span>
+            </div>
+            </h5>
             <div class="demo-controls">
-              <select class="my_dropdown" id="bfdatasetlist_renamedataset">
+              <select class="my-dropdown" id="bfdatasetlist_renamedataset">
                 <option> Select dataset </option>
               </select>
               <p></p>
               <button id="button-refresh-dataset-renamedataset-list" class="demo-button"> Refresh List </button>
             </div>
 
-            <h5> Enter new name:
-            </h5>
+            <h5> Enter new name: </h5>
             <div class="demo-controls">
               <input id="bf-rename-dataset-name" class="demo-response"> </input>
             </div>
@@ -154,7 +159,6 @@ my-dropdown<!DOCTYPE html>
             </div>
 
           </div>
-
 
         <p></p>
         </div>
@@ -580,23 +584,6 @@ my-dropdown<!DOCTYPE html>
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button"> Annotate dataset
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Annotate-dataset" >
-            <img class="nav-video" src="assets/img/play-video-icon.png">
-          </a>
-          <div class="demo-meta u-avoid-clicks"> Inform the model properties for your dataset </div>
-        </button>
-        <div class="demo-box">
-          <p> </p>
-
-          <p> Coming soon... Tentative date: April 2020</p>
-
-        </div>
-      </div>
-    </div>
-
-    <div class="demo">
-      <div class="demo-wrapper">
         <button id="button-new-window-submit-demo-toggle" class="js-container-target demo-toggle-button"> Upload local dataset
           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Upload-local-dataset" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
@@ -653,6 +640,84 @@ my-dropdown<!DOCTYPE html>
             <p id='para-progress-bar-status'> <p>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button"> Complete post-curation tasks
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Annotate-dataset" >
+            <img class="nav-video" src="assets/img/play-video-icon.png">
+          </a>
+          <div class="demo-meta u-avoid-clicks"> Reserve DOI and publish dataset </div>
+        </button>
+
+        <div class="demo-box">
+
+          <h5> Select Blackfynn dataset </h5>
+          <div class="demo-controls">
+            <select class="my-dropdown" id="bfdatasetlist_postcuration">
+              <option> Select dataset </option>
+            </select>
+          </div>
+
+          <div id="div-bf-post-curation-progress" class="progressdiv">
+            <div class="indeterminatebar"></div>
+          </div>
+
+          <h5></h5>
+          <form id = 'blackfynn-post-curation'>
+            <div style = "padding:10px 0px">
+              <input class="input-switch" id="reserveDOI" type="radio" name="tabs" checked>
+              <label class="label-switch" for="reserveDOI">Reserve DOI </label>
+              <input class="input-switch" id="publishDataset" type="radio" name="tabs">
+              <label class="label-switch" for="publishDataset">Publish dataset</label>
+            </div>
+          </form>
+
+          <br><br><br><br>
+          <div id="div-reserve-doi" class="datasetsaveoption" style="margin-left:20px">
+
+
+            <div class="demo-controls" style="margin-top:-30px">
+              <div style="width: 200px; float: left;">
+                <h5> Click to reserve DOI </h5>
+                <button id="button-reserve-doi" class="demo-button" style="width: 300px"> Reserve DataCite DOI
+                </button>
+              </div>
+              <div style="margin-left: 220px;">
+                <h5> Currently reserved DOI </h5>
+                <input id="input-current-doi" class="demo-response" value="None" disabled> </input>
+              </div>
+
+            </div>
+
+            <p id='para-reserve-doi-status'> Please wait...</p>
+
+          </div>
+
+          <div id="div-publish-dataset" class="datasetsaveoption" style="margin-left:20px">
+
+            <div class="demo-controls" style="margin-top:-30px">
+              <div style="width: 200px; float: left;">
+                <h5> Click to publish dataset </h5>
+                <button id="button-publish-dataset" class="demo-button" style="width: 300px"> Publish dataset
+                </button>
+              </div>
+              <div style="margin-left: 220px;">
+                <h5> Publishing status:
+                </h5>
+                <p id = "para-published-status"> Not published </p>
+              </div>
+
+            </div>
+
+            <p id='para-publish-dataset-status'> Please wait...</p>
+            
+          </div>
+          
+
         </div>
       </div>
     </div>
