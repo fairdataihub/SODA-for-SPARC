@@ -965,11 +965,11 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
       var rowcountCon = currentConTable.rows.length;
       var currentConInfo = [];
       for (i=1; i<rowcountCon; i++) {
-        var myCurrentCon = {"conName":document.getElementById("name-row"+i).innerHTML,
-                            "conID": document.getElementById("orcid-id-row"+i).innerHTML,
-                            "conAffliation": document.getElementById("affiliation-row"+i).innerHTML,
-                            "conRole": document.getElementById("role-row"+i).innerHTML,
-                            "conContact": document.getElementById("contact-person-row"+i).innerHTML}
+        var myCurrentCon = {"conName": currentConTable.rows[i].cells[0].innerHTML,
+                              "conID": currentConTable.rows[i].cells[1].innerHTML,
+                              "conAffliation": currentConTable.rows[i].cells[2].innerHTML,
+                              "conRole": currentConTable.rows[i].cells[3].innerHTML,
+                              "conContact": currentConTable.rows[i].cells[4].innerHTML}
         currentConInfo.push(myCurrentCon);
       };
       var acknowlegdment = document.getElementById("ds-description-acknowlegdment").value;
@@ -999,8 +999,8 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
       var rowcountLink = document.getElementById("table-addl-links").rows.length;
       var addlLinkInfo = [];
       for (i=1; i<rowcountLink; i++) {
-        var addlLink = {"link": document.getElementById("link-row"+i).innerHTML,
-                        "description": document.getElementById("link-description-row"+i).innerHTML}
+        var addlLink = {"link": document.getElementById("table-addl-links").rows[i].cells[0].innerHTML,
+                        "description": document.getElementById("table-addl-links").rows[i].cells[1].innerHTML}
         addlLinkInfo.push(addlLink)
       }
       miscObj["doi"] = doiArray;
