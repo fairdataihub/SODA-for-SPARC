@@ -234,7 +234,7 @@
   font-size: 1.1em;
   color: inherit;
   background-color: transparent;
-  width: 90px;
+  width: 110px;
   cursor: pointer;
   text-align: center;
 }
@@ -430,6 +430,7 @@ select.my-dropdown {
     border-radius: 5px;
     background-color: #ffffff;
     font: inherit;
+    height: 38px;
 }
 
 table {
