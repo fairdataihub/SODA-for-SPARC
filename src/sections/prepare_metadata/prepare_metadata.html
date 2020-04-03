@@ -55,25 +55,25 @@
 <!-- Save information for later -->
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-save-grant-info-demo-toggle" class="js-container-target demo-toggle-button">Provide grant information
+        <button id="button-save-grant-info-demo-toggle" class="js-container-target demo-toggle-button">Provide award information
           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Provide-grant-information">
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
-          <div class="demo-meta u-avoid-clicks"> Provide information about your grant number and milestones for later use </div>
+          <div class="demo-meta u-avoid-clicks"> Provide information about your award number and milestones for later use </div>
         </button>
 
       <div class="demo-box">
           <form id = 'grant-information'>
             <div style = "padding:10px 0px">
               <input class="input-switch" id="addGrant" type="radio" name="tabs" checked>
-              <label class="label-switch" style="font-size:15px;padding-top: 6px;" for="addGrant">Add new grant</label>
+              <label class="label-switch" style="font-size:15px;padding-top: 6px;" for="addGrant">Add new award</label>
               <input class="input-switch" id="selectGrant" type="radio" name="tabs">
-              <label class="label-switch" style="font-size:15px;padding-top: 6px;"for="selectGrant">Edit existing grant</label>
+              <label class="label-switch" style="font-size:15px;padding-top: 6px;"for="selectGrant">Edit existing award</label>
             </div>
          </form>
 
           <div id="div-add-new-grant" class="datasetsaveoption" style="display:block;margin-top:70px;margin-left:10px">
-            <h5> Add a new grant number: </h5>
+            <h5> Add a new award: </h5>
             <div class="demo-controls">
               <select id="select-grant-info-list" class="my-dropdown-metadata" style="width:90%;float:left;height:35px;line-height:2;padding:6px 8px;margin-top:15px">
                 <option>Select</option>
@@ -86,7 +86,7 @@
           </div>
 
           <div id="div-select-existing-grant" class="datasetsaveoption" style="display:none;margin-top:70px;margin-left:10px">
-            <h5> Specify a grant number: </h5>
+            <h5> Select award: </h5>
             <div class="demo-controls" style="margin-top:20px">
               <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:100%; height:35px;line-height:2;padding: 6px 8px; font-size:14px">
                 <option>Select</option>
@@ -101,13 +101,13 @@
             <div class="demo-controls">
               <div id="div-show-milestone-info-no-existing" class="pathtable" style="display:none;width:100%">
                 <!-- <form method="post" style="width:100%"> -->
-                  <h5> <span id="import-or-replace">Import your </span> Data Deliverables document: </h5>
+                  <h5>Data Deliverables document: </h5>
                   <h5></h5>
                   <div class="container-milestone-upload" style="display:flex;">
                     <!-- <button type="button" style="width:40%;float:left" class="button-milestone-upload">Select a file</button> -->
                     <input class="milestone-upload-text" id="input-milestone-select" style="width:40%;text-align:center" type="text" readonly placeholder="Select a file">
-                    <button id="button-import-milestone" type="button" style="width:20%" class="button-milestone-upload"><b>Upload</b></button>
-                    <p id="para-milestone-document-info" style="float:right;margin-top:0;margin-left:7px;text-align:center;vertical-align:middle;"></p>
+                    <button id="button-import-milestone" type="button" style="width:20%" class="button-milestone-upload"><b>Import</b></button>
+                    <p id="para-milestone-document-info" style="float:right;margin-top:0;margin-left:7px;padding: 0 0;height:34px;width:300px;text-align:left;vertical-align:middle;"></p>
                   </div>
                 <!-- </form> -->
               </div>
@@ -135,7 +135,7 @@
     <!-- Prepare submission file -->
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-submission-demo-toggle" class="js-container-target demo-toggle-button"> Prepare your Submission file
+        <button id="button-submission-demo-toggle" class="js-container-target demo-toggle-button"> Prepare your submission file
           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Prepare-Submission-File">
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
@@ -202,7 +202,7 @@
   <!-- Prepare dataset-description file -->
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-ds-description-demo-toggle" class="js-container-target demo-toggle-button"> Prepare your Dataset Description file
+        <button id="button-ds-description-demo-toggle" class="js-container-target demo-toggle-button"> Prepare your dataset description file
           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Prepare-Dataset-Description-File">
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
@@ -213,7 +213,7 @@
           <div class="multisteps-form__progress" style="margin-top:20px">
             <button id="ds-dataset-info" class="multisteps-form__progress-btn js-active1" style="font-size: 15px" type="button" title="Dataset Info"><b>Dataset Info</b></button>
             <button id="ds-contributor-info"class="multisteps-form__progress-btn" style="font-size: 15px" type="button" title="Con Info"><b>Contributor Info</b></button>
-            <button id="ds-misc-info"class="multisteps-form__progress-btn" style="font-size: 15px" type="button" title="Other Info"><b>Other Info</b></button>
+            <button id="ds-misc-info"class="multisteps-form__progress-btn" style="font-size: 15px" type="button" title="Other Info"><b>Article(s) and protocol(s)</b></button>
             <button id="ds-optional-info" class="multisteps-form__progress-btn" style="font-size: 15px" type="button" title="Optional Info"><b>Optional Info</b></button>
           </div>
 
