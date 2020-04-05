@@ -73,15 +73,19 @@
          </form>
 
           <div id="div-add-new-grant" class="datasetsaveoption" style="display:block;margin-top:70px;margin-left:10px">
-            <h5> Add a new award: </h5>
+            <h5> Search for award: </h5>
             <div class="demo-controls">
-              <select id="select-grant-info-list" class="my-dropdown-metadata" style="width:90%;float:left;height:35px;line-height:2;padding:6px 8px;margin-top:15px">
+              <input id="input-grant-info" list="select-grant-info-list" class="form-container-input-bf" style="width:90%;float:left;height:35px;line-height:2;padding:6px 8px;margin-top:15px">
+              <datalist id="select-grant-info-list">
                 <option>Select</option>
-              </select>
+              </datalist>
               <button id="button-add-award" class="demo-button" style="height:35px;width:150px;padding:0 0;margin-left:10px;margin-top:15px">Add</button>
             </div>
             <div style="height:20px;margin-top:7px;margin-bottom:7px">
               <p id="para-save-award-info"></p>
+            </div>
+            <div id="div-awards-load-progress" class="progressdiv">
+              <div class="indeterminatebar"></div>
             </div>
           </div>
 

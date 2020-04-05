@@ -534,20 +534,27 @@ function getRowIndex(table) {
 
 // Save grant information
 addAwardBtn.addEventListener('click', function() {
-  var opt = awardArray.options[awardArray.selectedIndex].text;
-  var awardNumber = awardArray.options[awardArray.selectedIndex].value;
+  var inputVal = document.getElementById("input-grant-info").value;
+  var awardVal;
+  for (var i = 0; i < awardArray.options.length; i++) {
+    if (awardArray.options[i].value === inputVal) {
+      awardVal = awardArray.options[i].value
+    }
+  }
+  var awardNo = awardVal.slice(0, awardVal.indexOf(" ("));
+  console.log(awardNo)
   // create empty milestone json files for newly added award
   createMetadataDir();
   var awardsJson = {};
   awardsJson = parseJson(awardPath);
-  if (awardNumber in awardsJson) {
+  if (awardNo in awardsJson) {
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Award already added!</span>";
   } else {
-    awardsJson[awardNumber] = opt;
+    awardsJson[awardNo] = awardVal;
     fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
-    addOption(presavedAwardArray1, opt, awardNumber);
-    addOption(presavedAwardArray2, opt, awardNumber);
-    addOption(dsAwardArray, opt, awardNumber);
+    addOption(presavedAwardArray1, awardVal, awardNo);
+    addOption(presavedAwardArray2, awardVal, awardNo);
+    addOption(dsAwardArray, awardVal, awardNo);
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Added!" + smileyCan + "</span>";
   }
 })
@@ -634,29 +641,51 @@ presavedAwardArray1.addEventListener('change', function() {
   }
 });
 
+// indicate to user that airtable records are being retrieved
+document.getElementById("div-awards-load-progress").style.display = 'block'
+
 ///// Construct table from data
+var awardResultArray = [];
 table_airtable.select({
     view: 'Grid view'
 }).eachPage(function page(records, fetchNextPage) {
-    var awardResultArray = [];
     records.forEach(function(record) {
       item = record.get('SPARC_Award_#').concat(" (", record.get('Project_title'), ")");
       awardResultArray.push(item);
     }),
   fetchNextPage();
-  // create set to remove duplicates
-  awardSet = [...new Set(awardResultArray)];
-  for (var i = 0; i < awardSet.length; i++) {
-      var opt = awardSet[i];
-      var value = awardSet[i].slice(0,awardSet[i].indexOf(" ("))
-      addOption(awardArray, opt, value)
-  };
 },
 function done(err) {
+    document.getElementById("div-awards-load-progress").style.display = 'none';
     if (err) {
       log.error(err)
       console.error(err); return;
     }
+    else {
+      // create set to remove duplicates
+      var awardSet = new Set()
+      for (var j=0;j<awardResultArray.length;j++) {
+        awardSet.add(awardResultArray[j])
+      }
+      var options = "";
+      for (award of awardSet) {
+          options += '<option value="'+award+'"></option>';
+      };
+      awardArray.innerHTML = options;
+    }
+});
+
+var contributorRoles = document.getElementById("input-con-role"),
+  currentContributortagify = new Tagify(contributorRoles, {
+    whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "ContactPerson", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+    dropdown : {
+        classname : "color-blue",
+        enabled   : 0,         // show the dropdown immediately on focus
+        maxItems  : 25,
+        // position  : "text",    // place the dropdown near the typed text
+        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+    },
+    duplicates: false
 });
 ///////////////// //////////////// //////////////// ////////////////
 ///////////////////////Submission file //////////////// ////////////////
