@@ -675,18 +675,6 @@ function done(err) {
     }
 });
 
-var contributorRoles = document.getElementById("input-con-role"),
-  currentContributortagify = new Tagify(contributorRoles, {
-    whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "ContactPerson", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
-    dropdown : {
-        classname : "color-blue",
-        enabled   : 0,         // show the dropdown immediately on focus
-        maxItems  : 25,
-        // position  : "text",    // place the dropdown near the typed text
-        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
-    },
-    duplicates: false
-});
 ///////////////// //////////////// //////////////// ////////////////
 ///////////////////////Submission file //////////////// ////////////////
 
