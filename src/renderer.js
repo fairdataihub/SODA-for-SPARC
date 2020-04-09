@@ -439,28 +439,19 @@ ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
 var metadataPath = path.join(homeDirectory,"SODA", "METADATA");
 var awardFileName = "awards.json";
 var milestoneFileName = "milestones.json";
+var defaultAwardFileName = "default-awards.json";
 var awardPath = path.join(metadataPath, awardFileName);
 var milestonePath = path.join(metadataPath, milestoneFileName);
+var defaultAwardPath = path.join(metadataPath, defaultAwardFileName);
 
 awardArray.addEventListener('change', function() {
   document.getElementById("para-save-award-info").innerHTML = "";
 })
 
 presavedAwardArray1.addEventListener('change', function() {
-  award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value
+  // award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value
   document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
   document.getElementById("para-delete-award-status").innerHTML = ""
-  //// set value of other award dropdowns to currently chosen value under Provide Award information
-  for (var i = 0; i < presavedAwardArray2.length; i++) {
-      if (presavedAwardArray2.options[i].value === award) {
-          presavedAwardArray2.value = presavedAwardArray2.options[i].value
-      }
-  };
-  for (var i = 0; i < dsAwardArray.length; i++) {
-      if (dsAwardArray.options[i].value === award) {
-          dsAwardArray.value = dsAwardArray.options[i].value
-      }
-  };
 })
 
 // function to load and parse json file
@@ -499,23 +490,17 @@ var addOption = function(selectbox, text, value) {
 
 // Function to auto load existing awards
 function loadAwards() {
-  var rawData = fs.readFile(awardPath, "utf8", function(error, contents) {
-    if (!fs.existsSync(awardPath)) {
-      return {}
-    }
-    if (error) {
-      log.error(error)
-      console.log(error)
-    } else {
-      var awards = JSON.parse(contents);
-      for (var key in awards) {
-        // Add options to dropdown lists
-        addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
-        addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
-        addOption(dsAwardArray, eval(JSON.stringify(awards[key])), key);
-      }
-    }
-  })
+  if (!fs.existsSync(awardPath)) {
+    return {}
+  }
+  var contents = fs.readFileSync(awardPath, "utf8");
+  var awards = JSON.parse(contents);
+  for (var key in awards) {
+    // Add options to dropdown lists
+    addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
+    addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
+    addOption(dsAwardArray, eval(JSON.stringify(awards[key])), key);
+  }
 }
 loadAwards()
 
@@ -542,7 +527,6 @@ addAwardBtn.addEventListener('click', function() {
     }
   }
   var awardNo = awardVal.slice(0, awardVal.indexOf(" ("));
-  console.log(awardNo)
   // create empty milestone json files for newly added award
   createMetadataDir();
   var awardsJson = {};
@@ -580,6 +564,11 @@ ipcRenderer.on('warning-delete-award-selection', (event, index) => {
     } else {
       var milestoneJson = parseJson(milestonePath);
       var awardsJson = parseJson(awardPath)
+      var defaultedAwardJson = parseJson(defaultAwardPath)
+      // check if award is default award
+      if (award === defaultedAwardJson["default"]) {
+        delete defaultedAwardJson["default"];
+        }
       // check if award is in list
       if (award in awardsJson) {
         delete awardsJson[award];
@@ -588,6 +577,7 @@ ipcRenderer.on('warning-delete-award-selection', (event, index) => {
       if (award in milestoneJson) {
         delete milestoneJson[award];
       }
+      fs.writeFileSync(defaultAwardPath, JSON.stringify(defaultedAwardJson));
       fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
       presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
       fs.writeFileSync(milestonePath, JSON.stringify(milestoneJson));
@@ -596,28 +586,78 @@ ipcRenderer.on('warning-delete-award-selection', (event, index) => {
       deleteOptionByValue(dsAwardArray,award);
       document.getElementById("div-show-milestone-info-no-existing").style.display = "none";
       document.getElementById("div-show-current-milestones").style.display = "none";
-
       document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black;'> " + "Deleted award number: " + award + "!" + "</span>"
     }
   }
 })
 
-///// Load Milestone info
-presavedAwardArray1.addEventListener('change', function() {
+//// function to make a selected award the default award
+function makeDefaultAward(award) {
+  var defaultObj = {};
+  var defaultObj = parseJson(defaultAwardPath);
+  defaultObj["default"] = award
+  fs.writeFileSync(defaultAwardPath, JSON.stringify(defaultObj));
+}
+
+/// When SODA launches, load default award
+function loadDefaultAward() {
+  var award;
+  var defaultObj = parseJson(defaultAwardPath);
+  try {
+    award = defaultObj["default"]
+    return award
+  }
+  catch (error) {
+    log.error(error)
+    console.log(error);
+    return ""
+  }
+}
+
+var defaultAward = loadDefaultAward()
+loadMilestoneInfo(defaultAward)
+
+function loadMilestoneInfo(awardNumber) {
   document.getElementById("para-milestone-document-info").innerHTML = ""
   document.getElementById("input-milestone-select").placeholder = "Select a file"
-  opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+
+  ///// first, make the selected award the default so next time SODA will auto-load it.
+  makeDefaultAward(awardNumber)
+
+  //// Start loading milestone table
   /// clear old table before loading new entries
   while (milestoneArray.rows.length>1) {
     milestoneArray.deleteRow(1)
   };
-  var informationJson = parseJson(milestonePath);
-  if (opt in informationJson) {
+  var awardJson = parseJson(awardPath);
+  if (awardNumber in awardJson) {
+    presavedAwardArray1.value = awardNumber
+    ///// populate submission award drop-down
+    for (var i = 0; i < presavedAwardArray2.length; i++) {
+        if (presavedAwardArray2.options[i].value === awardNumber) {
+            presavedAwardArray2.value = presavedAwardArray2.options[i].value
+            changeAwardInput()
+            break
+        }
+    };
+    //// populate dataset contribution award drop-down
+    for (var i = 0; i < dsAwardArray.length; i++) {
+        if (dsAwardArray.options[i].value === awardNumber) {
+            dsAwardArray.value = dsAwardArray.options[i].value
+            changeAwardInputDsDescription()
+            break
+        }
+    }
+    document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
     document.getElementById("div-show-current-milestones").style.display = "block";
     document.getElementById("table-current-milestones").style.display = "block";
     document.getElementById("para-current-milestones").style.display = "none";
+  }
 
-    var milestoneObj = informationJson[opt];
+  //// get content from milestone.json file and load it up
+  var milestoneJson = parseJson(milestonePath);
+  if (awardNumber in milestoneJson) {
+    var milestoneObj = milestoneJson[awardNumber];
     // start at 1 to skip the header
     var rowIndex = 1;
     var milestoneKey = Object.keys(milestoneObj)
@@ -634,12 +674,24 @@ presavedAwardArray1.addEventListener('change', function() {
       }
     return milestoneArray
   } else {
-      document.getElementById("div-show-current-milestones").style.display = "block";
-      document.getElementById("table-current-milestones").style.display = "none";
-      document.getElementById("para-current-milestones").style.display = "block";
-      document.getElementById("para-current-milestones").innerHTML = "There is no existing milestone information. Please import your data deliverable document!";
-  }
-});
+     document.getElementById("div-show-current-milestones").style.display = "block";
+     document.getElementById("table-current-milestones").style.display = "none";
+     document.getElementById("para-current-milestones").style.display = "block";
+     document.getElementById("para-current-milestones").innerHTML = "There is no existing milestone information. Please import your data deliverable document!";
+ }
+}
+
+/// check if no award is selected, then show no current milestones.
+if (presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value === "Select") {
+  document.getElementById("div-show-milestone-info-no-existing").style.display = "none"
+  document.getElementById("div-show-current-milestones").style.display = "none"
+}
+
+///// Load Milestone info
+presavedAwardArray1.addEventListener('change', function() {
+  var currentAward = presavedAwardArray1.value
+  loadMilestoneInfo(currentAward)
+})
 
 // indicate to user that airtable records are being retrieved
 document.getElementById("div-awards-load-progress").style.display = 'block'
@@ -663,23 +715,19 @@ function done(err) {
     }
     else {
       // create set to remove duplicates
-      var awardSet = new Set()
-      for (var j=0;j<awardResultArray.length;j++) {
-        awardSet.add(awardResultArray[j])
+      var awardSet = new Set(awardResultArray)
+      var options = ""
+      for (element of awardSet) {
+        options += '<option value="'+element+'" />';
       }
-      var options = "";
-      for (award of awardSet) {
-          options += '<option value="'+award+'"></option>';
-      };
-      awardArray.innerHTML = options;
+      awardArray.innerHTML = options
     }
 });
 
 ///////////////// //////////////// //////////////// ////////////////
 ///////////////////////Submission file //////////////// ////////////////
 
-/////// Populate Submission file fields from presaved information
-presavedAwardArray2.addEventListener('change', function() {
+function changeAwardInput() {
   document.getElementById("selected-milestone").value = "";
   document.getElementById("selected-milestone-date").value = "";
   document.getElementById("selected-description-data").value = "";
@@ -730,7 +778,12 @@ presavedAwardArray2.addEventListener('change', function() {
     }
   })
 }
-})
+}
+
+
+
+/////// Populate Submission file fields from presaved information
+presavedAwardArray2.addEventListener('change', changeAwardInput)
 
 /// Generate submission file
 generateSubmissionBtn.addEventListener('click', (event) => {
@@ -799,6 +852,47 @@ var contributorRoles = document.getElementById("input-con-role"),
     },
     duplicates: false
 });
+
+function clearCurrentConInfo() {
+  document.getElementById("input-con-ID").value = "";
+  document.getElementById("input-con-role").value = "";
+  document.getElementById("input-con-affiliation").value = "";
+  if (currentContributortagify !== undefined) {
+    currentContributortagify.removeAllTags()
+  }
+  contactPerson.checked = false;
+}
+
+function changeAwardInputDsDescription() {
+  clearCurrentConInfo()
+  /// delete old table
+  while (currentConTable.rows.length>1) {
+    currentConTable.deleteRow(1)
+  };
+  removeOptions(dsContributorArray)
+  addOption(dsContributorArray, "Select", "Select an option")
+  var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+  table_airtable.select({
+    filterByFormula: `({SPARC_Award_#} = "${awardVal}")`
+  }).eachPage(function page(records, fetchNextPage) {
+      var awardValArray = [];
+      records.forEach(function(record) {
+        var item = record.get('Name');
+        awardValArray.push(item);
+      }),
+    fetchNextPage();
+    for (var i = 0; i < awardValArray.length; i++) {
+        var opt = awardValArray[i];
+        addOption(dsContributorArray, opt, opt)
+    }
+  }),
+  function done(err) {
+      if (err) {
+        log.error(err)
+        console.error(err); return;
+      }
+  }
+}
 
 // Show current contributors
 function createCurrentConTable(table) {
@@ -905,42 +999,7 @@ addCurrentContributorsBtn.addEventListener("click", function() {
 })
 
 /// load Airtable Contributor data
-dsAwardArray.addEventListener("change", function(e) {
-  document.getElementById("input-con-ID").value = "";
-  document.getElementById("input-con-role").value = "";
-  document.getElementById("input-con-affiliation").value = "";
-  currentContributortagify.removeAllTags();
-  contactPerson.checked = false;
-
-  /// delete old table
-  while (currentConTable.rows.length>1) {
-    currentConTable.deleteRow(1)
-  };
-
-  removeOptions(dsContributorArray)
-  addOption(dsContributorArray, "Select", "Select an option")
-  var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value;
-  table_airtable.select({
-    filterByFormula: `({SPARC_Award_#} = "${awardVal}")`
-  }).eachPage(function page(records, fetchNextPage) {
-      var awardValArray = [];
-      records.forEach(function(record) {
-        var item = record.get('Name');
-        awardValArray.push(item);
-      }),
-    fetchNextPage();
-    for (var i = 0; i < awardValArray.length; i++) {
-        var opt = awardValArray[i];
-        addOption(dsContributorArray, opt, opt)
-    }
-  }),
-  function done(err) {
-      if (err) {
-        log.error(err)
-        console.error(err); return;
-      }
-  };
-})
+dsAwardArray.addEventListener("change", changeAwardInputDsDescription)
 
 /// Auto populate once a contributor is selected
 dsContributorArray.addEventListener("change", function(e) {
