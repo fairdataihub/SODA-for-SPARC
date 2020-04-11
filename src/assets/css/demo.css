@@ -173,13 +173,6 @@
   width: 180px;
   cursor: pointer;
 }
-/*
-.demo-button.delete:hover {
-  background-color: rgba(220,20,60,0.9);
-  color: white;
-  outline: none;
-  border: none;
-} */
 
 .demo-button:focus {
   outline: none;
@@ -188,6 +181,7 @@
 
 .demo-button:active {
   border-color: var(--color-border);
+  transform: scale(1.1);
 }
 
 .demo-button:hover {
@@ -242,11 +236,15 @@
 .demo-button-prev-next:hover {
   background-color: hsla(190,60%,36%,1);
   color: white;
-  border-color: var(--color-accent);
+  outline: none;
+  /* border-color: var(--color-accent); */
 }
 
 .demo-button-prev-next:active {
   outline: none;
+  /* border-color: var(--color-border); */
+  transform: scale(1.1);
+  }
   /* background-color: white; */
   /* color: hsla(190,60%,36%,1) */
 }
@@ -1049,76 +1047,6 @@ label.input-banner-img{
   transform: translateX(-50%) scale(1.5);
   background-color: #258193;
 }
-
-/* .ds-dataset-progressbar li {
-  list-style-type: none;
-  float:left;
-  width: 25%;
-  position:relative;
-  text-align:center;
-}
-
-.ds-dataset-progressbar li:before {
-  content:counter(step);
-  counter-increment: step;
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-  border: 1px solid #f1f1f1;
-  display: block;
-  text-align: center;
-  margin: 0 auto 10px auto;
-  border-radius: 50%;
-  background-color: #f1f1f1;
-}
-
-.ds-dataset-progressbar li::after {
-  content:'';
-  position: absolute;
-  width:100%;
-  height:1px;
-  background-color: #f1f1f1;
-  top:15px;
-  left: -50%;
-  z-index:-1;
-  border-color: yellow;
-}
-
-.ds-dataset-progressbar li:first-child:after{
-  content: none;
-} */
-/* .ds-dataset-progressbar li:active{
-  background-color: #258193;
-} */
-/* .ds-dataset-progressbar li:active:before{
-  /* border-color: #258193; */
-/* } */
-/* .ds-dataset-progressbar li:active + li:after{
-  border-color: #258193; */
-/* }  */
-
-/* Dataset Description file container */
-/* #form-datasetdescription { */
-  /* background-color: ; */
-  /* margin: 100px auto; */
-  /* padding: 20px; */
-  /* width: 70%; */
-  /* min-width: 300px; */
-/* } */
-
-/* Style the input fields */
-/* .ds-tabs input{
-  padding: 10px;
-  width: 100%;
-  font-size: 13px;
-  font-family: Raleway;
-  border: 1px solid #aaaaaa;
-} */
-
-/* Mark input boxes that gets an error on validation: */
-/* .ds-tabs input.invalid {
-  background-color: #ffdddd;
-} */
 
 /* Hide all steps by default: */
 .ds-tabs {

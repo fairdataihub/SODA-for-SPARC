@@ -65,25 +65,47 @@
       <div class="demo-box">
           <form id = 'grant-information'>
             <div style = "padding:10px 0px">
+              <input class="input-switch" id="connectAirtable" type="radio" name="tabs">
+              <label class="label-switch" style="width:185px;font-size:15px;padding-top: 6px;" for="connectAirtable">Connect to Airtable</label>
               <input class="input-switch" id="addGrant" type="radio" name="tabs" checked>
-              <label class="label-switch" style="font-size:15px;padding-top: 6px;" for="addGrant">Add new award</label>
+              <label class="label-switch" style="width:185px;font-size:15px;padding-top: 6px;" for="addGrant">Add new award</label>
               <input class="input-switch" id="selectGrant" type="radio" name="tabs">
-              <label class="label-switch" style="font-size:15px;padding-top: 6px;"for="selectGrant">Edit existing award</label>
+              <label class="label-switch" style="width:185px;font-size:15px;padding-top: 6px;"for="selectGrant">Edit existing award</label>
             </div>
          </form>
+
+         <div id="div-add-airtable-key" class="datasetsaveoption" style="display:none;margin-top:70px;margin-left:10px">
+           <h5> Enter your Airtable API key below:
+             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+               <span style="width: 250px;" class="tooltiptext">Please checkout the dedicated <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a>
+               for obtaining or re-generating your API key to connect to SODA during your first use.
+               </span>
+             </div>
+           </h5> <br>
+
+           <div class="demo-controls">
+             <input class="form-container-input-bf" style="width:555px;height:35px;float:left" type="password" id="airtable-api-key" />
+             <button class="demo-button-prev-next" style="float:right;margin-left:10px;font-size:15px;height:35px;" id="button-add-airtable-key"> Connect </button>
+           </div>
+           <br>
+           <div id="div-airtable-connect-load-progress" class="progressdiv">
+             <div class="indeterminatebar"></div>
+           </div>
+           <!-- <div class="demo-controls"> -->
+           <!-- </div> -->
+           <p id="para-add-airtable-key-status" style="display:none"></p>
+         </div>
 
           <div id="div-add-new-grant" class="datasetsaveoption" style="display:block;margin-top:70px;margin-left:10px">
             <h5> Search for award: </h5>
             <div class="demo-controls">
-              <input id="input-grant-info" list="select-grant-info-list" class="form-container-input-bf" style="width:90%;float:left;height:35px;line-height:2;padding:6px 8px;margin-top:15px">
+              <input id="input-grant-info" list="select-grant-info-list" class="form-container-input-bf" style="width:90%;float:left;height:35px;padding:6px 8px;margin-top:15px">
               <datalist id="select-grant-info-list" style="overflow-x: hidden; overflow: scroll; width: 100%; height:500px">
-                <option>Select</option>
+                <option disabled>Select</option>
               </datalist>
               <button id="button-add-award" class="demo-button" style="height:35px;width:150px;padding:0 0;margin-left:10px;margin-top:15px">Add</button>
             </div>
-            <div style="height:20px;margin-top:7px;margin-bottom:7px">
-              <p id="para-save-award-info"></p>
-            </div>
+            <p style="height:30px;margin-top:7px;margin-bottom:7px" id="para-save-award-info"></p>
             <div id="div-awards-load-progress" class="progressdiv">
               <div class="indeterminatebar"></div>
             </div>

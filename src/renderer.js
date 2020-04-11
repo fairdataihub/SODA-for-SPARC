@@ -15,6 +15,7 @@ const log  = require("electron-log");
 var Airtable = require('airtable');
 require('v8-compile-cache');
 var Tagify = require('@yaireo/tagify');
+const https = require('https')
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -96,14 +97,6 @@ function checkNewAppVersion() {
     })
 }
 
-/////// Load SPARC airtable data
-Airtable.configure({
-    endpointUrl: 'https://api.airtable.com',
-    apiKey: 'keyCDx02PhX2XnwEC'
-});
-var base = Airtable.base('appiYd1Tz9Sv857GZ');
-const table_airtable = base('sparc_members')
-
 //////////////////////////////////
 // Get html elements from UI
 //////////////////////////////////
@@ -119,6 +112,9 @@ const downloadSamples = document.getElementById("a-samples")
 const downloadSubjects = document.getElementById("a-subjects")
 const downloadDescription = document.getElementById("a-description")
 const downloadManifest = document.getElementById("a-manifest")
+
+/// save airtable api key
+const addAirtableKeyBtn = document.getElementById("button-add-airtable-key")
 
 // Save grant information
 const milestoneArray = document.getElementById("table-current-milestones")
@@ -325,6 +321,65 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 ///////////////////// Prepare Metadata Section ////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+///// Global variables for this section
+
+/////// Save and load award and milestone info
+var metadataPath = path.join(homeDirectory,"SODA", "METADATA");
+var awardFileName = "awards.json";
+var milestoneFileName = "milestones.json";
+var defaultAwardFileName = "default-awards.json";
+var airtableConfigFileName = "airtable-config.json";
+var awardPath = path.join(metadataPath, awardFileName);
+var milestonePath = path.join(metadataPath, milestoneFileName);
+var defaultAwardPath = path.join(metadataPath, defaultAwardFileName);
+var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
+
+///////////////////// Airtable Authentication /////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+/////// Load SPARC airtable data
+var airtableHostname = 'api.airtable.com'
+
+///// Upon clicking "Connect" to Airtable
+addAirtableKeyBtn.addEventListener("click", function() {
+  document.getElementById("div-airtable-connect-load-progress").style.display = "block"
+  document.getElementById("para-add-airtable-key-status").innerHTML = ""
+  var apiKeyInput = document.getElementById("airtable-api-key").value;
+  // test connection
+  const options = {
+    hostname: airtableHostname,
+    port: 443,
+    path: '/v0/appiYd1Tz9Sv857GZ/sparc_members',
+    headers: {'Authorization': `Bearer ${apiKeyInput}`}
+  }
+  https.get(options, res => {
+    // console.log(`statusCode: ${res.statusCode}`)
+    if (res.statusCode === 200) {
+      /// updating api key in SODA's storage
+      createMetadataDir();
+      var content = parseJson(airtableConfigPath);
+      content["api-key"] = apiKeyInput;
+      fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
+      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: black;'>Successfully connected to Airtable!</span>";
+      document.getElementById('para-save-award-info').innerHTML = ""
+      loadAwardData()
+    } else {
+      log.error(res)
+      console.error(res) //// todo: html error message
+      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key!</span>";
+    }
+    document.getElementById("div-airtable-connect-load-progress").style.display = "none"
+    document.getElementById("para-add-airtable-key-status").style.display = "block"
+
+    res.on('error', error => {
+      log.error(error)
+      console.error(error) //// todo: html error message
+      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key!</span>";
+      document.getElementById("para-add-airtable-key-status").style.display = "block"
+    })
+  })
+})
+
 /////////////////////// Download Metadata Templates ////////////////////////////
 templateArray = ["submission.xlsx", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx", "manifest.xlsx"]
 function downloadTemplates(templateItem, destinationFolder) {
@@ -361,8 +416,8 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
   }
 })
 
-//////////////// Provide Grant Information section /////////////////////////////////
-//////////////// //////////////// //////////////// //////////////// ////////////////
+/////////////////// Provide Grant Information section /////////////////////////
+//////////////// //////////////// //////////////// //////////////// ///////////
 
 ////////////////////////Import Milestone Info//////////////////////////////////
 
@@ -435,26 +490,16 @@ ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
 }
 })
 
-/////// Save and load award and milestone info
-var metadataPath = path.join(homeDirectory,"SODA", "METADATA");
-var awardFileName = "awards.json";
-var milestoneFileName = "milestones.json";
-var defaultAwardFileName = "default-awards.json";
-var awardPath = path.join(metadataPath, awardFileName);
-var milestonePath = path.join(metadataPath, milestoneFileName);
-var defaultAwardPath = path.join(metadataPath, defaultAwardFileName);
-
-awardArray.addEventListener('change', function() {
-  document.getElementById("para-save-award-info").innerHTML = "";
-})
-
+/// clear p messages upon changing awards
+// awardArray.addEventListener('change', function() {
+//   document.getElementById("para-save-award-info").innerHTML = "";
+// })
 presavedAwardArray1.addEventListener('change', function() {
-  // award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value
   document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
   document.getElementById("para-delete-award-status").innerHTML = ""
 })
 
-// function to load and parse json file
+// load and parse json file
 function parseJson(path) {
   if (!fs.existsSync(path)) {
     return {}
@@ -481,7 +526,7 @@ function createMetadataDir() {
 }
 
 // Function to add options to dropdown list
-var addOption = function(selectbox, text, value) {
+function addOption(selectbox, text, value) {
     var opt = document.createElement("OPTION");
     opt.text = text;
     opt.value = value;
@@ -520,6 +565,9 @@ function getRowIndex(table) {
 // Save grant information
 addAwardBtn.addEventListener('click', function() {
   var inputVal = document.getElementById("input-grant-info").value;
+  if (inputVal.length === 0) {
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Please choose an award key!</span>";
+  }
   var awardVal;
   for (var i = 0; i < awardArray.options.length; i++) {
     if (awardArray.options[i].value === inputVal) {
@@ -586,7 +634,7 @@ ipcRenderer.on('warning-delete-award-selection', (event, index) => {
       deleteOptionByValue(dsAwardArray,award);
       document.getElementById("div-show-milestone-info-no-existing").style.display = "none";
       document.getElementById("div-show-current-milestones").style.display = "none";
-      document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black;'> " + "Deleted award number: " + award + "!" + "</span>"
+      document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black'>Deleted award number: " + award + "!" + "</span>"
     }
   }
 })
@@ -694,35 +742,52 @@ presavedAwardArray1.addEventListener('change', function() {
 })
 
 // indicate to user that airtable records are being retrieved
-document.getElementById("div-awards-load-progress").style.display = 'block'
-
-///// Construct table from data
-var awardResultArray = [];
-table_airtable.select({
-    view: 'Grid view'
-}).eachPage(function page(records, fetchNextPage) {
-    records.forEach(function(record) {
-      item = record.get('SPARC_Award_#').concat(" (", record.get('Project_title'), ")");
-      awardResultArray.push(item);
-    }),
-  fetchNextPage();
-},
-function done(err) {
+function loadAwardData() {
+  document.getElementById("div-awards-load-progress").style.display = 'block'
+  ///// Construct table from data
+  var awardResultArray = [];
+  ///// config and load live data from Airtable
+  var airKeyContent = parseJson(airtableConfigPath)
+  if (Object.keys(airKeyContent).length === 0) {
     document.getElementById("div-awards-load-progress").style.display = 'none';
-    if (err) {
-      log.error(err)
-      console.error(err); return;
-    }
-    else {
-      // create set to remove duplicates
-      var awardSet = new Set(awardResultArray)
-      var options = ""
-      for (element of awardSet) {
-        options += '<option value="'+element+'" />';
-      }
-      awardArray.innerHTML = options
-    }
-});
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>No Airtable API key found! Please connect to Airtable first!</span>";
+  } else {
+    var airKeyInput = airKeyContent["api-key"]
+    Airtable.configure({
+        endpointUrl: 'https://' + airtableHostname,
+        apiKey: airKeyInput
+    });
+    var base = Airtable.base('appiYd1Tz9Sv857GZ');
+    base("sparc_members").select({
+        view: 'Grid view'
+    }).eachPage(function page(records, fetchNextPage) {
+        records.forEach(function(record) {
+          item = record.get('SPARC_Award_#').concat(" (", record.get('Project_title'), ")");
+          awardResultArray.push(item);
+        }),
+      fetchNextPage();
+    },
+    function done(err) {
+        document.getElementById("div-awards-load-progress").style.display = 'none';
+        if (err) {
+          document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Failed to load awards from Airtable. Please check your internet connection or API Key.</span>";
+          log.error(err);
+          console.log(err);
+          return;
+        }
+        else {
+          // create set to remove duplicates
+          var awardSet = new Set(awardResultArray)
+          var options = ""
+          for (element of awardSet) {
+            options += '<option value="'+element+'" />';
+          }
+          awardArray.innerHTML = options
+        }
+    });
+  }
+}
+loadAwardData()
 
 ///////////////// //////////////// //////////////// ////////////////
 ///////////////////////Submission file //////////////// ////////////////
@@ -871,25 +936,36 @@ function changeAwardInputDsDescription() {
   };
   removeOptions(dsContributorArray)
   addOption(dsContributorArray, "Select", "Select an option")
-  var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value;
-  table_airtable.select({
-    filterByFormula: `({SPARC_Award_#} = "${awardVal}")`
-  }).eachPage(function page(records, fetchNextPage) {
-      var awardValArray = [];
-      records.forEach(function(record) {
-        var item = record.get('Name');
-        awardValArray.push(item);
-      }),
-    fetchNextPage();
-    for (var i = 0; i < awardValArray.length; i++) {
-        var opt = awardValArray[i];
-        addOption(dsContributorArray, opt, opt)
-    }
-  }),
-  function done(err) {
-      if (err) {
-        log.error(err)
-        console.error(err); return;
+  var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value
+  var airKeyContent = parseJson(airtableConfigPath)
+    // document.getElementById("div-awards-load-progress").style.display = 'none';
+    // document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>No Airtable API key found! Please connect to Airtable first!</span>";
+  if (Object.keys(airKeyContent).length !== 0) {
+    var airKeyInput = airKeyContent["api-key"]
+    Airtable.configure({
+        endpointUrl: 'https://' + airtableHostname,
+        apiKey: airKeyInput
+    });
+    var base = Airtable.base('appiYd1Tz9Sv857GZ');
+    base("sparc_members").select({
+      filterByFormula: `({SPARC_Award_#} = "${awardVal}")`
+    }).eachPage(function page(records, fetchNextPage) {
+        var awardValArray = [];
+        records.forEach(function(record) {
+          var item = record.get('Name');
+          awardValArray.push(item);
+        }),
+      fetchNextPage();
+      for (var i = 0; i < awardValArray.length; i++) {
+          var opt = awardValArray[i];
+          addOption(dsContributorArray, opt, opt)
+      }
+    }),
+      function done(err) {
+          if (err) {
+            log.error(err)
+            console.error(err); return;
+          }
       }
   }
 }
@@ -994,8 +1070,12 @@ addAdditionalLinkBtn.addEventListener("click", function() {
 //// When users click on "Add" to current contributors table
 addCurrentContributorsBtn.addEventListener("click", function() {
   document.getElementById("para-save-contributor-status").innerHTML = "";
-  createCurrentConTable(currentConTable);
-  document.getElementById("div-current-contributors").style.display = "block"
+  if (dsContributorArray.options[dsContributorArray.selectedIndex].value === "Select an option") {
+    document.getElementById("para-save-contributor-status").innerHTML = "<span style='color:red'>Please choose a contributor!</span>";
+  } else {
+    createCurrentConTable(currentConTable);
+    document.getElementById("div-current-contributors").style.display = "block"
+  }
 })
 
 /// load Airtable Contributor data
@@ -1011,7 +1091,15 @@ dsContributorArray.addEventListener("change", function(e) {
   contactPerson.checked = false;
 
   var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
-  table_airtable.select({
+
+  var airKeyContent = parseJson(airtableConfigPath)
+  var airKeyInput = airKeyContent["api-key"]
+  var airtableConfig = Airtable.configure({
+      endpointUrl: 'https://' + airtableHostname,
+      apiKey: airKeyInput
+  });
+  var base = Airtable.base('appiYd1Tz9Sv857GZ');
+  base('sparc_members').select({
     filterByFormula: `({Name} = "${contributorVal}")`
   }).eachPage(function page(records, fetchNextPage) {
       var conInfoObj = {};

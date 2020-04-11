@@ -1,16 +1,29 @@
 const {ipcRenderer} = require('electron')
 
+function showAddAirtableKey(){
+  document.getElementById('div-add-airtable-key').style.display ='block';
+  document.getElementById('div-add-new-grant').style.display ='none';
+  document.getElementById('div-select-existing-grant').style.display ='none';
+  // document.getElementById('para-save-award-info').innerHTML = ""
+}
+
 function showAddGrant(){
   document.getElementById('div-add-new-grant').style.display ='block';
+  document.getElementById('div-add-airtable-key').style.display ='none';
   document.getElementById('div-select-existing-grant').style.display ='none';
-  document.getElementById('para-save-award-info').innerHTML = ""
+  // document.getElementById('para-save-award-info').innerHTML = ""
 }
 
 function showSelectGrant(){
   document.getElementById('div-add-new-grant').style.display ='none';
+  document.getElementById('div-add-airtable-key').style.display ='none';
   document.getElementById('div-select-existing-grant').style.display ='block';
-  document.getElementById('para-save-award-info').innerHTML = ""
+  // document.getElementById('para-save-award-info').innerHTML = ""
 }
+
+document.querySelector('#connectAirtable').addEventListener('click', () => {
+    showAddAirtableKey()
+})
 
 document.querySelector('#addGrant').addEventListener('click', () => {
     showAddGrant()
