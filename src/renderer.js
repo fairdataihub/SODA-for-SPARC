@@ -2865,11 +2865,12 @@ function updateBfAccountList(){
 
 function showCurrentDOI(){
   currentDOI.value = "Please wait..."
+  reserveDOIStatus.innerHTML = ""
   bfPostCurationProgress.style.display = 'block'
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
-    currentDOI.value = 'None'
+    currentDOI.value = '-------'
     bfPostCurationProgress.style.display = 'none'
   } else {
     client.invoke("api_bf_get_doi", selectedBfAccount, selectedBfDataset,
@@ -2877,7 +2878,10 @@ function showCurrentDOI(){
       if(error) {
         log.error(error)
         console.error(error)
-        bfCurrentPermissionProgress.style.display = 'none'
+        currentDOI.value = '-------'
+        var emessage = userError(error)
+        reserveDOIStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+        bfPostCurationProgress.style.display = 'none'
       } else {
         currentDOI.value = res
         bfPostCurationProgress.style.display = 'none'

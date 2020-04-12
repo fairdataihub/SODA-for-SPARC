@@ -2216,11 +2216,23 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
         raise Exception(error)
 
     try:
+        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        if role not in ['owner', 'manager']:
+            error = "Error: You don't have permissions to view/edit DOI for this Blackfynn dataset"
+            raise Exception(error)
+    except Exception as e:
+        raise e
+
+    try:
         selected_dataset_id = myds.id
         doi_status = bf._api._get('/datasets/' + str(selected_dataset_id) + '/doi')
         return doi_status['doi']
     except Exception as e:
-        return 'None'
+        if "doi" in str(e) and "not found" in str(e):
+            error = "No DOI has been reserved for this dataset"
+            raise Exception(error)
+        else:
+            raise e
 
 """
     Function to reserve doi for a selected dataset
@@ -2246,21 +2258,23 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         raise Exception(error)
 
     try:
-        bf_get_doi(selected_bfaccount, selected_bfdataset)
-    except:
-        pass
-    else:
-        error = "Error: A DOI has already been reserved for this dataset"
-        raise Exception(error)
-
-
-    try:
         role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
         if role not in ['owner', 'manager']:
-            error = "Error: You don't have permissions for reserving a DOI for this Blackfynn dataset"
+            error = "Error: You don't have permissions to view/edit DOI for this Blackfynn dataset"
             raise Exception(error)
     except Exception as e:
         raise e
+
+    try:
+        bf_get_doi(selected_bfaccount, selected_bfdataset)
+    except Exception as e: 
+        if (str(e) == "No DOI has been reserved for this dataset"):
+            pass
+        else:
+            raise e
+    else:
+        error = "Error: A DOI has already been reserved for this dataset"
+        raise Exception(error)
 
     try:
         selected_dataset_id = myds.id
