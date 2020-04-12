@@ -15,6 +15,7 @@ const log  = require("electron-log");
 var Airtable = require('airtable');
 require('v8-compile-cache');
 var Tagify = require('@yaireo/tagify');
+const https = require('https')
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -97,14 +98,6 @@ function checkNewAppVersion() {
     })
 }
 
-/////// Load SPARC airtable data
-Airtable.configure({
-    endpointUrl: 'https://api.airtable.com',
-    apiKey: 'keyCDx02PhX2XnwEC'
-});
-var base = Airtable.base('appiYd1Tz9Sv857GZ');
-const table_airtable = base('sparc_members')
-
 //////////////////////////////////
 // Get html elements from UI
 //////////////////////////////////
@@ -120,6 +113,9 @@ const downloadSamples = document.getElementById("a-samples")
 const downloadSubjects = document.getElementById("a-subjects")
 const downloadDescription = document.getElementById("a-description")
 const downloadManifest = document.getElementById("a-manifest")
+
+/// save airtable api key
+const addAirtableKeyBtn = document.getElementById("button-add-airtable-key")
 
 // Save grant information
 const milestoneArray = document.getElementById("table-current-milestones")
@@ -338,6 +334,65 @@ document.getElementById('button-validate-dataset-next-step').addEventListener('c
 ///////////////////// Prepare Metadata Section ////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+///// Global variables for this section
+
+/////// Save and load award and milestone info
+var metadataPath = path.join(homeDirectory,"SODA", "METADATA");
+var awardFileName = "awards.json";
+var milestoneFileName = "milestones.json";
+var defaultAwardFileName = "default-awards.json";
+var airtableConfigFileName = "airtable-config.json";
+var awardPath = path.join(metadataPath, awardFileName);
+var milestonePath = path.join(metadataPath, milestoneFileName);
+var defaultAwardPath = path.join(metadataPath, defaultAwardFileName);
+var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
+
+///////////////////// Airtable Authentication /////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+/////// Load SPARC airtable data
+var airtableHostname = 'api.airtable.com'
+
+///// Upon clicking "Connect" to Airtable
+addAirtableKeyBtn.addEventListener("click", function() {
+  document.getElementById("div-airtable-connect-load-progress").style.display = "block"
+  document.getElementById("para-add-airtable-key-status").innerHTML = ""
+  var apiKeyInput = document.getElementById("airtable-api-key").value;
+  // test connection
+  const options = {
+    hostname: airtableHostname,
+    port: 443,
+    path: '/v0/appiYd1Tz9Sv857GZ/sparc_members',
+    headers: {'Authorization': `Bearer ${apiKeyInput}`}
+  }
+  https.get(options, res => {
+    // console.log(`statusCode: ${res.statusCode}`)
+    if (res.statusCode === 200) {
+      /// updating api key in SODA's storage
+      createMetadataDir();
+      var content = parseJson(airtableConfigPath);
+      content["api-key"] = apiKeyInput;
+      fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
+      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: black;'>Successfully connected to Airtable!</span>";
+      document.getElementById('para-save-award-info').innerHTML = ""
+      loadAwardData()
+    } else {
+      log.error(res)
+      console.error(res) //// todo: html error message
+      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key!</span>";
+    }
+    document.getElementById("div-airtable-connect-load-progress").style.display = "none"
+    document.getElementById("para-add-airtable-key-status").style.display = "block"
+
+    res.on('error', error => {
+      log.error(error)
+      console.error(error) //// todo: html error message
+      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key!</span>";
+      document.getElementById("para-add-airtable-key-status").style.display = "block"
+    })
+  })
+})
+
 /////////////////////// Download Metadata Templates ////////////////////////////
 templateArray = ["submission.xlsx", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx", "manifest.xlsx"]
 function downloadTemplates(templateItem, destinationFolder) {
@@ -374,10 +429,67 @@ ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
   }
 })
 
-//////////////// Provide Grant Information section /////////////////////////////////
-//////////////// //////////////// //////////////// //////////////// ////////////////
+/////////////////// Provide Grant Information section /////////////////////////
+//////////////// //////////////// //////////////// //////////////// ///////////
 
 ////////////////////////Import Milestone Info//////////////////////////////////
+
+//// when users click on Import but haven't specified a path
+document.getElementById("button-import-milestone").addEventListener("click", function() {
+  document.getElementById("para-milestone-document-info").innerHTML = "";
+  var filepath = document.getElementById("input-milestone-select").placeholder;
+  if (filepath === "Select a file") {
+    document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: red ;'>" + "Please select a data deliverables document first!</span>"
+  } else {
+    var award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+    client.invoke("api_extract_milestone_info", filepath, (error, res) => {
+    if(error) {
+      var emessage = userError(error)
+      log.error(error)
+      console.error(error)
+      document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+    }
+    else {
+      milestoneObj = res;
+      createMetadataDir();
+      var informationJson = {};
+      informationJson = parseJson(milestonePath);
+      informationJson[award] = milestoneObj;
+      fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
+      document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: black ;'>" + "Imported!</span>"
+      //// after saving data to json file, load the table right after.
+      /// clear old table before loading new entries
+      while (milestoneArray.rows.length>1) {
+        milestoneArray.deleteRow(1)
+      };
+      if (award in informationJson) {
+        document.getElementById("para-current-milestones").style.display = "none";
+        /// check how many data description rows there are for each milestone (to set number of rowspans)
+
+        var rowIndex = 1;
+        var milestoneKey = Object.keys(milestoneObj)
+        for (var i=0;i<milestoneKey.length;i++){
+          var milestone = milestoneObj[milestoneKey[i]];
+          // var span = milestoneObj[milestoneKey[i]].length
+          for (var j=0;j<milestone.length;j++) {
+            var description = milestone[j]["Description of data"]
+            var date = milestone[j]["Expected date of completion"]
+            var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneKey[i] +"</td><td id='name-row-description"+rowIndex+"'>"+ description +"</td><td id='name-row-date"+rowIndex+"'>"+ date +"</td></tr>"
+          }
+          rowIndex++;
+        }
+      document.getElementById("table-current-milestones").style.display = "block";
+      document.getElementById("presaved-award-list").value = "Select"
+      removeOptions(document.getElementById("selected-milestone"));
+      removeOptions(document.getElementById("selected-description-data"));
+      document.getElementById("selected-milestone-date").value =
+      document.getElementById("input-milestone-select").placeholder = "Select a file"
+      return milestoneArray
+    }
+  }
+})
+}
+})
 
 document.getElementById("input-milestone-select").addEventListener("click", function() {
   ipcRenderer.send('open-file-dialog-milestone-doc')
@@ -385,79 +497,22 @@ document.getElementById("input-milestone-select").addEventListener("click", func
 ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
   if (filepath.length > 0) {
     if (filepath != null){
-      document.getElementById("input-milestone-select").placeholder = path.basename(filepath[0]);
-      //// when users click on "Upload" button
-      document.getElementById("button-import-milestone").addEventListener("click", function() {
-        var award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-        client.invoke("api_extract_milestone_info", filepath[0], (error, res) => {
-        if(error) {
-          var emessage = userError(error)
-          console.error(error)
-          document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
-        }
-        else {
-          milestoneObj = res;
-          createMetadataDir();
-          var informationJson = {};
-          informationJson = parseJson(milestonePath);
-          informationJson[award] = milestoneObj;
-          fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-          document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: black ;'>" + "Imported!</span>"
-
-          //// after saving data to json file, load the table right after.
-          /// clear old table before loading new entries
-          while (milestoneArray.rows.length>1) {
-            milestoneArray.deleteRow(1)
-          };
-          if (award in informationJson) {
-            document.getElementById("para-current-milestones").style.display = "none";
-            /// check how many data description rows there are for each milestone (to set number of rowspans)
-
-            var rowIndex = 1;
-            var milestoneKey = Object.keys(milestoneObj)
-            for (var i=0;i<milestoneKey.length;i++){
-              var milestone = milestoneObj[milestoneKey[i]];
-              // var span = milestoneObj[milestoneKey[i]].length
-              for (var j=0;j<milestone.length;j++) {
-                var description = milestone[j]["Description of data"]
-                var date = milestone[j]["Expected date of completion"]
-                var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneKey[i] +"</td><td id='name-row-description"+rowIndex+"'>"+ description +"</td><td id='name-row-date"+rowIndex+"'>"+ date +"</td></tr>"
-              }
-              rowIndex++;
-            }
-          document.getElementById("table-current-milestones").style.display = "block";
-          document.getElementById("presaved-award-list").value = "Select"
-          removeOptions(document.getElementById("selected-milestone"));
-          removeOptions(document.getElementById("selected-description-data"));
-          document.getElementById("selected-milestone-date").value = ""
-          return milestoneArray
-        }
-      }
-      });
-    })
-    }
+      // used to communicate value to button-import-milestone click event-listener
+      document.getElementById("input-milestone-select").placeholder = filepath[0];
   }
+}
 })
 
-/////// Save and load award and milestone info
-
-var metadataPath = path.join(homeDirectory,"SODA", "METADATA");
-var awardFileName = "awards.json";
-var milestoneFileName = "milestones.json";
-var awardPath = path.join(metadataPath, awardFileName);
-var milestonePath = path.join(metadataPath, milestoneFileName);
-
-awardArray.addEventListener('change', function() {
-  document.getElementById("para-save-award-info").innerHTML = "";
-})
-
+/// clear p messages upon changing awards
+// awardArray.addEventListener('change', function() {
+//   document.getElementById("para-save-award-info").innerHTML = "";
+// })
 presavedAwardArray1.addEventListener('change', function() {
   document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
-  // document.getElementById("para-save-milestone-status").innerHTML = "";
   document.getElementById("para-delete-award-status").innerHTML = ""
 })
 
-// function to load and parse json file
+// load and parse json file
 function parseJson(path) {
   if (!fs.existsSync(path)) {
     return {}
@@ -467,6 +522,7 @@ function parseJson(path) {
     contentJson = JSON.parse(content);
     return contentJson
   } catch (error) {
+    log.error(error)
     console.log(error);
     return {}
   }
@@ -477,12 +533,13 @@ function createMetadataDir() {
   try {
   fs.mkdirSync(metadataPath, { recursive: true } );
   } catch (error) {
+    log.error(error)
     console.log(error)
   }
 }
 
 // Function to add options to dropdown list
-var addOption = function(selectbox, text, value) {
+function addOption(selectbox, text, value) {
     var opt = document.createElement("OPTION");
     opt.text = text;
     opt.value = value;
@@ -491,22 +548,17 @@ var addOption = function(selectbox, text, value) {
 
 // Function to auto load existing awards
 function loadAwards() {
-  var rawData = fs.readFile(awardPath, "utf8", function(error, contents) {
-    if (!fs.existsSync(awardPath)) {
-      return {}
-    }
-    if (error) {
-      console.log(error)
-    } else {
-      var awards = JSON.parse(contents);
-      for (var key in awards) {
-        // Add options to dropdown lists
-        addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
-        addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
-        addOption(dsAwardArray, eval(JSON.stringify(awards[key])), key);
-      }
-    }
-  })
+  if (!fs.existsSync(awardPath)) {
+    return {}
+  }
+  var contents = fs.readFileSync(awardPath, "utf8");
+  var awards = JSON.parse(contents);
+  for (var key in awards) {
+    // Add options to dropdown lists
+    addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
+    addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
+    addOption(dsAwardArray, eval(JSON.stringify(awards[key])), key);
+  }
 }
 loadAwards()
 
@@ -525,27 +577,35 @@ function getRowIndex(table) {
 
 // Save grant information
 addAwardBtn.addEventListener('click', function() {
-  var opt = awardArray.options[awardArray.selectedIndex].text;
-  var awardNumber = awardArray.options[awardArray.selectedIndex].value;
+  var inputVal = document.getElementById("input-grant-info").value;
+  if (inputVal.length === 0) {
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Please choose an award key!</span>";
+  }
+  var awardVal;
+  for (var i = 0; i < awardArray.options.length; i++) {
+    if (awardArray.options[i].value === inputVal) {
+      awardVal = awardArray.options[i].value
+    }
+  }
+  var awardNo = awardVal.slice(0, awardVal.indexOf(" ("));
   // create empty milestone json files for newly added award
   createMetadataDir();
   var awardsJson = {};
   awardsJson = parseJson(awardPath);
-  if (awardNumber in awardsJson) {
+  if (awardNo in awardsJson) {
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Award already added!</span>";
   } else {
-    awardsJson[awardNumber] = opt;
+    awardsJson[awardNo] = awardVal;
     fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
-    addOption(presavedAwardArray1, opt, awardNumber);
-    addOption(presavedAwardArray2, opt, awardNumber);
-    addOption(dsAwardArray, opt, awardNumber);
+    addOption(presavedAwardArray1, awardVal, awardNo);
+    addOption(presavedAwardArray2, awardVal, awardNo);
+    addOption(dsAwardArray, awardVal, awardNo);
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Added!" + smileyCan + "</span>";
   }
 })
 
 /////// Delete an Award///////////
-function getOptionByValue (dropdown, value) {
-    // var options = dropdown.options;
+function deleteOptionByValue (dropdown, value) {
     for (var i = 0; i < dropdown.length; i++) {
         if (dropdown.options[i].value === value) {
             dropdown.remove(i)
@@ -565,6 +625,11 @@ ipcRenderer.on('warning-delete-award-selection', (event, index) => {
     } else {
       var milestoneJson = parseJson(milestonePath);
       var awardsJson = parseJson(awardPath)
+      var defaultedAwardJson = parseJson(defaultAwardPath)
+      // check if award is default award
+      if (award === defaultedAwardJson["default"]) {
+        delete defaultedAwardJson["default"];
+        }
       // check if award is in list
       if (award in awardsJson) {
         delete awardsJson[award];
@@ -573,37 +638,87 @@ ipcRenderer.on('warning-delete-award-selection', (event, index) => {
       if (award in milestoneJson) {
         delete milestoneJson[award];
       }
+      fs.writeFileSync(defaultAwardPath, JSON.stringify(defaultedAwardJson));
       fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
       presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
       fs.writeFileSync(milestonePath, JSON.stringify(milestoneJson));
       // delete award in the next two award arrays
-      getOptionByValue(presavedAwardArray2,award);
-      getOptionByValue(dsAwardArray,award);
+      deleteOptionByValue(presavedAwardArray2,award);
+      deleteOptionByValue(dsAwardArray,award);
       document.getElementById("div-show-milestone-info-no-existing").style.display = "none";
       document.getElementById("div-show-current-milestones").style.display = "none";
-
-      document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black;'> " + "Deleted award number: " + award + "!" + "</span>"
+      document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black'>Deleted award number: " + award + "!" + "</span>"
     }
   }
 })
 
-///// Load Milestone info
-presavedAwardArray1.addEventListener('change', function() {
+//// function to make a selected award the default award
+function makeDefaultAward(award) {
+  var defaultObj = {};
+  var defaultObj = parseJson(defaultAwardPath);
+  defaultObj["default"] = award
+  fs.writeFileSync(defaultAwardPath, JSON.stringify(defaultObj));
+}
+
+/// When SODA launches, load default award
+function loadDefaultAward() {
+  var award;
+  var defaultObj = parseJson(defaultAwardPath);
+  try {
+    award = defaultObj["default"]
+    return award
+  }
+  catch (error) {
+    log.error(error)
+    console.log(error);
+    return ""
+  }
+}
+
+var defaultAward = loadDefaultAward()
+loadMilestoneInfo(defaultAward)
+
+function loadMilestoneInfo(awardNumber) {
   document.getElementById("para-milestone-document-info").innerHTML = ""
   document.getElementById("input-milestone-select").placeholder = "Select a file"
-  opt = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+
+  ///// first, make the selected award the default so next time SODA will auto-load it.
+  makeDefaultAward(awardNumber)
+
+  //// Start loading milestone table
   /// clear old table before loading new entries
   while (milestoneArray.rows.length>1) {
     milestoneArray.deleteRow(1)
   };
-  var informationJson = parseJson(milestonePath);
-  if (opt in informationJson) {
-    document.getElementById("import-or-replace").innerHTML = "Replace existing";
+  var awardJson = parseJson(awardPath);
+  if (awardNumber in awardJson) {
+    presavedAwardArray1.value = awardNumber
+    ///// populate submission award drop-down
+    for (var i = 0; i < presavedAwardArray2.length; i++) {
+        if (presavedAwardArray2.options[i].value === awardNumber) {
+            presavedAwardArray2.value = presavedAwardArray2.options[i].value
+            changeAwardInput()
+            break
+        }
+    };
+    //// populate dataset contribution award drop-down
+    for (var i = 0; i < dsAwardArray.length; i++) {
+        if (dsAwardArray.options[i].value === awardNumber) {
+            dsAwardArray.value = dsAwardArray.options[i].value
+            changeAwardInputDsDescription()
+            break
+        }
+    }
+    document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
     document.getElementById("div-show-current-milestones").style.display = "block";
     document.getElementById("table-current-milestones").style.display = "block";
     document.getElementById("para-current-milestones").style.display = "none";
+  }
 
-    var milestoneObj = informationJson[opt];
+  //// get content from milestone.json file and load it up
+  var milestoneJson = parseJson(milestonePath);
+  if (awardNumber in milestoneJson) {
+    var milestoneObj = milestoneJson[awardNumber];
     // start at 1 to skip the header
     var rowIndex = 1;
     var milestoneKey = Object.keys(milestoneObj)
@@ -620,42 +735,77 @@ presavedAwardArray1.addEventListener('change', function() {
       }
     return milestoneArray
   } else {
-    document.getElementById("import-or-replace").innerHTML = "Import your"
-    document.getElementById("div-show-current-milestones").style.display = "block";
-    document.getElementById("table-current-milestones").style.display = "none";
-    document.getElementById("para-current-milestones").style.display = "block";
-    document.getElementById("para-current-milestones").innerHTML = "There is no existing milestone information. Please import your data deliverable document!";
-  }
-});
+     document.getElementById("div-show-current-milestones").style.display = "block";
+     document.getElementById("table-current-milestones").style.display = "none";
+     document.getElementById("para-current-milestones").style.display = "block";
+     document.getElementById("para-current-milestones").innerHTML = "There is no existing milestone information. Please import your data deliverable document!";
+ }
+}
 
-///// Construct table from data
-table_airtable.select({
-    view: 'Grid view'
-}).eachPage(function page(records, fetchNextPage) {
-    var awardResultArray = [];
-    records.forEach(function(record) {
-      item = record.get('SPARC_Award_#').concat(" (", record.get('Project_title'), ")");
-      awardResultArray.push(item);
-    }),
-  fetchNextPage();
-  // create set to remove duplicates
-  awardSet = [...new Set(awardResultArray)];
-  for (var i = 0; i < awardSet.length; i++) {
-      var opt = awardSet[i];
-      var value = awardSet[i].slice(0,awardSet[i].indexOf(" ("))
-      addOption(awardArray, opt, value)
-  };
-},
-function done(err) {
-    if (err) {
-      console.error(err); return;
-    }
-});
+/// check if no award is selected, then show no current milestones.
+if (presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value === "Select") {
+  document.getElementById("div-show-milestone-info-no-existing").style.display = "none"
+  document.getElementById("div-show-current-milestones").style.display = "none"
+}
+
+///// Load Milestone info
+presavedAwardArray1.addEventListener('change', function() {
+  var currentAward = presavedAwardArray1.value
+  loadMilestoneInfo(currentAward)
+})
+
+// indicate to user that airtable records are being retrieved
+function loadAwardData() {
+  document.getElementById("div-awards-load-progress").style.display = 'block'
+  ///// Construct table from data
+  var awardResultArray = [];
+  ///// config and load live data from Airtable
+  var airKeyContent = parseJson(airtableConfigPath)
+  if (Object.keys(airKeyContent).length === 0) {
+    document.getElementById("div-awards-load-progress").style.display = 'none';
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>No Airtable API key found! Please connect to Airtable first!</span>";
+  } else {
+    var airKeyInput = airKeyContent["api-key"]
+    Airtable.configure({
+        endpointUrl: 'https://' + airtableHostname,
+        apiKey: airKeyInput
+    });
+    var base = Airtable.base('appiYd1Tz9Sv857GZ');
+    base("sparc_members").select({
+        view: 'Grid view'
+    }).eachPage(function page(records, fetchNextPage) {
+        records.forEach(function(record) {
+          item = record.get('SPARC_Award_#').concat(" (", record.get('Project_title'), ")");
+          awardResultArray.push(item);
+        }),
+      fetchNextPage();
+    },
+    function done(err) {
+        document.getElementById("div-awards-load-progress").style.display = 'none';
+        if (err) {
+          document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Failed to load awards from Airtable. Please check your internet connection or API Key.</span>";
+          log.error(err);
+          console.log(err);
+          return;
+        }
+        else {
+          // create set to remove duplicates
+          var awardSet = new Set(awardResultArray)
+          var options = ""
+          for (element of awardSet) {
+            options += '<option value="'+element+'" />';
+          }
+          awardArray.innerHTML = options
+        }
+    });
+  }
+}
+loadAwardData()
+
 ///////////////// //////////////// //////////////// ////////////////
 ///////////////////////Submission file //////////////// ////////////////
 
-/////// Populate Submission file fields from presaved information
-presavedAwardArray2.addEventListener('change', function() {
+function changeAwardInput() {
   document.getElementById("selected-milestone").value = "";
   document.getElementById("selected-milestone-date").value = "";
   document.getElementById("selected-description-data").value = "";
@@ -700,20 +850,22 @@ presavedAwardArray2.addEventListener('change', function() {
           if (milestoneObj[milestoneKey[i]][j]["Description of data"] === descriptionInput.value) {
             //// stringify date object
             var dateStrings = milestoneObj[milestoneKey[i]][j]["Expected date of completion"].toString()
-            // /// Strip linebreaks out of date strings if applicable
-            // var newDate = dateStrings.replace(/(\r\n|\n|\r)/gm,"");
-            // //// convert mm/yyyy to HTML allowed format yyyy-mm
-            // var returnDate = newDate.split("/").reverse().join("-");
             dateInput.value = dateStrings
         }
       }
     }
   })
 }
-})
+}
+
+
+
+/////// Populate Submission file fields from presaved information
+presavedAwardArray2.addEventListener('change', changeAwardInput)
 
 /// Generate submission file
 generateSubmissionBtn.addEventListener('click', (event) => {
+  document.getElementById("para-save-submission-status").innerHTML = ""
   awardVal = document.getElementById("presaved-award-list").value;
   milestoneVal = document.getElementById("selected-milestone").value;
   descriptionVal = document.getElementById("selected-description-data").value;
@@ -744,6 +896,7 @@ ipcRenderer.on('selected-metadata-submission', (event, dirpath, filename) => {
         client.invoke("api_save_submission_file", destinationPath, json_str, (error, res) => {
           if(error) {
             var emessage = userError(error)
+            log.error(error)
             console.error(error)
             document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
           }
@@ -777,6 +930,58 @@ var contributorRoles = document.getElementById("input-con-role"),
     },
     duplicates: false
 });
+
+function clearCurrentConInfo() {
+  document.getElementById("input-con-ID").value = "";
+  document.getElementById("input-con-role").value = "";
+  document.getElementById("input-con-affiliation").value = "";
+  if (currentContributortagify !== undefined) {
+    currentContributortagify.removeAllTags()
+  }
+  contactPerson.checked = false;
+}
+
+function changeAwardInputDsDescription() {
+  clearCurrentConInfo()
+  /// delete old table
+  while (currentConTable.rows.length>1) {
+    currentConTable.deleteRow(1)
+  };
+  removeOptions(dsContributorArray)
+  addOption(dsContributorArray, "Select", "Select an option")
+  var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value
+  var airKeyContent = parseJson(airtableConfigPath)
+    // document.getElementById("div-awards-load-progress").style.display = 'none';
+    // document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>No Airtable API key found! Please connect to Airtable first!</span>";
+  if (Object.keys(airKeyContent).length !== 0) {
+    var airKeyInput = airKeyContent["api-key"]
+    Airtable.configure({
+        endpointUrl: 'https://' + airtableHostname,
+        apiKey: airKeyInput
+    });
+    var base = Airtable.base('appiYd1Tz9Sv857GZ');
+    base("sparc_members").select({
+      filterByFormula: `({SPARC_Award_#} = "${awardVal}")`
+    }).eachPage(function page(records, fetchNextPage) {
+        var awardValArray = [];
+        records.forEach(function(record) {
+          var item = record.get('Name');
+          awardValArray.push(item);
+        }),
+      fetchNextPage();
+      for (var i = 0; i < awardValArray.length; i++) {
+          var opt = awardValArray[i];
+          addOption(dsContributorArray, opt, opt)
+      }
+    }),
+      function done(err) {
+          if (err) {
+            log.error(err)
+            console.error(err); return;
+          }
+      }
+  }
+}
 
 // Show current contributors
 function createCurrentConTable(table) {
@@ -877,46 +1082,17 @@ addAdditionalLinkBtn.addEventListener("click", function() {
 
 //// When users click on "Add" to current contributors table
 addCurrentContributorsBtn.addEventListener("click", function() {
-  createCurrentConTable(currentConTable);
-  document.getElementById("div-current-contributors").style.display = "block"
+  document.getElementById("para-save-contributor-status").innerHTML = "";
+  if (dsContributorArray.options[dsContributorArray.selectedIndex].value === "Select an option") {
+    document.getElementById("para-save-contributor-status").innerHTML = "<span style='color:red'>Please choose a contributor!</span>";
+  } else {
+    createCurrentConTable(currentConTable);
+    document.getElementById("div-current-contributors").style.display = "block"
+  }
 })
 
 /// load Airtable Contributor data
-dsAwardArray.addEventListener("change", function(e) {
-  document.getElementById("input-con-ID").value = "";
-  document.getElementById("input-con-role").value = "";
-  document.getElementById("input-con-affiliation").value = "";
-  currentContributortagify.removeAllTags();
-  contactPerson.checked = false;
-
-  /// delete old table
-  while (currentConTable.rows.length>1) {
-    currentConTable.deleteRow(1)
-  };
-
-  removeOptions(dsContributorArray)
-  addOption(dsContributorArray, "Select", "Select an option")
-  var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value;
-  table_airtable.select({
-    filterByFormula: `({SPARC_Award_#} = "${awardVal}")`
-  }).eachPage(function page(records, fetchNextPage) {
-      var awardValArray = [];
-      records.forEach(function(record) {
-        var item = record.get('Name');
-        awardValArray.push(item);
-      }),
-    fetchNextPage();
-    for (var i = 0; i < awardValArray.length; i++) {
-        var opt = awardValArray[i];
-        addOption(dsContributorArray, opt, opt)
-    }
-  }),
-  function done(err) {
-      if (err) {
-        console.error(err); return;
-      }
-  };
-})
+dsAwardArray.addEventListener("change", changeAwardInputDsDescription)
 
 /// Auto populate once a contributor is selected
 dsContributorArray.addEventListener("change", function(e) {
@@ -928,7 +1104,15 @@ dsContributorArray.addEventListener("change", function(e) {
   contactPerson.checked = false;
 
   var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
-  table_airtable.select({
+
+  var airKeyContent = parseJson(airtableConfigPath)
+  var airKeyInput = airKeyContent["api-key"]
+  var airtableConfig = Airtable.configure({
+      endpointUrl: 'https://' + airtableHostname,
+      apiKey: airKeyInput
+  });
+  var base = Airtable.base('appiYd1Tz9Sv857GZ');
+  base('sparc_members').select({
     filterByFormula: `({Name} = "${contributorVal}")`
   }).eachPage(function page(records, fetchNextPage) {
       var conInfoObj = {};
@@ -943,6 +1127,7 @@ dsContributorArray.addEventListener("change", function(e) {
   }),
   function done(err) {
       if (err) {
+        log.error(err)
         console.error(err); return;
       }
   }
@@ -978,11 +1163,11 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
       var rowcountCon = currentConTable.rows.length;
       var currentConInfo = [];
       for (i=1; i<rowcountCon; i++) {
-        var myCurrentCon = {"conName":document.getElementById("name-row"+i).innerHTML,
-                            "conID": document.getElementById("orcid-id-row"+i).innerHTML,
-                            "conAffliation": document.getElementById("affiliation-row"+i).innerHTML,
-                            "conRole": document.getElementById("role-row"+i).innerHTML,
-                            "conContact": document.getElementById("contact-person-row"+i).innerHTML}
+        var myCurrentCon = {"conName": currentConTable.rows[i].cells[0].innerHTML,
+                              "conID": currentConTable.rows[i].cells[1].innerHTML,
+                              "conAffliation": currentConTable.rows[i].cells[2].innerHTML,
+                              "conRole": currentConTable.rows[i].cells[3].innerHTML,
+                              "conContact": currentConTable.rows[i].cells[4].innerHTML}
         currentConInfo.push(myCurrentCon);
       };
       var acknowlegdment = document.getElementById("ds-description-acknowlegdment").value;
@@ -1012,8 +1197,8 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
       var rowcountLink = document.getElementById("table-addl-links").rows.length;
       var addlLinkInfo = [];
       for (i=1; i<rowcountLink; i++) {
-        var addlLink = {"link": document.getElementById("link-row"+i).innerHTML,
-                        "description": document.getElementById("link-description-row"+i).innerHTML}
+        var addlLink = {"link": document.getElementById("table-addl-links").rows[i].cells[0].innerHTML,
+                        "description": document.getElementById("table-addl-links").rows[i].cells[1].innerHTML}
         addlLinkInfo.push(addlLink)
       }
       miscObj["doi"] = doiArray;
@@ -1044,6 +1229,7 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
         client.invoke("api_save_ds_description_file", destinationPath, json_str_ds, json_str_misc, json_str_optional, json_str_con, (error, res) => {
           if(error) {
             var emessage = userError(error)
+            log.error(error)
             console.error(error)
             document.getElementById("para-generate-description-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
           }

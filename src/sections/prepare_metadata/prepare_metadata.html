@@ -19,6 +19,9 @@
     <div class="demo">
       <div class="demo-wrapper">
         <button id="button-new-window-login-demo-toggle" class="js-container-target demo-toggle-button">Download templates
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Download-templates">
+            <img class="nav-video" src="assets/img/play-video-icon.png">
+          </a>
           <div class="demo-meta u-avoid-clicks"> Get the templates provided by the SPARC Curation Team </div>
         </button>
 
@@ -52,35 +55,64 @@
 <!-- Save information for later -->
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-save-grant-info-demo-toggle" class="js-container-target demo-toggle-button">Provide grant information
-          <div class="demo-meta u-avoid-clicks"> Provide information about your grant number and milestones for later use </div>
+        <button id="button-save-grant-info-demo-toggle" class="js-container-target demo-toggle-button">Provide award information
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Provide-award-information">
+            <img class="nav-video" src="assets/img/play-video-icon.png">
+          </a>
+          <div class="demo-meta u-avoid-clicks"> Provide information about your award number and milestones for later use </div>
         </button>
 
       <div class="demo-box">
           <form id = 'grant-information'>
             <div style = "padding:10px 0px">
+              <input class="input-switch" id="connectAirtable" type="radio" name="tabs">
+              <label class="label-switch" style="width:185px;font-size:15px;padding-top: 6px;" for="connectAirtable">Connect to Airtable</label>
               <input class="input-switch" id="addGrant" type="radio" name="tabs" checked>
-              <label class="label-switch" style="font-size:15px;padding-top: 6px;" for="addGrant">Add new grant</label>
+              <label class="label-switch" style="width:185px;font-size:15px;padding-top: 6px;" for="addGrant">Add new award</label>
               <input class="input-switch" id="selectGrant" type="radio" name="tabs">
-              <label class="label-switch" style="font-size:15px;padding-top: 6px;"for="selectGrant">Edit existing grant</label>
+              <label class="label-switch" style="width:185px;font-size:15px;padding-top: 6px;"for="selectGrant">Edit existing award</label>
             </div>
          </form>
 
+         <div id="div-add-airtable-key" class="datasetsaveoption" style="display:none;margin-top:70px;margin-left:10px">
+           <h5> Enter your Airtable API key below:
+             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+               <span style="width: 250px;" class="tooltiptext">Please checkout the dedicated <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a>
+               for obtaining or re-generating your API key to connect to SODA during your first use.
+               </span>
+             </div>
+           </h5> <br>
+
+           <div class="demo-controls">
+             <input class="form-container-input-bf" style="width:555px;height:35px;float:left" type="password" id="airtable-api-key" />
+             <button class="demo-button-prev-next" style="float:right;margin-left:10px;font-size:15px;height:35px;" id="button-add-airtable-key"> Connect </button>
+           </div>
+           <br>
+           <div id="div-airtable-connect-load-progress" class="progressdiv">
+             <div class="indeterminatebar"></div>
+           </div>
+           <!-- <div class="demo-controls"> -->
+           <!-- </div> -->
+           <p id="para-add-airtable-key-status" style="display:none"></p>
+         </div>
+
           <div id="div-add-new-grant" class="datasetsaveoption" style="display:block;margin-top:70px;margin-left:10px">
-            <h5> Add a new grant number: </h5>
+            <h5> Search for award: </h5>
             <div class="demo-controls">
-              <select id="select-grant-info-list" class="my-dropdown-metadata" style="width:90%;float:left;height:35px;line-height:2;padding:6px 8px;margin-top:15px">
-                <option>Select</option>
-              </select>
+              <input id="input-grant-info" list="select-grant-info-list" class="form-container-input-bf" style="width:90%;float:left;height:35px;padding:6px 8px;margin-top:15px">
+              <datalist id="select-grant-info-list" style="overflow-x: hidden; overflow: scroll; width: 100%; height:500px">
+                <option disabled>Select</option>
+              </datalist>
               <button id="button-add-award" class="demo-button" style="height:35px;width:150px;padding:0 0;margin-left:10px;margin-top:15px">Add</button>
             </div>
-            <div style="height:20px;margin-top:7px;margin-bottom:7px">
-              <p id="para-save-award-info"></p>
+            <p style="height:30px;margin-top:7px;margin-bottom:7px" id="para-save-award-info"></p>
+            <div id="div-awards-load-progress" class="progressdiv">
+              <div class="indeterminatebar"></div>
             </div>
           </div>
 
           <div id="div-select-existing-grant" class="datasetsaveoption" style="display:none;margin-top:70px;margin-left:10px">
-            <h5> Specify a grant number: </h5>
+            <h5> Select award: </h5>
             <div class="demo-controls" style="margin-top:20px">
               <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:100%; height:35px;line-height:2;padding: 6px 8px; font-size:14px">
                 <option>Select</option>
@@ -95,13 +127,13 @@
             <div class="demo-controls">
               <div id="div-show-milestone-info-no-existing" class="pathtable" style="display:none;width:100%">
                 <!-- <form method="post" style="width:100%"> -->
-                  <h5> <span id="import-or-replace">Import your </span> Data Deliverables document: </h5>
+                  <h5>Data Deliverables document: </h5>
                   <h5></h5>
                   <div class="container-milestone-upload" style="display:flex;">
                     <!-- <button type="button" style="width:40%;float:left" class="button-milestone-upload">Select a file</button> -->
                     <input class="milestone-upload-text" id="input-milestone-select" style="width:40%;text-align:center" type="text" readonly placeholder="Select a file">
-                    <button id="button-import-milestone" type="button" style="width:20%" class="button-milestone-upload"><b>Upload</b></button>
-                    <p id="para-milestone-document-info" style="float:right;margin-top:0;margin-left:7px;text-align:center;vertical-align:middle;"></p>
+                    <button id="button-import-milestone" type="button" style="width:20%" class="button-milestone-upload"><b>Import</b></button>
+                    <p id="para-milestone-document-info" style="float:right;margin-top:0;margin-left:7px;padding: 0 0;height:34px;width:300px;text-align:left;vertical-align:middle;"></p>
                   </div>
                 <!-- </form> -->
               </div>
@@ -129,7 +161,10 @@
     <!-- Prepare submission file -->
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-submission-demo-toggle" class="js-container-target demo-toggle-button"> Prepare your Submission file
+        <button id="button-submission-demo-toggle" class="js-container-target demo-toggle-button"> Prepare your submission file
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Prepare-Submission-File">
+            <img class="nav-video" src="assets/img/play-video-icon.png">
+          </a>
           <div class="demo-meta u-avoid-clicks"> Edit/Save the submission file to include in your dataset  </div>
         </button>
       <div class="demo-box">
@@ -144,7 +179,7 @@
             </span>
           </div>
           <div class="demo-controls">
-          <select id="presaved-award-list" class="form-container-input-bf" style="line-height: 2;height:28px">
+          <select id="presaved-award-list" class="form-container-input-bf" style="line-height: 2;font-size:13px;height:28px">
             <option value="Select">Select an option</option>
           </select>
           </div>
@@ -155,7 +190,7 @@
             </span>
           </div>
           <div class="demo-controls">
-            <select id="selected-milestone" class="form-container-input-bf" style="line-height: 2;height:28px">
+            <select id="selected-milestone" class="form-container-input-bf" style="font-size:13px;line-height: 2;height:28px">
               <option value="Select">Select an option</option>
             </select>
           </div>
@@ -166,7 +201,7 @@
             </span>
           </div>
           <div class="demo-controls">
-            <select id="selected-description-data" class="form-container-input-bf"  style="line-height: 2;height:28px">
+            <select id="selected-description-data" class="form-container-input-bf"  style="font-size:13px;line-height: 2;height:28px">
               <option value="Select">Select an option</option>
             </select>
           </div>
@@ -193,19 +228,22 @@
   <!-- Prepare dataset-description file -->
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-ds-description-demo-toggle" class="js-container-target demo-toggle-button"> Prepare your Dataset Description file
+        <button id="button-ds-description-demo-toggle" class="js-container-target demo-toggle-button"> Prepare your dataset description file
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Prepare-Dataset-Description-File">
+            <img class="nav-video" src="assets/img/play-video-icon.png">
+          </a>
           <div class="demo-meta u-avoid-clicks"> Edit/Save the dataset description file to include in your dataset  </div>
         </button>
         <div class="demo-box" style="width:100%">
 
           <div class="multisteps-form__progress" style="margin-top:20px">
-            <button id="ds-dataset-info" class="multisteps-form__progress-btn js-active1" type="button" title="Dataset Info"><b>Dataset Info</b></button>
-            <button id="ds-contributor-info"class="multisteps-form__progress-btn" type="button" title="Con Info"><b>Contributor Info</b></button>
-            <button id="ds-misc-info"class="multisteps-form__progress-btn" type="button" title="Other Info"><b>Other Info</b></button>
-            <button id="ds-optional-info" class="multisteps-form__progress-btn" type="button" title="Optional Info"><b>Optional Info</b></button>
+            <button id="ds-dataset-info" class="multisteps-form__progress-btn js-active1" style="font-size: 15px" type="button" title="Dataset Info"><b>Dataset Info</b></button>
+            <button id="ds-contributor-info"class="multisteps-form__progress-btn" style="font-size: 15px" type="button" title="Con Info"><b>Contributor Info</b></button>
+            <button id="ds-misc-info"class="multisteps-form__progress-btn" style="font-size: 15px" type="button" title="Other Info"><b>Article(s) and protocol(s)</b></button>
+            <button id="ds-optional-info" class="multisteps-form__progress-btn" style="font-size: 15px" type="button" title="Optional Info"><b>Optional Info</b></button>
           </div>
 
-          <div style="display:block;width:90%;margin: 0 auto" id="div-ds-dataset-info" class="datasetsaveoption">
+          <div style="display:block;width:90%;margin: 0 auto;font-size:13px" id="div-ds-dataset-info" class="datasetsaveoption">
             <br><br><br>
             <div class="form-container-ds"><font color="black"> Name: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -261,7 +299,7 @@
               <button id="button-next-ds-contributor"class="demo-button-prev-next">Next</button>
             </div>
           </div>
-          <div id="div-ds-contributor-info" style="width:90%;margin: 0 auto" class="datasetsaveoption">
+          <div id="div-ds-contributor-info" style="width:90%;margin: 0 auto;font-size:13px" class="datasetsaveoption">
             <br>
           <h5 align="center">Award Information </h5>
           <br>
@@ -273,14 +311,14 @@
               </span>
             </div>
             <div class="demo-controls">
-            <select id="ds-description-award-list" class="form-container-input-bf" style="line-height:2;height:28px">
+            <select id="ds-description-award-list" class="form-container-input-bf" style="font-size:13px;line-height:2;height:28px">
               <option value="Select">Select an option</option>
             </select>
             </div>
-            <div class="form-container-ds"><font color="black"> Acknowlegdments: </font> </div>
+            <div class="form-container-ds"><font color="black"> Acknowledgments: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px;">
-                Acknowledgements beyond funding and contributors
+                Acknowledgments beyond funding and contributors
               </span>
             </div>
             <div class="demo-controls">
@@ -296,7 +334,7 @@
               </span>
             </div>
             <div class="demo-controls">
-            <select id="ds-description-contributor-list" class="form-container-input-bf" style="line-height: 2;height:28px">
+            <select id="ds-description-contributor-list" class="form-container-input-bf" style="font-size:13px;line-height: 2;height:28px">
               <option>Select an option</option>
             </select>
             </div>
@@ -365,7 +403,7 @@
               <button id="button-next-contributor-misc" style="float:right" class="demo-button-prev-next">Next</button>
             </div>
           </div>
-          <div id="div-ds-misc-info" style="width:90%;margin: 0 auto"class="datasetsaveoption">
+          <div id="div-ds-misc-info" style="width:90%;margin: 0 auto;font-size:13px" class="datasetsaveoption">
             <br><br><br>
             <div class="form-container-ds"><font color="black"> Originating Article DOI: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -427,7 +465,7 @@
               <button id="button-next-misc-optional" style="float:right" class="demo-button-prev-next">Next</button>
             </div>
           </div>
-          <div id="div-ds-optional-info" style="width:90%;margin: 0 auto" class="datasetsaveoption">
+          <div id="div-ds-optional-info" style="width:90%;margin: 0 auto;font-size:13px" class="datasetsaveoption">
             <br><br><br>
             <div class="form-container-ds" style="width:230px"><font color="black"> Completeness of dataset: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -436,7 +474,7 @@
               </span>
             </div>
             <div class="demo-controls">
-              <select id = "input-completeness" class="form-container-input-bf" style="border: 1px solid #C0C0C0;border-left: 2px solid #258193;height:28px;line-height:2;">
+              <select id = "input-completeness" class="form-container-input-bf" style="font-size:13px;border: 1px solid #C0C0C0;border-left: 2px solid #258193;height:28px;line-height:2;">
                 <option value="Select">Select an option</option>
                 <option>hasChild</option>
                 <option>hasNext</option>

@@ -73,11 +73,11 @@ my-dropdown<!DOCTYPE html>
               </div>
             </h5>
             <div class="demo-controls">
-              <select class="my-dropdown" style="width:65%" id="bfaccountlist">
+              <select class="my-dropdown" style="width:80%;" id="bfaccountlist">
                 <option> Select </option>
               </select>
               <p></p>
-              <button id="button-check-bf-account-details" class="demo-button"> Switch Account </button>
+              <button id="button-check-bf-account-details" style="height:38px;width:180px" class="demo-button"> Switch Account </button>
             </div>
 
             <div id="div-bf-account-load-progress" class="progressdiv">
@@ -112,7 +112,7 @@ my-dropdown<!DOCTYPE html>
 
           <br><br><br>
           <div id="div-create-dataset" class="datasetsaveoption" style="margin-left:20px">
-        
+
             <h5> Enter name:
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">Enter desired name for your new dataset. This is the field that will be displayed in public as the title of the dataset. Please make sure that your dataset title is different than your other dataset titles and that it is relatively informative.
@@ -144,7 +144,7 @@ my-dropdown<!DOCTYPE html>
                 <option> Select dataset </option>
               </select>
               <p></p>
-              <button id="button-refresh-dataset-renamedataset-list" class="demo-button"> Refresh List </button>
+              <button id="button-refresh-dataset-renamedataset-list" class="demo-button" style="height:38px;width:180px;padding:0 0; display:none"> Refresh List </button>
             </div>
 
             <h5> Enter new name: </h5>
@@ -177,7 +177,7 @@ my-dropdown<!DOCTYPE html>
         <div class="demo-box">
           <h5> Select Blackfynn dataset
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the Blackfynn dataset for which you wish to add/edit metadata (sorted alphabetically). Click on "Refresh List" to update your list of datasets in case you have create an new one in parallel outside of SODA (e.g., from the Blackfynn webpage).
+              <span class="tooltiptext">Select the Blackfynn dataset for which you wish to add/edit metadata (sorted alphabetically).
               <br><br>
               Subtitle, description, banner image and license are mandatory SPARC metadata.
               <br><br>
@@ -186,11 +186,11 @@ my-dropdown<!DOCTYPE html>
             </div>
           </h5>
           <div class="demo-controls">
-            <select class="my-dropdown" id="bfdatasetlist_metadata">
+            <select class="my-dropdown" style="width:80%" id="bfdatasetlist_metadata">
               <option> Select dataset </option>
             </select>
             <p></p>
-            <button id="button-refresh-dataset-list-metadata" class="demo-button"> Refresh List </button>
+            <button id="button-refresh-dataset-list-metadata" class="demo-button"  style="width:150px;height:38px;display:none" > Refresh List </button>
           </div>
 
           <p></p>
@@ -326,10 +326,11 @@ my-dropdown<!DOCTYPE html>
             <div class="demo-controls" style="margin-top:-30px">
               <div style="width: 200px; float: left;">
                 <h5> Click to assign license </h5>
+                <br>
                 <button id="button-add-license" class="demo-button" style="width: 300px"> Assign Creative Commons Attribution (CC-BY) license
                 </button>
               </div>
-              <div style="margin-left: 220px;">
+              <div style="margin-left: 220px;margin-top:-30px">
                 <h5> Current License
                 </h5>
                 <p id = "para-dataset-license-current"> None </p>
@@ -370,18 +371,18 @@ my-dropdown<!DOCTYPE html>
         <div class="demo-box">
           <h5> Select Blackfynn dataset
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permissions (sorted alphabetically). Click on "Refresh List" to update your list of datasets in case you have create an new one in parallel outside of SODA (e.g., from the Blackfynn webpage).
+              <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permissions (sorted alphabetically).
               <br><br>
               Note: You must have "owner" or "manager" permissions on the dataset to manage permissions. Verify below under "Current permissions" after you select a dataset. See our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
               </span>
             </div>
           </h5>
           <div class="demo-controls">
-            <select class="my-dropdown" id="bfdatasetlist_permission">
+            <select class="my-dropdown" style="width:80%;" id="bfdatasetlist_permission">
               <option> Select dataset </option>
             </select>
             <p></p>
-            <button id="button-refresh-dataset-list-permission" class="demo-button"> Refresh List </button>
+            <button id="button-refresh-dataset-list-permission" class="demo-button" style="width:150px;height:38px;display:none"> Refresh List </button>
           </div>
           <p></p>
           <h5> Current permissions
@@ -544,11 +545,11 @@ my-dropdown<!DOCTYPE html>
           <br/>
 
           <div class="demo-controls">
-            <select class="my-dropdown" id="bfdatasetlist_dataset_status">
+            <select class="my-dropdown" style="width:80%" id="bfdatasetlist_dataset_status">
               <option> Select dataset </option>
             </select>
             <p></p>
-            <button id="button-refresh-dataset-status" class="demo-button"> Refresh List </button>
+            <button id="button-refresh-dataset-status" style="width:150px;height:38px;display:none" class="demo-button"> Refresh List </button>
           </div>
 
           <div id=div-bf-current-dataset-status-progress class="progressdiv">
@@ -571,7 +572,7 @@ my-dropdown<!DOCTYPE html>
           </h5>
           <br/>
           <div class="demo-controls">
-            <select class="my-dropdown" id="bf_list_dataset_status">
+            <select class="my-dropdown" style="width:80%" id="bf_list_dataset_status">
               <option>  </option>
             </select>
           </div>
@@ -599,25 +600,25 @@ my-dropdown<!DOCTYPE html>
           </div> -->
           </h5>
           <div class="demo-controls">
-            <button id="button-select-submit-dataset" class="demo-button">Select Folder </button>
-            <textarea class="demo-response-upload" style="resize: none; height:45px;width:58%" id="selected-submit-dataset"></textarea>
+            <button id="button-select-submit-dataset" style="height:45px"class="demo-button">Select Folder </button>
+            <textarea class="demo-response-upload" style="resize: none; height:45px;width:68%" id="selected-submit-dataset"></textarea>
           </div>
 
           <p></p>
           <h5> Select Blackfynn dataset for uploading
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically). Click on "Refresh List" to update your list of datasets in case you have create an new one in parallel outside of SODA (e.g., from the Blackfynn webpage).
+              <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically).
               <br> <br>
               Note: You must have "owner", "manager" or "editor" permissions on the dataset to upload. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
               </span>
             </div>
           </h5>
           <div class="demo-controls">
-            <select class="my-dropdown" id="bfdatasetlist">
+            <select class="my-dropdown" style="width:80%;" id="bfdatasetlist">
               <option> Select dataset </option>
             </select>
             <p></p>
-            <button id="button-refresh-dataset-list" class="demo-button"> Refresh List </button>
+            <button id="button-refresh-dataset-list" style="height:38px;width:150px;display:none" class="demo-button"> Refresh List </button>
           </div>
 
           <p></p>
