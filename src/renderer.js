@@ -140,6 +140,7 @@ const contactPerson = document.getElementById("ds-contact-person")
 const currentConTable = document.getElementById("table-current-contributors")
 const generateDSBtn = document.getElementById("button-generate-ds-description")
 const addAdditionalLinkBtn = document.getElementById("button-ds-add-link")
+const datasetDescriptionFileDataset = document.getElementById('ds-name')
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -1157,6 +1158,31 @@ dsContributorArray.addEventListener("change", function(e) {
   }
 })
 
+///// grab datalist name and auto-load current description
+function showDatasetDescription(){
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = datasetDescriptionFileDataset.options[datasetDescriptionFileDataset.selectedIndex].text
+  if (selectedBfDataset === 'Select dataset'){
+    bfCurrentMetadataProgress.style.display = 'none'
+  } else {
+    client.invoke("api_bf_get_description", selectedBfAccount, selectedBfDataset,
+    (error, res) => {
+      if(error) {
+        log.error(error)
+        console.error(error)
+      } else {
+        document.getElementById("ds-description").innerHTML = res
+      }
+    })
+  }
+}
+
+//// upon choosing a dataset, populate current description
+datasetDescriptionFileDataset.addEventListener("change", function() {
+  document.getElementById("ds-description").innerHTML = "Loading..."
+  document.getElementById("ds-description").disabled = true;
+  showDatasetDescription()
+})
 ///// Generate ds description file
 generateDSBtn.addEventListener('click', (event) => {
   ipcRenderer.send('open-folder-dialog-save-ds-description',"dataset_description.xlsx")
@@ -1170,7 +1196,7 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
       ipcRenderer.send('open-error-metadata-file-exits', emessage)
     } else {
       /// grab entries from dataset info section
-      var name = document.getElementById("ds-name").value;
+      var name = datasetDescriptionFileDataset.options[datasetDescriptionFileDataset.selectedIndex].value;
       var description = document.getElementById("ds-description").value;
       var keywordArray = keywordTagify.value;
       var keywordVal = []
@@ -2639,11 +2665,13 @@ function refreshAllBfDatasetLists(){
       var option4 = optionSelect.cloneNode(true)
       var option5 = optionSelect.cloneNode(true)
       var option6 = optionSelect.cloneNode(true)
+      var option7 = optionSelect.cloneNode(true)
       bfDatasetListMetadata.appendChild(option2)
       bfDatasetListPermission.appendChild(option3)
       bfUploadDatasetList.appendChild(option4)
       bfDatasetListDatasetStatus.appendChild(option5)
       bfDatasetListRenameDataset.appendChild(option6)
+      datasetDescriptionFileDataset.appendChild(option7)
     } else {
       client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
         if(error) {
@@ -2656,6 +2684,7 @@ function refreshAllBfDatasetLists(){
           removeOptions(bfUploadDatasetList)
           removeOptions(bfDatasetListDatasetStatus)
           removeOptions(bfDatasetListRenameDataset)
+          removeOptions(datasetDescriptionFileDataset)
           for (myitem in res){
             var myitemselect = res[myitem]
             var option = document.createElement("option")
@@ -2667,11 +2696,13 @@ function refreshAllBfDatasetLists(){
             var option4 = option.cloneNode(true)
             var option5 = option.cloneNode(true)
             var option6 = option.cloneNode(true)
+            var option7 = option.cloneNode(true)
             bfDatasetListMetadata.appendChild(option2)
             bfDatasetListPermission.appendChild(option3)
             bfUploadDatasetList.appendChild(option4)
             bfDatasetListDatasetStatus.appendChild(option5)
             bfDatasetListRenameDataset.appendChild(option6)
+            datasetDescriptionFileDataset.appendChild(option7)
         }
       }
     })

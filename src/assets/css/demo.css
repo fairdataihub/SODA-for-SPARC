@@ -917,8 +917,6 @@ label.input-banner-img{
 .form-container-textarea {
   float: right;
   font-weight: 400;
-  /* background-clip: padding-box; */
-  /* line-height: 2; */
   font: inherit;
   width: 100%;
   border: 1px solid #C0C0C0;
