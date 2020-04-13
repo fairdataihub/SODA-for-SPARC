@@ -808,6 +808,8 @@ function changeAwardInput() {
   removeOptions(document.getElementById("selected-description-data"))
   addOption(document.getElementById('selected-milestone'), "Select an option", "Select")
   addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
+  addOption(document.getElementById('selected-milestone'), "Not specified in Data Deliverables document", "N/A")
+  addOption(document.getElementById('selected-description-data'), "Not specified in Data Deliverables document", "N/A")
 
   award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
   var informationJson = parseJson(milestonePath);
@@ -823,35 +825,47 @@ function changeAwardInput() {
     }
     // populate description field based on milestone selected
     milestoneInput.addEventListener('input', function() {
+    document.getElementById("para-save-submission-status").innerHTML = ""
     removeOptions(descriptionInput);
-    document.getElementById("selected-milestone-date").value = "";
-    addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
-      for (var i=0;i<milestoneKey.length; i++) {
-        if (milestoneKey[i] === milestoneInput.value) {
-          //// Add description data to dropdowns
-          for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
-            addOption(descriptionInput, milestoneObj[milestoneKey[i]][j]["Description of data"], milestoneObj[milestoneKey[i]][j]["Description of data"])
-          }
+    document.getElementById("selected-milestone-date").value = ""
+    if (milestoneInput.value==="N/A") {
+      addOption(document.getElementById('selected-description-data'), "Not specified in Data Deliverables document", "Not applicable")
+      // descriptionInput.value === "N/A"
+      // descriptionInput.text === "Not specified in Data Deliverables document"
+      dateInput.value = "N/A"
+    } else {
+        addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
+        addOption(document.getElementById('selected-description-data'), "Not specified in Data Deliverables document", "Not applicable")
+        for (var i=0;i<milestoneKey.length; i++) {
+          if (milestoneKey[i] === milestoneInput.value) {
+            //// Add description data to dropdowns
+            for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
+              addOption(descriptionInput, milestoneObj[milestoneKey[i]][j]["Description of data"], milestoneObj[milestoneKey[i]][j]["Description of data"])
+            }
         }
       }
-    });
-    //// populate date field
-    descriptionInput.addEventListener('input', function() {
-      document.getElementById("selected-milestone-date").value = "";
+    }
+  })
+  //// populate date field
+  descriptionInput.addEventListener('input', function() {
+    document.getElementById("para-save-submission-status").innerHTML = ""
+    document.getElementById("selected-milestone-date").value = "";
+    if (descriptionInput.value === "Not applicable") {
+      dateInput.value = "Not applicable"
+    } else {
       for (var i=0;i<milestoneKey.length; i++) {
         for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
           if (milestoneObj[milestoneKey[i]][j]["Description of data"] === descriptionInput.value) {
             //// stringify date object
             var dateStrings = milestoneObj[milestoneKey[i]][j]["Expected date of completion"].toString()
             dateInput.value = dateStrings
+          }
         }
       }
     }
   })
+  }
 }
-}
-
-
 
 /////// Populate Submission file fields from presaved information
 presavedAwardArray2.addEventListener('change', changeAwardInput)
