@@ -413,9 +413,15 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
     ws1["D16"] = val_arr_ds[3]
     ws1["D17"] = val_arr_ds[4]
 
-    ## contributor info
+    ## award info
+    for i, column in zip(range(len(val_arr_con["funding"])), excel_columns()):
+        ws1[column + "11"] = val_arr_con["funding"][i]
+
+### val_arr_con["funding"] = ["sparc award","tag1","tag2"]
+
+    ### Acknowledgments
     ws1["D10"] = val_arr_con["acknowlegdment"]
-    ws1["D11"] = val_arr_con["funding"]
+    ### Contributors
     for contributor, column in zip(val_arr_con['contributors'], excel_columns()):
         ws1[column + "5"] = contributor["conName"]
         ws1[column + "6"] = contributor["conID"]

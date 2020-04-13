@@ -87,12 +87,9 @@
              <input class="form-container-input-bf" style="width:555px;height:35px;float:left" type="password" id="airtable-api-key" />
              <button class="demo-button-prev-next" style="float:right;margin-left:10px;font-size:15px;height:35px;" id="button-add-airtable-key"> Connect </button>
            </div>
-           <br>
            <div id="div-airtable-connect-load-progress" class="progressdiv">
              <div class="indeterminatebar"></div>
            </div>
-           <!-- <div class="demo-controls"> -->
-           <!-- </div> -->
            <p id="para-add-airtable-key-status" style="display:none"></p>
          </div>
 
@@ -105,7 +102,7 @@
               </datalist>
               <button id="button-add-award" class="demo-button" style="height:35px;width:150px;padding:0 0;margin-left:10px;margin-top:15px">Add</button>
             </div>
-            <p style="height:30px;margin-top:7px;margin-bottom:7px" id="para-save-award-info"></p>
+            <p style="margin-top:7px;margin-bottom:7px" id="para-save-award-info"></p>
             <div id="div-awards-load-progress" class="progressdiv">
               <div class="indeterminatebar"></div>
             </div>
@@ -237,10 +234,10 @@
         <div class="demo-box" style="width:100%">
 
           <div class="multisteps-form__progress" style="margin-top:20px">
-            <button id="ds-dataset-info" class="multisteps-form__progress-btn js-active1" style="font-size: 15px" type="button" title="Dataset Info"><b>Dataset Info</b></button>
-            <button id="ds-contributor-info"class="multisteps-form__progress-btn" style="font-size: 15px" type="button" title="Con Info"><b>Contributor Info</b></button>
-            <button id="ds-misc-info"class="multisteps-form__progress-btn" style="font-size: 15px" type="button" title="Other Info"><b>Article(s) and protocol(s)</b></button>
-            <button id="ds-optional-info" class="multisteps-form__progress-btn" style="font-size: 15px" type="button" title="Optional Info"><b>Optional Info</b></button>
+            <button id="ds-dataset-info" class="multisteps-form__progress-btn js-active1" style="font-size: 15px;cursor:pointer" type="button" title="Dataset Info"><b>Dataset Info</b></button>
+            <button id="ds-contributor-info"class="multisteps-form__progress-btn" style="font-size: 15px;cursor:pointer" type="button" title="Con Info"><b>Contributor Info</b></button>
+            <button id="ds-misc-info"class="multisteps-form__progress-btn" style="font-size: 15px;cursor:pointer" type="button" title="Other Info"><b>Article(s) and protocol(s)</b></button>
+            <button id="ds-optional-info" class="multisteps-form__progress-btn" style="font-size: 15px;cursor:pointer" type="button" title="Optional Info"><b>Optional Info</b></button>
           </div>
 
           <div style="display:block;width:90%;margin: 0 auto;font-size:13px" id="div-ds-dataset-info" class="datasetsaveoption">
@@ -304,7 +301,7 @@
           <h5 align="center">Award Information </h5>
           <br>
             <!-- <h5 align="center">Populate the fields below with information about the contributors: </h5> -->
-            <div class="form-container-ds"><font color="black"> Award/Funding: </font> </div>
+            <div class="form-container-ds"><font color="black"> SPARC Award: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 200px;">
                 Funding sources
@@ -314,6 +311,15 @@
             <select id="ds-description-award-list" class="form-container-input-bf" style="font-size:13px;line-height:2;height:28px">
               <option value="Select">Select an option</option>
             </select>
+            </div>
+            <div class="form-container-ds"><font color="black"> Other funding source(s): </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 200px;z-index:2">
+                Other funding sources
+              </span>
+            </div>
+            <div class="demo-controls">
+              <textarea id="ds-other-funding" class="form-container-textarea" style="border-left: 2px solid #258193;"> </textarea>
             </div>
             <div class="form-container-ds"><font color="black"> Acknowledgments: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -498,7 +504,7 @@
             <div class="demo-controls">
               <input id="input-completeds-title" class="form-container-input-bf" />
             </div>
-            <div class="form-container-ds" style="width:230px"><font color="black"> Metadata Version: </font> </div>
+            <!-- <div class="form-container-ds" style="width:230px"><font color="black"> Metadata Version: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px;">
                 DO NOT CHANGE: 1.2.3
@@ -506,8 +512,8 @@
             </div>
             <div class="demo-controls">
               <input id="input-metadata-ver" value="1.2.3" disabled class="form-container-input-bf"  style="line-height: 2;height:28px"/>
-            </div>
-            <br>
+            </div> -->
+            <br><br>
             <div>
               <button id="button-prev-optional-misc" class="demo-button-prev-next">Previous</button>
               <button id="button-generate-ds-description" style="float:right"  class="demo-button-prev-next">Generate</button>

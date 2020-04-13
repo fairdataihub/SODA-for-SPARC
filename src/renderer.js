@@ -355,12 +355,13 @@ addAirtableKeyBtn.addEventListener("click", function() {
   https.get(options, res => {
     // console.log(`statusCode: ${res.statusCode}`)
     if (res.statusCode === 200) {
+      console.log(res)
       /// updating api key in SODA's storage
       createMetadataDir();
       var content = parseJson(airtableConfigPath);
       content["api-key"] = apiKeyInput;
       fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: black;'>Successfully connected to Airtable!</span>";
+      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: black;'>Successfully connected to Airtable!" +smileyCan +"</span>";
       document.getElementById('para-save-award-info').innerHTML = ""
       loadAwardData()
     } else {
@@ -377,6 +378,7 @@ addAirtableKeyBtn.addEventListener("click", function() {
       document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key!</span>";
       document.getElementById("para-add-airtable-key-status").style.display = "block"
     })
+    document.getElementById("airtable-api-key").value = ""
   })
 })
 
@@ -491,9 +493,9 @@ ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
 })
 
 /// clear p messages upon changing awards
-// awardArray.addEventListener('change', function() {
-//   document.getElementById("para-save-award-info").innerHTML = "";
-// })
+awardArray.addEventListener('change', function() {
+  document.getElementById("para-save-award-info").innerHTML = "";
+})
 presavedAwardArray1.addEventListener('change', function() {
   document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
   document.getElementById("para-delete-award-status").innerHTML = ""
@@ -564,6 +566,7 @@ function getRowIndex(table) {
 
 // Save grant information
 addAwardBtn.addEventListener('click', function() {
+  document.getElementById("para-save-award-info").innerHTML = ""
   var inputVal = document.getElementById("input-grant-info").value;
   if (inputVal.length === 0) {
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Please choose an award key!</span>";
@@ -783,6 +786,8 @@ function loadAwardData() {
             options += '<option value="'+element+'" />';
           }
           awardArray.innerHTML = options
+          document.getElementById("para-add-airtable-key-status").style.display = "block"
+          document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: black;'>Successfully connected to Airtable!" +smileyCan +"</span>";
         }
     });
   }
@@ -905,6 +910,10 @@ var keywordInput = document.getElementById('ds-keywords'),
     duplicates: false,
     maxTags  : 5
 })
+var otherFundingInput = document.getElementById('ds-other-funding'),
+  otherFundingTagify = new Tagify(otherFundingInput, {
+    duplicates: false,
+})
 var contributorRoles = document.getElementById("input-con-role"),
   currentContributortagify = new Tagify(contributorRoles, {
     whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "ContactPerson", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
@@ -976,34 +985,63 @@ function createCurrentConTable(table) {
   var id = document.getElementById("input-con-ID").value
   var affiliation = document.getElementById("input-con-affiliation").value
   var role = currentContributortagify.value
-  var roleVal = []
-  for (var i=0;i<role.length;i++) {
-    roleVal.push(role[i].value)
+  //// check if any field is empty
+  if (name.length===0 || id.length===0 || affiliation.length===0 || role.length===0) {
+    document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Please fill in all the fields to add!</span>"
   }
-  var contactPersonStatus = "No"
-  if (contactPerson.checked) {
-    var contactPersonStatus = "Yes"
-  }
-  /// Construct table
-  var rowcount = table.rows.length;
-  if (rowcount===1) {
-    // start at 1 to skip the header
-    var rowIndex = 1;
-  } else {
-    /// append row to table from the bottom
-    var rowIndex = rowcount;
-  }
-  var duplicate = false
-  for (var i=0; i<rowcount;i++){
-    if (table.rows[i].cells[0].innerHTML===name) {
-      duplicate = true
-      break
+  else {
+    var roleVal = []
+    for (var i=0;i<role.length;i++) {
+      roleVal.push(role[i].value)
     }
-  } if (!duplicate) {
-    var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
-    return table
-  } else {
-    document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contributor already added!</span>"
+    var contactPersonStatus = "No"
+    if (contactPerson.checked) {
+      var contactPersonStatus = "Yes"
+    }
+    /// Construct table
+    var rowcount = table.rows.length;
+    if (rowcount===1) {
+      // start at 1 to skip the header
+      var rowIndex = 1;
+    } else {
+      /// append row to table from the bottom
+      var rowIndex = rowcount;
+    }
+    var duplicate = false
+    for (var i=0; i<rowcount;i++){
+      if (table.rows[i].cells[0].innerHTML===name) {
+        duplicate = true
+        break
+      }
+    }
+    var existingContactPersonStatus = false;
+    for (var i=0; i<rowcount;i++){
+      if (table.rows[i].cells[4].innerHTML==="Yes") {
+        existingContactPersonStatus = true
+        break
+      }
+    }
+    if (contactPersonStatus==="Yes") {
+      if (!existingContactPersonStatus) {
+        if (!duplicate) {
+          var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+          document.getElementById("div-current-contributors").style.display = "block"
+          return table
+        } else {
+          document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contributor already added!</span>"
+        }
+      } else {
+        document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contact person is already added below!</span>"
+      }
+    } else {
+      if (!duplicate) {
+        var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+        document.getElementById("div-current-contributors").style.display = "block"
+        return table
+      } else {
+        document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contributor already added!</span>"
+      }
+    }
   }
 }
 
@@ -1074,7 +1112,6 @@ addCurrentContributorsBtn.addEventListener("click", function() {
     document.getElementById("para-save-contributor-status").innerHTML = "<span style='color:red'>Please choose a contributor!</span>";
   } else {
     createCurrentConTable(currentConTable);
-    document.getElementById("div-current-contributors").style.display = "block"
   }
 })
 
@@ -1160,11 +1197,18 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
       var acknowlegdment = document.getElementById("ds-description-acknowlegdment").value;
       var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
       var contributorObj = {}
+      fundingArray = [];
       if (funding==="Select") {
-        contributorObj["funding"] = "N/A"
+        fundingArray = ["N/A"]
       } else {
-        contributorObj["funding"] = funding
+        fundingArray = [funding]
       }
+      /// other funding sources
+      var otherFunding = otherFundingTagify.value
+      for (var i=0;i<otherFunding.length;i++) {
+        fundingArray.push(otherFunding[i].value)
+      }
+      contributorObj["funding"] = fundingArray
       contributorObj["acknowlegdment"] = acknowlegdment
       contributorObj["contributors"] = currentConInfo
 
