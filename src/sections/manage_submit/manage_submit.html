@@ -588,7 +588,7 @@ my-dropdown<!DOCTYPE html>
           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Annotate-dataset" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
-          <div class="demo-meta u-avoid-clicks"> Reserve DOI and publish dataset </div>
+          <div class="demo-meta u-avoid-clicks"> Share with SPARC Consortium, Reserve DOI, and publish dataset </div>
         </button>
 
         <div class="demo-box">
@@ -604,19 +604,45 @@ my-dropdown<!DOCTYPE html>
             <div class="indeterminatebar"></div>
           </div>
 
+
           <h5></h5>
           <form id = 'blackfynn-post-curation'>
-            <div style = "padding:10px 0px">
-              <input class="input-switch" id="reserveDOI" type="radio" name="tabs" checked>
-              <label class="label-switch" for="reserveDOI">Reserve DOI </label>
+            <div style = "padding:10px 0px" class="switch-field">
+              <input class="input-switch" id="shareConsortium" type="radio" name="tabs">
+              <label class="label-switch" for="shareConsortium">Share with SPARC Consortium </label>
+              <input class="input-switch" id="reserveDOI" type="radio" name="tabs">
+              <label class="label-switch" for="reserveDOI">Reserve a DOI </label>
               <input class="input-switch" id="publishDataset" type="radio" name="tabs">
-              <label class="label-switch" for="publishDataset">Publish dataset</label>
+              <label class="label-switch" for="publishDataset">Publish dataset (make public)</label>
             </div>
           </form>
 
-          <br><br><br><br>
-          <div id="div-reserve-doi" class="datasetsaveoption" style="margin-left:20px">
+          <br><br>
 
+          <div id="div-share-consortium" class="datasetsaveoption" style="margin-left:20px">
+
+            <div class="demo-controls">
+              <button id="button-share-consortium" class="demo-button" style="min-width: 250px"> Share with Consortium
+              </button>
+
+              <p id='para-share-consortium-status'> Please wait...</p>
+
+              <div style="position:absolute; right:30px;margin-top:-10px">
+                <h5>
+                  <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                    <span class="tooltiptext">
+                      Once your dataset is approved by the Curation Team, it is ready to be shared with the SPARC Consortium as embargoed dataset. Sharing will give viewer permissions to any SPARC investigator who has signed the SPARC Non-disclosure form and will allow them to see your data.
+                      <br><br>
+                    </span>
+                  </div>
+                </h5>
+              </div>
+
+            </div>            
+          </div>
+
+
+          <div id="div-reserve-doi" class="datasetsaveoption" style="margin-left:20px">
 
             <div class="demo-controls" style="margin-top:-30px">
               <div style="width: 200px; float: left;">
@@ -626,7 +652,7 @@ my-dropdown<!DOCTYPE html>
               </div>
               <div style="margin-left: 220px;">
                 <h5> Currently reserved DOI </h5>
-                <input id="input-current-doi" class="demo-response" value="-------" disabled> </input>
+                <input id="input-current-doi" class="demo-response" value="-------" disabled>
               </div>
 
               <div style="position:absolute; right:30px";>
@@ -662,8 +688,6 @@ my-dropdown<!DOCTYPE html>
                 </h5>
                 <p id = "para-published-status"> Not published </p>
               </div>
-
-
 
             </div>
 
