@@ -2228,7 +2228,6 @@ function postCurationListChange(){
 }
 
 
-
 // Change dataset status option change
 bfListDatasetStatus.addEventListener('change', () => {
   bfCurrentDatasetStatusProgress.style.display = 'block'
@@ -2474,31 +2473,6 @@ ipcRenderer.on('warning-add-permission-owner-selection-PI', (event, index) => {
   }
 })
 
-// Share with Curation Team //
-bfAddPermissionCurationTeamBtn.addEventListener('click', () => {
-  datasetPermissionStatusCurationTeam.innerHTML = ''
-  bfCurrentPermissionProgress.style.display = 'block'
-  disableform(bfPermissionForm)
-  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
-  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
-  var selectedTeam = 'SPARC Data Curation Team'
-  var selectedRole = 'manager'
-  client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
-    (error, res) => {
-    if(error) {
-      log.error(error)
-      console.error(error)
-      var emessage = userError(error)
-      datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      bfCurrentPermissionProgress.style.display = 'none'
-      enableform(bfPermissionForm)
-    } else {
-      datasetPermissionStatusCurationTeam.innerHTML = 'Shared with Curation Team'
-      showCurrentPermission()
-      enableform(bfPermissionForm)
-    }
-  })
-})
 
 // Add permission for user //
 bfAddPermissionBtn.addEventListener('click', () => {
@@ -2554,6 +2528,58 @@ bfAddPermissionTeamBtn.addEventListener('click', () => {
     }
   })
 })
+
+// Share with Curation Team //
+bfAddPermissionCurationTeamBtn.addEventListener('click', () => {
+  datasetPermissionStatusCurationTeam.innerHTML = ''
+  ipcRenderer.send('warning-share-with-curation-team', formBannerHeight.value)
+})
+
+ipcRenderer.on('warning-share-with-curation-team-selection', (event, index) => {
+  if (index === 0) {
+    shareWithCurationTeam()
+  }
+})
+
+function shareWithCurationTeam(){
+  datasetPermissionStatusCurationTeam.innerHTML = 'Please wait...'
+  bfCurrentPermissionProgress.style.display = 'block'
+  disableform(bfPermissionForm)
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
+  var selectedTeam = 'SPARC Data Curation Team'
+  var selectedRole = 'manager'
+  client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
+    (error, res) => {
+    if(error) {
+      log.error(error)
+      console.error(error)
+      var emessage = userError(error)
+      datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfCurrentPermissionProgress.style.display = 'none'
+      enableform(bfPermissionForm)
+    } else {
+      showCurrentPermission()
+      var selectedStatusOption = '03. Ready for Curation (Investigator)'
+      client.invoke("api_bf_change_dataset_status", selectedBfAccount, selectedBfDataset, selectedStatusOption,
+        (error, res) => {
+        if(error) {
+          log.error(error)
+          console.error(error)
+          var emessage = userError(error)
+          datasetPermissionStatusCurationTeam = "<span style='color: red;'> " + emessage + "</span>"
+          bfCurrentPermissionProgress.style.display = 'none'
+        } else {
+          datasetPermissionStatusCurationTeam.innerHTML = 'Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"'
+          enableform(bfPermissionForm)
+          showCurrentDatasetStatus()
+          bfCurrentPermissionProgress.style.display = 'none'
+        }
+      })
+    }
+  })
+}
+
 
 // Reserve DOI
 bfReserveDOIBtn.addEventListener('click', () => {

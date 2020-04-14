@@ -2143,7 +2143,7 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
         dataset_current_status = bf._api._get('/datasets/' + str(selected_dataset_id))['content']['status']
         return [list_status, dataset_current_status]
     except Exception as e:
-        raise Exception(e)
+        raise e
 
 """
     Function to get current status for a selected dataset
@@ -2196,9 +2196,9 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
         jsonfile = {'status': new_status}
         bf._api.datasets._put('/' + str(selected_dataset_id),
                               json=jsonfile)
-        return "Success: Changed dataset status to " + selected_status
+        return "Success: Changed dataset status to '"+ selected_status +"'"
     except Exception as e:
-        raise Exception(e)
+        raise e
 
 """
     Function to get current doi for a selected dataset
