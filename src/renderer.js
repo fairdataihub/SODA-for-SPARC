@@ -48,7 +48,7 @@ document.getElementById("add-edit-subtitle").click()
 document.getElementById("pi-owner").click()
 document.getElementById("cloud-dataset").click()
 document.getElementById("organize-dataset").click()
-document.getElementById("reserveDOI").click()
+document.getElementById("shareConsortium").click()
 
 //log user's OS version //
 log.info("User OS:", os.type(), os.platform(), "version:", os.release())
@@ -259,10 +259,15 @@ const bfListDatasetStatus = document.querySelector('#bf_list_dataset_status')
 const datasetStatusStatus = document.querySelector('#para-dataset-status-status')
 const bfRefreshDatasetStatusBtn = document.getElementById('button-refresh-dataset-status')
 
-//Blackfynn dataset status
+//Blackfynn post curation
 const bfPostCurationForm = document.querySelector('#blackfynn-post-curation')
 const bfDatasetListPostCuration = document.querySelector('#bfdatasetlist_postcuration')
 const bfPostCurationProgress = document.querySelector('#div-bf-post-curation-progress')
+
+const bfShareConsortiumBtn = document.querySelector('#button-share-consortium')
+const sharedWithConsortiumStatus = document.querySelector('#shared-with-consortium-status')
+const shareConsortiumStatus = document.querySelector('#para-share-consortium-status')
+
 const bfReserveDOIBtn = document.querySelector('#button-reserve-doi')
 const currentDOI = document.querySelector('#input-current-doi')
 const reserveDOIStatus = document.querySelector('#para-reserve-doi-status')
@@ -2567,13 +2572,64 @@ function shareWithCurationTeam(){
           log.error(error)
           console.error(error)
           var emessage = userError(error)
-          datasetPermissionStatusCurationTeam = "<span style='color: red;'> " + emessage + "</span>"
+          datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           bfCurrentPermissionProgress.style.display = 'none'
         } else {
           datasetPermissionStatusCurationTeam.innerHTML = 'Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"'
           enableform(bfPermissionForm)
           showCurrentDatasetStatus()
           bfCurrentPermissionProgress.style.display = 'none'
+        }
+      })
+    }
+  })
+}
+
+// Share with Consortium
+bfShareConsortiumBtn.addEventListener('click', () => {
+  shareConsortiumStatus.innerHTML = ""
+  ipcRenderer.send('warning-share-with-consortium', formBannerHeight.value)
+})
+
+ipcRenderer.on('warning-share-with-consortium-selection', (event, index) => {
+  if (index === 0) {
+    shareWithConsortium()
+  }
+})
+
+function shareWithConsortium(){
+  shareConsortiumStatus.innerHTML = 'Please wait...'
+  bfPostCurationProgress.style.display = 'block'
+  disableform(bfPostCurationForm)
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  var selectedTeam = 'SPARC Embargoed Data Sharing Group'
+  var selectedRole = 'viewer'
+  client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
+    (error, res) => {
+    if(error) {
+      log.error(error)
+      console.error(error)
+      var emessage = userError(error)
+      shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfPostCurationProgress.style.display = 'none'
+      enableform(bfPostCurationForm)
+    } else {
+      showCurrentPermission()
+      var selectedStatusOption = '11. Complete, Under Embargo (Investigator)'
+      client.invoke("api_bf_change_dataset_status", selectedBfAccount, selectedBfDataset, selectedStatusOption,
+        (error, res) => {
+        if(error) {
+          log.error(error)
+          console.error(error)
+          var emessage = userError(error)
+          shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+          bbfPostCurationProgress.style.display = 'none'
+        } else {
+          shareConsortiumStatus.innerHTML = 'Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"'
+          enableform(bfPostCurationForm)
+          showCurrentDatasetStatus()
+          bfPostCurationProgress.style.display = 'none'
         }
       })
     }

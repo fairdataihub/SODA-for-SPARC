@@ -161,3 +161,16 @@ ipcMain.on('warning-share-with-curation-team', (event) => {
     event.sender.send('warning-share-with-curation-team-selection', index)
   })
 })
+
+ipcMain.on('warning-share-with-consortium', (event) => {
+  const options = {
+    type: 'info',
+    title: 'Sharing with SPARC consortium',
+    message: "Sharing will give viewer permissions to any SPARC investigator who has signed the SPARC Non-disclosure form and will allow them to see your data. This must be done only once your dataset has been approved by the Curation Team. Would you like to continue?",
+    buttons: ['Yes', 'No']
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('warning-share-with-consortium-selection', index)
+  })
+})
+
