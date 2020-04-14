@@ -2531,6 +2531,17 @@ bfAddPermissionTeamBtn.addEventListener('click', () => {
 
 // Share with Curation Team //
 bfAddPermissionCurationTeamBtn.addEventListener('click', () => {
+  datasetPermissionStatusCurationTeam.innerHTML = ''
+  ipcRenderer.send('warning-share-with-curation-team', formBannerHeight.value)
+})
+
+ipcRenderer.on('warning-share-with-curation-team-selection', (event, index) => {
+  if (index === 0) {
+    shareWithCurationTeam()
+  }
+})
+
+function shareWithCurationTeam(){
   datasetPermissionStatusCurationTeam.innerHTML = 'Please wait...'
   bfCurrentPermissionProgress.style.display = 'block'
   disableform(bfPermissionForm)
@@ -2565,11 +2576,9 @@ bfAddPermissionCurationTeamBtn.addEventListener('click', () => {
           bfCurrentPermissionProgress.style.display = 'none'
         }
       })
-
-      
     }
   })
-})
+}
 
 
 // Reserve DOI

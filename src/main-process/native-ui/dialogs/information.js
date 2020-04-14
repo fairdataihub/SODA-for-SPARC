@@ -148,3 +148,16 @@ ipcMain.on('open-info-upload-limitations', (event) => {
     event.sender.send('info-upload-limitations-shown')
   })
 })
+
+
+ipcMain.on('warning-share-with-curation-team', (event) => {
+  const options = {
+    type: 'info',
+    title: 'Sharing with Curation Team',
+    message: "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
+    buttons: ['Yes', 'No']
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('warning-share-with-curation-team-selection', index)
+  })
+})
