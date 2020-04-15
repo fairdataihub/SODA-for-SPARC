@@ -1146,7 +1146,7 @@ function createAdditionalLinksTable() {
   }
   /// Check for empty entry before adding to table
   var empty = false
-  if (link==="" && description==="") {
+  if (link==="") {
     empty = true
   }
   /// Check for duplicate links
@@ -1166,7 +1166,7 @@ function createAdditionalLinksTable() {
       document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>The link already exists below!</span>"
     }
   } else {
-    document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>Please fill in at least 1 field to add!</span>"
+    document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>Please specify a link to add!</span>"
   }
 }
 
@@ -1260,15 +1260,131 @@ function showDatasetDescription(){
   }
 }
 
+function emptyDSInfoEntries() {
+  var empty = false;
+  var infoArray = grabDSInfoEntries()
+  for (var element of infoArray) {
+    if (element.length===0) {
+      empty = true
+    }
+  }
+  return empty
+}
+
+function emptyInfoEntries(element) {
+  var empty = false
+  // var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+  if (element.length===0) {
+    empty = true
+  }
+  return empty
+}
+
+function grabDSInfoEntries() {
+  var name = datasetDescriptionFileDataset.options[datasetDescriptionFileDataset.selectedIndex].value;
+  var description = document.getElementById("ds-description").value;
+  var keywordArray = keywordTagify.value;
+  var samplesNo = document.getElementById("ds-samples-no").value;
+  var subjectsNo = document.getElementById("ds-subjects-no").value;
+  return [name,description,keywordArray,samplesNo,subjectsNo]
+}
+
+function grabConInfoEntries() {
+  var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+  var acknowlegdment = document.getElementById("ds-description-acknowlegdment").value;
+  var contributorObj = {}
+  var fundingArray = [];
+  if (funding==="Select") {
+    fundingArray = ["N/A"]
+  } else {
+    fundingArray = [funding]
+  }
+  /// other funding sources
+  var otherFunding = otherFundingTagify.value
+  for (var i=0;i<otherFunding.length;i++) {
+    fundingArray.push(otherFunding[i].value)
+  }
+  /// grab entries from contributor table
+  var rowcountCon = currentConTable.rows.length;
+  var currentConInfo = [];
+  for (i=1; i<rowcountCon; i++) {
+    var myCurrentCon = {"conName": currentConTable.rows[i].cells[0].innerHTML,
+                          "conID": currentConTable.rows[i].cells[1].innerHTML,
+                          "conAffliation": currentConTable.rows[i].cells[2].innerHTML,
+                          "conRole": currentConTable.rows[i].cells[3].innerHTML,
+                          "conContact": currentConTable.rows[i].cells[4].innerHTML}
+    currentConInfo.push(myCurrentCon);
+  };
+  contributorObj["funding"] = fundingArray
+  contributorObj["acknowlegdment"] = acknowlegdment
+  contributorObj["contributors"] = currentConInfo
+  return contributorObj
+}
+
+function grabProtocolSection() {
+  var miscObj = {}
+  var originatingDOIArray = doiInput.value
+  doiArray = [];
+  for (var i=0;i<originatingDOIArray.length;i++) {
+    doiArray.push(originatingDOIArray[i].value)
+  }
+  urlArray = [];
+  var protocolURLArray = urlInput.value
+  for (var i=0;i<protocolURLArray.length;i++) {
+    urlArray.push(protocolURLArray[i].value)
+  }
+  /// Additional link description
+  var rowcountLink = document.getElementById("table-addl-links").rows.length;
+  var addlLinkInfo = [];
+  for (i=1; i<rowcountLink; i++) {
+    var addlLink = {"link": document.getElementById("table-addl-links").rows[i].cells[0].innerHTML,
+                    "description": document.getElementById("table-addl-links").rows[i].cells[1].innerHTML}
+    addlLinkInfo.push(addlLink)
+  }
+  miscObj["doi"] = doiArray;
+  miscObj["url"] = urlArray;
+  miscObj["additional links"] = addlLinkInfo;
+  return miscObj
+}
+
+function grabCompletenessInfo() {
+  var completeness = document.getElementById("input-completeness").options[document.getElementById("input-completeness").selectedIndex].value;
+  var parentDS = document.getElementById("input-parent-ds").value;
+  var completeDSTitle = document.getElementById("input-completeds-title").value;
+  var optionalSectionObj = {};
+  if (completeness==="Select") {
+    optionalSectionObj["completeness"] = "N/A"
+  } else {
+    optionalSectionObj["completeness"] = completeness
+  }
+  optionalSectionObj["parentDS"] = parentDS;
+  optionalSectionObj["completeDSTitle"] = completeDSTitle;
+  return optionalSectionObj
+}
+
 //// upon choosing a dataset, populate current description
 datasetDescriptionFileDataset.addEventListener("change", function() {
   document.getElementById("ds-description").innerHTML = "Loading..."
   document.getElementById("ds-description").disabled = true;
   showDatasetDescription()
 })
+
 ///// Generate ds description file
 generateDSBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-folder-dialog-save-ds-description',"dataset_description.xlsx")
+  //// check if any field is left empty
+  var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value
+  var dsEmpty = emptyDSInfoEntries()
+  var conEmpty = emptyInfoEntries(funding)
+  var protocolEmpty = false
+  if (urlInput.value.length===0) {
+    protocolEmpty = true
+  }
+  var contributorNumber = currentConTable.rows.length
+  if (dsEmpty || conEmpty || protocolEmpty || contributorNumber===1) {
+    document.getElementById("para-generate-description-status").innerHTML = "<span style='color:red'>Please fill in all required fields (*)!</span>"
+  } else {
+    ipcRenderer.send('open-folder-dialog-save-ds-description',"dataset_description.xlsx")
+  }
 })
 
 ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) => {
@@ -1278,108 +1394,52 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
       var emessage = "File " + filename +  " already exists in " +  dirpath[0]
       ipcRenderer.send('open-error-metadata-file-exits', emessage)
     } else {
-      /// grab entries from dataset info section
-      var name = datasetDescriptionFileDataset.options[datasetDescriptionFileDataset.selectedIndex].value;
-      var description = document.getElementById("ds-description").value;
-      var keywordArray = keywordTagify.value;
-      var keywordVal = []
-      for (var i=0;i<keywordArray.length;i++) {
-        keywordVal.push(keywordArray[i].value)
-      }
-      var samplesNo = document.getElementById("ds-samples-no").value;
-      var subjectsNo = document.getElementById("ds-subjects-no").value;
-      var dsSectionArray = [];
-      for (let elementDS of [name,description,keywordVal,samplesNo,subjectsNo]) {
-        dsSectionArray.push(elementDS)
-      }
-      /// grab entries from contributor info section -- table
-      var rowcountCon = currentConTable.rows.length;
-      var currentConInfo = [];
-      for (i=1; i<rowcountCon; i++) {
-        var myCurrentCon = {"conName": currentConTable.rows[i].cells[0].innerHTML,
-                              "conID": currentConTable.rows[i].cells[1].innerHTML,
-                              "conAffliation": currentConTable.rows[i].cells[2].innerHTML,
-                              "conRole": currentConTable.rows[i].cells[3].innerHTML,
-                              "conContact": currentConTable.rows[i].cells[4].innerHTML}
-        currentConInfo.push(myCurrentCon);
-      };
-      var acknowlegdment = document.getElementById("ds-description-acknowlegdment").value;
-      var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
-      var contributorObj = {}
-      fundingArray = [];
-      if (funding==="Select") {
-        fundingArray = ["N/A"]
-      } else {
-        fundingArray = [funding]
-      }
-      /// other funding sources
-      var otherFunding = otherFundingTagify.value
-      for (var i=0;i<otherFunding.length;i++) {
-        fundingArray.push(otherFunding[i].value)
-      }
-      contributorObj["funding"] = fundingArray
-      contributorObj["acknowlegdment"] = acknowlegdment
-      contributorObj["contributors"] = currentConInfo
+        var datasetInfoValueArray = grabDSInfoEntries()
+        //// process obtained values to pass to an array
+        var keywordVal = []
+        for (var i=0;i<datasetInfoValueArray[2].length;i++) {
+          keywordVal.push(datasetInfoValueArray[2][i].value)
+        }
+        /// replace keywordArray with keywordVal array
+        datasetInfoValueArray[2] = keywordVal;
+        //// push to all ds info values to dsSectionArray
+        var dsSectionArray = [];
+        for (let elementDS of datasetInfoValueArray) {
+          dsSectionArray.push(elementDS)
+        }
 
-      /// grab entries from other misc info section
-      var miscObj = {}
-      var originatingDOIArray = doiInput.value
-      doiArray = [];
-      for (var i=0;i<originatingDOIArray.length;i++) {
-        doiArray.push(originatingDOIArray[i].value)
-      }
-      urlArray = [];
-      var protocolURLArray = urlInput.value
-      for (var i=0;i<protocolURLArray.length;i++) {
-        urlArray.push(protocolURLArray[i].value)
-      }
-      /// Additional link description
-      var rowcountLink = document.getElementById("table-addl-links").rows.length;
-      var addlLinkInfo = [];
-      for (i=1; i<rowcountLink; i++) {
-        var addlLink = {"link": document.getElementById("table-addl-links").rows[i].cells[0].innerHTML,
-                        "description": document.getElementById("table-addl-links").rows[i].cells[1].innerHTML}
-        addlLinkInfo.push(addlLink)
-      }
-      miscObj["doi"] = doiArray;
-      miscObj["url"] = urlArray;
-      miscObj["additional links"] = addlLinkInfo;
+        //// grab entries from contributor info section and pass values to conSectionArray
+        var contributorObj = grabConInfoEntries()
 
-      /// grab entries from other optional info section
-      var completeness = document.getElementById("input-completeness").options[document.getElementById("input-completeness").selectedIndex].value;
-      var parentDS = document.getElementById("input-parent-ds").value;
-      var completeDSTitle = document.getElementById("input-completeds-title").value;
-      var optionalSectionObj = {};
-      if (completeness==="Select") {
-        optionalSectionObj["completeness"] = "N/A"
-      } else {
-        optionalSectionObj["completeness"] = completeness
+        /// grab entries from other misc info section
+        var miscObj = grabProtocolSection()
+
+        /// grab entries from other optional info section
+        var completenessSectionObj = grabCompletenessInfo()
+
+        //// stringiy arrays
+        json_str_ds = JSON.stringify(dsSectionArray);
+        json_str_misc = JSON.stringify(miscObj);
+        json_str_completeness = JSON.stringify(completenessSectionObj);
+        json_str_con = JSON.stringify(contributorObj);
+
+        /// call python function to save file
+        if (dirpath != null){
+          client.invoke("api_save_ds_description_file", destinationPath, json_str_ds, json_str_misc, json_str_completeness, json_str_con, (error, res) => {
+            if(error) {
+              var emessage = userError(error)
+              log.error(error)
+              console.error(error)
+              document.getElementById("para-generate-description-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+            }
+            else {
+              document.getElementById("para-generate-description-status").innerHTML = "<span style='color: black ;'>" + "Done!" + smileyCan + "</span>"
+            }
+          })
+        }
       }
-      optionalSectionObj["parentDS"] = parentDS;
-      optionalSectionObj["completeDSTitle"] = completeDSTitle;
-
-      //// stringiy arrays
-      json_str_ds = JSON.stringify(dsSectionArray);
-      json_str_misc = JSON.stringify(miscObj);
-      json_str_optional = JSON.stringify(optionalSectionObj);
-      json_str_con = JSON.stringify(contributorObj);
-
-      /// call python function to save file
-      if (dirpath != null){
-        client.invoke("api_save_ds_description_file", destinationPath, json_str_ds, json_str_misc, json_str_optional, json_str_con, (error, res) => {
-          if(error) {
-            var emessage = userError(error)
-            log.error(error)
-            console.error(error)
-            document.getElementById("para-generate-description-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
-          }
-          else {
-            document.getElementById("para-generate-description-status").innerHTML = "<span style='color: black ;'>" + "Done!" + smileyCan + "</span>"
-          }
-        })
-       }
      }
-    }
+    // }
 });
 
 //////////////////////////End of Ds description section ///////////////////////
@@ -2889,6 +2949,7 @@ function refreshAllBfDatasetLists(){
       var option5 = optionSelect.cloneNode(true)
       var option6 = optionSelect.cloneNode(true)
       var option7 = optionSelect.cloneNode(true)
+      var option8 = optionSelect.cloneNode(true)
       bfDatasetListMetadata.appendChild(option2)
       bfDatasetListPermission.appendChild(option3)
       bfUploadDatasetList.appendChild(option4)
@@ -2923,13 +2984,14 @@ function refreshAllBfDatasetLists(){
             var option5 = option.cloneNode(true)
             var option6 = option.cloneNode(true)
             var option7 = option.cloneNode(true)
+            var option8 = option.cloneNode(true)
             bfDatasetListMetadata.appendChild(option2)
             bfDatasetListPermission.appendChild(option3)
             bfUploadDatasetList.appendChild(option4)
             bfDatasetListDatasetStatus.appendChild(option5)
             bfDatasetListRenameDataset.appendChild(option6)
-            bfDatasetListPostCuration.appendChild(option8)
             datasetDescriptionFileDataset.appendChild(option7)
+            bfDatasetListPostCuration.appendChild(option8)
         }
       }
     })

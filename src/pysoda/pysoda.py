@@ -418,15 +418,17 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
     ## name, description, keywords, samples, subjects
     ws1["D2"] = val_arr_ds[0]
     ws1["D3"] = val_arr_ds[1]
-    ws1["D4"] = ", ".join(val_arr_ds[2])
+    # ws1["D4"] = ", ".join(val_arr_ds[2])
     ws1["D16"] = val_arr_ds[3]
     ws1["D17"] = val_arr_ds[4]
+
+    ## keywords
+    for i, column in zip(range(len(val_arr_ds[2])), excel_columns()):
+        ws1[column + "4"] = val_arr_ds[2][i]
 
     ## award info
     for i, column in zip(range(len(val_arr_con["funding"])), excel_columns()):
         ws1[column + "11"] = val_arr_con["funding"][i]
-
-### val_arr_con["funding"] = ["sparc award","tag1","tag2"]
 
     ### Acknowledgments
     ws1["D10"] = val_arr_con["acknowlegdment"]
