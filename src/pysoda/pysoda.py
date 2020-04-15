@@ -332,10 +332,16 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     shutil.copystat(src, dst)
     return dst
 
+class InvalidDeliverablesDocument(Exception):
+    pass
+
 ### Import Milestone document
 def import_milestone(filepath):
     doc = Document(filepath)
-    table = doc.tables[0]
+    try:
+        table = doc.tables[0]
+    except IndexError:
+        raise InvalidDeliverablesDocument("Please select a valid SPARC Deliverables Document!")
     data = []
     keys = None
     for i, row in enumerate(table.rows):
@@ -355,7 +361,10 @@ def extract_milestone_info(datalist):
     milestone_key = "Related milestone, aim, or task"
     other_keys = ["Description of data", "Expected date of completion"]
     for row in datalist:
-        key = row[milestone_key]
+        try:
+            key = row[milestone_key]
+        except KeyError:
+            raise InvalidDeliverablesDocument("Please select a valid SPARC Deliverables Document!")
         milestone[key].append({key: row[key] for key in other_keys})
     return milestone
 

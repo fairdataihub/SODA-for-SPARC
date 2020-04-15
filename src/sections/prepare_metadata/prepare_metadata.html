@@ -112,7 +112,7 @@
             <h5> Select award: </h5>
             <div class="demo-controls" style="margin-top:20px">
               <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:100%; height:35px;line-height:2;padding: 6px 8px; font-size:14px">
-                <option>Select</option>
+                <option value="Select">Select an option</option>
               </select>
               <br>
               <button id="button-delete-award" class="demo-button" style="height:35px;width:150px;padding:0 0;margin-left:10px">Delete award</button>
@@ -120,16 +120,16 @@
             <div>
             <p id='para-delete-award-status' style="margin:10px 0px"></p>
             </div>
-            <p></p>
-            <div class="demo-controls">
+            <!-- <p></p> -->
+            <div class="demo-controls" id="div-milestone-info">
               <div id="div-show-milestone-info-no-existing" class="pathtable" style="display:none;width:100%">
                 <!-- <form method="post" style="width:100%"> -->
                   <h5>Data Deliverables document: </h5>
                   <h5></h5>
                   <div class="container-milestone-upload" style="display:flex;">
                     <!-- <button type="button" style="width:40%;float:left" class="button-milestone-upload">Select a file</button> -->
-                    <input class="milestone-upload-text" id="input-milestone-select" style="width:40%;text-align:center" type="text" readonly placeholder="Select a file">
-                    <button id="button-import-milestone" type="button" style="width:20%" class="button-milestone-upload"><b>Import</b></button>
+                    <input class="milestone-upload-text" id="input-milestone-select" style="width:50%;text-align:center;height:40px" type="text" readonly placeholder="Select a file">
+                    <button id="button-import-milestone" type="button" style="width:15%;height:40px" class="button-milestone-upload"><b>Import</b></button>
                     <p id="para-milestone-document-info" style="float:right;margin-top:0;margin-left:7px;padding: 0 0;height:34px;width:300px;text-align:left;vertical-align:middle;"></p>
                   </div>
                 <!-- </form> -->
@@ -189,6 +189,7 @@
           <div class="demo-controls">
             <select id="selected-milestone" class="form-container-input-bf" style="font-size:13px;line-height: 2;height:28px">
               <option value="Select">Select an option</option>
+              <option value="N/A">Not specified in Data Deliverables document</option>
             </select>
           </div>
           <div class="form-container-ds"><font color="black"> Description of Data: </font> </div>
@@ -200,6 +201,7 @@
           <div class="demo-controls">
             <select id="selected-description-data" class="form-container-input-bf"  style="font-size:13px;line-height: 2;height:28px">
               <option value="Select">Select an option</option>
+              <option value="N/A">Not specified in Data Deliverables document</option>
             </select>
           </div>
           <div class="form-container-ds"><font color="black"> Completion Date: </font> </div>

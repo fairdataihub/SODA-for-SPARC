@@ -341,22 +341,47 @@ var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 /////// Load SPARC airtable data
 var airtableHostname = 'api.airtable.com'
 
+function sendHTTPsRequestAirtable(options, varSuccess) {
+  https.get(options, res => {
+    if (res.statusCode === 200) {
+      varSuccess = true
+    } else {
+      log.error(res)
+      console.error(res)
+      varSuccess = false
+    }
+    res.on('error', error => {
+      log.error(error)
+      console.error(error)
+    })
+  return res
+  })
+}
+
 ///// Upon clicking "Connect" to Airtable
 addAirtableKeyBtn.addEventListener("click", function() {
   document.getElementById("div-airtable-connect-load-progress").style.display = "block"
   document.getElementById("para-add-airtable-key-status").innerHTML = ""
   var apiKeyInput = document.getElementById("airtable-api-key").value;
   // test connection
-  const options = {
+  // const optionsNoTable = {
+  const optionsSparcTable = {
     hostname: airtableHostname,
     port: 443,
     path: '/v0/appiYd1Tz9Sv857GZ/sparc_members',
     headers: {'Authorization': `Bearer ${apiKeyInput}`}
-  }
-  https.get(options, res => {
-    // console.log(`statusCode: ${res.statusCode}`)
+  };
+  // const optionsPublicTable = {
+  //   hostname: 'https://airtable.com',
+  //   port: 443,
+  //   path: '/shro9FpzeS7ek48zO',
+  //   headers: {'Authorization': `Bearer ${apiKeyInput}`}
+  // };
+  var sparcTableSuccess;
+  // var publicTableSuccess;
+  https.get(optionsSparcTable, res => {
     if (res.statusCode === 200) {
-      console.log(res)
+      // sparcTableSuccess = "success"
       /// updating api key in SODA's storage
       createMetadataDir();
       var content = parseJson(airtableConfigPath);
@@ -365,22 +390,42 @@ addAirtableKeyBtn.addEventListener("click", function() {
       document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: black;'>Successfully connected to Airtable!" +smileyCan +"</span>";
       document.getElementById('para-save-award-info').innerHTML = ""
       loadAwardData()
+    } else if (res.statusCode === 403) {
+        // sparcTableSuccess = "forbidden"
+        document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>";
     } else {
-      log.error(res)
-      console.error(res) //// todo: html error message
-      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key!</span>";
+        log.error(res)
+        console.error(res)
+        document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key!</span>";
     }
     document.getElementById("div-airtable-connect-load-progress").style.display = "none"
     document.getElementById("para-add-airtable-key-status").style.display = "block"
-
     res.on('error', error => {
       log.error(error)
-      console.error(error) //// todo: html error message
+      console.error(error)
       document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key!</span>";
-      document.getElementById("para-add-airtable-key-status").style.display = "block"
     })
-    document.getElementById("airtable-api-key").value = ""
   })
+    document.getElementById("airtable-api-key").value = ""
+  //// 4 cases that could happen
+  //// Case 1. Users have access to SPARC table and just a random public table (valid api key and valid table id)
+  // if (sparcTableSuccess && publicTableSuccess) {
+  //
+  //   //// Case 2. Users don't have access to SPARC table, but can connect to a random public table (valid api key but not authorized to access table)
+  // } else if (!sparcTableSuccess && publicTableSuccess) {
+  // //// Case 3. Users have access to SPARC table, but cannot connect to a random public table (authorized to access the table, but in the case that the random table doesn't exist anymore)
+  // } else if (sparcTableSuccess && !publicTableSuccess){
+  //     /// updating api key in SODA's storage
+  //     createMetadataDir();
+  //     var content = parseJson(airtableConfigPath);
+  //     content["api-key"] = apiKeyInput;
+  //     fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
+  //     document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: black;'>Successfully connected to Airtable!" +smileyCan +"</span>";
+  //     document.getElementById('para-save-award-info').innerHTML = ""
+  //     loadAwardData()
+  // //// Case 4. Users don't access to SPARC table, and cannot connect to a random public table (invalid api key and not authorized to access table)
+  // } else {
+  // }
 })
 
 /////////////////////// Download Metadata Templates ////////////////////////////
@@ -498,8 +543,14 @@ awardArray.addEventListener('change', function() {
   document.getElementById("para-save-award-info").innerHTML = "";
 })
 presavedAwardArray1.addEventListener('change', function() {
-  document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
-  document.getElementById("para-delete-award-status").innerHTML = ""
+  if (presavedAwardArray1.value === "Select") {
+    document.getElementById("div-show-milestone-info-no-existing").style.display = "none";
+    document.getElementById("div-milestone-info").style.display = "none";
+    document.getElementById("div-show-current-milestones").style.display = "none"
+  } else {
+      document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
+      document.getElementById("para-delete-award-status").innerHTML = ""
+  }
 })
 
 // load and parse json file
