@@ -273,6 +273,7 @@ const currentDOI = document.querySelector('#input-current-doi')
 const reserveDOIStatus = document.querySelector('#para-reserve-doi-status')
 
 const bfPublishDatasetBtn = document.querySelector('#publishDataset')
+const publishingStatus = document.querySelector('#input-publishing-status')
 const publishDatasetStatus = document.querySelector('#para-publish-dataset-status')
 
 //////////////////////////////////
@@ -2230,6 +2231,7 @@ function postCurationListChange(){
   reserveDOIStatus.innerHTML = ""
   publishDatasetStatus.innerHTML = ""
   showCurrentDOI()
+  showPublishingStatus()
 }
 
 
@@ -2640,6 +2642,30 @@ function shareWithConsortium(){
 // Reserve DOI
 bfReserveDOIBtn.addEventListener('click', () => {
   disableform(bfPostCurationForm)
+  publishDatasetStatus.innerHTML = "Please wait..."
+  bfPostCurationProgress.style.display = 'block'
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  client.invoke("api_bf_publish_dataset", selectedBfAccount, selectedBfDataset,
+    (error, res) => {
+    if(error) {
+      log.error(error)
+      console.error(error)
+      var emessage = userError(error)
+      publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfPostCurationProgress.style.display = 'none'
+      enableform(bfPostCurationForm)
+    } else {
+      publishDatasetStatus.innerHTML = res
+      showCurrentDOI()
+      enableform(bfPostCurationForm)
+    }
+  })
+})
+
+// Publish dataset
+bfPublishDatasetBtn.addEventListener('click', () => {
+  disableform(bfPostCurationForm)
   reserveDOIStatus.innerHTML = "Please wait..."
   bfPostCurationProgress.style.display = 'block'
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
@@ -2655,14 +2681,11 @@ bfReserveDOIBtn.addEventListener('click', () => {
       enableform(bfPostCurationForm)
     } else {
       reserveDOIStatus.innerHTML = res
-      showCurrentDOI()
+      showPublishingStatus()
       enableform(bfPostCurationForm)
     }
   })
 })
-
-// Publish dataset
-
 
 //////////////////////////////////
 // Helper functions
@@ -3152,6 +3175,34 @@ function showCurrentDOI(){
         bfPostCurationProgress.style.display = 'none'
       } else {
         currentDOI.value = res
+        bfPostCurationProgress.style.display = 'none'
+      }
+    })
+  }
+}
+
+
+function showPublishingStatus(){
+  publishingStatus.value = "Please wait..."
+  publishDatasetStatus.innerHTML = ""
+  bfPostCurationProgress.style.display = 'block'
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  if (selectedBfDataset === 'Select dataset'){
+    publishingStatus.value = '-------'
+    bfPostCurationProgress.style.display = 'none'
+  } else {
+    client.invoke("api_bf_get_publishing_status", selectedBfAccount, selectedBfDataset,
+    (error, res) => {
+      if(error) {
+        log.error(error)
+        console.error(error)
+        publishingStatus.value = '-------'
+        var emessage = userError(error)
+        publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+        bfPostCurationProgress.style.display = 'none'
+      } else {
+        publishingStatus.value = res
         bfPostCurationProgress.style.display = 'none'
       }
     })
