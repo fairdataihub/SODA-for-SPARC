@@ -1209,6 +1209,14 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     error, c = '', 0
     datasetname = renamed_dataset_name.strip()
 
+    try:
+        role = bf_get_current_user_permission(accountname, current_dataset_name)
+        if role not in ['owner', 'manager']:
+            error = "Error: You don't have permissions to change the name of this Blackfynn dataset"
+            raise Exception(error)
+    except Exception as e:
+        raise(e)
+
     if check_forbidden_characters_bf(datasetname):
         error = error + 'Error: A Blackfynn dataset name cannot contain any of the following characters: ' + forbidden_characters_bf + "<br>"
         c += 1
@@ -2150,7 +2158,7 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
         dataset_current_status = bf._api._get('/datasets/' + str(selected_dataset_id))['content']['status']
         return [list_status, dataset_current_status]
     except Exception as e:
-        raise Exception(e)
+        raise e
 
 """
     Function to get current status for a selected dataset
@@ -2203,6 +2211,106 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
         jsonfile = {'status': new_status}
         bf._api.datasets._put('/' + str(selected_dataset_id),
                               json=jsonfile)
-        return "Success: Changed dataset status to " + selected_status
+        return "Success: Changed dataset status to '"+ selected_status +"'"
     except Exception as e:
-        raise Exception(e)
+        raise e
+
+"""
+    Function to get current doi for a selected dataset
+
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+    Return:
+        Current doi or "None"
+    """
+def bf_get_doi(selected_bfaccount, selected_bfdataset):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        if role not in ['owner', 'manager']:
+            error = "Error: You don't have permissions to view/edit DOI for this Blackfynn dataset"
+            raise Exception(error)
+    except Exception as e:
+        raise e
+
+    try:
+        selected_dataset_id = myds.id
+        doi_status = bf._api._get('/datasets/' + str(selected_dataset_id) + '/doi')
+        return doi_status['doi']
+    except Exception as e:
+        if "doi" in str(e) and "not found" in str(e):
+            error = "No DOI has been reserved for this dataset"
+            raise Exception(error)
+        else:
+            raise e
+
+"""
+    Function to reserve doi for a selected dataset
+
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+    Return:
+        Success or error message
+"""
+def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        if role not in ['owner', 'manager']:
+            error = "Error: You don't have permissions to view/edit DOI for this Blackfynn dataset"
+            raise Exception(error)
+    except Exception as e:
+        raise e
+
+    try:
+        bf_get_doi(selected_bfaccount, selected_bfdataset)
+    except Exception as e: 
+        if (str(e) == "No DOI has been reserved for this dataset"):
+            pass
+        else:
+            raise e
+    else:
+        error = "Error: A DOI has already been reserved for this dataset"
+        raise Exception(error)
+
+    try:
+        selected_dataset_id = myds.id
+        contributors_list = bf._api._get('/datasets/' + str(selected_dataset_id) + '/contributors')
+        creators_list = []
+        for item in contributors_list:
+            creators_list.append(item['firstName'] + ' ' + item['lastName'])
+        jsonfile = {
+        'title' : selected_bfdataset,
+        'creators' : creators_list,
+        }
+        bf._api.datasets._post('/' + str(selected_dataset_id)+ '/doi', 
+                              json=jsonfile)
+        return 'Done!'
+    except Exception as e:
+        raise e

@@ -148,3 +148,29 @@ ipcMain.on('open-info-upload-limitations', (event) => {
     event.sender.send('info-upload-limitations-shown')
   })
 })
+
+
+ipcMain.on('warning-share-with-curation-team', (event) => {
+  const options = {
+    type: 'info',
+    title: 'Sharing with Curation Team',
+    message: "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
+    buttons: ['Yes', 'No']
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('warning-share-with-curation-team-selection', index)
+  })
+})
+
+ipcMain.on('warning-share-with-consortium', (event) => {
+  const options = {
+    type: 'info',
+    title: 'Sharing with SPARC consortium',
+    message: "Sharing will give viewer permissions to any SPARC investigator who has signed the SPARC Non-disclosure form and will allow them to see your data. This must be done only once your dataset has been approved by the Curation Team. Would you like to continue?",
+    buttons: ['Yes', 'No']
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('warning-share-with-consortium-selection', index)
+  })
+})
+
