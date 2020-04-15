@@ -724,73 +724,73 @@ function loadMilestoneInfo(awardNumber) {
   document.getElementById("para-milestone-document-info").innerHTML = ""
   document.getElementById("input-milestone-select").placeholder = "Select a file"
 
-  ///// first, make the selected award the default so next time SODA will auto-load it.
-  makeDefaultAward(awardNumber)
-
-  //// Start loading milestone table
-  /// clear old table before loading new entries
-  while (milestoneArray.rows.length>1) {
-    milestoneArray.deleteRow(1)
-  };
-  var awardJson = parseJson(awardPath);
-  if (awardNumber in awardJson) {
-    presavedAwardArray1.value = awardNumber
-    ///// populate submission award drop-down
-    for (var i = 0; i < presavedAwardArray2.length; i++) {
-        if (presavedAwardArray2.options[i].value === awardNumber) {
-            presavedAwardArray2.value = presavedAwardArray2.options[i].value
-            changeAwardInput()
-            break
-        }
+  if (awardNumber==="Select") {
+    document.getElementById("div-show-milestone-info-no-existing").style.display = "none"
+    document.getElementById("div-show-current-milestones").style.display = "none"
+  } else {
+    ///// first, make the selected award the default so next time SODA will auto-load it.
+    makeDefaultAward(awardNumber)
+    /// clear old table before loading new table
+    while (milestoneArray.rows.length>1) {
+      milestoneArray.deleteRow(1)
     };
-    //// populate dataset contribution award drop-down
-    for (var i = 0; i < dsAwardArray.length; i++) {
-        if (dsAwardArray.options[i].value === awardNumber) {
-            dsAwardArray.value = dsAwardArray.options[i].value
-            changeAwardInputDsDescription()
-            break
-        }
+    //// Start loading milestone table
+    var awardJson = parseJson(awardPath);
+    if (awardNumber in awardJson) {
+      presavedAwardArray1.value = awardNumber
+      ///// populate submission award drop-down
+      for (var i = 0; i < presavedAwardArray2.length; i++) {
+          if (presavedAwardArray2.options[i].value === awardNumber) {
+              presavedAwardArray2.value = presavedAwardArray2.options[i].value
+              changeAwardInput()
+              break
+          }
+      };
+      //// populate dataset contribution award drop-down
+      for (var i = 0; i < dsAwardArray.length; i++) {
+          if (dsAwardArray.options[i].value === awardNumber) {
+              dsAwardArray.value = dsAwardArray.options[i].value
+              changeAwardInputDsDescription()
+              break
+          }
+      }
     }
-    document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
-    document.getElementById("div-show-current-milestones").style.display = "block";
-    document.getElementById("table-current-milestones").style.display = "block";
-    document.getElementById("para-current-milestones").style.display = "none";
+    //// get content from milestone.json file and load it up
+    var milestoneJson = parseJson(milestonePath);
+    if (awardNumber in milestoneJson) {
+      var milestoneObj = milestoneJson[awardNumber];
+      // start at 1 to skip the header
+      var rowIndex = 1;
+      var milestoneKey = Object.keys(milestoneObj)
+      for (var i=0;i<milestoneKey.length;i++){
+        var milestone = milestoneObj[milestoneKey[i]];
+        // var span = milestoneObj[milestoneKey[i]].length
+        for (var j=0;j<milestone.length;j++) {
+          // console.log(milestoneObj[milestoneKey[i]])
+          var description = milestone[j]["Description of data"]
+          var date = milestone[j]["Expected date of completion"]
+          var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneKey[i] +"</td><td id='name-row-description"+rowIndex+"'>"+ description +"</td><td id='name-row-date"+rowIndex+"'>"+ date +"</td></tr>"
+        }
+        rowIndex++;
+        }
+      document.getElementById("div-show-current-milestones").style.display = "block";
+      document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
+      document.getElementById("table-current-milestones").style.display = "block";
+      document.getElementById("para-current-milestones").style.display = "none";
+      return milestoneArray
+    } else {
+       document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
+       document.getElementById("div-show-current-milestones").style.display = "block";
+       document.getElementById("table-current-milestones").style.display = "none";
+       document.getElementById("para-current-milestones").style.display = "block";
+       document.getElementById("para-current-milestones").innerHTML = "There is no existing milestone information. Please import your data deliverable document!";
+     }
   }
 
-  //// get content from milestone.json file and load it up
-  var milestoneJson = parseJson(milestonePath);
-  if (awardNumber in milestoneJson) {
-    var milestoneObj = milestoneJson[awardNumber];
-    // start at 1 to skip the header
-    var rowIndex = 1;
-    var milestoneKey = Object.keys(milestoneObj)
-    for (var i=0;i<milestoneKey.length;i++){
-      var milestone = milestoneObj[milestoneKey[i]];
-      // var span = milestoneObj[milestoneKey[i]].length
-      for (var j=0;j<milestone.length;j++) {
-        // console.log(milestoneObj[milestoneKey[i]])
-        var description = milestone[j]["Description of data"]
-        var date = milestone[j]["Expected date of completion"]
-        var row = milestoneArray.insertRow(rowIndex).outerHTML="<tr id='row-milestone"+rowIndex+"'style='color: #000000;'><td id='name-row-milestone"+rowIndex+"'>"+ milestoneKey[i] +"</td><td id='name-row-description"+rowIndex+"'>"+ description +"</td><td id='name-row-date"+rowIndex+"'>"+ date +"</td></tr>"
-      }
-      rowIndex++;
-      }
-    return milestoneArray
-  } else {
-     document.getElementById("div-show-current-milestones").style.display = "block";
-     document.getElementById("table-current-milestones").style.display = "none";
-     document.getElementById("para-current-milestones").style.display = "block";
-     document.getElementById("para-current-milestones").innerHTML = "There is no existing milestone information. Please import your data deliverable document!";
- }
-}
-
-/// check if no award is selected, then show no current milestones.
-if (presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value === "Select") {
-  document.getElementById("div-show-milestone-info-no-existing").style.display = "none"
-  document.getElementById("div-show-current-milestones").style.display = "none"
 }
 
 ///// Load Milestone info
+/// check if no award is selected, then show no current milestones.
 presavedAwardArray1.addEventListener('change', function() {
   var currentAward = presavedAwardArray1.value
   loadMilestoneInfo(currentAward)
