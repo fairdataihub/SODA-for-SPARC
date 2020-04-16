@@ -1306,14 +1306,25 @@ function grabConInfoEntries() {
   }
   /// grab entries from contributor table
   var rowcountCon = currentConTable.rows.length;
-  var currentConInfo = [];
+  var currentConInfo = []
   for (i=1; i<rowcountCon; i++) {
+    var conRoleInfo = currentConTable.rows[i].cells[3].innerHTML.split(",");
     var myCurrentCon = {"conName": currentConTable.rows[i].cells[0].innerHTML,
                           "conID": currentConTable.rows[i].cells[1].innerHTML,
                           "conAffliation": currentConTable.rows[i].cells[2].innerHTML,
-                          "conRole": currentConTable.rows[i].cells[3].innerHTML,
+                           "conRole": conRoleInfo[0],
                           "conContact": currentConTable.rows[i].cells[4].innerHTML}
     currentConInfo.push(myCurrentCon);
+    if (conRoleInfo.length>1) {
+      for (var j=1;j<conRoleInfo.length;j++) {
+        myCurrentCon = {"conName": "",
+                        "conID": "",
+                        "conAffliation": "",
+                         "conRole": conRoleInfo[j],
+                        "conContact": ""}
+        currentConInfo.push(myCurrentCon);
+      }
+    }
   };
   contributorObj["funding"] = fundingArray
   contributorObj["acknowlegdment"] = acknowlegdment
