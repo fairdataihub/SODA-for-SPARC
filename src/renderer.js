@@ -273,6 +273,7 @@ const currentDOI = document.querySelector('#input-current-doi')
 const reserveDOIStatus = document.querySelector('#para-reserve-doi-status')
 
 const bfPublishDatasetBtn = document.querySelector('#button-publish-dataset')
+const bfRefreshPublishingDatasetStatusBtn = document.querySelector('#button-refresh-publishing-status')
 const publishingStatus = document.querySelector('#input-publishing-status')
 const publishDatasetStatus = document.querySelector('#para-publish-dataset-status')
 
@@ -2552,6 +2553,7 @@ function shareWithCurationTeam(){
   datasetPermissionStatusCurationTeam.innerHTML = 'Please wait...'
   bfCurrentPermissionProgress.style.display = 'block'
   disableform(bfPermissionForm)
+  bfAddPermissionCurationTeamBtn.disabled = true
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
   var selectedTeam = 'SPARC Data Curation Team'
@@ -2565,6 +2567,7 @@ function shareWithCurationTeam(){
       datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentPermissionProgress.style.display = 'none'
       enableform(bfPermissionForm)
+      bfAddPermissionCurationTeamBtn.disabled = false
     } else {
       showCurrentPermission()
       var selectedStatusOption = '03. Ready for Curation (Investigator)'
@@ -2576,11 +2579,13 @@ function shareWithCurationTeam(){
           var emessage = userError(error)
           datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           bfCurrentPermissionProgress.style.display = 'none'
+          bfAddPermissionCurationTeamBtn.disabled = false
         } else {
           datasetPermissionStatusCurationTeam.innerHTML = 'Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"'
           enableform(bfPermissionForm)
           showCurrentDatasetStatus()
           bfCurrentPermissionProgress.style.display = 'none'
+          bfAddPermissionCurationTeamBtn.disabled = false
         }
       })
     }
@@ -2603,6 +2608,7 @@ function shareWithConsortium(){
   shareConsortiumStatus.innerHTML = 'Please wait...'
   bfPostCurationProgress.style.display = 'block'
   disableform(bfPostCurationForm)
+  bfShareConsortiumBtn.disabled = true
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
   var selectedTeam = 'SPARC Embargoed Data Sharing Group'
@@ -2616,6 +2622,7 @@ function shareWithConsortium(){
       shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfPostCurationProgress.style.display = 'none'
       enableform(bfPostCurationForm)
+      bfShareConsortiumBtn.disabled = false
     } else {
       showCurrentPermission()
       var selectedStatusOption = '11. Complete, Under Embargo (Investigator)'
@@ -2627,11 +2634,14 @@ function shareWithConsortium(){
           var emessage = userError(error)
           shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           bbfPostCurationProgress.style.display = 'none'
+          enableform(bfPostCurationForm)
+          bfShareConsortiumBtn.disabled = false
         } else {
           shareConsortiumStatus.innerHTML = 'Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"'
-          enableform(bfPostCurationForm)
           showCurrentDatasetStatus()
           bfPostCurationProgress.style.display = 'none'
+          enableform(bfPostCurationForm)
+          bfShareConsortiumBtn.disabled = false
         }
       })
     }
@@ -2642,6 +2652,7 @@ function shareWithConsortium(){
 // Reserve DOI
 bfReserveDOIBtn.addEventListener('click', () => {
   disableform(bfPostCurationForm)
+  bfReserveDOIBtn.disabled = true
   reserveDOIStatus.innerHTML = "Please wait..."
   bfPostCurationProgress.style.display = 'block'
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
@@ -2655,10 +2666,12 @@ bfReserveDOIBtn.addEventListener('click', () => {
       reserveDOIStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfPostCurationProgress.style.display = 'none'
       enableform(bfPostCurationForm)
+      bfReserveDOIBtn.disabled = false
     } else {
       reserveDOIStatus.innerHTML = res
       showCurrentDOI()
       enableform(bfPostCurationForm)
+      bfReserveDOIBtn.disabled = false
     }
   })
 })
@@ -2666,7 +2679,32 @@ bfReserveDOIBtn.addEventListener('click', () => {
 
 // Publish dataset
 bfPublishDatasetBtn.addEventListener('click', () => {
+  if (publishingStatus.value === 'PUBLISH_IN_PROGRESS'){
+    emessage = "Your dataset is currently being published. Please wait until it is completed."
+    publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+  } else if (publishingStatus.value === 'PUBLISH_SUCCEEDED'){
+    ipcRenderer.send("warning-publish-dataset-again")
+  } else {
+    ipcRenderer.send("warning-publish-dataset")
+  }
+})
+
+ipcRenderer.on('warning-publish-dataset-selection', (event, index) => {
+  if (index === 0) {
+    publishDataset()
+  }
+})
+
+ipcRenderer.on('warning-publish-dataset-again-selection', (event, index) => {
+  if (index === 0) {
+    publishDataset()
+  }
+})
+
+function publishDataset(){
   disableform(bfPostCurationForm)
+  bfPublishDatasetBtn.disabled = true
+  bfRefreshPublishingDatasetStatusBtn.disabled = true
   publishDatasetStatus.innerHTML = "Please wait..."
   bfPostCurationProgress.style.display = 'block'
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
@@ -2680,12 +2718,48 @@ bfPublishDatasetBtn.addEventListener('click', () => {
       publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfPostCurationProgress.style.display = 'none'
       enableform(bfPostCurationForm)
+      bfPublishDatasetBtn.disabled = false
+      bfRefreshPublishingDatasetStatusBtn.disabled = false
     } else {
-      publishDatasetStatus.innerHTML = res
-      showPublishingStatus()
-      enableform(bfPostCurationForm)
+      publishingStatus.value = res
+      showCurrentDOI()
+      if (bfSelectAccountStatus.innerHTML.includes("SPARC Consortium")){
+        var selectedStatusOption = '12. Published (Investigator)'
+        client.invoke("api_bf_change_dataset_status", selectedBfAccount, selectedBfDataset, selectedStatusOption,
+          (error, res) => {
+          if(error) {
+            log.error(error)
+            console.error(error)
+            var emessage = userError(error)
+            publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+            bbfPostCurationProgress.style.display = 'none'
+            enableform(bfPostCurationForm)
+            bfPublishDatasetBtn.disabled = false
+            bfRefreshPublishingDatasetStatusBtn.disabled = false
+          } else {
+            publishDatasetStatus.innerHTML = 'Success: Dataset is publishing (it may take some time to complete) and dataset status has been set to "Published"'
+            showCurrentDatasetStatus()
+            bfPostCurationProgress.style.display = 'none'
+            enableform(bfPostCurationForm)
+            bfPublishDatasetBtn.disabled = false
+            bfRefreshPublishingDatasetStatusBtn.disabled = false
+          }
+        })
+      } else {
+        publishDatasetStatus.innerHTML = 'Success: Dataset is publishing (it may take some time to complete)'
+        bfPostCurationProgress.style.display = 'none'
+        enableform(bfPostCurationForm)
+        bfPublishDatasetBtn.disabled = false
+        bfRefreshPublishingDatasetStatusBtn.disabled = false
+      }
     }
   })
+}
+
+
+// Refresh publishing dataset status
+bfRefreshPublishingDatasetStatusBtn.addEventListener('click', () => {
+  showPublishingStatus()
 })
 
 
@@ -3194,11 +3268,15 @@ function showPublishingStatus(){
   publishingStatus.value = "Please wait..."
   publishDatasetStatus.innerHTML = ""
   bfPostCurationProgress.style.display = 'block'
+  bfPublishDatasetBtn.disabled = true
+  bfRefreshPublishingDatasetStatusBtn.disabled = true
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
     publishingStatus.value = '-------'
     bfPostCurationProgress.style.display = 'none'
+    bfPublishDatasetBtn.disabled = false
+    bfRefreshPublishingDatasetStatusBtn.disabled = false
   } else {
     client.invoke("api_bf_get_publishing_status", selectedBfAccount, selectedBfDataset,
     (error, res) => {
@@ -3209,9 +3287,13 @@ function showPublishingStatus(){
         var emessage = userError(error)
         publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
         bfPostCurationProgress.style.display = 'none'
+        bfPublishDatasetBtn.disabled = false
+        bfRefreshPublishingDatasetStatusBtn.disabled = false
       } else {
         publishingStatus.value = res
         bfPostCurationProgress.style.display = 'none'
+        bfPublishDatasetBtn.disabled = false
+        bfRefreshPublishingDatasetStatusBtn.disabled = false
       }
     })
   }
