@@ -2254,8 +2254,7 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
         return doi_status['doi']
     except Exception as e:
         if "doi" in str(e) and "not found" in str(e):
-            error = "No DOI has been reserved for this dataset"
-            raise Exception(error)
+            return "None"
         else:
             raise e
 
@@ -2291,16 +2290,13 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         raise e
 
     try:
-        bf_get_doi(selected_bfaccount, selected_bfdataset)
+        res = bf_get_doi(selected_bfaccount, selected_bfdataset)
+        if res != 'None':
+            error = "Error: A DOI has already been reserved for this dataset"
+            raise Exception(error)
     except Exception as e: 
-        if (str(e) == "No DOI has been reserved for this dataset"):
-            pass
-        else:
-            raise e
-    else:
-        error = "Error: A DOI has already been reserved for this dataset"
-        raise Exception(error)
-
+        raise e
+        
     try:
         selected_dataset_id = myds.id
         contributors_list = bf._api._get('/datasets/' + str(selected_dataset_id) + '/contributors')
@@ -2314,5 +2310,76 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         bf._api.datasets._post('/' + str(selected_dataset_id)+ '/doi', 
                               json=jsonfile)
         return 'Done!'
+    except Exception as e:
+        raise e
+
+
+"""
+    Function to get the publishing status of a dataset
+
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+    Return:
+        Current pusblishing status
+    """
+def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        selected_dataset_id = myds.id
+        publishing_status = bf._api._get('/datasets/' + str(selected_dataset_id) + '/published')
+        return publishing_status['status']
+    except Exception as e:
+        raise e
+
+
+"""
+    Function to publish for a selected dataset
+
+    Args:
+        selected_bfaccount: name of selected Blackfynn acccount (string)
+        selected_bfdataset: name of selected Blackfynn dataset (string)
+    Return:
+        Success or error message
+"""
+
+def bf_publish_dataset(selected_bfaccount, selected_bfdataset):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        if role not in ['owner']:
+            error = "Error: You must be dataset owner to publish a dataset"
+            raise Exception(error)
+    except Exception as e:
+        raise e
+
+    try:
+        selected_dataset_id = myds.id
+        request_publish = bf._api._post('/datasets/' + str(selected_dataset_id) + '/publish')
+        return request_publish['status']
     except Exception as e:
         raise e

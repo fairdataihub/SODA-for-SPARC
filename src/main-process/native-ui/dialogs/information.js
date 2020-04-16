@@ -174,3 +174,28 @@ ipcMain.on('warning-share-with-consortium', (event) => {
   })
 })
 
+
+ipcMain.on('warning-publish-dataset', (event) => {
+  const options = {
+    type: 'warning',
+    title: 'Publishing dataset',
+    message: "Your dataset will become public on Blackfynn Discover. Would you like to continue?",
+    buttons: ['Yes', 'No']
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('warning-publish-dataset-selection', index)
+  })
+})
+
+
+ipcMain.on('warning-publish-dataset-again', (event) => {
+  const options = {
+    type: 'warning',
+    title: 'Publishing new version of dataset',
+    message: "This dataset has already been published. Would you like to release a new version on Blackfynn Discover?",
+    buttons: ['Yes', 'No']
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('warning-publish-dataset-again-selection', index)
+  })
+})
