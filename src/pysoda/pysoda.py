@@ -2237,8 +2237,7 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
         return doi_status['doi']
     except Exception as e:
         if "doi" in str(e) and "not found" in str(e):
-            error = "No DOI has been reserved for this dataset"
-            raise Exception(error)
+            return "None"
         else:
             raise e
 
@@ -2274,16 +2273,13 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         raise e
 
     try:
-        bf_get_doi(selected_bfaccount, selected_bfdataset)
+        res = bf_get_doi(selected_bfaccount, selected_bfdataset)
+        if res != 'None':
+            error = "Error: A DOI has already been reserved for this dataset"
+            raise Exception(error)
     except Exception as e: 
-        if (str(e) == "No DOI has been reserved for this dataset"):
-            pass
-        else:
-            raise e
-    else:
-        error = "Error: A DOI has already been reserved for this dataset"
-        raise Exception(error)
-
+        raise e
+        
     try:
         selected_dataset_id = myds.id
         contributors_list = bf._api._get('/datasets/' + str(selected_dataset_id) + '/contributors')
