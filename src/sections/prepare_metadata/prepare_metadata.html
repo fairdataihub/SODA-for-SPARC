@@ -45,7 +45,7 @@
              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                <span style="width: 250px;" class="tooltiptext"> Make sure you have an Airtable account and have access to the SPARC Airtable sheet (contact Dr. Charles Horn at <a href="mailto:chorn@pitt.edu" style='color: white'> chorn@pitt.edu</a>)
               <br><br>
-              Please keep your group information up to date in that sheet, especially contributors' name, email, affiliation, and ORCID. 
+              Please keep your group information up to date in that sheet, especially contributors' name, email, affiliation, and ORCID.
                <br><br>
                Please checkout the dedicated <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a>
                for obtaining or re-generating your API key to connect to SODA during your first use.
@@ -57,12 +57,9 @@
              <input class="form-container-input-bf" style="width:555px;height:35px;float:left" type="password" id="airtable-api-key" />
              <button class="demo-button-prev-next" style="float:right;margin-left:10px;font-size:15px;height:35px;" id="button-add-airtable-key"> Connect </button>
            </div>
-           <br>
            <div id="div-airtable-connect-load-progress" class="progressdiv">
              <div class="indeterminatebar"></div>
            </div>
-           <!-- <div class="demo-controls"> -->
-           <!-- </div> -->
            <p id="para-add-airtable-key-status" style="display:none"></p>
          </div>
 
@@ -75,7 +72,7 @@
               </datalist>
               <button id="button-add-award" class="demo-button" style="height:35px;width:150px;padding:0 0;margin-left:10px;margin-top:15px">Add</button>
             </div>
-            <p style="height:30px;margin-top:7px;margin-bottom:7px" id="para-save-award-info"></p>
+            <p style="margin-top:7px;margin-bottom:7px" id="para-save-award-info"></p>
             <div id="div-awards-load-progress" class="progressdiv">
               <div class="indeterminatebar"></div>
             </div>
@@ -85,7 +82,7 @@
             <h5> Select award: </h5>
             <div class="demo-controls" style="margin-top:20px">
               <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:100%; height:35px;line-height:2;padding: 6px 8px; font-size:14px">
-                <option>Select</option>
+                <option value="Select">Select an option</option>
               </select>
               <br>
               <button id="button-delete-award" class="demo-button" style="height:35px;width:150px;padding:0 0;margin-left:10px">Delete award</button>
@@ -93,11 +90,11 @@
             <div>
             <p id='para-delete-award-status' style="margin:10px 0px"></p>
             </div>
-            <p></p>
-            <div class="demo-controls">
+            <!-- <p></p> -->
+            <div class="demo-controls" id="div-milestone-info">
               <div id="div-show-milestone-info-no-existing" class="pathtable" style="display:none;width:100%">
                 <!-- <form method="post" style="width:100%"> -->
-                  <h5>Data Deliverables document: 
+                  <h5>Data Deliverables document:
 
                   <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                    <span style="width: 250px;" class="tooltiptext"> The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document.
@@ -110,8 +107,8 @@
                   <h5></h5>
                   <div class="container-milestone-upload" style="display:flex;">
                     <!-- <button type="button" style="width:40%;float:left" class="button-milestone-upload">Select a file</button> -->
-                    <input class="milestone-upload-text" id="input-milestone-select" style="width:40%;text-align:center" type="text" readonly placeholder="Select a file">
-                    <button id="button-import-milestone" type="button" style="width:20%" class="button-milestone-upload"><b>Import</b></button>
+                    <input class="milestone-upload-text" id="input-milestone-select" style="width:50%;text-align:center;height:40px" type="text" readonly placeholder="Select a file">
+                    <button id="button-import-milestone" type="button" style="width:15%;height:40px" class="button-milestone-upload"><b>Import</b></button>
                     <p id="para-milestone-document-info" style="float:right;margin-top:0;margin-left:7px;padding: 0 0;height:34px;width:300px;text-align:left;vertical-align:middle;"></p>
                   </div>
                 <!-- </form> -->
@@ -152,7 +149,7 @@
           <h5 align="center"> Populate the items below to generate submission file</h5>
           <br>
           <div class="form-container-ds"><font color="black"> SPARC Award Number: </font> </div>
-          <div class="tooltipnew"><img class="info" src="assets/img/info.png" style="visibility:hidden"> 
+          <div class="tooltipnew"><img class="info" src="assets/img/info.png" style="visibility:hidden">
             <span class="tooltiptext" style="width: 250px; font-weight: bold; display:none" class="tooltiptext">
             </span>
           </div>
@@ -162,17 +159,18 @@
           </select>
           </div>
           <div class="form-container-ds"><font color="black"> Milestone: </font> </div>
-          <div class="tooltipnew"><img class="info" src="assets/img/info.png" style="visibility:hidden"> 
+          <div class="tooltipnew"><img class="info" src="assets/img/info.png" style="visibility:hidden">
             <span class="tooltiptext" style="width: 250px; font-weight: bold; display:none" class="tooltiptext">
             </span>
           </div>
           <div class="demo-controls">
             <select id="selected-milestone" class="form-container-input-bf" style="font-size:13px;line-height: 2;height:28px; width: 95%">
               <option value="Select">Select an option</option>
+              <option value="N/A">Not specified in Data Deliverables document</option>
             </select>
           </div>
           <div class="form-container-ds"><font color="black"> Description of Data: </font> </div>
-          <div class="tooltipnew"><img class="info" src="assets/img/info.png" style="visibility:hidden"> 
+          <div class="tooltipnew"><img class="info" src="assets/img/info.png" style="visibility:hidden">
             <span class="tooltiptext" style="width: 250px; font-weight: bold; display:none" class="tooltiptext">
             </span>
           </div>
@@ -180,6 +178,7 @@
           <div class="demo-controls">
             <select id="selected-description-data" class="form-container-input-bf"  style="font-size:13px;line-height: 2;height:28px; width: 95%">
               <option value="Select">Select an option</option>
+              <option value="N/A">Not specified in Data Deliverables document</option>
             </select>
           </div>
           <div class="form-container-ds"><font color="black"> Completion Date: </font> </div>
@@ -228,7 +227,9 @@
               </span>
             </div>
             <div class="demo-controls">
-              <input id="ds-name" class="form-container-input-bf"/>
+              <select id="ds-name" class="form-container-input-bf">
+                <!-- <option value="Select" disabled>Select a dataset</option> -->
+              </select>
             </div>
             <div class="form-container-ds"><font color="black"> Description*: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -237,7 +238,7 @@
               </span>
             </div>
             <div class="demo-controls">
-              <textarea id="ds-description" class="form-container-textarea"> </textarea>
+              <textarea id="ds-description" class="form-container-textarea" style="height:80px"> </textarea>
             </div>
             <div class="form-container-ds"><font color="black"> Keywords*: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -286,6 +287,15 @@
             <select id="ds-description-award-list" class="form-container-input-bf" style="font-size:13px;line-height:2;height:28px">
               <option value="Select">Select an option</option>
             </select>
+            </div>
+            <div class="form-container-ds"><font color="black"> Other funding source(s): </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 200px;z-index:2">
+                Other funding sources
+              </span>
+            </div>
+            <div class="demo-controls">
+              <textarea id="ds-other-funding" class="form-container-textarea" style="border-left: 2px solid #258193;"> </textarea>
             </div>
             <div class="form-container-ds"><font color="black"> Acknowledgments: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -341,7 +351,7 @@
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
                 Check if the contributor is a contact person for the dataset. At least one and only one of contributor should be the contact person.
                 <br><br>
-                Click "Add" to add contributors to SODA's contributor table for easy control. Each contributor added to the table will be added to the dataset_description file. 
+                Click "Add" to add contributors to SODA's contributor table for easy control. Each contributor added to the table will be added to the dataset_description file.
               </span>
             </div>
             <div class="demo-controls">
@@ -412,7 +422,7 @@
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
                 Short description of Additional link content
                 <br><br>
-                Click on "Add" to register specified link and a link description to SODA's Additional Link table. All links and descriptions added to the table will be included in your dataset_description file. 
+                Click on "Add" to register specified link and a link description to SODA's Additional Link table. All links and descriptions added to the table will be included in your dataset_description file.
               </span>
             </div>
             <div class="demo-controls">
@@ -472,7 +482,7 @@
             <div class="demo-controls">
               <input id="input-completeds-title" class="form-container-input-bf" />
             </div>
-            <div class="form-container-ds" style="width:230px"><font color="black"> Metadata Version: </font> </div>
+            <!-- <div class="form-container-ds" style="width:230px"><font color="black"> Metadata Version: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
                 DO NOT CHANGE: 1.2.3
@@ -480,8 +490,8 @@
             </div>
             <div class="demo-controls">
               <input id="input-metadata-ver" value="1.2.3" disabled class="form-container-input-bf"  style="line-height: 2;height:28px"/>
-            </div>
-            <br>
+            </div> -->
+            <br><br>
             <div>
               <button id="button-prev-optional-misc" class="demo-button-prev-next">Previous</button>
               <button id="button-generate-ds-description" style="float:right"  class="demo-button-prev-next">Generate</button>

@@ -332,10 +332,16 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     shutil.copystat(src, dst)
     return dst
 
+class InvalidDeliverablesDocument(Exception):
+    pass
+
 ### Import Milestone document
 def import_milestone(filepath):
     doc = Document(filepath)
-    table = doc.tables[0]
+    try:
+        table = doc.tables[0]
+    except IndexError:
+        raise InvalidDeliverablesDocument("Please select a valid SPARC Deliverables Document!")
     data = []
     keys = None
     for i, row in enumerate(table.rows):
@@ -355,7 +361,10 @@ def extract_milestone_info(datalist):
     milestone_key = "Related milestone, aim, or task"
     other_keys = ["Description of data", "Expected date of completion"]
     for row in datalist:
-        key = row[milestone_key]
+        try:
+            key = row[milestone_key]
+        except KeyError:
+            raise InvalidDeliverablesDocument("Please select a valid SPARC Deliverables Document!")
         milestone[key].append({key: row[key] for key in other_keys})
     return milestone
 
@@ -409,13 +418,21 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
     ## name, description, keywords, samples, subjects
     ws1["D2"] = val_arr_ds[0]
     ws1["D3"] = val_arr_ds[1]
-    ws1["D4"] = ", ".join(val_arr_ds[2])
+    # ws1["D4"] = ", ".join(val_arr_ds[2])
     ws1["D16"] = val_arr_ds[3]
     ws1["D17"] = val_arr_ds[4]
 
-    ## contributor info
+    ## keywords
+    for i, column in zip(range(len(val_arr_ds[2])), excel_columns()):
+        ws1[column + "4"] = val_arr_ds[2][i]
+
+    ## award info
+    for i, column in zip(range(len(val_arr_con["funding"])), excel_columns()):
+        ws1[column + "11"] = val_arr_con["funding"][i]
+
+    ### Acknowledgments
     ws1["D10"] = val_arr_con["acknowlegdment"]
-    ws1["D11"] = val_arr_con["funding"]
+    ### Contributors
     for contributor, column in zip(val_arr_con['contributors'], excel_columns()):
         ws1[column + "5"] = contributor["conName"]
         ws1[column + "6"] = contributor["conID"]
