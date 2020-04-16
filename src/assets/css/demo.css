@@ -908,6 +908,10 @@ label.input-banner-img{
   padding: 4px 6px;
 }
 
+input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
 .form-container-input-bf:focus {
   background-color: #FFFAFA;
   border-left: 2px solid #C0C0C0;
@@ -917,8 +921,6 @@ label.input-banner-img{
 .form-container-textarea {
   float: right;
   font-weight: 400;
-  /* background-clip: padding-box; */
-  /* line-height: 2; */
   font: inherit;
   width: 100%;
   border: 1px solid #C0C0C0;
