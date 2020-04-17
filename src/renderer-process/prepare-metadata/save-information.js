@@ -74,18 +74,18 @@ var domStrings = {dataset: [document.getElementById('ds-name'), document.getElem
                             document.getElementById('input-completeds-title')]
                   }
 //// check if all fields have been filled
-function checkFields(div, fieldArray) {
-  var empty = false
-  for (let field of fieldArray) {
-    if (field.value.length===0 || field.value==="Select") {
-      empty = true
-      break
-    }
-  }
-  if (!empty) {
-    document.getElementById(div).className = 'multisteps-form__progress-btn js-active2';
-  }
-}
+// function checkFields(div, fieldArray) {
+//   var empty = false
+//   for (let field of fieldArray) {
+//     if (field.value.length===0 || field.value==="Select") {
+//       empty = true
+//       break
+//     }
+//   }
+//   if (!empty) {
+//     document.getElementById(div).className = 'multisteps-form__progress-btn js-active2';
+//   }
+// }
 
 /// check if at least one contributor is added
 function checkFieldsContributors() {
@@ -104,15 +104,15 @@ function checkFieldsContributors() {
 
 /// check if other info section is all populated
 function checkOtherInfoFields() {
-  var div = "div-ds-misc-info"
+  var div = 'div-ds-misc-info';
   var tableCurrentLinks = document.getElementById("table-addl-links")
-  var empty;
+  var fieldSatisfied = false;
   for (var i; i<tableCurrentLinks.rows.length; i++) {
     if (tableCurrentLinks.rows[i].cells[0].innerHTML==="Protocol URL or DOI*") {
-      empty = false
+      fieldSatisfied = true
     }
   }
-  if (!empty) {
+  if (fieldSatisfied) {
     document.getElementById(div).className = 'multisteps-form__progress-btn js-active2';
   }
 }
@@ -149,7 +149,7 @@ document.querySelector('#button-prev-misc-contributor').addEventListener('click'
 })
 document.querySelector('#button-prev-optional-misc').addEventListener('click', () => {
     document.querySelector('#ds-misc-info').click()
-    checkFields("ds-optional-info", domStrings.optional)
+    // checkFields("ds-optional-info", domStrings.optional)
 })
 
 //next buttons

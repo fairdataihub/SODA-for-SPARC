@@ -1404,6 +1404,7 @@ generateDSBtn.addEventListener('click', (event) => {
   if (!dsEmpty || !conEmpty || !protocolEmpty || contributorNumber===1) {
       document.getElementById("para-generate-description-status").innerHTML = "<span style='color:red'>Please fill in all required fields (*)!</span>"
   } else {
+    document.getElementById("para-generate-description-status").innerHTML = ""
     ipcRenderer.send('open-folder-dialog-save-ds-description',"dataset_description.xlsx")
   }
 })
