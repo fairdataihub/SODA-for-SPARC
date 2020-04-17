@@ -1269,7 +1269,7 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         myds = bf.get_dataset(current_dataset_name)
         selected_dataset_id = myds.id
         jsonfile = {'name': datasetname}
-        bf._api.datasets._put('/' + str(selected_dataset_id), 
+        bf._api.datasets._put('/' + str(selected_dataset_id),
             json=jsonfile)
 
 
@@ -2308,9 +2308,9 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         if res != 'None':
             error = "Error: A DOI has already been reserved for this dataset"
             raise Exception(error)
-    except Exception as e: 
+    except Exception as e:
         raise e
-        
+
     try:
         selected_dataset_id = myds.id
         contributors_list = bf._api._get('/datasets/' + str(selected_dataset_id) + '/contributors')
@@ -2321,7 +2321,7 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         'title' : selected_bfdataset,
         'creators' : creators_list,
         }
-        bf._api.datasets._post('/' + str(selected_dataset_id)+ '/doi', 
+        bf._api.datasets._post('/' + str(selected_dataset_id)+ '/doi',
                               json=jsonfile)
         return 'Done!'
     except Exception as e:

@@ -1,9 +1,0 @@
-{
-  "title": "SODA",
-  "icon": "assets/app-icon/mac/soda_icon.icns",
-  "background-color": "#DFDFDF",
-  "contents": [
-    { "x": 448, "y": 344, "type": "link", "path": "/Applications" },
-    { "x": 192, "y": 344, "type": "file", "path": "SODA-darwin-x64/SODA.app" }
-  ]
-}

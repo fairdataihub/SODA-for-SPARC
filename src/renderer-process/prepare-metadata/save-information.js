@@ -104,6 +104,7 @@ function checkFieldsContributors() {
 
 /// check if other info section is all populated
 function checkOtherInfoFields() {
+  var div = "div-ds-misc-info"
   var tableCurrentLinks = document.getElementById("table-addl-links")
   var empty;
   for (var i; i<tableCurrentLinks.rows.length; i++) {

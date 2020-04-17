@@ -46,6 +46,7 @@
     "@yaireo/tagify": "^3.6.2",
     "airtable": "^0.8.1",
     "axios": "^0.19.2",
+    "bootstrap-material-design": "^4.1.2",
     "cropperjs": "^1.5.6",
     "electron-context-menu": "^0.13.0",
     "electron-log": "^4.0.6",
@@ -59,7 +60,7 @@
   },
   "devDependencies": {
     "electron": "6.0.0",
-    "electron-packager": "^14.0.6",
+    "electron-packager": "git+https://github.com/electron/electron-packager.git",
     "electron-rebuild": "^1.8.6"
   }
 }
