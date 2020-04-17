@@ -166,7 +166,7 @@ ipcMain.on('warning-share-with-consortium', (event) => {
   const options = {
     type: 'info',
     title: 'Sharing with SPARC consortium',
-    message: "Sharing will give viewer permissions to any SPARC investigator who has signed the SPARC Non-disclosure form and will allow them to see your data. This must be done only once your dataset has been approved by the Curation Team. Would you like to continue?",
+    message: "Sharing will give viewer permissions to any SPARC investigator who has signed the SPARC Non-disclosure form and will allow them to see your data. This step must be done only once your dataset has been approved by the Curation Team. Would you like to continue?",
     buttons: ['Yes', 'No']
   }
   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
@@ -174,3 +174,28 @@ ipcMain.on('warning-share-with-consortium', (event) => {
   })
 })
 
+
+ipcMain.on('warning-publish-dataset', (event) => {
+  const options = {
+    type: 'warning',
+    title: 'Publishing dataset',
+    message: "Your dataset will become public on Blackfynn Discover. This step must be done only once your dataset has been approved by the Curation Team. Would you like to continue?",
+    buttons: ['Yes', 'No']
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('warning-publish-dataset-selection', index)
+  })
+})
+
+
+ipcMain.on('warning-publish-dataset-again', (event) => {
+  const options = {
+    type: 'warning',
+    title: 'Publishing new version of dataset',
+    message: "This dataset has already been published. Would you like to release a new version on Blackfynn Discover?",
+    buttons: ['Yes', 'No']
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('warning-publish-dataset-again-selection', index)
+  })
+})

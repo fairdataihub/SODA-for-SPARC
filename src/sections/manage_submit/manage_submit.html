@@ -140,7 +140,7 @@ my-dropdown<!DOCTYPE html>
             </div>
             </h5>
             <div class="demo-controls">
-              <select class="my-dropdown" style="width:100%" id="bfdatasetlist_renamedataset">
+              <select class="my-dropdown" style="width:80%" id="bfdatasetlist_renamedataset">
                 <option> Select dataset </option>
               </select>
               <!-- <p></p> -->
@@ -189,8 +189,7 @@ my-dropdown<!DOCTYPE html>
             <select class="my-dropdown" style="width:100%" id="bfdatasetlist_metadata">
               <option> Select dataset </option>
             </select>
-            <!-- <p></p> -->
-            <button id="button-refresh-dataset-list-metadata" class="demo-button"  style="width:150px;height:38px;display:none" > Refresh List </button>
+            <button id="button-refresh-dataset-list-metadata" class="demo-button" style="width:150px;height:38px;display:none" > Refresh List </button>
           </div>
 
           <p></p>
@@ -584,8 +583,8 @@ my-dropdown<!DOCTYPE html>
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button"> Complete post-curation tasks
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Annotate-dataset" >
+        <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button"> Complete post-curation steps
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
           <div class="demo-meta u-avoid-clicks"> Share with SPARC Consortium, Reserve DOI, and publish dataset </div>
@@ -595,7 +594,7 @@ my-dropdown<!DOCTYPE html>
 
           <h5> Select Blackfynn dataset </h5>
           <div class="demo-controls">
-            <select class="my-dropdown" id="bfdatasetlist_postcuration">
+            <select class="my-dropdown" style="width:80%" id="bfdatasetlist_postcuration">
               <option> Select dataset </option>
             </select>
           </div>
@@ -671,7 +670,7 @@ my-dropdown<!DOCTYPE html>
 
             </div>
 
-            <p id='para-reserve-doi-status'> Please wait...</p>
+            <p id='para-reserve-doi-status'> </p>
 
           </div>
 
@@ -683,15 +682,31 @@ my-dropdown<!DOCTYPE html>
                 <button id="button-publish-dataset" class="demo-button" style="width: 300px"> Publish dataset
                 </button>
               </div>
+
               <div style="margin-left: 220px;">
-                <h5> Publishing status:
+                <h5> Publishing status: </h5>
+                <input id="input-publishing-status" class="demo-response" value="-------" disabled>
+              </div>
+
+              <div style="position:absolute; right:30px">
+                <h5>
+                  <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                    <span class="tooltiptext">
+                      One year after the dataset completion date (as per the Data Deliverables document) or right after publishing results from the dataset, whichever comes first, you must publish your dataset to Blackfynn Discover, which populates the SPARC Data Portal.
+                      <br><br>
+                      Publishing the dataset will make it visible to the public.
+                      <br><br>
+                      Note: You must be dataset "owner" and have your ORCID linked on Blackfynn in order to publish. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+                    </span>
+                  </div>
                 </h5>
-                <p id = "para-published-status"> Not published </p>
               </div>
 
             </div>
-
-            <p id='para-publish-dataset-status'> Please wait...</p>
+            
+            <h5> </h5>
+            <button id="button-refresh-publishing-status" class="demo-button" style="width: 300px"> Refresh publishing status </button>
+            <p id='para-publish-dataset-status'> </p>
 
           </div>
 
@@ -721,6 +736,7 @@ my-dropdown<!DOCTYPE html>
               </span>
             </div>
           </h5>
+
           <br/>
 
           <div class="demo-controls">
@@ -745,7 +761,7 @@ my-dropdown<!DOCTYPE html>
                   <li> "11. Complete, Under Embargo (Investigator)": Select to share your dataset with the SPARC Consortium. This will give viewer permissions to the SPARC Embargoed Data Sharing Group and will therefore allow any SPARC investigator who has signed the SPARC Non-disclosure form to see your data. </li>
                   <li> "12. Published (Investigator)": Select this option once you have published your dataset. One year after the initial upload of your dataset, you must publish your dataset to Blackfynn Discover, which populates the SPARC Portal. To do this, open the dataset of interest on the Blackfynn webpage, click on the Settings tab on the left, and select Publish Dataset. </li>
                 </ul>
-              To find out more about dataset status, please visit <a href="https://docs.sparc.science/submit_data.html" style="color:white;"> docs.sparc.science </a>.
+              To find out more about dataset status, please visit <a href="https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd" style="color:white;"> docs.sparc.science </a>.
               </span>
             </div>
           </h5>
