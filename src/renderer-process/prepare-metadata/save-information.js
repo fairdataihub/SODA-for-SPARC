@@ -91,11 +91,10 @@ function checkFields(div, fieldArray) {
 function checkFieldsContributors() {
   var div = 'ds-contributor-info';
   var award = document.getElementById('ds-description-award-list').options[document.getElementById('ds-description-award-list').selectedIndex]
-  var acknowledgment = document.getElementById("ds-description-acknowlegdment")
   var tableCurrentCon = document.getElementById("table-current-contributors")
   var empty = false
-  /// check for empty acknowlegdment box (value.length===1, and not 0 for some reason)
-  if (acknowledgment.value.length === 1 || award.value==="Select") {
+  /// check for empty award
+  if (award.value==="Select") {
     empty = true
   }
   if (!empty && tableCurrentCon.rows.length>1) {
@@ -105,11 +104,14 @@ function checkFieldsContributors() {
 
 /// check if other info section is all populated
 function checkOtherInfoFields() {
-  var div = 'ds-misc-info';
-  var originatingDOI = document.getElementById('input-misc-DOI').value.length
-  var protocolDOI = document.getElementById("input-misc-protocol").value.length
   var tableCurrentLinks = document.getElementById("table-addl-links")
-  if ((originatingDOI>1) && (protocolDOI>1) && (tableCurrentLinks.rows.length>1)) {
+  var empty;
+  for (var i; i<tableCurrentLinks.rows.length; i++) {
+    if (tableCurrentLinks.rows[i].cells[0].innerHTML==="Protocol URL or DOI*") {
+      empty = false
+    }
+  }
+  if (!empty) {
     document.getElementById(div).className = 'multisteps-form__progress-btn js-active2';
   }
 }

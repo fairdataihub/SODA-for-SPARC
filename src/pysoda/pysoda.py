@@ -437,15 +437,29 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
         ws1[column + "5"] = contributor["conName"]
         ws1[column + "6"] = contributor["conID"]
         ws1[column + "7"] = contributor["conAffliation"]
-        ws1[column + "8"] = contributor["conRole"]
         ws1[column + "9"] = contributor["conContact"]
+        ws1[column + "8"] = contributor["conRole"]
 
     ## originating DOI, Protocol DOI
-    ws1["D12"] = ", ".join(val_arr_misc["doi"])
-    ws1["D13"] = ", ".join(val_arr_misc["url"])
-    for link, column in zip(val_arr_misc['additional links'], excel_columns()):
-        ws1[column + "14"] = link["link"]
-        ws1[column + "15"] = link["description"]
+    total_link_array = val_arr_misc["Originating Article DOI"] + val_arr_misc["Protocol URL or DOI*"] + val_arr_misc["Additional Link"]
+    for i, column in zip(range(len(total_link_array)), excel_columns()):
+        if total_link_array[i]["link type"] == "Originating Article DOI":
+            ws1[column + "12"] = total_link_array[i]["link"]
+            ws1[column + "13"] = ""
+            ws1[column + "14"] = ""
+            ws1[column + "15"] = total_link_array[i]["description"]
+        if total_link_array[i]["link type"] == "Protocol URL or DOI*":
+            ws1[column + "12"] = ""
+            ws1[column + "13"] = total_link_array[i]["link"]
+            ws1[column + "14"] = ""
+            ws1[column + "15"] = total_link_array[i]["description"]
+        if total_link_array[i]["link type"] == "Additional Link":
+            ws1[column + "12"] = ""
+            ws1[column + "13"] = ""
+            ws1[column + "14"] = total_link_array[i]["link"]
+            ws1[column + "15"] = total_link_array[i]["description"]
+
+    ### val_arr_misc["Originating Article DOI"][i] = [{"link type":"org", "link":"link1","desc":"testdesc"}, {{"link type":"org", "link":"link2","desc":"testdesc2"}}]
 
     ## completeness, parent dataset ID, title Respectively
     ws1["D18"] = val_arr_optional["completeness"]

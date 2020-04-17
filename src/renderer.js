@@ -987,8 +987,6 @@ ipcRenderer.on('selected-metadata-submission', (event, dirpath, filename) => {
 //////////////// Dataset description file ///////////////////////
 //////////////// //////////////// //////////////// ////////////////
 
-var doiInput = createTagsInput(document.getElementById('input-misc-DOI'));
-var urlInput = createTagsInput(document.getElementById('input-misc-protocol'));
 var keywordInput = document.getElementById('ds-keywords'),
   keywordTagify = new Tagify(keywordInput, {
     duplicates: false,
@@ -1133,7 +1131,8 @@ function createCurrentConTable(table) {
 function createAdditionalLinksTable() {
   document.getElementById("para-save-link-status").innerHTML = ""
   var myTable = document.getElementById("table-addl-links")
-  var link = document.getElementById("input-misc-addl-links").value
+  var linkType = document.getElementById("select-misc-link").value
+  var link = document.getElementById("input-misc-links").value
   var description = document.getElementById("input-misc-link-description").value
   /// Construct table
   var rowcount = myTable.rows.length;
@@ -1146,29 +1145,23 @@ function createAdditionalLinksTable() {
   }
   /// Check for empty entry before adding to table
   var empty = false
-  if (link==="") {
+  if (link==="" || linkType==="Select") {
     empty = true
   }
-  /// Check for duplicate links
-  var duplicate = false
-  for (var i=0; i<rowcount;i++){
-    if (myTable.rows[i].cells[0].innerHTML===link) {
-      duplicate = true
-      break
-    }
-  }
   if (!empty) {
-    if (!duplicate) {
-      var row = myTable.insertRow(rowIndex).outerHTML="<tr id='row-current-link"+rowIndex+"'style='color: #000000;'><td id='link-row"+rowIndex+"'>"+ link+"</td><td id='link-description-row"+rowIndex+"'>"+ description +"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_link("+rowIndex+")'></td></tr>";
-      document.getElementById("div-current-additional-links").style.display = "block";
-      return myTable
-    } else {
-      document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>The link already exists below!</span>"
-    }
+    var row = myTable.insertRow(rowIndex).outerHTML="<tr id='row-current-link"+rowIndex+"'style='color: #000000;'><td id='link-row"+rowIndex+"'>"+ linkType+"</td><td id='link-row"+rowIndex+"'>"+ link+"</td><td id='link-description-row"+rowIndex+"'>"+ description +"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_link("+rowIndex+")'></td></tr>";
+    document.getElementById("div-current-additional-links").style.display = "block";
+    return myTable
   } else {
     document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>Please specify a link to add!</span>"
   }
 }
+
+//// when link type is changed, clear other values
+document.getElementById("select-misc-link").addEventListener("change", function() {
+  document.getElementById("input-misc-links").value = ""
+  document.getElementById("input-misc-link-description").value = ""
+})
 
 //// function to leave fields empty if no data is found on Airtable
 function leaveFieldsEmpty(field, element) {
@@ -1261,23 +1254,34 @@ function showDatasetDescription(){
 }
 
 function emptyDSInfoEntries() {
-  var empty = false;
+  var fieldSatisfied = true;
   var infoArray = grabDSInfoEntries()
   for (var element of infoArray) {
     if (element.length===0) {
-      empty = true
+      fieldSatisfied = false
     }
   }
-  return empty
+  return fieldSatisfied
+}
+
+function emptyLinkInfo() {
+  var tableCurrentLinks = document.getElementById("table-addl-links")
+  var fieldSatisfied = false;
+  for (var i=0; i<tableCurrentLinks.rows.length; i++) {
+    if (tableCurrentLinks.rows[i].cells[0].innerHTML==="Protocol URL or DOI*") {
+      fieldSatisfied = true
+    }
+  }
+  return fieldSatisfied
 }
 
 function emptyInfoEntries(element) {
-  var empty = false
+  var fieldSatisfied = true
   // var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
-  if (element.length===0) {
-    empty = true
+  if (element==="Select") {
+    fieldSatisfied = false
   }
-  return empty
+  return fieldSatisfied
 }
 
 function grabDSInfoEntries() {
@@ -1334,27 +1338,31 @@ function grabConInfoEntries() {
 
 function grabProtocolSection() {
   var miscObj = {}
-  var originatingDOIArray = doiInput.value
-  doiArray = [];
-  for (var i=0;i<originatingDOIArray.length;i++) {
-    doiArray.push(originatingDOIArray[i].value)
-  }
-  urlArray = [];
-  var protocolURLArray = urlInput.value
-  for (var i=0;i<protocolURLArray.length;i++) {
-    urlArray.push(protocolURLArray[i].value)
-  }
   /// Additional link description
   var rowcountLink = document.getElementById("table-addl-links").rows.length;
   var addlLinkInfo = [];
   for (i=1; i<rowcountLink; i++) {
-    var addlLink = {"link": document.getElementById("table-addl-links").rows[i].cells[0].innerHTML,
-                    "description": document.getElementById("table-addl-links").rows[i].cells[1].innerHTML}
+    var addlLink = {"link type": document.getElementById("table-addl-links").rows[i].cells[0].innerHTML,
+                    "link": document.getElementById("table-addl-links").rows[i].cells[1].innerHTML,
+                    "description": document.getElementById("table-addl-links").rows[i].cells[2].innerHTML}
     addlLinkInfo.push(addlLink)
   }
-  miscObj["doi"] = doiArray;
-  miscObj["url"] = urlArray;
-  miscObj["additional links"] = addlLinkInfo;
+  //// categorize links based on types
+  var originatingDOIArray = [];
+  var protocolArray = [];
+  var additionalLinkArray = [];
+  for (var i=0; i<addlLinkInfo.length;i++) {
+    if (addlLinkInfo[i]["link type"]==="Originating Article DOI") {
+      originatingDOIArray.push(addlLinkInfo[i])
+    } else if (addlLinkInfo[i]["link type"]==="Protocol URL or DOI*"){
+      protocolArray.push(addlLinkInfo[i])
+    } else {
+      additionalLinkArray.push(addlLinkInfo[i])
+    }
+  }
+  miscObj["Originating Article DOI"] = originatingDOIArray
+  miscObj["Protocol URL or DOI*"] = protocolArray
+  miscObj["Additional Link"] = additionalLinkArray
   return miscObj
 }
 
@@ -1386,13 +1394,13 @@ generateDSBtn.addEventListener('click', (event) => {
   var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value
   var dsEmpty = emptyDSInfoEntries()
   var conEmpty = emptyInfoEntries(funding)
-  var protocolEmpty = false
-  if (urlInput.value.length===0) {
-    protocolEmpty = true
-  }
+  var protocolEmpty = emptyLinkInfo()
   var contributorNumber = currentConTable.rows.length
-  if (dsEmpty || conEmpty || protocolEmpty || contributorNumber===1) {
-    document.getElementById("para-generate-description-status").innerHTML = "<span style='color:red'>Please fill in all required fields (*)!</span>"
+  // if (protocolEmpty) {
+  //   document.getElementById("para-generate-description-status").innerHTML = "<span style='color:red'>Please include at least one Protocol URL or DOI to generate!</span>"
+  // }
+  if (!dsEmpty || !conEmpty || !protocolEmpty || contributorNumber===1) {
+      document.getElementById("para-generate-description-status").innerHTML = "<span style='color:red'>Please fill in all required fields (*)!</span>"
   } else {
     ipcRenderer.send('open-folder-dialog-save-ds-description',"dataset_description.xlsx")
   }

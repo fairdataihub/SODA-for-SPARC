@@ -387,42 +387,40 @@
           </div>
           <div id="div-ds-misc-info" style="width:90%;margin: 0 auto;font-size:13px" class="datasetsaveoption">
             <br><br><br>
-            <div class="form-container-ds"><font color="black"> Originating Article DOI: </font> </div>
+            <div id="show-add-link-description">
+            <div class="form-container-ds"><font color="black"> Link type: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px;z-index:3; font-weight: bold">
-                DOIs of published articles that were generated from this dataset. Hit "Enter" after each entry to register it.
+                Specify a link for which you wish to add a description to
               </span>
             </div>
             <div class="demo-controls">
-              <input id="input-misc-DOI" class="form-container-input-bf" />
+              <select id="select-misc-link" class="form-container-input-bf">
+                <option value="Select" disabled>Select an option</option>
+                <option value="Originating Article DOI">Originating Article DOI</option>
+                <option value="Protocol URL or DOI*">Protocol URL or DOI*</option>
+                <option value="Additional Link">Additional Link</option>
+              </select>
             </div>
-            <div class="form-container-ds"><font color="black"> Protocol URL or DOI*: </font> </div>
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext" style="width: 300px;z-index:3; font-weight: bold">
-                URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset. Hit "Enter" after each entry to register it.
-              </span>
-            </div>
-            <div class="demo-controls">
-              <input id="input-misc-protocol" class="form-container-input-bf" />
-            </div>
-            <p></p>
-
-            <h5 align="center"> Add additional links: </h5>
             <div class="form-container-ds"><font color="black"> Link: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext" style="width: 300px;z-index:3; font-weight: bold">
-                URLs of additional resources used by this dataset (e.g., a link to a code repository)
+              <span class="tooltiptext" style="width: 300px; font-weight: bold">
+                Originating Article DOIs: DOIs of published articles that were generated from this dataset.
+                Protocol URLs or DOIs: URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset. Hit "Enter" after each entry to register it.
+                Additional links: URLs of additional resources used by this dataset (e.g., a link to a code repository). Hit "Enter" after each entry to register it.
+                <br><br>
+                Hit "Enter" after each entry to register it.
               </span>
             </div>
             <div class="demo-controls">
-              <input id="input-misc-addl-links" class="form-container-input-bf" />
+              <input id="input-misc-links" class="form-container-input-bf" />
             </div>
             <div class="form-container-ds"><font color="black"> Link Description: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
-                Short description of Additional link content
+                Short description of either Originating Article DOIs or Protocol URLs or Additional links content
                 <br><br>
-                Click on "Add" to register specified link and a link description to SODA's Additional Link table. All links and descriptions added to the table will be included in your dataset_description file.
+                Click on "Add" to register specified link and a link description to SODA's link table. All links and descriptions added to the table will be included in your dataset_description file.
               </span>
             </div>
             <div class="demo-controls">
@@ -432,18 +430,20 @@
               <button id="button-ds-add-link" class="demo-button-prev-next" style="float:right">Add</button>
               <p id='para-save-link-status' style="float:right;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p>
             </div>
-          <br>
+            <br><br><br><br>
+          </div>
           <div id="div-current-additional-links" style="width:100%;margin: 0 auto;display:none">
             <h5 align="center">Additional Links:</h5>
             <table id="table-addl-links">
               <tr>
-                <th style="width:30%">Links</th>
-                <th style="width:60%">Description</th>
+                <th style="width:15%">Link type</th>
+                <th style="width:30%">Link</th>
+                <th style="width:45%">Description</th>
                 <th style="width:10%"></th>
              </tr>
             </table>
+            <br><br><br>
           </div>
-          <br><br><br>
             <div>
               <button id="button-prev-misc-contributor" class="demo-button-prev-next">Previous</button>
               <button id="button-next-misc-optional" style="float:right" class="demo-button-prev-next">Next</button>
