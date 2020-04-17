@@ -427,6 +427,7 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
         ws1[column + "4"] = val_arr_ds[2][i]
 
     ## award info
+
     for i, column in zip(range(len(val_arr_con["funding"])), excel_columns()):
         ws1[column + "11"] = val_arr_con["funding"][i]
 
