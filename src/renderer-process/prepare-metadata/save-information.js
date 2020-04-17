@@ -75,14 +75,13 @@ var domStrings = {dataset: [document.getElementById('ds-name'), document.getElem
                   }
 //// check if all fields have been filled
 function checkFields(div, fieldArray) {
-  var empty = false
+  var fieldSatisfied = true
   for (let field of fieldArray) {
     if (field.value.length===0 || field.value==="Select") {
-      empty = true
-      break
+      fieldSatisfied = false
     }
   }
-  if (!empty) {
+  if (fieldSatisfied) {
     document.getElementById(div).className = 'multisteps-form__progress-btn js-active2';
   }
 }
@@ -104,16 +103,18 @@ function checkFieldsContributors() {
 
 /// check if other info section is all populated
 function checkOtherInfoFields() {
-  var div = 'div-ds-misc-info';
+  var div = 'ds-misc-info';
   var tableCurrentLinks = document.getElementById("table-addl-links")
   var fieldSatisfied = false;
-  for (var i; i<tableCurrentLinks.rows.length; i++) {
+  for (var i=1; i<tableCurrentLinks.rows.length; i++) {
     if (tableCurrentLinks.rows[i].cells[0].innerHTML==="Protocol URL or DOI*") {
       fieldSatisfied = true
     }
   }
   if (fieldSatisfied) {
     document.getElementById(div).className = 'multisteps-form__progress-btn js-active2';
+  } else {
+    document.getElementById(div).className = 'multisteps-form__progress-btn'
   }
 }
 document.querySelector('#ds-dataset-info').addEventListener('click', () => {
@@ -149,7 +150,7 @@ document.querySelector('#button-prev-misc-contributor').addEventListener('click'
 })
 document.querySelector('#button-prev-optional-misc').addEventListener('click', () => {
     document.querySelector('#ds-misc-info').click()
-    // checkFields("ds-optional-info", domStrings.optional)
+    checkFields("ds-optional-info", domStrings.optional)
 })
 
 //next buttons

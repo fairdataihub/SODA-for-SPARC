@@ -3116,7 +3116,7 @@ function refreshAllBfDatasetLists(){
             metadataDatasetlistChange()
             permissionDatasetlistChange()
             postCurationListChange()
-            datasetStatusListChange()  
+            datasetStatusListChange()
         }
       }
     })
