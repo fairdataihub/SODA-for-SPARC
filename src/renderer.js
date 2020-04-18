@@ -801,8 +801,8 @@ function loadAwardData() {
   if (Object.keys(airKeyContent).length === 0) {
     document.getElementById("div-airtable-connect-load-progress").style.display = 'none'
     document.getElementById("div-awards-load-progress").style.display = 'none';
-    document.getElementsByID("para-add-airtable-key-status").style.display = 'block';
-    document.getElementsByID("para-add-airtable-key-status").innerHTML =  "<span style='color: red;'>Please add an API Key to connect to Airtable!></span>"
+    document.getElementById("para-add-airtable-key-status").style.display = 'block';
+    document.getElementById("para-add-airtable-key-status").innerHTML =  "<span style='color: red;'>Please add an API Key to connect to Airtable!</span>"
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>No Airtable API key found! Please connect to Airtable first!</span>";
   } else {
     var airKeyInput = airKeyContent["api-key"]
@@ -825,8 +825,8 @@ function loadAwardData() {
         document.getElementById("div-airtable-connect-load-progress").style.display = "none"
         if (err) {
           document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Failed to load awards from Airtable. Please check your internet connection or API Key.</span>";
-          document.getElementsByID("para-add-airtable-key-status").style.display = 'block';
-          document.getElementsByID("para-add-airtable-key-status").innerHTML =  "<span style='color: red;'>Could not connect to Airtable. Please check your API Key or internet connection and try again!></span>"
+          document.getElementById("para-add-airtable-key-status").style.display = 'block';
+          document.getElementById("para-add-airtable-key-status").innerHTML =  "<span style='color: red;'>Could not connect to Airtable. Please check your API Key or internet connection and try again!</span>"
           log.error(err);
           console.log(err);
           return;
@@ -1088,7 +1088,7 @@ function createCurrentConTable(table) {
     if (contactPersonStatus==="Yes") {
       if (!existingContactPersonStatus) {
         if (!duplicate) {
-          var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+          var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
           document.getElementById("div-current-contributors").style.display = "block"
           return table
         } else {
