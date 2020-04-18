@@ -391,27 +391,18 @@ addAirtableKeyBtn.addEventListener("click", function() {
     path: '/v0/appiYd1Tz9Sv857GZ/sparc_members',
     headers: {'Authorization': `Bearer ${apiKeyInput}`}
   };
-  // const optionsPublicTable = {
-  //   hostname: 'https://airtable.com',
-  //   port: 443,
-  //   path: '/shro9FpzeS7ek48zO',
-  //   headers: {'Authorization': `Bearer ${apiKeyInput}`}
-  // };
   var sparcTableSuccess;
-  // var publicTableSuccess;
   https.get(optionsSparcTable, res => {
     if (res.statusCode === 200) {
-      // sparcTableSuccess = "success"
       /// updating api key in SODA's storage
       createMetadataDir();
       var content = parseJson(airtableConfigPath);
       content["api-key"] = apiKeyInput;
       fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: black;'>Successfully connected to Airtable!" +smileyCan +"</span>";
+      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: black;'>New Airtable key added successfully!" +smileyCan +"</span>";
       document.getElementById('para-save-award-info').innerHTML = ""
       loadAwardData()
     } else if (res.statusCode === 403) {
-        // sparcTableSuccess = "forbidden"
         document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>";
     } else {
         log.error(res)
@@ -427,26 +418,9 @@ addAirtableKeyBtn.addEventListener("click", function() {
     })
   })
     document.getElementById("airtable-api-key").value = ""
-  //// 4 cases that could happen
-  //// Case 1. Users have access to SPARC table and just a random public table (valid api key and valid table id)
-  // if (sparcTableSuccess && publicTableSuccess) {
-  //
-  //   //// Case 2. Users don't have access to SPARC table, but can connect to a random public table (valid api key but not authorized to access table)
-  // } else if (!sparcTableSuccess && publicTableSuccess) {
-  // //// Case 3. Users have access to SPARC table, but cannot connect to a random public table (authorized to access the table, but in the case that the random table doesn't exist anymore)
-  // } else if (sparcTableSuccess && !publicTableSuccess){
-  //     /// updating api key in SODA's storage
-  //     createMetadataDir();
-  //     var content = parseJson(airtableConfigPath);
-  //     content["api-key"] = apiKeyInput;
-  //     fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-  //     document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: black;'>Successfully connected to Airtable!" +smileyCan +"</span>";
-  //     document.getElementById('para-save-award-info').innerHTML = ""
-  //     loadAwardData()
-  // //// Case 4. Users don't access to SPARC table, and cannot connect to a random public table (invalid api key and not authorized to access table)
-  // } else {
-  // }
 })
+
+loadAwardData()
 
 /////////////////////// Download Metadata Templates ////////////////////////////
 templateArray = ["submission.xlsx", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx", "manifest.xlsx"]
@@ -819,12 +793,16 @@ presavedAwardArray1.addEventListener('change', function() {
 // indicate to user that airtable records are being retrieved
 function loadAwardData() {
   document.getElementById("div-awards-load-progress").style.display = 'block'
+  document.getElementById("div-airtable-connect-load-progress").style.display = "block"
   ///// Construct table from data
   var awardResultArray = [];
   ///// config and load live data from Airtable
   var airKeyContent = parseJson(airtableConfigPath)
   if (Object.keys(airKeyContent).length === 0) {
+    document.getElementById("div-airtable-connect-load-progress").style.display = 'none'
     document.getElementById("div-awards-load-progress").style.display = 'none';
+    document.getElementsByID("para-add-airtable-key-status").style.display = 'block';
+    document.getElementsByID("para-add-airtable-key-status").innerHTML =  "<span style='color: red;'>Please add an API Key to connect to Airtable!></span>"
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>No Airtable API key found! Please connect to Airtable first!</span>";
   } else {
     var airKeyInput = airKeyContent["api-key"]
@@ -844,8 +822,11 @@ function loadAwardData() {
     },
     function done(err) {
         document.getElementById("div-awards-load-progress").style.display = 'none';
+        document.getElementById("div-airtable-connect-load-progress").style.display = "none"
         if (err) {
           document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Failed to load awards from Airtable. Please check your internet connection or API Key.</span>";
+          document.getElementsByID("para-add-airtable-key-status").style.display = 'block';
+          document.getElementsByID("para-add-airtable-key-status").innerHTML =  "<span style='color: red;'>Could not connect to Airtable. Please check your API Key or internet connection and try again!></span>"
           log.error(err);
           console.log(err);
           return;
@@ -864,7 +845,6 @@ function loadAwardData() {
     });
   }
 }
-loadAwardData()
 
 ///////////////// //////////////// //////////////// ////////////////
 ///////////////////////Submission file //////////////// ////////////////
@@ -1285,6 +1265,17 @@ function emptyInfoEntries(element) {
   }
   return fieldSatisfied
 }
+function contactPersonCheck() {
+  var contactPersonExists = false;
+  var rowcount = currentConTable.rows.length
+  for (var i=0; i<rowcount;i++){
+    if (currentConTable.rows[i].cells[4].innerHTML==="Yes") {
+      contactPersonExists = true
+      break
+    }
+  }
+  return contactPersonExists
+}
 
 function grabDSInfoEntries() {
   var name = datasetDescriptionFileDataset.options[datasetDescriptionFileDataset.selectedIndex].value;
@@ -1397,11 +1388,9 @@ generateDSBtn.addEventListener('click', (event) => {
   var dsEmpty = emptyDSInfoEntries()
   var conEmpty = emptyInfoEntries(funding)
   var protocolEmpty = emptyLinkInfo()
+  var contactPersonExists = contactPersonCheck()
   var contributorNumber = currentConTable.rows.length
-  // if (protocolEmpty) {
-  //   document.getElementById("para-generate-description-status").innerHTML = "<span style='color:red'>Please include at least one Protocol URL or DOI to generate!</span>"
-  // }
-  if (!dsEmpty || !conEmpty || !protocolEmpty || contributorNumber===1) {
+  if (!dsEmpty || !contactPersonExists || !conEmpty || !protocolEmpty || contributorNumber===1) {
       document.getElementById("para-generate-description-status").innerHTML = "<span style='color:red'>Please fill in all required fields (*)!</span>"
   } else {
     document.getElementById("para-generate-description-status").innerHTML = ""
