@@ -768,6 +768,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         if jsonpath[folders] != []:
             for path in jsonpath[folders]:
                 if exists(path):
+
                     if isfile(path):
                         mypathsize =  getsize(path)
                         if mypathsize == 0:
@@ -776,21 +777,33 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                         else:
                             total_dataset_size += mypathsize
                     else:
-                        for path, dirs, files in walk(path):
-                            for f in files:
-                                fp = join(path, f)
-                                mypathsize =  getsize(fp)
-                                if mypathsize == 0:
-                                    c += 1
-                                    error = error + path + ' is 0 KB <br>'
-                                else:
-                                    total_dataset_size += mypathsize
+
+                        myfoldersize = folder_size(path) 
+                        if myfoldersize == 0:
+                            c += 1
+                            error = error + path + ' is empty <br>'
+                        else:
+                            for path, dirs, files in walk(path):
+                                for f in files:
+                                    fp = join(path, f)
+                                    mypathsize =  getsize(fp)
+                                    if mypathsize == 0:
+                                        c += 1
+                                        error = error + fp + ' is 0 KB <br>'
+                                    else:
+                                        total_dataset_size += mypathsize
+                                for d in dirs:
+                                    dp = join(path,d)
+                                    myfoldersize = folder_size(dp) 
+                                    if myfoldersize == 0:
+                                        c += 1
+                                        error = error + dp + ' is empty <br>'
                 else:
                     c += 1
                     error = error + path + ' does not exist <br>'
 
     if c > 0:
-        error = error + '<br>Please remove invalid paths'
+        error = error + '<br>Please remove invalid files/folders from your dataset and try again'
         curatestatus = 'Done'
         raise Exception(error)
 
@@ -1365,15 +1378,21 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                 mypathsize = getsize(fp)
                 if mypathsize == 0:
                     c += 1
-                    error = error + path + ' is 0 KB <br>'
+                    error = error + fp + ' is 0 KB <br>'
                 else:
                     total_file_size += mypathsize
+            for d in dirs:
+                dp = join(path,d)
+                myfoldersize = folder_size(dp) 
+                if myfoldersize == 0:
+                    c += 1
+                    error = error + dp + ' is empty <br>'
     except Exception as e:
         raise e
 
     if c>0:
         submitdatastatus = 'Done'
-        error = error + '<br>Please remove invalid files from your dataset'
+        error = error + '<br>Please remove invalid files/folders from your dataset before uploading'
         raise Exception(error)
 
     total_file_size = total_file_size - 1
