@@ -92,11 +92,17 @@ function checkFieldsContributors() {
   var award = document.getElementById('ds-description-award-list').options[document.getElementById('ds-description-award-list').selectedIndex]
   var tableCurrentCon = document.getElementById("table-current-contributors")
   var empty = false
+  var contactPersonExists = false
   /// check for empty award
   if (award.value==="Select") {
     empty = true
   }
-  if (!empty && tableCurrentCon.rows.length>1) {
+  for (var i=0;i<tableCurrentCon.rows.length;i++) {
+    if (tableCurrentCon.rows[i].cells[4]==="Yes") {
+      contactPersonExists = true
+    }
+  }
+  if (!empty && contactPersonExists && tableCurrentCon.rows.length>1) {
     document.getElementById(div).className = 'multisteps-form__progress-btn js-active2';
   }
 }

@@ -113,6 +113,11 @@ function initialize () {
             if (response === 0) { // Runs the following if 'Yes' is clicked
                 app.showExitPrompt = false
                 mainWindow.close()
+                /// feedback form iframe prevents closing gracefully
+                /// so force close
+                if (!mainWindow.closed) {
+                  mainWindow.destroy()
+                }
             }
         })
     }

@@ -980,7 +980,7 @@ var otherFundingInput = document.getElementById('ds-other-funding'),
 })
 var contributorRoles = document.getElementById("input-con-role"),
   currentContributortagify = new Tagify(contributorRoles, {
-    whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "ContactPerson", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+    whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
     dropdown : {
         classname : "color-blue",
         enabled   : 0,         // show the dropdown immediately on focus
@@ -1088,6 +1088,7 @@ function createCurrentConTable(table) {
     if (contactPersonStatus==="Yes") {
       if (!existingContactPersonStatus) {
         if (!duplicate) {
+          roleVal.push("ContactPerson");
           var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
           document.getElementById("div-current-contributors").style.display = "block"
           return table
@@ -1385,15 +1386,31 @@ datasetDescriptionFileDataset.addEventListener("change", function() {
 generateDSBtn.addEventListener('click', (event) => {
   //// check if any field is left empty
   var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value
-  var dsEmpty = emptyDSInfoEntries()
-  var conEmpty = emptyInfoEntries(funding)
-  var protocolEmpty = emptyLinkInfo()
+  var dsSatisfied = emptyDSInfoEntries()
+  var conSatisfied = emptyInfoEntries(funding)
+  var protocolSatisfied = emptyLinkInfo()
   var contactPersonExists = contactPersonCheck()
   var contributorNumber = currentConTable.rows.length
-  if (!dsEmpty || !contactPersonExists || !conEmpty || !protocolEmpty || contributorNumber===1) {
-      document.getElementById("para-generate-description-status").innerHTML = "<span style='color:red'>Please fill in all required fields (*)!</span>"
+
+  var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied, contactPersonExists]
+  var emptyMessageArray = ["Please fill in all required fields under Dataset Info section!", "Please fill in all required fields under Contributor Info section!", "Please add at least one protocol url!", "Please add least one contact person!"]
+  var allFieldsSatisfied = true;
+  errorMessage = "<span style='color:red'>"
+  for (var i=0;i<emptyArray.length;i++) {
+    if (!emptyArray[i]) {
+      allFieldsSatisfied = false;
+      errorMessage += emptyMessageArray[i] + "<br>"
+    }
+  }
+  if (contributorNumber===1) {
+    allFieldsSatisfied = false
+    errorMessage += "Please add at least one contributor!"
+  }
+  if (allFieldsSatisfied===false) {
+    document.getElementById("para-big-error-message-ds-description").innerHTML = errorMessage + "</span>"
   } else {
-    document.getElementById("para-generate-description-status").innerHTML = ""
+    document.getElementById("para-big-error-message-ds-description").innerHTML = ""
+    document.getElementById("para-big-error-message-ds-description").style.display = "none"
     ipcRenderer.send('open-folder-dialog-save-ds-description',"dataset_description.xlsx")
   }
 })
@@ -1435,6 +1452,8 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
         json_str_con = JSON.stringify(contributorObj);
 
         /// call python function to save file
+        document.getElementById("para-generate-description-status").style.display = "block"
+        document.getElementById("para-big-error-message-ds-description").style.display = "none"
         if (dirpath != null){
           client.invoke("api_save_ds_description_file", destinationPath, json_str_ds, json_str_misc, json_str_completeness, json_str_con, (error, res) => {
             if(error) {
