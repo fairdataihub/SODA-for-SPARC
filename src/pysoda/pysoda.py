@@ -778,7 +778,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                             total_dataset_size += mypathsize
                     else:
 
-                        myfoldersize = folder_size(path) 
+                        myfoldersize = folder_size(path)
                         if myfoldersize == 0:
                             c += 1
                             error = error + path + ' is empty <br>'
@@ -794,7 +794,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                                         total_dataset_size += mypathsize
                                 for d in dirs:
                                     dp = join(path,d)
-                                    myfoldersize = folder_size(dp) 
+                                    myfoldersize = folder_size(dp)
                                     if myfoldersize == 0:
                                         c += 1
                                         error = error + dp + ' is empty <br>'
@@ -1383,7 +1383,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                     total_file_size += mypathsize
             for d in dirs:
                 dp = join(path,d)
-                myfoldersize = folder_size(dp) 
+                myfoldersize = folder_size(dp)
                 if myfoldersize == 0:
                     c += 1
                     error = error + dp + ' is empty <br>'

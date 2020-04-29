@@ -1,5 +1,5 @@
 '''
-This code validates the proposed folder structure and files 
+This code validates the proposed folder structure and files
 against the schema required by the SPARC curation team.
 Note that since this code is separate from the code used
 the the SPARC curation team that automatically checks similar
@@ -17,7 +17,7 @@ The code checks the following items:
 8. Check that all csv starts at first row and xlsx files start at (0,0) (completed)
 9. Check that all csv files are UTF-8 encoded. (completed)
 10. Check that all csv/xlsx files do not have any blank rows (completed)
-11. Check that the subjects and sample files have the mandatory column headings and they are in the 
+11. Check that the subjects and sample files have the mandatory column headings and they are in the
     right order (completed)
 12. Check that mandatory fields are populated for each subject/sample (completed)
 13. Check that the number of samples is the same in the dataset_description and samples files
@@ -39,7 +39,7 @@ fileExtension - the file extension
 
 code I/O:
 input: path to the folder selected by the user
-output: list of fatal errors and/or warnings, flags that signal whether the 
+output: list of fatal errors and/or warnings, flags that signal whether the
         folder organization and naming, file naming, and position of manifest
         files is correct.
 
@@ -147,7 +147,7 @@ class dictValidator():
             if os.path.isfile(rootFolder+"/"+c):
                 if c == self.reqFileNames[0] or c == self.reqFileNames[1]:  #dataset_description
                     dd = 1
-                elif c == self.reqFileNames[2] or c == self.reqFileNames[3]:   #subjects 
+                elif c == self.reqFileNames[2] or c == self.reqFileNames[3]:   #subjects
                     subj = 1
                 elif c == self.reqFileNames[4] or c == self.reqFileNames[5]:   #samples
                     sam = 1
@@ -178,7 +178,7 @@ class dictValidator():
 
         # check that that there is at least the minimum number of files
         checksumRootFiles = dd+subj+sam+subm
-        if checksumRootFiles >= 3:  
+        if checksumRootFiles >= 3:
             rootFilePass = 1
 
         return rootFilePass, man, dd  #pass back if a manifest file is in the root directory as well
@@ -236,7 +236,7 @@ class dictValidator():
         numManifest = 0  # number of manifest files found
         manVector = []
         # rootMan is a flag signalling that a manifest file was found in the root dir
-    
+
         # if a manifest file is in the root dir, it was detected in check_req_files
         if rootMan == 1:
             manPass = 1
@@ -248,12 +248,12 @@ class dictValidator():
                     if c in self.reqManifest:
                         numManifest = numManifest + 1
                         manVector.append("1")
-               
+
             #print(manVector, len(terminal))
             if len(manVector) == len(terminal):
-                manPass = 1 
+                manPass = 1
             else:
-                fatal.append("Missing manifest file: check each terminal folder.")
+                self.fatal.append("Missing manifest file: check each terminal folder.")
 
 
         return manPass, numManifest
@@ -270,7 +270,7 @@ class dictValidator():
     def read_row_1value_csv(self, f, name):
         valOut = 0
         # this opens a csv file that has the variable name as the first element in a row
-        # and returns the 2nd item in the row as the value.  In some cases it may be necessary 
+        # and returns the 2nd item in the row as the value.  In some cases it may be necessary
         # to return a list of values if the item has multiple values, then this will have
         # to be modified.
         with open(f) as csvFile:
@@ -296,11 +296,9 @@ class dictValidator():
         return valOut
 
 
-
-
     def  read_row_1value_xlsx(self, f, name):
-        # this opens an xlsx file, finds the variable name in the first column and 
-        # extracts the value from the next column, same row.  Does not look for 
+        # this opens an xlsx file, finds the variable name in the first column and
+        # extracts the value from the next column, same row.  Does not look for
         # multiple values in the row.
         valOut = 0
         workbook = xlrd.open_workbook(f)
@@ -318,7 +316,7 @@ class dictValidator():
         # this returns the number of rows -1 (for subjects file only)
         valOut = 0
         workbook = xlrd.open_workbook(f)
-        worksheet = workbook.sheet_by_index(0)   
+        worksheet = workbook.sheet_by_index(0)
         rowCount = worksheet.nrows
         valOut = rowCount - 1 #assume that the first row contains the headings
 
@@ -328,7 +326,7 @@ class dictValidator():
 
     def check_num_subjects(self, numSubjFolders, rootFolder, rootDD):
 
-        # this checks that the number of subject folders is the same as the value given in 
+        # this checks that the number of subject folders is the same as the value given in
         # dataset_description and in the subjects file.
 
         checkNumSubjDD = 0
@@ -363,7 +361,7 @@ class dictValidator():
                             #print(numSubjS)
                         if fileExtension == ".xlsx":
                             numSubjS = self.find_num_rows_xlsx(fullFilePath)
-                    
+
         if numSubjDD == numSubjFolders:
             checkNumSubjDD = 1
         else:
@@ -415,8 +413,6 @@ class dictValidator():
 
         return fileSizeCheck
 
-
-
     def check_file_start(self, fPathList):
         # checks to make sure that file starts at first row (csv) or (0,0) (xlsx)
         startOkCheck = 0
@@ -447,7 +443,7 @@ class dictValidator():
 
     def check_csv_utf8(self, fPathList):
         # checks that all csv files are UTF-8 encoded
-        # since looping through the files a "0" means that at least 
+        # since looping through the files a "0" means that at least
         # one file was not UTF-8, and which one(s) is/are recorded
         # in the warnings.
         utf8Check = 1
@@ -456,18 +452,18 @@ class dictValidator():
             fileNamePath, fileExtension = os.path.splitext(f)
 
             if fileExtension == ".csv":
-                # this is another way to do it, but it passes test files 
+                # this is another way to do it, but it passes test files
                 # that chardet says are ascii, rather than utf-8
                 #try:
                 #    fd=open(f, encoding='utf-8', errors='strict')
                 #except UnicodeDecodeError:
                 #    utf8Check = 0
                 #    warnings.append("The file {} is not encoded using UTF-8".format(f))
- 
+
                 # open the file as binary; join some lines together and pass to chardet
                 # chardet returns a dictionary with the key <encoding> giving what we want
                 with open(f, 'rb') as fd:
-                    # Join binary lines for specified number of lines; 
+                    # Join binary lines for specified number of lines;
                     rawdata = b''.join([fd.readline() for _ in range(3)])
                     #print(chardet.detect(rawdata)['encoding'])
                     if chardet.detect(rawdata)['encoding'] != 'utf-8':
@@ -532,7 +528,7 @@ class dictValidator():
 
     def generic_check_cols(self, cols, fileNamePath, fileExtension):
         # this is called by check_req_file_cols to do the actual checking
-        # this is checking that there are at least the required number of columns, 
+        # this is checking that there are at least the required number of columns,
         # that the required column headings are present and in the right order
         # check_req_file_cols loops through all existing files and gets the file extension
 
@@ -548,7 +544,7 @@ class dictValidator():
                 csvReader = csv.reader(csvFile, delimiter=',')
                 row0 = next(csvReader)
                 if len(row0) == len(cols):
-                    colsLenCheck = 1 
+                    colsLenCheck = 1
                     for i in cols:
                         if i == row0[count]:
                             subjColsVec.append(1)
@@ -556,7 +552,7 @@ class dictValidator():
                             subjColsVec.append(0)
                     count += 1
                 elif len(row0) > len(cols):  #if there are more cols than required that is fine
-                    colsLenCheck = 1 
+                    colsLenCheck = 1
                 else:
                     colsLenCheck = 0         #existing cols are LT required = some missing
 
@@ -565,7 +561,7 @@ class dictValidator():
             workbook = xlrd.open_workbook(fileNamePath+fileExtension)
             worksheet = workbook.sheet_by_index(0)
             if worksheet.ncols == len(cols):
-                colsLenCheck = 1 
+                colsLenCheck = 1
                 for c in cols:
                     if c == worksheet.cell_value(count,0):
                         colsVec.append(1)
@@ -573,7 +569,7 @@ class dictValidator():
                     else:
                         colsVec.append(0)
             elif worksheet.ncols > len(cols):  #if there are more cols than required that is fine
-                colsLenCheck = 1 
+                colsLenCheck = 1
             else:
                 colsLenCheck = 0         #existing cols are LT required = some missing
 
@@ -587,17 +583,17 @@ class dictValidator():
 
 
     def check_row_values(self, cols, fileNamePath, fileExtension):
-        # this is called by check_req_file_cols to do the actual checking 
-        # this is checking that the required columns have values in req columns for each subject 
+        # this is called by check_req_file_cols to do the actual checking
+        # this is checking that the required columns have values in req columns for each subject
 
         rowsValCheck = 0
         rowVals = []
         colsVec = []
 
         # here I use the number of subject folders as the gold standard.  I've
-        # already checked whether the 3 places where the number of subjects is 
+        # already checked whether the 3 places where the number of subjects is
         # recorded are the same or not. Problem is that each can be wrong, so have
-        # to choose something.  
+        # to choose something.
 
         # if this is a csv file
         if fileExtension == ".csv":
@@ -641,14 +637,14 @@ class dictValidator():
 
 
     def check_req_file_cols(self, fPathList):
-        # Checks to that the col headings in the required subjects/samples files are 
+        # Checks to that the col headings in the required subjects/samples files are
         # present, spelled correctly and in correct order
         # Then checks that mandatory fields are populated for each subject
         # Files can be either in csv or xlsx format.
         colsCheck = 1
         subjFlag = 0
         samFlag = 0
-        subjectsFile = 0 
+        subjectsFile = 0
         samplesFile = 0
 
         for f in fPathList:
@@ -665,7 +661,7 @@ class dictValidator():
                 samColsLenCheck, samColsCheck = self.generic_check_cols(cols, fileNamePath, fileExtension)
             else:
                 pass
-                
+
         # check status flags and return result; only check relevant flags
         if subjectsFile:
             if subjColsLenCheck == 0:
@@ -696,12 +692,12 @@ class dictValidator():
         # with the number found from the number of folders
         subjects = []
         samples = []
-        # dict of number of samples for each subject; can't use a list 
+        # dict of number of samples for each subject; can't use a list
         # since using set to find unique subjects and that's unordered
-        numSamFile = {}  
+        numSamFile = {}
         fileNamePath, fileExtension = os.path.splitext(filePath)
 
-        # open file and find put 0th (subject_id) and 1st (sample_id) values in a list 
+        # open file and find put 0th (subject_id) and 1st (sample_id) values in a list
         if fileExtension == ".csv":
             with open(filePath) as csvFile:
                 csvReader = csv.reader(csvFile, delimiter=',')
@@ -715,7 +711,7 @@ class dictValidator():
             for row in range(worksheet.nrows):
                 subjects.append(worksheet.cell_value(row,0))
                 samples.append(worksheet.cell_value(row,1))
-                    
+
         # find how many samples per subject
         # discard the column headings, which are first item in list
         subjects.pop(0)
@@ -738,7 +734,7 @@ class dictValidator():
 
     def find_num_sample_folders(self, rootFolder):
         # This module goes into each subject folder and finds the number of sample
-        # folders within. Returns a dict in which each element is the number 
+        # folders within. Returns a dict in which each element is the number
         # of sample folders (value) for each subject folder (key)
 
         # find number of subject directories in the primary folder
@@ -747,10 +743,10 @@ class dictValidator():
         # and value = number
 
         subjFolders = []
-        numSamFolders = {} 
+        numSamFolders = {}
 
-        # check to see if there is a samples file, which means that there 
-        # should be samples sub-folders 
+        # check to see if there is a samples file, which means that there
+        # should be samples sub-folders
         allContents = os.listdir(rootFolder)
         # continue only if there is a samples file
         if "samples.xlsx" or "samples.csv" in allContents:
@@ -794,7 +790,7 @@ class dictValidator():
         # 3) the dataset description file
 
         # this module finds the number of samples from the dataset description file and then
-        # calls read_samples_file and find_num_samples_folders to get the dicts that contain 
+        # calls read_samples_file and find_num_samples_folders to get the dicts that contain
         # the number of samples/subject and then compares each of those instances
 
         numSamDD = 0
@@ -816,7 +812,7 @@ class dictValidator():
                     # find the filename w/o path or extension
                     fileName = self.path_leaf(fileName1)
                     # find the number of samples from the dataset description file
-                    # I'm assuming that the number of samples given in the DD file  
+                    # I'm assuming that the number of samples given in the DD file
                     # is the TOTAL number of samples
                     if fileName == "dataset_description":
                         if fileExtension == ".csv":
@@ -913,7 +909,7 @@ def main():
     fileSizeCheck = validator.check_file_size(fPathList)
     print("Does this dataset contain empty files? = "+str(fileSizeCheck))
 
-    #check for DS.STORE files 
+    #check for DS.STORE files
     dsStoreCheck = validator.check_ds_store(fPathList)
     print("Does this dataset contain a DS.STORE file? = "+str(dsStoreCheck))
 

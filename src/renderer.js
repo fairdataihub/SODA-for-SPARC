@@ -59,7 +59,7 @@ const appVersion = window.require('electron').remote.app.getVersion()
 log.info("Current SODA version:", appVersion)
 console.log("Current SODA version:", appVersion)
 
-//check user's internet connection abd connect to default Blackfynn account //
+//check user's internet connection and connect to default Blackfynn account //
 require('dns').resolve('www.google.com', function(err) {
   if (err) {
      console.error("No internet connection");
