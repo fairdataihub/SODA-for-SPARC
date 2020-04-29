@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
+import logging
+
 from gevent import monkey; monkey.patch_all()
 import platform
 import os
@@ -67,6 +69,12 @@ DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
 
+logging.basicConfig(level=logging.DEBUG, filename=os.path.join(os.path.expanduser("~"), f"{__name__}.log"))
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(os.path.join(os.path.expanduser("~"), f"{__name__}.log"))
+handler.setLevel(logging.DEBUG)
+logger.addHandler(handler)
 
 ### Internal functions
 def open_file(file_path):
@@ -1295,7 +1303,6 @@ def clear_queue():
 
 
 def agent_running():
-    logger = get_logger('blackfynn.agent')
     listen_port = 11235
 
     try:
@@ -1311,8 +1318,6 @@ def agent_running():
             raise
     else:
         raise AgentError("The Blackfynn agent is already running. Please go to your Task Manager/Activity Monitor to stop any running blackfynn_agent processes and try again")
-
-    socket_address(listen_port)
 
 
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
