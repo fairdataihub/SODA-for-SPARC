@@ -60,36 +60,29 @@ import ntpath
 import chardet
 import re
 
-class dictValidator():
+class DictValidator:
+    reqFolderNames = ['primary', 'sub']
+    optFolderNames = ['samples', 'code', 'derivatives', 'docs', 'protocol']
+    optSubfolderNames = ['anat', 'ephys', 'microscopy', 'rna-seq', 'mri']
+    reqFileNames = ['dataset_description.xlsx', 'dataset_description.csv', 'subjects.csv', 'subjects.xlsx', 'samples.xlsx', 'samples.xlsx', 'submission.xlsx', 'submission.csv']
+    reqManifest = ['manifest.xlsx', 'manifest.csv']
+    optFileNames = ['README.txt', 'CHANGES.txt']
+    submissionRows = ['SPARC Award number', 'Milestone achieved', 'Milestone completion date']
+    reqFiles = ['dataset_description', 'subjects', 'samples', 'submission']
+    subjCols = ['subject_id', 'pool_id', 'experimental group', 'age', 'sex', 'species', 'strain', 'Organism RRID']
+    samCols = ['subject_id', 'sample_id', 'wasDerivedFromSample', 'pool_id', 'experimental group']
 
     def __init__(self):
+        self.fatal = []
+        self.warnings = []
 
-        self.reqFolderNames = ['primary', 'sub']
-
-        self.optFolderNames = ['samples', 'code', 'derivatives', 'docs', 'protocol']
-
-        self.optSubfolderNames = ['anat', 'ephys', 'microscopy', 'rna-seq', 'mri']
-
-        self.reqFileNames = ['dataset_description.xlsx', 'dataset_description.csv', 'subjects.csv', 'subjects.xlsx', 'samples.xlsx', 'samples.xlsx', 'submission.xlsx', 'submission.csv']
-
-        self.reqManifest = ['manifest.xlsx', 'manifest.csv']
-
-        self.optFileNames = ['README.txt', 'CHANGES.txt']
-
-        self.submissionRows = ['SPARC Award number', 'Milestone achieved', 'Milestone completion date']
-
-        self.reqFiles = ['dataset_description', 'subjects', 'samples', 'submission']
-
-        self.subjCols = ['subject_id', 'pool_id', 'experimental group', 'age', 'sex', 'species', 'strain', 'Organism RRID']
-
-        self.samCols = ['subject_id', 'sample_id', 'wasDerivedFromSample', 'pool_id', 'experimental group']
-
-    
     def get_files_folders(self,path):
-        # gets a list of the files and folders in the path of the root directory 
-        # fPathList is a list of the files including the path
-        # fList is the list of the filenames only
-        # dPathList is the list of directories including the path
+        """
+        gets a list of the files and folders in the path of the root directory
+        fPathList is a list of the files including the path
+        fList is the list of the filenames only
+        dPathList is the list of directories including the path
+        """
         fList = []
         fPathList = []
         dPathList = []
@@ -104,7 +97,7 @@ class dictValidator():
 
         #print(fList)
 
-        return dPathList[0], fList, fPathList, dPathList
+        return [dPathList[0], fList, fPathList, dPathList]
 
 
 
@@ -162,19 +155,19 @@ class dictValidator():
                     if os.path.isdir(rootFolder+"/"+c):
                         pass
                     else:
-                        warnings.append(rootFolder+"/"+c+" is an unknown file.")
+                        self.warnings.append(rootFolder+"/"+c+" is an unknown file.")
                 #print(c,dd,subj,sam,subm,man,rd,w)
 
         if not dd:
-            fatal.append("This dataset is missing the dataset_description file.")
+            self.fatal.append("This dataset is missing the dataset_description file.")
         if (not subj) and (not sam):
-            fatal.append("This dataset must contain a subjects or samples file.")
+            self.fatal.append("This dataset must contain a subjects or samples file.")
         if not subm:
-            fatal.append("This dataset is missing the submissions file.")
+            self.fatal.append("This dataset is missing the submissions file.")
         if not man:
-            warnings.append("This dataset is missing a manifest file in the root folder. Will check in sub-folders...")
+            self.warnings.append("This dataset is missing a manifest file in the root folder. Will check in sub-folders...")
         if not rd:
-            warnings.append("This dataset is missing an optional README and CHANGES file in the root folder. Will check in sub-folders...")
+            self.warnings.append("This dataset is missing an optional README and CHANGES file in the root folder. Will check in sub-folders...")
 
         # check that that there is at least the minimum number of files
         checksumRootFiles = dd+subj+sam+subm
@@ -185,48 +178,6 @@ class dictValidator():
 
 
 
-    def check_for_req_folders(self, rootFolder):
-        s = 0
-        p = 0
-        o = 0
-        w = 0
-        numSubjFolders = 0
-        rootFolderPass = 0
-
-        # first check for req and optional folders at the root level
-        allContents = os.listdir(rootFolder)
-
-        for c in allContents:
-            if os.path.isdir(rootFolder+"/"+c):
-                if c == self.reqFolderNames[0]:   #primary folder
-                    p = 1
-                    # check for subjects and/or samples
-                    pContents = os.listdir(rootFolder+"/"+c)
-                    for pc in pContents:
-                        if self.reqFolderNames[1] in pc:
-                            s = 1
-                            numSubjFolders += 1
-                elif c in self.optFolderNames:   #check for optional folders
-                    o = 1
-                else:      #non-standard folders are present
-                    w = 1
-                #print(c,p,o,s,w)
-                #print('numSubj = '+str(numSubjFolders))
-
-        if not p:
-            fatal.append("This dataset is missing the 'primary' folder.")
-        if not s:
-            fatal.append("This dataset is must contain either a 'subjects' or 'samples' folder.")
-        if not o:
-            warnings.append("This dataset contains no optional folders.")
-        if w:
-            warnings.append("This dataset contains non-standard folder names.")
-
-        checksumRootFolders = p+s
-        if checksumRootFolders == 2:  # check for req folders
-            rootFolderPass = 1
-
-        return rootFolderPass, numSubjFolders
 
 
 
@@ -365,12 +316,12 @@ class dictValidator():
         if numSubjDD == numSubjFolders:
             checkNumSubjDD = 1
         else:
-            fatal.append("The # of subjects in dataset_description doesn't match the # of subject folders")
+            self.fatal.append("The # of subjects in dataset_description doesn't match the # of subject folders")
 
         if numSubjS  == numSubjFolders:
             checkNumSubjS = 1
         else:
-            fatal.append("The # of subjects in subjects file doesn't match the # of subject folders")
+            self.fatal.append("The # of subjects in subjects file doesn't match the # of subject folders")
 
         return checkNumSubjDD, checkNumSubjS, numSubjDD, numSubjS, numSubjFolders
 
@@ -385,7 +336,14 @@ class dictValidator():
                 warnings.append("The folder {} is an empty folder".format(d))
                 emptyFolderPass = 1
 
-        return emptyFolderPass
+        if not p:
+            self.fatal.append("This dataset is missing the 'primary' folder.")
+        if not s:
+            self.fatal.append("This dataset is must contain either a 'subjects' or 'samples' folder.")
+        if not o:
+            self.warnings.append("This dataset contains no optional folders.")
+        if w:
+            self.warnings.append("This dataset contains non-standard folder names.")
 
 
 
@@ -395,20 +353,19 @@ class dictValidator():
 
         for f in fPathList:
             if "DS.STORE" in f:
-                warnings.append("A DS.STORE file exists in this dataset.  Please remove {} and re-validate".format(f))
+                self.warnings.append("A DS.STORE file exists in this dataset.  Please remove {} and re-validate".format(f))
                 dsStoreCheck = 1
 
         return dsStoreCheck
 
-
-
+    ## no empty files
     def check_file_size(self, fPathList):
     # detects the presence of empty (zero size) files
         fileSizeCheck = 0
 
         for f in fPathList:
             if os.path.getsize(f) == 0:
-                fatal.append("{} is an empty file.  Please remove and re-validate".format(f))
+                self.fatal.append("{} is an empty file.  Please remove and re-validate".format(f))
                 fileSizeCheck = 1
 
         return fileSizeCheck
@@ -427,7 +384,7 @@ class dictValidator():
                     if row0:
                         startOkCheck = 1
                     else:
-                        fatal.append("The file {} has an empty first row. Please remove empty row and revalidate.".format(f))
+                        self.fatal.append("The file {} has an empty first row. Please remove empty row and revalidate.".format(f))
 
             if fileExtension == ".xlsx":
                 workbook = xlrd.open_workbook(f)
@@ -435,7 +392,7 @@ class dictValidator():
                 if worksheet.cell_value(0,0):
                     startOkCheck = 1
                 else:
-                    fatal.append("The file {} does not start at (0,0). Please fix and revalidate.".format(f))
+                    self.fatal.append("The file {} does not start at (0,0). Please fix and revalidate.".format(f))
 
             return startOkCheck
 
@@ -468,8 +425,8 @@ class dictValidator():
                     #print(chardet.detect(rawdata)['encoding'])
                     if chardet.detect(rawdata)['encoding'] != 'utf-8':
                         utf8Check = 0
-                        warnings.append("The file {} is not encoded using UTF-8".format(f))
-        
+                        self.warnings.append("The file {} is not encoded using UTF-8".format(f))
+
         return utf8Check
 
 
@@ -518,7 +475,7 @@ class dictValidator():
             testVec = [1,0,1]  # I've already checked that 1st row is not zero in check_file_start
             if testVec in lineVector:
                 skpRowCheck = 1
-                warnings.append("There is a blank row in {}. Please correct and revalidate".format(f))
+                self.warnings.append("There is a blank row in {}. Please correct and revalidate".format(f))
             else:
                 skipRowCheck = 0
 
@@ -611,7 +568,7 @@ class dictValidator():
                 b = 0
                 if b in rowVals:
                     rowsValCheck = 0  #existing cols are LT the number required
-                    warning.append("The file {} is missing row values in required columns.".format(fileNamePath+fileExtension))
+                    self.warnings.append("The file {} is missing row values in required columns.".format(fileNamePath+fileExtension))
                 else:
                     rowsValCheck = 1  # all rows are ok
 
@@ -623,10 +580,10 @@ class dictValidator():
             for c in range(worksheet.ncols):
                 for r in range(worksheet.nrows): #FIX this should really be num of subjects, but which?
                     if worksheet.cell_value(r,c):  #CHECK is this (row, col) order?
-                        colsVec.append(1)  # we don't care what the value is, just that it's there 
+                        colsVec.append(1)  # we don't care what the value is, just that it's there
                     else:
                         colsVec.append(0)
-                        warning.append("The file {} is missing row values in required columns.".format(fileNamePath+fileExtension))
+                        self.warnings.append("The file {} is missing row values in required columns.".format(fileNamePath+fileExtension))
         # collect checking flags and return results
         m = 0
         if m in colsVec:
@@ -665,14 +622,14 @@ class dictValidator():
         # check status flags and return result; only check relevant flags
         if subjectsFile:
             if subjColsLenCheck == 0:
-                fatal.append("The subjects file does not contain all of the required columns. Please remediate and revalidate.")
+                self.fatal.append("The subjects file does not contain all of the required columns. Please remediate and revalidate.")
             if subjColsCheck == 0:
-                fatal.append("The subjects file column headings do not match the required headings or are in the wrong order. Please remediate and revalidate.")
+                self.fatal.append("The subjects file column headings do not match the required headings or are in the wrong order. Please remediate and revalidate.")
         if samplesFile:
             if samColsLenCheck == 0:
-                fatal.append("The samples file does not contain all of the required columns. Please remediate and revalidate.")
+                self.fatal.append("The samples file does not contain all of the required columns. Please remediate and revalidate.")
             if samColsCheck == 0:
-                fatal.append("The samples file column headings do not match the required headings or are in the wrong order. Please remediate and revalidate.")
+                self.fatal.append("The samples file column headings do not match the required headings or are in the wrong order. Please remediate and revalidate.")
 
         # set the variables that are not applicable to the current dataset to "NA"
         if subjectsFile == 0:
@@ -774,9 +731,9 @@ class dictValidator():
                     numSamFolders[folderName] = count
                 #print("numSamFolders = {}".format(numSamFolders))
             else:
-                fatal.append("No primary folder found in top-level directory.")
+                self.fatal.append("No primary folder found in top-level directory.")
         else:
-            warning.append("No samples file found. If this is incorrect, please check filename and revalidate.")
+            self.warnings.append("No samples file found. If this is incorrect, please check filename and revalidate.")
 
         return numSamFolders
 
@@ -845,46 +802,37 @@ class dictValidator():
             if numSamDD == totalFol:
                 checkSamFolDD = 1
             else:
-                fatal.append("The # of samples reported in the dataset_description file doesn't match the # of sample folders")
+                self.fatal.append("The # of samples reported in the dataset_description file doesn't match the # of sample folders")
 
             if numSamDD == totalFil:
                 checkSamFilDD = 1
             else:
-                fatal.append("The # of samples reported in the dataset_description file doesn't match the # of samples reported in the samples file")
+                self.fatal.append("The # of samples reported in the dataset_description file doesn't match the # of samples reported in the samples file")
 
             if totalFil == totalFol:
                 checkSamFilFol = 1
             else:
-                fatal.append("The # of samples reported in the samples file doesn't match the # of sample folders")
+                self.fatal.append("The # of samples reported in the samples file doesn't match the # of sample folders")
 
 
         else:
-            fatal.append("Checking number of samples, no dataset_description file found.")
+            self.fatal.append("Checking number of samples, no dataset_description file found.")
 
         return checkSamFolDD, checkSamFilDD, checkSamFilFol
 
 
+def main(vPath):
+    validator = DictValidator()
 
-
-def main():
-
-    global warnings, fatal
-
-    warnings = []
-    fatal = []
-
-    #hard code the path to the top-level directory for now; in reality this will be passed in
-    #vPath = "/home/karl/Work/SPARC/test_data_new"
-    vPath = "/home/karl/Work/SPARC/test_data_new_xlsx"
-
-    validator = dictValidator()
-
+    ###### GRAB FILE AND FOLDER INFO ###########
     # collect file and folder info from the path given by the user
     rootFolder, fList, fPathList, dPathList = validator.get_files_folders(vPath)
 
     # figure out which folders are terminal and which contain other folders
     terminal, notTerminal = validator.find_folder_status(dPathList)
 
+
+    ############################# FOLDERS ####################################
     # check the root folder for require files
     rootFilePass, rootMan, rootDD = validator.check_for_req_files(rootFolder)
     print("Does this dataset contain the required files? = "+str(rootFilePass))
@@ -945,9 +893,9 @@ def main():
     print("\n")
     print("warnings = ")
     print(warnings)
+    return {'errors': validator.fatal, 'warnings': validator.warnings}
 
 
 if __name__ == "__main__":
-    main()
-
-    
+    vPath = "/home/karl/Work/SPARC/test_data_new_xlsx"
+    main(vPath)
