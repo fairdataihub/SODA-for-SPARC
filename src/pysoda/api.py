@@ -85,55 +85,6 @@ class SodaApi(object):
     def api_validate_subject_sample_files(self, rootFolder):
         return validate_subject_sample_files(rootFolder)
 
-
-    # rootFolder, fList, fPathList, dPathList = validator.get_files_folders(vPath)
-    # terminal, notTerminal = validator.find_folder_status(dPathList)
-    # rootFilePass, rootMan, rootDD = validator.check_for_req_files(rootFolder)
-    # rootFolderPass, numSubjFolders = validator.check_for_req_folders(rootFolder)
-    # emptyFolderPass = validator.check_empty_folders(dPathList)
-    # fileSizeCheck = validator.check_file_size(fPathList)
-    # dsStoreCheck = validator.check_ds_store(fPathList)
-    # utf8Check = validator.check_csv_utf8(fPathList)
-    # manPass, numManifest = validator.check_manifest(fList, fPathList, rootMan, terminal)
-    # subjColsLenCheck, subjColsCheck, samColsLenCheck, samColsCheck, rowsValCheck = validator.check_req_file_cols(fPathList)
-    # checkNumSubjDD, checkNumSubjS, numSubjDD, numSubjS, numSubjFolders = validator.check_num_subjects(numSubjFolders, rootFolder, rootDD)
-    # fileStartCheck = validator.check_file_start(fPathList)
-    # checkSamFolDD, checkSamFilDD, checkSamFilFol = validator.check_num_samples(rootFolder, rootDD)
-    # skipRowCheck = validator.check_skipped_rows(fPathList)
-
-    # def api_check_for_req_folders(self, rootFolder):
-    #     rootFolderPass, numSubjFolders = validator.check_for_req_folders(rootFolder)
-    #     return rootFolderPass
-    #
-    def api_val_check_empty_folders(self, pathList):
-        validator = DictValidator()
-        validator.check_empty_folders(pathList)
-        return {
-            "errors": validator.fatal,
-            "warnings": validator.warnings
-        }
-    #
-    # def api_check_file_size(self, myPath):
-    #     fPathList = validator.get_files_folders(myPath)
-    #     return validator.check_file_size(fPathList[3])
-    #
-    # def api_check_ds_store(self, filepath):
-    #     return validator.check_ds_store(filepath)
-    #
-    # def api_check_csv_utf8(self, fPathList):
-    #     return validator.check_csv_utf8(fPathList)
-    #
-    # def api_check_manifest(self, fList, fPathList, rootMan, terminal)):fList, fPathList, rootMan, terminal)
-    #     return validator.check_manifest(fList, fPathList, rootMan, terminal)):fList, fPathList, rootMan, terminal)
-    #
-    def api_check_num_subjects(self, numSubjFolders, rootFolder, rootDD):
-        validator = DictValidator()
-        validator.check_num_subjects(numSubjFolders, rootFolder, rootDD)
-        return {
-            "errors": validator.fatal,
-            "warnings": validator.warnings
-        }
-
     ### Bf
     def api_bf_add_account(self, keyname, key, secret):
         try:

@@ -200,7 +200,7 @@ class DictValidator:
             if len(manVector) == len(terminal):
                 manPass = 1
             else:
-                self.fatal.append("Missing manifest file: check each terminal folder.")
+                fatal.append("Missing manifest file: Check that a manifest file is included either in each high-level SPARC folder or in each terminal folder of the folder structure.")
 
 
         return manPass, numManifest
