@@ -334,7 +334,78 @@
           <div class="demo-meta u-avoid-clicks"> Check that information provided during the previous steps will create a SPARC-approved dataset. </div>
         </button>
         <div id="div-validate-dataset" class="demo-box">
-          <p> Coming soon... Tentative date: March 2020 </p>
+          <form id = 'validator-form'>
+            <div style = "padding:10px 0px">
+              <input class="input-switch" id="validatorCurrent" type="radio" name="tabs" checked>
+              <label class="label-switch" style="width:250px;font-size:15px;padding-top: 6px;" for="validatorCurrent">Validate current dataset</label>
+              <input class="input-switch" id="validatorLocal" type="radio" name="tabs">
+              <label class="label-switch" style="width:250px;font-size:15px;padding-top: 6px;" for="validatorLocal">Validate a local dataset</label>
+            </div>
+          </form>
+          <div id="div-validate-current-ds" class="datasetsaveoption" style="display:block;margin-top:70px">
+            <div class="demo-controls">
+              <label class="switch">
+                <input id="generate-preview-validator" name="preview-current-ds" type="checkbox" class="with-style-manifest"/>
+                <span class="slider round"></span>
+              </label>
+              <label id="label-preview-current-ds" class="labelradio-manifest" style="padding-left:10px"> Preview dataset before validating
+              </label>
+            </div>
+            <br>
+            <div class="demo-controls" id="div-preview-current-ds-validator" style="display:none">
+            <table id="table-current-ds-validator" class = "pathtable">
+              <tr class="parent" id="val-code">
+                <th class="table-header">code</th>
+              </tr>
+              <tr class="parent" id="val-derivative">
+                <th class="table-header">derivative</th>
+              </tr>
+              <tr class="parent" id="val-docs">
+                <th class="table-header">docs</th>
+              </tr>
+              <tr class="parent" id="val-primary">
+                <th class="table-header">primary</th>
+              </tr>
+              <tr class="parent" id="val-protocol">
+                <th class="table-header">protocol</th>
+              </tr>
+              <tr class="parent" id="val-source">
+                <th class="table-header">source</th>
+              </tr>
+            </table>
+            <table id="table-metadata-preview" class = "pathtable">
+              <tr class="parent" id="val-metadata">
+                <th class="table-header">metadata</th>
+              </tr>
+            </table>
+            </div>
+
+            <button id="button-validate-current-ds" class="demo-button">Validate</button>
+            <!-- <textarea id="para-validate-current-ds" ></textarea> -->
+            <!-- <div id="para-validate-current-ds">
+              <div class="alert-box error"><span>error: </span>Write your error message here.</div>
+              <div class="alert-box success"><span>success: </span>Write your success message here.</div>
+            </div> -->
+
+          </div>
+          <div id="div-validate-local-ds" class="datasetsaveoption" style="display:none;margin-top:70px">
+            <h5>Local dataset: </h5>
+            <div class="container-milestone-upload" style="display:flex;">
+              <input class="milestone-upload-text" id="input-local-ds-select" style="width:50%;text-align:center;height:40px" type="text" readonly placeholder="Select a file"/>
+            </div>
+            <br>
+            <div style="display:flex;height:40px">
+            <button id="button-validate-local-ds" class="demo-button">Validate</button>
+            <p id="para-local-ds-info" style="float:right;margin-left:7px;padding: 2 2;margin: 0 0;text-align:left;vertical-align:middle;"></p>
+            </div>
+            <br>
+            <div>
+              <p id="para-validate-folders" style="display:none"></p>
+              <p id="para-validate-files" style="display:none"></p>
+              <p id="para-validate-manifest" style="display:none"></p>
+              <p id="para-validate-samples-subjects" style="display:none"></p>
+            </div>
+          </div>
           <div id="div-validate-dataset-next-step" align="right">
             <h5> </h5>
             <button id="button-validate-dataset-next-step" class="demo-button-next-step"> Next Step </button>

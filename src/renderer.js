@@ -165,6 +165,11 @@ const previewProgressBar = document.getElementById("div-dataset-preview-progress
 const previewMetadataProgressBar = document.getElementById("div-metadata-preview-progress")
 const selectSaveFileOrganizationMetadataBtn = document.getElementById('button-select-save-file-organization-metadata')
 
+// Validate dataset //
+const validateCurrentDSBtn = document.getElementById("button-validate-current-ds")
+const validateLocalDSBtn = document.getElementById("button-validate-local-ds")
+const previewCurrentDsStatus = document.querySelector('#generate-preview-validator')
+
 // Generate dataset //
 const createNewStatus = document.querySelector('#create-newdataset')
 const modifyExistingStatus = document.querySelector('#existing-dataset')
@@ -2046,6 +2051,281 @@ curateDatasetBtn.addEventListener('click', () => {
     }
   }
 
+})
+
+
+//////////////// Validate datasets ////////////
+function jsonToTablePreview(table, jsonVariable){
+  var keyvect = Object.keys(jsonVariable)
+  var countDouble  = 0
+
+  for (var j = 0; j < keyvect.length; j++) {
+    let SPARCfolder = keyvect[j]
+    var SPARCfolderid = SPARCfolder + '_org'
+    var rowcount = document.getElementById(SPARCfolderid).rowIndex
+    var pathlist = jsonVariable[SPARCfolder]
+    for (var i = 0; i < pathlist.length; i++){
+      if (pathlist[i] !== "" &&  countDouble === 0) {
+        var myheader = tableNotOrganized.rows[rowcount].cells[0]
+        if (myheader.className === "table-header"){
+          myheader.className = "table-header openfolder"
+        }
+        var r = rowcount + 1
+        while ((row = tableNotOrganized.rows[r]) && !/\bparent\b/.test(row.className)){
+          if (/\bopen\b/.test(row.className))
+            row.className = row.className.replace(/\bopen\b/," ")
+            r += 1
+        }
+      tableOrganizedCount = tableOrganizedCount + 1
+      var rownum = rowcount + i + 1
+      var table_len = tableOrganizedCount
+      if (fs.lstatSync(pathlist[i]).isDirectory()) {
+        var row = table.insertRow(rownum).outerHTML="<tr id='row-org"+table_len+"'style='color: #000000;'><td id='"+table_len+"'>"+ pathlist[i] +"</td></tr>";
+      } else {
+      var row = table.insertRow(rownum).outerHTML="<tr id='row-org"+table_len+"'style='color: #000000;'><td id='"+table_len+"'>"+ pathlist[i] +"</td></tr>";
+      }
+    }
+  }
+  return table
+  }
+}
+
+function jsonToTablePreviewMetadata(table, jsonVariable) {
+  var rowcount = 0
+  var jsontable = tableToJsonMetadata(table)
+  var emessage = ''
+  var count = 0
+  var emessage2 = ''
+  var count2 = 0
+  var SPARCfolder = 'metadata'
+  var countDouble  = 0
+
+  var listfilePath = []
+
+  for (let filePath of jsontable[SPARCfolder]){
+      var extension = path.extname(filePath);
+      var file = path.basename(filePath,extension);
+      listfilePath.push(file)
+    }
+  var pathlist = jsonVariable[SPARCfolder]
+  for (i = 0; i < pathlist.length; i++) {
+
+    if (pathlist[i] !== "" &&  countDouble === 0) {
+      var myheader = tableMetadata.rows[rowcount].cells[0]
+      if (myheader.className === "table-header"){
+        myheader.className = "table-header openfolder"
+      }
+      var r = rowcount + 1
+      while ((row = tableMetadata.rows[r]) && !/\bparent\b/.test(row.className)){
+        if (/\bopen\b/.test(row.className))
+          row.className = row.className.replace(/\bopen\b/," ")
+          r += 1
+      }
+
+      var extension = path.extname(pathlist[i]);
+      var fileFull = path.basename(pathlist[i]);
+      var file = path.basename(pathlist[i],extension);
+
+    if (allowedMedataFiles.indexOf(fileFull) > -1 && listfilePath.indexOf(file) === -1) {
+      tableMetadataCount = tableMetadataCount + 1
+      var table_len= tableMetadataCount
+      var rownum = rowcount + i + 1
+      var row = table.insertRow(rownum).outerHTML="<tr id='row_metadata"+table_len+"'style='color: #000000;'><td>"+ pathlist[i] +"</td></tr>";
+      }
+    }
+  }
+  return table
+}
+
+/////////////////////// Validate local dataset //////////////////////////////
+
+////// Preview current dataset //////
+previewCurrentDsStatus.addEventListener("change", function() {
+  var codePreviewTable = document.getElementById("table-current-ds-validator")
+  var metadataPreviewTable = document.getElementById("table-metadata-preview")
+  if (this.checked) {
+    //// code to convert tableOrganized to json, and then populate preview table with json
+    var jsonPreviewFiles = tableToJson(tableNotOrganized)
+    var jsonPreviewMetadata = tableToJsonMetadata(tableMetadata)
+    console.log(jsonPreviewMetadata)
+    console.log(jsonPreviewFiles)
+    var tablePreviewFiles = jsonToTablePreview(codePreviewTable, jsonPreviewFiles)
+    var tablePreviewMetadata = jsonToTablePreviewMetadata(metadataPreviewTable, jsonPreviewMetadata)
+    ////
+    document.getElementById("div-preview-current-ds-validator").style.display = "block"
+  } else {
+    document.getElementById("div-preview-current-ds-validator").style.display = "none"
+  }
+})
+
+var errorBox = document.getElementById("para-validate-current-ds")
+
+/////// Convert table content into json format for transferring to Python
+function grabCurrentDSValidator() {
+  var jsonvect = tableToJson(tableNotOrganized)
+  var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
+  jsonvect['main'] = jsonpathMetadata['metadata']
+  console.log(jsonvect)
+  return jsonvect
+}
+
+////////////// function checking for required folders
+function checkRequiredFolders(errorList, passList) {
+  var jsonvect = grabCurrentDSValidator()
+  var emptyFolderList = []
+  for (key of jsonvect) {
+    if (jsonvect[key].length===0) {
+      emptyFolderList.push(key)
+    }
+  }
+  if (emptyFolderList.length>0) {
+    var emptyFolders =  emptyFolderList.join(',')
+    errorList.append(`The dataset does not contain the required folder: ${emptyFolders}`)
+  } else {
+    passList.append("Pass: Dataset contains all required SPARC folders")
+  }
+}
+
+function checkEmptyFolders(pathList) {
+  //// listDir in node
+  //// check that directories have children
+  // client.invoke("api_val_check_empty_folders", pathList, (error, res) => {
+  //   if (error) {
+  //     /// TO DO: handle errors when unable to communicate with python
+  //     console.log(error)
+  //     log.error(error)
+  //   } else {
+  //       var errors = JSON.parse(res)
+  //       if (errors['errors'].length > 0) {
+  //         // report error
+  //       }
+  //       if (errors['warnings'].length > 0) {
+  //         // report warnings
+  //       }
+  //   }
+  // })
+}
+
+//// function to grab errors and warnings from api functions
+function reportErrors(resObj) {
+  var errorList = []
+  for (var i=0;i<resObj["errors"].length;i++) {
+    errorList.push(resObj["errors"][i])
+  }
+  return errorList
+}
+
+
+validateCurrentDSBtn.addEventListener("click", function() {
+
+})
+
+
+
+//// when users click on Import local dataset
+
+document.getElementById("input-local-ds-select").addEventListener("click", function() {
+  ipcRenderer.send('open-file-dialog-validate-local-ds')
+})
+ipcRenderer.on('selected-validate-local-dataset', (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null){
+      // used to communicate value to button-import-local-ds click eventlistener
+      document.getElementById("input-local-ds-select").placeholder = filepath[0];
+    } else {
+      document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a valid local dataset!</span>"
+    }
+    }
+})
+
+//// Validate a local dataset
+validateLocalDSBtn.addEventListener("click", function() {
+  //// pass in the filepath and call python functions here
+  var filePath = document.getElementById("input-local-ds-select").placeholder
+  if (filePath==="Select a file") {
+    document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset!</span>"
+  } else  {
+      if (filePath != null){
+        document.getElementById("para-validate-folders").style.display = "block"
+        document.getElementById("para-validate-files").style.display = "block"
+        document.getElementById("para-validate-manifest").style.display = "block"
+        document.getElementById("para-validate-samples-subjects").style.display = "block"
+        ////// check for folder requirements
+        client.invoke("api_validate_folders", filePath, (error, res) => {
+          document.getElementById("para-local-ds-info").innerHTML = ""
+          if (error) {
+            console.log(error)
+            log.error(error)
+          } else {
+              document.getElementById("para-local-ds-info").innerHTML = "Checking for folder requirements..." + smileyCan
+              //// if no errors are raised
+              if (res["errors"].length===0) {
+                document.getElementById("para-validate-folders").innerHTML = "<span style='color:green'><b>This dataset passes high-level folder requirements!</b></span>" + smileyCan
+              } else {
+                  var errorList = reportErrors(res)
+                  var displayedValue = errorList.join("<br>")
+                  document.getElementById("para-validate-folders").innerHTML = "<b>High-level folders failed to meet these SPARC requirements: </b><br>" + "<span style='color:red'>" + displayedValue + "</span>"
+              }
+            }
+        })
+        ////// check for file requirements
+        client.invoke("api_validate_files", filePath, (error, res) => {
+          document.getElementById("para-local-ds-info").innerHTML = ""
+          if (error) {
+            console.log(error)
+            log.error(error)
+          } else {
+              document.getElementById("para-local-ds-info").innerHTML = "Checking for file requirements..." + smileyCan
+              //// if no errors are raised
+              if (res["errors"].length===0) {
+                document.getElementById("para-validate-files").innerHTML = "<span style='color:green'><b>This dataset passes all file requirements!</b></span>" + smileyCan
+              } else {
+                var errorList = reportErrors(res)
+                var displayedValue = errorList.join("<br>")
+                document.getElementById("para-validate-files").innerHTML = "<b>The below files failed to meet SPARC requirements: </b><br>" + "<span style='color:red'>"+ displayedValue + "</span>"
+              }
+            }
+        })
+        ////// check for manifest file requirements
+        client.invoke("api_validate_manifest_file", filePath, (error, res) => {
+          document.getElementById("para-local-ds-info").innerHTML = ""
+          if (error) {
+            console.log(error)
+            log.error(error)
+          } else {
+              document.getElementById("para-local-ds-info").innerHTML = "Checking for manifest file..." + smileyCan
+              //// if no errors are raised
+              if (res["errors"].length===0) {
+                document.getElementById("para-validate-manifest").innerHTML = "<span style='color:green'><b>The manifest file of this dataset passes all SPARC requirements!</b></span>" + smileyCan
+              } else {
+                var errorList = reportErrors(res)
+                var displayedValue = errorList.join("<br>")
+                document.getElementById("para-validate-manifest").innerHTML = "<b>Manifest files failed to meet these SPARC requirements: </b><br>" + "<span style='color:red'>" + displayedValue + "</span>"
+              }
+            }
+        })
+        ////// check for subjects and samples file requirements
+        client.invoke("api_validate_subject_sample_files", filePath, (error, res) => {
+          document.getElementById("para-local-ds-info").innerHTML = ""
+          if (error) {
+            console.log(error)
+            log.error(error)
+          } else {
+              document.getElementById("para-local-ds-info").innerHTML = "Checking for samples and subjects files..." + smileyCan
+              //// if no errors are raised
+              if (res["errors"].length===0) {
+                document.getElementById("para-validate-samples-subjects").innerHTML = "<span style='color:green'><b>The samples and subjects file of this dataset passes all SPARC requirements!</b></span>" + smileyCan
+              } else {
+                var errorList = reportErrors(res)
+                var displayedValue = errorList.join("<br>")
+                document.getElementById("para-validate-samples-subjects").innerHTML = "<b>Samples and subjects files failed to meet these requirements: </b><br>" + "<span style='color:red'>" + displayedValue + "</span>"
+                document.getElementById("para-local-ds-info").innerHTML = ""
+                document.getElementById("para-local-ds-info").innerHTML = "Done!" 
+              }
+            }
+        })
+    }
+  }
 })
 
 //////////////////////////////////

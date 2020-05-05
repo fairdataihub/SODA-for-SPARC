@@ -177,10 +177,6 @@ class DictValidator:
         return rootFilePass, man, dd  #pass back if a manifest file is in the root directory as well
 
 
-
-
-
-
     def check_manifest(self, fList, fPathList, rootMan, terminal):
     # check to make sure there is at least one manifest file
         manPass = 0
@@ -787,14 +783,14 @@ class DictValidator:
             #print("numSamDD = {}".format(numSamDD))
 
             # find the total number of samples from the dict of samples/subject from actual folders
+            totalFol = 0
             if numSamFolders:
-                totalFol = 0
                 for k in numSamFolders.keys():
                     totalFol += numSamFolders[k]
 
             # find the total number of samples from the dict of samples/subject from samples file
+            totalFil = 0
             if numSamFile:
-                totalFil = 0
                 for k in numSamFile.keys():
                     totalFil += numSamFile[k]
 
@@ -831,27 +827,38 @@ def main(vPath):
     # figure out which folders are terminal and which contain other folders
     terminal, notTerminal = validator.find_folder_status(dPathList)
 
-
-    ############################# FOLDERS ####################################
-    # check the root folder for require files
-    rootFilePass, rootMan, rootDD = validator.check_for_req_files(rootFolder)
-    print("Does this dataset contain the required files? = "+str(rootFilePass))
-
     # check the root folder for required and optional folders
     rootFolderPass, numSubjFolders = validator.check_for_req_folders(rootFolder)
     print("Does this dataset contain the required folders? = "+str(rootFolderPass))
 
-    # check that the manifest files exist and have the right number
-    manPass, numManifest = validator.check_manifest(fList, fPathList, rootMan, terminal)
-    print("Does this dataset contain a master manifest file or one manifest in each terminal folder? = "+str(manPass))
-
-    #check that the number of subjects agrees
-    checkNumSubjDD, checkNumSubjS, numSubjDD, numSubjS, numSubjFolders = validator.check_num_subjects(numSubjFolders, rootFolder, rootDD)
-    print("Does the number of subjects folders match the numbers given in the dataset_description and subjects files? = "+ str(checkNumSubjDD)+" and "+str(checkNumSubjS))
-
     #check for empty folders
     emptyFolderPass = validator.check_empty_folders(dPathList)
     print("Does this dataset contain empty folders? = "+str(emptyFolderPass))
+
+    # check the root folder for require files
+    rootFilePass, rootMan, rootDD = validator.check_for_req_files(rootFolder)
+    print("Does this dataset contain the required files? = "+str(rootFilePass))
+
+    # print out summary of warnings and fatal errors
+    print("\n")
+    print("Fatal Errors and Warnings")
+    print("fatal = ")
+    print(validator.fatal)
+    print("\n")
+    print("warnings = ")
+    print(validator.warnings)
+    return {'errors': validator.fatal}
+
+
+###### GRAB FILE AND FOLDER INFO ###########
+def validate_files(vPath):
+    validator = DictValidator()
+
+    # collect file and folder info from the path given by the user
+    rootFolder, fList, fPathList, dPathList = validator.get_files_folders(vPath)
+
+    # figure out which folders are terminal and which contain other folders
+    terminal, notTerminal = validator.find_folder_status(dPathList)
 
     #check for empty files
     fileSizeCheck = validator.check_file_size(fPathList)
@@ -861,41 +868,113 @@ def main(vPath):
     dsStoreCheck = validator.check_ds_store(fPathList)
     print("Does this dataset contain a DS.STORE file? = "+str(dsStoreCheck))
 
-    #check for starting on row 0 or (0,0)
-    fileStartCheck = validator.check_file_start(fPathList)
-    print("Do files start at row 0 (csv) or (0,0) (xlsx)? = "+str(fileStartCheck))
-
     #check for CSV files for UTF-* encoding
     utf8Check = validator.check_csv_utf8(fPathList)
     print("Are CSV files encoded in UTF-8? = "+str(utf8Check))
-
-    #check for skipped rows in csv files
-    skipRowCheck = validator.check_skipped_rows(fPathList)
-    print("Are there any skipped rows in the required files? = "+str(skipRowCheck))
-
-    #check subjects and samples files for required column headings
-    subjColsLenCheck, subjColsCheck, samColsLenCheck, samColsCheck, rowsValCheck = validator.check_req_file_cols(fPathList)
-    print("Are there the correct number of column headings in the subjects files and are they named correctly? = "+str(subjColsLenCheck)+" and "+ str(subjColsCheck))
-    print("Are there the correct number of column headings in the samples files and are they named correctly? = "+str(samColsLenCheck)+" and "+ str(samColsCheck))
-    print("Are there values in the required columns in the subjects file? = "+str(rowsValCheck))
-
-    #check that the number of samples match between dataset description, samples, and actual folders
-    checkSamFolDD, checkSamFilDD, checkSamFilFol = validator.check_num_samples(rootFolder, rootDD)
-    print("Does the number of samples in dataset_description match the number of sample folders? = "+str(checkSamFolDD))
-    print("Does the number of samples in dataset_description file match the number in the samples file? = "+str(checkSamFilDD))
-    print("Does the number of sample folders match the number in the samples file? = "+str(checkSamFilFol))
 
     # print out summary of warnings and fatal errors
     print("\n")
     print("Fatal Errors and Warnings")
     print("fatal = ")
-    print(fatal)
+    print(validator.fatal)
     print("\n")
     print("warnings = ")
-    print(warnings)
-    return {'errors': validator.fatal, 'warnings': validator.warnings}
+    print(validator.warnings)
+    return {'errors': validator.fatal}
+
+############################ MANIFEST FILE #############################
+def validate_manifest_file(vPath):
+
+    ### Instantiate 2 instances: 1 to grab just a method's output and 1 main class to get warnings and errors.
+    validatorMain = DictValidator()
+    validator = DictValidator()
+
+    ###### GRAB FILE AND FOLDER INFO ###########
+    # collect file and folder info from the path given by the user
+    rootFolder, fList, fPathList, dPathList = validatorMain.get_files_folders(vPath)
+
+    # figure out which folders are terminal and which contain other folders
+    terminal, notTerminal = validatorMain.find_folder_status(dPathList)
+
+    # check the root folder for require files (manifest file in this case)
+    rootFilePass, rootMan, rootDD = validator.check_for_req_files(rootFolder)
+    print("Does this dataset contain the required files? = "+str(rootFilePass))
+
+    # check that the manifest files exist and have the right number
+    manPass, numManifest = validatorMain.check_manifest(fList, fPathList, rootMan, terminal)
+    print("Does this dataset contain a master manifest file or one manifest in each terminal folder? = "+str(manPass))
+
+    # print out summary of warnings and fatal errors
+    print("\n")
+    print("Fatal Errors and Warnings")
+    print("fatal = ")
+    print(validatorMain.fatal)
+    print("\n")
+    print("warnings = ")
+    print(validatorMain.warnings)
+    return {'errors': validatorMain.fatal}
+
+########################### SAMPLES, SUBJETCS FILES #####################
+def validate_subject_sample_files(vPath):
+    ### Instantiate 2 instances: 1 to grab just a method's output and 1 main class to get warnings and errors.
+    validatorMain = DictValidator()
+    validator = DictValidator()
+
+    ###### GRAB FILE AND FOLDER INFO ###########
+    # collect file and folder info from the path given by the user
+    rootFolder, fList, fPathList, dPathList = validatorMain.get_files_folders(vPath)
+
+    # figure out which folders are terminal and which contain other folders
+    terminal, notTerminal = validatorMain.find_folder_status(dPathList)
+
+    #check subjects and samples files for required column headings
+    subjColsLenCheck, subjColsCheck, samColsLenCheck, samColsCheck, rowsValCheck = validatorMain.check_req_file_cols(fPathList)
+    print("Are there the correct number of column headings in the subjects files and are they named correctly? = "+str(subjColsLenCheck)+" and "+ str(subjColsCheck))
+    print("Are there the correct number of column headings in the samples files and are they named correctly? = "+str(samColsLenCheck)+" and "+ str(samColsCheck))
+    print("Are there values in the required columns in the subjects file? = "+str(rowsValCheck))
+
+    # check the root folder for required and optional folders
+    rootFolderPass, numSubjFolders = validator.check_for_req_folders(rootFolder)
+    print("Does this dataset contain the required folders? = "+str(rootFolderPass))
+
+    # check the root folder for require files
+    rootFilePass, rootMan, rootDD = validator.check_for_req_files(rootFolder)
+    print("Does this dataset contain the required files? = "+str(rootFilePass))
+
+    checkNumSubjDD, checkNumSubjS, numSubjDD, numSubjS, numSubjFolders = validatorMain.check_num_subjects(numSubjFolders, rootFolder, rootDD)
+    print("Does the number of subjects folders match the numbers given in the dataset_description and subjects files? = "+ str(checkNumSubjDD)+" and "+str(checkNumSubjS))
+
+    #check for starting on row 0 or (0,0)
+    fileStartCheck = validatorMain.check_file_start(fPathList)
+    print("Do files start at row 0 (csv) or (0,0) (xlsx)? = "+str(fileStartCheck))
+
+    #check that the number of samples match between dataset description, samples, and actual folders
+    checkSamFolDD, checkSamFilDD, checkSamFilFol = validatorMain.check_num_samples(rootFolder, rootDD)
+    print("Does the number of samples in dataset_description match the number of sample folders? = "+str(checkSamFolDD))
+    print("Does the number of samples in dataset_description file match the number in the samples file? = "+str(checkSamFilDD))
+    print("Does the number of sample folders match the number in the samples file? = "+str(checkSamFilFol))
+
+    #check for skipped rows in csv files
+    skipRowCheck = validatorMain.check_skipped_rows(fPathList)
+    print("Are there any skipped rows in the required files? = "+str(skipRowCheck))
+
+    # check that the IDs in the subjects and samples files are unique
+    uniqueSubIDFlag, uniqueSamIDFlag = validatorMain.check_unique_ids(rootFolder)
+    print("Are the IDs in the subjects file unique? = "+str(uniqueSubIDFlag))
+    print("Are the IDs in the samples file unique? = "+str(uniqueSamIDFlag))
+
+    # print out summary of warnings and fatal errors
+    print("\n")
+    print("Fatal Errors and Warnings")
+    print("fatal = ")
+    print(validatorMain.fatal)
+    print("\n")
+    print("warnings = ")
+    print(validatorMain.warnings)
+    return {'errors': validatorMain.fatal}
 
 
-if __name__ == "__main__":
-    vPath = "/home/karl/Work/SPARC/test_data_new_xlsx"
-    main(vPath)
+# if __name__ == "__main__":
+#     vPath = "/home/karl/Work/SPARC/test_data_new_xlsx"
+#     pathInfo = {os.path.basename(path): path for path in os.path.listdir(vPath)}
+#     main(vPath)
