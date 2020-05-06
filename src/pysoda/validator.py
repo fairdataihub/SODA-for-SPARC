@@ -122,6 +122,50 @@ class DictValidator:
 
         return terminal, notTerminal
 
+    def check_for_req_folders(self, rootFolder):
+        s = 0
+        p = 0
+        o = 0
+        w = 0
+        numSubjFolders = 0
+        rootFolderPass = 0
+
+        # first check for req and optional folders at the root level
+        allContents = os.listdir(rootFolder)
+
+        for c in allContents:
+            if os.path.isdir(rootFolder+"/"+c):
+                if c == self.reqFolderNames[0]:   #primary folder
+                    p = 1
+                    # check for subjects and/or samples
+                    pContents = os.listdir(rootFolder+"/"+c)
+                    for pc in pContents:
+                        if self.reqFolderNames[1] in pc:
+                            s = 1
+                            numSubjFolders += 1
+                elif c in self.optFolderNames:   #check for optional folders
+                    o = 1
+                else:      #non-standard folders are present
+                    w = 1
+                #print(c,p,o,s,w)
+                #print('numSubj = '+str(numSubjFolders))
+
+        if not p:
+            self.fatal.append("This dataset is missing the 'primary' folder.")
+        if not s:
+            self.fatal.append("This dataset is must contain either a 'subjects' or 'samples' folder.")
+        if not o:
+            self.warnings.append("This dataset contains no optional folders.")
+        if w:
+            self.warnings.append("This dataset contains non-standard folder names.")
+
+        checksumRootFolders = p+s
+        if checksumRootFolders == 2:  # check for req folders
+            rootFolderPass = 1
+
+        return rootFolderPass, numSubjFolders
+
+
 
 
     def check_for_req_files(self, rootFolder):
@@ -200,7 +244,7 @@ class DictValidator:
             if len(manVector) == len(terminal):
                 manPass = 1
             else:
-                fatal.append("Missing manifest file: Check that a manifest file is included either in each high-level SPARC folder or in each terminal folder of the folder structure.")
+                self.fatal.append("Missing manifest file: Check that a manifest file is included either in each high-level SPARC folder or in each terminal folder of the folder structure.")
 
 
         return manPass, numManifest
@@ -332,15 +376,7 @@ class DictValidator:
                 warnings.append("The folder {} is an empty folder".format(d))
                 emptyFolderPass = 1
 
-        if not p:
-            self.fatal.append("This dataset is missing the 'primary' folder.")
-        if not s:
-            self.fatal.append("This dataset is must contain either a 'subjects' or 'samples' folder.")
-        if not o:
-            self.warnings.append("This dataset contains no optional folders.")
-        if w:
-            self.warnings.append("This dataset contains non-standard folder names.")
-
+        return emptyFolderPass
 
 
     def check_ds_store(self, fPathList):
@@ -599,6 +635,7 @@ class DictValidator:
         samFlag = 0
         subjectsFile = 0
         samplesFile = 0
+        rowsValCheck = 0
 
         for f in fPathList:
             fileNamePath, fileExtension = os.path.splitext(f)
@@ -612,8 +649,6 @@ class DictValidator:
                 cols = self.samCols
                 samplesFile = 1
                 samColsLenCheck, samColsCheck = self.generic_check_cols(cols, fileNamePath, fileExtension)
-            else:
-                pass
 
         # check status flags and return result; only check relevant flags
         if subjectsFile:
@@ -817,10 +852,100 @@ class DictValidator:
         return checkSamFolDD, checkSamFilDD, checkSamFilFol
 
 
-def main(vPath):
+    def get_col_vals_xlsx(self, f, name):
+        # this opens an xlsx file, finds the column with the requested variable name
+        # and extracts the values from that column. Returns a list with all of the
+        # values from that row.
+        colVals = []
+        workbook = xlrd.open_workbook(f)
+        worksheet = workbook.sheet_by_index(0)
+        for col in range(1, worksheet.ncols):
+            if worksheet.cell_value(0,col) == name:
+                colVals = worksheet.col_values(col,1)
+                break
+
+        return colVals
+
+
+
+
+    def get_col_vals_csv(self, f, name):
+        # this opens a csv file, write the file into a dict assuming that the
+        # first row are the variable names (which are then the keys).
+        # Then goes through each row and appends the value for the "name"
+        # key to the list to be returned.
+
+        colVals = []
+
+        with open(f) as csvFile:
+            dict = csv.DictReader(csvFile)
+            for row in dict:
+                colVals.append(row[name])
+
+        return colVals
+
+
+
+
+    def check_unique_ids(self, rootFolder):
+        # This module goes into the subjects and samples files to make sure that
+        # the listed subject and sample IDs are unique.
+        # In the subjects file there should not be any duplicate entries in the first
+        # column (which would mean the same ID was entered twice).
+        # The samples file should have a unique combination of the 1st two column values (subjID, samID)
+
+        names = ["subject_id", "sample_id"]
+        files = ["subjects.csv", "subjects.xlsx", "samples.csv", "samples.xlsx"]
+        extensions = ["csv", "xlsx"]
+        uniqueSubIDFlag = 1
+        uniqueSamIDFlag = 1
+        colVals = []
+
+        allContents = os.listdir(rootFolder)
+
+        # subjects first
+        for a in allContents:
+            fullFilePath = rootFolder+"/"+a
+            if os.path.isfile(fullFilePath):
+                if a == files[0]:
+                    colVals = self.get_col_vals_csv(fullFilePath,names[0])
+                if a == files[1]:
+                    colVals = self.get_col_vals_xlsx(fullFilePath,names[0])
+                else:
+                    pass
+                # we just need to check whether there are any repeats in subjectID here
+        if len(colVals) != len(set(colVals)):
+            warnings.append("There are duplicate subject ID's in the subjects file!")
+            uniqueSubIDFlag = 0
+
+        # samples next;
+        colValsSub = []
+        colValsSam = []
+        for a in allContents:
+            fullFilePath = rootFolder+"/"+a
+            if os.path.isfile(fullFilePath):
+                if a == files[2]:
+                    colValsSub = self.get_col_vals_csv(fullFilePath,names[0])
+                    colValsSam = self.get_col_vals_csv(fullFilePath,names[1])
+                elif a == files[3]:
+                    colValsSub = self.get_col_vals_xlsx(fullFilePath,names[0])
+                    colValsSam = self.get_col_vals_xlsx(fullFilePath,names[1])
+                else:
+                    pass
+
+        # here have to include values 1st two columns in comparison
+        for i in range(len(colValsSub)):
+            for j in range(i+1,len(colValsSub)):
+                if colValsSub[i] == colValsSub[j] and colValsSam[i] == colValsSam[j]:
+                    uniqueSamIDFlag = 0
+                    break
+
+        return uniqueSubIDFlag, uniqueSamIDFlag
+
+######## GRAB FOLDER INFO #######################
+def validate_folders(vPath):
     validator = DictValidator()
 
-    ###### GRAB FILE AND FOLDER INFO ###########
     # collect file and folder info from the path given by the user
     rootFolder, fList, fPathList, dPathList = validator.get_files_folders(vPath)
 
@@ -920,7 +1045,6 @@ def validate_subject_sample_files(vPath):
     validatorMain = DictValidator()
     validator = DictValidator()
 
-    ###### GRAB FILE AND FOLDER INFO ###########
     # collect file and folder info from the path given by the user
     rootFolder, fList, fPathList, dPathList = validatorMain.get_files_folders(vPath)
 
@@ -962,6 +1086,7 @@ def validate_subject_sample_files(vPath):
     uniqueSubIDFlag, uniqueSamIDFlag = validatorMain.check_unique_ids(rootFolder)
     print("Are the IDs in the subjects file unique? = "+str(uniqueSubIDFlag))
     print("Are the IDs in the samples file unique? = "+str(uniqueSamIDFlag))
+
 
     # print out summary of warnings and fatal errors
     print("\n")
