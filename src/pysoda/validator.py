@@ -23,9 +23,9 @@ The code checks the following items:
 13. Check that the number of samples is the same in the dataset_description and samples files
     and that those numbers match the actual number of folders (completed)
 
-14. Check that the subjects/samples files have unique IDs (to do)
-15. Check that the submission file has all of the required columns (to do) and are populated (to do)
-16. Check that the dataset_description file has all of the required rows (to do) and are populated (to do)
+14. Check that the subjects/samples files have unique IDs (completed)
+15. Check that the submission file has all of the required columns (to do) and are populated (completed)
+16. Check that the dataset_description file has all of the required rows (completed) and are populated (completed)
 
 definitions:
 a) a terminal folder is one with no further subfolders
@@ -71,6 +71,16 @@ class DictValidator:
     reqFiles = ['dataset_description', 'subjects', 'samples', 'submission']
     subjCols = ['subject_id', 'pool_id', 'experimental group', 'age', 'sex', 'species', 'strain', 'Organism RRID']
     samCols = ['subject_id', 'sample_id', 'wasDerivedFromSample', 'pool_id', 'experimental group']
+
+    # note: the capitalizations below are inconsistent, but are what is given in SPARC_FAIR-Folder_Structure V1.2.pdf
+    ddCols = ['Name', 'Description', 'Keywords', 'Contributors', 'Contributor ORCID ID',
+                   'Contributor Affiliation', 'Contributor Role',
+                   'Is Contact Person', 'Acknowledgements', 'Funding', 'Originating Article DOI',
+                   'Protocol URL or DOI', 'Additional Links', 'Link Description', 'Number of subjects',
+                   'Number of samples', 'Completeness of data set', 'Parent dataset ID', 'Title for complete data set',
+                   'Metadata Version']
+
+    submCols = ['SPARC Award number', 'Milestone achieved', 'Milestone completion date']
 
     def __init__(self):
         self.fatal = []
@@ -147,8 +157,6 @@ class DictValidator:
                     o = 1
                 else:      #non-standard folders are present
                     w = 1
-                #print(c,p,o,s,w)
-                #print('numSubj = '+str(numSubjFolders))
 
         if not p:
             self.fatal.append("This dataset is missing the 'primary' folder.")
@@ -157,7 +165,7 @@ class DictValidator:
         if not o:
             self.warnings.append("This dataset contains no optional folders.")
         if w:
-            self.warnings.append("This dataset contains non-standard folder names.")
+            self.fatal.append("This dataset contains non-standard folder names.")
 
         checksumRootFolders = p+s
         if checksumRootFolders == 2:  # check for req folders
@@ -885,8 +893,6 @@ class DictValidator:
         return colVals
 
 
-
-
     def check_unique_ids(self, rootFolder):
         # This module goes into the subjects and samples files to make sure that
         # the listed subject and sample IDs are unique.
@@ -915,7 +921,7 @@ class DictValidator:
                     pass
                 # we just need to check whether there are any repeats in subjectID here
         if len(colVals) != len(set(colVals)):
-            warnings.append("There are duplicate subject ID's in the subjects file!")
+            self.warnings.append("There are duplicate subject ID's in the subjects file!")
             uniqueSubIDFlag = 0
 
         # samples next;
@@ -942,7 +948,92 @@ class DictValidator:
 
         return uniqueSubIDFlag, uniqueSamIDFlag
 
-######## GRAB FOLDER INFO #######################
+
+
+    def check_dataset_description(self, rootFolder):
+        # The dataset_description file has the variable names in rows rather than columns
+        # Check that the first column has the right variable name and that at least the
+        # second column is filled in
+
+        checkDDVarsFlag = 1
+        checkDDValsFlag = 1
+        ddVariables = []
+        ddValues = []
+        ddFileRootCSV = rootFolder+"/"+"dataset_description.csv"
+        ddFileRootXLSX = rootFolder+"/"+"dataset_description.xlsx"
+
+        if os.path.isfile(ddFileRootCSV):
+            with open(ddFileRootCSV) as f:
+                reader = csv.reader(f, delimiter=",")
+                for row in reader:
+                    ddVariables.append(row[0])
+                    if row[1]:
+                        ddValues.append(row[1])
+                    else:
+                        checkDDVals = 0  # each row has to have a variable name and at least one value (even if N/A)
+
+        if os.path.isfile(ddFileRootXLSX):
+            workbook = xlrd.open_workbook(ddFileRootXLSX)
+            worksheet = workbook.sheet_by_index(0)
+            ddVariables = worksheet.col_values(0)
+            ddValues = worksheet.col_values(1)
+            if "" in ddValues:
+                checkDDValues = 0
+
+        # check to make sure that the variables are correct and in the right order
+        print("checking dataset_description required columns...")
+        for d in range(len(self.ddCols)):
+            if ddVariables[d] != self.ddCols[d]:
+                self.fatal.append("there is a problem with the dataset_description file: {}, {}".format(ddVariables[d],self.ddCols[d]))
+                print("there is a problem with the dataset_description file: {}, {}".format(ddVariables[d],self.ddCols[d]))
+                checkDDVarsFlag = 0
+
+        return checkDDVarsFlag, checkDDValsFlag
+
+
+
+    def check_submission(self, rootFolder):
+        # The submission file has the variable names in rows rather than columns
+        # Check that the first column has the right variable name and that at least the
+        # second column is filled in
+
+        checkSVarsFlag = 1
+        checkSValsFlag = 1
+        sVariables = []
+        sValues = []
+        sFileRootCSV = rootFolder+"/"+"submission.csv"
+        sFileRootXLSX = rootFolder+"/"+"submission.xlsx"
+
+        if os.path.isfile(sFileRootCSV):
+            with open(sFileRootCSV) as f:
+                reader = csv.reader(f, delimiter=",")
+                for row in reader:
+                    sVariables.append(row[0])
+                    if row[1]:
+                        sValues.append(row[1])
+                    else:
+                        checkSVals = 0  # each row has to have a variable name and at least one value (even if N/A)
+
+        if os.path.isfile(sFileRootXLSX):
+            workbook = xlrd.open_workbook(sFileRootXLSX)
+            worksheet = workbook.sheet_by_index(0)
+            sVariables = worksheet.col_values(0)
+            sValues = worksheet.col_values(1)
+            if "" in sValues:
+                checkSValues = 0
+
+        # check to make sure that the variables are correct and in the right order
+        print("checking submission required columns...")
+        for d in range(len(self.submCols)):
+            if sVariables[d] != self.submCols[d]:
+                self.fatal.append("There is a problem with the submission file: {}, {}".format(sVariables[d],self.submCols[d]))
+                print("there is a problem with the submission file: {}, {}".format(sVariables[d],self.submCols[d]))
+                checkSVarsFlag = 0
+
+        return checkSVarsFlag, checkSValsFlag
+
+
+######## GRAB High-FOLDER and File INFO #######################
 def validate_folders(vPath):
     validator = DictValidator()
 
@@ -975,7 +1066,7 @@ def validate_folders(vPath):
     return {'errors': validator.fatal}
 
 
-###### GRAB FILE AND FOLDER INFO ###########
+###### GRAB FILE AND SUB-FOLDER INFO ###########
 def validate_files(vPath):
     validator = DictValidator()
 
@@ -985,6 +1076,10 @@ def validate_files(vPath):
     # figure out which folders are terminal and which contain other folders
     terminal, notTerminal = validator.find_folder_status(dPathList)
 
+    #check for empty folders
+    emptyFolderPass = validator.check_empty_folders(dPathList)
+    print("Does this dataset contain empty folders? = "+str(emptyFolderPass))
+    
     #check for empty files
     fileSizeCheck = validator.check_file_size(fPathList)
     print("Does this dataset contain empty files? = "+str(fileSizeCheck))

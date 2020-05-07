@@ -2250,6 +2250,7 @@ validateLocalDSBtn.addEventListener("click", function() {
         document.getElementById("para-validate-files").style.display = "block"
         document.getElementById("para-validate-manifest").style.display = "block"
         document.getElementById("para-validate-samples-subjects").style.display = "block"
+        document.getElementById("para-validate-submission-dd").style.display = "block"
         ////// check for folder requirements
         client.invoke("api_validate_folders", filePath, (error, res) => {
           document.getElementById("para-local-ds-info").innerHTML = ""
@@ -2320,7 +2321,7 @@ validateLocalDSBtn.addEventListener("click", function() {
                 var displayedValue = errorList.join("<br>")
                 document.getElementById("para-validate-samples-subjects").innerHTML = "<b>Samples and subjects files failed to meet these requirements: </b><br>" + "<span style='color:red'>" + displayedValue + "</span>"
                 document.getElementById("para-local-ds-info").innerHTML = ""
-                document.getElementById("para-local-ds-info").innerHTML = "Done!" 
+                document.getElementById("para-local-ds-info").innerHTML = "Done!"
               }
             }
         })

@@ -12,7 +12,8 @@ from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_o
     save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone
 
 from validator import DictValidator
-from validator import validate_folders, validate_files, validate_manifest_file, validate_subject_sample_files
+from validator import validate_folders, validate_files, validate_manifest_file, validate_subject_sample_files, \
+     validate_submission_dataset_description_files
 
 
 import sys
