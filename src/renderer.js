@@ -2200,7 +2200,7 @@ bfRenameDatasetBtn.addEventListener('click', () => {
   var renamedDatasetName = renameDatasetName.value
   console.log(currentDatasetName)
   if (currentDatasetName ==='Select dataset'){
-    emessage = 'Please select a validate dataset'
+    emessage = 'Please select a valid dataset'
     bfRenameDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
   } else {
     bfRenameDatasetBtn.disabled = true
