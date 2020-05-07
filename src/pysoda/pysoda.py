@@ -1764,7 +1764,7 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
     try:
         if (selected_team == 'SPARC Data Curation Team'):
             if bf.context.name != 'SPARC Consortium':
-                raise Exception('Error: Please login under the SPARC Consortium organization to share with Curation Team')
+                raise Exception('Error: Please login under the SPARC Consortium organization to share with the Curation Team')
     except Exception as e:
         raise e
 
