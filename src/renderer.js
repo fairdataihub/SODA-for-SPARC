@@ -2208,11 +2208,15 @@ function checkEmptyFolders(pathList) {
 
 //// function to grab errors and warnings from api functions
 function reportErrors(resObj) {
+  var passList = []
   var errorList = []
   for (var i=0;i<resObj["errors"].length;i++) {
     errorList.push(resObj["errors"][i])
   }
-  return errorList
+  for (var i=0; i<resObj["pass"].length;i++) {
+    passList.push(resObj["pass"][i])
+  }
+  return [errorList, passList]
 }
 
 
@@ -2259,15 +2263,11 @@ validateLocalDSBtn.addEventListener("click", function() {
             log.error(error)
           } else {
               document.getElementById("para-local-ds-info").innerHTML = "Checking for folder requirements..." + smileyCan
-              //// if no errors are raised
-              if (res["errors"].length===0) {
-                document.getElementById("para-validate-folders").innerHTML = "<span style='color:green'><b>This dataset passes high-level folder requirements!</b></span>" + smileyCan
-              } else {
-                  var errorList = reportErrors(res)
-                  var displayedValue = errorList.join("<br>")
-                  document.getElementById("para-validate-folders").innerHTML = "<b>High-level folders failed to meet these SPARC requirements: </b><br>" + "<span style='color:red'>" + displayedValue + "</span>"
+              var reportValues = reportErrors(res)
+              var displayedErrors = reportValues[0].join("<br>")
+              var displayedPasses =reportValues[1].join("<br>")
+              document.getElementById("para-validate-folders").innerHTML = "<b>High-level folders: </b><br>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>"
               }
-            }
         })
         ////// check for file requirements
         client.invoke("api_validate_files", filePath, (error, res) => {
@@ -2277,14 +2277,10 @@ validateLocalDSBtn.addEventListener("click", function() {
             log.error(error)
           } else {
               document.getElementById("para-local-ds-info").innerHTML = "Checking for file requirements..." + smileyCan
-              //// if no errors are raised
-              if (res["errors"].length===0) {
-                document.getElementById("para-validate-files").innerHTML = "<span style='color:green'><b>This dataset passes all file requirements!</b></span>" + smileyCan
-              } else {
-                var errorList = reportErrors(res)
-                var displayedValue = errorList.join("<br>")
-                document.getElementById("para-validate-files").innerHTML = "<b>The below files failed to meet SPARC requirements: </b><br>" + "<span style='color:red'>"+ displayedValue + "</span>"
-              }
+              var reportValues = reportErrors(res)
+              var displayedErrors = reportValues[0].join("<br>")
+              var displayedPasses =reportValues[1].join("<br>")
+              document.getElementById("para-validate-files").innerHTML = "<b>Sub-folders and files: </b><br>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>"
             }
         })
         ////// check for manifest file requirements
@@ -2296,15 +2292,30 @@ validateLocalDSBtn.addEventListener("click", function() {
           } else {
               document.getElementById("para-local-ds-info").innerHTML = "Checking for manifest file..." + smileyCan
               //// if no errors are raised
-              if (res["errors"].length===0) {
-                document.getElementById("para-validate-manifest").innerHTML = "<span style='color:green'><b>The manifest file of this dataset passes all SPARC requirements!</b></span>" + smileyCan
-              } else {
-                var errorList = reportErrors(res)
-                var displayedValue = errorList.join("<br>")
-                document.getElementById("para-validate-manifest").innerHTML = "<b>Manifest files failed to meet these SPARC requirements: </b><br>" + "<span style='color:red'>" + displayedValue + "</span>"
+              var reportValues = reportErrors(res)
+              var displayedErrors = reportValues[0].join("<br>")
+              var displayedPasses =reportValues[1].join("<br>")
+              document.getElementById("para-validate-manifest").innerHTML = "<b>Manifest file: </b><br>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>"
               }
-            }
         })
+        ////// check for submission and dataset_description file requirements
+        // client.invoke("api_validate_submission_dataset_description_files", filePath, (error, res) => {
+        //   document.getElementById("para-local-ds-info").innerHTML = ""
+        //   if (error) {
+        //     console.log(error)
+        //     log.error(error)
+        //   } else {
+        //       document.getElementById("para-local-ds-info").innerHTML = "Checking for samples and subjects files..." + smileyCan
+        //       //// if no errors are raised
+        //       if (res["errors"].length===0) {
+        //         document.getElementById("para-validate-submission-dd").innerHTML = "<span style='color:green'><b>The submission and dataset_description files of this dataset passes all SPARC requirements!</b></span>" + smileyCan
+        //       } else {
+        //         var errorList = reportErrors(res)
+        //         var displayedValue = errorList.join("<br>")
+        //         document.getElementById("para-validate-submission-dd").innerHTML = "<b>Submission and dataset_description files failed to meet these requirements: </b><br>" + "<span style='color:red'>" + displayedValue + "</span>"
+        //       }
+        //     }
+        // })
         ////// check for subjects and samples file requirements
         client.invoke("api_validate_subject_sample_files", filePath, (error, res) => {
           document.getElementById("para-local-ds-info").innerHTML = ""
@@ -2313,16 +2324,12 @@ validateLocalDSBtn.addEventListener("click", function() {
             log.error(error)
           } else {
               document.getElementById("para-local-ds-info").innerHTML = "Checking for samples and subjects files..." + smileyCan
-              //// if no errors are raised
-              if (res["errors"].length===0) {
-                document.getElementById("para-validate-samples-subjects").innerHTML = "<span style='color:green'><b>The samples and subjects file of this dataset passes all SPARC requirements!</b></span>" + smileyCan
-              } else {
-                var errorList = reportErrors(res)
-                var displayedValue = errorList.join("<br>")
-                document.getElementById("para-validate-samples-subjects").innerHTML = "<b>Samples and subjects files failed to meet these requirements: </b><br>" + "<span style='color:red'>" + displayedValue + "</span>"
-                document.getElementById("para-local-ds-info").innerHTML = ""
-                document.getElementById("para-local-ds-info").innerHTML = "Done!"
-              }
+              var reportValues = reportErrors(res)
+              var displayedErrors = reportValues[0].join("<br>")
+              var displayedPasses =reportValues[1].join("<br>")
+              document.getElementById("para-validate-samples-subjects").innerHTML = "<b>Samples and subjects files: </b><br>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>"
+              document.getElementById("para-local-ds-info").innerHTML = ""
+              document.getElementById("para-local-ds-info").innerHTML = "Done!"
             }
         })
     }

@@ -86,6 +86,9 @@ class SodaApi(object):
     def api_validate_subject_sample_files(self, rootFolder):
         return validate_subject_sample_files(rootFolder)
 
+    def api_validate_submission_dataset_description_files(self, rootFolder):
+        return validate_submission_dataset_description_files(rootFolder)
+
     ### Bf
     def api_bf_add_account(self, keyname, key, secret):
         try:

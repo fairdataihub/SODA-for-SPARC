@@ -85,6 +85,7 @@ class DictValidator:
     def __init__(self):
         self.fatal = []
         self.warnings = []
+        self.passes = []
 
     def get_files_folders(self,path):
         """
@@ -160,12 +161,19 @@ class DictValidator:
 
         if not p:
             self.fatal.append("This dataset is missing the 'primary' folder.")
+        else:
+            self.passes.append("This dataset contains a 'primary' folder")
         if not s:
-            self.fatal.append("This dataset is must contain either a 'subjects' or 'samples' folder.")
+            self.warnings.append("This dataset does not contain a 'subjects' or 'samples' folder. Typically, a dataset contains AT LEAST one of those folders.")
+        else:
+            self.passes.append("This dataset contains at least a 'subjects' or 'samples' folder")
         if not o:
             self.warnings.append("This dataset contains no optional folders.")
         if w:
-            self.fatal.append("This dataset contains non-standard folder names.")
+            self.fatal.append("This dataset contains non-standard folder names. The only folder names allowed are code, primary, docs, derivatives, protocol, and source.")
+        else:
+            self.passes.append("This dataset only contains folders that have standard folder names")
+
 
         checksumRootFolders = p+s
         if checksumRootFolders == 2:  # check for req folders
@@ -212,10 +220,16 @@ class DictValidator:
 
         if not dd:
             self.fatal.append("This dataset is missing the dataset_description file.")
+        else:
+            self.passes.append("This dataset contains a dataset_description file.")
         if (not subj) and (not sam):
             self.fatal.append("This dataset must contain a subjects or samples file.")
+        else:
+            self.passes.append("This dataset contains either a subjects or a samples file.")
         if not subm:
             self.fatal.append("This dataset is missing the submissions file.")
+        else:
+            self.passes.append("This dataset contains a submission file.")
         if not man:
             self.warnings.append("This dataset is missing a manifest file in the root folder. Will check in sub-folders...")
         if not rd:
@@ -251,9 +265,9 @@ class DictValidator:
             #print(manVector, len(terminal))
             if len(manVector) == len(terminal):
                 manPass = 1
+                self.passes.append("Manifest files are present in EITHER under the root folder or in sub-folders.")
             else:
                 self.fatal.append("Missing manifest file: Check that a manifest file is included either in each high-level SPARC folder or in each terminal folder of the folder structure.")
-
 
         return manPass, numManifest
 
@@ -363,11 +377,13 @@ class DictValidator:
 
         if numSubjDD == numSubjFolders:
             checkNumSubjDD = 1
+            self.passes.append("The # of subjects in dataset_description matches the # of subject folders")
         else:
             self.fatal.append("The # of subjects in dataset_description doesn't match the # of subject folders")
 
         if numSubjS  == numSubjFolders:
             checkNumSubjS = 1
+            self.passes.append("The # of subjects in subjects file matches the # of subject folders")
         else:
             self.fatal.append("The # of subjects in subjects file doesn't match the # of subject folders")
 
@@ -381,8 +397,11 @@ class DictValidator:
         for d in dPathList:
             allContents = os.listdir(d)
             if not allContents:
-                warnings.append("The folder {} is an empty folder".format(d))
+                self.fatal.append("The folder {} is an empty folder".format(d))
                 emptyFolderPass = 1
+
+        if emptyFolderPass == 0:
+            self.passes.append("This dataset contains no empty folders.")
 
         return emptyFolderPass
 
@@ -396,6 +415,9 @@ class DictValidator:
                 self.warnings.append("A DS.STORE file exists in this dataset.  Please remove {} and re-validate".format(f))
                 dsStoreCheck = 1
 
+        if dsStoreCheck == 0:
+            self.passes.append("This dataset does not contain any DS.STORE file.")
+
         return dsStoreCheck
 
     ## no empty files
@@ -407,6 +429,9 @@ class DictValidator:
             if os.path.getsize(f) == 0:
                 self.fatal.append("{} is an empty file.  Please remove and re-validate".format(f))
                 fileSizeCheck = 1
+
+        if fileSizeCheck != 0:
+            self.passes.append("This dataset contains no empty files.")
 
         return fileSizeCheck
 
@@ -434,6 +459,8 @@ class DictValidator:
                 else:
                     self.fatal.append("The file {} does not start at (0,0). Please fix and revalidate.".format(f))
 
+            if startOkCheck != 0:
+                self.passes.append("All .csv and .xlsx files start with the right format")
             return startOkCheck
 
 
@@ -466,6 +493,8 @@ class DictValidator:
                     if chardet.detect(rawdata)['encoding'] != 'utf-8':
                         utf8Check = 0
                         self.warnings.append("The file {} is not encoded using UTF-8".format(f))
+                    else:
+                        self.passes.append("All .csv files in this dataset are UTF-8 encoded.")
 
         return utf8Check
 
@@ -518,6 +547,9 @@ class DictValidator:
                 self.warnings.append("There is a blank row in {}. Please correct and revalidate".format(f))
             else:
                 skipRowCheck = 0
+
+        if skipRowCheck == 0:
+            self.passes.append("All .csv and .xlsx files in this dataset does not contain any blank rows followed by non-blank rows.")
 
         return skipRowCheck
 
@@ -629,6 +661,9 @@ class DictValidator:
         if m in colsVec:
             rowsValCheck = 0
 
+        if rowsValCheck == 0:
+            self.passes.append("Required columns in all files contain values.")
+
         return rowsValCheck
 
 
@@ -662,13 +697,21 @@ class DictValidator:
         if subjectsFile:
             if subjColsLenCheck == 0:
                 self.fatal.append("The subjects file does not contain all of the required columns. Please remediate and revalidate.")
+            else:
+                self.passes.append("The subjects file contains all of the required columns.")
             if subjColsCheck == 0:
                 self.fatal.append("The subjects file column headings do not match the required headings or are in the wrong order. Please remediate and revalidate.")
+            else:
+                self.passes.append("The subjects file column headings match the required headings and are in the right order")
         if samplesFile:
             if samColsLenCheck == 0:
                 self.fatal.append("The samples file does not contain all of the required columns. Please remediate and revalidate.")
+            else:
+                self.passes.append("The samples file contains all of the required columns.")
             if samColsCheck == 0:
                 self.fatal.append("The samples file column headings do not match the required headings or are in the wrong order. Please remediate and revalidate.")
+            else:
+                self.passes.append("The samples file column headings match the required headings and are in the right order.")
 
         # set the variables that are not applicable to the current dataset to "NA"
         if subjectsFile == 0:
@@ -769,8 +812,10 @@ class DictValidator:
                             count += 1
                     numSamFolders[folderName] = count
                 #print("numSamFolders = {}".format(numSamFolders))
+                self.passes.append("Primary folder is present in top-level directory.")
             else:
                 self.fatal.append("No primary folder found in top-level directory.")
+            self.passes.append("This dataset contains a samples file.")
         else:
             self.warnings.append("No samples file found. If this is incorrect, please check filename and revalidate.")
 
@@ -840,19 +885,23 @@ class DictValidator:
             # now check each combination for consistency
             if numSamDD == totalFol:
                 checkSamFolDD = 1
+                self.passes.append("The # of samples reported in the dataset_description file match the # of sample folders.")
             else:
-                self.fatal.append("The # of samples reported in the dataset_description file doesn't match the # of sample folders")
+                self.fatal.append("The # of samples reported in the dataset_description file doesn't match the # of sample folders.")
 
             if numSamDD == totalFil:
                 checkSamFilDD = 1
+                self.passes.append("The # of samples reported in the dataset_description file match the # of samples reported in the samples file.")
             else:
-                self.fatal.append("The # of samples reported in the dataset_description file doesn't match the # of samples reported in the samples file")
+                self.fatal.append("The # of samples reported in the dataset_description file doesn't match the # of samples reported in the samples file.")
 
             if totalFil == totalFol:
                 checkSamFilFol = 1
+                self.passes.append("The # of samples reported in the samples file match the # of sample folders.")
             else:
-                self.fatal.append("The # of samples reported in the samples file doesn't match the # of sample folders")
+                self.fatal.append("The # of samples reported in the samples file doesn't match the # of sample folders.")
 
+            self.passes.append("This dataset does not contain a dataset_description file.")
 
         else:
             self.fatal.append("Checking number of samples, no dataset_description file found.")
@@ -917,12 +966,12 @@ class DictValidator:
                     colVals = self.get_col_vals_csv(fullFilePath,names[0])
                 if a == files[1]:
                     colVals = self.get_col_vals_xlsx(fullFilePath,names[0])
-                else:
-                    pass
                 # we just need to check whether there are any repeats in subjectID here
         if len(colVals) != len(set(colVals)):
             self.warnings.append("There are duplicate subject ID's in the subjects file!")
             uniqueSubIDFlag = 0
+        else:
+            self.passes.append("There are no repeats in subject ID's in the subjects file.")
 
         # samples next;
         colValsSub = []
@@ -984,9 +1033,12 @@ class DictValidator:
         print("checking dataset_description required columns...")
         for d in range(len(self.ddCols)):
             if ddVariables[d] != self.ddCols[d]:
-                self.fatal.append("there is a problem with the dataset_description file: {}, {}".format(ddVariables[d],self.ddCols[d]))
-                print("there is a problem with the dataset_description file: {}, {}".format(ddVariables[d],self.ddCols[d]))
+                self.fatal.append("There is a problem with the dataset_description file: {}, {}".format(ddVariables[d],self.ddCols[d]))
+                print("There is a problem with the dataset_description file: {}, {}".format(ddVariables[d],self.ddCols[d]))
                 checkDDVarsFlag = 0
+
+        if checkDDVarsFlag != 0 and checkDDValsFlag != 0:
+            self.passes.append("The dataset description file has correct variables and they are in the right order. All required fields are populated.")
 
         return checkDDVarsFlag, checkDDValsFlag
 
@@ -1029,6 +1081,8 @@ class DictValidator:
                 self.fatal.append("There is a problem with the submission file: {}, {}".format(sVariables[d],self.submCols[d]))
                 print("there is a problem with the submission file: {}, {}".format(sVariables[d],self.submCols[d]))
                 checkSVarsFlag = 0
+        if checkSVarsFlag != 0 and checkSValsFlag != 0:
+            self.passes.append("The submission file has correct variables and they are in the right order. All three fields are populated.")
 
         return checkSVarsFlag, checkSValsFlag
 
@@ -1047,9 +1101,6 @@ def validate_folders(vPath):
     rootFolderPass, numSubjFolders = validator.check_for_req_folders(rootFolder)
     print("Does this dataset contain the required folders? = "+str(rootFolderPass))
 
-    #check for empty folders
-    emptyFolderPass = validator.check_empty_folders(dPathList)
-    print("Does this dataset contain empty folders? = "+str(emptyFolderPass))
 
     # check the root folder for require files
     rootFilePass, rootMan, rootDD = validator.check_for_req_files(rootFolder)
@@ -1063,7 +1114,7 @@ def validate_folders(vPath):
     print("\n")
     print("warnings = ")
     print(validator.warnings)
-    return {'errors': validator.fatal}
+    return {'errors': validator.fatal, 'pass': validator.passes}
 
 
 ###### GRAB FILE AND SUB-FOLDER INFO ###########
@@ -1079,7 +1130,7 @@ def validate_files(vPath):
     #check for empty folders
     emptyFolderPass = validator.check_empty_folders(dPathList)
     print("Does this dataset contain empty folders? = "+str(emptyFolderPass))
-    
+
     #check for empty files
     fileSizeCheck = validator.check_file_size(fPathList)
     print("Does this dataset contain empty files? = "+str(fileSizeCheck))
@@ -1100,7 +1151,7 @@ def validate_files(vPath):
     print("\n")
     print("warnings = ")
     print(validator.warnings)
-    return {'errors': validator.fatal}
+    return {'errors': validator.fatal, 'pass': validator.passes}
 
 ############################ MANIFEST FILE #############################
 def validate_manifest_file(vPath):
@@ -1132,7 +1183,7 @@ def validate_manifest_file(vPath):
     print("\n")
     print("warnings = ")
     print(validatorMain.warnings)
-    return {'errors': validatorMain.fatal}
+    return {'errors': validatorMain.fatal, 'pass': validatorMain.passes}
 
 ########################### SAMPLES, SUBJETCS FILES #####################
 def validate_subject_sample_files(vPath):
@@ -1191,8 +1242,34 @@ def validate_subject_sample_files(vPath):
     print("\n")
     print("warnings = ")
     print(validatorMain.warnings)
-    return {'errors': validatorMain.fatal}
+    return {'errors': validatorMain.fatal, 'pass': validatorMain.passes}
 
+############################ Submission and Dataset_description files #############################
+def validate_submission_dataset_description_files(vPath):
+
+    ### Instantiate 2 instances: 1 to grab just a method's output and 1 main class to get warnings and errors.
+    validatorMain = DictValidator()
+    validator = DictValidator()
+
+    ###### GRAB FILE AND FOLDER INFO ###########
+    # collect file and folder info from the path given by the user
+    rootFolder, fList, fPathList, dPathList = validatorMain.get_files_folders(vPath)
+
+    # check for submission file requirements
+    checkSVarsFlag, checkSValsFlag = validatorMain.check_submission(rootFolder)
+
+    # check for dataset_description file requirements
+    checkDDVarsFlag, checkDDValsFlag = validatorMain.check_dataset_description(rootFolder)
+
+    # print out summary of warnings and fatal errors
+    # print("\n")
+    # print("Fatal Errors and Warnings")
+    # print("fatal = ")
+    # print(validatorMain.fatal)
+    # print("\n")
+    # print("warnings = ")
+    # print(validatorMain.warnings)
+    return {'errors': validatorMain.fatal}
 
 # if __name__ == "__main__":
 #     vPath = "/home/karl/Work/SPARC/test_data_new_xlsx"
