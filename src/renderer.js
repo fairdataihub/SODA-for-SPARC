@@ -2246,7 +2246,7 @@ ipcRenderer.on('selected-validate-local-dataset', (event, filepath) => {
 validateLocalDSBtn.addEventListener("click", function() {
   //// pass in the filepath and call python functions here
   var filePath = document.getElementById("input-local-ds-select").placeholder
-  if (filePath==="Select a file") {
+  if (filePath==="Select a folder") {
     document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset!</span>"
   } else  {
       if (filePath != null){
