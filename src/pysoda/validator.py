@@ -156,21 +156,26 @@ class DictValidator:
                             numSubjFolders += 1
                 elif c in self.optFolderNames:   #check for optional folders
                     o = 1
-                else:      #non-standard folders are present
-                    w = 1
+
+        if p==0 and s==0 and o==0: #non-standard folders are present
+            w = 1
 
         if not p:
             self.fatal.append("This dataset is missing the 'primary' folder.")
         else:
             self.passes.append("This dataset contains a 'primary' folder")
+
         if not s:
             self.warnings.append("This dataset does not contain a 'subjects' or 'samples' folder. Typically, a dataset contains AT LEAST one of those folders.")
         else:
             self.passes.append("This dataset contains at least a 'subjects' or 'samples' folder")
+
         if not o:
             self.warnings.append("This dataset contains no optional folders.")
-        if w:
+
+        if w == 1:
             self.fatal.append("This dataset contains non-standard folder names. The only folder names allowed are code, primary, docs, derivatives, protocol, and source.")
+
         else:
             self.passes.append("This dataset only contains folders that have standard folder names")
 
@@ -265,9 +270,12 @@ class DictValidator:
             #print(manVector, len(terminal))
             if len(manVector) == len(terminal):
                 manPass = 1
-                self.passes.append("Manifest files are present in EITHER under the root folder or in sub-folders.")
-            else:
-                self.fatal.append("Missing manifest file: Check that a manifest file is included either in each high-level SPARC folder or in each terminal folder of the folder structure.")
+
+        if manPass == 1:
+            self.passes.append("Manifest files are present in EITHER under the root folder OR in sub-folders.")
+
+        else:
+            self.fatal.append("Missing manifest file: Check that a manifest file is included either in each high-level SPARC folder or in each terminal folder of the folder structure.")
 
         return manPass, numManifest
 
@@ -342,8 +350,10 @@ class DictValidator:
         # this checks that the number of subject folders is the same as the value given in
         # dataset_description and in the subjects file.
 
+        subjectsFilePresent = 0
         checkNumSubjDD = 0
         checkNumSubj = 0
+        checkNumSubjS = 0
         numSubjDD = 0
         numSubjS = 0
         toCheck = "Number of subjects"
@@ -369,11 +379,16 @@ class DictValidator:
                             numSubjDD = self.read_row_1value_xlsx(fullFilePath, toCheck)
                     if fileName == "subjects":
                         #print("...found subjects file")
+                        subjectsFilePresent = 1
                         if fileExtension == ".csv":
                             numSubjS = self.find_num_rows_csv(fullFilePath)
                             #print(numSubjS)
                         if fileExtension == ".xlsx":
                             numSubjS = self.find_num_rows_xlsx(fullFilePath)
+
+        if subjectsFilePresent == 0:
+            self.fatal.append("Subjects file is not present.")
+            return checkNumSubjDD, checkNumSubjS, numSubjDD, numSubjS, numSubjFolders
 
         if numSubjDD == numSubjFolders:
             checkNumSubjDD = 1
@@ -493,8 +508,9 @@ class DictValidator:
                     if chardet.detect(rawdata)['encoding'] != 'utf-8':
                         utf8Check = 0
                         self.warnings.append("The file {} is not encoded using UTF-8".format(f))
-                    else:
-                        self.passes.append("All .csv files in this dataset are UTF-8 encoded.")
+
+        if utf8Check == 1:
+            self.passes.append("All .csv files in this dataset are UTF-8 encoded.")
 
         return utf8Check
 
@@ -789,6 +805,7 @@ class DictValidator:
         allContents = os.listdir(rootFolder)
         # continue only if there is a samples file
         if "samples.xlsx" or "samples.csv" in allContents:
+            self.passes.append("This dataset contains a samples file.")
             # continue only if there is a primary folder
             if "primary" in allContents:
                 pPath = rootFolder+'/'+"primary"+'/'
@@ -812,10 +829,9 @@ class DictValidator:
                             count += 1
                     numSamFolders[folderName] = count
                 #print("numSamFolders = {}".format(numSamFolders))
-                self.passes.append("Primary folder is present in top-level directory.")
             else:
                 self.fatal.append("No primary folder found in top-level directory.")
-            self.passes.append("This dataset contains a samples file.")
+
         else:
             self.warnings.append("No samples file found. If this is incorrect, please check filename and revalidate.")
 
@@ -839,6 +855,8 @@ class DictValidator:
         numSamFolders = {}
         toCheck = "Number of samples"
 
+        checkSamplesPresent = 0
+        checkDDPresent = 0
         checkSamFolDD = 0
         checkSamFilDD = 0
         checkSamFilFol = 0
@@ -856,6 +874,7 @@ class DictValidator:
                     # I'm assuming that the number of samples given in the DD file
                     # is the TOTAL number of samples
                     if fileName == "dataset_description":
+                        checkDDPresent = 1
                         if fileExtension == ".csv":
                             numSamDD = self.read_row_1value_csv(fullFilePath, toCheck)
                         if fileExtension == ".xlsx":
@@ -863,8 +882,13 @@ class DictValidator:
 
                     # if there is a samples file, find a dict for num samples/subject
                     if fileName == "samples":
+                        checkSamplesPresent = 1
                         #print("...found samples file!")
                         numSamFile = self.read_samples_file(fullFilePath)
+
+            if checkSamplesPresent == 0:
+                self.fatal.append("Samples file is not present.")
+                return checkSamFolDD, checkSamFilDD, checkSamFilFol
 
             numSamFolders = self.find_num_sample_folders(rootFolder)
 
@@ -900,11 +924,6 @@ class DictValidator:
                 self.passes.append("The # of samples reported in the samples file match the # of sample folders.")
             else:
                 self.fatal.append("The # of samples reported in the samples file doesn't match the # of sample folders.")
-
-            self.passes.append("This dataset does not contain a dataset_description file.")
-
-        else:
-            self.fatal.append("Checking number of samples, no dataset_description file found.")
 
         return checkSamFolDD, checkSamFilDD, checkSamFilFol
 
@@ -952,6 +971,8 @@ class DictValidator:
         names = ["subject_id", "sample_id"]
         files = ["subjects.csv", "subjects.xlsx", "samples.csv", "samples.xlsx"]
         extensions = ["csv", "xlsx"]
+        samplesFilePresent = 0
+        subjectFilePresent = 0
         uniqueSubIDFlag = 1
         uniqueSamIDFlag = 1
         colVals = []
@@ -964,14 +985,11 @@ class DictValidator:
             if os.path.isfile(fullFilePath):
                 if a == files[0]:
                     colVals = self.get_col_vals_csv(fullFilePath,names[0])
+                    subjectFilePresent = 1
                 if a == files[1]:
                     colVals = self.get_col_vals_xlsx(fullFilePath,names[0])
-                # we just need to check whether there are any repeats in subjectID here
-        if len(colVals) != len(set(colVals)):
-            self.warnings.append("There are duplicate subject ID's in the subjects file!")
-            uniqueSubIDFlag = 0
-        else:
-            self.passes.append("There are no repeats in subject ID's in the subjects file.")
+                    subjectFilePresent = 1
+
 
         # samples next;
         colValsSub = []
@@ -982,18 +1000,36 @@ class DictValidator:
                 if a == files[2]:
                     colValsSub = self.get_col_vals_csv(fullFilePath,names[0])
                     colValsSam = self.get_col_vals_csv(fullFilePath,names[1])
+                    samplesFilePresent = 1
                 elif a == files[3]:
                     colValsSub = self.get_col_vals_xlsx(fullFilePath,names[0])
                     colValsSam = self.get_col_vals_xlsx(fullFilePath,names[1])
-                else:
-                    pass
+                    samplesFilePresent = 1
+
+        if subjectFilePresent == 0:
+            return uniqueSubIDFlag, uniqueSamIDFlag
+
+        if samplesFilePresent == 0:
+            return uniqueSubIDFlag, uniqueSamIDFlag
+
+        # we just need to check whether there are any repeats in subjectID here
+        if len(colVals) != len(set(colVals)):
+            self.fatal.append("There are duplicate subject ID's in the subjects file!")
+            uniqueSubIDFlag = 0
 
         # here have to include values 1st two columns in comparison
         for i in range(len(colValsSub)):
             for j in range(i+1,len(colValsSub)):
                 if colValsSub[i] == colValsSub[j] and colValsSam[i] == colValsSam[j]:
                     uniqueSamIDFlag = 0
+                    self.fatal.append("There are duplicate (subject ID, sample ID) values in the samples file!")
                     break
+
+        if uniqueSubIDFlag == 1:
+            self.passes.append("There are no repeats in subject ID's in the subjects file.")
+
+        if uniqueSamIDFlag == 1:
+            self.passes.append("The samples file has a unique combination of the first two column values (subject ID, sample ID).")
 
         return uniqueSubIDFlag, uniqueSamIDFlag
 
@@ -1114,7 +1150,7 @@ def validate_folders(vPath):
     print("\n")
     print("warnings = ")
     print(validator.warnings)
-    return {'errors': validator.fatal, 'pass': validator.passes}
+    return {'errors': validator.fatal, 'pass': validator.passes, 'warnings': validator.warnings}
 
 
 ###### GRAB FILE AND SUB-FOLDER INFO ###########
@@ -1143,6 +1179,14 @@ def validate_files(vPath):
     utf8Check = validator.check_csv_utf8(fPathList)
     print("Are CSV files encoded in UTF-8? = "+str(utf8Check))
 
+    #check for skipped rows in csv files
+    skipRowCheck = validator.check_skipped_rows(fPathList)
+    print("Are there any skipped rows in the required files? = "+str(skipRowCheck))
+
+    #check for starting on row 0 or (0,0)
+    fileStartCheck = validator.check_file_start(fPathList)
+    print("Do files start at row 0 (csv) or (0,0) (xlsx)? = "+str(fileStartCheck))
+
     # print out summary of warnings and fatal errors
     print("\n")
     print("Fatal Errors and Warnings")
@@ -1151,7 +1195,7 @@ def validate_files(vPath):
     print("\n")
     print("warnings = ")
     print(validator.warnings)
-    return {'errors': validator.fatal, 'pass': validator.passes}
+    return {'errors': validator.fatal, 'pass': validator.passes, 'warnings': validator.warnings}
 
 ############################ MANIFEST FILE #############################
 def validate_manifest_file(vPath):
@@ -1183,7 +1227,7 @@ def validate_manifest_file(vPath):
     print("\n")
     print("warnings = ")
     print(validatorMain.warnings)
-    return {'errors': validatorMain.fatal, 'pass': validatorMain.passes}
+    return {'errors': validatorMain.fatal, 'pass': validatorMain.passes, 'warnings': validatorMain.warnings}
 
 ########################### SAMPLES, SUBJETCS FILES #####################
 def validate_subject_sample_files(vPath):
@@ -1214,19 +1258,11 @@ def validate_subject_sample_files(vPath):
     checkNumSubjDD, checkNumSubjS, numSubjDD, numSubjS, numSubjFolders = validatorMain.check_num_subjects(numSubjFolders, rootFolder, rootDD)
     print("Does the number of subjects folders match the numbers given in the dataset_description and subjects files? = "+ str(checkNumSubjDD)+" and "+str(checkNumSubjS))
 
-    #check for starting on row 0 or (0,0)
-    fileStartCheck = validatorMain.check_file_start(fPathList)
-    print("Do files start at row 0 (csv) or (0,0) (xlsx)? = "+str(fileStartCheck))
-
     #check that the number of samples match between dataset description, samples, and actual folders
     checkSamFolDD, checkSamFilDD, checkSamFilFol = validatorMain.check_num_samples(rootFolder, rootDD)
     print("Does the number of samples in dataset_description match the number of sample folders? = "+str(checkSamFolDD))
     print("Does the number of samples in dataset_description file match the number in the samples file? = "+str(checkSamFilDD))
     print("Does the number of sample folders match the number in the samples file? = "+str(checkSamFilFol))
-
-    #check for skipped rows in csv files
-    skipRowCheck = validatorMain.check_skipped_rows(fPathList)
-    print("Are there any skipped rows in the required files? = "+str(skipRowCheck))
 
     # check that the IDs in the subjects and samples files are unique
     uniqueSubIDFlag, uniqueSamIDFlag = validatorMain.check_unique_ids(rootFolder)
@@ -1242,7 +1278,7 @@ def validate_subject_sample_files(vPath):
     print("\n")
     print("warnings = ")
     print(validatorMain.warnings)
-    return {'errors': validatorMain.fatal, 'pass': validatorMain.passes}
+    return {'errors': validatorMain.fatal, 'pass': validatorMain.passes, 'warnings': validatorMain.warnings}
 
 ############################ Submission and Dataset_description files #############################
 def validate_submission_dataset_description_files(vPath):
@@ -1261,14 +1297,6 @@ def validate_submission_dataset_description_files(vPath):
     # check for dataset_description file requirements
     checkDDVarsFlag, checkDDValsFlag = validatorMain.check_dataset_description(rootFolder)
 
-    # print out summary of warnings and fatal errors
-    # print("\n")
-    # print("Fatal Errors and Warnings")
-    # print("fatal = ")
-    # print(validatorMain.fatal)
-    # print("\n")
-    # print("warnings = ")
-    # print(validatorMain.warnings)
     return {'errors': validatorMain.fatal}
 
 # if __name__ == "__main__":

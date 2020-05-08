@@ -2210,24 +2210,20 @@ function checkEmptyFolders(pathList) {
 function reportErrors(resObj) {
   var passList = []
   var errorList = []
+  var warningList = []
   for (var i=0;i<resObj["errors"].length;i++) {
     errorList.push(resObj["errors"][i])
   }
   for (var i=0; i<resObj["pass"].length;i++) {
     passList.push(resObj["pass"][i])
   }
-  return [errorList, passList]
+  for (var i=0; i<resObj["warnings"].length;i++) {
+    warningList.push(resObj["warnings"][i])
+  }
+  return [errorList, passList, warningList]
 }
 
-
-validateCurrentDSBtn.addEventListener("click", function() {
-
-})
-
-
-
 //// when users click on Import local dataset
-
 document.getElementById("input-local-ds-select").addEventListener("click", function() {
   ipcRenderer.send('open-file-dialog-validate-local-ds')
 })
@@ -2242,6 +2238,101 @@ ipcRenderer.on('selected-validate-local-dataset', (event, filepath) => {
     }
 })
 
+function showLocalValidateMessages() {
+  document.getElementById("para-validate-folders").style.display = "block"
+  document.getElementById("para-validate-files").style.display = "block"
+  document.getElementById("para-validate-manifest").style.display = "block"
+  document.getElementById("para-validate-samples-subjects").style.display = "block"
+  // document.getElementById("para-validate-submission-dd").style.display = "block"
+}
+
+function localValidateFolders(filepath) {
+  client.invoke("api_validate_folders", filepath, (error, res) => {
+    if (error) {
+      console.log(error)
+      log.error(error)
+    } else {
+        document.getElementById("para-local-ds-info").innerHTML = "Checking for folder requirements..." + smileyCan
+        var reportValues = reportErrors(res)
+        var displayedErrors = reportValues[0].join("<br>")
+        var displayedPasses = reportValues[1].join("<br>")
+        var displayedWarnings = reportValues[2].join("<br>")
+        document.getElementById("para-validate-folders").innerHTML = "<b>High-level folders: </b><br>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>" + "<br>" + "<span style='color: orange'>" + displayedWarnings + "</span>"
+        }
+  })
+}
+
+function localValidateFiles(filepath) {
+  client.invoke("api_validate_files", filepath, (error, res) => {
+    if (error) {
+      console.log(error)
+      log.error(error)
+    } else {
+        document.getElementById("para-local-ds-info").innerHTML = "Checking for file requirements..." + smileyCan
+        var reportValues = reportErrors(res)
+        var displayedErrors = reportValues[0].join("<br>")
+        var displayedPasses =reportValues[1].join("<br>")
+        var displayedWarnings = reportValues[2].join("<br>")
+        document.getElementById("para-validate-files").innerHTML = "<b>Sub-folders and files: </b>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>" + "<br>" + "<span style='color: orange'>" + displayedWarnings + "</span>"
+      }
+  })
+}
+
+function localValidateManifest(filepath) {
+  client.invoke("api_validate_manifest_file", filepath, (error, res) => {
+    if (error) {
+      console.log(error)
+      log.error(error)
+    } else {
+        document.getElementById("para-local-ds-info").innerHTML = "Checking for manifest file..." + smileyCan
+        var reportValues = reportErrors(res)
+        var displayedErrors = reportValues[0].join("<br>")
+        var displayedPasses =reportValues[1].join("<br>")
+        var displayedWarnings = reportValues[2].join("<br>")
+        document.getElementById("para-validate-manifest").innerHTML = "<b>Manifest file: </b> <br>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>" + "<span style='color: orange'>" + "<br>" + displayedWarnings + "</span>"
+        }
+  })
+}
+
+function localValidateSubSam(filepath) {
+  client.invoke("api_validate_subject_sample_files", filepath, (error, res) => {
+    if (error) {
+      console.log(error)
+      log.error(error)
+    } else {
+        document.getElementById("para-local-ds-info").innerHTML = "Checking for samples and subjects files..." + smileyCan
+        var reportValues = reportErrors(res)
+        var displayedErrors = reportValues[0].join("<br>")
+        var displayedPasses =reportValues[1].join("<br>")
+        var displayedWarnings = reportValues[2].join("<br>")
+        document.getElementById("para-validate-samples-subjects").innerHTML = "<b>Samples and subjects files: </b> <br>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>" + "<span style='color: orange'>" + "<br>" + displayedWarnings + "</span>"
+        document.getElementById("para-local-ds-info").innerHTML = ""
+        document.getElementById("para-local-ds-info").innerHTML = "Done!"
+      }
+  })
+}
+
+function localValidateSubmission(filepath) {
+  // client.invoke("api_validate_submission_dataset_description_files", filePath, (error, res) => {
+  //   document.getElementById("para-local-ds-info").innerHTML = ""
+  //   if (error) {
+  //     console.log(error)
+  //     log.error(error)
+  //   } else {
+  //       document.getElementById("para-local-ds-info").innerHTML = "Checking for samples and subjects files..." + smileyCan
+  //       //// if no errors are raised
+  //       if (res["errors"].length===0) {
+  //         document.getElementById("para-validate-submission-dd").innerHTML = "<span style='color:green'><b>The submission and dataset_description files of this dataset passes all SPARC requirements!</b></span>" + smileyCan
+  //       } else {
+  //         var errorList = reportErrors(res)
+  //         var displayedValue = errorList.join("<br>")
+  //         document.getElementById("para-validate-submission-dd").innerHTML = "<b>Submission and dataset_description files failed to meet these requirements: </b><br>" + "<span style='color:red'>" + displayedValue + "</span>"
+  //       }
+  //     }
+  // })
+}
+
+
 //// Validate a local dataset
 validateLocalDSBtn.addEventListener("click", function() {
   //// pass in the filepath and call python functions here
@@ -2250,89 +2341,21 @@ validateLocalDSBtn.addEventListener("click", function() {
     document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset!</span>"
   } else  {
       if (filePath != null){
-        document.getElementById("para-validate-folders").style.display = "block"
-        document.getElementById("para-validate-files").style.display = "block"
-        document.getElementById("para-validate-manifest").style.display = "block"
-        document.getElementById("para-validate-samples-subjects").style.display = "block"
-        document.getElementById("para-validate-submission-dd").style.display = "block"
+        validateLocalDSBtn.disabled = true
+        document.getElementById("para-local-ds-info").innerHTML = ""
+        showLocalValidateMessages();
         ////// check for folder requirements
-        client.invoke("api_validate_folders", filePath, (error, res) => {
-          document.getElementById("para-local-ds-info").innerHTML = ""
-          if (error) {
-            console.log(error)
-            log.error(error)
-          } else {
-              document.getElementById("para-local-ds-info").innerHTML = "Checking for folder requirements..." + smileyCan
-              var reportValues = reportErrors(res)
-              var displayedErrors = reportValues[0].join("<br>")
-              var displayedPasses =reportValues[1].join("<br>")
-              document.getElementById("para-validate-folders").innerHTML = "<b>High-level folders: </b><br>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>"
-              }
-        })
+        localValidateFolders(filePath);
         ////// check for file requirements
-        client.invoke("api_validate_files", filePath, (error, res) => {
-          document.getElementById("para-local-ds-info").innerHTML = ""
-          if (error) {
-            console.log(error)
-            log.error(error)
-          } else {
-              document.getElementById("para-local-ds-info").innerHTML = "Checking for file requirements..." + smileyCan
-              var reportValues = reportErrors(res)
-              var displayedErrors = reportValues[0].join("<br>")
-              var displayedPasses =reportValues[1].join("<br>")
-              document.getElementById("para-validate-files").innerHTML = "<b>Sub-folders and files: </b><br>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>"
-            }
-        })
+        localValidateFiles(filePath)
         ////// check for manifest file requirements
-        client.invoke("api_validate_manifest_file", filePath, (error, res) => {
-          document.getElementById("para-local-ds-info").innerHTML = ""
-          if (error) {
-            console.log(error)
-            log.error(error)
-          } else {
-              document.getElementById("para-local-ds-info").innerHTML = "Checking for manifest file..." + smileyCan
-              //// if no errors are raised
-              var reportValues = reportErrors(res)
-              var displayedErrors = reportValues[0].join("<br>")
-              var displayedPasses =reportValues[1].join("<br>")
-              document.getElementById("para-validate-manifest").innerHTML = "<b>Manifest file: </b><br>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>"
-              }
-        })
+        localValidateManifest(filePath)
         ////// check for submission and dataset_description file requirements
-        // client.invoke("api_validate_submission_dataset_description_files", filePath, (error, res) => {
-        //   document.getElementById("para-local-ds-info").innerHTML = ""
-        //   if (error) {
-        //     console.log(error)
-        //     log.error(error)
-        //   } else {
-        //       document.getElementById("para-local-ds-info").innerHTML = "Checking for samples and subjects files..." + smileyCan
-        //       //// if no errors are raised
-        //       if (res["errors"].length===0) {
-        //         document.getElementById("para-validate-submission-dd").innerHTML = "<span style='color:green'><b>The submission and dataset_description files of this dataset passes all SPARC requirements!</b></span>" + smileyCan
-        //       } else {
-        //         var errorList = reportErrors(res)
-        //         var displayedValue = errorList.join("<br>")
-        //         document.getElementById("para-validate-submission-dd").innerHTML = "<b>Submission and dataset_description files failed to meet these requirements: </b><br>" + "<span style='color:red'>" + displayedValue + "</span>"
-        //       }
-        //     }
-        // })
+        localValidateSubmission(filePath)
         ////// check for subjects and samples file requirements
-        client.invoke("api_validate_subject_sample_files", filePath, (error, res) => {
-          document.getElementById("para-local-ds-info").innerHTML = ""
-          if (error) {
-            console.log(error)
-            log.error(error)
-          } else {
-              document.getElementById("para-local-ds-info").innerHTML = "Checking for samples and subjects files..." + smileyCan
-              var reportValues = reportErrors(res)
-              var displayedErrors = reportValues[0].join("<br>")
-              var displayedPasses =reportValues[1].join("<br>")
-              document.getElementById("para-validate-samples-subjects").innerHTML = "<b>Samples and subjects files: </b><br>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>"
-              document.getElementById("para-local-ds-info").innerHTML = ""
-              document.getElementById("para-local-ds-info").innerHTML = "Done!"
-            }
-        })
+        localValidateSubSam(filePath)
     }
+    validateLocalDSBtn.disabled = false
   }
 })
 
