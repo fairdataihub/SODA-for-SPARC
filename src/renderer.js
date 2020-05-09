@@ -2054,7 +2054,7 @@ curateDatasetBtn.addEventListener('click', () => {
 })
 
 
-//////////////// Validate datasets ////////////
+////////////////// Validate current datasets ////////////////////////////////
 function jsonToTablePreview(table, jsonVariable){
   var keyvect = Object.keys(jsonVariable)
   var countDouble  = 0
@@ -2136,9 +2136,6 @@ function jsonToTablePreviewMetadata(table, jsonVariable) {
   }
   return table
 }
-
-/////////////////////// Validate local dataset //////////////////////////////
-
 ////// Preview current dataset //////
 previewCurrentDsStatus.addEventListener("change", function() {
   var codePreviewTable = document.getElementById("table-current-ds-validator")
@@ -2169,43 +2166,7 @@ function grabCurrentDSValidator() {
   return jsonvect
 }
 
-////////////// function checking for required folders
-function checkRequiredFolders(errorList, passList) {
-  var jsonvect = grabCurrentDSValidator()
-  var emptyFolderList = []
-  for (key of jsonvect) {
-    if (jsonvect[key].length===0) {
-      emptyFolderList.push(key)
-    }
-  }
-  if (emptyFolderList.length>0) {
-    var emptyFolders =  emptyFolderList.join(',')
-    errorList.append(`The dataset does not contain the required folder: ${emptyFolders}`)
-  } else {
-    passList.append("Pass: Dataset contains all required SPARC folders")
-  }
-}
-
-function checkEmptyFolders(pathList) {
-  //// listDir in node
-  //// check that directories have children
-  // client.invoke("api_val_check_empty_folders", pathList, (error, res) => {
-  //   if (error) {
-  //     /// TO DO: handle errors when unable to communicate with python
-  //     console.log(error)
-  //     log.error(error)
-  //   } else {
-  //       var errors = JSON.parse(res)
-  //       if (errors['errors'].length > 0) {
-  //         // report error
-  //       }
-  //       if (errors['warnings'].length > 0) {
-  //         // report warnings
-  //       }
-  //   }
-  // })
-}
-
+/////////////////////// Validate local dataset //////////////////////////////
 //// function to grab errors and warnings from api functions
 function reportErrors(resObj) {
   var passList = []
@@ -2238,14 +2199,6 @@ ipcRenderer.on('selected-validate-local-dataset', (event, filepath) => {
     }
 })
 
-function showLocalValidateMessages() {
-  document.getElementById("para-validate-folders").style.display = "block"
-  document.getElementById("para-validate-files").style.display = "block"
-  document.getElementById("para-validate-manifest").style.display = "block"
-  document.getElementById("para-validate-samples-subjects").style.display = "block"
-  // document.getElementById("para-validate-submission-dd").style.display = "block"
-}
-
 function localValidateFolders(filepath) {
   client.invoke("api_validate_folders", filepath, (error, res) => {
     if (error) {
@@ -2254,11 +2207,22 @@ function localValidateFolders(filepath) {
     } else {
         document.getElementById("para-local-ds-info").innerHTML = "Checking for folder requirements..." + smileyCan
         var reportValues = reportErrors(res)
-        var displayedErrors = reportValues[0].join("<br>")
-        var displayedPasses = reportValues[1].join("<br>")
-        var displayedWarnings = reportValues[2].join("<br>")
-        document.getElementById("para-validate-folders").innerHTML = "<b>High-level folders: </b><br>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>" + "<br>" + "<span style='color: orange'>" + displayedWarnings + "</span>"
+        var displayedErrors = reportValues[0].join("\n")
+        var displayedPasses = reportValues[1].join("\n")
+        var displayedWarnings = reportValues[2].join("\n")
+        if (reportValues[0].length != 0) {
+          document.getElementById("textarea-validate-folders-errors").style.display = "block"
+          document.getElementById("textarea-validate-folders-errors").value = displayedErrors
         }
+        if (reportValues[1].length != 0) {
+          document.getElementById("textarea-validate-folders-passes").style.display = "block"
+          document.getElementById("textarea-validate-folders-passes").value = displayedPasses
+        }
+        if (reportValues[2].length != 0) {
+          document.getElementById("textarea-validate-folders-warnings").style.display = "block"
+          document.getElementById("textarea-validate-folders-warnings").value = displayedWarnings
+        }
+      }
   })
 }
 
@@ -2270,10 +2234,21 @@ function localValidateFiles(filepath) {
     } else {
         document.getElementById("para-local-ds-info").innerHTML = "Checking for file requirements..." + smileyCan
         var reportValues = reportErrors(res)
-        var displayedErrors = reportValues[0].join("<br>")
-        var displayedPasses =reportValues[1].join("<br>")
-        var displayedWarnings = reportValues[2].join("<br>")
-        document.getElementById("para-validate-files").innerHTML = "<b>Sub-folders and files: </b>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>" + "<br>" + "<span style='color: orange'>" + displayedWarnings + "</span>"
+        var displayedErrors = reportValues[0].join("\n")
+        var displayedPasses =reportValues[1].join("\n")
+        var displayedWarnings = reportValues[2].join("\n")
+        if (reportValues[0].length != 0) {
+          document.getElementById("textarea-validate-files-errors").style.display = "block"
+          document.getElementById("textarea-validate-files-errors").value = displayedErrors
+        }
+        if (reportValues[1].length != 0) {
+          document.getElementById("textarea-validate-files-passes").style.display = "block"
+          document.getElementById("textarea-validate-files-passes").value = displayedPasses
+        }
+        if (reportValues[2].length != 0) {
+          document.getElementById("textarea-validate-files-warnings").style.display = "block"
+          document.getElementById("textarea-validate-files-warnings").value = displayedWarnings
+        }
       }
   })
 }
@@ -2286,11 +2261,22 @@ function localValidateManifest(filepath) {
     } else {
         document.getElementById("para-local-ds-info").innerHTML = "Checking for manifest file..." + smileyCan
         var reportValues = reportErrors(res)
-        var displayedErrors = reportValues[0].join("<br>")
-        var displayedPasses =reportValues[1].join("<br>")
-        var displayedWarnings = reportValues[2].join("<br>")
-        document.getElementById("para-validate-manifest").innerHTML = "<b>Manifest file: </b> <br>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>" + "<span style='color: orange'>" + "<br>" + displayedWarnings + "</span>"
+        var displayedErrors = reportValues[0].join("\n")
+        var displayedPasses =reportValues[1].join("\n")
+        var displayedWarnings = reportValues[2].join("\n")
+        if (reportValues[0].length != 0) {
+          document.getElementById("textarea-validate-manifest-errors").style.display = "block"
+          document.getElementById("textarea-validate-manifest-errors").value = displayedErrors
         }
+        if (reportValues[1].length != 0) {
+          document.getElementById("textarea-validate-manifest-passes").style.display = "block"
+          document.getElementById("textarea-validate-manifest-passes").value = displayedPasses
+        }
+        if (reportValues[2].length != 0) {
+          document.getElementById("textarea-validate-manifest-warnings").style.display = "block"
+          document.getElementById("textarea-validate-manifest-warnings").value = displayedWarnings
+        }
+      }
   })
 }
 
@@ -2302,10 +2288,21 @@ function localValidateSubSam(filepath) {
     } else {
         document.getElementById("para-local-ds-info").innerHTML = "Checking for samples and subjects files..." + smileyCan
         var reportValues = reportErrors(res)
-        var displayedErrors = reportValues[0].join("<br>")
-        var displayedPasses =reportValues[1].join("<br>")
-        var displayedWarnings = reportValues[2].join("<br>")
-        document.getElementById("para-validate-samples-subjects").innerHTML = "<b>Samples and subjects files: </b> <br>" + "<span style='color:red'>" + displayedErrors + "</span>" + "<br>" + "<span style='color:green'>" + displayedPasses + "</span>" + "<span style='color: orange'>" + "<br>" + displayedWarnings + "</span>"
+        var displayedErrors = reportValues[0].join("\n")
+        var displayedPasses =reportValues[1].join("\n")
+        var displayedWarnings = reportValues[2].join("\n")
+        if (reportValues[0].length != 0) {
+          document.getElementById("textarea-validate-samples-subjects-errors").style.display = "block"
+          document.getElementById("textarea-validate-samples-subjects-errors").value = displayedErrors
+        }
+        if (reportValues[1].length != 0) {
+          document.getElementById("textarea-validate-samples-subjects-passes").style.display = "block"
+          document.getElementById("textarea-validate-samples-subjects-passes").value = displayedPasses
+        }
+        if (reportValues[2].length != 0) {
+          document.getElementById("textarea-validate-samples-subjects-warnings").style.display = "block"
+          document.getElementById("textarea-validate-samples-subjects-warnings").value = displayedWarnings
+        }
         document.getElementById("para-local-ds-info").innerHTML = ""
         document.getElementById("para-local-ds-info").innerHTML = "Done!"
       }
@@ -2332,8 +2329,11 @@ function localValidateSubmission(filepath) {
   // })
 }
 
+function showLocalValidateMessages() {
+  document.getElementById("div-display-local-val-messages").style.display = "block"
+}
 
-//// Validate a local dataset
+//// Click on "validate" button to validate a local dataset
 validateLocalDSBtn.addEventListener("click", function() {
   //// pass in the filepath and call python functions here
   var filePath = document.getElementById("input-local-ds-select").placeholder
@@ -2344,20 +2344,18 @@ validateLocalDSBtn.addEventListener("click", function() {
         validateLocalDSBtn.disabled = true
         document.getElementById("para-local-ds-info").innerHTML = ""
         showLocalValidateMessages();
-        ////// check for folder requirements
         localValidateFolders(filePath);
-        ////// check for file requirements
         localValidateFiles(filePath)
-        ////// check for manifest file requirements
         localValidateManifest(filePath)
-        ////// check for submission and dataset_description file requirements
         localValidateSubmission(filePath)
-        ////// check for subjects and samples file requirements
         localValidateSubSam(filePath)
-    }
+      }
     validateLocalDSBtn.disabled = false
   }
 })
+
+/////// Click to "generate" validator report (text file) ///////
+
 
 //////////////////////////////////
 // Manage Dataset
