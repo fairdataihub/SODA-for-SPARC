@@ -2232,7 +2232,7 @@ function localValidateFiles(filepath) {
       console.log(error)
       log.error(error)
     } else {
-        document.getElementById("para-local-ds-info").innerHTML = "Checking for file requirements..." + smileyCan
+        document.getElementById("para-local-ds-info").innerHTML = "Checking for file requirements..."
         var reportValues = reportErrors(res)
         var displayedErrors = reportValues[0].join("\n")
         var displayedPasses =reportValues[1].join("\n")
@@ -2259,7 +2259,7 @@ function localValidateManifest(filepath) {
       console.log(error)
       log.error(error)
     } else {
-        document.getElementById("para-local-ds-info").innerHTML = "Checking for manifest file..." + smileyCan
+        document.getElementById("para-local-ds-info").innerHTML = "Checking for manifest file..."
         var reportValues = reportErrors(res)
         var displayedErrors = reportValues[0].join("\n")
         var displayedPasses =reportValues[1].join("\n")
@@ -2286,7 +2286,7 @@ function localValidateSubSam(filepath) {
       console.log(error)
       log.error(error)
     } else {
-        document.getElementById("para-local-ds-info").innerHTML = "Checking for samples and subjects files..." + smileyCan
+        document.getElementById("para-local-ds-info").innerHTML = "Checking for samples and subjects files..." 
         var reportValues = reportErrors(res)
         var displayedErrors = reportValues[0].join("\n")
         var displayedPasses =reportValues[1].join("\n")
