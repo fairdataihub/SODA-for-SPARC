@@ -2205,7 +2205,7 @@ function localValidateFolders(filepath) {
       console.log(error)
       log.error(error)
     } else {
-        document.getElementById("para-local-ds-info").innerHTML = "Checking for folder requirements..." + smileyCan
+        document.getElementById("para-local-ds-info").innerHTML = "Checking for folder requirements..."
         var reportValues = reportErrors(res)
         var displayedErrors = reportValues[0].join("\n")
         var displayedPasses = reportValues[1].join("\n")
@@ -2338,7 +2338,7 @@ validateLocalDSBtn.addEventListener("click", function() {
   //// pass in the filepath and call python functions here
   var filePath = document.getElementById("input-local-ds-select").placeholder
   if (filePath==="Select a folder") {
-    document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset!</span>"
+    document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset first</span>"
   } else  {
       if (filePath != null){
         validateLocalDSBtn.disabled = true
