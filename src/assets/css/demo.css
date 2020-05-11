@@ -941,33 +941,24 @@ input::-webkit-calendar-picker-indicator {
 }
 
 /* Text areas for error messages - Validator */
-.validate-messages-container-textarea {
+.span-validate-local {
   font-weight: 400;
   font: inherit;
-  width: 100%;
-  border: 1px solid #C0C0C0;
-  margin-bottom: 10px;
-  border-radius: 5px;
+  border-radius: 5px; */
   transition: #258193 .25s ease-out;
-  padding: 4px 6px;
   height:auto;
-  /* max-height:60px; */
-  resize: vertical;
   display: none;
 }
 
 .errors {
-  border-color: red;
   color: red
 }
 
 .passes {
-  border-color: green;
   color: green
 }
 
 .warnings {
-  border-color: orange;
   color: orange
 }
 

@@ -343,43 +343,13 @@
             </div>
           </form>
           <div id="div-validate-current-ds" class="datasetsaveoption" style="display:block;margin-top:70px">
-            <div class="demo-controls">
-              <label class="switch">
-                <input id="generate-preview-validator" name="preview-current-ds" type="checkbox" class="with-style-manifest"/>
-                <span class="slider round"></span>
-              </label>
-              <label id="label-preview-current-ds" class="labelradio-manifest" style="padding-left:10px"> Preview dataset before validating
-              </label>
+            <h5>Preview current dataset before validating: </h5>
+            <div class="demo-controls" id="div-preview-current-ds-validator">
+              <button type="button" id="button-preview-local-ds" class="demo-button">Preview</button>
+              <p id="para-preview-local-ds" style="float:righ;margin-left:7px;padding: 2 2;margin: 0 0;"</p>
             </div>
             <br>
-            <div class="demo-controls" id="div-preview-current-ds-validator" style="display:none">
-            <table id="table-current-ds-validator" class = "pathtable">
-              <tr class="parent" id="val-code">
-                <th class="table-header">code</th>
-              </tr>
-              <tr class="parent" id="val-derivative">
-                <th class="table-header">derivative</th>
-              </tr>
-              <tr class="parent" id="val-docs">
-                <th class="table-header">docs</th>
-              </tr>
-              <tr class="parent" id="val-primary">
-                <th class="table-header">primary</th>
-              </tr>
-              <tr class="parent" id="val-protocol">
-                <th class="table-header">protocol</th>
-              </tr>
-              <tr class="parent" id="val-source">
-                <th class="table-header">source</th>
-              </tr>
-            </table>
-            <table id="table-metadata-preview" class = "pathtable">
-              <tr class="parent" id="val-metadata">
-                <th class="table-header">metadata</th>
-              </tr>
-            </table>
-            </div>
-
+            <h5>Proceed to validate dataset:</h5>
             <button id="button-validate-current-ds" class="demo-button">Validate</button>
             <!-- <textarea id="para-validate-current-ds" ></textarea> -->
             <!-- <div id="para-validate-current-ds">
@@ -389,7 +359,7 @@
 
           </div>
           <div id="div-validate-local-ds" class="datasetsaveoption" style="display:none;margin-top:70px">
-            <h5>Local dataset: </h5>
+            <h5>Select a local dataset: </h5>
             <div class="container-milestone-upload" style="display:flex;">
               <input class="milestone-upload-text" id="input-local-ds-select" style="width:50%;text-align:center;height:40px" type="text" readonly placeholder="Select a folder"/>
             </div>
@@ -399,30 +369,35 @@
             <p id="para-local-ds-info" style="float:right;margin-left:7px;padding: 2 2;margin: 0 0;text-align:left;vertical-align:middle;"></p>
             </div>
             <br>
-            <div id="div-display-local-val-messages" style="display:none">
-              <h5>Validating results:</h5>
-              <h5 align="center">High-level folders: </h5>
-                <textarea class="validate-messages-container-textarea errors" readonly id="textarea-validate-folders-errors"></textarea>
-                <textarea class="validate-messages-container-textarea passes"readonly id="textarea-validate-folders-passes"></textarea>
-                <textarea class="validate-messages-container-textarea warnings" readonly id="textarea-validate-folders-warnings"></textarea>
+            <h5 id="h-validating-results-local" style="display:none">Validating results:</h5>
+            <div id="div-display-local-val-messages" contenteditable="true" style="display:none;border:1px solid black;padding:10px">
 
-              <h5 align="center">Subfolders and files: </h5>
-                <textarea class="validate-messages-container-textarea errors" readonly id="textarea-validate-files-errors"></textarea>
-                <textarea class="validate-messages-container-textarea passes" readonly id="textarea-validate-files-passes"></textarea>
-                <textarea class="validate-messages-container-textarea warnings" readonly id="textarea-validate-files-warnings"></textarea>
+              <span style="color:black"><b>High-level folders: </b></span>
+              <span class="span-validate-local errors" id="textarea-validate-folders-errors"></span>
+              <span class="span-validate-local warnings" id="textarea-validate-folders-warnings"></span>
+              <span class="span-validate-local passes" id="textarea-validate-folders-passes"></span>
+              <br>
 
-              <h5 align="center">Manifest files: </h5>
-                <textarea class="validate-messages-container-textarea errors"readonly id="textarea-validate-manifest-errors"></textarea>
-                <textarea class="validate-messages-container-textarea passes"readonly id="textarea-validate-manifest-passes"></textarea>
-                <textarea class="validate-messages-container-textarea warnings" readonly id="textarea-validate-manifest-warnings"></textarea>
+              <span style="color:black"><b>Subfolders and files: </b></span>
+              <span class="span-validate-local errors" id="textarea-validate-files-errors"></span>
+              <span class="span-validate-local warnings" id="textarea-validate-files-warnings"></span>
+              <span class="span-validate-local passes" id="textarea-validate-files-passes"></span>
+              <br>
 
-              <h5 align="center">Samples and subjects files: </h5>
-                <textarea class="validate-messages-container-textarea errors" readonly id="textarea-validate-samples-subjects-errors"></textarea>
-                <textarea class="validate-messages-container-textarea passes" readonly id="textarea-validate-samples-subjects-passes"></textarea>
-                <textarea class="validate-messages-container-textarea warnings" readonly id="textarea-validate-samples-subjects-warnings"></textarea>
+              <span style="color:black"><b>Manifest files: </b></span>
+              <span class="span-validate-local errors" id="textarea-validate-manifest-errors"></span>
+              <span class="span-validate-local warnings" id="textarea-validate-manifest-warnings"></span>
+              <span class="span-validate-local passes" id="textarea-validate-manifest-passes"></span>
+              <br>
+
+              <span style="color:black"><b>Samples and subjects files: </b></span>
+              <span class="span-validate-local errors" id="textarea-validate-samples-subjects-errors"></span>
+              <span class="span-validate-local warnings" id="textarea-validate-samples-subjects-warnings"></span>
+              <span class="span-validate-local passes" id="textarea-validate-samples-subjects-passes"></span>
 
             </div>
           </div>
+
           <div id="div-validate-dataset-next-step" align="right">
             <h5> </h5>
             <button id="button-validate-dataset-next-step" class="demo-button-next-step"> Next Step </button>

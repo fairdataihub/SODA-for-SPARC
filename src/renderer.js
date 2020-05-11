@@ -168,7 +168,7 @@ const selectSaveFileOrganizationMetadataBtn = document.getElementById('button-se
 // Validate dataset //
 const validateCurrentDSBtn = document.getElementById("button-validate-current-ds")
 const validateLocalDSBtn = document.getElementById("button-validate-local-ds")
-const previewCurrentDsStatus = document.querySelector('#generate-preview-validator')
+const previewCurrentDsValidate = document.getElementById('button-preview-local-ds')
 
 // Generate dataset //
 const createNewStatus = document.querySelector('#create-newdataset')
@@ -2055,105 +2055,44 @@ curateDatasetBtn.addEventListener('click', () => {
 
 
 ////////////////// Validate current datasets ////////////////////////////////
-function jsonToTablePreview(table, jsonVariable){
-  var keyvect = Object.keys(jsonVariable)
-  var countDouble  = 0
+// /////////////////////////////////////////////////////////////////////////
 
-  for (var j = 0; j < keyvect.length; j++) {
-    let SPARCfolder = keyvect[j]
-    var SPARCfolderid = SPARCfolder + '_org'
-    var rowcount = document.getElementById(SPARCfolderid).rowIndex
-    var pathlist = jsonVariable[SPARCfolder]
-    for (var i = 0; i < pathlist.length; i++){
-      if (pathlist[i] !== "" &&  countDouble === 0) {
-        var myheader = tableNotOrganized.rows[rowcount].cells[0]
-        if (myheader.className === "table-header"){
-          myheader.className = "table-header openfolder"
-        }
-        var r = rowcount + 1
-        while ((row = tableNotOrganized.rows[r]) && !/\bparent\b/.test(row.className)){
-          if (/\bopen\b/.test(row.className))
-            row.className = row.className.replace(/\bopen\b/," ")
-            r += 1
-        }
-      tableOrganizedCount = tableOrganizedCount + 1
-      var rownum = rowcount + i + 1
-      var table_len = tableOrganizedCount
-      if (fs.lstatSync(pathlist[i]).isDirectory()) {
-        var row = table.insertRow(rownum).outerHTML="<tr id='row-org"+table_len+"'style='color: #000000;'><td id='"+table_len+"'>"+ pathlist[i] +"</td></tr>";
+//// when users click on "Preview", show preview dataset in explorer
+previewCurrentDsValidate.addEventListener("click", function() {
+  document.getElementById("para-preview-local-ds").innerHTML = ""
+  document.getElementById("para-preview-local-ds").innerHTML = 'Please wait...'
+  previewCurrentDsValidate.disabled = true
+  if (alreadyOrganizedStatus.checked) {
+    var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
+  } else if (organizeDatasetStatus.checked) {
+    var jsonvect = tableToJsonWithDescription(tableNotOrganized)
+  }
+  var jsonpath = jsonvect[0]
+  if (manifestStatus.checked){
+    var keyvect = sparcFolderNames.slice()
+    for (var j = 0; j < keyvect.length; j++){
+      var folder = keyvect[j]
+      var folderPaths = jsonpath[folder]
+      if (folderPaths.length>0){
+        folderPaths.push(path.join(__dirname, "file_templates","manifest.xlsx"))
+      }
+    }
+  }
+  var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
+  jsonpath['main'] = jsonpathMetadata['metadata']
+  client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
+      if(error) {
+        log.error(error)
+        console.error(error)
+        var emessage = userError(error)
+        document.getElementById("para-preview-local-ds").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
-      var row = table.insertRow(rownum).outerHTML="<tr id='row-org"+table_len+"'style='color: #000000;'><td id='"+table_len+"'>"+ pathlist[i] +"</td></tr>";
+        document.getElementById("para-preview-local-ds").innerHTML = "Preview folder is available in a new file explorer window!";
       }
-    }
-  }
-  return table
-  }
-}
-
-function jsonToTablePreviewMetadata(table, jsonVariable) {
-  var rowcount = 0
-  var jsontable = tableToJsonMetadata(table)
-  var emessage = ''
-  var count = 0
-  var emessage2 = ''
-  var count2 = 0
-  var SPARCfolder = 'metadata'
-  var countDouble  = 0
-
-  var listfilePath = []
-
-  for (let filePath of jsontable[SPARCfolder]){
-      var extension = path.extname(filePath);
-      var file = path.basename(filePath,extension);
-      listfilePath.push(file)
-    }
-  var pathlist = jsonVariable[SPARCfolder]
-  for (i = 0; i < pathlist.length; i++) {
-
-    if (pathlist[i] !== "" &&  countDouble === 0) {
-      var myheader = tableMetadata.rows[rowcount].cells[0]
-      if (myheader.className === "table-header"){
-        myheader.className = "table-header openfolder"
-      }
-      var r = rowcount + 1
-      while ((row = tableMetadata.rows[r]) && !/\bparent\b/.test(row.className)){
-        if (/\bopen\b/.test(row.className))
-          row.className = row.className.replace(/\bopen\b/," ")
-          r += 1
-      }
-
-      var extension = path.extname(pathlist[i]);
-      var fileFull = path.basename(pathlist[i]);
-      var file = path.basename(pathlist[i],extension);
-
-    if (allowedMedataFiles.indexOf(fileFull) > -1 && listfilePath.indexOf(file) === -1) {
-      tableMetadataCount = tableMetadataCount + 1
-      var table_len= tableMetadataCount
-      var rownum = rowcount + i + 1
-      var row = table.insertRow(rownum).outerHTML="<tr id='row_metadata"+table_len+"'style='color: #000000;'><td>"+ pathlist[i] +"</td></tr>";
-      }
-    }
-  }
-  return table
-}
-////// Preview current dataset //////
-previewCurrentDsStatus.addEventListener("change", function() {
-  var codePreviewTable = document.getElementById("table-current-ds-validator")
-  var metadataPreviewTable = document.getElementById("table-metadata-preview")
-  if (this.checked) {
-    //// code to convert tableOrganized to json, and then populate preview table with json
-    var jsonPreviewFiles = tableToJson(tableNotOrganized)
-    var jsonPreviewMetadata = tableToJsonMetadata(tableMetadata)
-    console.log(jsonPreviewMetadata)
-    console.log(jsonPreviewFiles)
-    var tablePreviewFiles = jsonToTablePreview(codePreviewTable, jsonPreviewFiles)
-    var tablePreviewMetadata = jsonToTablePreviewMetadata(metadataPreviewTable, jsonPreviewMetadata)
-    ////
-    document.getElementById("div-preview-current-ds-validator").style.display = "block"
-  } else {
-    document.getElementById("div-preview-current-ds-validator").style.display = "none"
-  }
+      previewCurrentDsValidate.disabled = false
+  })
 })
+
 
 var errorBox = document.getElementById("para-validate-current-ds")
 
@@ -2191,6 +2130,9 @@ document.getElementById("input-local-ds-select").addEventListener("click", funct
 ipcRenderer.on('selected-validate-local-dataset', (event, filepath) => {
   if (filepath.length > 0) {
     if (filepath != null){
+      document.getElementById("para-local-ds-info").innerHTML = ""
+      document.getElementById("div-display-local-val-messages").style.display = "none"
+      document.getElementById("h-validating-results-local").style.display = "none"
       // used to communicate value to button-import-local-ds click eventlistener
       document.getElementById("input-local-ds-select").placeholder = filepath[0];
     } else {
@@ -2204,23 +2146,26 @@ function localValidateFolders(filepath) {
     if (error) {
       console.log(error)
       log.error(error)
+      var emessage = userError(error)
+      document.getElementById("textarea-validate-folders-errors").style.display = "block"
+      document.getElementById("textarea-validate-folders-errors").innerHTML = "Failed to validate high-level folders due to errors: <br>" + emessage
     } else {
         document.getElementById("para-local-ds-info").innerHTML = "Checking for folder requirements..." + smileyCan
         var reportValues = reportErrors(res)
-        var displayedErrors = reportValues[0].join("\n")
-        var displayedPasses = reportValues[1].join("\n")
-        var displayedWarnings = reportValues[2].join("\n")
+        var displayedErrors = reportValues[0].join("<br>")
+        var displayedPasses = reportValues[1].join("<br>")
+        var displayedWarnings = reportValues[2].join("<br>")
         if (reportValues[0].length != 0) {
           document.getElementById("textarea-validate-folders-errors").style.display = "block"
-          document.getElementById("textarea-validate-folders-errors").value = displayedErrors
-        }
-        if (reportValues[1].length != 0) {
-          document.getElementById("textarea-validate-folders-passes").style.display = "block"
-          document.getElementById("textarea-validate-folders-passes").value = displayedPasses
+          document.getElementById("textarea-validate-folders-errors").innerHTML = displayedErrors
         }
         if (reportValues[2].length != 0) {
           document.getElementById("textarea-validate-folders-warnings").style.display = "block"
-          document.getElementById("textarea-validate-folders-warnings").value = displayedWarnings
+          document.getElementById("textarea-validate-folders-warnings").innerHTML = displayedWarnings
+        }
+        if (reportValues[1].length != 0) {
+          document.getElementById("textarea-validate-folders-passes").style.display = "block"
+          document.getElementById("textarea-validate-folders-passes").innerHTML = displayedPasses
         }
       }
   })
@@ -2231,23 +2176,26 @@ function localValidateFiles(filepath) {
     if (error) {
       console.log(error)
       log.error(error)
+      var emessage = userError(error)
+      document.getElementById("textarea-validate-files-errors").style.display = "block"
+      document.getElementById("textarea-validate-files-errors").innerHTML = "Failed to validate sub-folders and files due to errors: <br>" + emessage
     } else {
         document.getElementById("para-local-ds-info").innerHTML = "Checking for file requirements..." + smileyCan
         var reportValues = reportErrors(res)
-        var displayedErrors = reportValues[0].join("\n")
-        var displayedPasses =reportValues[1].join("\n")
-        var displayedWarnings = reportValues[2].join("\n")
+        var displayedErrors = reportValues[0].join("<br>")
+        var displayedPasses =reportValues[1].join("<br>")
+        var displayedWarnings = reportValues[2].join("<br>")
         if (reportValues[0].length != 0) {
           document.getElementById("textarea-validate-files-errors").style.display = "block"
-          document.getElementById("textarea-validate-files-errors").value = displayedErrors
-        }
-        if (reportValues[1].length != 0) {
-          document.getElementById("textarea-validate-files-passes").style.display = "block"
-          document.getElementById("textarea-validate-files-passes").value = displayedPasses
+          document.getElementById("textarea-validate-files-errors").innerHTML = displayedErrors
         }
         if (reportValues[2].length != 0) {
           document.getElementById("textarea-validate-files-warnings").style.display = "block"
-          document.getElementById("textarea-validate-files-warnings").value = displayedWarnings
+          document.getElementById("textarea-validate-files-warnings").innerHTML = displayedWarnings
+        }
+        if (reportValues[1].length != 0) {
+          document.getElementById("textarea-validate-files-passes").style.display = "block"
+          document.getElementById("textarea-validate-files-passes").innerHTML = displayedPasses
         }
       }
   })
@@ -2258,23 +2206,26 @@ function localValidateManifest(filepath) {
     if (error) {
       console.log(error)
       log.error(error)
+      var emessage = userError(error)
+      document.getElementById("textarea-validate-manifest-errors").style.display = "block"
+      document.getElementById("textarea-validate-manifest-errors").innerHTML = "Failed to validate manifest files due to errors: <br>" + emessage
     } else {
         document.getElementById("para-local-ds-info").innerHTML = "Checking for manifest file..." + smileyCan
         var reportValues = reportErrors(res)
-        var displayedErrors = reportValues[0].join("\n")
-        var displayedPasses =reportValues[1].join("\n")
-        var displayedWarnings = reportValues[2].join("\n")
+        var displayedErrors = reportValues[0].join("<br>")
+        var displayedPasses =reportValues[1].join("<br>")
+        var displayedWarnings = reportValues[2].join("<br>")
         if (reportValues[0].length != 0) {
           document.getElementById("textarea-validate-manifest-errors").style.display = "block"
-          document.getElementById("textarea-validate-manifest-errors").value = displayedErrors
-        }
-        if (reportValues[1].length != 0) {
-          document.getElementById("textarea-validate-manifest-passes").style.display = "block"
-          document.getElementById("textarea-validate-manifest-passes").value = displayedPasses
+          document.getElementById("textarea-validate-manifest-errors").innerHTML = displayedErrors
         }
         if (reportValues[2].length != 0) {
           document.getElementById("textarea-validate-manifest-warnings").style.display = "block"
-          document.getElementById("textarea-validate-manifest-warnings").value = displayedWarnings
+          document.getElementById("textarea-validate-manifest-warnings").innerHTML = displayedWarnings
+        }
+        if (reportValues[1].length != 0) {
+          document.getElementById("textarea-validate-manifest-passes").style.display = "block"
+          document.getElementById("textarea-validate-manifest-passes").innerHTML = displayedPasses
         }
       }
   })
@@ -2285,23 +2236,26 @@ function localValidateSubSam(filepath) {
     if (error) {
       console.log(error)
       log.error(error)
+      var emessage = userError(error)
+      document.getElementById("textarea-validate-samples-subjects-errors").style.display = "block"
+      document.getElementById("textarea-validate-samples-subjects-errors").innerHTML = "Failed to validate subjects and samples files due to errors: <br>" + emessage
     } else {
         document.getElementById("para-local-ds-info").innerHTML = "Checking for samples and subjects files..." + smileyCan
         var reportValues = reportErrors(res)
-        var displayedErrors = reportValues[0].join("\n")
-        var displayedPasses =reportValues[1].join("\n")
-        var displayedWarnings = reportValues[2].join("\n")
+        var displayedErrors = reportValues[0].join("<br>")
+        var displayedPasses =reportValues[1].join("<br>")
+        var displayedWarnings = reportValues[2].join("<br>")
         if (reportValues[0].length != 0) {
           document.getElementById("textarea-validate-samples-subjects-errors").style.display = "block"
-          document.getElementById("textarea-validate-samples-subjects-errors").value = displayedErrors
-        }
-        if (reportValues[1].length != 0) {
-          document.getElementById("textarea-validate-samples-subjects-passes").style.display = "block"
-          document.getElementById("textarea-validate-samples-subjects-passes").value = displayedPasses
+          document.getElementById("textarea-validate-samples-subjects-errors").innerHTML = displayedErrors
         }
         if (reportValues[2].length != 0) {
           document.getElementById("textarea-validate-samples-subjects-warnings").style.display = "block"
-          document.getElementById("textarea-validate-samples-subjects-warnings").value = displayedWarnings
+          document.getElementById("textarea-validate-samples-subjects-warnings").innerHTML = displayedWarnings
+        }
+        if (reportValues[1].length != 0) {
+          document.getElementById("textarea-validate-samples-subjects-passes").style.display = "block"
+          document.getElementById("textarea-validate-samples-subjects-passes").innerHTML = displayedPasses
         }
         document.getElementById("para-local-ds-info").innerHTML = ""
         document.getElementById("para-local-ds-info").innerHTML = "Done!"
@@ -2331,6 +2285,7 @@ function localValidateSubmission(filepath) {
 
 function showLocalValidateMessages() {
   document.getElementById("div-display-local-val-messages").style.display = "block"
+  document.getElementById("h-validating-results-local").style.display = "block"
 }
 
 //// Click on "validate" button to validate a local dataset
