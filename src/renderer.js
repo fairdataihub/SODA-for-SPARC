@@ -169,6 +169,7 @@ const selectSaveFileOrganizationMetadataBtn = document.getElementById('button-se
 const validateCurrentDSBtn = document.getElementById("button-validate-current-ds")
 const validateLocalDSBtn = document.getElementById("button-validate-local-ds")
 const previewCurrentDsStatus = document.querySelector('#generate-preview-validator')
+const validateDatasetReport = document.querySelector('#textarea-validate-dataset')
 
 // Generate dataset //
 const createNewStatus = document.querySelector('#create-newdataset')
@@ -2334,25 +2335,79 @@ function showLocalValidateMessages() {
 }
 
 //// Click on "validate" button to validate a local dataset
+// validateLocalDSBtn.addEventListener("click", function() {
+//   //// pass in the filepath and call python functions here
+//   var filePath = document.getElementById("input-local-ds-select").placeholder
+//   if (filePath==="Select a folder") {
+//     document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset first</span>"
+//   } else  {
+//       if (filePath != null){
+//         validateLocalDSBtn.disabled = true
+//         document.getElementById("para-local-ds-info").innerHTML = ""
+//         showLocalValidateMessages();
+//         localValidateFolders(filePath);
+//         localValidateFiles(filePath)
+//         localValidateManifest(filePath)
+//         localValidateSubmission(filePath)
+//         localValidateSubSam(filePath)
+//       }
+//     validateLocalDSBtn.disabled = false
+//   }
+// })
+
 validateLocalDSBtn.addEventListener("click", function() {
   //// pass in the filepath and call python functions here
-  var filePath = document.getElementById("input-local-ds-select").placeholder
-  if (filePath==="Select a folder") {
+  var datasetPath = document.getElementById("input-local-ds-select").placeholder
+  if (datasetPath==="Select a folder") {
     document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset first</span>"
   } else  {
-      if (filePath != null){
+      if (datasetPath != null){
         validateLocalDSBtn.disabled = true
-        document.getElementById("para-local-ds-info").innerHTML = ""
-        showLocalValidateMessages();
-        localValidateFolders(filePath);
-        localValidateFiles(filePath)
-        localValidateManifest(filePath)
-        localValidateSubmission(filePath)
-        localValidateSubSam(filePath)
+        client.invoke("api_validate_local_dataset", datasetPath, (error, res) => {
+          if (error) {
+            console.log(error)
+            log.error(error)
+          } else {
+            console.log(res)
+            checkCategory1 = "High-level folder structure"
+            validateDatasetReport.innerHTML = checkCategory1.bold()
+            messageDisplay = "<ul class='validatelist'>"
+
+            messageCategory = res['fatal']
+            if (messageCategory.length > 0){
+              for (i = 0; i < messageCategory.length; i++) {
+                message = validateMessageTransform(messageCategory[i])
+                messageDisplay += "<li class='bulleterror'>" + "<span style='color: red;'> " + message + "</span>" + "</li>"
+              } 
+            }
+            messageCategory = res['warnings']
+            if (messageCategory.length > 0){
+              for (i = 0; i < messageCategory.length; i++) {
+                message = validateMessageTransform(messageCategory[i])
+                messageDisplay += "<li class='bulletwarning'>" + "<span style='color: #F4B800;'> " + message + "</span>" + "</li>"
+              } 
+            }
+            messageCategory = res['pass']
+            if (messageCategory.length > 0){
+              for (i = 0; i < messageCategory.length; i++) {
+                message = validateMessageTransform(messageCategory[i])
+                messageDisplay += "<li class='bulletpass'>" + "<span style='color: green;'> " + message + "</span>" + "</li>"
+              } 
+            }
+            messageDisplay += "</ul>"
+            validateDatasetReport.innerHTML += messageDisplay
+
+          }
+        })  
+        validateLocalDSBtn.disabled = false
       }
-    validateLocalDSBtn.disabled = false
   }
 })
+
+function validateMessageTransform(inString) {
+  outString = inString.split("--").join("<br>")
+  return outString
+}
 
 /////// Click to "generate" validator report (text file) ///////
 

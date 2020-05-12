@@ -35,6 +35,8 @@ from openpyxl import load_workbook
 from openpyxl import Workbook
 from docx import Document
 
+from validator import validate_high_level_folder_structure
+
 ### Global variables
 curateprogress = ' '
 curatestatus = ' '
@@ -973,6 +975,21 @@ def curate_dataset_progress():
 
     return (curateprogress+elapsed_time_formatted_display, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time_formatted)
 
+### Validate local dataset
+def validate_local_dataset(dataset_path):
+
+    try:
+        validatorHighLevelFolder = validate_high_level_folder_structure(dataset_path)
+
+        res = {}
+        res['pass'] = validatorHighLevelFolder.passes
+        res['warnings'] = validatorHighLevelFolder.warnings
+        res['fatal'] = validatorHighLevelFolder.fatal
+
+        return res
+        
+    except Exception as e:
+        raise e
 
 ### Manage datasets (Blackfynn interface)
 def bf_add_account(keyname, key, secret):

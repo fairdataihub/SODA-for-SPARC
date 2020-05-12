@@ -399,7 +399,13 @@
             <p id="para-local-ds-info" style="float:right;margin-left:7px;padding: 2 2;margin: 0 0;text-align:left;vertical-align:middle;"></p>
             </div>
             <br>
-            <div id="div-display-local-val-messages" style="display:none">
+
+            <div id="div-validation-report" class="demo-controls" style="display:block; user-select: all">
+              <!-- <textarea id="textarea-validate-dataset" class="validate-textarea" rows="10" readonly style="width:100%; max-width:100%"></textarea> -->
+              <p id='textarea-validate-dataset' style='background: white'> <p>
+            </div>
+            
+            <div id="div-display-local-val-messages"  style="display:none">
               <h5>Validating results:</h5>
               <h5 align="center">High-level folders: </h5>
                 <textarea class="validate-messages-container-textarea errors" readonly id="textarea-validate-folders-errors"></textarea>
@@ -420,13 +426,15 @@
                 <textarea class="validate-messages-container-textarea errors" readonly id="textarea-validate-samples-subjects-errors"></textarea>
                 <textarea class="validate-messages-container-textarea passes" readonly id="textarea-validate-samples-subjects-passes"></textarea>
                 <textarea class="validate-messages-container-textarea warnings" readonly id="textarea-validate-samples-subjects-warnings"></textarea>
-
             </div>
+
           </div>
+
           <div id="div-validate-dataset-next-step" align="right">
             <h5> </h5>
             <button id="button-validate-dataset-next-step" class="demo-button-next-step"> Next Step </button>
           </div>
+
         </div>
       </div>
     </div>
@@ -499,7 +507,6 @@
               <div class="indeterminatebar"></div>
             </div>
             <p id='para-upload-select-account-status'> <p>
-
 
             <h5> Select Blackfynn dataset for uploading
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">

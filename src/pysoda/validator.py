@@ -61,8 +61,9 @@ import chardet
 import re
 
 class DictValidator:
-    reqFolderNames = ['primary', 'sub']
-    optFolderNames = ['samples', 'code', 'derivatives', 'docs', 'protocol']
+    reqFolderNames = ['primary']
+    reqSubFolderNames = ['subjects','samples']
+    optFolderNames = [ 'code', 'derivative', 'docs', 'protocol', 'source']
     optSubfolderNames = ['anat', 'ephys', 'microscopy', 'rna-seq', 'mri']
     reqFileNames = ['dataset_description.xlsx', 'dataset_description.csv', 'subjects.csv', 'subjects.xlsx', 'samples.xlsx', 'samples.xlsx', 'submission.xlsx', 'submission.csv']
     reqManifest = ['manifest.xlsx', 'manifest.csv']
@@ -136,57 +137,89 @@ class DictValidator:
     def check_for_req_folders(self, rootFolder):
         s = 0
         p = 0
+        e = 0
         o = 0
         w = 0
+        nonStandardFolders = ""
+        emptyFolders = ""
         numSubjFolders = 0
+        numSamjFolders = 0
         rootFolderPass = 0
+        
 
         # first check for req and optional folders at the root level
         allContents = os.listdir(rootFolder)
 
         for c in allContents:
-            if os.path.isdir(rootFolder+"/"+c):
-                if c == self.reqFolderNames[0]:   #primary folder
+            if os.path.isdir(os.path.join(rootFolder,c)):
+                if c == self.reqFolderNames[0]: #primary folder
                     p = 1
-                    # check for subjects and/or samples
-                    pContents = os.listdir(rootFolder+"/"+c)
-                    for pc in pContents:
-                        if self.reqFolderNames[1] in pc:
-                            s = 1
-                            numSubjFolders += 1
+                    pContents = os.listdir(os.path.join(rootFolder,c))
+                    if len(pContents) == 0: #check primary empty
+                        e = 1
+                        emptyFolders += " " + c + ","
+                    # check for subjects and samples folder within primary folder
+                    else:
+                        for pc in pContents:
+                            if os.path.isdir(os.path.join(rootFolder,c,pc)):
+                                if self.reqSubFolderNames[0] in pc:
+                                    s = 1
+                                    numSubjFolders += 1
+                                elif self.reqSubFolderNames[1] in pc:
+                                    s = 1
+                                    numSamjFolders += 1
                 elif c in self.optFolderNames:   #check for optional folders
                     o = 1
+                    pContents = os.listdir(os.path.join(rootFolder,c))
+                    if len(pContents) == 0: #check primary empty
+                        e = 1
+                        emptyFolders += " " + c + ","
+                else:
+                    nonStandardFolders += " " + c + ","
+                    w = 1
+                    
+#         if p==0 and s==0 and o==0: #non-standard folders are present
+#             w = 1
 
-        if p==0 and s==0 and o==0: #non-standard folders are present
-            w = 1
-
-        if not p:
-            self.fatal.append("This dataset is missing the 'primary' folder.")
-        else:
-            self.passes.append("This dataset contains a 'primary' folder")
-
-        if not s:
-            self.warnings.append("This dataset does not contain a 'subjects' or 'samples' folder. Typically, a dataset contains AT LEAST one of those folders.")
-        else:
-            self.passes.append("This dataset contains at least a 'subjects' or 'samples' folder")
-
-        if not o:
-            self.warnings.append("This dataset contains no optional folders.")
-
+        checkfolders1 = "All folders are SPARC standard folders"
+        checkfolders1f = "Only SPARC standard folders (“code”, “derivative”, “docs”, “primary”, “protocol”, and/or “source”, all small caps) are allowed. The following folder(s) must be removed:" 
+        
+        checkfolders2 = "A “primary” folder is included"
+        checkfolders2f = "A 'primary' folder is required in all datasets, make sure it is included"
+        
+        checkfolders3 = "All SPARC folders are non-empty"
+        checkfolders3f = "No empty folder should be included, include files or remove the following folder(s):"
+        
+        checkfolders4 = "A “subjects” and/or “samples” folder is included in the primary folder"
+                
         if w == 1:
-            self.fatal.append("This dataset contains non-standard folder names. The only folder names allowed are code, primary, docs, derivatives, protocol, and source.")
-
+            self.fatal.append(checkfolders1 + "--" + checkfolders1f + nonStandardFolders[:-1])
         else:
-            self.passes.append("This dataset only contains folders that have standard folder names")
+            self.passes.append(checkfolders1)
+                
+        if not p:
+            self.fatal.append(checkfolders2 + "--" + checkfolders2f)
+        else:
+            self.passes.append(checkfolders2)
+            
+        if e == 1:
+            self.fatal.append(checkfolders3 + "--" + checkfolders3f + emptyFolders[:-1])
+        else:
+            self.passes.append(checkfolders3)
 
+#        if not s:
+#            self.warnings.append(checkfolders3)
+#        else:
+#            self.passes.append(checkfolders3)
+            
+#         if not o:
+#             self.warnings.append("This dataset contains no optional folders.")
 
         checksumRootFolders = p+s
         if checksumRootFolders == 2:  # check for req folders
             rootFolderPass = 1
 
         return rootFolderPass, numSubjFolders
-
-
 
 
     def check_for_req_files(self, rootFolder):
@@ -202,7 +235,7 @@ class DictValidator:
 
         allContents = os.listdir(rootFolder)
         for c in allContents:
-            if os.path.isfile(rootFolder+"/"+c):
+            if os.path.isfile(os.path.join(rootFolder,c)):
                 if c == self.reqFileNames[0] or c == self.reqFileNames[1]:  #dataset_description
                     dd = 1
                 elif c == self.reqFileNames[2] or c == self.reqFileNames[3]:   #subjects
@@ -1124,6 +1157,33 @@ class DictValidator:
 
 
 ######## GRAB High-FOLDER and File INFO #######################
+def validate_high_level_folder_structure(vPath):
+    validator = DictValidator()
+
+    # collect file and folder info from the path given by the user
+    rootFolder, fList, fPathList, dPathList = validator.get_files_folders(vPath)
+
+    # figure out which folders are terminal and which contain other folders
+    terminal, notTerminal = validator.find_folder_status(dPathList)
+
+    # check the root folder for required and optional folders
+    rootFolderPass, numSubjFolders = validator.check_for_req_folders(rootFolder)
+    
+    return(validator)
+
+def validate_high_level_metadata_files(vPath):
+    validator = DictValidator()
+
+    # collect file and folder info from the path given by the user
+    rootFolder, fList, fPathList, dPathList = validator.get_files_folders(vPath)
+
+    # figure out which folders are terminal and which contain other folders
+    terminal, notTerminal = validator.find_folder_status(dPathList)
+
+    # check the root folder for required and optional folders
+    rootFolderPass, numSubjFolders = validator.check_for_req_folders(rootFolder)
+    
+    return(validator)
 def validate_folders(vPath):
     validator = DictValidator()
 
