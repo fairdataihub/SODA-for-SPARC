@@ -2150,7 +2150,7 @@ function localValidateFolders(filepath) {
       document.getElementById("textarea-validate-folders-errors").style.display = "block"
       document.getElementById("textarea-validate-folders-errors").innerHTML = "Failed to validate high-level folders due to errors: <br>" + emessage
     } else {
-        document.getElementById("para-local-ds-info").innerHTML = "Checking for folder requirements..." + smileyCan
+        document.getElementById("para-local-ds-info").innerHTML = "Checking for folder requirements..."
         var reportValues = reportErrors(res)
         var displayedErrors = reportValues[0].join("<br>")
         var displayedPasses = reportValues[1].join("<br>")
@@ -2180,7 +2180,7 @@ function localValidateFiles(filepath) {
       document.getElementById("textarea-validate-files-errors").style.display = "block"
       document.getElementById("textarea-validate-files-errors").innerHTML = "Failed to validate sub-folders and files due to errors: <br>" + emessage
     } else {
-        document.getElementById("para-local-ds-info").innerHTML = "Checking for file requirements..." + smileyCan
+        document.getElementById("para-local-ds-info").innerHTML = "Checking for file requirements..."
         var reportValues = reportErrors(res)
         var displayedErrors = reportValues[0].join("<br>")
         var displayedPasses =reportValues[1].join("<br>")
@@ -2210,7 +2210,7 @@ function localValidateManifest(filepath) {
       document.getElementById("textarea-validate-manifest-errors").style.display = "block"
       document.getElementById("textarea-validate-manifest-errors").innerHTML = "Failed to validate manifest files due to errors: <br>" + emessage
     } else {
-        document.getElementById("para-local-ds-info").innerHTML = "Checking for manifest file..." + smileyCan
+        document.getElementById("para-local-ds-info").innerHTML = "Checking for manifest file..."
         var reportValues = reportErrors(res)
         var displayedErrors = reportValues[0].join("<br>")
         var displayedPasses =reportValues[1].join("<br>")
@@ -2240,7 +2240,7 @@ function localValidateSubSam(filepath) {
       document.getElementById("textarea-validate-samples-subjects-errors").style.display = "block"
       document.getElementById("textarea-validate-samples-subjects-errors").innerHTML = "Failed to validate subjects and samples files due to errors: <br>" + emessage
     } else {
-        document.getElementById("para-local-ds-info").innerHTML = "Checking for samples and subjects files..." + smileyCan
+        document.getElementById("para-local-ds-info").innerHTML = "Checking for samples and subjects files..." 
         var reportValues = reportErrors(res)
         var displayedErrors = reportValues[0].join("<br>")
         var displayedPasses =reportValues[1].join("<br>")
@@ -2293,7 +2293,7 @@ validateLocalDSBtn.addEventListener("click", function() {
   //// pass in the filepath and call python functions here
   var filePath = document.getElementById("input-local-ds-select").placeholder
   if (filePath==="Select a folder") {
-    document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset!</span>"
+    document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset first</span>"
   } else  {
       if (filePath != null){
         validateLocalDSBtn.disabled = true
