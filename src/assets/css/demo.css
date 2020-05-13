@@ -1212,3 +1212,32 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+
+/* Validate list styling */
+.validatelist{
+  position: relative;
+  list-style: none;
+  margin-left: 0;
+  padding-left: 2em;
+  padding-bottom: 2em;
+}
+
+.validatelist li{
+  padding-bottom: 1em;
+  left: 0;
+  text-indent: -1.5em;
+}
+
+.validatelist li.bulletpass :before{
+  content:"\2705"; 
+}
+
+.validatelist li.bulletwarning :before{
+  content:"\26A0"; 
+  font-size: 20px
+}
+
+.validatelist li.bulleterror :before{
+  content: "\274C"; 
+}
