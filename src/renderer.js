@@ -168,7 +168,7 @@ const selectSaveFileOrganizationMetadataBtn = document.getElementById('button-se
 // Validate dataset //
 const validateCurrentDSBtn = document.getElementById("button-validate-current-ds")
 const validateLocalDSBtn = document.getElementById("button-validate-local-ds")
-const previewCurrentDsStatus = document.querySelector('#generate-preview-validator')
+const previewCurrentDsValidate = document.getElementById("button-preview-local-ds")
 const validateDatasetReport = document.querySelector('#textarea-validate-dataset')
 
 // Generate dataset //
@@ -2133,7 +2133,7 @@ ipcRenderer.on('selected-validate-local-dataset', (event, filepath) => {
     if (filepath != null){
       document.getElementById("para-local-ds-info").innerHTML = ""
       document.getElementById("div-display-local-val-messages").style.display = "none"
-      document.getElementById("h-validating-results-local").style.display = "none"
+      // document.getElementById("h-validating-results-local").style.display = "none"
       // used to communicate value to button-import-local-ds click eventlistener
       document.getElementById("input-local-ds-select").placeholder = filepath[0];
     } else {
@@ -2286,7 +2286,6 @@ function localValidateSubmission(filepath) {
 
 function showLocalValidateMessages() {
   document.getElementById("div-display-local-val-messages").style.display = "block"
-  document.getElementById("h-validating-results-local").style.display = "block"
 }
 
 //// Click on "validate" button to validate a local dataset
