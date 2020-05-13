@@ -10,7 +10,7 @@ from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_o
     bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load, bf_get_doi, bf_reserve_doi, \
     bf_get_publishing_status, bf_publish_dataset, \
     save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone,\
-    validate_local_dataset
+    validate_dataset
 
 from validator import DictValidator
 from validator import validate_folders, validate_files, validate_manifest_file, validate_subject_sample_files, \
@@ -75,14 +75,20 @@ class SodaApi(object):
             raise e
 
     ### Validate local dataset
-    def api_validate_local_dataset(self, rootFolder):
-        return validate_local_dataset(rootFolder)
+    def api_validate_dataset(self, validator_input):
+        try:
+            return validate_dataset(validator_input)
+        except Exception as e:
+            raise e
 
     def api_validate_folders(self, rootFolder):
         return validate_folders(rootFolder)
 
     def api_validate_files(self, rootFolder):
-        return validate_files(rootFolder)
+        try:
+            return validate_files(rootFolder)
+        except Exception as e:
+            raise e
 
     def api_validate_manifest_file(self, rootFolder):
         return validate_manifest_file(rootFolder)

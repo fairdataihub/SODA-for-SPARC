@@ -2356,46 +2356,28 @@ function showLocalValidateMessages() {
 // })
 
 validateLocalDSBtn.addEventListener("click", function() {
-  //// pass in the filepath and call python functions here
   var datasetPath = document.getElementById("input-local-ds-select").placeholder
   if (datasetPath==="Select a folder") {
     document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset first</span>"
   } else  {
       if (datasetPath != null){
         validateLocalDSBtn.disabled = true
-        client.invoke("api_validate_local_dataset", datasetPath, (error, res) => {
+        validatorInput = datasetPath
+        client.invoke("api_validate_dataset", validatorInput, (error, res) => {
           if (error) {
-            console.log(error)
+            console.error(error)
             log.error(error)
           } else {
-            console.log(res)
-            checkCategory1 = "High-level folder structure"
-            validateDatasetReport.innerHTML = checkCategory1.bold()
-            messageDisplay = "<ul class='validatelist'>"
-
-            messageCategory = res['fatal']
-            if (messageCategory.length > 0){
-              for (i = 0; i < messageCategory.length; i++) {
-                message = validateMessageTransform(messageCategory[i])
-                messageDisplay += "<li class='bulleterror'>" + "<span style='color: red;'> " + message + "</span>" + "</li>"
-              } 
+            var messageDisplay = ""
+            var checkCategory0 = "High-level folder structure"
+            var checkCategory1 = "High-level metadata files"
+            var checkCategories =[checkCategory0, checkCategory1]
+            
+            for (var i = 0; i < res.length; i++) {
+              messageDisplay = errorMessageCategory(res[i], checkCategories[i], messageDisplay)
             }
-            messageCategory = res['warnings']
-            if (messageCategory.length > 0){
-              for (i = 0; i < messageCategory.length; i++) {
-                message = validateMessageTransform(messageCategory[i])
-                messageDisplay += "<li class='bulletwarning'>" + "<span style='color: #F4B800;'> " + message + "</span>" + "</li>"
-              } 
-            }
-            messageCategory = res['pass']
-            if (messageCategory.length > 0){
-              for (i = 0; i < messageCategory.length; i++) {
-                message = validateMessageTransform(messageCategory[i])
-                messageDisplay += "<li class='bulletpass'>" + "<span style='color: green;'> " + message + "</span>" + "</li>"
-              } 
-            }
-            messageDisplay += "</ul>"
-            validateDatasetReport.innerHTML += messageDisplay
+            console.log(messageDisplay)
+            validateDatasetReport.innerHTML = messageDisplay
 
           }
         })  
@@ -2408,6 +2390,43 @@ function validateMessageTransform(inString) {
   outString = inString.split("--").join("<br>")
   return outString
 }
+
+function errorMessageCategory(resitem, checkCategory, messageDisplay){
+  messageDisplay += "<b>" + checkCategory + "</b>"
+  messageDisplay += "<ul class='validatelist'>"
+  var category = 'fatal'
+  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
+  category = 'warnings'
+  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
+  category = 'pass'
+  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
+  messageDisplay += "</ul>"
+ return messageDisplay
+}
+
+function errorMessageGenerator(resitem, category, messageDisplay){
+  if (resitem[category]){
+    var messageCategory = resitem[category]
+    if (messageCategory.length > 0){
+      if (category === 'fatal'){
+        var colorSelection = "red"
+        var classSelection = 'bulleterror'
+      } else if (category === 'warnings'){
+        var colorSelection = "#F4B800"
+        var classSelection = 'bulletwarning'
+      } else if (category === 'pass'){
+        var colorSelection = "green"
+        var classSelection = 'bulletpass'
+      }
+      for (var i = 0; i < messageCategory.length; i++) {
+        var message = validateMessageTransform(messageCategory[i])
+        messageDisplay += "<li class=" + classSelection + ">" + "<span style='color:"+ colorSelection + ";'>" + message + "</span>" + "</li>"
+      } 
+    }
+  }
+ return messageDisplay
+}
+
 
 /////// Click to "generate" validator report (text file) ///////
 
@@ -3924,21 +3943,25 @@ function checkFolderStruture(pathDatasetFolder){
 
 function organizedFolderToJson(pathDatasetVal){
   var jsonvar = {}
-  var files = fs.readdirSync(pathDatasetVal)
-  for (var i = 0; i<files.length; i++) {
-    var filename = files[i]
-    var filepath = path.join(pathDatasetVal, filename)
-    if (fs.lstatSync(filepath).isDirectory()){
-      var filesInFolder = fs.readdirSync(filepath)
-      filesInFolder = filesInFolder.filter(item => !(/(^|\/)\.[^\/\.]/g).test(item));
-      var folderfiles = []
+  var contentDataset = fs.readdirSync(pathDatasetVal)
+  var listPathFilesinDataset = []
+  for (var i = 0; i<contentDataset.length; i++) {
+    var contentName = contentDataset[i]
+    var contentPath = path.join(pathDatasetVal, contentName)
+    if (fs.lstatSync(contentPath).isDirectory()){
+      var filesInFolder = fs.readdirSync(contentPath)
+      var listPathFilesinFolder = []
       for (var j = 0; j<filesInFolder.length; j++) {
         var fileNameInFolder = filesInFolder[j]
-        folderfiles.push(path.join(filepath, fileNameInFolder))
+        listPathFilesinFolder.push(path.join(contentPath, fileNameInFolder))
       }
-      jsonvar[filename] = folderfiles
+      jsonvar[contentName] = listPathFilesinFolder
+    }
+    else{
+      listPathFilesinDataset.push(contentPath)
     }
   }
+  jsonvar['main'] = listPathFilesinDataset
   return jsonvar
 }
 

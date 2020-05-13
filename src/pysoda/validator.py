@@ -73,6 +73,10 @@ class DictValidator:
     subjCols = ['subject_id', 'pool_id', 'experimental group', 'age', 'sex', 'species', 'strain', 'Organism RRID']
     samCols = ['subject_id', 'sample_id', 'wasDerivedFromSample', 'pool_id', 'experimental group']
 
+    reqMetadataFileNames = ['submission', 'dataset_description', 'subjects', 'samples']
+    reqMetadataFileFormats = ['.xlsx','.csv']
+    optMetadataFileNames = ['README', 'CHANGES']
+    
     # note: the capitalizations below are inconsistent, but are what is given in SPARC_FAIR-Folder_Structure V1.2.pdf
     ddCols = ['Name', 'Description', 'Keywords', 'Contributors', 'Contributor ORCID ID',
                    'Contributor Affiliation', 'Contributor Role',
@@ -82,7 +86,7 @@ class DictValidator:
                    'Metadata Version']
 
     submCols = ['SPARC Award number', 'Milestone achieved', 'Milestone completion date']
-
+    
     def __init__(self):
         self.fatal = []
         self.warnings = []
@@ -134,94 +138,201 @@ class DictValidator:
 
         return terminal, notTerminal
 
-    def check_for_req_folders(self, rootFolder):
-        s = 0
+    def check_for_req_high_level_folders(self, jsonStruct):
         p = 0
         e = 0
-        o = 0
         w = 0
         nonStandardFolders = ""
         emptyFolders = ""
-        numSubjFolders = 0
-        numSamjFolders = 0
-        rootFolderPass = 0
-        
 
-        # first check for req and optional folders at the root level
-        allContents = os.listdir(rootFolder)
-
+        # get all high-level files/folders
+        allContents = jsonStruct.keys()
+        allContents = [ x for x in allContents if x!='main' ]
         for c in allContents:
-            if os.path.isdir(os.path.join(rootFolder,c)):
-                if c == self.reqFolderNames[0]: #primary folder
-                    p = 1
-                    pContents = os.listdir(os.path.join(rootFolder,c))
-                    if len(pContents) == 0: #check primary empty
-                        e = 1
-                        emptyFolders += " " + c + ","
-                    # check for subjects and samples folder within primary folder
-                    else:
-                        for pc in pContents:
-                            if os.path.isdir(os.path.join(rootFolder,c,pc)):
-                                if self.reqSubFolderNames[0] in pc:
-                                    s = 1
-                                    numSubjFolders += 1
-                                elif self.reqSubFolderNames[1] in pc:
-                                    s = 1
-                                    numSamjFolders += 1
-                elif c in self.optFolderNames:   #check for optional folders
-                    o = 1
-                    pContents = os.listdir(os.path.join(rootFolder,c))
-                    if len(pContents) == 0: #check primary empty
-                        e = 1
-                        emptyFolders += " " + c + ","
-                else:
-                    nonStandardFolders += " " + c + ","
-                    w = 1
+            if c == self.reqFolderNames[0]: #primary folder
+                p = 1
+                pContents = jsonStruct[c]
+                if len(pContents) == 0: #check primary empty
+                    e = 1
+                    emptyFolders += " " + c + ","
+            elif c in self.optFolderNames:   #check for optional folders
+                pContents = jsonStruct[c]
+                if len(pContents) == 0: #check optional folder empty
+                    e = 1
+                    emptyFolders += " " + c + ","
+            else:
+                nonStandardFolders += " " + c + ","
+                w = 1
+
+        check1 = "All folders are SPARC standard folders"
+        check1f = "Only SPARC standard folders (“code”, “derivative”, “docs”, “primary”, “protocol”, and/or “source”, all small caps) are allowed. The following folder(s) must be removed:" 
+        
+        check2 = "A “primary” folder is included"
+        check2f = "A 'primary' folder is required in all datasets, make sure it is included"
+        
+        check3 = "All SPARC folders are non-empty"
+        check3f = "No empty folder should be included, include files or remove the following folder(s):"
+                
+        if w == 1:
+            self.fatal.append(check1 + "--" + check1f + nonStandardFolders[:-1])
+        else:
+            self.passes.append(check1)
+                
+        if not p:
+            self.fatal.append(check2 + "--" + check2f)
+        else:
+            self.passes.append(check2)
+            
+        if e == 1:
+            self.fatal.append(check3 + "--" + check3f + emptyFolders[:-1])
+        else:
+            self.passes.append(check3)
+
+    def check_for_req_high_level_metadata_files(self, jsonStruct):
+        nonstand = 0
+        subm = 0
+        dd = 0
+        subj = 0
+        sam = 0
+        csvf = 0
+        nonStandardFiles = ""
+        nonUTF8 = 0
+        nonUTF8Files = ""
+        nonu = 0
+        nonUniqueFiles = ""
+        
+        #check for req files at the root level
+        allFiles = jsonStruct['main']
+        for c in allFiles:
+            filePath = c
+            fullFileName = os.path.basename(c)
+            cname = os.path.splitext(fullFileName )[0]
+            extension = os.path.splitext(fullFileName )[1]
+            print(extension)
+            if cname in self.reqMetadataFileNames[0]: #submission file
+                if extension in self.reqMetadataFileFormats:
+                    subm += 1
+                    if extension in self.reqMetadataFileFormats[1]:
+                        csvf = 1
+                        UTF8status = self.check_csv_utf8(filePath)
+                        if UTF8status == 0:
+                           nonUTF8 = 1
+                           nonUTF8Files = " " + c + ","
+                    if subm>1:
+                        nonu = 1
+                        nonUniqueFiles = " " + cname + ","
+    
+                else: #if not in csv or xlsx format
+                    nonstand = 1
+                    nonStandardFiles += " " + c + ","
+                       
+            elif cname in self.reqMetadataFileNames[1]: #dataset_description file
+                if extension in self.reqMetadataFileFormats:
+                    dd += 1
+                    if extension in self.reqMetadataFileFormats[1]:
+                        csvf = 1
+                        UTF8status = self.check_csv_utf8(filePath)
+                        if UTF8status == 0:
+                           nonUTF8 = 1
+                           nonUTF8Files = " " + c + ","
+                    if dd>1:
+                        nonu = 1
+                        nonUniqueFiles = " " + cname + ","
+                        
+                else: #if not in csv or xlsx format
+                    nonstand = 1
+                    nonStandardFiles += " " + c + ","
                     
+            elif cname in self.reqMetadataFileNames[2]: #subjects file
+                if extension in self.reqMetadataFileFormats:
+                    subj += 1
+                    if extension in self.reqMetadataFileFormats[1]:
+                        csvf = 1
+                        UTF8status = self.check_csv_utf8(filePath)
+                        if UTF8status == 0:
+                           nonUTF8 = 1
+                           nonUTF8Files = " " + c + ","
+                    if subj>1:
+                            nonu = 1
+                            nonUniqueFiles = " " + cname + ","
+                else: #if not in csv or xlsx format
+                    nonstand = 1
+                    nonStandardFiles += " " + c + ","
+                    
+            elif cname in self.reqMetadataFileNames[3]: #samples file
+                if extension in self.reqMetadataFileFormats:
+                    sam += 1
+                    if extension in self.reqMetadataFileFormats[1]:
+                        csvf = 1
+                        UTF8status = self.check_csv_utf8(filePath)
+                        if UTF8status == 0:
+                           nonUTF8 = 1
+                           nonUTF8Files = " " + c + ","
+                    if sam>1:
+                        nonu = 1
+                        nonUniqueFiles = " " + cname + ","
+                else: #if not in csv or xlsx format
+                    nonstand = 1
+                    nonStandardFiles += " " + c + ","
+                    
+            elif cname not in self.optMetadataFileNames:
+                nonstand = 1
+                nonStandardFiles += " " + c + ","
 #         if p==0 and s==0 and o==0: #non-standard folders are present
 #             w = 1
 
-        checkfolders1 = "All folders are SPARC standard folders"
-        checkfolders1f = "Only SPARC standard folders (“code”, “derivative”, “docs”, “primary”, “protocol”, and/or “source”, all small caps) are allowed. The following folder(s) must be removed:" 
+        check1 = "All files are SPARC metadata files"
+        check1f = "Only SPARC metadata files are allowed in the high-level dataset folder. The following file(s) must be removed:" 
         
-        checkfolders2 = "A “primary” folder is included"
-        checkfolders2f = "A 'primary' folder is required in all datasets, make sure it is included"
+        check2 = "A submission metadata file is included in either csv or xlsx fomat"
+        check2f = "This is a mandatory file for ALL SPARC datasets. Please include it and in the right format"
         
-        checkfolders3 = "All SPARC folders are non-empty"
-        checkfolders3f = "No empty folder should be included, include files or remove the following folder(s):"
+        check3 = "A dataset_description metadata file is included in either csv or xlsx fomat"
+        check3f = "This is a mandatory file for ALL SPARC datasets. Please include it and in the right format"
         
-        checkfolders4 = "A “subjects” and/or “samples” folder is included in the primary folder"
+        check4 = "A subjects and-or a samples metadata file(s) is/are included in either csv or xlsx format"
+        check4f = "A least one of these two metadata files is typically expected in all SPARC dataset although they could be exceptions."
+        
+        check5 = "All csv metadata files are UTF-8 encoded"
+        check5f = "As per requirement from the SPARC Curation Team, please change the csv encoding format to UTF-8 for the following metadata files:"
+        
+        check6 = "All metadata files are unique"
+        check6f = "Each metadata file should only be included once in either csv or xlsx format. The following metadata files are included twice and you must remove one:"
                 
-        if w == 1:
-            self.fatal.append(checkfolders1 + "--" + checkfolders1f + nonStandardFolders[:-1])
+        if  nonstand == 1:
+            self.fatal.append(check1 + "--" + check1f + nonStandardFiles[:-1])
         else:
-            self.passes.append(checkfolders1)
+            self.passes.append(check1)
                 
-        if not p:
-            self.fatal.append(checkfolders2 + "--" + checkfolders2f)
+        if  not subm:
+            self.fatal.append(check2 + "--" + check2f)
         else:
-            self.passes.append(checkfolders2)
+            self.passes.append(check2)
             
-        if e == 1:
-            self.fatal.append(checkfolders3 + "--" + checkfolders3f + emptyFolders[:-1])
+        if  not dd:
+            self.fatal.append(check3 + "--" + check3f)
         else:
-            self.passes.append(checkfolders3)
-
-#        if not s:
-#            self.warnings.append(checkfolders3)
-#        else:
-#            self.passes.append(checkfolders3)
+            self.passes.append(check3)
             
-#         if not o:
-#             self.warnings.append("This dataset contains no optional folders.")
-
-        checksumRootFolders = p+s
-        if checksumRootFolders == 2:  # check for req folders
-            rootFolderPass = 1
-
-        return rootFolderPass, numSubjFolders
-
-
+        if  not subj and not sam:
+            self.warnings.append(check4 + "--" + check4f)
+        else:
+            self.passes.append(check4)
+        
+        if  csvf == 1:
+            if nonUTF8 == 1:
+                self.fatal.append(check5 + "--" + check5f + nonUTF8Files[:-1])
+            else:
+                self.passes.append(check5)
+        
+        if  nonu == 1:
+            self.fatal.append(check6 + "--" + check6f + nonUniqueFiles[:-1])
+        else:
+            self.passes.append(check6)
+            
+        return 
+    
+    
     def check_for_req_files(self, rootFolder):
         # this checks the root directory for the presence of required files
         dd = 0
@@ -511,8 +622,6 @@ class DictValidator:
                 self.passes.append("All .csv and .xlsx files start with the right format")
             return startOkCheck
 
-
-
     def check_csv_utf8(self, fPathList):
         # checks that all csv files are UTF-8 encoded
         # since looping through the files a "0" means that at least
@@ -542,8 +651,8 @@ class DictValidator:
                         utf8Check = 0
                         self.warnings.append("The file {} is not encoded using UTF-8".format(f))
 
-        if utf8Check == 1:
-            self.passes.append("All .csv files in this dataset are UTF-8 encoded.")
+        #if utf8Check == 1:
+         #   self.passes.append("All .csv files in this dataset are UTF-8 encoded.")
 
         return utf8Check
 
@@ -1156,34 +1265,43 @@ class DictValidator:
         return checkSVarsFlag, checkSValsFlag
 
 
-######## GRAB High-FOLDER and File INFO #######################
-def validate_high_level_folder_structure(vPath):
+######## Main validation functions called in pysoda #######################
+def pathToJsonStruct(vPath): #create a jsonStruct convenient for SODA's workflow 
+  jsonvar = {}
+  contentDataset = os.listdir(vPath)
+  print(contentDataset)
+  listPathFilesinDataset = []
+  for i in range(len(contentDataset)):
+    contentName = contentDataset[i]
+    contentPath = os.path.join(vPath, contentName)
+    if (os.path.isdir(contentPath)):
+      filesInFolder = os.listdir(contentPath)
+      listPathFilesinFolder = []
+      for j in range(len(filesInFolder)):
+        fileNameInFolder = filesInFolder[j]
+        listPathFilesinFolder.append(os.path.join(contentPath, fileNameInFolder))
+      jsonvar[contentName] = listPathFilesinFolder
+    else:
+      listPathFilesinDataset.append(contentPath)
+  jsonvar['main'] = listPathFilesinDataset
+  return jsonvar      
+    
+def validate_high_level_folder_structure(jsonStruct):
     validator = DictValidator()
 
-    # collect file and folder info from the path given by the user
-    rootFolder, fList, fPathList, dPathList = validator.get_files_folders(vPath)
-
-    # figure out which folders are terminal and which contain other folders
-    terminal, notTerminal = validator.find_folder_status(dPathList)
-
     # check the root folder for required and optional folders
-    rootFolderPass, numSubjFolders = validator.check_for_req_folders(rootFolder)
+    validator.check_for_req_high_level_folders(jsonStruct)
     
     return(validator)
 
-def validate_high_level_metadata_files(vPath):
+def validate_high_level_metadata_files(jsonStruct):
     validator = DictValidator()
 
-    # collect file and folder info from the path given by the user
-    rootFolder, fList, fPathList, dPathList = validator.get_files_folders(vPath)
-
-    # figure out which folders are terminal and which contain other folders
-    terminal, notTerminal = validator.find_folder_status(dPathList)
-
     # check the root folder for required and optional folders
-    rootFolderPass, numSubjFolders = validator.check_for_req_folders(rootFolder)
+    validator.check_for_req_high_level_metadata_files(jsonStruct)
     
     return(validator)
+    
 def validate_folders(vPath):
     validator = DictValidator()
 
@@ -1196,7 +1314,6 @@ def validate_folders(vPath):
     # check the root folder for required and optional folders
     rootFolderPass, numSubjFolders = validator.check_for_req_folders(rootFolder)
     print("Does this dataset contain the required folders? = "+str(rootFolderPass))
-
 
     # check the root folder for require files
     rootFilePass, rootMan, rootDD = validator.check_for_req_files(rootFolder)

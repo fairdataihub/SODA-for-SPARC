@@ -1225,21 +1225,21 @@ input:checked + .slider:before {
 
 /* Validate list styling */
 .validatelist{
-  position: relative;
   list-style: none;
-  margin-left: 0;
-  padding-left: 2em;
-  padding-bottom: 2em;
 }
 
 .validatelist li{
-  padding-bottom: 1em;
-  left: 0;
-  text-indent: -1.5em;
+  padding-bottom: 10px;
+  position: relative;
+}
+
+.validatelist li :before{
+  position: absolute;
+  left: -30px;
 }
 
 .validatelist li.bulletpass :before{
-  content:"\2705"; 
+  content:"\2705"; -
 }
 
 .validatelist li.bulletwarning :before{
