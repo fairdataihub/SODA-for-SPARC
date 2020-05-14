@@ -35,7 +35,8 @@ from openpyxl import load_workbook
 from openpyxl import Workbook
 from docx import Document
 
-from validator import pathToJsonStruct, validate_high_level_folder_structure, validate_high_level_metadata_files
+from validator import pathToJsonStruct, validate_high_level_folder_structure, validate_high_level_metadata_files, \
+validate_sub_level_organization
 
 ### Global variables
 curateprogress = ' '
@@ -997,6 +998,14 @@ def validate_dataset(validator_input):
 
         validatorHighLevelMetadataFiles = validate_high_level_metadata_files(jsonStruct)
         validatorObj = validatorHighLevelMetadataFiles
+        resitem = {}
+        resitem['pass'] = validatorObj.passes
+        resitem['warnings'] = validatorObj.warnings
+        resitem['fatal'] = validatorObj.fatal
+        res.append(resitem)
+
+        validatorSubLevelOrganization = validate_sub_level_organization(jsonStruct)
+        validatorObj = validatorSubLevelOrganization
         resitem = {}
         resitem['pass'] = validatorObj.passes
         resitem['warnings'] = validatorObj.warnings

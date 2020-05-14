@@ -2371,7 +2371,12 @@ validateLocalDSBtn.addEventListener("click", function() {
             var messageDisplay = ""
             var checkCategory0 = "High-level folder structure"
             var checkCategory1 = "High-level metadata files"
-            var checkCategories =[checkCategory0, checkCategory1]
+            var checkCategory2 = "Sub-level organization"
+            var checkCategory3 = "submission file"
+            var checkCategory4 = "dataset_description file"
+            var checkCategory5 = "subjects file"
+            var checkCategory6 = "samples file"
+            var checkCategories =[checkCategory0, checkCategory1, checkCategory2, checkCategory3, checkCategory4, checkCategory5, checkCategory6]
             
             for (var i = 0; i < res.length; i++) {
               messageDisplay = errorMessageCategory(res[i], checkCategories[i], messageDisplay)

@@ -206,9 +206,8 @@ class DictValidator:
         for c in allFiles:
             filePath = c
             fullFileName = os.path.basename(c)
-            cname = os.path.splitext(fullFileName )[0]
-            extension = os.path.splitext(fullFileName )[1]
-            print(extension)
+            cname = os.path.splitext(fullFileName)[0]
+            extension = os.path.splitext(fullFileName)[1]
             if cname in self.reqMetadataFileNames[0]: #submission file
                 if extension in self.reqMetadataFileFormats:
                     subm += 1
@@ -550,35 +549,125 @@ class DictValidator:
 
 
 
-    def check_empty_folders(self, dPathList):
+    def check_empty_folders(self, jsonStruct):
     # detects empty folders if they exist, return a flag
-        emptyFolderPass = 0
-        for d in dPathList:
-            allContents = os.listdir(d)
-            if not allContents:
-                self.fatal.append("The folder {} is an empty folder".format(d))
-                emptyFolderPass = 1
-
-        if emptyFolderPass == 0:
-            self.passes.append("This dataset contains no empty folders.")
-
-        return emptyFolderPass
-
-
-    def check_ds_store(self, fPathList):
+        emptyFolderSearch = 0
+        emptyFolderList = ""
+        nonExistFolderSearch = 0
+        nonExistFolderList = ""
+        
+        
+        for folders in jsonStruct.keys():
+            if len(jsonStruct[folders]) != 0:
+                for mainPath in jsonStruct[folders]:
+                    if os.path.exists(mainPath):
+                        if os.path.isdir(mainPath):
+                            pathContent = os.listdir(mainPath)
+                            if len(pathContent) == 0:
+                                emptyFolderSearch = 1
+                                emptyFolderList += " " + mainPath + ","
+                            else:
+                                for root, dirs, files in os.walk(mainPath):
+                                    for d in dirs:
+                                        dp = os.path.join(root,d)
+                                        pathContent = os.listdir(dp)
+                                        if len(pathContent) == 0:
+                                            emptyFolderSearch = 1
+                                            emptyFolderList += " " + dp + ","
+                    else:
+                        nonExistFolderSearch = 1
+                        nonExistFolderList += " " + mainPath + ","
+                            
+        check1 = "No empty folders are included"
+        check1f = "The following empty folder(s) must be removed:"
+        
+        check2 = "All folder paths exist"
+        check2f = "The following folder path(s) are non-existent and must be removed: "
+        
+        if emptyFolderSearch == 0:
+            self.passes.append(check1)
+        else:
+            self.fatal.append(check1 + '--' + check1f + emptyFolderList[:-1])
+        
+        if nonExistFolderSearch == 1:
+            self.fatal.append(check2 + '--' + check2f + nonExistFolderList[:-1])
+    
+    
+    def check_empty_files(self, jsonStruct):
+    # detects empty files if they exist, return a flag
+        emptyFileSearch = 0
+        emptyFileList = ""
+        nonExistFileSearch = 0
+        nonExistFileList = ""
+        
+        for folders in jsonStruct.keys():
+            if len(jsonStruct[folders]) != 0:
+                for mainPath in jsonStruct[folders]:
+                    if os.path.exists(mainPath):
+                        if os.path.isfile(mainPath):
+                            fileSize = os.path.getsize(mainPath)
+                            if fileSize == 0:
+                                emptyFileSearch = 1
+                                emptyFileList += " " + mainPath + ","
+                        else:
+                            for root, dirs, files in os.walk(mainPath):
+                                for f in files:
+                                    fp = os.path.join(root,f)
+                                    fileSize = os.path.getsize(fp)
+                                    if fileSize == 0:
+                                        emptyFileSearch = 1
+                                        emptyFileList += " " + fp + ","
+                    else:
+                        nonExistFileSearch = 1
+                        nonExistFileList += " " + mainPath + ","
+                        
+        check1 = "No empty files are included"
+        check1f = "The following empty file(s) must be removed:"
+        
+        check2 = "All file paths exist"
+        check2f = "The following file path(s) are non-existent and must be removed: "
+        
+        if emptyFileSearch == 0:
+            self.passes.append(check1)
+        else:
+            self.fatal.append(check1 + '--' + check1f + emptyFileList[:-1])
+            
+        if nonExistFileSearch == 1:
+            self.fatal.append(check2 + '--' + check2f + nonExistFolderList[:-1])
+            
+    def check_ds_store(self, jsonStruct):
     # detects the presence of a DS.STORE file, "1" means the file exists
-        dsStoreCheck = 0
-
-        for f in fPathList:
-            if "DS.STORE" in f:
-                self.warnings.append("A DS.STORE file exists in this dataset.  Please remove {} and re-validate".format(f))
-                dsStoreCheck = 1
-
-        if dsStoreCheck == 0:
-            self.passes.append("This dataset does not contain any DS.STORE file.")
-
-        return dsStoreCheck
-
+        # detects empty files if they exist, return a flag
+        DS_STORESearch = 0
+        DS_STOREList = ""
+        
+        for folders in jsonStruct.keys():
+            if len(jsonStruct[folders]) != 0:
+                for mainPath in jsonStruct[folders]:
+                    if os.path.exists(mainPath):
+                        if os.path.isfile(mainPath):
+                            fullName = os.path.basename(mainPath)
+                            if fullName == 'DS.STORE':
+                                DS_STORESearch = 1
+                                DS_STOREList += " " + mainPath + ","
+                        else:
+                            for root, dirs, files in os.walk(mainPath):
+                                for f in files:
+                                    fp = os.path.join(root,f)
+                                    fullName = os.path.basename(mainPath)
+                                    if fullName == 'DS.STORE':
+                                        DS_STORESearch = 1
+                                        DS_STOREList += " " + fp + ","
+                        
+        check1 = "No DS.STORE files are included"
+        check1f = "The following DS.STORE file(s) must be removed:"
+                
+        if DS_STORESearch == 0:
+            self.passes.append(check1)
+        else:
+            self.fatal.append(check1 + '--' + check1f + DS_STOREList[:-1])
+            
+            
     ## no empty files
     def check_file_size(self, fPathList):
     # detects the presence of empty (zero size) files
@@ -1297,11 +1386,26 @@ def validate_high_level_folder_structure(jsonStruct):
 def validate_high_level_metadata_files(jsonStruct):
     validator = DictValidator()
 
-    # check the root folder for required and optional folders
+    # check the root folder for required metadata files
     validator.check_for_req_high_level_metadata_files(jsonStruct)
     
     return(validator)
+
+def validate_sub_level_organization(jsonStruct):
+    validator = DictValidator()
     
+    #check sub level structure for empty folders
+    validator.check_empty_folders(jsonStruct)
+    
+    #check sub level structure for empty files
+    validator.check_empty_files(jsonStruct)
+    
+    #check sub level structure for DS.STORE
+    validator.check_ds_store(jsonStruct)
+    
+    return(validator)
+    
+##############################
 def validate_folders(vPath):
     validator = DictValidator()
 
