@@ -2107,22 +2107,6 @@ function grabCurrentDSValidator() {
 }
 
 /////////////////////// Validate local dataset //////////////////////////////
-//// function to grab errors and warnings from api functions
-function reportErrors(resObj) {
-  var passList = []
-  var errorList = []
-  var warningList = []
-  for (var i=0;i<resObj["errors"].length;i++) {
-    errorList.push(resObj["errors"][i])
-  }
-  for (var i=0; i<resObj["pass"].length;i++) {
-    passList.push(resObj["pass"][i])
-  }
-  for (var i=0; i<resObj["warnings"].length;i++) {
-    warningList.push(resObj["warnings"][i])
-  }
-  return [errorList, passList, warningList]
-}
 
 //// when users click on Import local dataset
 document.getElementById("input-local-ds-select").addEventListener("click", function() {
@@ -2142,214 +2126,38 @@ ipcRenderer.on('selected-validate-local-dataset', (event, filepath) => {
     }
 })
 
-function localValidateFolders(filepath) {
-  client.invoke("api_validate_folders", filepath, (error, res) => {
-    if (error) {
-      console.log(error)
-      log.error(error)
-      var emessage = userError(error)
-      document.getElementById("textarea-validate-folders-errors").style.display = "block"
-      document.getElementById("textarea-validate-folders-errors").innerHTML = "Failed to validate high-level folders due to errors: <br>" + emessage
-    } else {
-        document.getElementById("para-local-ds-info").innerHTML = "Checking for folder requirements..."
-        var reportValues = reportErrors(res)
-        var displayedErrors = reportValues[0].join("<br>")
-        var displayedPasses = reportValues[1].join("<br>")
-        var displayedWarnings = reportValues[2].join("<br>")
-        if (reportValues[0].length != 0) {
-          document.getElementById("textarea-validate-folders-errors").style.display = "block"
-          document.getElementById("textarea-validate-folders-errors").innerHTML = displayedErrors
-        }
-        if (reportValues[2].length != 0) {
-          document.getElementById("textarea-validate-folders-warnings").style.display = "block"
-          document.getElementById("textarea-validate-folders-warnings").innerHTML = displayedWarnings
-        }
-        if (reportValues[1].length != 0) {
-          document.getElementById("textarea-validate-folders-passes").style.display = "block"
-          document.getElementById("textarea-validate-folders-passes").innerHTML = displayedPasses
-        }
-      }
-  })
-}
-
-function localValidateFiles(filepath) {
-  client.invoke("api_validate_files", filepath, (error, res) => {
-    if (error) {
-      console.log(error)
-      log.error(error)
-      var emessage = userError(error)
-      document.getElementById("textarea-validate-files-errors").style.display = "block"
-      document.getElementById("textarea-validate-files-errors").innerHTML = "Failed to validate sub-folders and files due to errors: <br>" + emessage
-    } else {
-        document.getElementById("para-local-ds-info").innerHTML = "Checking for file requirements..."
-        var reportValues = reportErrors(res)
-        var displayedErrors = reportValues[0].join("<br>")
-        var displayedPasses =reportValues[1].join("<br>")
-        var displayedWarnings = reportValues[2].join("<br>")
-        if (reportValues[0].length != 0) {
-          document.getElementById("textarea-validate-files-errors").style.display = "block"
-          document.getElementById("textarea-validate-files-errors").innerHTML = displayedErrors
-        }
-        if (reportValues[2].length != 0) {
-          document.getElementById("textarea-validate-files-warnings").style.display = "block"
-          document.getElementById("textarea-validate-files-warnings").innerHTML = displayedWarnings
-        }
-        if (reportValues[1].length != 0) {
-          document.getElementById("textarea-validate-files-passes").style.display = "block"
-          document.getElementById("textarea-validate-files-passes").innerHTML = displayedPasses
-        }
-      }
-  })
-}
-
-function localValidateManifest(filepath) {
-  client.invoke("api_validate_manifest_file", filepath, (error, res) => {
-    if (error) {
-      console.log(error)
-      log.error(error)
-      var emessage = userError(error)
-      document.getElementById("textarea-validate-manifest-errors").style.display = "block"
-      document.getElementById("textarea-validate-manifest-errors").innerHTML = "Failed to validate manifest files due to errors: <br>" + emessage
-    } else {
-        document.getElementById("para-local-ds-info").innerHTML = "Checking for manifest file..."
-        var reportValues = reportErrors(res)
-        var displayedErrors = reportValues[0].join("<br>")
-        var displayedPasses =reportValues[1].join("<br>")
-        var displayedWarnings = reportValues[2].join("<br>")
-        if (reportValues[0].length != 0) {
-          document.getElementById("textarea-validate-manifest-errors").style.display = "block"
-          document.getElementById("textarea-validate-manifest-errors").innerHTML = displayedErrors
-        }
-        if (reportValues[2].length != 0) {
-          document.getElementById("textarea-validate-manifest-warnings").style.display = "block"
-          document.getElementById("textarea-validate-manifest-warnings").innerHTML = displayedWarnings
-        }
-        if (reportValues[1].length != 0) {
-          document.getElementById("textarea-validate-manifest-passes").style.display = "block"
-          document.getElementById("textarea-validate-manifest-passes").innerHTML = displayedPasses
-        }
-      }
-  })
-}
-
-function localValidateSubSam(filepath) {
-  client.invoke("api_validate_subject_sample_files", filepath, (error, res) => {
-    if (error) {
-      console.log(error)
-      log.error(error)
-      var emessage = userError(error)
-      document.getElementById("textarea-validate-samples-subjects-errors").style.display = "block"
-      document.getElementById("textarea-validate-samples-subjects-errors").innerHTML = "Failed to validate subjects and samples files due to errors: <br>" + emessage
-    } else {
-        document.getElementById("para-local-ds-info").innerHTML = "Checking for samples and subjects files..."
-        var reportValues = reportErrors(res)
-        var displayedErrors = reportValues[0].join("<br>")
-        var displayedPasses =reportValues[1].join("<br>")
-        var displayedWarnings = reportValues[2].join("<br>")
-        if (reportValues[0].length != 0) {
-          document.getElementById("textarea-validate-samples-subjects-errors").style.display = "block"
-          document.getElementById("textarea-validate-samples-subjects-errors").innerHTML = displayedErrors
-        }
-        if (reportValues[2].length != 0) {
-          document.getElementById("textarea-validate-samples-subjects-warnings").style.display = "block"
-          document.getElementById("textarea-validate-samples-subjects-warnings").innerHTML = displayedWarnings
-        }
-        if (reportValues[1].length != 0) {
-          document.getElementById("textarea-validate-samples-subjects-passes").style.display = "block"
-          document.getElementById("textarea-validate-samples-subjects-passes").innerHTML = displayedPasses
-        }
-        document.getElementById("para-local-ds-info").innerHTML = ""
-        document.getElementById("para-local-ds-info").innerHTML = "Done!"
-      }
-  })
-}
-
-function localValidateSubmission(filepath) {
-  // client.invoke("api_validate_submission_dataset_description_files", filePath, (error, res) => {
-  //   document.getElementById("para-local-ds-info").innerHTML = ""
-  //   if (error) {
-  //     console.log(error)
-  //     log.error(error)
-  //   } else {
-  //       document.getElementById("para-local-ds-info").innerHTML = "Checking for samples and subjects files..." + smileyCan
-  //       //// if no errors are raised
-  //       if (res["errors"].length===0) {
-  //         document.getElementById("para-validate-submission-dd").innerHTML = "<span style='color:green'><b>The submission and dataset_description files of this dataset passes all SPARC requirements!</b></span>" + smileyCan
-  //       } else {
-  //         var errorList = reportErrors(res)
-  //         var displayedValue = errorList.join("<br>")
-  //         document.getElementById("para-validate-submission-dd").innerHTML = "<b>Submission and dataset_description files failed to meet these requirements: </b><br>" + "<span style='color:red'>" + displayedValue + "</span>"
-  //       }
-  //     }
-  // })
-}
-
 function showLocalValidateMessages() {
   document.getElementById("div-display-local-val-messages").style.display = "block"
 }
 
-//// Click on "validate" button to validate a local dataset
-// validateLocalDSBtn.addEventListener("click", function() {
-//   //// pass in the filepath and call python functions here
-//   var filePath = document.getElementById("input-local-ds-select").placeholder
-//   if (filePath==="Select a folder") {
-//     document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset first</span>"
-//   } else  {
-//       if (filePath != null){
-//         validateLocalDSBtn.disabled = true
-//         document.getElementById("para-local-ds-info").innerHTML = ""
-//         showLocalValidateMessages();
-//         localValidateFolders(filePath);
-//         localValidateFiles(filePath)
-//         localValidateManifest(filePath)
-//         localValidateSubmission(filePath)
-//         localValidateSubSam(filePath)
-//       }
-//     validateLocalDSBtn.disabled = false
-//   }
-// })
-
 validateLocalDSBtn.addEventListener("click", function() {
-  //// pass in the filepath and call python functions here
   var datasetPath = document.getElementById("input-local-ds-select").placeholder
   if (datasetPath==="Select a folder") {
     document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset first</span>"
   } else  {
       if (datasetPath != null){
         validateLocalDSBtn.disabled = true
-        client.invoke("api_validate_local_dataset", datasetPath, (error, res) => {
+        validatorInput = datasetPath
+        client.invoke("api_validate_dataset", validatorInput, (error, res) => {
           if (error) {
-            console.log(error)
+            console.error(error)
             log.error(error)
           } else {
-            console.log(res)
-            checkCategory1 = "High-level folder structure"
-            validateDatasetReport.innerHTML = checkCategory1.bold()
-            messageDisplay = "<ul class='validatelist'>"
+            var messageDisplay = ""
+            var checkCategory0 = "High-level folder structure"
+            var checkCategory1 = "High-level metadata files"
+            var checkCategory2 = "Sub-level organization"
+            var checkCategory3 = "submission file"
+            var checkCategory4 = "dataset_description file"
+            var checkCategory5 = "subjects file"
+            var checkCategory6 = "samples file"
+            var checkCategories =[checkCategory0, checkCategory1, checkCategory2, checkCategory3, checkCategory4, checkCategory5, checkCategory6]
 
-            messageCategory = res['fatal']
-            if (messageCategory.length > 0){
-              for (i = 0; i < messageCategory.length; i++) {
-                message = validateMessageTransform(messageCategory[i])
-                messageDisplay += "<li class='bulleterror'>" + "<span style='color: red;'> " + message + "</span>" + "</li>"
-              }
+            for (var i = 0; i < res.length; i++) {
+              messageDisplay = errorMessageCategory(res[i], checkCategories[i], messageDisplay)
             }
-            messageCategory = res['warnings']
-            if (messageCategory.length > 0){
-              for (i = 0; i < messageCategory.length; i++) {
-                message = validateMessageTransform(messageCategory[i])
-                messageDisplay += "<li class='bulletwarning'>" + "<span style='color: #F4B800;'> " + message + "</span>" + "</li>"
-              }
-            }
-            messageCategory = res['pass']
-            if (messageCategory.length > 0){
-              for (i = 0; i < messageCategory.length; i++) {
-                message = validateMessageTransform(messageCategory[i])
-                messageDisplay += "<li class='bulletpass'>" + "<span style='color: green;'> " + message + "</span>" + "</li>"
-              }
-            }
-            messageDisplay += "</ul>"
-            validateDatasetReport.innerHTML += messageDisplay
+            console.log(messageDisplay)
+            validateDatasetReport.innerHTML = messageDisplay
 
           }
         })
@@ -2362,6 +2170,43 @@ function validateMessageTransform(inString) {
   outString = inString.split("--").join("<br>")
   return outString
 }
+
+function errorMessageCategory(resitem, checkCategory, messageDisplay){
+  messageDisplay += "<b>" + checkCategory + "</b>"
+  messageDisplay += "<ul class='validatelist'>"
+  var category = 'fatal'
+  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
+  category = 'warnings'
+  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
+  category = 'pass'
+  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
+  messageDisplay += "</ul>"
+ return messageDisplay
+}
+
+function errorMessageGenerator(resitem, category, messageDisplay){
+  if (resitem[category]){
+    var messageCategory = resitem[category]
+    if (messageCategory.length > 0){
+      if (category === 'fatal'){
+        var colorSelection = "red"
+        var classSelection = 'bulleterror'
+      } else if (category === 'warnings'){
+        var colorSelection = "#F4B800"
+        var classSelection = 'bulletwarning'
+      } else if (category === 'pass'){
+        var colorSelection = "green"
+        var classSelection = 'bulletpass'
+      }
+      for (var i = 0; i < messageCategory.length; i++) {
+        var message = validateMessageTransform(messageCategory[i])
+        messageDisplay += "<li class=" + classSelection + ">" + "<span style='color:"+ colorSelection + ";'>" + message + "</span>" + "</li>"
+      }
+    }
+  }
+ return messageDisplay
+}
+
 
 /////// Click to "generate" validator report (text file) ///////
 
@@ -3878,21 +3723,25 @@ function checkFolderStruture(pathDatasetFolder){
 
 function organizedFolderToJson(pathDatasetVal){
   var jsonvar = {}
-  var files = fs.readdirSync(pathDatasetVal)
-  for (var i = 0; i<files.length; i++) {
-    var filename = files[i]
-    var filepath = path.join(pathDatasetVal, filename)
-    if (fs.lstatSync(filepath).isDirectory()){
-      var filesInFolder = fs.readdirSync(filepath)
-      filesInFolder = filesInFolder.filter(item => !(/(^|\/)\.[^\/\.]/g).test(item));
-      var folderfiles = []
+  var contentDataset = fs.readdirSync(pathDatasetVal)
+  var listPathFilesinDataset = []
+  for (var i = 0; i<contentDataset.length; i++) {
+    var contentName = contentDataset[i]
+    var contentPath = path.join(pathDatasetVal, contentName)
+    if (fs.lstatSync(contentPath).isDirectory()){
+      var filesInFolder = fs.readdirSync(contentPath)
+      var listPathFilesinFolder = []
       for (var j = 0; j<filesInFolder.length; j++) {
         var fileNameInFolder = filesInFolder[j]
-        folderfiles.push(path.join(filepath, fileNameInFolder))
+        listPathFilesinFolder.push(path.join(contentPath, fileNameInFolder))
       }
-      jsonvar[filename] = folderfiles
+      jsonvar[contentName] = listPathFilesinFolder
+    }
+    else{
+      listPathFilesinDataset.push(contentPath)
     }
   }
+  jsonvar['main'] = listPathFilesinDataset
   return jsonvar
 }
 

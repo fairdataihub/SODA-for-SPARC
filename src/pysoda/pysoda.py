@@ -35,7 +35,8 @@ from openpyxl import load_workbook
 from openpyxl import Workbook
 from docx import Document
 
-from validator import validate_high_level_folder_structure
+from validator import pathToJsonStruct, validate_high_level_folder_structure, validate_high_level_metadata_files, \
+validate_sub_level_organization
 
 ### Global variables
 curateprogress = ' '
@@ -975,19 +976,44 @@ def curate_dataset_progress():
 
     return (curateprogress+elapsed_time_formatted_display, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time_formatted)
 
-### Validate local dataset
-def validate_local_dataset(dataset_path):
-
+### Validate data
+def validate_dataset(validator_input):
     try:
-        validatorHighLevelFolder = validate_high_level_folder_structure(dataset_path)
+        if type(validator_input) is str:
+            jsonStruct = pathToJsonStruct(validator_input)
+        elif type(validator_input) is dict:
+            jsonStruct = validator_input
+        else:
+            raise Exception('Error: validator input must be string (path to dataset) or a JSON Structure/Python dictionary')
 
-        res = {}
-        res['pass'] = validatorHighLevelFolder.passes
-        res['warnings'] = validatorHighLevelFolder.warnings
-        res['fatal'] = validatorHighLevelFolder.fatal
+        res = []
+
+        validatorHighLevelFolder = validate_high_level_folder_structure(jsonStruct)
+        validatorObj = validatorHighLevelFolder
+        resitem = {}
+        resitem['pass'] = validatorObj.passes
+        resitem['warnings'] = validatorObj.warnings
+        resitem['fatal'] = validatorObj.fatal
+        res.append(resitem)
+
+        validatorHighLevelMetadataFiles = validate_high_level_metadata_files(jsonStruct)
+        validatorObj = validatorHighLevelMetadataFiles
+        resitem = {}
+        resitem['pass'] = validatorObj.passes
+        resitem['warnings'] = validatorObj.warnings
+        resitem['fatal'] = validatorObj.fatal
+        res.append(resitem)
+
+        validatorSubLevelOrganization = validate_sub_level_organization(jsonStruct)
+        validatorObj = validatorSubLevelOrganization
+        resitem = {}
+        resitem['pass'] = validatorObj.passes
+        resitem['warnings'] = validatorObj.warnings
+        resitem['fatal'] = validatorObj.fatal
+        res.append(resitem)
 
         return res
-        
+
     except Exception as e:
         raise e
 
