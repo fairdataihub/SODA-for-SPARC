@@ -984,10 +984,10 @@ def validate_dataset(validator_input):
         elif type(validator_input) is dict:
             jsonStruct = validator_input
         else:
-            raise Exception('Error: validator input must be string (path to dataset) or a json Structure/Pyhon dictionary')
-        
+            raise Exception('Error: validator input must be string (path to dataset) or a JSON Structure/Python dictionary')
+
         res = []
-        
+
         validatorHighLevelFolder = validate_high_level_folder_structure(jsonStruct)
         validatorObj = validatorHighLevelFolder
         resitem = {}
