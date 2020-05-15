@@ -169,7 +169,8 @@ const selectSaveFileOrganizationMetadataBtn = document.getElementById('button-se
 const validateCurrentDSBtn = document.getElementById("button-validate-current-ds")
 const validateLocalDSBtn = document.getElementById("button-validate-local-ds")
 const previewCurrentDsValidate = document.getElementById("button-preview-local-ds")
-const validateDatasetReport = document.querySelector('#textarea-validate-dataset')
+const validateLocalDatasetReport = document.querySelector('#textarea-validate-local-dataset')
+const validateCurrentDatasetReport = document.querySelector('#textarea-validate-current-dataset')
 
 // Generate dataset //
 const createNewStatus = document.querySelector('#create-newdataset')
@@ -2060,8 +2061,8 @@ curateDatasetBtn.addEventListener('click', () => {
 
 //// when users click on "Preview", show preview dataset in explorer
 previewCurrentDsValidate.addEventListener("click", function() {
-  document.getElementById("para-preview-local-ds").innerHTML = ""
-  document.getElementById("para-preview-local-ds").innerHTML = 'Please wait...'
+  document.getElementById("para-preview-current-ds").innerHTML = ""
+  document.getElementById("para-preview-current-ds").innerHTML = 'Please wait...'
   previewCurrentDsValidate.disabled = true
   if (alreadyOrganizedStatus.checked) {
     var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
@@ -2086,27 +2087,75 @@ previewCurrentDsValidate.addEventListener("click", function() {
         log.error(error)
         console.error(error)
         var emessage = userError(error)
-        document.getElementById("para-preview-local-ds").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
+        document.getElementById("para-preview-current-ds").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
       } else {
-        document.getElementById("para-preview-local-ds").innerHTML = "Preview folder is available in a new file explorer window!";
+        document.getElementById("para-preview-current-ds").innerHTML = "Preview folder is available in a new file explorer window!";
       }
       previewCurrentDsValidate.disabled = false
   })
 })
-
-
-var errorBox = document.getElementById("para-validate-current-ds")
 
 /////// Convert table content into json format for transferring to Python
 function grabCurrentDSValidator() {
   var jsonvect = tableToJson(tableNotOrganized)
   var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
   jsonvect['main'] = jsonpathMetadata['metadata']
-  console.log(jsonvect)
   return jsonvect
 }
 
-/////////////////////// Validate local dataset //////////////////////////////
+//// Check for empty JSON object
+function checkJSONObj(jsonObj) {
+  var empty = true
+  for (var key of Object.keys(jsonObj)) {
+    if (jsonObj[key].length !== 0) {
+      empty = false
+    }
+  }
+  return empty
+}
+
+///////// Clicking on Validate current DS
+validateCurrentDSBtn.addEventListener("click", function() {
+  document.getElementById("div-validation-report-current").style.display = "none"
+  document.getElementById("para-validate-current-ds").innerHTML = ""
+  var structuredDataset = grabCurrentDSValidator()
+  var empty = checkJSONObj(structuredDataset)
+  if (empty === true) {
+    document.getElementById("para-validate-current-ds").innerHTML = "<span style='color: red;'>Please add files or folders to your dataset!</span>"
+  } else {
+    validateCurrentDSBtn.disabled = true
+    validatorInput = structuredDataset
+    client.invoke("api_validate_dataset", validatorInput, (error, res) => {
+      if (error) {
+        console.error(error)
+        log.error(error)
+        var emessage = userError(error)
+        document.getElementById("para-validate-current-ds").innerHTML = "<span style='color: red;'>" + emessage + "</span>"
+      } else {
+        var messageDisplay = ""
+        var checkCategory0 = "High-level folder structure"
+        var checkCategory1 = "High-level metadata files"
+        var checkCategory2 = "Sub-level organization"
+        var checkCategory3 = "submission file"
+        var checkCategory4 = "dataset_description file"
+        var checkCategory5 = "subjects file"
+        var checkCategory6 = "samples file"
+        var checkCategories =[checkCategory0, checkCategory1, checkCategory2, checkCategory3, checkCategory4, checkCategory5, checkCategory6]
+
+        for (var i = 0; i < res.length; i++) {
+          messageDisplay = errorMessageCategory(res[i], checkCategories[i], messageDisplay)
+        }
+        console.log(messageDisplay)
+        document.getElementById("div-validation-report-current").style.display = "block"
+        validateCurrentDatasetReport.innerHTML = messageDisplay
+      }
+    })
+    validateCurrentDSBtn.disabled = false
+    }
+})
+
+/////////////////////// Validate local datasets //////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 //// when users click on Import local dataset
 document.getElementById("input-local-ds-select").addEventListener("click", function() {
@@ -2116,8 +2165,7 @@ ipcRenderer.on('selected-validate-local-dataset', (event, filepath) => {
   if (filepath.length > 0) {
     if (filepath != null){
       document.getElementById("para-local-ds-info").innerHTML = ""
-      document.getElementById("div-display-local-val-messages").style.display = "none"
-      // document.getElementById("h-validating-results-local").style.display = "none"
+      document.getElementById("div-validation-report-local").style.display = "none"
       // used to communicate value to button-import-local-ds click eventlistener
       document.getElementById("input-local-ds-select").placeholder = filepath[0];
     } else {
@@ -2125,10 +2173,6 @@ ipcRenderer.on('selected-validate-local-dataset', (event, filepath) => {
     }
     }
 })
-
-function showLocalValidateMessages() {
-  document.getElementById("div-display-local-val-messages").style.display = "block"
-}
 
 validateLocalDSBtn.addEventListener("click", function() {
   var datasetPath = document.getElementById("input-local-ds-select").placeholder
@@ -2157,8 +2201,8 @@ validateLocalDSBtn.addEventListener("click", function() {
               messageDisplay = errorMessageCategory(res[i], checkCategories[i], messageDisplay)
             }
             console.log(messageDisplay)
-            validateDatasetReport.innerHTML = messageDisplay
-
+            document.getElementById("div-validation-report-local").style.display = "block"
+            validateLocalDatasetReport.innerHTML = messageDisplay
           }
         })
         validateLocalDSBtn.disabled = false
