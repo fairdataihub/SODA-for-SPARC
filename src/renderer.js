@@ -970,16 +970,18 @@ ipcRenderer.on('selected-metadata-submission', (event, dirpath, filename) => {
 //////////////// //////////////// //////////////// ////////////////
 
 var keywordInput = document.getElementById('ds-keywords'),
-  keywordTagify = new Tagify(keywordInput, {
+keywordTagify = new Tagify(keywordInput, {
     duplicates: false,
     maxTags  : 5
 })
+
 var otherFundingInput = document.getElementById('ds-other-funding'),
-  otherFundingTagify = new Tagify(otherFundingInput, {
+otherFundingTagify = new Tagify(otherFundingInput, {
     duplicates: false,
 })
+
 var contributorRoles = document.getElementById("input-con-role"),
-  currentContributortagify = new Tagify(contributorRoles, {
+currentContributortagify = new Tagify(contributorRoles, {
     whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
     dropdown : {
         classname : "color-blue",
@@ -990,6 +992,17 @@ var contributorRoles = document.getElementById("input-con-role"),
     },
     duplicates: false
 });
+
+var completenessInput = document.getElementById('ds-completeness'),
+completenessTagify = new Tagify(completenessInput, {
+    whitelist : ["hasChild", "hasNext"],
+    duplicates: false,
+    maxTags   : 2,
+    dropdown : {
+      enabled   : 0,
+      closeOnSelect : true
+    }
+})
 
 function clearCurrentConInfo() {
   document.getElementById("input-con-ID").value = "";
@@ -1009,10 +1022,9 @@ function changeAwardInputDsDescription() {
   };
   removeOptions(dsContributorArray)
   addOption(dsContributorArray, "Select", "Select an option")
+  addOption(dsContributorArray, "Other collaborators", "Other collaborators not listed")
   var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value
   var airKeyContent = parseJson(airtableConfigPath)
-    // document.getElementById("div-awards-load-progress").style.display = 'none';
-    // document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>No Airtable API key found! Please connect to Airtable first!</span>";
   if (Object.keys(airKeyContent).length !== 0) {
     var airKeyInput = airKeyContent["api-key"]
     Airtable.configure({
@@ -1045,7 +1057,13 @@ function changeAwardInputDsDescription() {
 
 // Show current contributors
 function createCurrentConTable(table) {
-  var name = dsContributorArray.options[dsContributorArray.selectedIndex].value
+  var conVal = dsContributorArray.options[dsContributorArray.selectedIndex].value
+  var name;
+  if (conVal === "Other collaborators not listed") {
+    name = document.getElementById("input-con-others").value
+  } else {
+    name = conVal
+  }
   var id = document.getElementById("input-con-ID").value
   var affiliation = document.getElementById("input-con-affiliation").value
   var role = currentContributortagify.value
@@ -1096,7 +1114,7 @@ function createCurrentConTable(table) {
           document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contributor already added!</span>"
         }
       } else {
-        document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contact person is already added below!</span>"
+        document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contact person is already added below. Per SPARC requirements, only one contact person is allowed for a dataset.</span>"
       }
     } else {
       if (!duplicate) {
@@ -1184,36 +1202,47 @@ dsContributorArray.addEventListener("change", function(e) {
   document.getElementById("para-save-contributor-status").innerHTML = '';
   document.getElementById("input-con-ID").value = '';
   document.getElementById("input-con-affiliation").value = '';
+  /// hide Other collaborators fields upon changing contributors
+  document.getElementById("div-other-collaborators-1").style.display = "none"
+  document.getElementById("div-other-collaborators-2").style.display = "none"
+  document.getElementById("div-other-collaborators-3").style.display = "none"
+
   currentContributortagify.removeAllTags();
   contactPerson.checked = false;
 
   var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
-
-  var airKeyContent = parseJson(airtableConfigPath)
-  var airKeyInput = airKeyContent["api-key"]
-  var airtableConfig = Airtable.configure({
+  if (contributorVal === "Other collaborators not listed") {
+    document.getElementById("div-other-collaborators-1").style.display = "flex"
+    document.getElementById("div-other-collaborators-2").style.display = "flex"
+    document.getElementById("div-other-collaborators-3").style.display = "flex"
+  }
+  else {
+    var airKeyContent = parseJson(airtableConfigPath)
+    var airKeyInput = airKeyContent["api-key"]
+    var airtableConfig = Airtable.configure({
       endpointUrl: 'https://' + airtableHostname,
       apiKey: airKeyInput
-  });
-  var base = Airtable.base('appiYd1Tz9Sv857GZ');
-  base('sparc_members').select({
-    filterByFormula: `({Name} = "${contributorVal}")`
-  }).eachPage(function page(records, fetchNextPage) {
+    });
+    var base = Airtable.base('appiYd1Tz9Sv857GZ');
+    base('sparc_members').select({
+      filterByFormula: `({Name} = "${contributorVal}")`
+    }).eachPage(function page(records, fetchNextPage) {
       var conInfoObj = {};
       records.forEach(function(record) {
         conInfoObj["ID"] = record.get('ORCID');
         // conInfoObj["Role"] = record.get('Project_Role');
         conInfoObj["Affiliation"] = record.get('Institution');
       }),
-    fetchNextPage();
-    leaveFieldsEmpty(conInfoObj["ID"],document.getElementById("input-con-ID"));
-    leaveFieldsEmpty(conInfoObj["Affiliation"],document.getElementById("input-con-affiliation"));
-  }),
-  function done(err) {
+      fetchNextPage();
+      leaveFieldsEmpty(conInfoObj["ID"],document.getElementById("input-con-ID"));
+      leaveFieldsEmpty(conInfoObj["Affiliation"],document.getElementById("input-con-affiliation"));
+    }),
+    function done(err) {
       if (err) {
         log.error(err)
         console.error(err); return;
       }
+    }
   }
 })
 
@@ -1361,15 +1390,11 @@ function grabProtocolSection() {
 }
 
 function grabCompletenessInfo() {
-  var completeness = document.getElementById("input-completeness").options[document.getElementById("input-completeness").selectedIndex].value;
+  var completeness = completenessTagify.value;
   var parentDS = document.getElementById("input-parent-ds").value;
   var completeDSTitle = document.getElementById("input-completeds-title").value;
   var optionalSectionObj = {};
-  if (completeness==="Select") {
-    optionalSectionObj["completeness"] = "N/A"
-  } else {
-    optionalSectionObj["completeness"] = completeness
-  }
+  optionalSectionObj["completeness"] = completeness
   optionalSectionObj["parentDS"] = parentDS;
   optionalSectionObj["completeDSTitle"] = completeDSTitle;
   return optionalSectionObj

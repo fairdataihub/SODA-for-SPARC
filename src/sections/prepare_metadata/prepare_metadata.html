@@ -216,6 +216,7 @@
             <button id="ds-optional-info" class="multisteps-form__progress-btn" style="font-size: 15px" type="button" title="Optional Info"><b>Completeness Info</b></button>
           </div>
 
+          <!-- Dataset Info -->
           <div style="display:block;width:90%;margin: 0 auto;font-size:13px" id="div-ds-dataset-info" class="datasetsaveoption">
             <br><br><br>
             <div class="form-container-ds"><font color="black"> Name*: </font> </div>
@@ -270,6 +271,8 @@
               <button id="button-next-ds-contributor"class="demo-button-prev-next">Next</button>
             </div>
           </div>
+
+          <!-- Contributor Info -->
           <div id="div-ds-contributor-info" style="width:90%;margin: 0 auto;font-size:13px" class="datasetsaveoption">
             <br>
           <h5 align="center">Award Information </h5>
@@ -316,6 +319,16 @@
             <select id="ds-description-contributor-list" class="form-container-input-bf" style="font-size:13px;line-height: 2;height:28px">
               <option>Select an option</option>
             </select>
+            </div>
+            <!-- This div is for Other collaborators input -->
+            <div class="form-container-ds" id="div-other-collaborators-1" style="display:none;"><font color="black"> Collaborator name*: </font> </div>
+            <div class="tooltipnew" id="div-other-collaborators-3" style="display:none;"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 300px; font-weight: bold">
+                Name of other collaborators to the dataset. This individual is not listed under SPARC Airtable sheet.
+              </span>
+            </div>
+            <div class="demo-controls" id="div-other-collaborators-2" style="display:none;">
+              <input id="input-con-others" class="form-container-input-bf"/>
             </div>
             <div class="form-container-ds"><font color="black"> ORCID ID*: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -383,6 +396,8 @@
               <button id="button-next-contributor-misc" style="float:right" class="demo-button-prev-next">Next</button>
             </div>
           </div>
+
+      <!-- Protocols and Articles Info -->
           <div id="div-ds-misc-info" style="width:90%;margin: 0 auto;font-size:13px" class="datasetsaveoption">
             <br><br><br>
             <div id="show-add-link-description">
@@ -447,6 +462,9 @@
               <button id="button-next-misc-optional" style="float:right" class="demo-button-prev-next">Next</button>
             </div>
           </div>
+
+
+          <!-- Completeness Info -->
           <div id="div-ds-optional-info" style="width:90%;margin: 0 auto;font-size:13px" class="datasetsaveoption">
             <br><br><br>
             <div class="form-container-ds" style="width:230px"><font color="black"> Completeness of dataset: </font> </div>
@@ -456,11 +474,7 @@
               </span>
             </div>
             <div class="demo-controls">
-              <select id = "input-completeness" class="form-container-input-bf" style="font-size:13px;border: 1px solid #C0C0C0;border-left: 2px solid #258193;height:28px;line-height:2;">
-                <option value="Select">Select an option (optional) </option>
-                <option>hasChild</option>
-                <option>hasNext</option>
-              </select>
+              <input id="ds-completeness" class="form-container-input-bf" style="border-left: 2px solid #258193;"> </input>
             </div>
             <div class="form-container-ds" style="width:230px"><font color="black"> Parent dataset ID: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">

@@ -358,14 +358,21 @@ def import_milestone(filepath):
 
 def extract_milestone_info(datalist):
     milestone = defaultdict(list)
-    milestone_key = "Related milestone, aim, or task"
+    milestone_key1 = "Related milestone, aim, or task"
+    milestone_key2 = "Related milestone, aim or task"
     other_keys = ["Description of data", "Expected date of completion"]
     for row in datalist:
-        try:
-            key = row[milestone_key]
-        except KeyError:
+        if milestone_key1 in row:
+            milestone_key = milestone_key1
+        elif milestone_key2 in row:
+            milestone_key = milestone_key2
+        else:
             raise InvalidDeliverablesDocument("Please select a valid SPARC Deliverables Document!")
-        milestone[key].append({key: row[key] for key in other_keys})
+
+        key = row[milestone_key]
+        if key != "":
+            milestone[key].append({key: row[key] for key in other_keys})
+
     return milestone
 
 ### Prepare submission file
@@ -418,7 +425,6 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
     ## name, description, keywords, samples, subjects
     ws1["D2"] = val_arr_ds[0]
     ws1["D3"] = val_arr_ds[1]
-    # ws1["D4"] = ", ".join(val_arr_ds[2])
     ws1["D16"] = val_arr_ds[3]
     ws1["D17"] = val_arr_ds[4]
 
