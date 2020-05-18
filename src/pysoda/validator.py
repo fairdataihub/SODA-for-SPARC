@@ -59,6 +59,7 @@ import csv
 import ntpath
 import chardet
 import re
+import pandas as pd
 
 class DictValidator:
     reqFolderNames = ['primary']
@@ -69,6 +70,7 @@ class DictValidator:
     reqManifest = ['manifest.xlsx', 'manifest.csv']
     optFileNames = ['README.txt', 'CHANGES.txt']
     submissionRows = ['SPARC Award number', 'Milestone achieved', 'Milestone completion date']
+    submissionColumns = ['SPARC Award number', 'Milestone achieved', 'Milestone completion date']
     reqFiles = ['dataset_description', 'subjects', 'samples', 'submission']
     subjCols = ['subject_id', 'pool_id', 'experimental group', 'age', 'sex', 'species', 'strain', 'Organism RRID']
     samCols = ['subject_id', 'sample_id', 'wasDerivedFromSample', 'pool_id', 'experimental group']
@@ -77,13 +79,29 @@ class DictValidator:
     reqMetadataFileFormats = ['.xlsx','.csv']
     optMetadataFileNames = ['README', 'CHANGES']
     
+    submissionHeaders = ['Submission Item', 'Definition', 'Value']
+    submissionCol0 = ['SPARC Award number', 'Milestone achieved', 'Milestone completion date']
+    
     # note: the capitalizations below are inconsistent, but are what is given in SPARC_FAIR-Folder_Structure V1.2.pdf
-    ddCols = ['Name', 'Description', 'Keywords', 'Contributors', 'Contributor ORCID ID',
+    ddHeadersReq = ['Metadata element', 'Value']
+    ddHeaderOpt = ['Description', 'Example']
+    
+    ddCol0 = ['Name', 'Description', 'Keywords', 'Contributors', 'Contributor ORCID ID',
                    'Contributor Affiliation', 'Contributor Role',
                    'Is Contact Person', 'Acknowledgements', 'Funding', 'Originating Article DOI',
                    'Protocol URL or DOI', 'Additional Links', 'Link Description', 'Number of subjects',
                    'Number of samples', 'Completeness of data set', 'Parent dataset ID', 'Title for complete data set',
                    'Metadata Version']
+    
+    ddCol0Req = ['Name', 'Description', 'Keywords', 'Contributors', 'Contributor ORCID ID',
+                   'Contributor Affiliation', 'Contributor Role',
+                   'Is Contact Person',  'Funding', 
+                   'Protocol URL or DOI', 'Number of subjects',
+                   'Number of samples']
+    
+    ddCol0Opt = ['Acknowledgements', 'Originating Article DOI', 'Additional Links', 'Link Description', 
+                 'Completeness of data set', 'Parent dataset ID', 'Title for complete data set', 
+                 'Metadata Version']
 
     submCols = ['SPARC Award number', 'Milestone achieved', 'Milestone completion date']
     
@@ -168,7 +186,7 @@ class DictValidator:
         check1f = "Only SPARC standard folders (“code”, “derivative”, “docs”, “primary”, “protocol”, and/or “source”, all small caps) are allowed. The following folder(s) must be removed:" 
         
         check2 = "A “primary” folder is included"
-        check2f = "A 'primary' folder is required in all datasets, make sure it is included"
+        check2f = "A non-empty 'primary' folder is required in all datasets, make sure it is included"
         
         check3 = "All SPARC folders are non-empty"
         check3f = "No empty folder should be included, include files or remove the following folder(s):"
@@ -200,85 +218,87 @@ class DictValidator:
         nonUTF8Files = ""
         nonu = 0
         nonUniqueFiles = ""
+        nofiles = 0
         
         #check for req files at the root level
         allFiles = jsonStruct['main']
-        for c in allFiles:
-            filePath = c
-            fullFileName = os.path.basename(c)
-            cname = os.path.splitext(fullFileName)[0]
-            extension = os.path.splitext(fullFileName)[1]
-            if cname in self.reqMetadataFileNames[0]: #submission file
-                if extension in self.reqMetadataFileFormats:
-                    subm += 1
-                    if extension in self.reqMetadataFileFormats[1]:
-                        csvf = 1
-                        UTF8status = self.check_csv_utf8(filePath)
-                        if UTF8status == 0:
-                           nonUTF8 = 1
-                           nonUTF8Files = " " + c + ","
-                    if subm>1:
-                        nonu = 1
-                        nonUniqueFiles = " " + cname + ","
-    
-                else: #if not in csv or xlsx format
-                    nonstand = 1
-                    nonStandardFiles += " " + c + ","
-                       
-            elif cname in self.reqMetadataFileNames[1]: #dataset_description file
-                if extension in self.reqMetadataFileFormats:
-                    dd += 1
-                    if extension in self.reqMetadataFileFormats[1]:
-                        csvf = 1
-                        UTF8status = self.check_csv_utf8(filePath)
-                        if UTF8status == 0:
-                           nonUTF8 = 1
-                           nonUTF8Files = " " + c + ","
-                    if dd>1:
-                        nonu = 1
-                        nonUniqueFiles = " " + cname + ","
-                        
-                else: #if not in csv or xlsx format
-                    nonstand = 1
-                    nonStandardFiles += " " + c + ","
-                    
-            elif cname in self.reqMetadataFileNames[2]: #subjects file
-                if extension in self.reqMetadataFileFormats:
-                    subj += 1
-                    if extension in self.reqMetadataFileFormats[1]:
-                        csvf = 1
-                        UTF8status = self.check_csv_utf8(filePath)
-                        if UTF8status == 0:
-                           nonUTF8 = 1
-                           nonUTF8Files = " " + c + ","
-                    if subj>1:
+        if len(allFiles) == 0:
+            nofiles = 1
+        else:
+            for c in allFiles:
+                filePath = c
+                fullFileName = os.path.basename(c)
+                cname = os.path.splitext(fullFileName)[0]
+                extension = os.path.splitext(fullFileName)[1]
+                if cname in self.reqMetadataFileNames[0]: #submission file
+                    if extension in self.reqMetadataFileFormats:
+                        subm += 1
+                        if extension in self.reqMetadataFileFormats[1]:
+                            csvf = 1
+                            UTF8status = self.check_csv_utf8(filePath)
+                            if UTF8status == 0:
+                               nonUTF8 = 1
+                               nonUTF8Files = " " + c + ","
+                        if subm>1:
                             nonu = 1
                             nonUniqueFiles = " " + cname + ","
-                else: #if not in csv or xlsx format
+        
+                    else: #if not in csv or xlsx format
+                        nonstand = 1
+                        nonStandardFiles += " " + c + ","
+                           
+                elif cname in self.reqMetadataFileNames[1]: #dataset_description file
+                    if extension in self.reqMetadataFileFormats:
+                        dd += 1
+                        if extension in self.reqMetadataFileFormats[1]:
+                            csvf = 1
+                            UTF8status = self.check_csv_utf8(filePath)
+                            if UTF8status == 0:
+                               nonUTF8 = 1
+                               nonUTF8Files = " " + c + ","
+                        if dd>1:
+                            nonu = 1
+                            nonUniqueFiles = " " + cname + ","
+                            
+                    else: #if not in csv or xlsx format
+                        nonstand = 1
+                        nonStandardFiles += " " + c + ","
+                        
+                elif cname in self.reqMetadataFileNames[2]: #subjects file
+                    if extension in self.reqMetadataFileFormats:
+                        subj += 1
+                        if extension in self.reqMetadataFileFormats[1]:
+                            csvf = 1
+                            UTF8status = self.check_csv_utf8(filePath)
+                            if UTF8status == 0:
+                               nonUTF8 = 1
+                               nonUTF8Files = " " + c + ","
+                        if subj>1:
+                                nonu = 1
+                                nonUniqueFiles = " " + cname + ","
+                    else: #if not in csv or xlsx format
+                        nonstand = 1
+                        nonStandardFiles += " " + c + ","
+                        
+                elif cname in self.reqMetadataFileNames[3]: #samples file
+                    if extension in self.reqMetadataFileFormats:
+                        sam += 1
+                        if extension in self.reqMetadataFileFormats[1]:
+                            csvf = 1
+                            UTF8status = self.check_csv_utf8(filePath)
+                            if UTF8status == 0:
+                               nonUTF8 = 1
+                               nonUTF8Files = " " + c + ","
+                        if sam>1:
+                            nonu = 1
+                            nonUniqueFiles = " " + cname + ","
+                    else: #if not in csv or xlsx format
+                        nonstand = 1
+                        nonStandardFiles += " " + c + ","
+                        
+                elif cname not in self.optMetadataFileNames:
                     nonstand = 1
                     nonStandardFiles += " " + c + ","
-                    
-            elif cname in self.reqMetadataFileNames[3]: #samples file
-                if extension in self.reqMetadataFileFormats:
-                    sam += 1
-                    if extension in self.reqMetadataFileFormats[1]:
-                        csvf = 1
-                        UTF8status = self.check_csv_utf8(filePath)
-                        if UTF8status == 0:
-                           nonUTF8 = 1
-                           nonUTF8Files = " " + c + ","
-                    if sam>1:
-                        nonu = 1
-                        nonUniqueFiles = " " + cname + ","
-                else: #if not in csv or xlsx format
-                    nonstand = 1
-                    nonStandardFiles += " " + c + ","
-                    
-            elif cname not in self.optMetadataFileNames:
-                nonstand = 1
-                nonStandardFiles += " " + c + ","
-#         if p==0 and s==0 and o==0: #non-standard folders are present
-#             w = 1
 
         check1 = "All files are SPARC metadata files"
         check1f = "Only SPARC metadata files are allowed in the high-level dataset folder. The following file(s) must be removed:" 
@@ -298,24 +318,25 @@ class DictValidator:
         check6 = "All metadata files are unique"
         check6f = "Each metadata file should only be included once in either csv or xlsx format. The following metadata files are included twice and you must remove one:"
                 
-        if  nonstand == 1:
-            self.fatal.append(check1 + "--" + check1f + nonStandardFiles[:-1])
-        else:
-            self.passes.append(check1)
+        if  nofiles == 0:
+            if  nonstand == 1:
+                self.fatal.append(check1 + "--" + check1f + nonStandardFiles[:-1])
+            else:
+                self.passes.append(check1)
                 
         if  not subm:
             self.fatal.append(check2 + "--" + check2f)
-        else:
+        elif subm == 1:
             self.passes.append(check2)
             
         if  not dd:
             self.fatal.append(check3 + "--" + check3f)
-        else:
+        elif dd == 1:
             self.passes.append(check3)
             
         if  not subj and not sam:
             self.warnings.append(check4 + "--" + check4f)
-        else:
+        elif subj == 1 or sam == 1:
             self.passes.append(check4)
         
         if  csvf == 1:
@@ -324,14 +345,14 @@ class DictValidator:
             else:
                 self.passes.append(check5)
         
-        if  nonu == 1:
-            self.fatal.append(check6 + "--" + check6f + nonUniqueFiles[:-1])
-        else:
-            self.passes.append(check6)
-            
-        return 
-    
-    
+        if  nofiles == 0:
+            if  nonu == 1:
+                self.fatal.append(check6 + "--" + check6f + nonUniqueFiles[:-1])
+            else:
+                self.passes.append(check6)
+                
+        return subm, dd, subj, sam
+                      
     def check_for_req_files(self, rootFolder):
         # this checks the root directory for the presence of required files
         dd = 0
@@ -857,7 +878,6 @@ class DictValidator:
         return colsLenCheck, colsCheck
 
 
-
     def check_row_values(self, cols, fileNamePath, fileExtension):
         # this is called by check_req_file_cols to do the actual checking
         # this is checking that the required columns have values in req columns for each subject
@@ -1264,7 +1284,86 @@ class DictValidator:
 
         return uniqueSubIDFlag, uniqueSamIDFlag
 
-
+    def check_dataset_description_file(self, ddFilePath):
+        # Check that 
+        # - The dataset description file follows the format provided by the Curation Team
+        # - All mandatory "Value" fields are populated
+        # - All populated fields follow required format (when applicable)
+        
+        firsth = 0
+        unq = 0
+        hmand = 0
+        hopt = 1
+        c0 = 0
+        v = 1
+    
+        fullName = os.path.basename(ddFilePath)
+        if fullName not in ['dataset_description.xlsx', 'dataset_description.csv']:
+            raise Exception("Please select a valid dataset description file")
+            
+        if os.path.isfile(ddFilePath):
+            extension = os.path.splitext(ddFilePath)[1] 
+            if extension == '.csv':
+                df = pd.read_csv(ddFilePath)
+            elif extension == '.xlsx':
+                df = pd.read_excel(ddFilePath) 
+            fileHeaders = list(df)
+            
+            #check that first hearder is "Metadata element"
+            if fileHeaders[0] == self.ddHeadersReq[0]:
+                firsth = 1
+                # check that all headers are unique
+                if len(set(fileHeaders)) == len(fileHeaders) :
+                    unq = 1
+                    # check that mandatory headers are included
+                    if self.ddHeadersReq[1] in fileHeaders:
+                        hmand = 1
+                        # check that optional headers are acceptable values
+                        fileHeadersOpt = [x for x in fileHeaders if x not in self.ddHeadersReq]
+                        if len(fileHeadersOpt) > 0:
+                            for el in fileHeadersOpt:
+                                if el not in self.ddHeaderOpt or 'Value' not in el:
+                                    hopt = 0
+                        
+                    #check that first column matches with template
+                    if df[self.ddHeaders[0]].tolist() == self.ddCol0:
+                        c0 = 1
+                      
+                    #check that mandatory values are provided (does't contain any NaN or empty elements)
+                    if hmand == 1 and c0 == 1:
+                        dfMand = df.loc[df[self.ddHeaders[0]].isin(self.ddColReq)]
+                        print(dfMand)
+                        if dfMand[self.ddHeadersReq[1]].isnull().any():
+                            v = 0
+                            print('v',v)
+                        
+                        valueCol = dfMand[self.ddHeadersReq[1]].values
+                        valueCol = [x.strip() for x in valueCol if type(x) == str]
+                        print(valueCol)
+                        if "" in valueCol:
+                            v = 0
+                            print('v2',v)                  
+                            
+        check1 = "The submission file format matches with the template provided by the SPARC Curation Team"
+        check1f = "The headers do not match with the template, please correct them." 
+        check1f2 = "The first column items do not match with the template, please correct them." 
+        
+        check2 = "All cells in the 'Value' column are populated"
+        check2f = "One or multiple cells from the 'Value' column are empty. All of them must be populated."
+        
+        if hmand == 1 and c0 == 1:
+            self.passes.append(check1)
+            if v == 1:
+                self.passes.append(check2) 
+            else:
+                self.fatal.append(check2 + '--' + check2f)  
+        else:
+            if h == 0:
+                self.fatal.append(check1 + '--' + check1f)
+            else:
+                if c0 == 0:
+                    self.fatal.append(check1 + '--' + check1f2)
+                    
 
     def check_dataset_description(self, rootFolder):
         # The dataset_description file has the variable names in rows rather than columns
@@ -1309,7 +1408,63 @@ class DictValidator:
 
         return checkDDVarsFlag, checkDDValsFlag
 
-
+    def check_submission_file(self, submFilePath):
+        # The submission file follows the format provided by the Curation Team
+        # and that all three "Value" fields are populated
+        h = 0
+        c0 = 0
+        v = 1
+    
+        fullName = os.path.basename(submFilePath)
+        
+        if fullName not in ['submission.xlsx', 'submission.csv']:
+            raise Exception("Please select a valid submission file")
+            
+        if os.path.isfile(submFilePath):
+            extension = os.path.splitext(submFilePath)[1] 
+            if extension == '.csv':
+                df = pd.read_csv(submFilePath)
+            elif extension == '.xlsx':
+                df = pd.read_excel(submFilePath) 
+            
+            # check that headers matches with template
+            fileHeaders = list(df)
+            if fileHeaders == self.submissionHeaders:
+                h = 1            
+                #check that first column matches with template
+                if df[self.submissionHeaders[0]].tolist() == self.submissionCol0:
+                    c0 = 1
+                    
+                #check that the value column does't contain any NaN or empty elements
+                if df[self.submissionHeaders[2]].isnull().any():
+                    v = 0
+                    print('v',v)
+                
+                valueCol = df[self.submissionHeaders[2]].values
+                valueCol = [x.strip() for x in valueCol if type(x) == str]
+                if "" in valueCol:
+                    v = 0
+                            
+        check1 = "The submission file format matches with the template provided by the SPARC Curation Team"
+        check1f = "The headers do not match with the template, please correct them." 
+        check1f2 = "The first column items do not match with the template, please correct them." 
+        
+        check2 = "All cells in the 'Value' column are populated"
+        check2f = "One or multiple cells from the 'Value' column are empty. All of them must be populated."
+        
+        if h == 1 and c0 == 1:
+            self.passes.append(check1)
+            if v == 1:
+                self.passes.append(check2) 
+            else:
+                self.fatal.append(check2 + '--' + check2f)  
+        else:
+            if h == 0:
+                self.fatal.append(check1 + '--' + check1f)
+            else:
+                if c0 == 0:
+                    self.fatal.append(check1 + '--' + check1f2)
+        
 
     def check_submission(self, rootFolder):
         # The submission file has the variable names in rows rather than columns
@@ -1387,9 +1542,9 @@ def validate_high_level_metadata_files(jsonStruct):
     validator = DictValidator()
 
     # check the root folder for required metadata files
-    validator.check_for_req_high_level_metadata_files(jsonStruct)
+    isSubmission, isDatasetDescription, isSubjects, isSamples = validator.check_for_req_high_level_metadata_files(jsonStruct)
     
-    return(validator)
+    return(validator, isSubmission, isDatasetDescription, isSubjects, isSamples)
 
 def validate_sub_level_organization(jsonStruct):
     validator = DictValidator()
@@ -1402,6 +1557,23 @@ def validate_sub_level_organization(jsonStruct):
     
     #check sub level structure for DS.STORE
     validator.check_ds_store(jsonStruct)
+    
+    return(validator)
+    
+def validate_submission_file(submFilePath):
+    validator = DictValidator()
+    
+    #check sub level structure for empty folders
+    validator.check_submission_file(submFilePath)
+    
+    return(validator)
+    
+
+def validate_dataset_description_file(ddFilePath):
+    validator = DictValidator()
+    
+    #check sub level structure for empty folders
+    validator.check_dataset_description_file(ddFilePath)
     
     return(validator)
     

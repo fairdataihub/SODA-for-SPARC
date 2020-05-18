@@ -36,7 +36,7 @@ from openpyxl import Workbook
 from docx import Document
 
 from validator import pathToJsonStruct, validate_high_level_folder_structure, validate_high_level_metadata_files, \
-validate_sub_level_organization
+validate_sub_level_organization, validate_submission_file
 
 ### Global variables
 curateprogress = ' '
@@ -976,7 +976,7 @@ def curate_dataset_progress():
 
     return (curateprogress+elapsed_time_formatted_display, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time_formatted)
 
-### Validate data
+### Validate dataset
 def validate_dataset(validator_input):
     try:
         if type(validator_input) is str:
@@ -984,7 +984,7 @@ def validate_dataset(validator_input):
         elif type(validator_input) is dict:
             jsonStruct = validator_input
         else:
-            raise Exception('Error: validator input must be string (path to dataset) or a JSON Structure/Python dictionary')
+            raise Exception('Error: validator input must be string (path to dataset) or a SODA JSON Structure/Python dictionary')
 
         res = []
 
@@ -996,7 +996,8 @@ def validate_dataset(validator_input):
         resitem['fatal'] = validatorObj.fatal
         res.append(resitem)
 
-        validatorHighLevelMetadataFiles = validate_high_level_metadata_files(jsonStruct)
+        validatorHighLevelMetadataFiles, isSubmission, isDatasetDescription, isSubjects, isSamples = \
+         validate_high_level_metadata_files(jsonStruct)
         validatorObj = validatorHighLevelMetadataFiles
         resitem = {}
         resitem['pass'] = validatorObj.passes
@@ -1011,6 +1012,24 @@ def validate_dataset(validator_input):
         resitem['warnings'] = validatorObj.warnings
         resitem['fatal'] = validatorObj.fatal
         res.append(resitem)
+
+        if isSubmission == 1:
+            metadataFiles = jsonStruct['main']
+            for f in metadataFiles:
+                fullName = os.path.basename(f)
+                if os.path.splitext(fullName)[0] == 'submission':
+                    subFilePath = f
+            validatorSubmissionFile = validate_submission_file(subFilePath)
+            validatorObj = validatorSubmissionFile
+            resitem = {}
+            resitem['pass'] = validatorObj.passes
+            resitem['warnings'] = validatorObj.warnings
+            resitem['fatal'] = validatorObj.fatal
+            res.append(resitem)
+        else:
+            resitem = 'N/A'
+            res.append(resitem)
+
 
         return res
 

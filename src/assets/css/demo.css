@@ -1220,7 +1220,7 @@ input:checked + .slider:before {
 }
 
 .validatelist li{
-  padding-bottom: 10px;
+  padding-bottom: 15px;
   position: relative;
 }
 

@@ -2057,7 +2057,6 @@ curateDatasetBtn.addEventListener('click', () => {
 
 
 ////////////////// Validate current datasets ////////////////////////////////
-// /////////////////////////////////////////////////////////////////////////
 
 //// when users click on "Preview", show preview dataset in explorer
 previewCurrentDsValidate.addEventListener("click", function() {
@@ -2103,28 +2102,42 @@ function grabCurrentDSValidator() {
   return jsonvect
 }
 
-//// Check for empty JSON object
+//// Check for empty JSON object and remove then
 function checkJSONObj(jsonObj) {
   var empty = true
   for (var key of Object.keys(jsonObj)) {
     if (jsonObj[key].length !== 0) {
       empty = false
     }
+    else{
+      if (key !== 'main')
+        delete jsonObj[key]
+    }
   }
   return empty
 }
 
 ///////// Clicking on Validate current DS
+var checkCategory0 = "High-level folder structure"
+var checkCategory1 = "High-level metadata files"
+var checkCategory2 = "Sub-level organization"
+var checkCategory3 = "submission file"
+var checkCategory4 = "dataset_description file"
+var checkCategory5 = "subjects file"
+var checkCategory6 = "samples file"
+var checkCategories =[checkCategory0, checkCategory1, checkCategory2, checkCategory3, checkCategory4, checkCategory5, checkCategory6]
+
 validateCurrentDSBtn.addEventListener("click", function() {
   document.getElementById("div-validation-report-current").style.display = "none"
   document.getElementById("para-validate-current-ds").innerHTML = ""
+  var messageDisplay = ""
   var structuredDataset = grabCurrentDSValidator()
   var empty = checkJSONObj(structuredDataset)
   if (empty === true) {
     document.getElementById("para-validate-current-ds").innerHTML = "<span style='color: red;'>Please add files or folders to your dataset!</span>"
   } else {
     validateCurrentDSBtn.disabled = true
-    validatorInput = structuredDataset
+    var validatorInput = structuredDataset
     client.invoke("api_validate_dataset", validatorInput, (error, res) => {
       if (error) {
         console.error(error)
@@ -2132,16 +2145,6 @@ validateCurrentDSBtn.addEventListener("click", function() {
         var emessage = userError(error)
         document.getElementById("para-validate-current-ds").innerHTML = "<span style='color: red;'>" + emessage + "</span>"
       } else {
-        var messageDisplay = ""
-        var checkCategory0 = "High-level folder structure"
-        var checkCategory1 = "High-level metadata files"
-        var checkCategory2 = "Sub-level organization"
-        var checkCategory3 = "submission file"
-        var checkCategory4 = "dataset_description file"
-        var checkCategory5 = "subjects file"
-        var checkCategory6 = "samples file"
-        var checkCategories =[checkCategory0, checkCategory1, checkCategory2, checkCategory3, checkCategory4, checkCategory5, checkCategory6]
-
         for (var i = 0; i < res.length; i++) {
           messageDisplay = errorMessageCategory(res[i], checkCategories[i], messageDisplay)
         }
@@ -2155,7 +2158,6 @@ validateCurrentDSBtn.addEventListener("click", function() {
 })
 
 /////////////////////// Validate local datasets //////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
 
 //// when users click on Import local dataset
 document.getElementById("input-local-ds-select").addEventListener("click", function() {
@@ -2176,6 +2178,7 @@ ipcRenderer.on('selected-validate-local-dataset', (event, filepath) => {
 
 validateLocalDSBtn.addEventListener("click", function() {
   var datasetPath = document.getElementById("input-local-ds-select").placeholder
+  var messageDisplay = ""
   if (datasetPath==="Select a folder") {
     document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset first</span>"
   } else  {
@@ -2187,20 +2190,11 @@ validateLocalDSBtn.addEventListener("click", function() {
             console.error(error)
             log.error(error)
           } else {
-            var messageDisplay = ""
-            var checkCategory0 = "High-level folder structure"
-            var checkCategory1 = "High-level metadata files"
-            var checkCategory2 = "Sub-level organization"
-            var checkCategory3 = "submission file"
-            var checkCategory4 = "dataset_description file"
-            var checkCategory5 = "subjects file"
-            var checkCategory6 = "samples file"
-            var checkCategories =[checkCategory0, checkCategory1, checkCategory2, checkCategory3, checkCategory4, checkCategory5, checkCategory6]
-
             for (var i = 0; i < res.length; i++) {
-              messageDisplay = errorMessageCategory(res[i], checkCategories[i], messageDisplay)
+              if (res[i] !== 'N/A'){
+                messageDisplay = errorMessageCategory(res[i], checkCategories[i], messageDisplay)
+              }
             }
-            console.log(messageDisplay)
             document.getElementById("div-validation-report-local").style.display = "block"
             validateLocalDatasetReport.innerHTML = messageDisplay
           }
