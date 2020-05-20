@@ -167,10 +167,12 @@ const selectSaveFileOrganizationMetadataBtn = document.getElementById('button-se
 
 // Validate dataset //
 const validateCurrentDSBtn = document.getElementById("button-validate-current-ds")
-const validateLocalDSBtn = document.getElementById("button-validate-local-ds")
 const previewCurrentDsValidate = document.getElementById("button-preview-local-ds")
-const validateLocalDatasetReport = document.querySelector('#textarea-validate-local-dataset')
 const validateCurrentDatasetReport = document.querySelector('#textarea-validate-current-dataset')
+const currentDatasetValReport = document.getElementById('button-generate-report-current-ds')
+const validateLocalDSBtn = document.getElementById("button-validate-local-ds")
+const validateLocalDatasetReport = document.querySelector('#textarea-validate-local-dataset')
+const localDatasetValReport = document.getElementById('button-generate-report-local-ds')
 
 // Generate dataset //
 const createNewStatus = document.querySelector('#create-newdataset')
@@ -2147,11 +2149,38 @@ validateCurrentDSBtn.addEventListener("click", function() {
         }
         console.log(messageDisplay)
         document.getElementById("div-validation-report-current").style.display = "block"
+        document.getElementById("div-report-current").style.display = "block"
         validateCurrentDatasetReport.innerHTML = messageDisplay
       }
     })
     validateCurrentDSBtn.disabled = false
     }
+})
+
+///// Generate text validator file
+currentDatasetValReport.addEventListener("click", (event) => {
+  ipcRenderer.send('save-file-dialog-validator-current')
+})
+ipcRenderer.on('selected-savedvalidatorcurrent', (event, filepath) => {
+if (filepath.length > 0){
+  // Call python to save
+  if (filepath != null){
+    document.getElementById("para-generate-report-current-ds").innerHTML = ""
+    localDatasetValReport.disabled = true
+    var highLevelObj = parseInnerHTMLreport(document.getElementById('High-level folder structure'))
+    var metadataFilesObj = parseInnerHTMLreport(document.getElementById("High-level metadata files"))
+    var subLevelObj = parseInnerHTMLreport(document.getElementById("Sub-level organization"))
+
+    //// writing content to text file
+    var highLevelcontent = printMessagesValidator(highLevelObj, "1. High-level folders: ")
+    var metadataContent = printMessagesValidator(metadataFilesObj, "\n\n2. High-level metadata files: ")
+    var subLevelContent = printMessagesValidator(subLevelObj, "\n\n3. Sub-level organization: ")
+    var fullContent = highLevelcontent + metadataContent + subLevelContent
+    fs.writeFileSync(filepath, fullContent);
+    localDatasetValReport.disabled = false
+    document.getElementById("para-generate-report-current-ds").innerHTML = "Done!"
+    }
+  }
 })
 
 /////////////////////// Validate local datasets //////////////////////////////
@@ -2202,6 +2231,7 @@ validateLocalDSBtn.addEventListener("click", function() {
             }
             console.log(messageDisplay)
             document.getElementById("div-validation-report-local").style.display = "block"
+            document.getElementById("div-report-local").style.display = "block"
             validateLocalDatasetReport.innerHTML = messageDisplay
           }
         })
@@ -2251,9 +2281,90 @@ function errorMessageGenerator(resitem, category, messageDisplay){
  return messageDisplay
 }
 
+//////// Parse innerHTML validator report and categorize messages by classes.
+
+//// Add each class message to list
+function addClassMessagesValidator(sectionElement, list, classString) {
+  var messageText = sectionElement.getElementsByClassName(classString);
+  var listElement;
+  for (var i=0; i<messageText.length; i++) {
+    // console.log(messageText[i].innerHTML)
+    if (messageText[i].innerHTML.indexOf("<br>") !== -1) {
+      listElement = messageText[i].innerHTML.replace(/\<br>/g, ". ")
+      listElement = listElement.slice(listElement.indexOf(">") + 1, listElement.indexOf("</span>"))
+    } else {
+        listElement = messageText[i].textContent
+    }
+    list.push(listElement)
+  }
+}
+
+/// make JSON object containing 3 lists: pass, warnings, errors
+function parseInnerHTMLreport(sectionElement) {
+  var levelObj = {}
+  var passList = []
+  var warningsList = []
+  var errorsList = []
+
+  addClassMessagesValidator(sectionElement, passList, 'bulletpass')
+  addClassMessagesValidator(sectionElement, warningsList, 'bulletwarning')
+  addClassMessagesValidator(sectionElement, errorsList, 'bulleterror')
+
+  levelObj["pass"] = passList
+  levelObj["warnings"] = warningsList
+  levelObj["errors"] = errorsList
+  return levelObj
+}
+
+////// Format validator messages to be written to a text file
+//////// check undefined and empty check sections (pass, warnings, errors)
+function checkEmptySectionValidator(objKey, sectionStrings, checkSection) {
+  var keyContent;
+  if (objKey !== undefined) {
+    if (objKey.length>0) {
+      keyContent = sectionStrings + "\n" + checkSection + "\n *" + objKey.join("\n *")
+    } else {
+        keyContent = ""
+    }
+  } else {
+      keyContent = ""
+  }
+  return keyContent
+}
+
+//// combine messages
+function printMessagesValidator(sectionObj, sectionStrings) {
+  var passContent = checkEmptySectionValidator(sectionObj["pass"], sectionStrings, "Pass: ")
+  var warningsContent = checkEmptySectionValidator(sectionObj["warnings"], "", "Warnings: ")
+  var errorsContent = checkEmptySectionValidator(sectionObj["errors"], "", "Errors: ")
+  return passContent + warningsContent + errorsContent
+}
 
 /////// Click to "generate" validator report (text file) ///////
+localDatasetValReport.addEventListener("click", function() {
+    ipcRenderer.send('save-file-dialog-validator-local')
+})
+ipcRenderer.on('selected-savedvalidatorlocal', (event, filepath) => {
+  if (filepath.length > 0){
+    // Call python to save
+    if (filepath != null){
+      document.getElementById("para-generate-report-local-ds").innerHTML = ""
+      localDatasetValReport.disabled = true
+      var highLevelObj = parseInnerHTMLreport(document.getElementById('High-level folder structure'))
+      var metadataFilesObj = parseInnerHTMLreport(document.getElementById("High-level metadata files"))
+      var subLevelObj = parseInnerHTMLreport(document.getElementById("Sub-level organization"))
 
+      //// writing content to text file
+      var highLevelcontent = printMessagesValidator(highLevelObj, "1. High-level folders: ")
+      var metadataContent = printMessagesValidator(metadataFilesObj, "\n\n2. High-level metadata files: ")
+      var subLevelContent = printMessagesValidator(subLevelObj, "\n\n3. Sub-level organization: ")
+      var fullContent = highLevelcontent + metadataContent + subLevelContent
+      fs.writeFileSync(filepath, fullContent);
+      localDatasetValReport.disabled = false
+      document.getElementById("para-generate-report-local-ds").innerHTML = "Done!"
+      }
+    }
+})
 
 //////////////////////////////////
 // Manage Dataset
