@@ -2150,6 +2150,7 @@ validateCurrentDSBtn.addEventListener("click", function() {
         console.log(messageDisplay)
         document.getElementById("div-validation-report-current").style.display = "block"
         document.getElementById("div-report-current").style.display = "block"
+        document.getElementById("para-validate-current-ds").innerHTML = "Please see report below."
         validateCurrentDatasetReport.innerHTML = messageDisplay
       }
     })
@@ -2166,7 +2167,7 @@ if (filepath.length > 0){
   // Call python to save
   if (filepath != null){
     document.getElementById("para-generate-report-current-ds").innerHTML = ""
-    localDatasetValReport.disabled = true
+    currentDatasetValReport.disabled = true
     var highLevelObj = parseInnerHTMLreport(document.getElementById('High-level folder structure'))
     var metadataFilesObj = parseInnerHTMLreport(document.getElementById("High-level metadata files"))
     var subLevelObj = parseInnerHTMLreport(document.getElementById("Sub-level organization"))
@@ -2176,8 +2177,9 @@ if (filepath.length > 0){
     var metadataContent = printMessagesValidator(metadataFilesObj, "\n\n2. High-level metadata files: ")
     var subLevelContent = printMessagesValidator(subLevelObj, "\n\n3. Sub-level organization: ")
     var fullContent = highLevelcontent + metadataContent + subLevelContent
+
     fs.writeFileSync(filepath, fullContent);
-    localDatasetValReport.disabled = false
+    currentDatasetValReport.disabled = false
     document.getElementById("para-generate-report-current-ds").innerHTML = "Done!"
     }
   }
@@ -2204,6 +2206,7 @@ ipcRenderer.on('selected-validate-local-dataset', (event, filepath) => {
 })
 
 validateLocalDSBtn.addEventListener("click", function() {
+  document.getElementById("para-local-ds-info").innerHTML = ""
   var datasetPath = document.getElementById("input-local-ds-select").placeholder
   if (datasetPath==="Select a folder") {
     document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset first</span>"
@@ -2232,6 +2235,7 @@ validateLocalDSBtn.addEventListener("click", function() {
             console.log(messageDisplay)
             document.getElementById("div-validation-report-local").style.display = "block"
             document.getElementById("div-report-local").style.display = "block"
+            document.getElementById("para-local-ds-info").innerHTML = "Done!"
             validateLocalDatasetReport.innerHTML = messageDisplay
           }
         })
@@ -2247,7 +2251,7 @@ function validateMessageTransform(inString) {
 
 function errorMessageCategory(resitem, checkCategory, messageDisplay){
   messageDisplay += "<b>" + checkCategory + "</b>"
-  messageDisplay += "<ul class='validatelist'>"
+  messageDisplay += "<ul class='validatelist' id='" + checkCategory + "'>"
   var category = 'fatal'
   messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
   category = 'warnings'
@@ -2288,7 +2292,6 @@ function addClassMessagesValidator(sectionElement, list, classString) {
   var messageText = sectionElement.getElementsByClassName(classString);
   var listElement;
   for (var i=0; i<messageText.length; i++) {
-    // console.log(messageText[i].innerHTML)
     if (messageText[i].innerHTML.indexOf("<br>") !== -1) {
       listElement = messageText[i].innerHTML.replace(/\<br>/g, ". ")
       listElement = listElement.slice(listElement.indexOf(">") + 1, listElement.indexOf("</span>"))
@@ -2356,9 +2359,10 @@ ipcRenderer.on('selected-savedvalidatorlocal', (event, filepath) => {
 
       //// writing content to text file
       var highLevelcontent = printMessagesValidator(highLevelObj, "1. High-level folders: ")
-      var metadataContent = printMessagesValidator(metadataFilesObj, "\n\n2. High-level metadata files: ")
-      var subLevelContent = printMessagesValidator(subLevelObj, "\n\n3. Sub-level organization: ")
+      var metadataContent = printMessagesValidator(metadataFilesObj, "\n2. High-level metadata files: ")
+      var subLevelContent = printMessagesValidator(subLevelObj, "\n3. Sub-level organization: ")
       var fullContent = highLevelcontent + metadataContent + subLevelContent
+
       fs.writeFileSync(filepath, fullContent);
       localDatasetValReport.disabled = false
       document.getElementById("para-generate-report-local-ds").innerHTML = "Done!"
