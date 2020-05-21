@@ -220,6 +220,7 @@ ipcMain.on('open-file-dialog-samples', (event) => {
   })
 })
 
+
 ////// milestone document
 ipcMain.on('open-file-dialog-milestone-doc', (event) => {
   dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
@@ -279,24 +280,13 @@ ipcMain.on('open-folder-dialog-save-metadata', (event, filename) => {
   })
 })
 
-// Metadata submission download
-ipcMain.on('open-folder-dialog-save-submission', (event, filename) => {
+//// DDD download
+ipcMain.on('open-folder-dialog-save-DDD', (event, filename) => {
   dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
     properties: ['openDirectory']
   }, (files) => {
     if (files) {
-      event.sender.send('selected-metadata-submission', files, filename);
-    }
-  })
-})
-
-// Metadata ds description download
-ipcMain.on('open-folder-dialog-save-ds-description', (event, filename) => {
-  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
-    properties: ['openDirectory']
-  }, (files) => {
-    if (files) {
-      event.sender.send('selected-metadata-ds-description', files, filename);
+      event.sender.send('selected-DDD-download-folder', files, filename);
     }
   })
 })

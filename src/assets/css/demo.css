@@ -309,7 +309,7 @@ button.download-metadata{
   display: inline-block;
   border-radius: 4px;
   margin:0 0.3em 0.3em 0;
-  width: 220px;
+  width: 250px;
   height: 45px;
   text-align: left;
   vertical-align: middle;
@@ -1190,3 +1190,38 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+<<<<<<< Updated upstream
+=======
+
+
+/* Validate list styling */
+.validatelist{
+  list-style: none;
+}
+
+.validatelist li{
+  padding-bottom: 10px;
+  position: relative;
+}
+
+.validatelist li :before{
+  position: absolute;
+  left: -30px;
+}
+
+.validatelist li.bulletpass :before{
+  content:"\2705"; -
+}
+
+.validatelist li.bulletwarning :before{
+  content:"\26A0";
+  font-size: 20px
+}
+
+.validatelist li.bulleterror :before{
+  content: "\274C";
+}
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes

@@ -113,6 +113,7 @@ const downloadSamples = document.getElementById("a-samples")
 const downloadSubjects = document.getElementById("a-subjects")
 const downloadDescription = document.getElementById("a-description")
 const downloadManifest = document.getElementById("a-manifest")
+const downloadDDD = document.getElementById("a-DDD")
 
 /// save airtable api key
 const addAirtableKeyBtn = document.getElementById("button-add-airtable-key")
@@ -423,7 +424,7 @@ addAirtableKeyBtn.addEventListener("click", function() {
 loadAwardData()
 
 /////////////////////// Download Metadata Templates ////////////////////////////
-templateArray = ["submission.xlsx", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx", "manifest.xlsx"]
+templateArray = ["submission.xlsx", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx", "manifest.xlsx", "DDD-template.docx"]
 function downloadTemplates(templateItem, destinationFolder) {
   var templatePath = path.join(__dirname, "file_templates", templateItem)
   var destinationPath = path.join(destinationFolder, templateItem)
@@ -453,6 +454,15 @@ downloadManifest.addEventListener('click', (event) => {
   ipcRenderer.send('open-folder-dialog-save-metadata', templateArray[4])
 });
 ipcRenderer.on('selected-metadata-download-folder', (event, path, filename) => {
+  if (path.length > 0) {
+    downloadTemplates(filename, path[0])
+  }
+})
+
+downloadDDD.addEventListener('click', (event) => {
+  ipcRenderer.send('open-folder-dialog-save-DDD', templateArray[5])
+});
+ipcRenderer.on('selected-DDD-download-folder', (event, path, filename) => {
   if (path.length > 0) {
     downloadTemplates(filename, path[0])
   }
