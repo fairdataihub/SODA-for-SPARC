@@ -39,7 +39,7 @@
 
            <h5> Information from the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide"> SPARC Airtable sheet</a> will be used to easily prepare your metadata files.</h5>
 
-           <h5> Enter your Airtable API key below to connect your Airtable account with SODA:
+           <h5> Enter your Airtable API key below and specify a key name to connect your Airtable account with SODA:
              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                <span style="width: 250px;" class="tooltiptext"> Make sure you have an Airtable account and have access to the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide">SPARC Airtable sheet </a> (contact Dr. Charles Horn at <a href="mailto:chorn@pitt.edu" style='color: white'> chorn@pitt.edu</a>)
               <br><br>
@@ -51,17 +51,46 @@
              </div>
            </h5> <br>
 
-           <div class="demo-controls">
-             <input class="form-container-input-bf" style="width:555px;height:35px;float:left" type="password" id="airtable-api-key" />
+           <!-- <div class="demo-controls"> -->
+             <div class="form-container"><font color="black"> Key name: </font> </div>
+             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+               <span class="tooltiptext" style="width: 200px; font-weight: bold">
+                 Generate a name for your Airtable API Key. Your API Key will be stored under this key name.
+               </span>
+             </div>
+             <div class="demo-controls">
+               <input class="form-container-input-bf" id="airtable-key-name" />
+             </div>
+             <div class="form-container"><font color="black"> API Key: </font> </div>
+             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+               <span class="tooltiptext" style="width: 200px; font-weight: bold">
+                 To obtain or re-generate your API key to connect to SODA during your first use, check out the dedicated <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a>
+               </span>
+             </div>
+             <div class="demo-controls">
+               <input type="password" class="form-container-input-bf" id="airtable-api-key" />
+             </div>
+             <br>
+             <div class="demo-controls">
+               <button class="demo-button" id="button-add-airtable-key"> Connect </button>
+               <div style="display:none" id="div-airtable-connect-load-progress" class="progressdiv">
+                 <div class="indeterminatebar"></div>
+               </div>
+               <p id="para-add-airtable-key"  style="display:none;float:right;margin: 0 0;padding: 0 0;vertical-align: middle;"></p>
+             </div>
+           <!-- </div> -->
+          </div>
+            <!-- <input class="form-container-input-bf" style="width:555px;height:35px;float:left" type="password" id="airtable-api-key" />
              <button class="demo-button-prev-next" style="float:right;margin-left:10px;font-size:15px;height:35px;" id="button-add-airtable-key"> Connect </button>
            </div>
            <div id="div-airtable-connect-load-progress" class="progressdiv">
              <div class="indeterminatebar"></div>
            </div>
-           <p id="para-add-airtable-key-status" style="display:none"></p>
-         </div>
+           <p id="para-add-airtable-key-status"></p> -->
+
 
           <div id="div-add-new-grant" class="datasetsaveoption" style="display:block;margin-top:70px;margin-left:10px">
+            <font color="black"><b> Airtable connection status: </b><span style="color:black" id="para-add-airtable-key-status"></span></font>
             <h5> Search for award: </h5>
             <div class="demo-controls">
               <input id="input-grant-info" list="select-grant-info-list" class="form-container-input-bf" style="width:90%;float:left;height:35px;padding:6px 8px;margin-top:15px">
@@ -88,31 +117,31 @@
             <div>
             <p id='para-delete-award-status' style="margin:10px 0px"></p>
             </div>
-            <!-- <p></p> -->
-            <div class="demo-controls" id="div-milestone-info">
-              <div id="div-show-milestone-info-no-existing" class="pathtable" style="display:none;width:100%">
-                <!-- <form method="post" style="width:100%"> -->
-                  <h5>Data Deliverables document:
+         <p></p>
+          <div class="demo-controls" id="div-milestone-info">
+            <div id="div-show-milestone-info-no-existing" class="pathtable" style="display:none;width:100%">
+              <!-- <form method="post" style="width:100%"> -->
+                <h5>Data Deliverables document:
 
-                  <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                   <span style="width: 250px;" class="tooltiptext"> The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document.
-                  <br><br>
-                  Click <a href=# id="a-DDD">here</a> to download a template of the Data Deliverables document.
-                  <br><br>
-                   Import that document to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section.
-                   </span>
-                 </div>
+                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                 <span style="width: 250px;" class="tooltiptext"> The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document.
+                <br><br>
+                Click <a href=# id="a-DDD">here</a> to download a template of the Data Deliverables document.
+                <br><br>
+                 Import that document to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section.
+                 </span>
+               </div>
 
-                  </h5>
-                  <h5></h5>
-                  <div class="container-milestone-upload" style="display:flex;">
-                    <!-- <button type="button" style="width:40%;float:left" class="button-milestone-upload">Select a file</button> -->
-                    <input class="milestone-upload-text" id="input-milestone-select" style="width:50%;text-align:center;height:40px" type="text" readonly placeholder="Select a file">
-                    <button id="button-import-milestone" type="button" style="width:15%;height:40px" class="button-milestone-upload"><b>Import</b></button>
-                    <p id="para-milestone-document-info" style="float:right;margin-top:0;margin-left:7px;padding: 0 0;height:34px;width:300px;text-align:left;vertical-align:middle;"></p>
-                  </div>
-                <!-- </form> -->
-              </div>
+                </h5>
+                <h5></h5>
+                <div class="container-milestone-upload" style="display:flex;">
+                  <!-- <button type="button" style="width:40%;float:left" class="button-milestone-upload">Select a file</button> -->
+                  <input class="milestone-upload-text" id="input-milestone-select" style="width:50%;text-align:center;height:40px" type="text" readonly placeholder="Select a file">
+                  <button id="button-import-milestone" type="button" style="width:15%;height:40px" class="button-milestone-upload"><b>Import</b></button>
+                  <p id="para-milestone-document-info" style="float:right;margin-top:0;margin-left:7px;padding: 0 0;height:34px;width:300px;text-align:left;vertical-align:middle;"></p>
+                </div>
+              <!-- </form> -->
+            </div>
             </div>
               <br>
               <div id="div-show-current-milestones" style="display:none;width:100%">

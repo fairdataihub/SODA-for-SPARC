@@ -382,8 +382,11 @@ function sendHTTPsRequestAirtable(options, varSuccess) {
 ///// Upon clicking "Connect" to Airtable
 addAirtableKeyBtn.addEventListener("click", function() {
   document.getElementById("div-airtable-connect-load-progress").style.display = "block"
-  document.getElementById("para-add-airtable-key-status").innerHTML = ""
+  document.getElementById("para-add-airtable-key").innerHTML = ""
+  // document.getElementById("airtable-key-name").value = ""
+  // document.getElementById("airtable-api-key").value = ""
   var apiKeyInput = document.getElementById("airtable-api-key").value;
+  var keyName = document.getElementById("airtable-key-name").value;
   // test connection
   // const optionsNoTable = {
   const optionsSparcTable = {
@@ -399,26 +402,28 @@ addAirtableKeyBtn.addEventListener("click", function() {
       createMetadataDir();
       var content = parseJson(airtableConfigPath);
       content["api-key"] = apiKeyInput;
+      content["key-name"] = keyName
       fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: black;'>New Airtable key added successfully!" +smileyCan +"</span>";
+      document.getElementById("para-add-airtable-key").innerHTML = "<span style='color: black;'>New Airtable key added successfully!" +smileyCan +"</span>";
       document.getElementById('para-save-award-info').innerHTML = ""
       loadAwardData()
     } else if (res.statusCode === 403) {
-        document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>";
+        document.getElementById("para-add-airtable-key").innerHTML = "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>";
     } else {
         log.error(res)
         console.error(res)
-        document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key!</span>";
+        document.getElementById("para-add-airtable-key").innerHTML = "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key under Connect to Airtable tab!</span>";
     }
     document.getElementById("div-airtable-connect-load-progress").style.display = "none"
-    document.getElementById("para-add-airtable-key-status").style.display = "block"
+    document.getElementById("para-add-airtable-key").style.display = "block"
     res.on('error', error => {
       log.error(error)
       console.error(error)
-      document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key!</span>";
+      document.getElementById("para-add-airtable-key").innerHTML = "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key under Connect to Airtable tab!</span>";
     })
   })
     document.getElementById("airtable-api-key").value = ""
+    document.getElementById("airtable-key-name").value = ""
 })
 
 loadAwardData()
@@ -803,19 +808,17 @@ presavedAwardArray1.addEventListener('change', function() {
 // indicate to user that airtable records are being retrieved
 function loadAwardData() {
   document.getElementById("div-awards-load-progress").style.display = 'block'
-  document.getElementById("div-airtable-connect-load-progress").style.display = "block"
   ///// Construct table from data
   var awardResultArray = [];
   ///// config and load live data from Airtable
   var airKeyContent = parseJson(airtableConfigPath)
   if (Object.keys(airKeyContent).length === 0) {
-    document.getElementById("div-airtable-connect-load-progress").style.display = 'none'
     document.getElementById("div-awards-load-progress").style.display = 'none';
-    document.getElementById("para-add-airtable-key-status").style.display = 'block';
     document.getElementById("para-add-airtable-key-status").innerHTML =  "<span style='color: red;'>Please add an API Key to connect to Airtable!</span>"
     document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>No Airtable API key found! Please connect to Airtable first!</span>";
   } else {
     var airKeyInput = airKeyContent["api-key"]
+    var airKeyName = airKeyContent["key-name"]
     Airtable.configure({
         endpointUrl: 'https://' + airtableHostname,
         apiKey: airKeyInput
@@ -832,11 +835,9 @@ function loadAwardData() {
     },
     function done(err) {
         document.getElementById("div-awards-load-progress").style.display = 'none';
-        document.getElementById("div-airtable-connect-load-progress").style.display = "none"
         if (err) {
-          document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Failed to load awards from Airtable. Please check your internet connection or API Key.</span>";
-          document.getElementById("para-add-airtable-key-status").style.display = 'block';
-          document.getElementById("para-add-airtable-key-status").innerHTML =  "<span style='color: red;'>Could not connect to Airtable. Please check your API Key or internet connection and try again!</span>"
+          document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to load awards from Airtable. Please try re-connecting to Airtable under Connect to Airtable.</span>";
+          // document.getElementById("para-add-airtable-key-status").style.display = 'block';
           log.error(err);
           console.log(err);
           return;
@@ -849,8 +850,8 @@ function loadAwardData() {
             options += '<option value="'+element+'" />';
           }
           awardArray.innerHTML = options
-          document.getElementById("para-add-airtable-key-status").style.display = "block"
-          document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: black;'>Successfully connected to Airtable!" +smileyCan +"</span>";
+          // document.getElementById("para-add-airtable-key-status").style.display = "block"
+          document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: black;'>Successfully connected to Airtable account " + airKeyName + "!" +smileyCan +"</span>";
         }
     });
   }
