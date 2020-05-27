@@ -424,7 +424,7 @@ addAirtableKeyBtn.addEventListener("click", function() {
 loadAwardData()
 
 /////////////////////// Download Metadata Templates ////////////////////////////
-templateArray = ["submission.xlsx", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx", "manifest.xlsx", "DDD-template.docx"]
+templateArray = ["submission.xlsx", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx", "manifest.xlsx", "DataDeliverablesDocument-template.docx"]
 function downloadTemplates(templateItem, destinationFolder) {
   var templatePath = path.join(__dirname, "file_templates", templateItem)
   var destinationPath = path.join(destinationFolder, templateItem)

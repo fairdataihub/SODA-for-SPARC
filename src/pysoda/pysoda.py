@@ -341,7 +341,7 @@ def import_milestone(filepath):
     try:
         table = doc.tables[0]
     except IndexError:
-        raise InvalidDeliverablesDocument("Please select a valid SPARC Deliverables Document!")
+        raise InvalidDeliverablesDocument("Please select a valid SPARC Deliverables Document! The following headers could not be found in a table of the document you selected: Related milestone, aim, or task, Description of data, and Expected date of completion.")
     data = []
     keys = None
     for i, row in enumerate(table.rows):
