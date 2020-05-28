@@ -16,7 +16,7 @@ var Airtable = require('airtable');
 require('v8-compile-cache');
 var Tagify = require('@yaireo/tagify');
 const https = require('https')
-const jsPdf = require("jsPDF")
+const PDFDocument = require('pdfkit');
 const html2canvas = require("html2canvas")
 
 //////////////////////////////////
@@ -2171,14 +2171,24 @@ ipcRenderer.on('selected-savedvalidatorcurrent', (event, filepath) => {
       currentDatasetReportBtn.disabled = true
       // obtain canvas and print to pdf
       const domElement = validateCurrentDatasetReport
+      // obtain canvas and print to pdf
       html2canvas(domElement).then((canvas) => {
-          const img = canvas.toDataURL('image/png')
-          const pdf = new jsPdf()
-          pdf.addImage(img, 'JPG', 10, 10, 150, 180)
-          var pdfString = pdf.output()
-          ////// writing pdf output string to a file (encoding 'binary')
-          fs.writeFileSync(filepath, pdfString, 'binary')
-          document.getElementById("para-generate-report-current-ds").innerHTML = "Report saved!"
+        const img = canvas.toDataURL('image/png', 1.0)
+        var data = img.replace(/^data:image\/\w+;base64,/, "");
+        var buf = new Buffer(data, 'base64');
+
+        pdf = new PDFDocument
+        pdf.pipe(fs.createWriteStream(filepath))
+
+        pdf.image(buf, {
+           width: 530,
+           align: 'center',
+           valign: 'top'
+        });
+
+        pdf.end()
+
+        document.getElementById("para-generate-report-current-ds").innerHTML = "Report saved!"
         })
       }
   }
@@ -2291,23 +2301,33 @@ function errorMessageGenerator(resitem, category, messageDisplay){
 localDatasetReportBtn.addEventListener("click", function() {
   ipcRenderer.send('save-file-dialog-validator-local')
 })
-  ipcRenderer.on('selected-savedvalidatorlocal', (event, filepath) => {
-    if (filepath.length > 0) {
-      if (filepath != null){
-        document.getElementById("para-generate-report-local-ds").innerHTML = "Please wait..."
-        localDatasetReportBtn.disabled = true
+ipcRenderer.on('selected-savedvalidatorlocal', (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null){
+      document.getElementById("para-generate-report-local-ds").innerHTML = "Please wait..."
+      localDatasetReportBtn.disabled = true
+      const domElement = validateLocalDatasetReport
+      html2canvas(domElement).then((canvas) => {
+
+        const img = canvas.toDataURL('image/png', 1.0)
+        var data = img.replace(/^data:image\/\w+;base64,/, "");
+        var buf = new Buffer(data, 'base64');
+
         // obtain canvas and print to pdf
-        const domElement = validateLocalDatasetReport
-        html2canvas(domElement).then((canvas) => {
-            const img = canvas.toDataURL('image/png')
-            const pdf = new jsPdf()
-            pdf.addImage(img, 'JPG', 10, 10, 150, 180)
-            var pdfString = pdf.output()
-            ////// writing pdf output string to a file (encoding 'binary')
-            fs.writeFileSync(filepath, pdfString, 'binary')
-            document.getElementById("para-generate-report-local-ds").innerHTML = "Report saved!"
-          })
-    }
+        pdf = new PDFDocument
+        pdf.pipe(fs.createWriteStream(filepath))
+
+        pdf.image(buf, {
+           width: 535,
+           align: 'left',
+           valign: 'top'
+        });
+
+        pdf.end()
+
+        document.getElementById("para-generate-report-local-ds").innerHTML = "Report saved!"
+        })
+      }
   }
   localDatasetReportBtn.disabled = false
 })
