@@ -52,7 +52,7 @@ ipcMain.on('save-file-dialog-validator-current', (event, location) => {
   const options = {
     title: 'Saving your validator report',
     filters: [
-      { name: 'Text', extensions: ['txt'] }
+      { name: 'PDF', extensions: ['pdf'] }
     ]
   }
   dialog.showSaveDialog(BrowserWindow.getFocusedWindow(), options, (filename) => {
@@ -64,7 +64,7 @@ ipcMain.on('save-file-dialog-validator-local', (event, location) => {
   const options = {
     title: 'Saving your validator report',
     filters: [
-      { name: 'Text', extensions: ['txt'] }
+      { name: 'PDF', extensions: ['pdf'] }
     ]
   }
   dialog.showSaveDialog(BrowserWindow.getFocusedWindow(), options, (filename) => {
