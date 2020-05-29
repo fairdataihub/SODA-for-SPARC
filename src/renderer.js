@@ -2183,11 +2183,10 @@ ipcRenderer.on('selected-savedvalidatorcurrent', (event, filepath) => {
         pdf.pipe(fs.createWriteStream(filepath))
 
         pdf.image(buf, {
-           width: 530,
-           align: 'center',
+           width: 490,
            valign: 'top'
         });
-
+        
         pdf.end()
 
         document.getElementById("para-generate-report-current-ds").innerHTML = "Report saved!"
@@ -2320,8 +2319,7 @@ ipcRenderer.on('selected-savedvalidatorlocal', (event, filepath) => {
         pdf.pipe(fs.createWriteStream(filepath))
 
         pdf.image(buf, {
-           width: 535,
-           align: 'left',
+           width: 490,
            valign: 'top'
         });
 
