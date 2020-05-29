@@ -1902,6 +1902,7 @@ selectPreviewMetadataBtn.addEventListener('click', () => {
 curateDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-please-wait-curate").innerHTML = "Please wait..."
   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
+  document.getElementById("para-preview-current-ds").innerHTML = ""
   progressBarCurate.value = 0;
 
   // Disable curate button to prevent multiple clicks
@@ -2121,6 +2122,7 @@ function checkJSONObj(jsonObj) {
 ///////// Clicking on Validate current DS
 validateCurrentDSBtn.addEventListener("click", function() {
   document.getElementById("div-validation-report-current").style.display = "none"
+  document.getElementById("para-preview-current-ds").innerHTML = ""
   document.getElementById("para-validate-current-ds").innerHTML = ""
   var structuredDataset = grabCurrentDSValidator()
   var empty = checkJSONObj(structuredDataset)
