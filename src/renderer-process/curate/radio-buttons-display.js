@@ -4,8 +4,6 @@ function showModifyExisting(){
   document.getElementById('div-curate-button').style.display ='block';
   document.getElementById('div-curate-progress-bar-error-status').style.display ='block';
   document.getElementById('div-curate-progress-bar-status').style.display ='block';
-  // document.getElementById('div-progress-print').style.display ='none';
-  // document.getElementById('progressinfo').value ='';
   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
   document.getElementById("para-curate-progress-bar-status").innerHTML = ""
   document.getElementById("div-curate-meter-progress").style.display ='none';

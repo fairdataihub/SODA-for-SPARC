@@ -838,7 +838,7 @@ function loadAwardData() {
     function done(err) {
         document.getElementById("div-awards-load-progress").style.display = 'none';
         if (err) {
-          document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to load awards from Airtable. Please try re-connecting to Airtable under Connect to Airtable.</span>";
+          document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to load awards from Airtable. To add new SPARC award(s), please try re-connecting to Airtable under the Connect to Airtable tab above.</span>";
           document.getElementById("para-add-airtable-key-status").style.display = 'block';
           log.error(err);
           console.log(err);
