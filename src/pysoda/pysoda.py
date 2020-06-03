@@ -466,12 +466,27 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
             ws1[column + "14"] = total_link_array[i]["link"]
             ws1[column + "15"] = total_link_array[i]["description"]
 
-    ### val_arr_misc["Originating Article DOI"][i] = [{"link type":"org", "link":"link1","desc":"testdesc"}, {{"link type":"org", "link":"link2","desc":"testdesc2"}}]
-
     ## completeness, parent dataset ID, title Respectively
-    ws1["D18"] = val_arr_optional["completeness"]
-    ws1["D19"] = val_arr_optional["parentDS"]
-    ws1["D20"] = val_arr_optional["completeDSTitle"]
+    index = 18
+    if val_arr_optional["completeness"] == "":
+        ws1.delete_rows(18, 1)
+    else:
+        ws1["D18"] = val_arr_optional["completeness"]
+        index += 1
+
+    if val_arr_optional["parentDS"] == "":
+        ws1.delete_rows(index, 1)
+    else:
+        ws1["D"+str(index)] = val_arr_optional["parentDS"]
+        index += 1
+
+    if val_arr_optional["completeDSTitle"] == "":
+        ws1.delete_rows(index, 1)
+    else:
+        ws1["D"+str(index)] = val_arr_optional["completeDSTitle"]
+
+    # ws1["D19"] = val_arr_optional["parentDS"]
+    # ws1["D20"] = val_arr_optional["completeDSTitle"]
 
     wb.save(destination)
 
@@ -784,7 +799,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                             total_dataset_size += mypathsize
                     else:
 
-                        myfoldersize = folder_size(path) 
+                        myfoldersize = folder_size(path)
                         if myfoldersize == 0:
                             c += 1
                             error = error + path + ' is empty <br>'
@@ -800,7 +815,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
                                         total_dataset_size += mypathsize
                                 for d in dirs:
                                     dp = join(path,d)
-                                    myfoldersize = folder_size(dp) 
+                                    myfoldersize = folder_size(dp)
                                     if myfoldersize == 0:
                                         c += 1
                                         error = error + dp + ' is empty <br>'
@@ -1389,7 +1404,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                     total_file_size += mypathsize
             for d in dirs:
                 dp = join(path,d)
-                myfoldersize = folder_size(dp) 
+                myfoldersize = folder_size(dp)
                 if myfoldersize == 0:
                     c += 1
                     error = error + dp + ' is empty <br>'

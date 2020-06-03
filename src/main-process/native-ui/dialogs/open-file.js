@@ -280,6 +280,28 @@ ipcMain.on('open-folder-dialog-save-metadata', (event, filename) => {
   })
 })
 
+// Generate submission file
+ipcMain.on('open-folder-dialog-save-submission', (event, filename) => {
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ['openDirectory']
+  }, (files) => {
+    if (files) {
+      event.sender.send('selected-metadata-submission', files, filename);
+    }
+  })
+})
+
+// Generate ds description file
+ipcMain.on('open-folder-dialog-save-ds-description', (event, filename) => {
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ['openDirectory']
+  }, (files) => {
+    if (files) {
+      event.sender.send("selected-metadata-ds-description", files, filename);
+    }
+  })
+})
+
 //// DDD download
 ipcMain.on('open-folder-dialog-save-DDD', (event, filename) => {
   dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {

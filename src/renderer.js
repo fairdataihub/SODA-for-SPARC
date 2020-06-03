@@ -1339,7 +1339,7 @@ function grabConInfoEntries() {
   var contributorObj = {}
   var fundingArray = [];
   if (funding==="Select") {
-    fundingArray = ["N/A"]
+    fundingArray = [""]
   } else {
     fundingArray = [funding]
   }
@@ -1411,9 +1411,23 @@ function grabCompletenessInfo() {
   var parentDS = document.getElementById("input-parent-ds").value;
   var completeDSTitle = document.getElementById("input-completeds-title").value;
   var optionalSectionObj = {};
-  optionalSectionObj["completeness"] = completeness
-  optionalSectionObj["parentDS"] = parentDS;
-  optionalSectionObj["completeDSTitle"] = completeDSTitle;
+  console.log(parentDS)
+  console.log(typeof completeDSTitle)
+  var completenessValueArray = []
+  for (var i=0; i<completeness.length; i++) {
+    completenessValueArray.push(completeness[i].value)
+  }
+  optionalSectionObj["completeness"] = completenessValueArray.join(", ")
+  if (parentDS.length===0) {
+    optionalSectionObj["parentDS"] = ""
+  } else {
+    optionalSectionObj["parentDS"] = parentDS;
+  }
+  if (completeDSTitle.length===0) {
+    optionalSectionObj["completeDSTitle"] = ""
+  } else {
+    optionalSectionObj["completeDSTitle"] = completeDSTitle;
+  }
   return optionalSectionObj
 }
 
