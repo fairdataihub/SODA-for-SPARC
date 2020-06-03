@@ -170,7 +170,9 @@ const selectSaveFileOrganizationMetadataBtn = document.getElementById('button-se
 const createNewStatus = document.querySelector('#create-newdataset')
 const modifyExistingStatus = document.querySelector('#existing-dataset')
 const bfUploadDirectlyStatus = document.querySelector('#cloud-dataset')
-const pathNewDataset = document.querySelector('#selected-new-dataset')
+const selectnewDatasetBtn = document.getElementById('selected-new-dataset')
+const importnewDatasetBtn = document.getElementById('button-select-new-dataset')
+// const pathNewDataset = document.querySelector('#selected-new-dataset')
 const newDatasetName = document.querySelector('#new-dataset-name')
 const manifestStatus = document.querySelector('#generate-manifest')
 const curationForm = document.querySelector('#dataset-curate-form')
@@ -203,8 +205,10 @@ const bfNewDatasetName = document.querySelector('#bf-new-dataset-name')
 const bfCreateNewDatasetBtn = document.getElementById('button-create-bf-new-dataset')
 const bfCreateNewDatasetStatus = document.querySelector('#para-add-new-dataset-status')
 const bfSubmitDatasetBtn = document.getElementById('button-submit-dataset')
+const selectLocalDsSubmit = document.getElementById("selected-local-dataset-submit")
+const importLocalDsSubmit = document.getElementById("button-import-local-ds-submit")
 const bfSubmitDatasetInfo = document.querySelector('#progresssubmit')
-const pathSubmitDataset = document.querySelector('#selected-submit-dataset')
+const pathSubmitDataset = document.querySelector('#selected-local-dataset-submit')
 const progressUploadBf = document.getElementById("div-progress-submit")
 const progressBarUploadBf = document.getElementById("progress-bar-upload-bf")
 const bfDatasetListRenameDataset = document.querySelector('#bfdatasetlist_renamedataset')
@@ -1925,6 +1929,28 @@ selectPreviewMetadataBtn.addEventListener('click', () => {
   })
 })
 
+//// Select to generate a local dataset
+selectnewDatasetBtn.addEventListener("click", function() {
+  ipcRenderer.send('open-file-dialog-newdataset')
+})
+ipcRenderer.on('selected-new-dataset', (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null){
+      document.getElementById("para-info-new-dataset").innerHTML = ""
+      document.getElementById("selected-new-dataset").placeholder = filepath[0];
+    }
+  }
+})
+
+importnewDatasetBtn.addEventListener("click", function() {
+  var filepath = document.getElementById("selected-new-dataset").placeholder;
+  if (filepath === "Select destination") {
+    document.getElementById("para-info-new-dataset").innerHTML = "<span style='color: red ;'>" + "Please select a destination!</span>"
+  } else {
+    document.getElementById("para-info-new-dataset").innerHTML = "Selected!"
+  }
+})
+
 // Generate dataset //
 curateDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-please-wait-curate").innerHTML = "Please wait..."
@@ -1992,7 +2018,7 @@ curateDatasetBtn.addEventListener('click', () => {
     pathDatasetValue = String(pathDataset.innerHTML)
   } else if (createNewStatus.checked) {
     destinationDataset = 'create new'
-    pathDatasetValue = pathNewDataset.value
+    pathDatasetValue = selectnewDatasetBtn.placeholder
     newDatasetNameVar = newDatasetName.value
   } else if (bfUploadDirectlyStatus.checked) {
     destinationDataset = 'upload to blackfynn'
@@ -2272,7 +2298,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text
   ipcRenderer.send('open-info-upload-limitations')
-  client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathSubmitDataset.value, (error, res) => {
+  client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathSubmitDataset.placeholder, (error, res) => {
     if (error) {
       document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
       var emessage = userError(error)
@@ -2361,6 +2387,28 @@ bfUploadDatasetList.addEventListener('change', () => {
   bfDatasetListPostCuration.selectedIndex = listSelectedIndex
   postCurationListChange()
 })
+
+selectLocalDsSubmit.addEventListener("click", function() {
+  ipcRenderer.send('open-file-dialog-submit-dataset')
+})
+ipcRenderer.on('selected-submit-dataset', (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null){
+      document.getElementById("para-info-local-submit").innerHTML = ""
+      document.getElementById("selected-local-dataset-submit").placeholder = filepath[0];
+    }
+  }
+})
+
+importLocalDsSubmit.addEventListener("click", function() {
+  var filepath = document.getElementById("selected-local-dataset-submit").placeholder;
+  if (filepath === "Select a folder") {
+    document.getElementById("para-info-local-submit").innerHTML = "<span style='color: red ;'>" + "Please select a folder!</span>"
+  } else {
+    document.getElementById("para-info-local-submit").innerHTML = "Imported!"
+  }
+})
+
 
 // Upload local dataset
 bfDatasetList.addEventListener('change', () => {

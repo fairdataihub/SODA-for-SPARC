@@ -382,13 +382,18 @@
             <p></p>
             <h5> Select destination folder for new dataset </h5>
             <h5></h5>
-            <div class="demo-controls">
+            <!-- <div class="demo-controls">
               <button id="button-select-new-dataset" style="width:200px" class="demo-button"> Select Destination </button>
               <textarea class="demo-response" style="resize:vertical;height:40px" id="selected-new-dataset"></textarea>
+            </div> -->
+            <div class="container-milestone-upload" style="display:flex;">
+              <input class="milestone-upload-text" id="selected-new-dataset" style="width:65%;text-align:center;height:40px" type="text" readonly placeholder="Select destination">
+              <button id="button-select-new-dataset" type="button" style="width:15%;height:40px" class="button-milestone-upload"><b>Confirm</b></button>
+              <p id="para-info-new-dataset" style="float:right;margin-top:0;margin-left:7px;padding: 2 2;width:20%;text-align:left;margin-bottom:0"></p>
             </div>
             <br>
             <h5> Enter a name for the new dataset:  </h5>
-              <div class="demo-controls">
+              <div class="demo-controls" style="width:80%">
                 <textarea class="demo-response" id="new-dataset-name"></textarea>
               </div>
 
