@@ -438,7 +438,7 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
         ws1[column + "11"] = val_arr_con["funding"][i]
 
     ### Acknowledgments
-    ws1["D10"] = val_arr_con["acknowlegdment"]
+    ws1["D10"] = val_arr_con["acknowledgment"]
     ### Contributors
     for contributor, column in zip(val_arr_con['contributors'], excel_columns()):
         ws1[column + "5"] = contributor["conName"]

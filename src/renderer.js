@@ -1370,7 +1370,7 @@ function grabDSInfoEntries() {
 
 function grabConInfoEntries() {
   var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
-  var acknowledgment = document.getElementById("ds-description-acknowledgment").value.trim();
+  var acknowledgment = document.getElementById("ds-description-acknowledgments").value.trim();
 
   var contributorObj = {}
   var fundingArray = [];
@@ -1407,7 +1407,7 @@ function grabConInfoEntries() {
     }
   };
   contributorObj["funding"] = fundingArray
-  contributorObj["acknowlegdment"] = acknowlegdment
+  contributorObj["acknowledgment"] = acknowledgment
   contributorObj["contributors"] = currentConInfo
   return contributorObj
 }
