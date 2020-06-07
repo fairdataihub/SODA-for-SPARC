@@ -411,13 +411,21 @@
             </div>
             <br><br>
             <div id="div-current-contributors" style="width:100%;margin:0 auto;display:none;overflow-x:scroll">
-              <h5 align="center">Current Contributors</h5>
+              <h5 align="center">Current Contributors
+              <br>(Move rows up and down to change the order that contributors appear in the dataset_description file)</h5>
               <table id="table-current-contributors">
+
+                <style>
+                /* style for grabbed contributor row for moving contributors */
+                  .grab { cursor: grab; }
+                  .grabbed { box-shadow: 0 0 6px #000; }
+                  .grabCursor, .grabCursor * { cursor: grabbing !important; }
+                </style>
                 <tr>
-                  <th style="width:30%">Current Contributors</th>
-                  <th style="width:15%">ORCID ID</th>
-                  <th style="width:20%">Affiliation</th>
-                  <th style="width:20%">Role</th>
+                  <th style="width:20%">Current Contributors</th>
+                  <th style="width:20%">ORCID ID</th>
+                  <th style="width:25%">Affiliation</th>
+                  <th style="width:25%">Role</th>
                   <th style="width:10%">Contact Person</th>
                   <th style="width:5%"></th>
                 </tr>

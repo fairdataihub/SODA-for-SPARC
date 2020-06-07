@@ -74,20 +74,22 @@ function checkFields(div, fieldArray) {
 /// check if at least one contributor is added
 function checkFieldsContributors() {
   var div = 'ds-contributor-info';
-  var award = document.getElementById('ds-description-award-list').options[document.getElementById('ds-description-award-list').selectedIndex]
+  var dsAwardArray = document.getElementById('ds-description-award-list')
+  var award = dsAwardArray.options[dsAwardArray.selectedIndex].value
   var tableCurrentCon = document.getElementById("table-current-contributors")
-  var empty = false
+  var fieldSatisfied = true
   var contactPersonExists = false
   /// check for empty award
   if (award.value==="Select") {
-    empty = true
+    fieldSatisfied = false
   }
   for (var i=0;i<tableCurrentCon.rows.length;i++) {
-    if (tableCurrentCon.rows[i].cells[4]==="Yes") {
+    if (tableCurrentCon.rows[i].cells[4].innerHTML==="Yes") {
       contactPersonExists = true
+      break
     }
   }
-  if (!empty && contactPersonExists && tableCurrentCon.rows.length>1) {
+  if (fieldSatisfied && contactPersonExists && tableCurrentCon.rows.length>1) {
     document.getElementById(div).className = 'multisteps-form__progress-btn js-active2';
   }
 }

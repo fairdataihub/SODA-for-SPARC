@@ -12,10 +12,11 @@ const remote = require('electron').remote;
 const app = remote.app;
 const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
-var Airtable = require('airtable');
+const Airtable = require('airtable');
 require('v8-compile-cache');
-var Tagify = require('@yaireo/tagify');
+const Tagify = require('@yaireo/tagify');
 const https = require('https')
+const $ = require( "jquery" );
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -1124,8 +1125,9 @@ function createCurrentConTable(table) {
       if (!existingContactPersonStatus) {
         if (!duplicate) {
           roleVal.push("ContactPerson");
-          var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+          var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td class='grab' id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
           document.getElementById("div-current-contributors").style.display = "block"
+
           return table
         } else {
           document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contributor already added!</span>"
@@ -1135,7 +1137,8 @@ function createCurrentConTable(table) {
       }
     } else {
       if (!duplicate) {
-        var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td id='name-row"+rowIndex+"'>"+ name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+        var row = table.insertRow(rowIndex).outerHTML="<tr  id='row-current-name"+rowIndex+"'style='color: #000000;'><td class='grab' id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+
         document.getElementById("div-current-contributors").style.display = "block"
         return table
       } else {
@@ -1206,9 +1209,41 @@ addCurrentContributorsBtn.addEventListener("click", function() {
   if (dsContributorArray.options[dsContributorArray.selectedIndex].value === "Select an option") {
     document.getElementById("para-save-contributor-status").innerHTML = "<span style='color:red'>Please choose a contributor!</span>";
   } else {
-    createCurrentConTable(currentConTable);
+      createCurrentConTable(currentConTable);
   }
 })
+
+$(currentConTable).mousedown(function (e) {
+  var tr = $(e.target).closest('tr'), sy = e.pageY, drag;
+  if ($(e.target).is('tr')) tr = $(e.target);
+  var index = tr.index();
+  $(tr).addClass('grabbed');
+  // var rowCount = $(currentConTable).length;
+  // if( $(currentConTable).length > 2 ) {
+    function move (e) {
+    if (!drag && Math.abs(e.pageY - sy) < 10) return;
+    drag = true;
+    tr.siblings().each(function() {
+      var s = $(this), i = s.index(), y = s.offset().top;
+      if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
+        if (i!==0) {
+          if (i < tr.index()) s.insertAfter(tr);
+          else s.insertBefore(tr);
+          return false;
+          }
+        }
+      });
+    }
+  // }
+  function up (e) {
+    if (drag && index != tr.index()) {
+      drag = false;
+    }
+    $(document).unbind('mousemove', move).unbind('mouseup', up);
+    $(tr).removeClass('grabbed');
+  }
+  $(document).mousemove(move).mouseup(up);
+});
 
 /// load Airtable Contributor data
 dsAwardArray.addEventListener("change", changeAwardInputDsDescription)
@@ -1335,7 +1370,8 @@ function grabDSInfoEntries() {
 
 function grabConInfoEntries() {
   var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
-  var acknowlegdment = document.getElementById("ds-description-acknowlegdment").value;
+  var acknowledgment = document.getElementById("ds-description-acknowledgment").value.trim();
+
   var contributorObj = {}
   var fundingArray = [];
   if (funding==="Select") {
@@ -1353,9 +1389,9 @@ function grabConInfoEntries() {
   var currentConInfo = []
   for (i=1; i<rowcountCon; i++) {
     var conRoleInfo = currentConTable.rows[i].cells[3].innerHTML.split(",");
-    var myCurrentCon = {"conName": currentConTable.rows[i].cells[0].innerHTML,
-                          "conID": currentConTable.rows[i].cells[1].innerHTML,
-                          "conAffliation": currentConTable.rows[i].cells[2].innerHTML,
+    var myCurrentCon = {"conName": currentConTable.rows[i].cells[0].innerHTML.trim(),
+                          "conID": currentConTable.rows[i].cells[1].innerHTML.trim(),
+                          "conAffliation": currentConTable.rows[i].cells[2].innerHTML.trim(),
                            "conRole": conRoleInfo[0],
                           "conContact": currentConTable.rows[i].cells[4].innerHTML}
     currentConInfo.push(myCurrentCon);
