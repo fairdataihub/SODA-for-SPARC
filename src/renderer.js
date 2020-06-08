@@ -1447,8 +1447,6 @@ function grabCompletenessInfo() {
   var parentDS = document.getElementById("input-parent-ds").value;
   var completeDSTitle = document.getElementById("input-completeds-title").value;
   var optionalSectionObj = {};
-  console.log(parentDS)
-  console.log(typeof completeDSTitle)
   var completenessValueArray = []
   for (var i=0; i<completeness.length; i++) {
     completenessValueArray.push(completeness[i].value)
@@ -1485,24 +1483,28 @@ generateDSBtn.addEventListener('click', (event) => {
   var contributorNumber = currentConTable.rows.length
 
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied, contactPersonExists]
-  var emptyMessageArray = ["Please fill in all required fields under Dataset Info section!", "Please fill in all required fields under Contributor Info section!", "Please add at least one protocol url!", "Please add least one contact person!"]
+  var emptyMessageArray = ["Required fields under Dataset Info section", "Required fields under Contributor Info section", "At least one protocol url", "At least one contact person"]
   var allFieldsSatisfied = true;
-  errorMessage = "<span style='color:red'>"
+  errorMessage = []
   for (var i=0;i<emptyArray.length;i++) {
     if (!emptyArray[i]) {
       allFieldsSatisfied = false;
-      errorMessage += emptyMessageArray[i] + "<br>"
+      errorMessage.push(emptyMessageArray[i])
     }
   }
   if (contributorNumber===1) {
     allFieldsSatisfied = false
-    errorMessage += "Please add at least one contributor!"
+    errorMessage.push("At least one contributor")
   }
   if (allFieldsSatisfied===false) {
-    document.getElementById("para-big-error-message-ds-description").innerHTML = errorMessage + "</span>"
+    ipcRenderer.send("warning-missing-items-ds-description", errorMessage)
   } else {
-    document.getElementById("para-big-error-message-ds-description").innerHTML = ""
-    document.getElementById("para-big-error-message-ds-description").style.display = "none"
+    ipcRenderer.send('open-folder-dialog-save-ds-description',"dataset_description.xlsx")
+  }
+})
+
+ipcRenderer.on('show-missing-items-ds-description', (event, index) => {
+  if (index === 0) {
     ipcRenderer.send('open-folder-dialog-save-ds-description',"dataset_description.xlsx")
   }
 })
@@ -1545,7 +1547,6 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
 
         /// call python function to save file
         document.getElementById("para-generate-description-status").style.display = "block"
-        document.getElementById("para-big-error-message-ds-description").style.display = "none"
         if (dirpath != null){
           client.invoke("api_save_ds_description_file", destinationPath, json_str_ds, json_str_misc, json_str_completeness, json_str_con, (error, res) => {
             if(error) {

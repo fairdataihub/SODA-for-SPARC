@@ -92,6 +92,19 @@ ipcMain.on('open-error-folder-selected', (event, emessage) => {
   })
 })
 
+///// warnings of missing items
+ipcMain.on('warning-missing-items-ds-description', (event, emptyFieldArray) => {
+  const options = {
+    type: 'info',
+    title: 'Warning',
+    message: "The following mandatory item(s) is/are missing: " + emptyFieldArray.join(", ") + ". Would you still like to generate the dataset description file?",
+    buttons: ['Yes', 'No']
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('show-missing-items-ds-description', index)
+  })
+})
+
 ipcMain.on('open-error-wrong-file', (event, emessage) => {
   const options = {
     type: 'error',
