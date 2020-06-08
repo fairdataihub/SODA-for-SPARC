@@ -1474,6 +1474,8 @@ datasetDescriptionFileDataset.addEventListener("change", function() {
 
 ///// Generate ds description file
 generateDSBtn.addEventListener('click', (event) => {
+  document.getElementById("para-generate-description-status").innerHTML = ""
+
   //// check if any field is left empty
   var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value
   var dsSatisfied = emptyDSInfoEntries()
@@ -1483,7 +1485,7 @@ generateDSBtn.addEventListener('click', (event) => {
   var contributorNumber = currentConTable.rows.length
 
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied, contactPersonExists]
-  var emptyMessageArray = ["Required fields under Dataset Info section", "Required fields under Contributor Info section", "At least one protocol url", "At least one contact person"]
+  var emptyMessageArray = ["All required fields under Dataset Info section", "All required fields under Contributor Info section", "At least one protocol url", "At least one contact person"]
   var allFieldsSatisfied = true;
   errorMessage = []
   for (var i=0;i<emptyArray.length;i++) {
