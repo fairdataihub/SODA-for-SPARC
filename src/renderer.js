@@ -564,6 +564,8 @@ presavedAwardArray1.addEventListener('change', function() {
     document.getElementById("div-show-current-milestones").style.display = "none"
   } else {
       document.getElementById("div-show-milestone-info-no-existing").style.display = "block";
+      document.getElementById("div-milestone-info").style.display = "block";
+      document.getElementById("div-show-current-milestones").style.display = "block"
       document.getElementById("para-delete-award-status").innerHTML = ""
   }
 })
@@ -1319,13 +1321,15 @@ function showDatasetDescription(){
 
 function emptyDSInfoEntries() {
   var fieldSatisfied = true;
-  var infoArray = grabDSInfoEntries()
-  for (var element of infoArray) {
-    if (element.length===0) {
+  var inforObj = grabDSInfoEntries()
+  var emptyFieldArray = []
+  for (var element in inforObj) {
+    if (inforObj[element].length===0 || inforObj[element]==="Select dataset") {
       fieldSatisfied = false
+      emptyFieldArray.push(element)
     }
   }
-  return fieldSatisfied
+  return [fieldSatisfied, emptyFieldArray]
 }
 
 function emptyLinkInfo() {
@@ -1365,7 +1369,9 @@ function grabDSInfoEntries() {
   var keywordArray = keywordTagify.value;
   var samplesNo = document.getElementById("ds-samples-no").value;
   var subjectsNo = document.getElementById("ds-subjects-no").value;
-  return [name,description,keywordArray,samplesNo,subjectsNo]
+  return {"name": name, "description": description,
+          "keywords": keywordArray, "number of samples": samplesNo,
+          "number of subjects": subjectsNo}
 }
 
 function grabConInfoEntries() {
@@ -1478,14 +1484,18 @@ generateDSBtn.addEventListener('click', (event) => {
 
   //// check if any field is left empty
   var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value
-  var dsSatisfied = emptyDSInfoEntries()
+  /// dataset info
+  var dsContent = emptyDSInfoEntries()
+  var dsSatisfied = dsContent[0]
+  var dsEmptyField = dsContent[1]
+  /// contributor info
   var conSatisfied = emptyInfoEntries(funding)
   var protocolSatisfied = emptyLinkInfo()
   var contactPersonExists = contactPersonCheck()
   var contributorNumber = currentConTable.rows.length
 
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied, contactPersonExists]
-  var emptyMessageArray = ["All required fields under Dataset Info section", "All required fields under Contributor Info section", "At least one protocol url", "At least one contact person"]
+  var emptyMessageArray = ["\n" + "- Missing fields under Dataset Info section: " + dsEmptyField.join(", "), "- Missing required fields under Contributor Info section: SPARC Award", "- At least one protocol url", "- At least one contact person" + "\n"]
   var allFieldsSatisfied = true;
   errorMessage = []
   for (var i=0;i<emptyArray.length;i++) {
@@ -1496,7 +1506,7 @@ generateDSBtn.addEventListener('click', (event) => {
   }
   if (contributorNumber===1) {
     allFieldsSatisfied = false
-    errorMessage.push("At least one contributor")
+    errorMessage.push("- At least one contributor" + "\n")
   }
   if (allFieldsSatisfied===false) {
     ipcRenderer.send("warning-missing-items-ds-description", errorMessage)
@@ -1520,16 +1530,18 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
     } else {
         var datasetInfoValueArray = grabDSInfoEntries()
         //// process obtained values to pass to an array
+
         var keywordVal = []
-        for (var i=0;i<datasetInfoValueArray[2].length;i++) {
-          keywordVal.push(datasetInfoValueArray[2][i].value)
+        for (var i=0;i<datasetInfoValueArray["keywords"].length;i++) {
+          keywordVal.push(datasetInfoValueArray["keywords"][i].value)
         }
         /// replace keywordArray with keywordVal array
-        datasetInfoValueArray[2] = keywordVal;
+        datasetInfoValueArray["keywords"] = keywordVal;
+
         //// push to all ds info values to dsSectionArray
         var dsSectionArray = [];
-        for (let elementDS of datasetInfoValueArray) {
-          dsSectionArray.push(elementDS)
+        for (let elementDS in datasetInfoValueArray) {
+          dsSectionArray.push(datasetInfoValueArray[elementDS])
         }
 
         //// grab entries from contributor info section and pass values to conSectionArray
