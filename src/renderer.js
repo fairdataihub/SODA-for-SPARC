@@ -557,6 +557,7 @@ ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
 awardArray.addEventListener('change', function() {
   document.getElementById("para-save-award-info").innerHTML = "";
 })
+
 presavedAwardArray1.addEventListener('change', function() {
   if (presavedAwardArray1.value === "Select") {
     document.getElementById("div-show-milestone-info-no-existing").style.display = "none";
@@ -1306,6 +1307,7 @@ function showDatasetDescription(){
   var selectedBfDataset = datasetDescriptionFileDataset.options[datasetDescriptionFileDataset.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
     bfCurrentMetadataProgress.style.display = 'none'
+    document.getElementById("ds-description").innerHTML = ""
   } else {
     client.invoke("api_bf_get_description", selectedBfAccount, selectedBfDataset,
     (error, res) => {
@@ -1495,7 +1497,7 @@ generateDSBtn.addEventListener('click', (event) => {
   var contributorNumber = currentConTable.rows.length
 
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied, contactPersonExists]
-  var emptyMessageArray = ["\n" + "- Missing fields under Dataset Info section: " + dsEmptyField.join(", "), "- Missing required fields under Contributor Info section: SPARC Award", "- At least one protocol url", "- At least one contact person" + "\n"]
+  var emptyMessageArray = ["\n" + "- Missing fields under Dataset Info section: " + dsEmptyField.join(", "), "- Missing required fields under Contributor Info section: SPARC Award", "- At least one protocol url",  "- At least one contact person"]
   var allFieldsSatisfied = true;
   errorMessage = []
   for (var i=0;i<emptyArray.length;i++) {
@@ -1506,10 +1508,10 @@ generateDSBtn.addEventListener('click', (event) => {
   }
   if (contributorNumber===1) {
     allFieldsSatisfied = false
-    errorMessage.push("- At least one contributor" + "\n")
+    errorMessage.push("- At least one contributor")
   }
   if (allFieldsSatisfied===false) {
-    ipcRenderer.send("warning-missing-items-ds-description", errorMessage)
+    ipcRenderer.send("warning-missing-items-ds-description", errorMessage.join("\n"))
   } else {
     ipcRenderer.send('open-folder-dialog-save-ds-description',"dataset_description.xlsx")
   }

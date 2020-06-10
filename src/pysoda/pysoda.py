@@ -31,6 +31,7 @@ import json
 
 from openpyxl import load_workbook
 from openpyxl import Workbook
+from openpyxl.styles import PatternFill, Font
 from docx import Document
 
 ### Global variables
@@ -406,6 +407,37 @@ def excel_columns():
     two_letter = [a + b for a,b in itertools.product(ascii_uppercase, ascii_uppercase)]
     return single_letter + two_letter
 
+def rename_headers(workbook, keyword_array, contributor_role_array, funding_array, total_link_array):
+    """
+    Rename header columns if values exceed 3. Change Additional Values to Value 4, 5,...
+    """
+    # keywords
+    keyword_len = len(keyword_array)
+
+    # contributors
+    no_contributors = len(contributor_role_array)
+
+    # funding = SPARC award + other funding sources
+    funding_len = len(funding_array)
+
+    # total links added
+    link_len = len(total_link_array)
+
+    max_len = max(keyword_len, funding_len, link_len, no_contributors)
+
+    if max_len > 3:
+        for i, column in zip(range(1, max_len+1), excel_columns()):
+            workbook[column + "1"] = "Value " + str(i)
+            cell = workbook[column + "1"]
+
+            blueFill = PatternFill(start_color='9CC2E5',
+                               end_color='9CC2E5',
+                               fill_type='solid')
+
+            font = Font(bold=True)
+            cell.fill = blueFill
+            cell.font = font
+
 ### Prepare dataset-description file
 def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_str):
     source = join(TEMPLATE_PATH, "dataset_description.xlsx")
@@ -466,27 +498,12 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
             ws1[column + "14"] = total_link_array[i]["link"]
             ws1[column + "15"] = total_link_array[i]["description"]
 
+    rename_headers(ws1, val_arr_ds[2], val_arr_con['contributors'], val_arr_con["funding"], total_link_array)
+
     ## completeness, parent dataset ID, title Respectively
-    index = 18
-    if val_arr_optional["completeness"] == "":
-        ws1.delete_rows(18, 1)
-    else:
-        ws1["D18"] = val_arr_optional["completeness"]
-        index += 1
-
-    if val_arr_optional["parentDS"] == "":
-        ws1.delete_rows(index, 1)
-    else:
-        ws1["D"+str(index)] = val_arr_optional["parentDS"]
-        index += 1
-
-    if val_arr_optional["completeDSTitle"] == "":
-        ws1.delete_rows(index, 1)
-    else:
-        ws1["D"+str(index)] = val_arr_optional["completeDSTitle"]
-
-    # ws1["D19"] = val_arr_optional["parentDS"]
-    # ws1["D20"] = val_arr_optional["completeDSTitle"]
+    ws1["D18"] = val_arr_optional["completeness"]
+    ws1["D19"] = val_arr_optional["parentDS"]
+    ws1["D20"] = val_arr_optional["completeDSTitle"]
 
     wb.save(destination)
 
