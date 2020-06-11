@@ -97,7 +97,7 @@ ipcMain.on('warning-missing-items-ds-description', (event, emptyFieldString) => 
   const options = {
     type: 'info',
     title: 'Warning',
-    message: "The following mandatory item(s) is/are missing: " + emptyFieldString + "\n" + "Would you still like to generate the dataset description file?",
+    message: "The following mandatory item(s) is/are missing: " + "\n" + emptyFieldString + "\n" + "Would you still like to generate the dataset description file?",
     buttons: ['Yes', 'No']
   }
   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {

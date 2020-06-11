@@ -259,7 +259,6 @@
             </div>
             <div class="demo-controls">
               <select id="ds-name" class="form-container-input-bf" style="font-size:13px;line-height:2;height:28px">
-                <!-- <option value="Select" disabled>Select a dataset</option> -->
               </select>
             </div>
             <div class="form-container-ds"><font color="black"> Description*: </font> </div>
@@ -516,14 +515,17 @@
             <div class="demo-controls">
               <input id="ds-completeness" class="form-container-input-bf" style="border-left: 2px solid #258193;"> </input>
             </div>
-            <div class="form-container-ds" style="width:230px"><font color="black"> Parent dataset ID: </font> </div>
+            <div class="form-container-ds" style="width:230px"><font color="black"> Parent dataset(s): </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
                 If this is a part of a larger data set, or refereces subjects or samples from a parent dataset, what was the accession number of the prior batch.  You need only give us the number of the last batch, not all batches. If samples and subjects are from multiple parent datasets please create a comma separated list of all parent ids.
+                <br><br>
+                Tip: Start typing to see the name of your dataset, and then press Enter to add your dataset.
               </span>
             </div>
             <div class="demo-controls">
-              <input id="input-parent-ds" class="form-container-input-bf"  style="line-height: 2;height:28px"/>
+              <input id="input-parent-ds" class="form-container-input-bf" style="border-left: 2px solid #258193;">
+              </input>
             </div>
             <div class="form-container-ds" style="width:230px"><font color="black"> Title for complete dataset: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">

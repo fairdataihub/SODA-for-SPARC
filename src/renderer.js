@@ -144,6 +144,8 @@ const currentConTable = document.getElementById("table-current-contributors")
 const generateDSBtn = document.getElementById("button-generate-ds-description")
 const addAdditionalLinkBtn = document.getElementById("button-ds-add-link")
 const datasetDescriptionFileDataset = document.getElementById('ds-name')
+const parentDSDropdown = document.getElementById("input-parent-ds")
+var parentDSTagify
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -1017,6 +1019,7 @@ currentContributortagify = new Tagify(contributorRoles, {
 var completenessInput = document.getElementById('ds-completeness'),
 completenessTagify = new Tagify(completenessInput, {
     whitelist : ["hasChild", "hasNext"],
+    enforceWhitelist: true,
     duplicates: false,
     maxTags   : 2,
     dropdown : {
@@ -1024,6 +1027,26 @@ completenessTagify = new Tagify(completenessInput, {
       closeOnSelect : true
     }
 })
+
+//// get datasets and append that to option list for parent datasets
+function getParentDatasets() {
+  var parentDatasets = []
+  for (var i=0, n=datasetDescriptionFileDataset.options.length;i<n;i++) {
+    if (datasetDescriptionFileDataset.options[i].value) {
+      parentDatasets.push(datasetDescriptionFileDataset.options[i].value);
+    }
+  }
+  parentDSTagify = new Tagify(parentDSDropdown, {
+    whitelist : parentDatasets,
+    enforceWhitelist: true,
+    duplicates: false,
+    dropdown : {
+      enabled   : 0,
+      closeOnSelect : true
+    }
+  })
+}
+
 
 function clearCurrentConInfo() {
   document.getElementById("input-con-ID").value = "";
@@ -1452,7 +1475,7 @@ function grabProtocolSection() {
 
 function grabCompletenessInfo() {
   var completeness = completenessTagify.value;
-  var parentDS = document.getElementById("input-parent-ds").value;
+  var parentDS = parentDSTagify.value;
   var completeDSTitle = document.getElementById("input-completeds-title").value;
   var optionalSectionObj = {};
   var completenessValueArray = []
@@ -1460,11 +1483,13 @@ function grabCompletenessInfo() {
     completenessValueArray.push(completeness[i].value)
   }
   optionalSectionObj["completeness"] = completenessValueArray.join(", ")
-  if (parentDS.length===0) {
-    optionalSectionObj["parentDS"] = ""
-  } else {
-    optionalSectionObj["parentDS"] = parentDS;
+
+  var parentDSValueArray = []
+  for (var i=0; i<parentDS.length; i++) {
+    parentDSValueArray.push(parentDS[i].value)
   }
+  optionalSectionObj["parentDS"] = parentDSValueArray.join(", ")
+
   if (completeDSTitle.length===0) {
     optionalSectionObj["completeDSTitle"] = ""
   } else {
@@ -1497,7 +1522,7 @@ generateDSBtn.addEventListener('click', (event) => {
   var contributorNumber = currentConTable.rows.length
 
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied, contactPersonExists]
-  var emptyMessageArray = ["\n" + "- Missing fields under Dataset Info section: " + dsEmptyField.join(", "), "- Missing required fields under Contributor Info section: SPARC Award", "- At least one protocol url",  "- At least one contact person"]
+  var emptyMessageArray = ["- Missing fields under Dataset Info section: " + dsEmptyField.join(", "), "- Missing required fields under Contributor Info section: SPARC Award", "- At least one protocol url",  "- At least one contact person"]
   var allFieldsSatisfied = true;
   errorMessage = []
   for (var i=0;i<emptyArray.length;i++) {
@@ -3237,7 +3262,7 @@ function refreshAllBfDatasetLists(){
       bfDatasetListRenameDataset.appendChild(option6)
       datasetDescriptionFileDataset.appendChild(option7)
       bfDatasetListPostCuration.appendChild(option8)
-
+      // getParentDatasets()
     } else {
       client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
         if(error) {
@@ -3272,13 +3297,13 @@ function refreshAllBfDatasetLists(){
             bfDatasetListRenameDataset.appendChild(option6)
             datasetDescriptionFileDataset.appendChild(option7)
             bfDatasetListPostCuration.appendChild(option8)
-
             renameDatasetlistChange()
             metadataDatasetlistChange()
             permissionDatasetlistChange()
             postCurationListChange()
             datasetStatusListChange()
         }
+        getParentDatasets()
       }
     })
     }
