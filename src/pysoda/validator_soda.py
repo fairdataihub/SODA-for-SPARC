@@ -1,0 +1,1180 @@
+'''
+This code validates the proposed folder structure and files
+against the schema required by the SPARC curation team.
+Note that since this code is separate from the code used
+the the SPARC curation team that automatically checks similar
+items, code passing this validator may not pass the official
+SPARC validator code.  The converse is not true however.
+The code checks the following items:
+
+1. The required files exist (completed)
+2. The required folders exist (completed)
+3. A manifest files exists either in the root folder or in each terminal folder (completed)
+4. The number of subject folders and that in the subjects info file agree (completed)
+5. Check that there are no empty folders (completed)
+6. Check that there are no DS.STORE files in the dataset (completed)
+7. Check that there are no empty files (completed)
+8. Check that all csv starts at first row and xlsx files start at (0,0) (completed)
+9. Check that all csv files are UTF-8 encoded. (completed)
+10. Check that all csv/xlsx files do not have any blank rows (completed)
+11. Check that the subjects and sample files have the mandatory column headings and they are in the
+    right order (completed)
+12. Check that mandatory fields are populated for each subject/sample (completed)
+13. Check that the number of samples is the same in the dataset_description and samples files
+    and that those numbers match the actual number of folders (completed)
+
+14. Check that the subjects/samples files have unique IDs (completed)
+15. Check that the submission file has all of the required columns (to do) and are populated (completed)
+16. Check that the dataset_description file has all of the required rows (completed) and are populated (completed)
+
+definitions:
+a) a terminal folder is one with no further subfolders
+
+variables:
+fPathList - list of the files including the path and extension
+fList - list of the filenames only
+dPathList - list of directories including the path
+fullFilePath - the filename with path, but without the extension
+fileExtension - the file extension
+
+code I/O:
+input: path to the folder selected by the user
+output: list of fatal errors and/or warnings, flags that signal whether the
+        folder organization and naming, file naming, and position of manifest
+        files is correct.
+
+ver 0.1 2020-01-13 (start)
+ver 0.2 2020-01-31 (1-9 checks)
+ver 0.3 2020-03-05 (1-13 checks)
+
+Karl G. Helmer
+Martinos Center for Biomedical Imaging
+Massachusetts General Hospital
+helmer@nmr.mgh.harvard.edu
+'''
+
+import os
+import chardet #utf8 check for csv
+import pandas as pd
+import numpy as np
+
+class DictValidator:
+    
+    #High level folder
+    reqFolderNames = ['primary']
+    optFolderNames = [ 'code', 'derivative', 'docs', 'protocol', 'source']
+    
+    # High level metadata files
+    reqMetadataFileNames = ['submission', 'dataset_description', 'subjects', 'README']
+    optMetadataFileNames = ['samples', 'CHANGES']
+    manifestFileName = 'manifest'
+    metadataFileFormats1 = ['.xlsx','.csv', '.json']
+    metadataFileFormats2 = ['.txt']
+    
+    # submission file
+    reqSubmissionHeaders = ['Submission Item', 'Value']
+    optSubmissionHeaders = ['Definition']
+    submissionCol0 = ['SPARC Award number', 'Milestone achieved', 'Milestone completion date']
+
+    #dataset_description file
+    # note: the capitalizations below are inconsistent, but are what is given in SPARC_FAIR-Folder_Structure V1.2.pdf
+    reqddHeaders = ['Metadata element', 'Value']
+    optddHeaders = ['Description', 'Example']
+    for i in range(2,101):
+        el = 'Value '+ str(i)
+        optddHeaders.append(el)
+    
+    ddCol0 = ['Name', 'Description', 'Keywords', 'Contributors', 'Contributor ORCID ID',
+                   'Contributor Affiliation', 'Contributor Role',
+                   'Is Contact Person', 'Acknowledgements', 'Funding', 'Originating Article DOI',
+                   'Protocol URL or DOI', 'Additional Links', 'Link Description', 'Number of subjects',
+                   'Number of samples', 'Completeness of data set', 'Parent dataset ID', 'Title for complete data set',
+                   'Metadata Version DO NOT CHANGE']
+    
+    ddCol0Req = ['Name', 'Description', 'Keywords', 'Contributors', 'Contributor ORCID ID',
+                   'Contributor Affiliation', 'Contributor Role',
+                   'Is Contact Person',  'Funding', 
+                   'Protocol URL or DOI', 'Number of subjects',
+                   'Number of samples', 'Metadata Version DO NOT CHANGE']
+    
+    ddCol0Opt = ['Acknowledgements', 'Originating Article DOI', 'Additional Links', 'Link Description', 
+                 'Completeness of data set', 'Parent dataset ID', 'Title for complete data set']
+    
+    #subjects file
+    subjCols = ['subject_id', 'pool_id', 'experimental group', 'age', 'sex', 'species', 'strain', 'Organism RRID']
+    
+    #samples file
+    samCols = ['subject_id', 'sample_id', 'wasDerivedFromSample', 'pool_id', 'experimental group']
+    
+    #none terms
+    noneTerms = ['None', 'NONE', 'none', 'N/A', 'n/a', 'NA', 'na', 'Not applicable', 'Not Applicable']
+ 
+    def __init__(self):
+        self.fatal = []
+        self.warnings = []
+        self.passes = []
+
+    def check_high_level_folder_structure(self, jsonStruct):
+        p = 0
+        e = 0
+        w = 0
+        nonStandardFolders = ""
+        emptyFolders = ""
+
+        # get all high-level files/folders
+        allContents = jsonStruct.keys()
+        allContents = [ x for x in allContents if x!='main' ]
+        for c in allContents:
+            if c == self.reqFolderNames[0]: #primary folder
+                p = 1
+                pContents = jsonStruct[c]
+                if len(pContents) == 0: #check primary empty
+                    e = 1
+                    emptyFolders += " " + c + ","
+            elif c in self.optFolderNames:   #check for optional folders
+                pContents = jsonStruct[c]
+                if len(pContents) == 0: #check optional folder empty
+                    e = 1
+                    emptyFolders += " " + c + ","
+            else:
+                nonStandardFolders += " " + c + ","
+                w = 1
+
+        check1 = "All folders are SPARC standard folders"
+        check1f = "Only SPARC standard folders ('code', 'derivative', 'docs', 'primary', 'protocol', and/or 'source', all lowercase) are allowed. The following folder(s) must be removed:" 
+        
+        check2 = "A 'primary' folder is included"
+        check2f = "A non-empty 'primary' folder is required in all datasets, make sure it is included"
+        
+        check3 = "All SPARC folders are non-empty"
+        check3f = "No empty SPARC folder should be included. Populate or remove the following folder(s):"
+                
+        if w == 1:
+            self.fatal.append(check1 + "--" + check1f + nonStandardFolders[:-1])
+        else:
+            if p==1 or c==1:
+                self.passes.append(check1)
+                
+        if not p:
+            self.fatal.append(check2 + "--" + check2f)
+        else:
+            self.passes.append(check2)
+            
+        if e == 1:
+            self.fatal.append(check3 + "--" + check3f + emptyFolders[:-1])
+        else:
+            if p==1 or c==1:
+                self.passes.append(check3)
+
+    def check_high_level_metadata_files(self, jsonStruct):
+        nofiles = 0
+        subm = 0
+        dd = 0
+        subj = 0
+        sam = 0
+        rm = 0
+        chg = 0
+        csvf = 0
+        nonstand = 0
+        nonStandardFiles = ""
+        nonUTF8 = 0
+        nonUTF8Files = ""
+        nonu = 0
+        nonUniqueFiles = ""
+        
+        #check for req files at the root level
+        allFiles = jsonStruct['main']
+        if len(allFiles) == 0:
+            nofiles = 1
+        else:
+            for c in allFiles:
+                filePath = c
+                fullFileName = os.path.basename(c)
+                cname = os.path.splitext(fullFileName)[0]
+                extension = os.path.splitext(fullFileName)[1]
+                
+                if cname == self.reqMetadataFileNames[0]: #submission file
+                    if extension in self.metadataFileFormats1: #if in xlsx, csv, or json format
+                        subm += 1
+                        if extension in self.metadataFileFormats1[1]:#if csv
+                            csvf = 1
+                            UTF8status = self.check_csv_utf8(filePath)
+                            if UTF8status == 0:
+                               nonUTF8 = 1
+                               nonUTF8Files = " " + c + ","
+                    else: 
+                        nonstand = 1
+                        nonStandardFiles += " " + c + ","
+                           
+                elif cname == self.reqMetadataFileNames[1]: #dataset_description file
+                    if extension in self.metadataFileFormats1: #if in xlsx, csv, or json format
+                        dd += 1
+                        if extension in self.metadataFileFormats1[1]: #if csv
+                            csvf = 1
+                            UTF8status = self.check_csv_utf8(filePath)
+                            if UTF8status == 0:
+                               nonUTF8 = 1
+                               nonUTF8Files = " " + c + "," 
+                    else:
+                        nonstand = 1
+                        nonStandardFiles += " " + c + ","
+                        
+                elif cname == self.reqMetadataFileNames[2]: #subjects file
+                    if extension in self.metadataFileFormats1: #if in xlsx, csv, or json format
+                        subj += 1
+                        if extension in self.metadataFileFormats1[1]: #if csv
+                            csvf = 1
+                            UTF8status = self.check_csv_utf8(filePath)
+                            if UTF8status == 0:
+                               nonUTF8 = 1
+                               nonUTF8Files = " " + c + ","
+                    else: #if not in xlsx, csv, or json format
+                        nonstand = 1
+                        nonStandardFiles += " " + c + ","
+                        
+                elif cname == self.optMetadataFileNames[0]: #samples file
+                    if extension in self.metadataFileFormats1: #if in xlsx, csv, or json format
+                        sam += 1
+                        if extension in self.metadataFileFormats1[1]: #if csv
+                            csvf = 1
+                            UTF8status = self.check_csv_utf8(filePath)
+                            if UTF8status == 0:
+                               nonUTF8 = 1
+                               nonUTF8Files = " " + c + ","   
+                    else:
+                        nonstand = 1
+                        nonStandardFiles += " " + c + ","
+                        
+                elif (fullFileName == self.reqMetadataFileNames[3] + self.metadataFileFormats2[0]): #README.txt file
+                    rm = 1
+                        
+                elif (fullFileName == self.optMetadataFileNames[1] + self.metadataFileFormats2[0]): #CHANGES.txt file
+                    chg = 1
+ 
+                else:
+                    nonstand = 1
+                    nonStandardFiles += " " + c + ","
+            
+            #check for uniqueness
+            if subm>1:
+                nonu = 1
+                nonUniqueFiles = " " + cname + ","
+            if dd>1:
+                nonu = 1
+                nonUniqueFiles = " " + cname + ","
+            if subj>1:
+                nonu = 1
+                nonUniqueFiles = " " + cname + ","
+            if sam>1:
+                nonu = 1
+                nonUniqueFiles = " " + cname + ","
+            
+                            
+        check1 = "All files are SPARC metadata files"
+        check1f = "Only SPARC metadata files are allowed in the high-level dataset folder. The following file(s) must be removed:" 
+        
+        check2 = "A 'submission' metadata file is included in either xlsx, csv, or json format"
+        check2f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the right format."
+        check2f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the right format."
+        
+        check3 = "A 'dataset_description' metadata file is included in either xlsx, csv, or json format"
+        check3f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the right format."
+        
+        check4 = "A 'subjects' metadata file is included in either xlsx, csv, or json format"
+        check4f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the right format."
+        
+        check5 = "A 'samples' metadata file is included in either xlsx, csv, or json format"
+        check5f = "This is NOT a mandatory file but must be included (and be in the right format) if your study includes samples (e.g., tissue slices). "
+        
+        check6 = "A 'README' metadata file is included in txt format"
+        check6f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the right format."
+        
+        check7 = "All csv metadata files are UTF-8 encoded"
+        check7f = "As per requirement from the SPARC Curation Team, please change the csv encoding format to UTF-8 for the following metadata files:"
+        
+        check8 = "All metadata files are unique"
+        check8f = "Each metadata file should only be included once. The following metadata files are included more than once:"
+                
+        if nofiles == 0:
+            if  nonstand == 1:
+                self.fatal.append(check1 + "--" + check1f + nonStandardFiles[:-1])
+            else:
+                self.passes.append(check1)
+                
+        if not subm:
+            self.fatal.append(check2 + "--" + check2f)
+        elif subm == 1:
+            self.passes.append(check2)
+            
+        if not dd:
+            self.fatal.append(check3 + "--" + check3f)
+        elif dd == 1:
+            self.passes.append(check3)
+            
+        if not subj:
+            self.fatal.append(check4 + "--" + check4f)
+        elif subj == 1:
+            self.passes.append(check4)
+            
+        if not sam:
+            self.warnings.append(check5 + "--" + check5f)
+        elif sam == 1:
+            self.passes.append(check5)
+            
+        if not rm:
+            self.fatal.append(check6 + "--" + check6f)
+        elif subj == 1:
+            self.passes.append(check6)
+        
+        if csvf == 1:
+            if nonUTF8 == 1:
+                self.fatal.append(check7 + "--" + check7f + nonUTF8Files[:-1])
+            else:
+                self.passes.append(check7)
+        
+        if nofiles == 0:
+            if nonu == 1:
+                self.fatal.append(check8 + "--" + check8f + nonUniqueFiles[:-1])
+            else:
+                self.passes.append(check8)
+                
+        return subm, dd, subj, sam
+         
+             
+    def check_empty_folders(self, jsonStruct):
+    # detects empty folders if they exist, return a flag
+        emptyFolderSearch = 0
+        emptyFolderList = ""
+        nonExistFolderSearch = 0
+        nonExistFolderList = ""
+        
+        for folders in jsonStruct.keys():
+            if len(jsonStruct[folders]) != 0:
+                for mainPath in jsonStruct[folders]:
+                    if os.path.exists(mainPath):
+                        if os.path.isdir(mainPath):
+                            pathContent = os.listdir(mainPath)
+                            if len(pathContent) == 0:
+                                emptyFolderSearch = 1
+                                emptyFolderList += " " + mainPath + ","
+                            else:
+                                for root, dirs, files in os.walk(mainPath):
+                                    for d in dirs:
+                                        dp = os.path.join(root,d)
+                                        pathContent = os.listdir(dp)
+                                        if len(pathContent) == 0:
+                                            emptyFolderSearch = 1
+                                            emptyFolderList += " " + dp + ","
+                    else:
+                        nonExistFolderSearch = 1
+                        nonExistFolderList += " " + mainPath + ","
+                            
+        check1 = "All sub-folders are non-empty"
+        check1f = "Empty folders MUST not be included in your dataset. The following empty folder(s) must be removed:"
+        
+        check2 = "All folder paths exist"
+        check2f = "The following folder path(s) are non-existent and must be removed: "
+        
+        if emptyFolderSearch == 0:
+            self.passes.append(check1)
+        else:
+            self.fatal.append(check1 + '--' + check1f + emptyFolderList[:-1])
+        
+        if nonExistFolderSearch == 1:
+            self.fatal.append(check2 + '--' + check2f + nonExistFolderList[:-1])
+    
+    
+    def check_empty_files(self, jsonStruct):
+    # detects empty files if they exist, return a flag
+        emptyFileSearch = 0
+        emptyFileList = ""
+        nonExistFileSearch = 0
+        nonExistFileList = ""
+        
+        for folders in jsonStruct.keys():
+            if len(jsonStruct[folders]) != 0:
+                for mainPath in jsonStruct[folders]:
+                    if os.path.exists(mainPath):
+                        if os.path.isfile(mainPath):
+                            fileSize = os.path.getsize(mainPath)
+                            if fileSize == 0:
+                                emptyFileSearch = 1
+                                emptyFileList += " " + mainPath + ","
+                        else:
+                            for root, dirs, files in os.walk(mainPath):
+                                for f in files:
+                                    fp = os.path.join(root,f)
+                                    fileSize = os.path.getsize(fp)
+                                    if fileSize == 0:
+                                        emptyFileSearch = 1
+                                        emptyFileList += " " + fp + ","
+                    else:
+                        nonExistFileSearch = 1
+                        nonExistFileList += " " + mainPath + ","
+                        
+        check1 = "No empty files are included"
+        check1f = "The following empty file(s) must be removed:"
+        
+        check2 = "All file paths exist"
+        check2f = "The following file path(s) are non-existent and must be removed: "
+        
+        if emptyFileSearch == 0:
+            self.passes.append(check1)
+        else:
+            self.fatal.append(check1 + '--' + check1f + emptyFileList[:-1])
+            
+        if nonExistFileSearch == 1:
+            self.fatal.append(check2 + '--' + check2f + nonExistFolderList[:-1])
+            
+    def check_ds_store(self, jsonStruct):
+    # detects the presence of a DS.STORE file, "1" means the file exists
+        # detects empty files if they exist, return a flag
+        DS_STORESearch = 0
+        DS_STOREList = ""
+        
+        for folders in jsonStruct.keys():
+            if len(jsonStruct[folders]) != 0:
+                for mainPath in jsonStruct[folders]:
+                    if os.path.exists(mainPath):
+                        if os.path.isfile(mainPath):
+                            fullName = os.path.basename(mainPath)
+                            if fullName == 'DS.STORE':
+                                DS_STORESearch = 1
+                                DS_STOREList += " " + mainPath + ","
+                        else:
+                            for root, dirs, files in os.walk(mainPath):
+                                for f in files:
+                                    fp = os.path.join(root,f)
+                                    fullName = os.path.basename(mainPath)
+                                    if fullName == 'DS.STORE':
+                                        DS_STORESearch = 1
+                                        DS_STOREList += " " + fp + ","
+                        
+        check1 = "No DS.STORE files are included"
+        check1f = "The following DS.STORE file(s) must be removed:"
+                
+        if DS_STORESearch == 0:
+            self.passes.append(check1)
+        else:
+            self.fatal.append(check1 + '--' + check1f + DS_STOREList[:-1])
+        
+        
+    def check_csv_utf8(self, fPathList):
+        # checks that all csv files are UTF-8 encoded
+        # since looping through the files a "0" means that at least
+        # one file was not UTF-8, and which one(s) is/are recorded
+        # in the warnings.
+        utf8Check = 1
+
+        f = fPathList
+        print ("PATH", f)
+        fileNamePath, fileExtension = os.path.splitext(f)
+        
+        if fileExtension == ".csv":
+            # this is another way to do it, but it passes test files
+            # that chardet says are ascii, rather than utf-8
+            #try:
+            #    fd=open(f, encoding='utf-8', errors='strict')
+            #except UnicodeDecodeError:
+            #    utf8Check = 0
+            #    warnings.append("The file {} is not encoded using UTF-8".format(f))
+
+            # open the file as binary; join some lines together and pass to chardet
+            # chardet returns a dictionary with the key <encoding> giving what we want
+            with open(f, 'rb') as fd:
+                # Join binary lines for specified number of lines;
+                rawdata = b''.join([fd.readline() for _ in range(3)])
+                print(chardet.detect(rawdata)['encoding'])
+                if 'UTF-8' not in chardet.detect(rawdata)['encoding']:
+                        utf8Check = 0
+
+        #if utf8Check == 1:
+         #   self.passes.append("All .csv files in this dataset are UTF-8 encoded.")
+
+        return utf8Check
+    
+    def check_manifest_file_included(self, jsonStruct):
+        # checks if a manifest file is included in all folders with files or in all high-level SPARC folders
+        mnf_style = 0 # 0 = none; 1 if manifest file is included in all folders with files; 2 if manifest file is included in all high-level SPARC folders
+        
+        mnf_hlf = 0
+        mnf_slf = 0
+       
+        msng_hlf = 0
+        missingHLF = ""
+        msng_slf = 0
+        missingSLF = ""
+        
+        not_req_slf = 0
+        notRequiredSLF = ""
+        
+        multiple_mnf_hlf = 0
+        multipleListHLF = ""
+        multiple_mnf_slf = 0
+        multipleListSLF = ""
+        
+        manifest_allowed_name = []
+        for extension in self.metadataFileFormats1:
+            manifest_allowed_name.append(self.manifestFileName + extension)
+            
+        # check for manifest files in any of the allowable format
+        allContents = jsonStruct.keys()
+        allContents = [ x for x in allContents if x!='main' ]
+        for folder in allContents:
+            if len(jsonStruct[folder]) != 0:
+                hl_file = 0
+                num_manifest_hlf = 0
+                for mainPath in jsonStruct[folder]:
+                    if os.path.exists(mainPath):
+                        if os.path.isdir(mainPath):
+                            pathContent = os.listdir(mainPath)
+                            if len(pathContent) != 0:
+                                # check manifest file in sub-level folders
+                                for root, dirs, files in os.walk(mainPath):
+                                    if len(files) > 0 :
+                                        num_manifest = 0
+                                        num_file = 0
+                                        for f in files:
+                                            if f in manifest_allowed_name:
+                                                mnf_slf += 1
+                                                num_manifest += 1
+                                        else:
+                                            fname = os.path.splitext(f)[0]
+                                            if fname != 'README':
+                                                num_file += 1                                            
+                                        if num_file == 0:
+                                            if num_manifest>0:
+                                               notRequiredSLF = " " +  str(root) + ","
+                                        if num_file > 0:                                               
+                                            if num_manifest == 0:
+                                                missingSLF += " " + str(root) + "," 
+                                            elif num_manifest > 1:
+                                                multiple_mnf_slf += 1
+                                                multipleListSLF += " " + str(root) + ","
+                        else:
+                            # check for manifest file in high-level SPARC folder
+                            fullFileName = os.path.basename(mainPath)
+                            if fullFileName in manifest_allowed_name:
+                                mnf_hlf += 1
+                                num_manifest_hlf += 1
+                            else:
+                                fname = os.path.splitext(fullFileName)[0]
+                                if fname != 'README':
+                                    hl_file += 1
+
+                if num_manifest_hlf == 0:
+                    msng_hlf += 1
+                    missingHLF += " " + str(folder) + "," 
+                    if hl_file>0:
+                        msng_slf += 1
+                        missingSLF += " " + str(folder) + "," 
+                elif num_manifest_hlf == 1:
+                    if hl_file == 0:
+                        not_req_slf += 1
+                        notRequiredSLF += " " + str(folder) + "," 
+                elif num_manifest_hlf > 1:
+                    multiple_mnf_hlf += 1
+                    multipleListHLF += " " + str(folder) + ","
+                    if hl_file>0:
+                        multiple_mnf_slf += 1
+                        multipleListSLF += " " + str(folder) + ","
+                    
+        
+        check1 = "Manifest files in xlsx, csv, or json format are included in EITHER all folders with at least one file or all high-level SPARC folders only"
+        
+        check1f = "Please include manifest files according to one of the two allowable configurations"
+        
+        check1c1 = "It is likely you chose the 'all folders with at least one file' option" 
+        check1c2 = "It is likely you chose the 'all high-level SPARC folders only' option" 
+        
+        check1f2 = "A manifest is missing in the following folders: " 
+        check1f3 = "The manifest must be removed from the following folder(s) since they contain only folders or a 'README' file: "
+        check1f4 = "Multiple manifest files are included in the following folder(s): "
+        
+        user_msg = check1
+        if mnf_hlf == 0 and mnf_slf == 0:
+            user_msg += '--' + check1f 
+            self.fatal.append(user_msg) 
+            
+        elif mnf_slf>0:
+            mnf_style = 1
+            user_msg += '--' + check1c1
+            if msng_slf == 0 and not_req_slf == 0 and multiple_mnf_slf == 0:
+                self.passes.append(user_msg)
+            else:
+                if msng_slf>0:
+                    user_msg += '--' + check1f2 + missingSLF[:-1]
+                if not_req_slf > 0:
+                    user_msg += '--' + check1f3 + notRequiredSLF[:-1]
+                if multiple_mnf_slf > 0:
+                    user_msg += '--' + check1f4 + multipleListSLF[:-1]
+                self.fatal.append(user_msg) 
+            
+        elif mnf_hlf>0:
+            mnf_style = 2
+            user_msg += '--' + check1c2
+            if msng_hlf == 0 and multiple_mnf_hlf == 0:
+                self.passes.append(user_msg)
+            else:
+                if msng_hlf>0:
+                    user_msg += '--' + check1f2 + missingHLF[:-1]
+                if multiple_mnf_hlf > 0:
+                    user_msg += '--' + check1f4 + multipleListHLF[:-1]
+                self.fatal.append(user_msg) 
+
+        return mnf_style
+    
+    def check_submission_file(self, submFilePath):
+        firsth = 0
+        valueh = 0
+        nonstandardh = 0
+        nonStandardHeaders = ""
+        c0 = 0
+        v = 1
+    
+        fullName = os.path.basename(submFilePath)
+        
+        submissionName = self.reqMetadataFileNames[0]
+        expectedSubmissionFullName = [(submissionName + i) for i in self.metadataFileFormats1]
+        
+        if fullName not in expectedSubmissionFullName:
+            raise Exception("Please select a valid submission file")
+            
+        if os.path.isfile(submFilePath):
+            extension = os.path.splitext(fullName)[1] 
+            if extension == '.csv':
+                
+                df = pd.read_csv(submFilePath)
+            elif extension == '.xlsx':
+                df = pd.read_excel(submFilePath) 
+            elif extension == '.json':
+                self.warnings.append("The SODA validator currently doesn't support the json format so your file cannot be validated. This will be implemented in a future release.")
+                return
+            
+            # check that first header is "Submission item"
+            fileHeaders = list(df)
+            if fileHeaders[0] == self.reqSubmissionHeaders[0]:
+                firsth = 1 
+                
+                #check that first column matches with template
+                if df[self.reqSubmissionHeaders[0]].tolist() == self.submissionCol0:
+                    c0 = 1
+                    
+            # check that 'Value' header is included
+            if self.reqSubmissionHeaders[1] in fileHeaders:
+                valueh = 1
+                
+                #check that the value column does't contain any NaN or empty elements
+                if df[self.reqSubmissionHeaders[1]].isnull().any():
+                    v = 0
+                
+                valueCol = df[self.reqSubmissionHeaders[1]].values
+                valueColMod = []
+                for x in valueCol:
+                    if type(x) == str:
+                        valueColMod.append(x.strip())
+                    else:
+                        valueColMod.append(x)
+                if "" in valueCol:
+                    v = 0
+            
+            #check that the only other header is "Definition"
+            for header in fileHeaders:
+                if header not in (self.reqSubmissionHeaders + self.optSubmissionHeaders):
+                    nonstandardh = 1
+                    nonStandardHeaders += " " + header + ","
+                    
+        check1 = "The submission file format matches with the template provided by the SPARC Curation Team"
+        check1f = "The first header (in cell A1) MUST be " +  self.reqSubmissionHeaders[0]
+        check1f2 = "The first column items do not match exactly with the template, please correct them." 
+        
+        check1f3 = "A " + self.reqSubmissionHeaders[1] + " must be included"  
+        
+        check1f4 = "Only the following headers are expected: " + str(self.reqSubmissionHeaders[0]) +  \
+        str(self.reqSubmissionHeaders[1]) + "," + str(self.optSubmissionHeaders[0]) + \
+        ". Remove the following non-standard headers: "
+        
+        check2 = "All cells in the 'Value' column are populated"
+        check2f = "One or multiple cells from the 'Value' column are empty. All three of them must be populated."
+        
+        if firsth==1 and c0==1 and valueh==1 and nonstandardh==0:
+            self.passes.append(check1)
+            if v == 1:
+                self.passes.append(check2) 
+            else:
+                self.fatal.append(check2 + '--' + check2f)  
+        else:
+            user_msg = check1
+            if firsth == 0:
+                user_msg += '--' + check1f
+            else:
+                if c0 == 0:
+                    user_msg += '--' + check1f2
+            if valueh == 0:
+                user_msg += '--' + check1f3                
+            if nonstandardh == 1:
+                user_msg += '--' + check1f4
+            self.fatal.append(user_msg) 
+            if valueh == 1:
+                if v == 1:
+                    self.passes.append(check2) 
+                else:
+                    self.fatal.append(check2 + '--' + check2f) 
+
+    def check_dataset_description_file(self, ddFilePath):
+        # Check that 
+        # - The dataset description file follows the format provided by the Curation Team
+        # - All mandatory "Value" fields are populated
+        # - No negative statements ('None', 'N/A', etc.) are providedf for optional fields
+        # - All populated fields follow required format (when applicable)
+        
+        columnfail = 0
+        firsthnotstd = 0
+        c0empt = 0
+        c0emptList = ""
+        c0duplicate = 0
+        c0duplicateList = ""
+        c0mandmissing = 0
+        c0mandmissingList = ""
+        c0optremove = 0
+        c0optremoveList = ""
+        
+        cempty = 0
+        cemptyList = ""
+        
+        headersfail = 0
+        hvaluemissing = 0
+        hempty = 0
+        hemptyList = ""
+        hnotallowed = 0
+        hnotallowedList = ""
+        hnotunq = 0
+        hnotunqList = ""
+        
+        valuemandempty = 0
+        valuemandemptyList = ""
+        valuemandnoneterm = 0
+        valuemandnonetermList = ""
+        valueoptnoneterm = 0
+        valueoptnonetermList = ""
+        hvaluesequencewrong = 0
+        
+        
+        fullName = os.path.basename(ddFilePath)        
+        dDName = self.reqMetadataFileNames[1]
+        expectedDDFullName = [(dDName + i) for i in self.metadataFileFormats1]
+        
+        print(fullName)
+        if fullName not in expectedDDFullName:
+            raise Exception("Please select a valid dataset_description file")
+            
+        if not os.path.isfile(ddFilePath):
+            raise Exception("File path not found, please select a valid file")
+        else:
+            extension = os.path.splitext(ddFilePath)[1] 
+            if extension == '.csv':
+                UTF8status = self.check_csv_utf8(ddFilePath)
+                if UTF8status == 0:
+                   self.fatal.append("You csv format file must be UTF-8 encoded")
+                   return
+                df = pd.read_csv(ddFilePath, header=None) # headers ignored here since pandas modify duplicat headers
+            elif extension == '.xlsx':
+                df = pd.read_excel(ddFilePath, header=None) 
+            elif extension == '.json':
+                self.warnings.append("The SODA validator currently doesn't support the json format so your file cannot be validated. This will be implemented in a future release.")
+                return
+            print(df)
+            df = cleanDataFrame(df)
+            # Column headers of the cleaned up df
+            fileHeaders = list(df)
+            print("CLEANED DF")
+            print(df)
+            
+            #check that first hearder is "Metadata element"
+            if fileHeaders[0] != self.reqddHeaders[0]:
+                firsthnotstd = 1
+            else:
+                
+                #FIRST COLUMN CHECK
+                
+                #check for empty first column elements
+                valueCol = df[self.reqddHeaders[0]].values
+                index_empty = [i for i, e in enumerate(valueCol) if e == "empty"]
+                if len(index_empty)>0:
+                    c0empt = 1  
+                    index_empty.sort()
+                    for i in index_empty:
+                        c0emptList += str(i+2) + ","
+           
+                #check for duplicates first column elements
+                dfnoEmpt = df.drop(index_empty)
+                valueColnoEmpt = dfnoEmpt[self.reqddHeaders[0]].values
+                if len(set(valueColnoEmpt)) != len(valueColnoEmpt):
+                    c0duplicate = 1
+                    #list of non unique items:
+                    item = []
+                    duplicate_list = []
+                    for x in valueColnoEmpt:
+                        if x in self.ddCol0Req or x in self.ddCol0Opt:
+                            if x not in item:
+                                item.append(x)
+                            else:
+                                if x not in duplicate_list:
+                                    duplicate_list.append(x)
+                                    c0duplicateList += " " + x + "," 
+                
+                #check that mandatory column elements are present
+                valueColUnq = set(valueColnoEmpt)
+                for el in self.ddCol0Req:
+                    if el not in valueColUnq:
+                        c0mandmissing = 1
+                        c0mandmissingList += " " + el + ","
+                
+                #check that other column elements are within allowable optional elements
+                for el in valueColUnq:
+                    if el not in self.ddCol0Req:
+                        if el not in self.ddCol0Opt:
+                            c0optremove = 1
+                            c0optremoveList += " " + el + ","
+                            
+                #empty column check:
+                #Trim last empty columns if imported (e.g. if user accidently include space)
+                for header in list(df):
+                    if len(set(df[header].values))==1 and df[header].iloc[0]=='empty':
+                        cempty = 1
+                        cemptyList += " " + header + ","
+                
+                # HEADERS CHECK
+                
+                # check that Value header is included
+                if self.reqddHeaders[1] not in fileHeaders:
+                    hvaluemissing = 1
+                        
+                # check that there are no empty headers                    
+                index_unnamed = [i for i, e in enumerate(fileHeaders) if "Empty." in e]
+                if len(index_unnamed)>0:
+                    hempty = 1
+                    index_unnamed.sort()
+                    for i in index_unnamed:
+                        hemptyList += " " + str(i+1) + ","         
+                
+                # check that only allowable hearders are used
+                fileHeadersnonEmpty = list(fileHeaders)
+                for index in sorted(index_unnamed, reverse=True):
+                    del fileHeadersnonEmpty[index]
+                fileHeadersnonEmpty = set(fileHeadersnonEmpty)
+                for item in fileHeadersnonEmpty:
+                    if item not in self.reqddHeaders and item not in self.optddHeaders:
+                        hnotallowed = 1
+                        hnotallowedList += " " + item + ","                     
+                        
+                # check that all headers are unique
+                if len(set(fileHeadersnonEmpty)) != len(fileHeadersnonEmpty):
+                    hnotunq = 1
+                    #list of non unique headers:
+                    item = []
+                    notunqval = []
+                    for x in fileHeadersnonEmpty:
+                        if x not in item:
+                            item.append(x)
+                        else:
+                            if x not in notunqval:
+                                notunqval.append(x)
+                                hnotunqList += " " + x + ","
+                                
+                # Value must be the first column (besides Metadata element, Description, and Example) and all subsequent must be Value 2, Value 3, etc.
+                removeHeadersList = [self.reqddHeaders[0], self.optddHeaders[0], self.optddHeaders[1]]
+                fileHeadersVal = list(fileHeaders)
+                for item in removeHeadersList:  
+                    print(item)
+                    if item in fileHeadersVal: fileHeadersVal.remove(item)
+                print('HEADERS VAL', fileHeadersVal)
+                if len(fileHeadersVal) == 0:
+                    hvaluesequencewrong = 1
+                elif fileHeadersVal[0] != self.reqddHeaders[1]:
+                    hvaluesequencewrong = 1
+                else:
+                    if len(fileHeadersVal)>1:
+                        count = 2
+                        for item in fileHeadersVal[1:]:
+                            print(item, count)
+                            if item != 'Value ' + str(count):
+                                hvaluesequencewrong = 1
+                                break
+                            else:
+                                count += 1
+    
+                  
+                # If column pass and headers pass continue
+                if c0empt == 0 and c0duplicate == 0 and c0mandmissing == 0 and c0optremove == 0 and cempty == 0:
+                    columnfail = 0
+                else:
+                    columnfail = 1
+                
+                if hvaluemissing == 0 and hempty == 0 and hnotallowed == 0 and hnotunq == 0 and hvaluesequencewrong == 0:
+                    headersfail = 0
+                else:
+                    headersfail = 1
+                
+                if columnfail == 0 and headersfail == 0:
+                    
+                    #check for empty "Value" for mandatory fields
+                    dfMand = df.loc[df[self.reqddHeaders[0]].isin(self.ddCol0Req)]
+                    valueColMod = []
+                    for x in valueCol:
+                        if type(x) == str:
+                            valueColMod.append(x.strip())
+                        else:
+                            valueColMod.append(x)
+                    index_empty = [i for i, e in enumerate(valueColMod) if e == "empty"]
+                    if len(index_empty)>0:
+                        valuemandempty = 1
+                        for i in index_empty:
+                            valuemandemptyList += " " + dfMand[self.reqddHeaders[0]].iloc[i] + ","
+                    
+                    #check for non terms for "Value" for mandatory fields
+                    index_none = [i for i, e in enumerate(valueColMod) if e in self.noneTerms]
+                    if len(index_none)>0:
+                        valuemandnoneterm = 1
+                        for i in index_none:
+                            valuemandnonetermList += " " + dfMand[self.reqddHeaders[0]].iloc[i] + ","                
+
+                    #check in optional fields for none terms
+                    dfOpt = df.loc[df[self.reqddHeaders[0]].isin(self.ddCol0Opt)]
+                    valueCol = dfOpt[self.reqddHeaders[1]].values
+                    valueColMod = []
+                    for x in valueCol:
+                        if type(x) == str:
+                            valueColMod.append(x.strip())
+                        else:
+                            valueColMod.append(x)
+                    index_none = [i for i, e in enumerate(valueColMod) if e in self.noneTerms]
+                    if len(index_none)>0:
+                        valueoptnoneterm = 1
+                        for i in index_none:
+                            valueoptnonetermList += " " + dfMand[self.reqddHeaders[0]].iloc[i] + ","
+                    
+                    # CHECK PROVIDED VALUES
+                            
+                    # 3-5 keywords are provided and they are each in a separate column
+                    
+                    # Contributors Name are in the Format Last, First Middle
+                    
+                    # For each Contributor there must be at least one affiliationl, only one ORCID, at least one role
+                    
+                    # ORCID in the format https://orcid.org/0000-0002-5497-0243
+                    
+                    # There must be only one ontributor role per column and each of them must be from the Data Cite list of roles
+                    
+                    # One funding source listed per column
+                    
+                    # There must be only one of DOI of articles, DOI/URL of protocol or Additional link per column 
+                    
+                    # One DOI of articles per column and format follows https://doi.org/xxxxx
+                    
+                    # One URL/DOI for protocol per column and format follows https://doi.org/xxxxx or 
+                    
+                    # Number of subjects must be an integer
+                    
+                    # Number of samples must be an integer
+                    
+                    # Completeness of data must be "empty", "hasNext", or "hasChildren"
+                    
+                    # Parent dataset ID must be comma seperated list and each ID must be of the format N:dataset:xxxx
+                    
+                    # Metadata version must be 1.2.3 as of 06/2020
+
+        
+      
+        check1= "The first column header is 'Metadata element' and is located in the top left corner" 
+        check1f = "The header of the first column MUST be 'Metadata element' and must be located in cell A0. Rectify it." 
+        
+        check1_c = "The content of the first column 'Metadata element' match exactly with the template."
+        check1_c1 = "In the first column, the following row number element(s) is/are empty and must be populated or removed: "
+        check1_c2 = "All elements in the first column must be unique. The following element(s) is/are duplicated: "
+        check1_c3 = "The following standard element(s) is/are missing in the first column and MUST be included: "
+        check1_c4 = "The following element(s) is/are not standard in the first column and MUST be removed: "
+        check1_c5 = "The following column(s) is/are empty and must be deleted or populated: "
+        
+        check1_h = "The names of the column headers meet all requirements" 
+        check1_h1 = "The following mandatory header is missing: 'Value'" 
+        check1_h2 = "All column must have a header. The following column number do not have a header: "
+        check1_h3 = "Only the the following hearders are expected: 'Metadata element', 'Description', 'Example', and \
+        'Value', 'Value 2', 'Value 3', etc. The following headers should be removed/corrected: "
+        check1_h4 = "All headers must be unique. The following header(s) is/are duplicated: "
+        check1_h5 = "'Value' must be the first column header after 'Metadata element' (and the optional 'Description' and 'Example' columns) followed by the sequence Value 2, Value 3, etc. as applicable"
+        
+        check2 = "There is an element in the 'Value' column for all mandatory fields of the first column 'Metadata element'"
+        check2_1 = "The following mandatory element(s) of the first column MUST be provived an element in the 'Value' column: "
+        check2_2 = "Negative statements ('None', 'N/A', etc.) are not allowed for mandatory element(s). Rectify the 'Value' element for the folowing 'Metadata element': " 
+        
+        check3 = "There is an acceptable element in the 'Value' column for optional fields of the first column 'Metadata element' elements or it is left empty"
+        check3_1 = "Negative statements ('None', 'N/A', etc.) are not allowed for optional element(s). Rectify/detele the 'Value' element for the folowing optional 'Metadata element': " 
+        
+        print('Value', hvaluemissing)
+        if firsthnotstd == 1:
+            self.fatal.append(check1 + '--' + check1f)
+        else:
+            self.passes.append(check1)
+            
+            msg = check1_c
+            if columnfail == 1:
+                if c0empt ==1:
+                    msg += '--' + check1_c1 + c0emptList[:-1]
+                if c0duplicate == 1 :
+                    msg += '--' + check1_c2 + c0duplicateList[:-1]
+                if c0mandmissing == 1:
+                    msg += '--' + check1_c3 + c0mandmissingList[:-1]
+                if c0optremove == 1:
+                    msg += '--' + check1_c4 + c0optremoveList[:-1]
+                if cempty == 1:
+                    msg += '--' + check1_c5 + cemptyList[:-1]
+                self.fatal.append(msg)
+            else:
+                self.passes.append(msg)
+                
+            msg = check1_h       
+            if headersfail == 1:
+                if hvaluemissing == 1: 
+                    msg += '--' + check1_h1
+                if hempty == 1: 
+                    msg += '--' + check1_h2 + hemptyList[:-1]
+                if hnotallowed == 1: 
+                    msg += '--' + check1_h3 + hnotallowedList[:-1]
+                if hnotunq == 1:
+                    msg += '--' + check1_h4 + hnotunqList[:-1]
+                if hvaluesequencewrong == 1:
+                    msg += '--' + check1_h5
+                self.fatal.append(msg)
+            else:
+                self.passes.append(msg)
+            
+            if columnfail == 0 and headersfail == 0:
+                msg = check2
+                if valuemandempty == 0 and valuemandnoneterm == 0:
+                    self.passes.append(msg)
+                else:
+                    if valuemandempty ==1:
+                        msg += '--' + check2_1 + valuemandemptyList[:-1]
+                    if valuemandnoneterm == 1:
+                        msg += '--' + check2_2 + valuemandnonetermList[:-1]
+                    self.fatal.append(msg)
+                
+                msg = check3
+                if valueoptnoneterm == 0:
+                    self.passes.append(msg)
+                else:
+                    msg += '--' + check3_1 + valueoptnonetermList[:-1]
+                    self.fatal.append(msg)
+   
+def cleanDataFrame(df):
+    #Replace nan and empty first row cells by "Empty.n"
+    empty_count = 0
+    for column in list(df):
+        element = df[column].iloc[0]
+        if type(element) == str:
+            if not element.strip():
+                df[column].iloc[0] = "Empty." + str(empty_count)
+                empty_count += 1
+        elif np.isnan(df[column].iloc[0]):
+            df[column].iloc[0] = "Empty." + str(empty_count)
+            empty_count += 1
+    
+    #Set first row as headers
+    df = df.rename(columns=df.iloc[0], copy=False).iloc[1:].reset_index(drop=True)
+    
+    #Change all empty and nan cells to "empty" to handle them more easily
+    for rownum in df.index.values:
+        for column in list(df):
+            element = df[column].iloc[rownum]
+            if type(element) == str:
+                if not element.strip():
+                    df[column].iloc[rownum] = "empty"
+            elif np.isnan(df[column].iloc[rownum]):
+                df[column].iloc[rownum] = "empty"         
+    
+    #Trim last empty columns if imported (e.g. if user accidently include space)
+    for header in list(df)[::-1]:
+        if "Empty." in header and len(set(df[header].values))==1 and df[header].iloc[0]=='empty':
+            df = df.drop(header, 1)
+        else:
+            break
+    
+    #Trim last empty rows if imported (e.g. if user accidently include space)
+    for rownum in df.index.values[::-1]:
+        if len(set(df.iloc[rownum].values))==1 and df[list(df)[0]].iloc[rownum] == 'empty':
+            df = df.drop(rownum)
+        else:
+            break
+    
+    return df
+     
+######## Main validation functions called in pysoda #######################
+def pathToJsonStruct(vPath): #create a jsonStruct convenient for SODA's workflow 
+  jsonvar = {}
+  contentDataset = os.listdir(vPath)
+  listPathFilesinDataset = []
+  for i in range(len(contentDataset)):
+    contentName = contentDataset[i]
+    contentPath = os.path.join(vPath, contentName)
+    if (os.path.isdir(contentPath)):
+      filesInFolder = os.listdir(contentPath)
+      listPathFilesinFolder = []
+      for j in range(len(filesInFolder)):
+        fileNameInFolder = filesInFolder[j]
+        listPathFilesinFolder.append(os.path.join(contentPath, fileNameInFolder))
+      jsonvar[contentName] = listPathFilesinFolder
+    else:
+      listPathFilesinDataset.append(contentPath)
+  jsonvar['main'] = listPathFilesinDataset
+  return jsonvar      
+    
+def validate_high_level_folder_structure(jsonStruct):
+    validator = DictValidator()
+
+    # check the root folder for required and optional folders
+    validator.check_high_level_folder_structure(jsonStruct)
+    
+    return(validator)
+
+def validate_high_level_metadata_files(jsonStruct):
+    validator = DictValidator()
+
+    # check the root folder for required metadata files
+    isSubmission, isDatasetDescription, isSubjects, isSamples = validator.check_high_level_metadata_files(jsonStruct)
+    
+    return(validator, isSubmission, isDatasetDescription, isSubjects, isSamples)
+
+def validate_sub_level_organization(jsonStruct):
+    validator = DictValidator()
+    
+    #check sub level structure for empty folders
+    validator.check_empty_folders(jsonStruct)
+    
+    #check sub level structure for empty files
+    validator.check_empty_files(jsonStruct)
+    
+    #check sub level structure for DS.STORE
+    validator.check_ds_store(jsonStruct)
+    
+     #check sub level structure for DS.STORE
+    mnf_style = validator.check_manifest_file_included(jsonStruct)
+    
+    return(validator)
+    
+def validate_submission_file(submFilePath):
+    validator = DictValidator()
+    
+    #check sub level structure for empty folders
+    validator.check_submission_file(submFilePath)
+    
+    return(validator)
+    
+
+def validate_dataset_description_file(ddFilePath):
+    validator = DictValidator()
+    
+    #check sub level structure for empty folders
+    validator.check_dataset_description_file(ddFilePath)
+    
+    return(validator)

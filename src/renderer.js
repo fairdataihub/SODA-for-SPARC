@@ -2114,7 +2114,7 @@ function checkJSONObj(jsonObj) {
         delete jsonObj[key]
     }
   }
-  return empty
+  return [empty, jsonObj]
 }
 
 ///////// Clicking on Validate current DS
@@ -2132,7 +2132,12 @@ validateCurrentDSBtn.addEventListener("click", function() {
   document.getElementById("para-validate-current-ds").innerHTML = ""
   var messageDisplay = ""
   var structuredDataset = grabCurrentDSValidator()
-  var empty = checkJSONObj(structuredDataset)
+  console.log(structuredDataset)
+  var outCheck = checkJSONObj(structuredDataset)
+  var empty = outCheck[0]
+  structuredDataset = outCheck[1]
+  console.log(structuredDataset)
+  console.log(empty)
   if (empty === true) {
     document.getElementById("para-validate-current-ds").innerHTML = "<span style='color: red;'>Please add files or folders to your dataset!</span>"
   } else {

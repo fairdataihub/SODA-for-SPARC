@@ -30,13 +30,14 @@ from blackfynn.api.agent import agent_cmd
 from blackfynn.api.agent import AgentError, check_port, socket_address
 from urllib.request import urlopen
 import json
+import collections
 
 from openpyxl import load_workbook
 from openpyxl import Workbook
 from docx import Document
 
-from validator import pathToJsonStruct, validate_high_level_folder_structure, validate_high_level_metadata_files, \
-validate_sub_level_organization, validate_submission_file
+from validator_soda import pathToJsonStruct, validate_high_level_folder_structure, validate_high_level_metadata_files, \
+validate_sub_level_organization, validate_submission_file, validate_dataset_description_file
 
 ### Global variables
 curateprogress = ' '
@@ -1026,10 +1027,32 @@ def validate_dataset(validator_input):
             resitem['warnings'] = validatorObj.warnings
             resitem['fatal'] = validatorObj.fatal
             res.append(resitem)
-        else:
-            resitem = 'N/A'
-            res.append(resitem)
+        elif isSubmission == 0:
+            resitem = {}
+            resitem['warnings'] = "Include a 'submission' file in a valid format to check it through the validator"
+        elif isSubmission>1:
+            resitem = {}
+            resitem['warnings'] = "Include a unique 'submission' file to check it through the validator"
 
+        if isDatasetDescription == 1:
+            metadataFiles = jsonStruct['main']
+            for f in metadataFiles:
+                fullName = os.path.basename(f)
+                if os.path.splitext(fullName)[0] == 'dataset_description':
+                    ddFilePath = f
+            validatorDatasetDescriptionFile = validate_dataset_description_file(ddFilePath)
+            validatorObj = validatorDatasetDescriptionFile
+            resitem = {}
+            resitem['pass'] = validatorObj.passes
+            resitem['warnings'] = validatorObj.warnings
+            resitem['fatal'] = validatorObj.fatal
+            res.append(resitem)
+        elif isDatasetDescription == 0:
+            resitem = {}
+            resitem['warnings'] = "Include a 'dataset_description' file in a valid format to check it through the validator"
+        elif isDatasetDescription>1:
+            resitem = {}
+            resitem['warnings'] = "Include a unique 'dataset_description' file to check it through the validator"
 
         return res
 
@@ -1157,6 +1180,7 @@ def bf_account_list():
     except Exception as e:
         raise e
 
+
 def bf_default_account_load():
     """
     Action:
@@ -1192,6 +1216,7 @@ def bf_default_account_load():
         return accountlist
     except Exception as e:
         raise e
+
 
 def bf_dataset_account(accountname):
     """
@@ -1514,6 +1539,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     except Exception as e:
         submitdatastatus = 'Done'
         raise e
+
 
 def submit_dataset_progress():
     """
