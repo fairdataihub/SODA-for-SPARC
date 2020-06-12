@@ -534,7 +534,7 @@ document.getElementById("button-import-milestone").addEventListener("click", fun
       document.getElementById("presaved-award-list").value = "Select"
       removeOptions(document.getElementById("selected-milestone"));
       removeOptions(document.getElementById("selected-description-data"));
-      document.getElementById("selected-milestone-date").value =
+      document.getElementById("selected-milestone-date").value = ""
       document.getElementById("input-milestone-select").placeholder = "Select a file"
       return milestoneArray
     }
@@ -925,7 +925,7 @@ function changeAwardInput() {
     document.getElementById("para-save-submission-status").innerHTML = ""
     document.getElementById("selected-milestone-date").value = "";
     if (descriptionInput.value === "Not applicable") {
-      dateInput.value = "Not applicable"
+      dateInput.value = "N/A"
     } else {
       for (var i=0;i<milestoneKey.length; i++) {
         for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
@@ -1031,7 +1031,7 @@ completenessTagify = new Tagify(completenessInput, {
 //// get datasets and append that to option list for parent datasets
 function getParentDatasets() {
   var parentDatasets = []
-  for (var i=0, n=datasetDescriptionFileDataset.options.length;i<n;i++) {
+  for (var i=1, n=datasetDescriptionFileDataset.options.length;i<n;i++) {
     if (datasetDescriptionFileDataset.options[i].value) {
       parentDatasets.push(datasetDescriptionFileDataset.options[i].value);
     }
@@ -1041,11 +1041,14 @@ function getParentDatasets() {
     enforceWhitelist: true,
     duplicates: false,
     dropdown : {
+      maxItems: Infinity,
       enabled   : 0,
       closeOnSelect : true
     }
   })
 }
+
+
 
 
 function clearCurrentConInfo() {
@@ -1390,6 +1393,9 @@ function contactPersonCheck() {
 
 function grabDSInfoEntries() {
   var name = datasetDescriptionFileDataset.options[datasetDescriptionFileDataset.selectedIndex].value;
+  if (name==="Select dataset") {
+    name = "N/A"
+  }
   var description = document.getElementById("ds-description").value;
   var keywordArray = keywordTagify.value;
   var samplesNo = document.getElementById("ds-samples-no").value;
@@ -1488,7 +1494,7 @@ function grabCompletenessInfo() {
   for (var i=0; i<parentDS.length; i++) {
     parentDSValueArray.push(parentDS[i].value)
   }
-  optionalSectionObj["parentDS"] = parentDSValueArray.join(", ")
+  optionalSectionObj["parentDS"] = parentDSValueArray
 
   if (completeDSTitle.length===0) {
     optionalSectionObj["completeDSTitle"] = ""
@@ -1505,36 +1511,60 @@ datasetDescriptionFileDataset.addEventListener("change", function() {
   showDatasetDescription()
 })
 
-///// Generate ds description file
-generateDSBtn.addEventListener('click', (event) => {
-  document.getElementById("para-generate-description-status").innerHTML = ""
+/// detect empty required fields and raise a warning
+function detectEmptyRequiredFields(funding) {
 
-  //// check if any field is left empty
-  var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value
   /// dataset info
   var dsContent = emptyDSInfoEntries()
   var dsSatisfied = dsContent[0]
   var dsEmptyField = dsContent[1]
-  /// contributor info
-  var conSatisfied = emptyInfoEntries(funding)
+
+  /// protocol info check
   var protocolSatisfied = emptyLinkInfo()
+
+  /// contributor info
+  var conEmptyField = []
+  var conSatisfied = true
+  var fundingSatisfied = emptyInfoEntries(funding)
   var contactPersonExists = contactPersonCheck()
   var contributorNumber = currentConTable.rows.length
+  if (!fundingSatisfied) {
+    conEmptyField.push("SPARC Award")
+  }
+  if (!contactPersonExists) {
+    conEmptyField.push("One contact person")
+  }
+  if (contributorNumber===1) {
+    conEmptyField.push("At least one contributor")
+  }
+  if (conEmptyField.length!==0) {
+    conSatisfied = false
+  }
 
-  var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied, contactPersonExists]
-  var emptyMessageArray = ["- Missing fields under Dataset Info section: " + dsEmptyField.join(", "), "- Missing required fields under Contributor Info section: SPARC Award", "- At least one protocol url",  "- At least one contact person"]
+  /// detect empty required fields and raise a warning
+  var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied]
+  var emptyMessageArray = ["- Missing required fields under Dataset Info section: " + dsEmptyField.join(", "), "- Missing required fields under Contributor Info section: " + conEmptyField.join(", "), "- Missing item under Article(s) and Protocol(s) Info section: At least one protocol url"]
   var allFieldsSatisfied = true;
   errorMessage = []
   for (var i=0;i<emptyArray.length;i++) {
     if (!emptyArray[i]) {
-      allFieldsSatisfied = false;
       errorMessage.push(emptyMessageArray[i])
+      allFieldsSatisfied = false;
     }
   }
-  if (contributorNumber===1) {
-    allFieldsSatisfied = false
-    errorMessage.push("- At least one contributor")
-  }
+  return [allFieldsSatisfied, errorMessage]
+}
+
+
+/////////////// Generate ds description file ///////////////////
+////////////////////////////////////////////////////////////////
+generateDSBtn.addEventListener('click', (event) => {
+  document.getElementById("para-generate-description-status").innerHTML = ""
+  var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value
+  var allFieldsSatisfied = detectEmptyRequiredFields(funding)[0]
+  var errorMessage = detectEmptyRequiredFields(funding)[1]
+
+  /// raise a warning if empty required fields are found
   if (allFieldsSatisfied===false) {
     ipcRenderer.send("warning-missing-items-ds-description", errorMessage.join("\n"))
   } else {
@@ -1555,9 +1585,11 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
       var emessage = "File " + filename +  " already exists in " +  dirpath[0]
       ipcRenderer.send('open-error-metadata-file-exits', emessage)
     } else {
+        document.getElementById("para-generate-description-status").innerHTML = "Please wait..."
         var datasetInfoValueArray = grabDSInfoEntries()
-        //// process obtained values to pass to an array
 
+        //// process obtained values to pass to an array ///
+        ///////////////////////////////////////////////////
         var keywordVal = []
         for (var i=0;i<datasetInfoValueArray["keywords"].length;i++) {
           keywordVal.push(datasetInfoValueArray["keywords"][i].value)
@@ -1580,16 +1612,19 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
         /// grab entries from other optional info section
         var completenessSectionObj = grabCompletenessInfo()
 
-        //// stringiy arrays
+        ///////////// stringify JSON objects //////////////////////
         json_str_ds = JSON.stringify(dsSectionArray);
         json_str_misc = JSON.stringify(miscObj);
         json_str_completeness = JSON.stringify(completenessSectionObj);
         json_str_con = JSON.stringify(contributorObj);
 
+        /// get current, selected Blackfynn account
+        var bfaccountname = bfAccountList.options[bfAccountList.selectedIndex].text
+
         /// call python function to save file
         document.getElementById("para-generate-description-status").style.display = "block"
         if (dirpath != null){
-          client.invoke("api_save_ds_description_file", destinationPath, json_str_ds, json_str_misc, json_str_completeness, json_str_con, (error, res) => {
+          client.invoke("api_save_ds_description_file", bfaccountname, destinationPath, json_str_ds, json_str_misc, json_str_completeness, json_str_con, (error, res) => {
             if(error) {
               var emessage = userError(error)
               log.error(error)
@@ -1603,11 +1638,10 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
         }
       }
      }
-    // }
 });
 
-//////////////////////////End of Ds description section ///////////////////////
-//////////////// //////////////// //////////////// //////////////// ////////////////
+//////////////////////////End of Ds description section ///////////////////////////////////
+//////////////// //////////////// //////////////// //////////////// ////////////////////////
 
 // Select organized dataset folder and populate table //
 selectDatasetBtn.addEventListener('click', (event) => {

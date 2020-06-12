@@ -439,7 +439,80 @@ def rename_headers(workbook, keyword_array, contributor_role_array, funding_arra
             cell.font = font
 
 ### Prepare dataset-description file
-def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_str):
+
+def populate_dataset_info(workbook, val_array):
+    ## name, description, samples, subjects
+    workbook["D2"] = val_array[0]
+    workbook["D3"] = val_array[1]
+    workbook["D16"] = val_array[3]
+    workbook["D17"] = val_array[4]
+
+    ## keywords
+    for i, column in zip(range(len(val_array[2])), excel_columns()):
+        workbook[column + "4"] = val_array[2][i]
+
+    return val_array[2]
+
+def populate_contributor_info(workbook, val_array):
+    ## award info
+    for i, column in zip(range(len(val_array["funding"])), excel_columns()):
+        workbook[column + "11"] = val_array["funding"][i]
+
+    ### Acknowledgments
+    workbook["D10"] = val_array["acknowledgment"]
+
+    ### Contributors
+    for contributor, column in zip(val_array['contributors'], excel_columns()):
+        workbook[column + "5"] = contributor["conName"]
+        workbook[column + "6"] = contributor["conID"]
+        workbook[column + "7"] = contributor["conAffliation"]
+        workbook[column + "9"] = contributor["conContact"]
+        workbook[column + "8"] = contributor["conRole"]
+
+    return [val_array["funding"], val_array['contributors']]
+
+def populate_links_info(workbook, val_array):
+    ## originating DOI, Protocol DOI
+    total_link_array = val_array["Originating Article DOI"] + val_array["Protocol URL or DOI*"] + val_array["Additional Link"]
+    for i, column in zip(range(len(total_link_array)), excel_columns()):
+        if total_link_array[i]["link type"] == "Originating Article DOI":
+            workbook[column + "12"] = total_link_array[i]["link"]
+            workbook[column + "13"] = ""
+            workbook[column + "14"] = ""
+            workbook[column + "15"] = total_link_array[i]["description"]
+        if total_link_array[i]["link type"] == "Protocol URL or DOI*":
+            workbook[column + "12"] = ""
+            workbook[column + "13"] = total_link_array[i]["link"]
+            workbook[column + "14"] = ""
+            workbook[column + "15"] = total_link_array[i]["description"]
+        if total_link_array[i]["link type"] == "Additional Link":
+            workbook[column + "12"] = ""
+            workbook[column + "13"] = ""
+            workbook[column + "14"] = total_link_array[i]["link"]
+            workbook[column + "15"] = total_link_array[i]["description"]
+
+    return total_link_array
+
+def populate_completeness_info(workbook, val_array, bfaccountname):
+    ## completeness, parent dataset ID, title Respectively
+    workbook["D18"] = val_array["completeness"]
+    workbook["D20"] = val_array["completeDSTitle"]
+
+    ## parent Datasets
+    parentds_id_array = []
+    bf = Blackfynn(bfaccountname)
+
+    for dataset in val_array["parentDS"]:
+
+        myds = bf.get_dataset(dataset)
+        dataset_id = myds.id
+        parentds_id_array.append(dataset_id)
+
+    workbook["D19"] = ", ".join(parentds_id_array)
+
+
+### generate the file
+def save_ds_description_file(bfaccountname, filepath, dataset_str, misc_str, optional_str, con_str):
     source = join(TEMPLATE_PATH, "dataset_description.xlsx")
     destination = filepath
     shutil.copyfile(source, destination)
@@ -454,56 +527,12 @@ def save_ds_description_file(filepath, dataset_str, misc_str, optional_str, con_
     wb = load_workbook(destination)
     ws1 = wb['Sheet1']
 
-    ## name, description, keywords, samples, subjects
-    ws1["D2"] = val_arr_ds[0]
-    ws1["D3"] = val_arr_ds[1]
-    ws1["D16"] = val_arr_ds[3]
-    ws1["D17"] = val_arr_ds[4]
+    ret_val_1 = populate_dataset_info(ws1, val_arr_ds)
+    ret_val_2 = populate_contributor_info(ws1, val_arr_con)
+    ret_val_3 = populate_links_info(ws1, val_arr_misc)
+    populate_completeness_info(ws1, val_arr_optional, bfaccountname)
 
-    ## keywords
-    for i, column in zip(range(len(val_arr_ds[2])), excel_columns()):
-        ws1[column + "4"] = val_arr_ds[2][i]
-
-    ## award info
-
-    for i, column in zip(range(len(val_arr_con["funding"])), excel_columns()):
-        ws1[column + "11"] = val_arr_con["funding"][i]
-
-    ### Acknowledgments
-    ws1["D10"] = val_arr_con["acknowledgment"]
-    ### Contributors
-    for contributor, column in zip(val_arr_con['contributors'], excel_columns()):
-        ws1[column + "5"] = contributor["conName"]
-        ws1[column + "6"] = contributor["conID"]
-        ws1[column + "7"] = contributor["conAffliation"]
-        ws1[column + "9"] = contributor["conContact"]
-        ws1[column + "8"] = contributor["conRole"]
-
-    ## originating DOI, Protocol DOI
-    total_link_array = val_arr_misc["Originating Article DOI"] + val_arr_misc["Protocol URL or DOI*"] + val_arr_misc["Additional Link"]
-    for i, column in zip(range(len(total_link_array)), excel_columns()):
-        if total_link_array[i]["link type"] == "Originating Article DOI":
-            ws1[column + "12"] = total_link_array[i]["link"]
-            ws1[column + "13"] = ""
-            ws1[column + "14"] = ""
-            ws1[column + "15"] = total_link_array[i]["description"]
-        if total_link_array[i]["link type"] == "Protocol URL or DOI*":
-            ws1[column + "12"] = ""
-            ws1[column + "13"] = total_link_array[i]["link"]
-            ws1[column + "14"] = ""
-            ws1[column + "15"] = total_link_array[i]["description"]
-        if total_link_array[i]["link type"] == "Additional Link":
-            ws1[column + "12"] = ""
-            ws1[column + "13"] = ""
-            ws1[column + "14"] = total_link_array[i]["link"]
-            ws1[column + "15"] = total_link_array[i]["description"]
-
-    rename_headers(ws1, val_arr_ds[2], val_arr_con['contributors'], val_arr_con["funding"], total_link_array)
-
-    ## completeness, parent dataset ID, title Respectively
-    ws1["D18"] = val_arr_optional["completeness"]
-    ws1["D19"] = val_arr_optional["parentDS"]
-    ws1["D20"] = val_arr_optional["completeDSTitle"]
+    rename_headers(ws1, ret_val_1, ret_val_2[1], ret_val_2[0], ret_val_3)
 
     wb.save(destination)
 

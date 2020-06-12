@@ -26,8 +26,8 @@ class SodaApi(object):
         return save_submission_file(filepath, val_arr)
 
     ### Save Description file
-    def api_save_ds_description_file(self, filepath, val_arr1, val_arr2, val_arr3, val_arr4):
-        return save_ds_description_file(filepath, val_arr1, val_arr2, val_arr3, val_arr4)
+    def api_save_ds_description_file(self, bfaccount, filepath, val_arr1, val_arr2, val_arr3, val_arr4):
+        return save_ds_description_file(bfaccount, filepath, val_arr1, val_arr2, val_arr3, val_arr4)
 
     ### Curate dataset
     def api_save_file_organization(self, jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization):
