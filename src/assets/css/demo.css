@@ -874,6 +874,7 @@ label.input-banner-img{
   border-left: 2px solid #258193 !important;
   border-radius: 5px !important;
   background-color: white !important;
+  --tag--max-width           : 250px !important
 }
 
 .tagify.tagify--focus {
