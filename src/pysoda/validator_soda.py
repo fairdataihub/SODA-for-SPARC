@@ -100,6 +100,14 @@ class DictValidator:
     ddCol0Opt = ['Acknowledgements', 'Originating Article DOI', 'Additional Links', 'Link Description', 
                  'Completeness of data set', 'Parent dataset ID', 'Title for complete data set']
     
+    
+    contributorRoles = ['PrincipleInvestigator', 'Creator', 'CoInvestigator', 'ContactPerson', 'DataCollector', 
+                        'DataCurator', 'DataManager', 'Distributor', 'Editor', 'Producer', 'ProjectLeader', 
+                        'ProjectManager', 'ProjectMember', 'RelatedPerson', 'Researcher', 'ResearchGroup', 
+                        'Sponsor', 'Supervisor', 'WorkPackageLeader', 'Other']
+    
+    completnessInfo = ['hasNext', 'hasChildren']
+    
     #subjects file
     subjCols = ['subject_id', 'pool_id', 'experimental group', 'age', 'sex', 'species', 'strain', 'Organism RRID']
     
@@ -108,6 +116,10 @@ class DictValidator:
     
     #none terms
     noneTerms = ['None', 'NONE', 'none', 'N/A', 'n/a', 'NA', 'na', 'Not applicable', 'Not Applicable']
+    
+    empty = 'empty'
+    
+    metadataVersion = '1.2.3'
  
     def __init__(self):
         self.fatal = []
@@ -750,6 +762,7 @@ class DictValidator:
         hnotallowedList = ""
         hnotunq = 0
         hnotunqList = ""
+        hvaluesequencewrong = 0
         
         valuemandempty = 0
         valuemandemptyList = ""
@@ -757,8 +770,35 @@ class DictValidator:
         valuemandnonetermList = ""
         valueoptnoneterm = 0
         valueoptnonetermList = ""
-        hvaluesequencewrong = 0
-        
+        valuefail = 0
+
+        keywordsfail = 0
+        contributorsnameunqfail = 0
+        contributorsnameunqfailList = ""
+        contributorsnameformatfail = 0 
+        contributorsnameformatfailList = ""
+        contributorinfofail = 0
+        contributorinfofailList = ""
+        rolefail = 0
+        rolefailList = ""
+        contactpersonformatfail = 0
+        contactpersonformatfailList = ""
+        contactpersonfail = 0
+        fundingsourcefail = 0
+        fundingsourcefailList = ""
+        linksnumfail = 0
+        linksnumfailList = ""
+        articleformatfail = 0
+        articleformatfailList = ""
+        protocolformatfail = 0
+        protocolformatfailList = ""
+        numsubjectsformatfail = 0
+        numsamplesformatfail = 0
+        completenessformatfail = 0
+        parentidvaluefail = 0
+        parentidvaluefailList = "" 
+        parentidformatfail = 0
+        parentidformatfailList = ""
         
         fullName = os.path.basename(ddFilePath)        
         dDName = self.reqMetadataFileNames[1]
@@ -886,9 +926,7 @@ class DictValidator:
                 removeHeadersList = [self.reqddHeaders[0], self.optddHeaders[0], self.optddHeaders[1]]
                 fileHeadersVal = list(fileHeaders)
                 for item in removeHeadersList:  
-                    print(item)
                     if item in fileHeadersVal: fileHeadersVal.remove(item)
-                print('HEADERS VAL', fileHeadersVal)
                 if len(fileHeadersVal) == 0:
                     hvaluesequencewrong = 1
                 elif fileHeadersVal[0] != self.reqddHeaders[1]:
@@ -897,14 +935,13 @@ class DictValidator:
                     if len(fileHeadersVal)>1:
                         count = 2
                         for item in fileHeadersVal[1:]:
-                            print(item, count)
                             if item != 'Value ' + str(count):
                                 hvaluesequencewrong = 1
                                 break
                             else:
                                 count += 1
+                print('sequence', hvaluesequencewrong)
     
-                  
                 # If column pass and headers pass continue
                 if c0empt == 0 and c0duplicate == 0 and c0mandmissing == 0 and c0optremove == 0 and cempty == 0:
                     columnfail = 0
@@ -953,38 +990,214 @@ class DictValidator:
                         valueoptnoneterm = 1
                         for i in index_none:
                             valueoptnonetermList += " " + dfMand[self.reqddHeaders[0]].iloc[i] + ","
-                    
+                   
                     # CHECK PROVIDED VALUES
-                            
-                    # 3-5 keywords are provided and they are each in a separate column
-                    
-                    # Contributors Name are in the Format Last, First Middle
-                    
-                    # For each Contributor there must be at least one affiliationl, only one ORCID, at least one role
-                    
-                    # ORCID in the format https://orcid.org/0000-0002-5497-0243
-                    
-                    # There must be only one ontributor role per column and each of them must be from the Data Cite list of roles
-                    
-                    # One funding source listed per column
-                    
-                    # There must be only one of DOI of articles, DOI/URL of protocol or Additional link per column 
-                    
-                    # One DOI of articles per column and format follows https://doi.org/xxxxx
-                    
-                    # One URL/DOI for protocol per column and format follows https://doi.org/xxxxx or 
-                    
-                    # Number of subjects must be an integer
-                    
-                    # Number of samples must be an integer
-                    
-                    # Completeness of data must be "empty", "hasNext", or "hasChildren"
-                    
-                    # Parent dataset ID must be comma seperated list and each ID must be of the format N:dataset:xxxx
-                    
-                    # Metadata version must be 1.2.3 as of 06/2020
+                    if valuemandempty == 0 and valuemandnoneterm == 0 and valueoptnoneterm == 0:
+                        valuefail = 0
+                    else:
+                        valuefail = 1
+                        
+                    if valuefail == 0:
+                        dfv = df
+                        dropColumn = [self.optddHeaders[0], self.optddHeaders[1]]
+                        for item in dropColumn:
+                            if item in fileHeaders:
+                                dfv = dfv.drop(item, axis=1)
+                        
+                        metadataEl = self.reqddHeaders[0]
+                        valueEl = self.reqddHeaders[1]
+                        
+                        # 3-5 unique keywords are provided and they are each in a separate column
+                        selectedEl = self.ddCol0Req[2]
+                        keywordsList = dfv.loc[dfv[metadataEl] == selectedEl].iloc[0].values
+                        keywordsList = np.delete(keywordsList, np.argwhere(keywordsList == selectedEl))
+                        keywordsList = np.delete(keywordsList, np.argwhere(keywordsList == self.empty))
+                        keywordsListUnq = np.unique(keywordsList)
 
-        
+                        if len(keywordsListUnq)>2 and len(keywordsListUnq)<6:
+                            keywordsfail = 0
+                        else:
+                            keywordsfail = 1
+                        
+                        # Contributors Names are unique and in the Format Last, First Middle
+                        selectedEl = self.ddCol0Req[3]
+                        contributorsList = dfv.loc[dfv[metadataEl] == selectedEl].iloc[0].values
+                        contributorsList = np.delete(contributorsList, np.argwhere(contributorsList == selectedEl))
+                        contributorsList = np.delete(contributorsList, np.argwhere(contributorsList == self.empty))
+                        contributorsListUnq = np.unique(contributorsList)
+                        
+                        if len(contributorsListUnq) != len(contributorsList):
+                            contributorsnameunqfail = 1
+                            #list of non unique names:
+                            item = []
+                            notunqval = []
+                            for x in contributorsList:
+                                if x not in item:
+                                    item.append(x)
+                                else:
+                                    if x not in notunqval:
+                                        notunqval.append(x)
+                                        contributorsnameunqfailList += " " + x + ","
+                        
+                        for item in contributorsList:
+                            #number of comma
+                            countcomma = 0
+                            for i in item:
+                                if i == ",":
+                                    countcomma += 1
+                            if countcomma != 1:
+                                contributorsnameformatfail = 1
+                                contributorsnameformatfailList += " " + item + ","
+   
+                        # For each Contributor there must be at least one affiliation, only one ORCID, at least one role
+                        if contributorsnameunqfail == 0 and contributorsnameformatfail == 0:
+                            selectedEl1 = self.ddCol0Req[3]
+                            selectedEl2 = self.ddCol0Req[4]
+                            selectedEl3 = self.ddCol0Req[5]
+                            selectedEl4 = self.ddCol0Req[6]
+                            selectedEl5 = self.ddCol0Req[7]
+                            
+                            nameList = dfv.loc[dfv[metadataEl] == selectedEl1].iloc[0].values
+                            nameList = np.delete(nameList, np.argwhere(nameList == selectedEl1))
+                            orcidList = dfv.loc[dfv[metadataEl] == selectedEl2].iloc[0].values
+                            orcidList = np.delete(orcidList, np.argwhere(orcidList == selectedEl2))
+                            affiliationList = dfv.loc[dfv[metadataEl] == selectedEl3].iloc[0].values
+                            affiliationList = np.delete(affiliationList, np.argwhere(affiliationList == selectedEl3))
+                            roleList = dfv.loc[dfv[metadataEl] == selectedEl4].iloc[0].values
+                            roleList = np.delete(roleList, np.argwhere(roleList == selectedEl4))
+                            contactpersonList = dfv.loc[dfv[metadataEl] == selectedEl5].iloc[0].values
+                            contactpersonList = np.delete(contactpersonList, np.argwhere(contactpersonList == selectedEl5))
+                                   
+                            for name, orcid, affiliation, role, contactperson in zip(nameList, orcidList, affiliationList, roleList, contactpersonList):
+                                if name != self.empty:
+                                    if orcid == self.empty or affiliation == self.empty or role == self.empty  or contactperson == self.empty:
+                                        contributorinfofail = 1
+                                        contributorinfofailList = " " + name + ","
+                        
+                        # ORCID in the format https://orcid.org/0000-0002-5497-0243
+                        for orcid in orcidList:
+                            if orcid != self.empty:
+                                if 'https://orcid.org/' not in orcid:
+                                    orcidformatfail = 1
+                                    orcidformatfailList = " " + orcid + ","
+                        
+                        # There must be only one contributor role per column and each of them must be from the Data Cite list of roles
+                        for role in roleList:
+                            if role != self.empty:
+                                if role not in self.contributorRoles:
+                                        rolefail = 1
+                                        rolefailList += " " + role + ","
+                        
+                        # Contact person must be 'Yes' or 'No' and there must one and only one 'Yes'
+                        countYes = 0
+                        for contactperson in contactpersonList:
+                            if contactperson != self.empty:
+                                if contactperson not in self.contactPersonOptions:
+                                    contactpersonformatfail = 1
+                                    contactpersonformatfailList += " " + contactperson + "," 
+                                elif contactperson == self.contactPersonOptions[0]:
+                                    countYes += 1
+                        if countYes != 1:
+                            contactpersonfail = 1
+                        
+                        # One funding source listed per column
+                        selectedEl = self.ddCol0Req[8]
+                        fundingList = dfv.loc[dfv[metadataEl] == selectedEl].iloc[0].values
+                        fundingList = np.delete(fundingList, np.argwhere(fundingList == selectedEl))
+                        fundingList = np.delete(fundingList, np.argwhere(fundingList == self.empty))
+                        for fundingsource in fundingList:
+                            if "," in fundingsource or ";" in fundingsource:
+                                fundingsourcefail = 1
+                                fundingsourcefailList += " " + fundingsource + ","
+                        
+                        # There must be only one of DOI of articles, DOI/URL of protocol or Additional link per column
+                        selectedEl1 = self.ddCol0Req[9]
+                        selectedEl2 = self.ddCol0Opt[1]
+                        selectedEl3 = self.ddCol0Opt[2]
+                        selectedElList = [selectedEl1, selectedEl2, selectedEl3]
+                        dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
+                        
+                        linkHeaders = list(dfc)
+                        for header in linkHeaders:
+                            if header != metadataEl:
+                                linkList = dfc[header].values
+                                numempty = list(linkList).count(self.empty)
+                                if numempty == 0 or numempty == 1:
+                                    linksnumfail = 0
+                                    linksnumfailList += " " + header + ","
+                                  
+                        # DOI articles format follows https://doi.org/xxxx
+                        articleList = dfv.loc[dfv[metadataEl] == selectedEl1].iloc[0].values
+                        articleList = np.delete(articleList, np.argwhere(articleList == selectedEl1))
+                        for article in articleList:
+                            if article != self.empty:
+                                if 'https://doi.org/' not in article:
+                                    articleformatfail = 1
+                                    articleformatfailList += " " + str(article) + "," 
+                        
+                        # URL/DOI format follows  https://protocol.io/xxxx or https://doi.org/xxxx
+                        protocolList = dfv.loc[dfv[metadataEl] == selectedEl2].iloc[0].values
+                        protocolList = np.delete(protocolList, np.argwhere(protocolList == selectedEl2))
+                        for protocol in protocolList:
+                            if protocol != 'empty':
+                                if 'https://doi.org/' not in protocol or 'https://www.protocols.io/' not in protocol:
+                                    protocolformatfail = 1
+                                    protocolformatfailList += " " + protocol + "," 
+                        
+                        # Number of subjects must be an integer
+                        selectedEl = self.ddCol0Req[10]
+                        selectedElList = [selectedEl]
+                        dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
+                        numSubjects = dfc['Value'].values[0]
+                        if not numSubjects.isdigit():
+                            numsubjectsformatfail = 1
+                            
+                        # Number of samples must be an integer
+                        selectedEl = self.ddCol0Req[11]
+                        selectedElList = [selectedEl]
+                        dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
+                        numSamples = dfc['Value'].values[0]
+                        if not numSamples.isdigit():
+                            numsamplesformatfail = 1
+                        
+                        # Completeness of data must be "empty", "hasNext", or "hasChildren"
+                        selectedEl = self.ddCol0Opt[4]
+                        selectedElList = [selectedEl]
+                        dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
+                        completeness = dfc['Value'].values[0]
+                        if completeness not in self.completnessInfo or completeness != 'empty':
+                            completenessformatfail = 1
+ 
+                        # Parent dataset ID must be comma seperated list and each ID must be of the format N:dataset:xxxx
+                        selectedEl = self.ddCol0Opt[5]
+                        selectedElList = [selectedEl]
+                        dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
+
+                        for header in list(dfc):
+                            if header != metadataEl or item != valueEl:
+                                item = dfc[header].values[0]
+                                if item != self.empty:
+                                    parentidvaluefail = 1
+                                    parentidvaluefailList += " " + header + "," 
+                        
+                        parentIDList = dfc[valueEl].values[0]
+                        if parentIDList != self.empty:
+                            if ',' in parentIDList:
+                                parentIDList = [parentID for parentID in parentIDList.split(',')]
+                            for parentID in parentIDList:
+                                if "N:dataset:" not in parentID:
+                                    parentidformatfail = 1
+                                    parentidformatfailList += " " + parentID + ","
+                        
+                        # Metadata version must be 1.2.3 as of 06/2020
+                        selectedEl = self.ddCol0Req[12]
+                        selectedElList = [selectedEl]
+                        dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
+                        metadataV = dfc[valueEl].values[0]
+                        metadataV.strip()
+                        if metadataV != self.metadataVersion:
+                            metadataversionfail = 1
+  
       
         check1= "The first column header is 'Metadata element' and is located in the top left corner" 
         check1f = "The header of the first column MUST be 'Metadata element' and must be located in cell A0. Rectify it." 
@@ -1011,7 +1224,38 @@ class DictValidator:
         check3 = "There is an acceptable element in the 'Value' column for optional fields of the first column 'Metadata element' elements or it is left empty"
         check3_1 = "Negative statements ('None', 'N/A', etc.) are not allowed for optional element(s). Rectify/detele the 'Value' element for the folowing optional 'Metadata element': " 
         
-        print('Value', hvaluemissing)
+        check_keywords = "3 to 5 unique keywords are provided for the 'Keywords' field"
+        check_keywords_f = "Ensure that 3 to 5 unique keywords are provided, each one in a seperate column"
+        
+        check_contributorsname = "Contributors names are unique and in the format 'Last, First Middle'"
+        check_contributorsname_f1 = "The following contributor name(s) may be included more than once: "
+        check_contributorsname_f2 = "The following contributor name(s) may not follow the expected 'Last, First Middle' format: "
+        
+        check_contributorinfo = "For each 'Contributors' listed there is at least only one 'Contributor ORCID ID', at least one 'Contributor Affiliation', at least one 'Contributor Role', and one 'Is Contact Person' specified"
+        check_contributorinfo_f = "Check that above requirements are met for the following 'Contributors': "
+        
+        check_orcid = " 'Contributor ORCID ID' are in the format 'https://orcid.org/xxxx-xxxx-xxxx-xxxx"
+        check_orcid_f = "The following ORCID element may not be in the required format: "
+        
+        check_contributorrole = "There must be only one contributor role per column and each of them must be from the Data Cite list of roles"
+        check_contributorrole_f = "The following role(s) do(es) not fit the requirements and must be corrected: "
+        
+        check_contactperson = "'Is Contact Person' is either 'Yes' or 'No' and there is one and only one 'Yes' accross all contributors"
+        check_contactperson_f1 = "The following 'Is Contact Person' element is not 'Yes' or 'No': "
+        check_contactperson_f2 = "There must be one and only one 'Yes' for the 'Is Contact Person' field. Currently there is either none or more than one"
+        
+        check_fundingsource = "Each funding source is mentioned in a seperate column"
+        check_fundingsource_f = "Make sure the following refers to a single funding source: "
+        
+        check_links = "There is only one of the following in each Value column: Originating Article DOI, Protocol URL or DOI, or Additional Links"
+        check_links_f = "Make sure the above condition is met in the following column: "
+        
+        check_articles = "'Originating Article DOI' is in the format https://doi.org/xxxx"
+        check_articles_f = "Make sure the above condition is for the following DOI article(s): "
+        
+        check_protocols = "'Protocol URL or DOI' is in the format https://protocol.io/xxxx or https://doi.org/xxxx"
+        check_protocols_f = "Make sure the above condition is for the following Protocol URL or DOI: "
+        
         if firsthnotstd == 1:
             self.fatal.append(check1 + '--' + check1f)
         else:
@@ -1066,7 +1310,79 @@ class DictValidator:
                 else:
                     msg += '--' + check3_1 + valueoptnonetermList[:-1]
                     self.fatal.append(msg)
-   
+                
+                if valuefail == 0:
+                    
+                    msg = check_keywords
+                    if keywordsfail == 0:
+                        self.passes.append(msg)
+                    else:
+                        self.fatal.append(msg + '--' + check_keywords_f)
+                
+                    msg = check_contributorsname
+                    if contributorsnameunqfail == 0 and contributorsnameformatfail == 0:
+                        self.passes.append(msg)
+                        
+                        msg = check_contributorinfo
+                        if contributorinfofail == 0: 
+                            self.passes.append(msg)
+                        else:
+                            msg += '--' + check_contributorinfo_f + contributorinfofailList[:-1]
+                            self.fatal.append(msg)  
+                    else:
+                        if contributorsnameunqfail == 1:
+                            msg += '--' + check_contributorsname_f1 + contributorsnameunqfailList[:-1]
+                        
+                        if contributorsnameformatfail == 1:
+                            msg += '--' + check_contributorsname_f2 + contributorsnameformatfailList[:-1]
+                        self.warnings.append(msg)
+                    
+                    msg = check_orcid
+                    if orcidformatfail == 0: 
+                        self.passes.append(msg)
+                    else:
+                        msg += '--' + check_orcid_f + orcidformatfailList[:-1]
+                        self.warnings.append(msg)
+                    
+                    msg = check_contributorrole
+                    if rolefail == 0: 
+                        self.passes.append(msg)
+                    else:
+                        msg += '--' + check_contributorrole_f + rolefailList[:-1]
+                        self.fatal.append(msg)
+                    
+                    msg = check_contactperson
+                    if contactpersonformatfail == 0 and contactpersonfail == 0: 
+                        self.passes.append(msg)
+                    else:
+                        if contactpersonformatfail == 0:     
+                            msg += '--' + check_contactperson_f1 + contactpersonformatfailList[:-1]
+                        if contactpersonfail == 0: 
+                            msg += '--' + check_contactperson_f2
+                        self.fatal.append(msg)
+                        
+                    msg = check_fundingsource
+                    if fundingsourcefail == 0: 
+                        self.passes.append(msg)
+                    else:
+                        msg += '--' + check_fundingsource_f + fundingsourcefailList[:-1]
+                        self.warnings.append(msg)
+                    
+                    msg = check_links
+                    if linksnumfail == 0: 
+                        self.passes.append(msg)
+                    else:
+                        msg += '--' + check_links_f + linksnumfailList[:-1]
+                        self.fatal.append(msg)
+                        
+                    msg = check_articles
+                    if articleformatfail == 0: 
+                        self.passes.append(msg)
+                    else:
+                        msg += '--' + check_articles_f + articleformatfailList[:-1]
+                        self.fatal.append(msg)
+                        
+                        
 def cleanDataFrame(df):
     #Replace nan and empty first row cells by "Empty.n"
     empty_count = 0
