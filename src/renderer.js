@@ -2326,6 +2326,7 @@ validateCurrentDSBtn.addEventListener("click", function() {
   document.getElementById("div-validation-report-current").style.display = "none"
   document.getElementById("para-preview-current-ds").innerHTML = ""
   document.getElementById("para-validate-current-ds").innerHTML = ""
+  document.getElementById("para-generate-report-current-ds").innerHTML = ""
   var messageDisplay = ""
   var structuredDataset = grabCurrentDSValidator()
   console.log(structuredDataset)
@@ -2362,6 +2363,7 @@ validateCurrentDSBtn.addEventListener("click", function() {
 
 ///// Generate pdf validator file
 currentDatasetReportBtn.addEventListener("click", function() {
+  document.getElementById("para-generate-report-current-ds").innerHTML = ""
   ipcRenderer.send('save-file-dialog-validator-current')
 })
 ipcRenderer.on('selected-savedvalidatorcurrent', (event, filepath) => {
@@ -2377,13 +2379,17 @@ ipcRenderer.on('selected-savedvalidatorcurrent', (event, filepath) => {
         var data = img.replace(/^data:image\/\w+;base64,/, "");
         var buf = new Buffer(data, 'base64');
 
-        pdf = new PDFDocument
+        // obtain canvas and print to pdf
+        pdf = new PDFDocument({autoFirstPage:false})
+        var image = pdf.openImage(buf)
+        pdf.addPage({size: [image.width, image.height]});
         pdf.pipe(fs.createWriteStream(filepath))
+        pdf.image(image, 0,0);
 
-        pdf.image(buf, {
-           width: 490,
-           valign: 'top'
-        });
+        // pdf.image(buf, {
+        //    width: 490,
+        //    valign: 'top'
+        // });
 
         pdf.end()
 
@@ -2417,6 +2423,7 @@ ipcRenderer.on('selected-validate-local-dataset', (event, filepath) => {
 
 validateLocalDSBtn.addEventListener("click", function() {
   document.getElementById("para-local-ds-info").innerHTML = ""
+  document.getElementById("para-generate-report-local-ds").innerHTML = ""
   var datasetPath = document.getElementById("input-local-ds-select").placeholder
   var messageDisplay = ""
   if (datasetPath==="Select a folder") {
@@ -2489,6 +2496,7 @@ function errorMessageGenerator(resitem, category, messageDisplay){
 
 ///// Generate pdf report for local validator report
 localDatasetReportBtn.addEventListener("click", function() {
+  document.getElementById("para-generate-report-local-ds").innerHTML = ""
   ipcRenderer.send('save-file-dialog-validator-local')
 })
 ipcRenderer.on('selected-savedvalidatorlocal', (event, filepath) => {
@@ -2499,18 +2507,16 @@ ipcRenderer.on('selected-savedvalidatorlocal', (event, filepath) => {
       const domElement = validateLocalDatasetReport
       html2canvas(domElement).then((canvas) => {
 
-        const img = canvas.toDataURL('image/png', 1.0)
+        const img = canvas.toDataURL('image/png', 1.0);
         var data = img.replace(/^data:image\/\w+;base64,/, "");
         var buf = new Buffer(data, 'base64');
 
         // obtain canvas and print to pdf
-        pdf = new PDFDocument
+        pdf = new PDFDocument({autoFirstPage:false})
+        var image = pdf.openImage(buf)
+        pdf.addPage({size: [image.width, image.height]});
         pdf.pipe(fs.createWriteStream(filepath))
-
-        pdf.image(buf, {
-           width: 490,
-           valign: 'top'
-        });
+        pdf.image(image, 0,0);
 
         pdf.end()
 
