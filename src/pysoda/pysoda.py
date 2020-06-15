@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
+import logging
+
 from gevent import monkey; monkey.patch_all()
 import platform
 import os
@@ -28,11 +30,15 @@ from blackfynn.api.agent import agent_cmd
 from blackfynn.api.agent import AgentError, check_port, socket_address
 from urllib.request import urlopen
 import json
+import collections
 
 from openpyxl import load_workbook
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font
 from docx import Document
+
+from validator_soda import pathToJsonStruct, validate_high_level_folder_structure, validate_high_level_metadata_files, \
+validate_sub_level_organization, validate_submission_file, validate_dataset_description_file
 
 ### Global variables
 curateprogress = ' '
@@ -68,6 +74,12 @@ DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
 
+logging.basicConfig(level=logging.DEBUG, filename=os.path.join(os.path.expanduser("~"), f"{__name__}.log"))
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(os.path.join(os.path.expanduser("~"), f"{__name__}.log"))
+handler.setLevel(logging.DEBUG)
+logger.addHandler(handler)
 
 ### Internal functions
 def open_file(file_path):
@@ -1032,6 +1044,87 @@ def curate_dataset_progress():
 
     return (curateprogress+elapsed_time_formatted_display, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time_formatted)
 
+### Validate dataset
+def validate_dataset(validator_input):
+    try:
+        if type(validator_input) is str:
+            jsonStruct = pathToJsonStruct(validator_input)
+        elif type(validator_input) is dict:
+            jsonStruct = validator_input
+        else:
+            raise Exception('Error: validator input must be string (path to dataset) or a SODA JSON Structure/Python dictionary')
+
+        res = []
+
+        validatorHighLevelFolder = validate_high_level_folder_structure(jsonStruct)
+        validatorObj = validatorHighLevelFolder
+        resitem = {}
+        resitem['pass'] = validatorObj.passes
+        resitem['warnings'] = validatorObj.warnings
+        resitem['fatal'] = validatorObj.fatal
+        res.append(resitem)
+
+        validatorHighLevelMetadataFiles, isSubmission, isDatasetDescription, isSubjects, isSamples = \
+         validate_high_level_metadata_files(jsonStruct)
+        validatorObj = validatorHighLevelMetadataFiles
+        resitem = {}
+        resitem['pass'] = validatorObj.passes
+        resitem['warnings'] = validatorObj.warnings
+        resitem['fatal'] = validatorObj.fatal
+        res.append(resitem)
+
+        validatorSubLevelOrganization = validate_sub_level_organization(jsonStruct)
+        validatorObj = validatorSubLevelOrganization
+        resitem = {}
+        resitem['pass'] = validatorObj.passes
+        resitem['warnings'] = validatorObj.warnings
+        resitem['fatal'] = validatorObj.fatal
+        res.append(resitem)
+
+        if isSubmission == 1:
+            metadataFiles = jsonStruct['main']
+            for f in metadataFiles:
+                fullName = os.path.basename(f)
+                if os.path.splitext(fullName)[0] == 'submission':
+                    subFilePath = f
+            validatorSubmissionFile = validate_submission_file(subFilePath)
+            validatorObj = validatorSubmissionFile
+            resitem = {}
+            resitem['pass'] = validatorObj.passes
+            resitem['warnings'] = validatorObj.warnings
+            resitem['fatal'] = validatorObj.fatal
+            res.append(resitem)
+        elif isSubmission == 0:
+            resitem = {}
+            resitem['warnings'] = "Include a 'submission' file in a valid format to check it through the validator"
+        elif isSubmission>1:
+            resitem = {}
+            resitem['warnings'] = "Include a unique 'submission' file to check it through the validator"
+
+        if isDatasetDescription == 1:
+            metadataFiles = jsonStruct['main']
+            for f in metadataFiles:
+                fullName = os.path.basename(f)
+                if os.path.splitext(fullName)[0] == 'dataset_description':
+                    ddFilePath = f
+            validatorDatasetDescriptionFile = validate_dataset_description_file(ddFilePath)
+            validatorObj = validatorDatasetDescriptionFile
+            resitem = {}
+            resitem['pass'] = validatorObj.passes
+            resitem['warnings'] = validatorObj.warnings
+            resitem['fatal'] = validatorObj.fatal
+            res.append(resitem)
+        elif isDatasetDescription == 0:
+            resitem = {}
+            resitem['warnings'] = "Include a 'dataset_description' file in a valid format to check it through the validator"
+        elif isDatasetDescription>1:
+            resitem = {}
+            resitem['warnings'] = "Include a unique 'dataset_description' file to check it through the validator"
+
+        return res
+
+    except Exception as e:
+        raise e
 
 ### Manage datasets (Blackfynn interface)
 def bf_add_account(keyname, key, secret):
@@ -1154,6 +1247,7 @@ def bf_account_list():
     except Exception as e:
         raise e
 
+
 def bf_default_account_load():
     """
     Action:
@@ -1189,6 +1283,7 @@ def bf_default_account_load():
         return accountlist
     except Exception as e:
         raise e
+
 
 def bf_dataset_account(accountname):
     """
@@ -1362,7 +1457,6 @@ def clear_queue():
 
 
 def agent_running():
-    logger = get_logger('blackfynn.agent')
     listen_port = 11235
 
     try:
@@ -1378,8 +1472,6 @@ def agent_running():
             raise
     else:
         raise AgentError("The Blackfynn agent is already running. Please go to your Task Manager/Activity Monitor to stop any running blackfynn_agent processes and try again")
-
-    socket_address(listen_port)
 
 
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
@@ -1514,6 +1606,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     except Exception as e:
         submitdatastatus = 'Done'
         raise e
+
 
 def submit_dataset_progress():
     """

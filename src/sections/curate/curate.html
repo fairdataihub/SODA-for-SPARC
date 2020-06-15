@@ -327,18 +327,73 @@
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-validate-dataset-demo-toggle" class="js-container-target demo-toggle-button"> Validate dataset before generating
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Validate-dataset-before-generating" >
+        <button id="button-validate-dataset-demo-toggle" class="js-container-target demo-toggle-button"> Validate dataset
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Validate-dataset" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
           <div class="demo-meta u-avoid-clicks"> Check that information provided during the previous steps will create a SPARC-approved dataset. </div>
         </button>
         <div id="div-validate-dataset" class="demo-box">
-          <p> Coming soon... Tentative date: March 2020 </p>
+          <form id = 'validator-form'>
+            <div style = "padding:10px 0px">
+              <input class="input-switch" id="validatorCurrent" type="radio" name="tabs" checked>
+              <label class="label-switch" style="width:250px;font-size:15px;padding-top: 6px;" for="validatorCurrent">Validate specified files in SODA</label>
+              <input class="input-switch" id="validatorLocal" type="radio" name="tabs">
+              <label class="label-switch" style="width:250px;font-size:15px;padding-top: 6px;" for="validatorLocal">Validate a local dataset</label>
+            </div>
+          </form>
+          <div id="div-validate-current-ds" class="datasetsaveoption" style="display:block;margin-top:70px">
+            <h5>Preview current dataset before validating: </h5>
+            <div class="demo-controls" id="div-preview-current-ds-validator">
+              <button type="button" id="button-preview-local-ds" style="float:left;" class="demo-button">Preview</button>
+              <p id="para-preview-current-ds" style="margin-left:7px;padding: 2 2;margin: 0 0;"></p>
+            </div>
+            <br>
+          <h5>Proceed to validate dataset:</h5>
+          <div class="demo-controls">
+            <button id="button-validate-current-ds" style="float:left;" class="demo-button">Validate</button>
+            <p id="para-validate-current-ds" style="margin-left:7px;padding: 2 2;margin: 0 0;"></p>
+          </div>
+          <br>
+          <div id="div-validation-report-current" class="demo-controls" style="display:none; user-select: all">
+            <!-- <textarea id="textarea-validate-dataset" class="validate-textarea" rows="10" readonly style="width:100%; max-width:100%"></textarea> -->
+            <p id='textarea-validate-current-dataset' style='background: white;max-width:630px;'> <p>
+          </div>
+          <div id="div-report-current" class="demo-controls" style="display:none;">
+            <button type="button" id="button-generate-report-current-ds" style="float:left;" class="demo-button">Generate report</button>
+            <p id="para-generate-report-current-ds" style="margin-left:7px;padding: 2 2;margin: 0 0;"></p>
+          </div>
+        </div>
+
+
+          <div id="div-validate-local-ds" class="datasetsaveoption" style="display:none;margin-top:70px">
+            <h5>Select a local dataset: </h5>
+            <div class="container-milestone-upload" style="display:flex;">
+              <input class="milestone-upload-text" id="input-local-ds-select" style="width:50%;text-align:center;height:40px" type="text" readonly placeholder="Select a folder"/>
+            </div>
+            <br>
+            <div style="display:flex;height:40px">
+            <button id="button-validate-local-ds" style="float:left;" class="demo-button">Validate</button>
+            <p id="para-local-ds-info" style="margin-left:7px;padding: 2 2;margin: 0 0;text-align:left;vertical-align:middle;"></p>
+            </div>
+            <br>
+
+            <div id="div-validation-report-local" class="demo-controls" style="display:none; user-select: all">
+              <!-- <textarea id="textarea-validate-dataset" class="validate-textarea" rows="10" readonly style="width:100%; max-width:100%"></textarea> -->
+              <p id='textarea-validate-local-dataset' style='background: white;max-width:630px;'> <p>
+            </div>
+            <div class="demo-controls"  id="div-report-local" style="display:none;">
+              <button id="button-generate-report-local-ds" style="float:left;" class="demo-button">Generate report</button>
+              <p id="para-generate-report-local-ds" style="margin-left:7px;padding: 2 2;margin: 0 0;"></p>
+            </div>
+
+          </div>
+
           <div id="div-validate-dataset-next-step" align="right">
             <h5> </h5>
             <button id="button-validate-dataset-next-step" class="demo-button-next-step"> Next Step </button>
           </div>
+
         </div>
       </div>
     </div>
@@ -416,7 +471,6 @@
               <div class="indeterminatebar"></div>
             </div>
             <p id='para-upload-select-account-status'> <p>
-
 
             <h5> Select Blackfynn dataset for uploading
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">

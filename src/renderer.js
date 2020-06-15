@@ -17,6 +17,8 @@ require('v8-compile-cache');
 const Tagify = require('@yaireo/tagify');
 const https = require('https')
 const $ = require( "jquery" );
+const PDFDocument = require('pdfkit');
+const html2canvas = require("html2canvas")
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -60,7 +62,7 @@ const appVersion = window.require('electron').remote.app.getVersion()
 log.info("Current SODA version:", appVersion)
 console.log("Current SODA version:", appVersion)
 
-//check user's internet connection abd connect to default Blackfynn account //
+//check user's internet connection and connect to default Blackfynn account //
 require('dns').resolve('www.google.com', function(err) {
   if (err) {
      console.error("No internet connection");
@@ -168,6 +170,15 @@ let tableMetadataCount = 0
 const previewProgressBar = document.getElementById("div-dataset-preview-progress")
 const previewMetadataProgressBar = document.getElementById("div-metadata-preview-progress")
 const selectSaveFileOrganizationMetadataBtn = document.getElementById('button-select-save-file-organization-metadata')
+
+// Validate dataset //
+const validateCurrentDSBtn = document.getElementById("button-validate-current-ds")
+const previewCurrentDsValidate = document.getElementById("button-preview-local-ds")
+const validateCurrentDatasetReport = document.querySelector('#textarea-validate-current-dataset')
+const currentDatasetReportBtn = document.getElementById('button-generate-report-current-ds')
+const validateLocalDSBtn = document.getElementById("button-validate-local-ds")
+const validateLocalDatasetReport = document.querySelector('#textarea-validate-local-dataset')
+const localDatasetReportBtn = document.getElementById('button-generate-report-local-ds')
 
 // Generate dataset //
 const createNewStatus = document.querySelector('#create-newdataset')
@@ -2081,6 +2092,7 @@ importnewDatasetBtn.addEventListener("click", function() {
 curateDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-please-wait-curate").innerHTML = "Please wait..."
   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
+  document.getElementById("para-preview-current-ds").innerHTML = ""
   progressBarCurate.value = 0;
 
   // Disable curate button to prevent multiple clicks
@@ -2236,6 +2248,277 @@ curateDatasetBtn.addEventListener('click', () => {
     }
   }
 
+})
+
+
+////////////////// Validate current datasets ////////////////////////////////
+
+//// when users click on "Preview", show preview dataset in explorer
+previewCurrentDsValidate.addEventListener("click", function() {
+  document.getElementById("para-preview-current-ds").innerHTML = ""
+  document.getElementById("para-preview-current-ds").innerHTML = 'Please wait...'
+  previewCurrentDsValidate.disabled = true
+  if (alreadyOrganizedStatus.checked) {
+    var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
+  } else if (organizeDatasetStatus.checked) {
+    var jsonvect = tableToJsonWithDescription(tableNotOrganized)
+  }
+  var jsonpath = jsonvect[0]
+  if (manifestStatus.checked){
+    var keyvect = sparcFolderNames.slice()
+    for (var j = 0; j < keyvect.length; j++){
+      var folder = keyvect[j]
+      var folderPaths = jsonpath[folder]
+      if (folderPaths.length>0){
+        folderPaths.push(path.join(__dirname, "file_templates","manifest.xlsx"))
+      }
+    }
+  }
+  var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
+  jsonpath['main'] = jsonpathMetadata['metadata']
+  client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
+      if(error) {
+        log.error(error)
+        console.error(error)
+        var emessage = userError(error)
+        document.getElementById("para-preview-current-ds").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
+      } else {
+        document.getElementById("para-preview-current-ds").innerHTML = "Preview folder is available in a new file explorer window!";
+      }
+      previewCurrentDsValidate.disabled = false
+  })
+})
+
+/////// Convert table content into json format for transferring to Python
+function grabCurrentDSValidator() {
+  var jsonvect = tableToJson(tableNotOrganized)
+  var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
+  jsonvect['main'] = jsonpathMetadata['metadata']
+  return jsonvect
+}
+
+//// Check for empty JSON object and remove then
+function checkJSONObj(jsonObj) {
+  var empty = true
+  for (var key of Object.keys(jsonObj)) {
+    if (jsonObj[key].length !== 0) {
+      empty = false
+    }
+    else{
+      if (key !== 'main')
+        delete jsonObj[key]
+    }
+  }
+  return [empty, jsonObj]
+}
+
+///////// Clicking on Validate current DS
+var checkCategory0 = "High-level folder structure"
+var checkCategory1 = "High-level metadata files"
+var checkCategory2 = "Sub-level organization"
+var checkCategory3 = "submission file"
+var checkCategory4 = "dataset_description file"
+var checkCategory5 = "subjects file"
+var checkCategory6 = "samples file"
+var checkCategories =[checkCategory0, checkCategory1, checkCategory2, checkCategory3, checkCategory4, checkCategory5, checkCategory6]
+
+validateCurrentDSBtn.addEventListener("click", function() {
+  document.getElementById("div-validation-report-current").style.display = "none"
+  document.getElementById("para-preview-current-ds").innerHTML = ""
+  document.getElementById("para-validate-current-ds").innerHTML = ""
+  var messageDisplay = ""
+  var structuredDataset = grabCurrentDSValidator()
+  console.log(structuredDataset)
+  var outCheck = checkJSONObj(structuredDataset)
+  var empty = outCheck[0]
+  structuredDataset = outCheck[1]
+  console.log(structuredDataset)
+  console.log(empty)
+  if (empty === true) {
+    document.getElementById("para-validate-current-ds").innerHTML = "<span style='color: red;'>Please add files or folders to your dataset!</span>"
+  } else {
+    validateCurrentDSBtn.disabled = true
+    var validatorInput = structuredDataset
+    client.invoke("api_validate_dataset", validatorInput, (error, res) => {
+      if (error) {
+        console.error(error)
+        log.error(error)
+        var emessage = userError(error)
+        document.getElementById("para-validate-current-ds").innerHTML = "<span style='color: red;'>" + emessage + "</span>"
+      } else {
+        for (var i = 0; i < res.length; i++) {
+          messageDisplay = errorMessageCategory(res[i], checkCategories[i], messageDisplay)
+        }
+        console.log(messageDisplay)
+        document.getElementById("div-validation-report-current").style.display = "block"
+        document.getElementById("div-report-current").style.display = "block"
+        document.getElementById("para-validate-current-ds").innerHTML = "Please see report below."
+        validateCurrentDatasetReport.innerHTML = messageDisplay
+      }
+    })
+    validateCurrentDSBtn.disabled = false
+    }
+})
+
+///// Generate pdf validator file
+currentDatasetReportBtn.addEventListener("click", function() {
+  ipcRenderer.send('save-file-dialog-validator-current')
+})
+ipcRenderer.on('selected-savedvalidatorcurrent', (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null){
+      document.getElementById("para-generate-report-current-ds").innerHTML = "Please wait..."
+      currentDatasetReportBtn.disabled = true
+      // obtain canvas and print to pdf
+      const domElement = validateCurrentDatasetReport
+      // obtain canvas and print to pdf
+      html2canvas(domElement).then((canvas) => {
+        const img = canvas.toDataURL('image/png', 1.0)
+        var data = img.replace(/^data:image\/\w+;base64,/, "");
+        var buf = new Buffer(data, 'base64');
+
+        pdf = new PDFDocument
+        pdf.pipe(fs.createWriteStream(filepath))
+
+        pdf.image(buf, {
+           width: 490,
+           valign: 'top'
+        });
+
+        pdf.end()
+
+        document.getElementById("para-generate-report-current-ds").innerHTML = "Report saved!"
+        })
+      }
+  }
+  currentDatasetReportBtn.disabled = false
+})
+
+
+
+/////////////////////// Validate local datasets //////////////////////////////
+
+//// when users click on Import local dataset
+document.getElementById("input-local-ds-select").addEventListener("click", function() {
+  ipcRenderer.send('open-file-dialog-validate-local-ds')
+})
+ipcRenderer.on('selected-validate-local-dataset', (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null){
+      document.getElementById("para-local-ds-info").innerHTML = ""
+      document.getElementById("div-validation-report-local").style.display = "none"
+      // used to communicate value to button-import-local-ds click eventlistener
+      document.getElementById("input-local-ds-select").placeholder = filepath[0];
+    } else {
+      document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a valid local dataset!</span>"
+    }
+    }
+})
+
+validateLocalDSBtn.addEventListener("click", function() {
+  document.getElementById("para-local-ds-info").innerHTML = ""
+  var datasetPath = document.getElementById("input-local-ds-select").placeholder
+  var messageDisplay = ""
+  if (datasetPath==="Select a folder") {
+    document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset first</span>"
+  } else  {
+      if (datasetPath != null){
+        validateLocalDSBtn.disabled = true
+        validatorInput = datasetPath
+        client.invoke("api_validate_dataset", validatorInput, (error, res) => {
+          if (error) {
+            console.error(error)
+            log.error(error)
+          } else {
+            for (var i = 0; i < res.length; i++) {
+              if (res[i] !== 'N/A'){
+                messageDisplay = errorMessageCategory(res[i], checkCategories[i], messageDisplay)
+              }
+            }
+            document.getElementById("div-validation-report-local").style.display = "block"
+            document.getElementById("div-report-local").style.display = "block"
+            document.getElementById("para-local-ds-info").innerHTML = "Please see report below!"
+            validateLocalDatasetReport.innerHTML = messageDisplay
+          }
+        })
+        validateLocalDSBtn.disabled = false
+      }
+  }
+})
+
+function validateMessageTransform(inString) {
+  outString = inString.split("--").join("<br>")
+  return outString
+}
+
+function errorMessageCategory(resitem, checkCategory, messageDisplay){
+  messageDisplay += "<b>" + checkCategory + "</b>"
+  messageDisplay += "<ul class='validatelist' id='" + checkCategory + "'>"
+  var category = 'fatal'
+  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
+  category = 'warnings'
+  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
+  category = 'pass'
+  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
+  messageDisplay += "</ul>"
+ return messageDisplay
+}
+
+function errorMessageGenerator(resitem, category, messageDisplay){
+  if (resitem[category]){
+    var messageCategory = resitem[category]
+    if (messageCategory.length > 0){
+      if (category === 'fatal'){
+        var colorSelection = "red"
+        var classSelection = 'bulleterror'
+      } else if (category === 'warnings'){
+        var colorSelection = "#F4B800"
+        var classSelection = 'bulletwarning'
+      } else if (category === 'pass'){
+        var colorSelection = "green"
+        var classSelection = 'bulletpass'
+      }
+      for (var i = 0; i < messageCategory.length; i++) {
+        var message = validateMessageTransform(messageCategory[i])
+        messageDisplay += "<li class=" + classSelection + ">" + "<span style='color:"+ colorSelection + ";'>" + message + "</span>" + "</li>"
+      }
+    }
+  }
+ return messageDisplay
+}
+
+///// Generate pdf report for local validator report
+localDatasetReportBtn.addEventListener("click", function() {
+  ipcRenderer.send('save-file-dialog-validator-local')
+})
+ipcRenderer.on('selected-savedvalidatorlocal', (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null){
+      document.getElementById("para-generate-report-local-ds").innerHTML = "Please wait..."
+      localDatasetReportBtn.disabled = true
+      const domElement = validateLocalDatasetReport
+      html2canvas(domElement).then((canvas) => {
+
+        const img = canvas.toDataURL('image/png', 1.0)
+        var data = img.replace(/^data:image\/\w+;base64,/, "");
+        var buf = new Buffer(data, 'base64');
+
+        // obtain canvas and print to pdf
+        pdf = new PDFDocument
+        pdf.pipe(fs.createWriteStream(filepath))
+
+        pdf.image(buf, {
+           width: 490,
+           valign: 'top'
+        });
+
+        pdf.end()
+
+        document.getElementById("para-generate-report-local-ds").innerHTML = "Report saved!"
+        })
+      }
+  }
+  localDatasetReportBtn.disabled = false
 })
 
 //////////////////////////////////
@@ -3772,21 +4055,25 @@ function checkFolderStruture(pathDatasetFolder){
 
 function organizedFolderToJson(pathDatasetVal){
   var jsonvar = {}
-  var files = fs.readdirSync(pathDatasetVal)
-  for (var i = 0; i<files.length; i++) {
-    var filename = files[i]
-    var filepath = path.join(pathDatasetVal, filename)
-    if (fs.lstatSync(filepath).isDirectory()){
-      var filesInFolder = fs.readdirSync(filepath)
-      filesInFolder = filesInFolder.filter(item => !(/(^|\/)\.[^\/\.]/g).test(item));
-      var folderfiles = []
+  var contentDataset = fs.readdirSync(pathDatasetVal)
+  var listPathFilesinDataset = []
+  for (var i = 0; i<contentDataset.length; i++) {
+    var contentName = contentDataset[i]
+    var contentPath = path.join(pathDatasetVal, contentName)
+    if (fs.lstatSync(contentPath).isDirectory()){
+      var filesInFolder = fs.readdirSync(contentPath)
+      var listPathFilesinFolder = []
       for (var j = 0; j<filesInFolder.length; j++) {
         var fileNameInFolder = filesInFolder[j]
-        folderfiles.push(path.join(filepath, fileNameInFolder))
+        listPathFilesinFolder.push(path.join(contentPath, fileNameInFolder))
       }
-      jsonvar[filename] = folderfiles
+      jsonvar[contentName] = listPathFilesinFolder
+    }
+    else{
+      listPathFilesinDataset.push(contentPath)
     }
   }
+  jsonvar['main'] = listPathFilesinDataset
   return jsonvar
 }
 

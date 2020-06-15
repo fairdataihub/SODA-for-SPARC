@@ -47,6 +47,22 @@ document.querySelector('#cloud-dataset').addEventListener('click', () => {
     showCreateCloud()
 })
 
+function showValidateCurrentDS() {
+  document.getElementById('div-validate-current-ds').style.display = "block"
+  document.getElementById('div-validate-local-ds').style.display = "none"
+}
+
+function showValidateLocalDS() {
+  document.getElementById('div-validate-local-ds').style.display = "block"
+  document.getElementById('div-validate-current-ds').style.display = "none"
+}
+
+document.querySelector('#validatorCurrent').addEventListener('click', () => {
+    showValidateCurrentDS()
+})
+document.querySelector('#validatorLocal').addEventListener('click', () => {
+    showValidateLocalDS()
+})
 
 function showPreorganizedDataset(){
   document.getElementById('div-pre-organized-dataset').style.display ='block';

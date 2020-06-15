@@ -9,7 +9,13 @@ from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_o
     bf_add_description, bf_get_banner_image, bf_add_banner_image, bf_get_license, bf_add_license, \
     bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load, bf_get_doi, bf_reserve_doi, \
     bf_get_publishing_status, bf_publish_dataset, \
-    save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone
+    save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone,\
+    validate_dataset
+
+from validator import DictValidator
+from validator import validate_folders, validate_files, validate_manifest_file, validate_subject_sample_files, \
+     validate_submission_dataset_description_files
+
 
 import sys
 import zerorpc
@@ -68,6 +74,30 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
+    ### Validate local dataset
+    def api_validate_dataset(self, validator_input):
+        try:
+            return validate_dataset(validator_input)
+        except Exception as e:
+            raise e
+
+    def api_validate_folders(self, rootFolder):
+        return validate_folders(rootFolder)
+
+    def api_validate_files(self, rootFolder):
+        try:
+            return validate_files(rootFolder)
+        except Exception as e:
+            raise e
+
+    def api_validate_manifest_file(self, rootFolder):
+        return validate_manifest_file(rootFolder)
+
+    def api_validate_subject_sample_files(self, rootFolder):
+        return validate_subject_sample_files(rootFolder)
+
+    def api_validate_submission_dataset_description_files(self, rootFolder):
+        return validate_submission_dataset_description_files(rootFolder)
 
     ### Bf
     def api_bf_add_account(self, keyname, key, secret):

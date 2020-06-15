@@ -52,7 +52,9 @@
     "electron-settings": "^3.2.0",
     "electron-shortcut-normalizer": "^1.0.0",
     "glob": "^7.1.6",
+    "html2canvas": "^1.0.0-rc.5",
     "image-data-uri": "^2.0.1",
+    "pdfkit": "^0.11.0",
     "tui-editor": "^1.4.10",
     "v8-compile-cache": "^2.1.0",
     "zerorpc": "^0.9.8"

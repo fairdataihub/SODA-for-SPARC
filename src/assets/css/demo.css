@@ -942,6 +942,28 @@ input::-webkit-calendar-picker-indicator {
   border-radius: 0;
 }
 
+/* Text areas for error messages - Validator */
+.span-validate-local {
+  font-weight: 400;
+  font: inherit;
+  border-radius: 5px; */
+  transition: #258193 .25s ease-out;
+  height:auto;
+  display: none;
+}
+
+.errors {
+  color: red
+}
+
+.passes {
+  color: green
+}
+
+.warnings {
+  color: orange
+}
+
 /* BF Add account */
 .form-container-input-bf {
   float: right;
@@ -1192,8 +1214,6 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
-<<<<<<< Updated upstream
-=======
 
 
 /* Validate list styling */
@@ -1202,7 +1222,7 @@ input:checked + .slider:before {
 }
 
 .validatelist li{
-  padding-bottom: 10px;
+  padding-bottom: 15px;
   position: relative;
 }
 
@@ -1223,7 +1243,3 @@ input:checked + .slider:before {
 .validatelist li.bulleterror :before{
   content: "\274C";
 }
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes

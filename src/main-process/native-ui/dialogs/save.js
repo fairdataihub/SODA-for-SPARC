@@ -48,3 +48,27 @@ ipcMain.on('save-file-dialog-ds-description', (event) => {
     event.sender.send('selected-savedsdescriptionfile', "dataset_description.xlsx")
   })
 })
+
+ipcMain.on('save-file-dialog-validator-current', (event, location) => {
+  const options = {
+    title: 'Saving your validator report',
+    filters: [
+      { name: 'PDF', extensions: ['pdf'] }
+    ]
+  }
+  dialog.showSaveDialog(BrowserWindow.getFocusedWindow(), options, (filename) => {
+    event.sender.send('selected-savedvalidatorcurrent', filename)
+  })
+})
+
+ipcMain.on('save-file-dialog-validator-local', (event, location) => {
+  const options = {
+    title: 'Saving your validator report',
+    filters: [
+      { name: 'PDF', extensions: ['pdf'] }
+    ]
+  }
+  dialog.showSaveDialog(BrowserWindow.getFocusedWindow(), options, (filename) => {
+    event.sender.send('selected-savedvalidatorlocal', filename)
+  })
+})
