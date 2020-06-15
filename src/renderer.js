@@ -147,7 +147,6 @@ const generateDSBtn = document.getElementById("button-generate-ds-description")
 const addAdditionalLinkBtn = document.getElementById("button-ds-add-link")
 const datasetDescriptionFileDataset = document.getElementById('ds-name')
 const parentDSDropdown = document.getElementById("input-parent-ds")
-var parentDSTagify
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -1027,6 +1026,17 @@ currentContributortagify = new Tagify(contributorRoles, {
     duplicates: false
 });
 
+var parentDSTagify = new Tagify(parentDSDropdown, {
+  enforceWhitelist: true,
+  whitelist: [],
+  duplicates: false,
+  dropdown : {
+    maxItems: Infinity,
+    enabled   : 0,
+    closeOnSelect : true
+  }
+})
+
 var completenessInput = document.getElementById('ds-completeness'),
 completenessTagify = new Tagify(completenessInput, {
     whitelist : ["hasChild", "hasNext"],
@@ -1047,20 +1057,8 @@ function getParentDatasets() {
       parentDatasets.push(datasetDescriptionFileDataset.options[i].value);
     }
   }
-  parentDSTagify = new Tagify(parentDSDropdown, {
-    whitelist : parentDatasets,
-    enforceWhitelist: true,
-    duplicates: false,
-    dropdown : {
-      maxItems: Infinity,
-      enabled   : 0,
-      closeOnSelect : true
-    }
-  })
+  return parentDatasets
 }
-
-
-
 
 function clearCurrentConInfo() {
   document.getElementById("input-con-ID").value = "";
@@ -3585,7 +3583,6 @@ function refreshAllBfDatasetLists(){
       bfDatasetListRenameDataset.appendChild(option6)
       datasetDescriptionFileDataset.appendChild(option7)
       bfDatasetListPostCuration.appendChild(option8)
-      // getParentDatasets()
     } else {
       client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
         if(error) {
@@ -3626,7 +3623,7 @@ function refreshAllBfDatasetLists(){
             postCurationListChange()
             datasetStatusListChange()
         }
-        getParentDatasets()
+      parentDSTagify.settings.whitelist = getParentDatasets();
       }
     })
     }
