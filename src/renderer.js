@@ -123,7 +123,7 @@ const addAirtableKeyBtn = document.getElementById("button-add-airtable-key")
 
 // Save grant information
 const milestoneArray = document.getElementById("table-current-milestones")
-const awardArray = document.getElementById("select-grant-info-list")
+const awardInputField = document.getElementById("input-grant-info")
 const presavedAwardArray1 = document.getElementById("select-presaved-grant-info-list")
 const addAwardBtn = document.getElementById("button-add-award")
 const deleteMilestoneBtn = document.getElementById("button-delete-milestone")
@@ -566,9 +566,9 @@ ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
 })
 
 /// clear p messages upon changing awards
-awardArray.addEventListener('change', function() {
-  document.getElementById("para-save-award-info").innerHTML = "";
-})
+// awardArray.addEventListener('change', function() {
+//   document.getElementById("para-save-award-info").innerHTML = "";
+// })
 
 presavedAwardArray1.addEventListener('change', function() {
   if (presavedAwardArray1.value === "Select") {
@@ -648,31 +648,54 @@ function getRowIndex(table) {
 
 // Save grant information
 addAwardBtn.addEventListener('click', function() {
-  document.getElementById("para-save-award-info").innerHTML = ""
-  var inputVal = document.getElementById("input-grant-info").value;
-  if (inputVal.length === 0) {
-    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Please choose an award key!</span>";
-  }
-  var awardVal;
-  for (var i = 0; i < awardArray.options.length; i++) {
-    if (awardArray.options[i].value === inputVal) {
-      awardVal = awardArray.options[i].value
-    }
-  }
-  var awardNo = awardVal.slice(0, awardVal.indexOf(" ("));
-  // create empty milestone json files for newly added award
-  createMetadataDir();
-  var awardsJson = {};
-  awardsJson = parseJson(awardPath);
-  if (awardNo in awardsJson) {
-    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Award already added!</span>";
+  var tagifyArray = awardArrayTagify.value;
+  if (tagifyArray.length === 0) {
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color:red'>Please choose an award!</span>"
   } else {
-    awardsJson[awardNo] = awardVal;
+    document.getElementById("para-save-award-info").innerHTML = "Please wait..."
+    if (awardArrayTagify.length === 0) {
+      document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Please choose an award key!</span>";
+    }
+    var awardVal = [];
+    for (var i = 0; i < tagifyArray.length; i++) {
+      awardVal.push(tagifyArray[i].value)
+    }
+
+    var awardNoAray = [];
+    for (var award of awardVal) {
+      var awardNo = award.slice(0, award.indexOf(" ("));
+      var keyValuePair = {"award-number": awardNo, "award-full-title": award}
+      awardNoAray.push(keyValuePair)
+    }
+    // create empty milestone json files for newly added award
+    createMetadataDir();
+    var awardsJson = {};
+    awardsJson = parseJson(awardPath);
+    var duplicateList = [];
+    var successfullyAddedList = [];
+
+    for (var keyValuePair of awardNoAray) {
+      if (keyValuePair["award-number"] in awardsJson) {
+        duplicateList.push(keyValuePair["award-number"])
+      } else {
+        addOption(presavedAwardArray1, keyValuePair["award-full-title"], keyValuePair["award-number"]);
+        addOption(presavedAwardArray2, keyValuePair["award-full-title"], keyValuePair["award-number"]);
+        addOption(dsAwardArray, keyValuePair["award-full-title"], keyValuePair["award-number"]);
+        awardsJson[keyValuePair["award-number"]] = keyValuePair["award-full-title"];
+        successfullyAddedList.push(keyValuePair["award-number"])
+      }
+    }
     fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
-    addOption(presavedAwardArray1, awardVal, awardNo);
-    addOption(presavedAwardArray2, awardVal, awardNo);
-    addOption(dsAwardArray, awardVal, awardNo);
-    document.getElementById("para-save-award-info").innerHTML = "<span style='color: black;'> " + "Added!" + smileyCan + "</span>";
+    if (duplicateList.length !== 0) {
+      if (successfullyAddedList.length !== 0) {
+        document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Award(s) already added to your existing awards: " + duplicateList.join(", ") + "</span><br><span color='color:black'>Award(s) successfully added: " + successfullyAddedList.join(", ") + ".</span>";
+      } else {
+        document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>Award(s) already added to your existing awards: " + duplicateList.join(", ") + ".</span>";
+      }
+    } else {
+      document.getElementById("para-save-award-info").innerHTML = "<span color='color:black'>Award(s) successfully added: " + successfullyAddedList.join(", ") + ".</span>";
+    }
+    awardArrayTagify.removeAllTags()
   }
 })
 
@@ -687,41 +710,43 @@ function deleteOptionByValue (dropdown, value) {
 }
 
 deleteAwardBtn.addEventListener('click', function() {
-  ipcRenderer.send('warning-delete-award')
+  award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+  if (award==="Select") {
+    document.getElementById("para-delete-award-status").innerHTML = "<span style='color: red;'>Please select an award number to delete</span>"
+  } else {
+    ipcRenderer.send('warning-delete-award')
+  }
 });
 ipcRenderer.on('warning-delete-award-selection', (event, index) => {
   if (index === 0) {
     award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-    if (award==="Select") {
-      document.getElementById("para-delete-award-status").innerHTML = "<span style='color: red;'>Please select an award number to delete</span>"
-    } else {
-      var milestoneJson = parseJson(milestonePath);
-      var awardsJson = parseJson(awardPath)
-      var defaultedAwardJson = parseJson(defaultAwardPath)
-      // check if award is default award
-      if (award === defaultedAwardJson["default"]) {
-        delete defaultedAwardJson["default"];
-        }
-      // check if award is in list
-      if (award in awardsJson) {
-        delete awardsJson[award];
-        }
-      // check if award is in list of milestones
-      if (award in milestoneJson) {
-        delete milestoneJson[award];
+    var milestoneJson = parseJson(milestonePath);
+    var awardsJson = parseJson(awardPath)
+    var defaultedAwardJson = parseJson(defaultAwardPath)
+    // check if award is default award
+    if (award === defaultedAwardJson["default"]) {
+      delete defaultedAwardJson["default"];
       }
-      fs.writeFileSync(defaultAwardPath, JSON.stringify(defaultedAwardJson));
-      fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
-      presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
-      fs.writeFileSync(milestonePath, JSON.stringify(milestoneJson));
-      // delete award in the next two award arrays
-      deleteOptionByValue(presavedAwardArray2,award);
-      deleteOptionByValue(dsAwardArray,award);
-      document.getElementById("div-show-milestone-info-no-existing").style.display = "none";
-      document.getElementById("div-show-current-milestones").style.display = "none";
-      document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black'>Deleted award number: " + award + "!" + "</span>"
+    // check if award is in list
+    if (award in awardsJson) {
+      delete awardsJson[award];
+      }
+    // check if award is in list of milestones
+    if (award in milestoneJson) {
+      delete milestoneJson[award];
     }
-  }
+    fs.writeFileSync(defaultAwardPath, JSON.stringify(defaultedAwardJson));
+    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
+    presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
+    fs.writeFileSync(milestonePath, JSON.stringify(milestoneJson));
+    // delete award in the next two award arrays
+    deleteOptionByValue(presavedAwardArray2,award);
+    deleteOptionByValue(dsAwardArray,award);
+    awardArrayTagify.removeAllTags()
+    document.getElementById("div-show-milestone-info-no-existing").style.display = "none";
+    document.getElementById("div-show-current-milestones").style.display = "none";
+    document.getElementById("para-delete-award-status").innerHTML = "<span style='color: black'>Deleted award number: " + award + "!" + "</span>"
+    }
 })
 
 //// function to make a selected award the default award
@@ -826,6 +851,18 @@ presavedAwardArray1.addEventListener('change', function() {
   loadMilestoneInfo(currentAward)
 })
 
+//// initiate a tagify Award list
+var awardArrayTagify = new Tagify(awardInputField, {
+  enforceWhitelist: true,
+  whitelist: [],
+  duplicates: false,
+  dropdown : {
+    maxItems: Infinity,
+    enabled   : 0,
+    closeOnSelect : true
+  }
+})
+
 // indicate to user that airtable records are being retrieved
 function loadAwardData() {
   document.getElementById("div-awards-load-progress").style.display = 'block'
@@ -850,8 +887,10 @@ function loadAwardData() {
         view: 'Grid view'
     }).eachPage(function page(records, fetchNextPage) {
         records.forEach(function(record) {
-          item = record.get('SPARC_Award_#').concat(" (", record.get('Project_title'), ")");
-          awardResultArray.push(item);
+          if (record.get('Project_title')!==undefined) {
+            item = record.get('SPARC_Award_#').concat(" (", record.get('Project_title'), ")");
+            awardResultArray.push(item);
+          }
         }),
       fetchNextPage();
     },
@@ -867,11 +906,8 @@ function loadAwardData() {
         else {
           // create set to remove duplicates
           var awardSet = new Set(awardResultArray)
-          var options = ""
-          for (element of awardSet) {
-            options += '<option value="'+element+'" />';
-          }
-          awardArray.innerHTML = options
+          var resultArray = [...awardSet]
+          awardArrayTagify.settings.whitelist = resultArray
           document.getElementById("div-search-for-awards").style.display = "block"
           document.getElementById("para-add-airtable-key-status").innerHTML = "<br><span style='color: black;'>Successfully connected to Airtable account " + airKeyName + "!" +smileyCan +"</span>";
         }
@@ -1436,10 +1472,10 @@ function grabConInfoEntries() {
   for (i=1; i<rowcountCon; i++) {
     var conRoleInfo = currentConTable.rows[i].cells[3].innerHTML.split(",");
     var myCurrentCon = {"conName": currentConTable.rows[i].cells[0].innerHTML.trim(),
-                          "conID": currentConTable.rows[i].cells[1].innerHTML.trim(),
-                          "conAffliation": currentConTable.rows[i].cells[2].innerHTML.trim(),
-                           "conRole": conRoleInfo[0],
-                          "conContact": currentConTable.rows[i].cells[4].innerHTML}
+                        "conID": currentConTable.rows[i].cells[1].innerHTML.trim(),
+                        "conAffliation": currentConTable.rows[i].cells[2].innerHTML.trim(),
+                         "conRole": conRoleInfo[0],
+                        "conContact": currentConTable.rows[i].cells[4].innerHTML}
     currentConInfo.push(myCurrentCon);
     if (conRoleInfo.length>1) {
       for (var j=1;j<conRoleInfo.length;j++) {
