@@ -498,6 +498,7 @@ ipcRenderer.on('selected-DDD-download-folder', (event, path, filename) => {
 
 //// when users click on Import but haven't specified a path
 document.getElementById("button-import-milestone").addEventListener("click", function() {
+  document.getElementById("para-milestone-document-info-long").style.display = "none"
   document.getElementById("para-milestone-document-info").innerHTML = "";
   var filepath = document.getElementById("input-milestone-select").placeholder;
   if (filepath === "Select a file") {
@@ -509,7 +510,8 @@ document.getElementById("button-import-milestone").addEventListener("click", fun
       var emessage = userError(error)
       log.error(error)
       console.error(error)
-      document.getElementById("para-milestone-document-info").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+      document.getElementById("para-milestone-document-info-long").style.display = "block"
+      document.getElementById("para-milestone-document-info-long").innerHTML = "<span style='color: red;'> " + emessage + "</span>";
     }
     else {
       milestoneObj = res;
@@ -554,6 +556,7 @@ document.getElementById("button-import-milestone").addEventListener("click", fun
 })
 
 document.getElementById("input-milestone-select").addEventListener("click", function() {
+  document.getElementById("para-milestone-document-info-long").style.display = "none"
   ipcRenderer.send('open-file-dialog-milestone-doc')
 })
 ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
@@ -564,11 +567,6 @@ ipcRenderer.on('selected-milestonedoc', (event, filepath) => {
   }
 }
 })
-
-/// clear p messages upon changing awards
-// awardArray.addEventListener('change', function() {
-//   document.getElementById("para-save-award-info").innerHTML = "";
-// })
 
 presavedAwardArray1.addEventListener('change', function() {
   if (presavedAwardArray1.value === "Select") {
@@ -645,6 +643,24 @@ function getRowIndex(table) {
   }
   return rowIndex
 }
+
+
+//// initiate a tagify Award list
+var awardArrayTagify = new Tagify(awardInputField, {
+  enforceWhitelist: true,
+  whitelist: [],
+  duplicates: false,
+  dropdown : {
+    maxItems: Infinity,
+    enabled   : 0,
+    closeOnSelect : true
+  }
+})
+
+// /// clear p messages upon typing new awards
+// awardArrayTagify.on('input', e => {
+//   document.getElementById("para-save-award-info").innerHTML = "";
+// })
 
 // Save grant information
 addAwardBtn.addEventListener('click', function() {
@@ -849,18 +865,6 @@ function loadMilestoneInfo(awardNumber) {
 presavedAwardArray1.addEventListener('change', function() {
   var currentAward = presavedAwardArray1.value
   loadMilestoneInfo(currentAward)
-})
-
-//// initiate a tagify Award list
-var awardArrayTagify = new Tagify(awardInputField, {
-  enforceWhitelist: true,
-  whitelist: [],
-  duplicates: false,
-  dropdown : {
-    maxItems: Infinity,
-    enabled   : 0,
-    closeOnSelect : true
-  }
 })
 
 // indicate to user that airtable records are being retrieved
