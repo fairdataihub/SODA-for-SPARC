@@ -127,9 +127,10 @@ class DictValidator:
         self.passes = []
 
     def check_high_level_folder_structure(self, jsonStruct):
-        p = 0
-        e = 0
-        w = 0
+        primaryf = 0
+        sparcf = 0
+        emptyf = 0
+        nonstandardf = 0
         nonStandardFolders = ""
         emptyFolders = ""
 
@@ -138,19 +139,20 @@ class DictValidator:
         allContents = [ x for x in allContents if x!='main' ]
         for c in allContents:
             if c == self.reqFolderNames[0]: #primary folder
-                p = 1
+                primaryf = 1
                 pContents = jsonStruct[c]
                 if len(pContents) == 0: #check primary empty
-                    e = 1
+                    emptyf = 1
                     emptyFolders += " " + c + ","
             elif c in self.optFolderNames:   #check for optional folders
+                sparcf = 1
                 pContents = jsonStruct[c]
                 if len(pContents) == 0: #check optional folder empty
-                    e = 1
+                    emptyf = 1
                     emptyFolders += " " + c + ","
             else:
+                nonstandardf = 1
                 nonStandardFolders += " " + c + ","
-                w = 1
 
         check1 = "All folders are SPARC standard folders"
         check1f = "Only SPARC standard folders ('code', 'derivative', 'docs', 'primary', 'protocol', and/or 'source', all lowercase) are allowed. The following folder(s) must be removed:" 
@@ -161,21 +163,21 @@ class DictValidator:
         check3 = "All SPARC folders are non-empty"
         check3f = "No empty SPARC folder should be included. Populate or remove the following folder(s):"
                 
-        if w == 1:
+        if nonstandardf == 1:
             self.fatal.append(check1 + "--" + check1f + nonStandardFolders[:-1])
         else:
-            if p==1 or c==1:
+            if primaryf == 1 and sparcf == 1:
                 self.passes.append(check1)
                 
-        if not p:
+        if not primaryf:
             self.fatal.append(check2 + "--" + check2f)
         else:
             self.passes.append(check2)
             
-        if e == 1:
+        if emptyf == 1:
             self.fatal.append(check3 + "--" + check3f + emptyFolders[:-1])
         else:
-            if p==1 or c==1:
+            if primaryf == 1 and sparcf == 1:
                 self.passes.append(check3)
 
     def check_high_level_metadata_files(self, jsonStruct):
@@ -269,15 +271,19 @@ class DictValidator:
             
             #check for uniqueness
             if subm>1:
+                cname = self.reqMetadataFileNames[0]
                 nonu = 1
                 nonUniqueFiles = " " + cname + ","
             if dd>1:
+                cname = self.reqMetadataFileNames[1]
                 nonu = 1
                 nonUniqueFiles = " " + cname + ","
             if subj>1:
+                cname = self.reqMetadataFileNames[2]
                 nonu = 1
                 nonUniqueFiles = " " + cname + ","
             if sam>1:
+                cname = self.reqMetadataFileNames[3]
                 nonu = 1
                 nonUniqueFiles = " " + cname + ","
             
@@ -315,27 +321,27 @@ class DictValidator:
                 
         if not subm:
             self.fatal.append(check2 + "--" + check2f)
-        elif subm == 1:
+        else:
             self.passes.append(check2)
             
         if not dd:
             self.fatal.append(check3 + "--" + check3f)
-        elif dd == 1:
+        else:
             self.passes.append(check3)
             
         if not subj:
             self.fatal.append(check4 + "--" + check4f)
-        elif subj == 1:
+        else:
             self.passes.append(check4)
             
         if not sam:
             self.warnings.append(check5 + "--" + check5f)
-        elif sam == 1:
+        else:
             self.passes.append(check5)
             
         if not rm:
             self.fatal.append(check6 + "--" + check6f)
-        elif subj == 1:
+        else:
             self.passes.append(check6)
         
         if csvf == 1:
@@ -799,6 +805,7 @@ class DictValidator:
         parentidvaluefailList = "" 
         parentidformatfail = 0
         parentidformatfailList = ""
+        metadataversionfail = 0
         
         fullName = os.path.basename(ddFilePath)        
         dDName = self.reqMetadataFileNames[1]
@@ -823,12 +830,9 @@ class DictValidator:
             elif extension == '.json':
                 self.warnings.append("The SODA validator currently doesn't support the json format so your file cannot be validated. This will be implemented in a future release.")
                 return
-            print(df)
             df = cleanDataFrame(df)
             # Column headers of the cleaned up df
             fileHeaders = list(df)
-            print("CLEANED DF")
-            print(df)
             
             #check that first hearder is "Metadata element"
             if fileHeaders[0] != self.reqddHeaders[0]:
@@ -1148,7 +1152,7 @@ class DictValidator:
                         selectedEl = self.ddCol0Req[10]
                         selectedElList = [selectedEl]
                         dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
-                        numSubjects = dfc['Value'].values[0]
+                        numSubjects = dfc[valueEl].values[0]
                         if not numSubjects.isdigit():
                             numsubjectsformatfail = 1
                             
@@ -1156,7 +1160,7 @@ class DictValidator:
                         selectedEl = self.ddCol0Req[11]
                         selectedElList = [selectedEl]
                         dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
-                        numSamples = dfc['Value'].values[0]
+                        numSamples = dfc[valueEl].values[0]
                         if not numSamples.isdigit():
                             numsamplesformatfail = 1
                         
@@ -1164,8 +1168,8 @@ class DictValidator:
                         selectedEl = self.ddCol0Opt[4]
                         selectedElList = [selectedEl]
                         dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
-                        completeness = dfc['Value'].values[0]
-                        if completeness not in self.completnessInfo or completeness != 'empty':
+                        completeness = dfc[valueEl].values[0]
+                        if completeness not in self.completnessInfo or completeness != self.empty:
                             completenessformatfail = 1
  
                         # Parent dataset ID must be comma seperated list and each ID must be of the format N:dataset:xxxx
@@ -1202,7 +1206,7 @@ class DictValidator:
         check1= "The first column header is 'Metadata element' and is located in the top left corner" 
         check1f = "The header of the first column MUST be 'Metadata element' and must be located in cell A0. Rectify it." 
         
-        check1_c = "The content of the first column 'Metadata element' match exactly with the template."
+        check1_c = "The content of the first column 'Metadata element' match exactly with the template version 1.2.3 provided by the Curation Team."
         check1_c1 = "In the first column, the following row number element(s) is/are empty and must be populated or removed: "
         check1_c2 = "All elements in the first column must be unique. The following element(s) is/are duplicated: "
         check1_c3 = "The following standard element(s) is/are missing in the first column and MUST be included: "
@@ -1211,8 +1215,8 @@ class DictValidator:
         
         check1_h = "The names of the column headers meet all requirements" 
         check1_h1 = "The following mandatory header is missing: 'Value'" 
-        check1_h2 = "All column must have a header. The following column number do not have a header: "
-        check1_h3 = "Only the the following hearders are expected: 'Metadata element', 'Description', 'Example', and \
+        check1_h2 = "All columns must have a header. The following column number do not have a header: "
+        check1_h3 = "Only the following hearders are expected: 'Metadata element', 'Description', 'Example', and \
         'Value', 'Value 2', 'Value 3', etc. The following headers should be removed/corrected: "
         check1_h4 = "All headers must be unique. The following header(s) is/are duplicated: "
         check1_h5 = "'Value' must be the first column header after 'Metadata element' (and the optional 'Description' and 'Example' columns) followed by the sequence Value 2, Value 3, etc. as applicable"
@@ -1228,14 +1232,14 @@ class DictValidator:
         check_keywords_f = "Ensure that 3 to 5 unique keywords are provided, each one in a seperate column"
         
         check_contributorsname = "Contributors names are unique and in the format 'Last, First Middle'"
-        check_contributorsname_f1 = "The following contributor name(s) may be included more than once: "
+        check_contributorsname_f1 = "The following contributor name(s) may have been included more than once: "
         check_contributorsname_f2 = "The following contributor name(s) may not follow the expected 'Last, First Middle' format: "
         
         check_contributorinfo = "For each 'Contributors' listed there is at least only one 'Contributor ORCID ID', at least one 'Contributor Affiliation', at least one 'Contributor Role', and one 'Is Contact Person' specified"
         check_contributorinfo_f = "Check that above requirements are met for the following 'Contributors': "
         
         check_orcid = " 'Contributor ORCID ID' are in the format 'https://orcid.org/xxxx-xxxx-xxxx-xxxx"
-        check_orcid_f = "The following ORCID element may not be in the required format: "
+        check_orcid_f = "The following ORCID element is/are not in the required format and must be corrected: "
         
         check_contributorrole = "There must be only one contributor role per column and each of them must be from the Data Cite list of roles"
         check_contributorrole_f = "The following role(s) do(es) not fit the requirements and must be corrected: "
@@ -1248,13 +1252,29 @@ class DictValidator:
         check_fundingsource_f = "Make sure the following refers to a single funding source: "
         
         check_links = "There is only one of the following in each Value column: Originating Article DOI, Protocol URL or DOI, or Additional Links"
-        check_links_f = "Make sure the above condition is met in the following column: "
+        check_links_f = "Make sure the above condition is met in the following column(s): "
         
         check_articles = "'Originating Article DOI' is in the format https://doi.org/xxxx"
         check_articles_f = "Make sure the above condition is for the following DOI article(s): "
         
         check_protocols = "'Protocol URL or DOI' is in the format https://protocol.io/xxxx or https://doi.org/xxxx"
-        check_protocols_f = "Make sure the above condition is for the following Protocol URL or DOI: "
+        check_protocols_f = "Make sure the above condition is met for the following Protocol URL or DOI: "
+        
+        check_numsubjects = "'Number of subjects' is provided an integer number as 'Value'"
+        check_numsubjects_f = "Ensure that an integer number is provided for the 'Number of subjects' field in the 'Value' column"
+        
+        check_numsamples = "'Number of samples' is provided an integer number as 'Value'"
+        check_numsamples_f = "Ensure that an integer number is provided for the 'Number of samples' field in the 'Value' column"
+                
+        check_completness = "'Completeness of data set' is provided an allowable 'Value'"
+        check_completness_f = "Ensure that the 'Value' for 'Completeness of data set' is either empty, 'hasNext, or hasChildren'"
+        
+        check_parentID = "'Parent dataset ID' is only provided in the 'Value' column and is in the correct format or left empty"
+        check_parentID_f1 = "'Parent dataset ID' must be only provided in the 'Value' column. Delete values in the following column: "
+        check_parentID_f2 = "'Parent dataset ID' must be of the format 'N:dataset:xxxx' (Blackfynn dataset ID). Correct the following ID or delete it: "
+        
+        check_metadatav = "The 'Value' for 'Metadata Version DO NOT CHANGE' is '1.2.3'"
+        check_metadatav_f = "The 'Value' for 'Metadata Version DO NOT CHANGE' must be '1.2.3'. Correct it."
         
         if firsthnotstd == 1:
             self.fatal.append(check1 + '--' + check1f)
@@ -1342,7 +1362,7 @@ class DictValidator:
                         self.passes.append(msg)
                     else:
                         msg += '--' + check_orcid_f + orcidformatfailList[:-1]
-                        self.warnings.append(msg)
+                        self.fatal.append(msg)
                     
                     msg = check_contributorrole
                     if rolefail == 0: 
@@ -1382,7 +1402,52 @@ class DictValidator:
                         msg += '--' + check_articles_f + articleformatfailList[:-1]
                         self.fatal.append(msg)
                         
+                    msg = check_protocols
+                    if protocolformatfail == 0: 
+                        self.passes.append(msg)
+                    else:
+                        msg += '--' + check_protocols_f + protocolformatfailList[:-1]
+                        self.fatal.append(msg)
+                     
+                    msg = check_numsubjects
+                    if numsubjectsformatfail == 0: 
+                        self.passes.append(msg)
+                    else:
+                        msg += '--' + check_numsubjects_f
+                        self.fatal.append(msg) 
+                    
+                    msg = check_numsamples
+                    if numsamplesformatfail == 0: 
+                        self.passes.append(msg)
+                    else:
+                        msg += '--' + check_numsamples_f
+                        self.fatal.append(msg)  
                         
+                    msg = check_completness
+                    if completenessformatfail == 0: 
+                        self.passes.append(msg)
+                    else:
+                        msg += '--' + check_completness_f
+                        self.fatal.append(msg)
+                     
+                    msg = check_parentID
+                    if parentidvaluefail == 0 and parentidformatfail == 0:
+                        self.passes.append(msg)
+                    else:
+                        if parentidvaluefail == 0:
+                            msg += '--' + check_parentID_f1 + parentidvaluefailList[:-1]
+                        if parentidformatfail == 0:
+                            msg += '--' + check_parentID_f2 + parentidformatfailList[:-1]
+                        self.fatal.append(msg)
+                    
+                    msg = check_metadatav
+                    if metadataversionfail == 0: 
+                        self.passes.append(msg)
+                    else:
+                        msg += '--' + check_metadatav_f
+                        self.fatal.append(msg)
+                            
+                                             
 def cleanDataFrame(df):
     #Replace nan and empty first row cells by "Empty.n"
     empty_count = 0

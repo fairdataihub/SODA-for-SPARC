@@ -12,7 +12,7 @@ from validator_soda import pathToJsonStruct, validate_high_level_folder_structur
 validate_sub_level_organization, validate_submission_file, validate_dataset_description_file
 
    
-rootFolder = r'C:\Users\Calmi2\Desktop\DatasetSODA'
+rootFolder = r'C:\Users\Calmi2\Desktop\DatasetTemplate'
 jsonStruct = pathToJsonStruct(rootFolder)
 
 for root, dirs, files in os.walk(rootFolder):
