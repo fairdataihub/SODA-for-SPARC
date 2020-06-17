@@ -2437,6 +2437,7 @@ validateLocalDSBtn.addEventListener("click", function() {
             console.error(error)
             log.error(error)
           } else {
+            console.log(res)
             for (var i = 0; i < res.length; i++) {
               if (res[i] !== 'N/A'){
                 messageDisplay = errorMessageCategory(res[i], checkCategories[i], messageDisplay)
@@ -2446,6 +2447,7 @@ validateLocalDSBtn.addEventListener("click", function() {
             document.getElementById("div-report-local").style.display = "block"
             document.getElementById("para-local-ds-info").innerHTML = "Please see report below!"
             validateLocalDatasetReport.innerHTML = messageDisplay
+            console.log(messageDisplay)
           }
         })
         validateLocalDSBtn.disabled = false
@@ -2456,19 +2458,6 @@ validateLocalDSBtn.addEventListener("click", function() {
 function validateMessageTransform(inString) {
   outString = inString.split("--").join("<br>")
   return outString
-}
-
-function errorMessageCategory(resitem, checkCategory, messageDisplay){
-  messageDisplay += "<b>" + checkCategory + "</b>"
-  messageDisplay += "<ul class='validatelist' id='" + checkCategory + "'>"
-  var category = 'fatal'
-  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
-  category = 'warnings'
-  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
-  category = 'pass'
-  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
-  messageDisplay += "</ul>"
- return messageDisplay
 }
 
 function errorMessageGenerator(resitem, category, messageDisplay){
@@ -2493,6 +2482,21 @@ function errorMessageGenerator(resitem, category, messageDisplay){
   }
  return messageDisplay
 }
+
+function errorMessageCategory(resitem, checkCategory, messageDisplay){
+  messageDisplay += "<b>" + checkCategory + "</b>"
+  messageDisplay += "<ul class='validatelist' id='" + checkCategory + "'>"
+  var category = 'fatal'
+  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
+  category = 'warnings'
+  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
+  category = 'pass'
+  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay)
+  messageDisplay += "</ul>"
+ return messageDisplay
+}
+
+
 
 ///// Generate pdf report for local validator report
 localDatasetReportBtn.addEventListener("click", function() {
