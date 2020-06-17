@@ -1096,10 +1096,13 @@ def validate_dataset(validator_input):
             res.append(resitem)
         elif isSubmission == 0:
             resitem = {}
-            resitem['warnings'] = "Include a 'submission' file in a valid format to check it through the validator"
+            resitem['warnings'] = ["Include a 'submission' file in a valid format to check it through the validator"]
+            res.append(resitem)
+
         elif isSubmission>1:
             resitem = {}
-            resitem['warnings'] = "Include a unique 'submission' file to check it through the validator"
+            resitem['warnings'] = ["Include a unique 'submission' file to check it through the validator"]
+            res.append(resitem)
 
         if isDatasetDescription == 1:
             metadataFiles = jsonStruct['main']
@@ -1114,12 +1117,15 @@ def validate_dataset(validator_input):
             resitem['warnings'] = validatorObj.warnings
             resitem['fatal'] = validatorObj.fatal
             res.append(resitem)
+
         elif isDatasetDescription == 0:
             resitem = {}
-            resitem['warnings'] = "Include a 'dataset_description' file in a valid format to check it through the validator"
+            resitem['warnings'] = ["Include a 'dataset_description' file in a valid format to check it through the validator"]
+            res.append(resitem)
         elif isDatasetDescription>1:
             resitem = {}
-            resitem['warnings'] = "Include a unique 'dataset_description' file to check it through the validator"
+            resitem['warnings'] = ["Include a unique 'dataset_description' file to check it through the validator"]
+            res.append(resitem)
 
         return res
 
