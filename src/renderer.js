@@ -2329,12 +2329,9 @@ validateCurrentDSBtn.addEventListener("click", function() {
   document.getElementById("para-generate-report-current-ds").innerHTML = ""
   var messageDisplay = ""
   var structuredDataset = grabCurrentDSValidator()
-  console.log(structuredDataset)
   var outCheck = checkJSONObj(structuredDataset)
   var empty = outCheck[0]
   structuredDataset = outCheck[1]
-  console.log(structuredDataset)
-  console.log(empty)
   if (empty === true) {
     document.getElementById("para-validate-current-ds").innerHTML = "<span style='color: red;'>Please add files or folders to your dataset!</span>"
   } else {
@@ -2437,7 +2434,6 @@ validateLocalDSBtn.addEventListener("click", function() {
             console.error(error)
             log.error(error)
           } else {
-            console.log(res)
             for (var i = 0; i < res.length; i++) {
               if (res[i] !== 'N/A'){
                 messageDisplay = errorMessageCategory(res[i], checkCategories[i], messageDisplay)
@@ -2447,7 +2443,6 @@ validateLocalDSBtn.addEventListener("click", function() {
             document.getElementById("div-report-local").style.display = "block"
             document.getElementById("para-local-ds-info").innerHTML = "Please see report below!"
             validateLocalDatasetReport.innerHTML = messageDisplay
-            console.log(messageDisplay)
           }
         })
         validateLocalDSBtn.disabled = false
@@ -2455,9 +2450,20 @@ validateLocalDSBtn.addEventListener("click", function() {
   }
 })
 
-function validateMessageTransform(inString) {
-  outString = inString.split("--").join("<br>")
-  return outString
+function validateMessageTransform(inString, classSelection, colorSelection) {
+  //outString = inString.split("--").join("<br>")
+  outString = inString.split("--")
+  var msg = "<li class=" + classSelection + ">" + "<span style='color:"+ colorSelection + ";'>" 
+  msg += outString[0]
+  msg += "</span>" + "</li>"
+  if (outString.length > 1){   
+    msg += "<ul style='margin-top:-10px';>"
+    for (var i = 1; i < outString.length; i++) {
+      msg += "<li>" + "<span style='color:"+ colorSelection + ";'>" + outString[i] + "</span>" + "</li>"
+    }
+    msg += "</ul>"
+  } 
+  return msg
 }
 
 function errorMessageGenerator(resitem, category, messageDisplay){
@@ -2475,8 +2481,8 @@ function errorMessageGenerator(resitem, category, messageDisplay){
         var classSelection = 'bulletpass'
       }
       for (var i = 0; i < messageCategory.length; i++) {
-        var message = validateMessageTransform(messageCategory[i])
-        messageDisplay += "<li class=" + classSelection + ">" + "<span style='color:"+ colorSelection + ";'>" + message + "</span>" + "</li>"
+        var message = validateMessageTransform(messageCategory[i], classSelection, colorSelection)
+        messageDisplay += message
       }
     }
   }

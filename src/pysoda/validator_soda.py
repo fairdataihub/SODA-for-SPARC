@@ -127,9 +127,10 @@ class DictValidator:
         self.passes = []
 
     def check_high_level_folder_structure(self, jsonStruct):
-        p = 0
-        e = 0
-        w = 0
+        primaryf = 0
+        sparcf = 0
+        emptyf = 0
+        nonstandardf = 0
         nonStandardFolders = ""
         emptyFolders = ""
 
@@ -138,19 +139,20 @@ class DictValidator:
         allContents = [ x for x in allContents if x!='main' ]
         for c in allContents:
             if c == self.reqFolderNames[0]: #primary folder
-                p = 1
+                primaryf = 1
                 pContents = jsonStruct[c]
                 if len(pContents) == 0: #check primary empty
-                    e = 1
+                    emptyf = 1
                     emptyFolders += " " + c + ","
             elif c in self.optFolderNames:   #check for optional folders
+                sparcf = 1
                 pContents = jsonStruct[c]
                 if len(pContents) == 0: #check optional folder empty
-                    e = 1
+                    emptyf = 1
                     emptyFolders += " " + c + ","
             else:
+                nonstandardf = 1
                 nonStandardFolders += " " + c + ","
-                w = 1
 
         check1 = "All folders are SPARC standard folders"
         check1f = "Only SPARC standard folders ('code', 'derivative', 'docs', 'primary', 'protocol', and/or 'source', all lowercase) are allowed. The following folder(s) must be removed:" 
@@ -161,21 +163,21 @@ class DictValidator:
         check3 = "All SPARC folders are non-empty"
         check3f = "No empty SPARC folder should be included. Populate or remove the following folder(s):"
                 
-        if w == 1:
+        if nonstandardf == 1:
             self.fatal.append(check1 + "--" + check1f + nonStandardFolders[:-1])
         else:
-            if p==1 or c==1:
+            if primaryf == 1 and sparcf == 1:
                 self.passes.append(check1)
                 
-        if not p:
+        if not primaryf:
             self.fatal.append(check2 + "--" + check2f)
         else:
             self.passes.append(check2)
             
-        if e == 1:
+        if emptyf == 1:
             self.fatal.append(check3 + "--" + check3f + emptyFolders[:-1])
         else:
-            if p==1 or c==1:
+            if primaryf == 1 and sparcf == 1:
                 self.passes.append(check3)
 
     def check_high_level_metadata_files(self, jsonStruct):
