@@ -292,23 +292,22 @@ class DictValidator:
         check1f = "Only SPARC metadata files are allowed in the high-level dataset folder. The following file(s) must be removed:" 
         
         check2 = "A 'submission' metadata file is included in either xlsx, csv, or json format"
-        check2f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the right format."
-        check2f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the right format."
+        check2f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format."
         
         check3 = "A 'dataset_description' metadata file is included in either xlsx, csv, or json format"
-        check3f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the right format."
+        check3f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format."
         
         check4 = "A 'subjects' metadata file is included in either xlsx, csv, or json format"
-        check4f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the right format."
+        check4f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format."
         
         check5 = "A 'samples' metadata file is included in either xlsx, csv, or json format"
-        check5f = "This is NOT a mandatory file but must be included (and be in the right format) if your study includes samples (e.g., tissue slices). "
+        check5f = "This is NOT a mandatory file but must be included (and be in the correct format) if your study includes samples (e.g., tissue slices). "
         
         check6 = "A 'README' metadata file is included in txt format"
-        check6f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the right format."
+        check6f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the txt format."
         
         check7 = "All csv metadata files are UTF-8 encoded"
-        check7f = "As per requirement from the SPARC Curation Team, please change the csv encoding format to UTF-8 for the following metadata files:"
+        check7f = "As per requirement from the SPARC Curation Team, please change the csv encoding format to UTF-8 for the following metadata files: "
         
         check8 = "All metadata files are unique"
         check8f = "Each metadata file should only be included once. The following metadata files are included more than once:"
