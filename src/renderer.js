@@ -1151,7 +1151,7 @@ function changeAwardInputDsDescription() {
   }
 }
 
-// Show current contributors
+//////////////////////// Current Contributor(s) /////////////////////
 function createCurrentConTable(table) {
   var conVal = dsContributorArray.options[dsContributorArray.selectedIndex].value
   var name;
@@ -1185,6 +1185,8 @@ function createCurrentConTable(table) {
       /// append row to table from the bottom
       var rowIndex = rowcount;
     }
+
+    // check for duplicates
     var duplicate = false
     for (var i=0; i<rowcount;i++){
       if (table.rows[i].cells[0].innerHTML===name) {
@@ -1199,42 +1201,43 @@ function createCurrentConTable(table) {
         break
       }
     }
-    if (contactPersonStatus==="Yes") {
-      if (!existingContactPersonStatus) {
-        if (!duplicate) {
-          roleVal.push("ContactPerson");
-          var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td class='grab' id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
-          document.getElementById("div-current-contributors").style.display = "block"
+    if (!duplicate) {
 
-          return table
-        } else {
-          document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contributor already added!</span>"
-        }
+      if (contactPersonStatus==="Yes") {
+          if (!existingContactPersonStatus) {
+            roleVal.push("ContactPerson");
+            var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td class='grab' id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+            document.getElementById("div-current-contributors").style.display = "block"
+            return table
+
+          } else {
+            document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contact person is already added below. Per SPARC requirements, only one contact person is allowed for a dataset.</span>"
+          }
+
       } else {
-        document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contact person is already added below. Per SPARC requirements, only one contact person is allowed for a dataset.</span>"
-      }
+            var row = table.insertRow(rowIndex).outerHTML="<tr  id='row-current-name"+rowIndex+"'style='color: #000000;'><td class='grab' id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+
+            document.getElementById("div-current-contributors").style.display = "block"
+            return table
+          }
+
     } else {
-      if (!duplicate) {
-        var row = table.insertRow(rowIndex).outerHTML="<tr  id='row-current-name"+rowIndex+"'style='color: #000000;'><td class='grab' id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
-
-        document.getElementById("div-current-contributors").style.display = "block"
-        return table
-      } else {
-        document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contributor already added!</span>"
+          document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contributor already added!</span>"
       }
     }
-  }
 }
 
-// Show additional links and desciption
+//////////////////////// Article(s) and Protocol(s) /////////////////////
 function createAdditionalLinksTable() {
   document.getElementById("para-save-link-status").innerHTML = ""
-  var myTable = document.getElementById("table-addl-links")
+  var linkTable = document.getElementById("table-addl-links")
   var linkType = document.getElementById("select-misc-link").value
   var link = document.getElementById("input-misc-links").value
   var description = document.getElementById("input-misc-link-description").value
+
+
   /// Construct table
-  var rowcount = myTable.rows.length;
+  var rowcount = linkTable.rows.length;
   if (rowcount===1) {
     // start at 1 to skip the header
     var rowIndex = 1;
@@ -1242,18 +1245,35 @@ function createAdditionalLinksTable() {
     /// append row to table from the bottom
     var rowIndex = rowcount;
   }
+
+  //// check for duplicate links
+  var duplicate = false
+  for (var i=0; i<rowcount;i++){
+    if (linkTable.rows[i].cells[1].innerHTML===link) {
+      duplicate = true
+      break
+    }
+  }
+
   /// Check for empty entry before adding to table
   var empty = false
   if (link==="" || linkType==="Select") {
     empty = true
   }
+
+  /// construct table
   if (!empty) {
-    var row = myTable.insertRow(rowIndex).outerHTML="<tr id='row-current-link"+rowIndex+"'style='color: #000000;'><td id='link-row"+rowIndex+"'>"+ linkType+"</td><td id='link-row"+rowIndex+"'>"+ link+"</td><td id='link-description-row"+rowIndex+"'>"+ description +"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_link("+rowIndex+")'></td></tr>";
-    document.getElementById("div-current-additional-links").style.display = "block";
-    return myTable
+    if (!duplicate) {
+      var row = linkTable.insertRow(rowIndex).outerHTML="<tr id='row-current-link"+rowIndex+"'style='color: #000000;'><td id='link-row"+rowIndex+"'>"+ linkType+"</td><td id='link-row"+rowIndex+"'>"+ link+"</td><td id='link-description-row"+rowIndex+"'>"+ description +"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_link("+rowIndex+")'></td></tr>";
+      document.getElementById("div-current-additional-links").style.display = "block";
+      return linkTable
+    } else {
+        document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>Link already added below!</span>"
+    }
   } else {
-    document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>Please specify a link to add!</span>"
+      document.getElementById("para-save-link-status").innerHTML = "<span style='color: red;'>Please specify a link to add!</span>"
   }
+
 }
 
 //// when link type is changed, clear other values
@@ -1592,7 +1612,7 @@ function detectEmptyRequiredFields(funding) {
 
   /// detect empty required fields and raise a warning
   var emptyArray = [dsSatisfied, conSatisfied, protocolSatisfied]
-  var emptyMessageArray = ["- Missing required fields under Dataset Info section: " + dsEmptyField.join(", "), "- Missing required fields under Contributor Info section: " + conEmptyField.join(", "), "- Missing item under Article(s) and Protocol(s) Info section: At least one protocol url"]
+  var emptyMessageArray = ["- Missing required fields under Dataset Info section: " + dsEmptyField.join(", "), "- Missing required fields under Contributor Info section: " + conEmptyField.join(", "), "- Missing required item under Article(s) and Protocol(s) Info section: At least one protocol url"]
   var allFieldsSatisfied = true;
   errorMessage = []
   for (var i=0;i<emptyArray.length;i++) {
@@ -2417,14 +2437,10 @@ ipcRenderer.on('selected-savedvalidatorcurrent', (event, filepath) => {
         // obtain canvas and print to pdf
         pdf = new PDFDocument({autoFirstPage:false})
         var image = pdf.openImage(buf)
-        pdf.addPage({size: [image.width, image.height]});
+        pdf.addPage({size: [image.width + 100, image.height + 25]});
         pdf.pipe(fs.createWriteStream(filepath))
-        pdf.image(image, 0,0);
+        pdf.image(image, 25, 25);
 
-        // pdf.image(buf, {
-        //    width: 490,
-        //    valign: 'top'
-        // });
 
         pdf.end()
 
@@ -2441,6 +2457,8 @@ ipcRenderer.on('selected-savedvalidatorcurrent', (event, filepath) => {
 
 //// when users click on Import local dataset
 document.getElementById("input-local-ds-select").addEventListener("click", function() {
+  document.getElementById("para-generate-report-local-ds").innerHTML = ""
+  document.getElementById("div-report-local").style.display = "none"
   ipcRenderer.send('open-file-dialog-validate-local-ds')
 })
 ipcRenderer.on('selected-validate-local-dataset', (event, filepath) => {
@@ -2491,16 +2509,16 @@ validateLocalDSBtn.addEventListener("click", function() {
 function validateMessageTransform(inString, classSelection, colorSelection) {
   //outString = inString.split("--").join("<br>")
   outString = inString.split("--")
-  var msg = "<li class=" + classSelection + ">" + "<span style='color:"+ colorSelection + ";'>" 
+  var msg = "<li class=" + classSelection + ">" + "<span style='color:"+ colorSelection + ";'>"
   msg += outString[0]
   msg += "</span>" + "</li>"
-  if (outString.length > 1){   
+  if (outString.length > 1){
     msg += "<ul style='margin-top:-10px';>"
     for (var i = 1; i < outString.length; i++) {
       msg += "<li>" + "<span style='color:"+ colorSelection + ";'>" + outString[i] + "</span>" + "</li>"
     }
     msg += "</ul>"
-  } 
+  }
   return msg
 }
 
@@ -2562,9 +2580,9 @@ ipcRenderer.on('selected-savedvalidatorlocal', (event, filepath) => {
         // obtain canvas and print to pdf
         pdf = new PDFDocument({autoFirstPage:false})
         var image = pdf.openImage(buf)
-        pdf.addPage({size: [image.width, image.height]});
+        pdf.addPage({size: [image.width + 100, image.height + 25]});
         pdf.pipe(fs.createWriteStream(filepath))
-        pdf.image(image, 0,0);
+        pdf.image(image, 25, 25);
 
         pdf.end()
 
