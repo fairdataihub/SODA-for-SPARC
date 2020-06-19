@@ -8,7 +8,7 @@
           <img class="section-icon" src="assets/img/metadata-teal.png">
           Prepare Metadata
         </h1>
-        <h3>This interface will help you in preparing the SPARC metadata files for your dataset. SODA make use of the SPARC Airtable sheet and your groups Data Deliverables document to help you prepare the metadata files easily.
+        <h3>This interface will help you in preparing the SPARC metadata files (currently submission and dataset_description files) for your dataset. 
          </h3>
       </div>
     </header>
@@ -25,15 +25,16 @@
 
       <div class="demo-box">
         <div id="div-add-airtable-key">
-          <h5> Information from the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide"> SPARC Airtable sheet</a> will be used to easily prepare your metadata files.</h5>
           <h5> Enter your Airtable API key below and specify a key name to connect your Airtable account with SODA:
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span style="width: 250px;" class="tooltiptext"> Make sure you have an Airtable account and have access to the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide">SPARC Airtable sheet </a> (contact Dr. Charles Horn at <a href="mailto:chorn@pitt.edu" style='color: white'> chorn@pitt.edu</a>)
-             <br><br>
-             Please keep your group information up to date in that sheet, especially contributors' name, email, affiliation, and ORCID.
-              <br><br>
-              Please checkout the dedicated <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a>
-              for obtaining or re-generating your API key to connect to SODA during your first use.
+              <span style="width: 250px;" class="tooltiptext"> 
+                SODA make use of the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;"> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata file. To enable this, you have to connect your Airtable account with SODA (only necessary once).
+                <br><br>
+                To achieve that, create an Airtable account and request access to the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;>SPARC Airtable sheet </a> (contact Dr. Charles Horn at <a href="mailto:chorn@pitt.edu" style='color: white'> chorn@pitt.edu</a>)
+                <br><br>
+                Then, enter your Airtable API key in the dedicated SODA interface. Checkout the <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a> to learn how to obtain or re-generate your API key.
+                <br><br>
+                Please keep your group information up to date in that sheet, especially contributors' name, email, affiliation, and ORCID to help SODA help you!
               </span>
             </div>
           </h5> <br>
@@ -90,11 +91,25 @@
          </form>
 
           <div id="div-add-new-grant" class="datasetsaveoption" style="display:none;margin-top:70px;margin-left:10px">
-            <font color="black"><b style="vertical-align:top;"> Airtable connection status:</b>
-               <span style="color:black;margin-top:5px" id="para-add-airtable-key-status"></span>
-             </font>
+
+            <h5> Airtable connection status:
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span style="width: 250px;" class="tooltiptext"> 
+                If SODA fails to connect to your Airtable account, make sure that you have entered a valid API key in the "Connect to Airtable" feature or that you are connected to the internet.
+              </span>
+            </div>
+            </h5>
+
+            <span style="color:black;margin-top:5px" id="para-add-airtable-key-status"></span>
+
             <div class="demo-controls" id="div-search-for-awards" style="display:none">
-              <h5> Search for award(s): </h5>
+              <h5> Search for award(s): 
+               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span style="width: 250px;" class="tooltiptext"> 
+                  Select your award(s) and click on "Add" to save it/them in SODA. You will only have to do this once. You can your award(s) and provide additional information in the "View you SPARC award(s)" tab.
+                </span>
+                </div>
+              </h5>
               <div class="demo-controls">
                 <input id="input-grant-info" list="select-grant-info-list" class="form-container-input-bf" style="width:90%;float:left;height:35px !important;padding:6px 8px;margin-top:15px">
                 <!-- <datalist id="select-grant-info-list" style="overflow-x: hidden; overflow: scroll; width: 100%; height:500px">
@@ -123,31 +138,38 @@
             </div>
           <div class="demo-controls" id="div-milestone-info">
             <div id="div-show-milestone-info-no-existing" class="pathtable" style="display:none;width:100%">
-                <h5>Data Deliverables document:
-
+              <h5>Data Deliverables document:
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                 <span style="width: 250px;" class="tooltiptext"> The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document.
-                <br><br>
-                Click <a href=# id="a-DDD">here</a> to download a template of the Data Deliverables document.
-                <br><br>
-                 Import that document to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section.
-                 </span>
-               </div>
-
-                </h5>
-                <h5></h5>
-                <div class="container-milestone-upload" style="display:flex;">
-                  <!-- <button type="button" style="width:40%;float:left" class="button-milestone-upload">Select a file</button> -->
-                  <input class="milestone-upload-text" id="input-milestone-select" style="width:50%;text-align:center;height:40px" type="text" readonly placeholder="Select a file">
-                  <button id="button-import-milestone" type="button" style="width:15%;height:40px" class="button-milestone-upload"><b>Import</b></button>
-                  <p id="para-milestone-document-info" style="float:right;margin-top:0;margin-left:7px;padding: 0 0;height:34px;width:300px;text-align:left;vertical-align:middle;"></p>
+                  <span style="width: 250px;" class="tooltiptext"> 
+                  The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document (usually kept by the PI of the SPARC award or the award manager).
+                  <br><br>
+                  Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section.
+                  <br><br>
+                  Click <a href=# id="a-DDD" style="color:white;">here</a> to download a template of the Data Deliverables document to see the expected format. Most importantly, at least one table with these exact three hearders is expected: "Related milestone, aim, or task", "Description of data", "Expected date of completion".
+                  <br><br>                 
+                  </span>
                 </div>
-                <p id="para-milestone-document-info-long" style="display:none;margin-top:5px;margin-bottom:0;text-align:left;padding: 0 0"></p>
+              </h5>
+              <h5></h5>
+              <div class="container-milestone-upload" style="display:flex;">
+                <!-- <button type="button" style="width:40%;float:left" class="button-milestone-upload">Select a file</button> -->
+                <input class="milestone-upload-text" id="input-milestone-select" style="width:50%;text-align:center;height:40px" type="text" readonly placeholder="Select a file">
+                <button id="button-import-milestone" type="button" style="width:15%;height:40px" class="button-milestone-upload"><b>Import</b></button>
+                <p id="para-milestone-document-info" style="float:right;margin-top:0;margin-left:7px;padding: 0 0;height:34px;width:300px;text-align:left;vertical-align:middle;"></p>
+              </div>
+              <p id="para-milestone-document-info-long" style="display:none;margin-top:5px;margin-bottom:0;text-align:left;padding: 0 0"></p>
             </div>
             </div>
             <br>
             <div id="div-show-current-milestones" style="display:none;width:100%">
-              <h5>Current Milestone Information: </h5>
+              <h5>Current Milestone Information: 
+                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                  <span style="width: 250px;" class="tooltiptext"> 
+                  This table shows you the information extracted from your Data Deliverables document. It will be used in the next feature to help you generate your submission file.             
+                  </span>
+                </div>
+              </h5>
+
               <h5></h5>
               <p style="display:none" id="para-current-milestones"></p>
               <table id="table-current-milestones">
@@ -177,7 +199,7 @@
       <div class="demo-box">
         <div class="demo-controls">
         <div id="div-generate-submission-file" class="pathtable" style="width:100%;">
-          <h5 align="center"> Populate the items below to generate submission file</h5>
+          <h5 align="center"> Populate the items below to generate your submission file</h5>
           <br>
           <div class="form-container-ds"><font color="black"> SPARC Award Number: </font> </div>
           <div class="tooltipnew"><img class="info" src="assets/img/info.png" style="visibility:hidden">
@@ -265,7 +287,7 @@
             <div class="form-container-ds"><font color="black"> Description*: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 200px;z-index:4; font-weight: bold">
-                The description will be automatically pulled from the description associated with the selected Blackfynn dataset. You can add a description from the the "Manage Datasets" section under the "Add metadata to dataset" feature.
+                The description will be automatically pulled from the description associated with the selected Blackfynn dataset. You can add/edit the description from the the "Manage Datasets" section under the "Add metadata to dataset" feature.
               </span>
             </div>
             <div class="demo-controls">
@@ -274,7 +296,7 @@
             <div class="form-container-ds"><font color="black"> Keywords*: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 200px;z-index:2; font-weight: bold">
-                A set of 3-5 keywords other than the above that will aid in search. Hit "Enter" after each entry to register it.
+                A set of 3-5 keywords other than the above that will aid in search. Hit "Enter" on your keyboard after each entry to register it.
               </span>
             </div>
             <div class="demo-controls">
@@ -323,8 +345,8 @@
             </div>
             <div class="form-container-ds"><font color="black"> Other funding source(s): </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext" style="width: 200px;z-index:2">
-                Other funding sources
+              <span class="tooltiptext" style="width: 200px;z-index:2; font-weight: bold">
+                Other funding sources, if any
               </span>
             </div>
             <div class="demo-controls">
@@ -333,7 +355,7 @@
             <div class="form-container-ds"><font color="black"> Acknowledgments: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
-                Acknowledgments beyond funding and contributors
+                Acknowledgments beyond funding and contributors, if any
               </span>
             </div>
             <div class="demo-controls">
@@ -383,7 +405,7 @@
             <div class="form-container-ds"><font color="black"> Contributor Role*: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px;z-index:3; font-weight: bold">
-                 Role(s) of the contributor. Must be from the Data Cite schema. Hit "Enter" after each entry to register it.
+                 Role(s) of the contributor. Must be from the Data Cite schema (c.f. associated dropdown list). Hit "Enter" after each entry to register it.
               </span>
             </div>
             <div class="demo-controls">
@@ -394,7 +416,7 @@
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
                 Check if the contributor is a contact person for the dataset. At least one and only one of contributor should be the contact person.
                 <br><br>
-                Click "Add" to add contributors to SODA's contributor table for easy control. Each contributor added to the table will be added to the dataset_description file.
+                Click "Add" to add contributors to SODA's contributor table. Each contributor added to the table will be added to the dataset_description file when it is generated.
               </span>
             </div>
             <div class="demo-controls">

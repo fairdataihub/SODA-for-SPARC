@@ -331,7 +331,7 @@
           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Validate-dataset" >
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
-          <div class="demo-meta u-avoid-clicks"> Check that information provided during the previous steps will create a SPARC-approved dataset. </div>
+          <div class="demo-meta u-avoid-clicks"> Check that information provided during the previous steps will generate a dataset without major errors or check a locally stored dataset. </div>
         </button>
         <div id="div-validate-dataset" class="demo-box">
           <form id = 'validator-form'>
@@ -343,13 +343,25 @@
             </div>
           </form>
           <div id="div-validate-current-ds" class="datasetsaveoption" style="display:block;margin-top:70px">
-            <h5>Preview current dataset before validating: </h5>
+            <h5>Preview current dataset before validating: 
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">
+                  In this feature, you will be able to check that the files specified in the SODA interface under "Specify dataset files" and "Specify metadata files" will generate a dataset without major errors.
+                </span>
+              </div>
+            </h5>
             <div class="demo-controls" id="div-preview-current-ds-validator">
               <button type="button" id="button-preview-local-ds" style="float:left;" class="demo-button">Preview</button>
               <p id="para-preview-current-ds" style="margin-left:7px;padding: 2 2;margin: 0 0;"></p>
             </div>
             <br>
-          <h5>Proceed to validate dataset:</h5>
+            <h5> Proceed to dataset validation:
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">
+                  Click to check your dataset through the SODA validator. Note that the SODA validator is different from the validator developed and used by the Curation Team and some errors may still be identified by the Curation Team after submission. SODA, however, will check the dataset for high-level errors and errors commonly seen by the Curation Team.
+                </span>
+              </div>
+            </h5>
           <div class="demo-controls">
             <button id="button-validate-current-ds" style="float:left;" class="demo-button">Validate</button>
             <p id="para-validate-current-ds" style="margin-left:7px;padding: 2 2;margin: 0 0;"></p>
@@ -372,6 +384,13 @@
               <input class="milestone-upload-text" id="input-local-ds-select" style="width:50%;text-align:center;height:40px" type="text" readonly placeholder="Select a folder"/>
             </div>
             <br>
+            <h5>Proceed to dataset validation:
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">
+                  Click to check your dataset through the SODA validator. Note that the SODA validator is different from the validator developed and used by the Curation Team and some errors may still be identified by the Curation Team after submission. SODA, however, will check the dataset for high-level errors and errors commonly seen by the Curation Team.
+                </span>
+              </div>
+            </h5>
             <div style="display:flex;height:40px">
             <button id="button-validate-local-ds" style="float:left;" class="demo-button">Validate</button>
             <p id="para-local-ds-info" style="margin-left:7px;padding: 2 2;margin: 0 0;text-align:left;vertical-align:middle;"></p>
