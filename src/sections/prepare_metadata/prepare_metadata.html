@@ -17,7 +17,7 @@
     <div class="demo">
       <div class="demo-wrapper">
         <button id="button-save-grant-info-demo-toggle" class="js-container-target demo-toggle-button">Connect to Airtable
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Provide-award-information">
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Connect-to-Airtable">
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
           <div class="demo-meta u-avoid-clicks"> Connect your Airtable account with SODA  </div>
@@ -30,9 +30,9 @@
               <span style="width: 250px;" class="tooltiptext"> 
                 SODA make use of the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;"> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata file. To enable this, you have to connect your Airtable account with SODA (only necessary once).
                 <br><br>
-                To achieve that, create an Airtable account and request access to the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;>SPARC Airtable sheet </a> (contact Dr. Charles Horn at <a href="mailto:chorn@pitt.edu" style='color: white'> chorn@pitt.edu</a>)
+                To achieve that, create an Airtable account and request access to the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;">SPARC Airtable sheet </a> (contact Dr. Charles Horn at <a href="mailto:chorn@pitt.edu" style='color: white'> chorn@pitt.edu</a>)
                 <br><br>
-                Then, enter your Airtable API key in the dedicated SODA interface. Checkout the <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a> to learn how to obtain or re-generate your API key.
+                Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a> to learn how to obtain or re-generate your API key.
                 <br><br>
                 Please keep your group information up to date in that sheet, especially contributors' name, email, affiliation, and ORCID to help SODA help you!
               </span>
@@ -42,7 +42,7 @@
           <div class="form-container"><font color="black"> Key name: </font> </div>
           <div class="tooltipnew"><img class="info" src="assets/img/info.png">
             <span class="tooltiptext" style="width: 200px; font-weight: bold">
-              Generate a name for your Airtable API Key. Your API Key will be stored under this key name.
+              Provide a name of your choice for your Airtable API Key. Your API Key will be stored under this key name.
             </span>
           </div>
           <div class="demo-controls">
@@ -51,7 +51,7 @@
           <div class="form-container"><font color="black"> API Key: </font> </div>
           <div class="tooltipnew"><img class="info" src="assets/img/info.png">
             <span class="tooltiptext" style="width: 200px; font-weight: bold">
-              To obtain or re-generate your API key to connect to SODA during your first use, check out the dedicated <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a>
+              To obtain or re-generate your API key to connect to SODA during your first use, check out the dedicated <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a>. Note that the key will be stored locally on your computer and the SODA Team will not have access to it.
             </span>
           </div>
           <div class="demo-controls">
@@ -77,7 +77,7 @@
           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Provide-award-information">
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
-          <div class="demo-meta u-avoid-clicks"> Provide information about your SPARC award to help fill out metadata files </div>
+          <div class="demo-meta u-avoid-clicks"> Provide relevant information about your SPARC award </div>
         </button>
 
       <div class="demo-box">
@@ -104,10 +104,10 @@
 
             <div class="demo-controls" id="div-search-for-awards" style="display:none">
               <h5> Search for award(s): 
-               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                <span style="width: 250px;" class="tooltiptext"> 
-                  Select your award(s) and click on "Add" to save it/them in SODA. You will only have to do this once. You can your award(s) and provide additional information in the "View you SPARC award(s)" tab.
-                </span>
+                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                  <span style="width: 250px;" class="tooltiptext"> 
+                    The list of active SPARC awards in this dropdown list is generated automatically from the SPARC Airtable sheet once SODA is connected with your Airtable account. Select your award(s) and click on "Add" to save it/them in SODA. You will only have to do this once. You can then view your award(s) and provide additional information in the "View you SPARC award(s)" tab.
+                  </span>
                 </div>
               </h5>
               <div class="demo-controls">
@@ -125,7 +125,13 @@
           </div>
 
           <div id="div-select-existing-grant" class="datasetsaveoption" style="display:block;margin-top:70px;margin-left:10px">
-            <h5> Select award: </h5>
+            <h5> Select award: 
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span style="width: 250px;" class="tooltiptext"> 
+                  Select an award to provide additional information about it. You can delete an existing award from the list by clicking on the "Delete award" button. This will remove the award from your list of awards as well as delete any associated milestone information.
+                </span>
+              </div>
+            </h5>
             <div class="demo-controls" style="margin-top:20px">
               <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:100%; height:35px;line-height:2;padding: 6px 8px; font-size:14px">
                 <option value="Select">Select an option</option>
@@ -143,7 +149,9 @@
                   <span style="width: 250px;" class="tooltiptext"> 
                   The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document (usually kept by the PI of the SPARC award or the award manager).
                   <br><br>
-                  Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section.
+                  Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use. 
+                  <br><br>
+                  Note that you can import a new Dataset Deliverable to replace an existing one.
                   <br><br>
                   Click <a href=# id="a-DDD" style="color:white;">here</a> to download a template of the Data Deliverables document to see the expected format. Most importantly, at least one table with these exact three hearders is expected: "Related milestone, aim, or task", "Description of data", "Expected date of completion".
                   <br><br>                 
@@ -174,9 +182,9 @@
               <p style="display:none" id="para-current-milestones"></p>
               <table id="table-current-milestones">
                 <tr>
-                  <th style="width:45%">Milestones</th>
+                  <th style="width:45%">Related milestone, aim, or task</th>
                   <th style="width:45%">Description of data</th>
-                  <th style="width:10%">Completion Date</th>
+                  <th style="width:10%">Expected date of completion</th>
                </tr>
               </table>
             </div>
@@ -191,7 +199,7 @@
     <div class="demo">
       <div class="demo-wrapper">
         <button id="button-submission-demo-toggle" class="js-container-target demo-toggle-button"> Prepare your submission file
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Prepare-Submission-File">
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Prepare-your-submission-file">
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
           <div class="demo-meta u-avoid-clicks"> The submission file is mandatory for all SPARC datasets </div>
@@ -211,33 +219,34 @@
             <option value="Select">Select an option</option>
           </select>
           </div>
-          <div class="form-container-ds"><font color="black"> Milestone: </font> </div>
-          <div class="tooltipnew"><img class="info" src="assets/img/info.png" style="visibility:hidden">
-            <span class="tooltiptext" style="width: 250px; font-weight: bold; display:none" class="tooltiptext">
+          <div class="form-container-ds"> <font color="black"> Milestone: </font> </div>
+           <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+            <span class="tooltiptext" style="width: 250px; font-weight: bold" class="tooltiptext">
+              Choose a milestone from the list compiled from the Data Deliverables document imported to SODA in the feature "Provide award information". Choose "Not specified in the Data Deliverables document" if this dataset isn't associated with any milestone initially planned.
             </span>
           </div>
           <div class="demo-controls">
             <select id="selected-milestone" class="form-container-input-bf" style="font-size:13px;line-height: 2;height:28px; width: 95%">
               <option value="Select">Select an option</option>
-              <option value="N/A">Not specified in Data Deliverables document</option>
+              <option value="N/A">Not specified in the Data Deliverables document</option>
             </select>
           </div>
           <div class="form-container-ds"><font color="black"> Description of Data: </font> </div>
-          <div class="tooltipnew"><img class="info" src="assets/img/info.png" style="visibility:hidden">
-            <span class="tooltiptext" style="width: 250px; font-weight: bold; display:none" class="tooltiptext">
+          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+            <span class="tooltiptext" style="width: 250px; font-weight: bold" class="tooltiptext">
+              Select the description corresponding to your dataset and SODA will automatically populate the associated completion date. Choose "Not specified in the Data Deliverables document" if this dataset isn't associated with any description initially planned.
             </span>
           </div>
-
           <div class="demo-controls">
             <select id="selected-description-data" class="form-container-input-bf"  style="font-size:13px;line-height: 2;height:28px; width: 95%">
               <option value="Select">Select an option</option>
-              <option value="N/A">Not specified in Data Deliverables document</option>
+              <option value="N/A">Not specified in the Data Deliverables document</option>
             </select>
           </div>
           <div class="form-container-ds"><font color="black"> Completion Date: </font> </div>
           <div class="tooltipnew"><img class="info" src="assets/img/info.png">
             <span class="tooltiptext" style="width: 250px; font-weight: bold" class="tooltiptext">
-              This date is filled automatically based on the milestone/description of data selected. This date starts the countdown for submission (30 days after completion) and length of embargo and publication date (12 months from completion of milestone)
+              This date is filled automatically using extracted information from the Data Deliverables document and based on the milestone/description of data selected above. 
             </span>
           </div>
           <div class="demo-controls">
@@ -257,7 +266,7 @@
     <div class="demo">
       <div class="demo-wrapper">
         <button id="button-ds-description-demo-toggle" class="js-container-target demo-toggle-button"> Prepare your dataset description file
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Prepare-Dataset-Description-File">
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Prepare-your-dataset-description-file">
             <img class="nav-video" src="assets/img/play-video-icon.png">
           </a>
           <div class="demo-meta u-avoid-clicks"> The dataset description file is mandatory for all SPARC datasets </div>
@@ -302,6 +311,15 @@
             <div class="demo-controls">
               <textarea id="ds-keywords" class="form-container-textarea" style="border-left: 2px solid #258193;"> </textarea>
             </div>
+            <div class="form-container-ds"><font color="black"> Number of subjects*: </font> </div>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style="width: 200px; font-weight: bold">
+                Number of unique subjects in this dataset, should match subjects metadata file. Must be greater or equal to 1.
+              </span>
+            </div>
+            <div class="demo-controls">
+              <input id="ds-subjects-no" class="form-container-input-bf"/>
+            </div>
             <div class="form-container-ds"><font color="black"> Number of samples*: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 200px; font-weight: bold">
@@ -310,15 +328,6 @@
             </div>
             <div class="demo-controls">
               <input id="ds-samples-no" class="form-container-input-bf"/>
-            </div>
-            <div class="form-container-ds"><font color="black"> Number of subjects*: </font> </div>
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext" style="width: 200px; font-weight: bold">
-                Number of unique subjects in this dataset, should match subjects metadata file.
-              </span>
-            </div>
-            <div class="demo-controls">
-              <input id="ds-subjects-no" class="form-container-input-bf"/>
             </div>
             <br><br><br>
             <div align="right">
@@ -335,7 +344,7 @@
             <div class="form-container-ds"><font color="black"> SPARC Award*: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 200px;font-weight: bold">
-                SPARC award associated with the dataset
+                SPARC award associated with the dataset.
               </span>
             </div>
             <div class="demo-controls">
@@ -346,7 +355,7 @@
             <div class="form-container-ds"><font color="black"> Other funding source(s): </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 200px;z-index:2; font-weight: bold">
-                Other funding sources, if any
+                Other funding sources, if any. Hit 'Enter' on your keyboard after typing each. Leave empty if none.
               </span>
             </div>
             <div class="demo-controls">
@@ -355,7 +364,7 @@
             <div class="form-container-ds"><font color="black"> Acknowledgments: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
-                Acknowledgments beyond funding and contributors, if any
+                Acknowledgments beyond funding and contributors, if any. Leave empty if none.
               </span>
             </div>
             <div class="demo-controls">
@@ -367,6 +376,8 @@
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
                 Name of any contributor to the dataset. This individual need not have been authors on any publications describing the data,
                 but should be acknowledged for their role in producing and publishing the data set.
+                <br><br>
+                The "Contributor" list is compiled from the SPARC Airtable sheet based on the SPARC award selected. Select one Contributor to get the ORCID ID, Contributor Affiliation, and Contributor Role populated automatically (if specified in the SPARC Airtable Sheet). Select "Other contributors" in the "Contributors" dropdown list if you'd like to enter a Contributor name manually (although we suggest to enter them directly in the SPARC Airtable - restart SODA to see them in the list).
               </span>
             </div>
             <div class="demo-controls">
@@ -414,9 +425,9 @@
             <div class="form-container-ds"><font color="black"> Is Contact person? </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
-                Check if the contributor is a contact person for the dataset. At least one and only one of contributor should be the contact person.
+                Check if the contributor is a contact person for the dataset. At least one and only one of the contributors should be the contact person.
                 <br><br>
-                Click "Add" to add contributors to SODA's contributor table. Each contributor added to the table will be added to the dataset_description file when it is generated.
+                Click "Add" to add contributors to SODA's contributor table. Each contributor added to the table will be added to the dataset description file when it is generated.
               </span>
             </div>
             <div class="demo-controls">
@@ -466,7 +477,15 @@
             <div class="form-container-ds"><font color="black"> Link type: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px;z-index:3; font-weight: bold">
-                Specify a link for which you wish to add a description to
+                Select the nature of the link:
+                <br><br>
+                - Protocol URLs or DOIs: URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.
+                <br><br>
+                - Originating Article DOIs: DOIs of published articles that were generated from this dataset.
+                <br><br>
+                - Additional links: URLs of additional resources used by this dataset (e.g., a link to a code repository). 
+                <br><br>
+                Note that at least one "Protocol URLs or DOIs" link is mandatory. The remaining is optional.
               </span>
             </div>
             <div class="demo-controls">
@@ -480,11 +499,7 @@
             <div class="form-container-ds"><font color="black"> Link: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
-                Originating Article DOIs: DOIs of published articles that were generated from this dataset.
-                Protocol URLs or DOIs: URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset. Hit "Enter" after each entry to register it.
-                Additional links: URLs of additional resources used by this dataset (e.g., a link to a code repository). Hit "Enter" after each entry to register it.
-                <br><br>
-                Hit "Enter" after each entry to register it.
+                Enter the link.
               </span>
             </div>
             <div class="demo-controls">
@@ -493,9 +508,9 @@
             <div class="form-container-ds"><font color="black"> Link Description: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
-                Short description of either Originating Article DOIs or Protocol URLs or Additional links content
+                Optionally provide a short description of the link.
                 <br><br>
-                Click on "Add" to register specified link and a link description to SODA's link table. All links and descriptions added to the table will be included in your dataset_description file.
+                Click on "Add" to register specified link to SODA's link table. All links and descriptions added to the table will be included in your dataset description file when it is generated.
               </span>
             </div>
             <div class="demo-controls">
@@ -532,7 +547,7 @@
             <div class="form-container-ds" style="width:230px"><font color="black"> Completeness of dataset: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
-                Is the data set as uploaded complete or is it part of an ongoing study.  Use "hasNext" to indicate that you expect more data on different subjects as a continuation of this study. Use “hasChildren” to indicate that you expect more data on the same subjects or samples derived from those subjects.
+                Is the data set as uploaded complete or is it part of an ongoing study? Select "hasNext" to indicate that you expect more data on different subjects as a continuation of this study. Select “hasChildren” to indicate that you expect more data on the same subjects or samples derived from those subjects. Leave empty if none.
               </span>
             </div>
             <div class="demo-controls">
@@ -541,7 +556,7 @@
             <div class="form-container-ds" style="width:230px"><font color="black"> Parent dataset(s): </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
-                If this is a part of a larger data set, or refereces subjects or samples from a parent dataset, what was the accession number of the prior batch.  You need only give us the number of the last batch, not all batches. If samples and subjects are from multiple parent datasets please create a comma separated list of all parent ids.
+                If this is a part of a larger dataset, or references subjects or samples from a parent dataset, select the prior dataset. You need only the last dataset, not all datasets. If samples and subjects are from multiple parent datasets please select them all. Leave empty if none.
                 <br><br>
                 Tip: Start typing to see the name of your dataset, and then press Enter to add your dataset.
               </span>
@@ -553,7 +568,7 @@
             <div class="form-container-ds" style="width:230px"><font color="black"> Title for complete dataset: </font> </div>
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style="width: 300px; font-weight: bold">
-                Please give us a provisional title for the entire data set.
+                Please give us a provisional title for the entire data set. Leave empty if not applicable.
               </span>
             </div>
             <div class="demo-controls">
