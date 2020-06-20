@@ -932,8 +932,8 @@ function changeAwardInput() {
   removeOptions(document.getElementById("selected-description-data"))
   addOption(document.getElementById('selected-milestone'), "Select an option", "Select")
   addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
-  addOption(document.getElementById('selected-milestone'), "Not specified in Data Deliverables document", "N/A")
-  addOption(document.getElementById('selected-description-data'), "Not specified in Data Deliverables document", "N/A")
+  addOption(document.getElementById('selected-milestone'), "Not specified in the Data Deliverables document", "N/A")
+  addOption(document.getElementById('selected-description-data'), "Not specified in the Data Deliverables document", "N/A")
 
   award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
   var informationJson = parseJson(milestonePath);
@@ -953,13 +953,13 @@ function changeAwardInput() {
     removeOptions(descriptionInput);
     document.getElementById("selected-milestone-date").value = ""
     if (milestoneInput.value==="N/A") {
-      addOption(document.getElementById('selected-description-data'), "Not specified in Data Deliverables document", "Not applicable")
+      addOption(document.getElementById('selected-description-data'), "Not specified in the Data Deliverables document", "Not applicable")
       // descriptionInput.value === "N/A"
-      // descriptionInput.text === "Not specified in Data Deliverables document"
+      // descriptionInput.text === "Not specified in the Data Deliverables document"
       dateInput.value = "N/A"
     } else {
         addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
-        addOption(document.getElementById('selected-description-data'), "Not specified in Data Deliverables document", "Not applicable")
+        addOption(document.getElementById('selected-description-data'), "Not specified in the Data Deliverables document", "Not applicable")
         for (var i=0;i<milestoneKey.length; i++) {
           if (milestoneKey[i] === milestoneInput.value) {
             //// Add description data to dropdowns
