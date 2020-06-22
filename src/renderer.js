@@ -178,6 +178,8 @@ const currentDatasetReportBtn = document.getElementById('button-generate-report-
 const validateLocalDSBtn = document.getElementById("button-validate-local-ds")
 const validateLocalDatasetReport = document.querySelector('#textarea-validate-local-dataset')
 const localDatasetReportBtn = document.getElementById('button-generate-report-local-ds')
+const validateLocalProgressBar = document.getElementById("div-indetermiate-bar-validate-local")
+const validateSODAProgressBar = document.getElementById("div-indetermiate-bar-validate-soda")
 
 // Generate dataset //
 const createNewStatus = document.querySelector('#create-newdataset')
@@ -2349,10 +2351,12 @@ previewCurrentDsValidate.addEventListener("click", function() {
 
 /////// Convert table content into json format for transferring to Python
 function grabCurrentDSValidator() {
-  var jsonvect = tableToJson(tableNotOrganized)
+  var jsonvect = tableToJsonWithDescription(tableNotOrganized)
+  var jsonpath = jsonvect[0]
+  var jsondescription = jsonvect[1]
   var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
-  jsonvect['main'] = jsonpathMetadata['metadata']
-  return jsonvect
+  jsonpath['main'] = jsonpathMetadata['metadata']
+  return [jsonpath, jsondescription]
 }
 
 //// Check for empty JSON object and remove then
@@ -2385,37 +2389,61 @@ validateCurrentDSBtn.addEventListener("click", function() {
   document.getElementById("para-preview-current-ds").innerHTML = ""
   document.getElementById("para-validate-current-ds").innerHTML = ""
   document.getElementById("para-generate-report-current-ds").innerHTML = ""
-  var messageDisplay = ""
-  var structuredDataset = grabCurrentDSValidator()
-  var outCheck = checkJSONObj(structuredDataset)
+  var jsonvect = grabCurrentDSValidator()
+  var jsonpath = jsonvect[0]
+  var jsondescription = jsonvect[1]
+  var outCheck = checkJSONObj(jsonpath)
   var empty = outCheck[0]
-  structuredDataset = outCheck[1]
   if (empty === true) {
-    document.getElementById("para-validate-current-ds").innerHTML = "<span style='color: red;'>Please add files or folders to your dataset!</span>"
+    document.getElementById("para-validate-current-ds").innerHTML = "<span style='color: red;'>Please add files or folders to your dataset first!</span>"
   } else {
     validateCurrentDSBtn.disabled = true
-    var validatorInput = structuredDataset
-    client.invoke("api_validate_dataset", validatorInput, (error, res) => {
-      if (error) {
-        console.error(error)
-        log.error(error)
-        var emessage = userError(error)
-        document.getElementById("para-validate-current-ds").innerHTML = "<span style='color: red;'>" + emessage + "</span>"
-      } else {
-        for (var i = 0; i < res.length; i++) {
-          messageDisplay = errorMessageCategory(res[i], checkCategories[i], messageDisplay)
+    if (manifestStatus.checked){  
+      validateSODAProgressBar.style.display = 'block'
+      client.invoke("api_create_folder_level_manifest", jsonpath, jsondescription, (error, res) => {
+        if (error) {
+          console.error(error)
+          log.error(error)
+          var emessage = userError(error)
+          document.getElementById("para-validate-current-ds").innerHTML = "<span style='color: red;'>" + emessage + "</span>"
+          validateCurrentDSBtn.disabled = false
+          validateSODAProgressBar.style.display = 'none'
+        } else {
+          var validatorInput = res
+          localValidator(validatorInput)
         }
-        console.log(messageDisplay)
-        document.getElementById("div-validation-report-current").style.display = "block"
-        document.getElementById("div-report-current").style.display = "block"
-        document.getElementById("para-validate-current-ds").innerHTML = "Please see report below."
-        validateCurrentDatasetReport.innerHTML = messageDisplay
-      }
-    })
-    validateCurrentDSBtn.disabled = false
+      })
+    } else {
+      var validatorInput = jsonpath
+      console.log(validatorInput)
+      localValidator(validatorInput)
     }
+  }
 })
 
+function localValidator(validatorInput){
+  var messageDisplay = ""
+  client.invoke("api_validate_dataset", validatorInput, (error, res) => {
+    if (error) {
+      console.error(error)
+      log.error(error)
+      var emessage = userError(error)
+      document.getElementById("para-validate-current-ds").innerHTML = "<span style='color: red;'>" + emessage + "</span>"
+      validateCurrentDSBtn.disabled = false
+      validateSODAProgressBar.style.display = 'none'
+    } else {
+      for (var i = 0; i < res.length; i++) {
+        messageDisplay = errorMessageCategory(res[i], checkCategories[i], messageDisplay)
+      }
+      document.getElementById("div-validation-report-current").style.display = "block"
+      document.getElementById("div-report-current").style.display = "block"
+      document.getElementById("para-validate-current-ds").innerHTML = "Done, see report below!"
+      validateCurrentDatasetReport.innerHTML = messageDisplay
+      validateCurrentDSBtn.disabled = false
+      validateSODAProgressBar.style.display = 'none'
+    }
+  })
+}
 ///// Generate pdf validator file
 currentDatasetReportBtn.addEventListener("click", function() {
   document.getElementById("para-generate-report-current-ds").innerHTML = ""
@@ -2483,12 +2511,14 @@ validateLocalDSBtn.addEventListener("click", function() {
     document.getElementById("para-local-ds-info").innerHTML = "<span style='color: red ;'>Please select a local dataset first</span>"
   } else  {
       if (datasetPath != null){
+        validateLocalProgressBar.style.display = 'block'
         validateLocalDSBtn.disabled = true
         validatorInput = datasetPath
         client.invoke("api_validate_dataset", validatorInput, (error, res) => {
           if (error) {
             console.error(error)
             log.error(error)
+            validateLocalProgressBar.style.display = 'none'
           } else {
             for (var i = 0; i < res.length; i++) {
               if (res[i] !== 'N/A'){
@@ -2497,8 +2527,9 @@ validateLocalDSBtn.addEventListener("click", function() {
             }
             document.getElementById("div-validation-report-local").style.display = "block"
             document.getElementById("div-report-local").style.display = "block"
-            document.getElementById("para-local-ds-info").innerHTML = "Please see report below!"
+            document.getElementById("para-local-ds-info").innerHTML = "Done, see report below!"
             validateLocalDatasetReport.innerHTML = messageDisplay
+            validateLocalProgressBar.style.display = 'none'
           }
         })
         validateLocalDSBtn.disabled = false

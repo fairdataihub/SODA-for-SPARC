@@ -10,7 +10,7 @@ from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_o
     bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load, bf_get_doi, bf_reserve_doi, \
     bf_get_publishing_status, bf_publish_dataset, \
     save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone,\
-    validate_dataset
+    validate_dataset, create_folder_level_manifest
 
 
 import sys
@@ -70,30 +70,18 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    ### Validate local dataset
+    ### Validate dataset
+    def api_create_folder_level_manifest(self, jsonpath, jsondescription):
+        try:
+            return create_folder_level_manifest(jsonpath, jsondescription)
+        except Exception as e:
+            raise e
+        
     def api_validate_dataset(self, validator_input):
         try:
             return validate_dataset(validator_input)
         except Exception as e:
             raise e
-
-    def api_validate_folders(self, rootFolder):
-        return validate_folders(rootFolder)
-
-    def api_validate_files(self, rootFolder):
-        try:
-            return validate_files(rootFolder)
-        except Exception as e:
-            raise e
-
-    def api_validate_manifest_file(self, rootFolder):
-        return validate_manifest_file(rootFolder)
-
-    def api_validate_subject_sample_files(self, rootFolder):
-        return validate_subject_sample_files(rootFolder)
-
-    def api_validate_submission_dataset_description_files(self, rootFolder):
-        return validate_submission_dataset_description_files(rootFolder)
 
     ### Bf
     def api_bf_add_account(self, keyname, key, secret):
