@@ -57,6 +57,7 @@ total_file_size = 1
 uploaded_file_size = 0
 start_time_bf_upload = 0
 start_submit = 0
+metadatapath = join(userpath, 'SODA', 'SODA_metadata')
 
 bf = ""
 myds = ""
@@ -149,7 +150,7 @@ def path_size(path):
         return getsize(path)
 
 
-def create_folder_level_manifest(datasetpath, jsonpath, jsondescription):
+def create_folder_level_manifest(jsonpath, jsondescription):
     """
     Function to create manifest files for each SPARC folder.
     Files are created in a temporary folder
@@ -159,10 +160,13 @@ def create_folder_level_manifest(datasetpath, jsonpath, jsondescription):
         jsonpath: all paths in json format with key being SPARC folder names (dictionary)
         jsondescription: description associated with each path (dictionary)
     Action:
-        Creates manifest files in csv format for each SPARC folder
+        Creates manifest files in xslx format for each SPARC folder
     """
     global total_dataset_size
     try:
+        datasetpath = metadatapath
+        shutil.rmtree(datasetpath) if isdir(datasetpath) else 0
+        makedirs(datasetpath)
         folders = list(jsonpath.keys())
         if 'main' in folders:
             folders.remove('main')
@@ -889,15 +893,11 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
     total_dataset_size = total_dataset_size - 1
 
     # Add metadata to jsonpath
-    userpath = expanduser("~")
-    metadatapath = join(userpath, 'SODA', 'SODA_metadata')
     curateprogress = 'Generating metadata'
 
     if manifeststatus:
         try:
-            shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
-            makedirs(metadatapath)
-            jsonpath = create_folder_level_manifest(metadatapath, jsonpath, jsondescription)
+            jsonpath = create_folder_level_manifest(jsonpath, jsondescription)
         except Exception as e:
             curatestatus = 'Done'
             raise e
