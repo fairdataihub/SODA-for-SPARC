@@ -40,6 +40,8 @@ from docx import Document
 from validator_soda import pathToJsonStruct, validate_high_level_folder_structure, validate_high_level_metadata_files, \
 validate_sub_level_organization, validate_submission_file, validate_dataset_description_file
 
+import augpathlib as aug
+
 ### Global variables
 curateprogress = ' '
 curatestatus = ' '
@@ -83,6 +85,12 @@ handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
 ### Internal functions
+
+
+def TZLOCAL():
+    return datetime.now(timezone.utc).astimezone().tzinfo
+
+
 def open_file(file_path):
     """
     Opening folder on all platforms
@@ -163,6 +171,7 @@ def create_folder_level_manifest(jsonpath, jsondescription):
         Creates manifest files in xslx format for each SPARC folder
     """
     global total_dataset_size
+    local_timezone = TZLOCAL()
     try:
         datasetpath = metadatapath
         shutil.rmtree(datasetpath) if isdir(datasetpath) else 0
@@ -200,11 +209,11 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                         for subdir, dirs, files in os.walk(paths):
                             for file in files:
                                 gevent.sleep(0)
-                                filepath = join(paths,subdir,file) #full local file path
-                                lastmodtime = getmtime(filepath)
-                                timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
-                                                                      localtime(lastmodtime)))
-                                fullfilename = basename(filepath)
+                                filepath = aug.LocalPath(paths, subdir, file)
+                                fs_meta = filepath.meta
+                                lastmodtime = fs_meta.updated.astimezone(local_timezone)
+                                timestamp.append(aug.meta.isoformat(lastmodtime))
+                                fullfilename = filepath.name
                                 if folder == 'main': # if file in main folder
                                     filename.append(fullfilename) if folder == '' else filename.append(join(folder, fullfilename))
                                 else:
@@ -222,11 +231,12 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                     else:
                         gevent.sleep(0)
                         countpath += 1
-                        file = basename(paths)
+                        filepath = aug.LocalPath(paths)
+                        file = filepath.name
                         filename.append(file)
-                        lastmodtime = getmtime(paths)
-                        timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
-                                                  localtime(lastmodtime)))
+                        fs_meta = filepath.meta
+                        lastmodtime = fs_meta.updated.astimezone(local_timezone)
+                        timestamp.append(aug.meta.isoformat(lastmodtime))
                         filedescription.append(alldescription[countpath])
                         if isdir(paths):
                             filetype.append('folder')
