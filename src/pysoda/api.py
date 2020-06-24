@@ -76,7 +76,7 @@ class SodaApi(object):
             return create_folder_level_manifest(jsonpath, jsondescription)
         except Exception as e:
             raise e
-        
+
     def api_validate_dataset(self, validator_input):
         try:
             return validate_dataset(validator_input)
@@ -102,9 +102,9 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_bf_dataset_account(self, accountname):
+    def api_bf_dataset_account(self, accountname, role):
         try:
-            return bf_dataset_account(accountname)
+            return bf_dataset_account(accountname, role)
         except Exception as e:
             raise e
 

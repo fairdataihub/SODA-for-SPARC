@@ -86,7 +86,34 @@ my-dropdown<!DOCTYPE html>
               <div class="indeterminatebar"></div>
             </div>
             <p id='para-select-account-status'> <p>
+
+          <div style="display:none" id="div-permission-list">
+            <h5> Select a permission to load datasets
+             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">Previously added account(s) will be displayed in this drop-down list. Default account (last selected account before app closed) will be loaded automatically at start if available. Click on "Switch Account" and select one from the drop-down list for changing to another account (in case multiple ones are connected with SODA).
+                <br><br>
+                To remove an account from the list, you would have to delete the associated API key from the Blackfynn webpage (under "My Settings").
+                </span>
+              </div>
+            </h5>
+            <div class="demo-controls">
+              <select class="my-dropdown" style="width:80%;" id="select-permission-list">
+                <option value="select"> Select </option>
+                <option> Owner </option>
+                <option> Manager </option>
+                <option> Editor </option>
+                <option> Viewer </option>
+              </select>
+            </div>
+
+            <div id="div-filter-datasets-progress" class="progressdiv">
+              <div class="indeterminatebar"></div>
+            </div>
+            <p id='para-filter-datasets-status'> </p>
+
           </div>
+
+        </div>
 
         </div>
       </div>
@@ -138,6 +165,9 @@ my-dropdown<!DOCTYPE html>
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">
               Note: You must have "owner" or "manager" permissions on the dataset to change its name. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+              <br><br>
+              Tip: If you do not see any datasets listed under this drop-down, refer to the Connect to your Blackfynn account tab to specify an account and a permission/role for SODA to load your datasets.
+
               </span>
             </div>
             </h5>
@@ -184,6 +214,8 @@ my-dropdown<!DOCTYPE html>
               Subtitle, description, banner image and license are mandatory SPARC metadata.
               <br><br>
               Note: You must have "owner" or "manager" permissions on the dataset to edit metadata. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+              <br><br>
+              Tip: If you do not see any datasets listed under this drop-down, refer to Connect to your Blackfynn account tab to specify an account and a permission/role for SODA to load yoru datasets.
               </span>
             </div>
           </h5>
@@ -238,7 +270,7 @@ my-dropdown<!DOCTYPE html>
             <h5> </h5>
             <div class="demo-controls">
               <button id="button-add-subtitle" class="demo-button"> Add subtitle </button>
-              <p id = "para-dataset-subtitle-status"> </p>
+              <p id = "para-dataset-subtitle-status"  style="padding: 0 0; margin: 0 0"> </p>
             </div>
           </div>
 
@@ -254,7 +286,7 @@ my-dropdown<!DOCTYPE html>
             <h5> </h5>
             <div class="demo-controls">
               <button id="button-add-description" class="demo-button"> Add description </button>
-              <p id = "para-dataset-description-status"> </p>
+              <p id = "para-dataset-description-status"  style="padding: 0 0; margin: 0 0"> </p>
             </div>
           </div>
 
@@ -295,7 +327,7 @@ my-dropdown<!DOCTYPE html>
                 <p></p>
                 <p></p>
                 <button type="button" id="save-banner-image" class="demo-button"> Upload </button>
-                <p id = "para-dataset-banner-image-status"> </p>
+                <p id = "para-dataset-banner-image-status"  style="padding: 0 0; margin: 0 0"> </p>
               </div>
 
               <div class="banner-image" style="border: 1px solid black; ">
@@ -350,8 +382,9 @@ my-dropdown<!DOCTYPE html>
 
             </div>
 
+            <br>
             <div class="demo-controls">
-              <p id = "para-dataset-license-status"> </p>
+              <p id = "para-dataset-license-status"  style="padding: 0 0; margin: 0 0"> </p>
             </div>
 
           </div>
@@ -376,6 +409,9 @@ my-dropdown<!DOCTYPE html>
               <span class="tooltiptext">Select the Blackfynn dataset you wish to see/edit permissions (sorted alphabetically).
               <br><br>
               Note: You must have "owner" or "manager" permissions on the dataset to manage permissions. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+              <br><br>
+              Tip: If you do not see any datasets listed under this drop-down, refer to the Connect to your Blackfynn account tab to specify an account and a permission/role for SODA to load your datasets.
+
               </span>
             </div>
           </h5>
@@ -449,7 +485,7 @@ my-dropdown<!DOCTYPE html>
               <h5>  </h5>
               <div class="demo-controls">
                 <button id="button-add-permission-pi" class="demo-button" style="width: 250px"> Make PI owner </button>
-                <p id = "para-dataset-permission-status-pi"> </p>
+                <p id = "para-dataset-permission-status-pi" style="margin: 0 0; padding: 0 0"> </p>
               </div>
           </div>
 
@@ -477,7 +513,7 @@ my-dropdown<!DOCTYPE html>
               <h5>  </h5>
               <div class="demo-controls">
                 <button id="button-add-permission" class="demo-button" style="width: 250px"> Add permission for user </button>
-                <p id = "para-dataset-permission-status"> </p>
+                <p id = "para-dataset-permission-status" style="padding: 0 0; margin: 0 0"> </p>
               </div>
           </div>
 
@@ -504,7 +540,7 @@ my-dropdown<!DOCTYPE html>
             <h5>  </h5>
             <div class="demo-controls">
               <button id="button-add-permission-team" class="demo-button" style="width: 250px"> Add permission for team </button>
-              <p id = "para-dataset-permission-status-team"> </p>
+              <p id = "para-dataset-permission-status-team"  style="padding: 0 0; margin: 0 0"> </p>
             </div>
           </div>
 
@@ -512,7 +548,7 @@ my-dropdown<!DOCTYPE html>
               <h5>  </h5>
               <div class="demo-controls">
                 <button id="button-add-permission-curation-team" class="demo-button" style="min-width: 250px"> Share with Curation Team </button>
-                <p id = "para-dataset-permission-status-curation-team"> </p>
+                <p id = "para-dataset-permission-status-curation-team"  style="padding: 0 0; margin: 0 0"> </p>
               </div>
           </div>
 
@@ -549,6 +585,8 @@ my-dropdown<!DOCTYPE html>
               <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically).
               <br> <br>
               Note: You must have "owner", "manager" or "editor" permissions on the dataset to upload. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+              <br><br>
+              Tip: If you do not see any datasets listed under this drop-down, refer to the Connect to your Blackfynn account tab to specify an account and a permission/role for SODA to load your datasets.
               </span>
             </div>
           </h5>
@@ -627,7 +665,7 @@ my-dropdown<!DOCTYPE html>
               <button id="button-share-consortium" class="demo-button" style="min-width: 250px"> Share with Consortium
               </button>
 
-              <p id='para-share-consortium-status'> Please wait...</p>
+              <p id='para-share-consortium-status'  style="padding: 0 0; margin: 0 0"> Please wait...</p>
 
               <div style="position:absolute; right:30px;margin-top:-10px">
                 <h5>
@@ -636,6 +674,10 @@ my-dropdown<!DOCTYPE html>
                       Once your dataset is approved by the Curation Team, it is ready to be shared with the SPARC Consortium as embargoed dataset. Sharing will give "viewer" permissions to any SPARC investigator who has signed the SPARC Non-disclosure form and will allow them to see your data.
                       <br><br>
                       Note: You must have "owner" or "manager" permissions on the dataset to share with the SPARC consortium. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+
+                      <br><br>
+                      Tip: If you do not see any datasets listed under this drop-down, refer to the Connect to your Blackfynn account tab to specify an account and a permission/role for SODA to load your datasets.
+
                     </span>
                   </div>
                 </h5>
@@ -669,6 +711,10 @@ my-dropdown<!DOCTYPE html>
                       A DOI can optionally be reserved prior to publication. Otherwise, it will be reserved automatically when you publish the dataset.
                       <br><br>
                       Note: You must have "owner" or "manager" permissions on the dataset to view/reserve a DOI. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+
+                      <br><br>
+                      Tip: If you do not see any datasets listed under this drop-down, refer to the Connect to your Blackfynn account tab to specify an account and a permission/role for SODA to load your datasets.
+
                     </span>
                   </div>
                 </h5>
@@ -703,6 +749,10 @@ my-dropdown<!DOCTYPE html>
                       Publishing the dataset will make it visible to the public.
                       <br><br>
                       Note: You must be dataset "owner" and have your ORCID linked on Blackfynn in order to publish. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+
+                      <br><br>
+                      Tip: If you do not see any datasets listed under this drop-down, refer to the Connect to your Blackfynn account tab to specify an account and a permission/role for SODA to load your datasets.
+
                     </span>
                   </div>
                 </h5>
@@ -739,6 +789,9 @@ my-dropdown<!DOCTYPE html>
               Select the Blackfynn dataset for which you wish to change the status (sorted alphabetically).
               <br><br>
               Note: You must have "owner" or "manager" permissions on the dataset to change dataset status. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+              <br><br>
+              Tip: If you do not see any datasets listed under this drop-down, refer to the Connect to your Blackfynn account tab to specify an account and a permission/role for SODA to load your datasets.
+
               </span>
             </div>
           </h5>
