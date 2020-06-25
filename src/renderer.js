@@ -3690,7 +3690,7 @@ function removeDatasetListOptions() {
 function refreshAllBfDatasetLists(){
     var roleSelected = datasetPermissionList.options[datasetPermissionList.selectedIndex].text
     document.getElementById("div-filter-datasets-progress").style.display = "block"
-    document.getElementById("para-filter-datasets-status").innerHTML = "Loading datasets where you have permission as: " + roleSelected.toLowerCase() + "."
+    document.getElementById("para-filter-datasets-status").innerHTML = "Loading datasets where you have " + roleSelected.toLowerCase() + " permissions..."
     var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
 
     if (accountSelected === "Select"){
@@ -3742,7 +3742,7 @@ function refreshAllBfDatasetLists(){
               datasetStatusListChange()
             }
             document.getElementById("div-filter-datasets-progress").style.display = "none"
-            document.getElementById("para-filter-datasets-status").innerHTML = numberOfDatasetsRetrieved + " datasets filtered and loaded successfully on SODA!"
+            document.getElementById("para-filter-datasets-status").innerHTML = numberOfDatasetsRetrieved + " dataset(s) where you have " +  roleSelected.toLowerCase() + " permissions were loaded successfully in SODA's interface"
             parentDSTagify.settings.whitelist = getParentDatasets();
           }
         })
