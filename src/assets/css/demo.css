@@ -741,6 +741,14 @@ progress.progresstrack[value]::-webkit-progress-value {
   color: black
 }
 
+.te-preview {
+  min-width: 270px !important;
+}
+
+.te-preview .tui-editor-contents {
+  word-wrap: break-word !important;
+}
+
 
 #canvas {
   height: 600px;
