@@ -208,6 +208,7 @@ const bfUploadAccountList = document.querySelector('#bfuploadaccountlist')
 const bfAccountLoadProgress = document.querySelector('#div-bf-account-load-progress')
 const bfAccountLoadProgressCurate = document.querySelector('#div-bf-account-load-progress-curate')
 var myitem
+var datasetList
 const bfDatasetList = document.querySelector('#bfdatasetlist')
 const bfUploadDatasetList = document.querySelector('#bfuploaddatasetlist')
 const bfSelectAccountStatus = document.getElementById("para-select-account-status")
@@ -2673,6 +2674,8 @@ bfAccountList.addEventListener('change', () => {
   bfSelectAccountStatus.innerHTML = "Please wait..."
   bfAccountLoadProgress.style.display = 'block'
   currentDatasetPermission.innerHTML = ''
+  document.getElementById("div-filter-datasets-progress").style.display = "block"
+
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
   if (selectedbfaccount == 'Select') {
     bfSelectAccountStatus.innerHTML = "";
@@ -3684,49 +3687,51 @@ function refreshAllBfDatasetLists(){
       datasetDescriptionFileDataset.appendChild(option7)
       bfDatasetListPostCuration.appendChild(option8)
     } else {
-      client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
-        if(error) {
-          log.error(error)
-          console.error(error)
-        } else {
-          removeOptions(bfDatasetList)
-          removeOptions(bfDatasetListMetadata)
-          removeOptions(bfDatasetListPermission)
-          removeOptions(bfUploadDatasetList)
-          removeOptions(bfDatasetListDatasetStatus)
-          removeOptions(bfDatasetListRenameDataset)
-          removeOptions(bfDatasetListPostCuration)
-          removeOptions(datasetDescriptionFileDataset)
-          for (myitem in res){
-            var myitemselect = res[myitem]
-            var option = document.createElement("option")
-            option.textContent = myitemselect
-            option.value = myitemselect
-            bfDatasetList.appendChild(option)
-            var option2 = option.cloneNode(true)
-            var option3 = option.cloneNode(true)
-            var option4 = option.cloneNode(true)
-            var option5 = option.cloneNode(true)
-            var option6 = option.cloneNode(true)
-            var option7 = option.cloneNode(true)
-            var option8 = option.cloneNode(true)
-            bfDatasetListMetadata.appendChild(option2)
-            bfDatasetListPermission.appendChild(option3)
-            bfUploadDatasetList.appendChild(option4)
-            bfDatasetListDatasetStatus.appendChild(option5)
-            bfDatasetListRenameDataset.appendChild(option6)
-            datasetDescriptionFileDataset.appendChild(option7)
-            bfDatasetListPostCuration.appendChild(option8)
-            renameDatasetlistChange()
-            metadataDatasetlistChange()
-            permissionDatasetlistChange()
-            postCurationListChange()
-            datasetStatusListChange()
-        }
-      parentDSTagify.settings.whitelist = getParentDatasets();
+        client.invoke("api_bf_dataset_account", accountSelected, (error, res) => {
+          if(error) {
+            log.error(error)
+            console.error(error)
+          } else {
+            removeOptions(bfDatasetList)
+            removeOptions(bfDatasetListMetadata)
+            removeOptions(bfDatasetListPermission)
+            removeOptions(bfUploadDatasetList)
+            removeOptions(bfDatasetListDatasetStatus)
+            removeOptions(bfDatasetListRenameDataset)
+            removeOptions(bfDatasetListPostCuration)
+            removeOptions(datasetDescriptionFileDataset)
+            for (myitem in res){
+              var myitemselect = res[myitem]
+              var option = document.createElement("option")
+              option.textContent = myitemselect
+              option.value = myitemselect
+              bfDatasetList.appendChild(option)
+              var option2 = option.cloneNode(true)
+              var option3 = option.cloneNode(true)
+              var option4 = option.cloneNode(true)
+              var option5 = option.cloneNode(true)
+              var option6 = option.cloneNode(true)
+              var option7 = option.cloneNode(true)
+              var option8 = option.cloneNode(true)
+              bfDatasetListMetadata.appendChild(option2)
+              bfDatasetListPermission.appendChild(option3)
+              bfUploadDatasetList.appendChild(option4)
+              bfDatasetListDatasetStatus.appendChild(option5)
+              bfDatasetListRenameDataset.appendChild(option6)
+              datasetDescriptionFileDataset.appendChild(option7)
+              bfDatasetListPostCuration.appendChild(option8)
+              renameDatasetlistChange()
+              metadataDatasetlistChange()
+              permissionDatasetlistChange()
+              postCurationListChange()
+              datasetStatusListChange()
+            }
+            document.getElementById("div-filter-datasets-progress").style.display = "none"
+            document.getElementById("para-filter-datasets-status").innerHTML = numberOfDatasetsRetrieved + " datasets filtered and loaded successfully on SODA!"
+            parentDSTagify.settings.whitelist = getParentDatasets();
+          }
+        })
       }
-    })
-    }
 }
 
 function showCurrentSubtitle(){
@@ -3967,6 +3972,7 @@ function selectOptionColor(mylist){
   mylist.style.color = mylist.options[mylist.selectedIndex].style.color
 }
 
+
 function showAccountDetails(bfLoadAccount){
   /// load and get permission for account
   client.invoke("api_bf_account_details", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
@@ -3977,12 +3983,93 @@ function showAccountDetails(bfLoadAccount){
       bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
       bfLoadAccount.style.display = 'none'
     } else {
-      bfSelectAccountStatus.innerHTML = res;
+      bfSelectAccountStatus.innerHTML = res[0];
       bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
       bfLoadAccount.style.display = 'none'
+      datasetList = res[1]
+      datasetList.sort()
+      datasetPermissionList.selectedIndex = 0
+      document.getElementById("div-permission-list").style.display = "block"
+      document.getElementById("div-filter-datasets-progress").style.display = "none"
     }
   })
 }
+
+function get_dataset_list(accountname) {
+  var selectedAccount = accountname
+
+  client.invoke("api_bf_dataset_account", selectedAccount, (error, res) => {
+    if (error) {
+      log.error(error)
+      console.error(error)
+    } else {
+        // let promise = new Promise((resolve, reject) => {
+        //       setTimeout(() => resolve(res, 1000))
+        //     });
+        //
+        // let result = await promise
+
+        datasetList = res
+        datasetList.sort()
+        datasetPermissionList.selectedIndex = 0
+    }
+    console.log(datasetList)
+  })
+}
+
+datasetPermissionList.addEventListener("change", function(e) {
+  var datasetPermission = datasetPermissionList.options[datasetPermissionList.selectedIndex].text
+  // var datasetOptions  = get_dataset_list(bfAccountList.options[bfAccountList.selectedIndex].text)
+
+  //// return dataset list based on roles
+  var filteredDatasets = [];
+  if (datasetPermission.toLowerCase()==="all") {
+    for (var i=0; i<datasetList.length; i++) {
+      filteredDatasets.push(datasetList[i].name)
+    }
+  } else {
+      for (var i=0; i<datasetList.length; i++) {
+        if (datasetList[i].role === datasetPermission.toLowerCase()) {
+          filteredDatasets.push(datasetList[i].name)
+        }
+      }
+  }
+  console.log(filteredDatasets)
+  for (let list of [bfDatasetList, bfDatasetListMetadata, bfDatasetListMetadata, bfUploadDatasetList, bfDatasetListDatasetStatus, bfDatasetListRenameDataset, bfDatasetListPostCuration, datasetDescriptionFileDataset]) {
+    removeOptions(list)
+    addOption(list, "Select dataset", "Select dataset")
+  }
+
+
+  /// populate the dropdowns
+  for (myitem in filteredDatasets){
+    var myitemselect = filteredDatasets[myitem]
+    var option = document.createElement("option")
+    option.textContent = myitemselect
+    option.value = myitemselect
+    bfDatasetList.appendChild(option)
+    var option2 = option.cloneNode(true)
+    var option3 = option.cloneNode(true)
+    var option4 = option.cloneNode(true)
+    var option5 = option.cloneNode(true)
+    var option6 = option.cloneNode(true)
+    var option7 = option.cloneNode(true)
+    var option8 = option.cloneNode(true)
+    bfDatasetListMetadata.appendChild(option2)
+    bfDatasetListPermission.appendChild(option3)
+    bfUploadDatasetList.appendChild(option4)
+    bfDatasetListDatasetStatus.appendChild(option5)
+    bfDatasetListRenameDataset.appendChild(option6)
+    datasetDescriptionFileDataset.appendChild(option7)
+    bfDatasetListPostCuration.appendChild(option8)
+    renameDatasetlistChange()
+    metadataDatasetlistChange()
+    permissionDatasetlistChange()
+    postCurationListChange()
+    datasetStatusListChange()
+  }
+  document.getElementById("para-filter-datasets-status").innerHTML = "<span>Done!</span>"
+})
 
 function showUploadAccountDetails(bfLoadAccount){
   client.invoke("api_bf_account_details",
@@ -3999,6 +4086,7 @@ function showUploadAccountDetails(bfLoadAccount){
 }
 
 function loadDefaultAccount() {
+  document.getElementById("div-filter-datasets-progress").style.display = "block"
   client.invoke("api_bf_default_account_load", (error, res) => {
     if(error) {
       log.error(error)

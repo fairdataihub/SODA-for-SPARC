@@ -1293,25 +1293,39 @@ def bf_default_account_load():
 
 def bf_dataset_account(accountname):
     """
-    Args:
-        accountname: name of local Blackfynn account key (string)
-    Return:
-        dataset_list: list of datasets associated with the specified account Name (list of string)
-    Action:
-        Returns list of datasets associated with the specified account Name ('accountname')
+    This function filters dataset dropdowns across SODA by the permissions granted to users.
+
+    Input: BFaccountname
+    Output: a filtered dataset list with objects as elements: {"name": dataset's name, "id": dataset's id}
+
     """
-    try:
-        dataset_list = []
-        bf = Blackfynn(accountname)
-        current_user = bf._api._get('/user')
-        current_user_id = current_user['id']
-        for ds in bf.datasets():
-            dataset_list.append(ds.name)
-        dataset_list.sort(key=lambda v: v.upper()) # Returning the list of datasets in alphabetical order
-        dataset_list.insert(0, ['Select dataset'])
-        return dataset_list
-    except Exception as e:
-        raise e
+    # # current_user = bf._api._get('/user')
+    # # current_user_id = current_user['id']
+    # # for ds in bf.datasets():
+    # #     dataset_list.append(ds.name)
+    # dataset_list.sort(key=lambda v: v.upper()) # Returning the list of datasets in alphabetical order
+    # dataset_list.insert(0, ['Select dataset'])
+    # return dataset_list
+
+    bf = Blackfynn(accountname)
+    bfaccountname = bf.profile.id
+    datasets_list = bf.datasets()
+
+    all_bf_datasets = []
+
+    for dataset in datasets_list:
+
+        ### user_collaborators() returns a list with all the collaborators for the dataset and their information
+        user_info = dataset.user_collaborators()
+
+        for i in range(len(user_info)):
+            if user_info[i].id == bfaccountname:
+                all_bf_datasets.append({"id": dataset.id, "name": dataset.name, "role": user_info[i].role})
+
+    # all_bf_datasets[].sort(key=lambda v: v.upper())
+    # all_bf_datasets.insert(0, {"name": 'Select dataset'})
+
+    return all_bf_datasets
 
 
 def bf_account_details(accountname):
@@ -1341,7 +1355,8 @@ def bf_account_details(accountname):
         with open(configpath, 'w') as configfile:
             config.write(configfile)
 
-        return acc_details
+        ## return account details and datasets where such an account has some permission
+        return [acc_details, bf_dataset_account(accountname)]
 
     except Exception as e:
         raise e

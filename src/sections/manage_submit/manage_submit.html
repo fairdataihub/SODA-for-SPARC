@@ -86,6 +86,31 @@ my-dropdown<!DOCTYPE html>
               <div class="indeterminatebar"></div>
             </div>
             <p id='para-select-account-status'> <p>
+
+          <div style="display:none" id="div-permission-list">
+            <h5> Select a permission to load datasets
+             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">Previously added account(s) will be displayed in this drop-down list. Default account (last selected account before app closed) will be loaded automatically at start if available. Click on "Switch Account" and select one from the drop-down list for changing to another account (in case multiple ones are connected with SODA).
+                <br><br>
+                To remove an account from the list, you would have to delete the associated API key from the Blackfynn webpage (under "My Settings").
+                </span>
+              </div>
+            </h5>
+            <div class="demo-controls">
+              <select class="my-dropdown" style="width:80%;" id="select-permission-list">
+                <option default> All </option>
+                <option> Owner </option>
+                <option> Manager </option>
+                <option> Editor </option>
+                <option> Viewer </option>
+              </select>
+            </div>
+
+            <div id="div-filter-datasets-progress" class="progressdiv">
+              <div class="indeterminatebar"></div>
+            </div>
+            <p id='para-filter-datasets-status'> </p>
+
           </div>
 
         </div>
