@@ -1291,38 +1291,28 @@ def bf_default_account_load():
         raise e
 
 
-def bf_dataset_account(accountname, selected_role):
+def bf_dataset_account(accountname):
     """
-    This function filters dataset dropdowns across SODA by the permissions granted to users.
-
-    Input: BFaccountname and role
-    Output: a filtered dataset list with objects as elements: {"name": dataset's name, "id": dataset's id}
-
+    Args:
+        accountname: name of local Blackfynn account key (string)
+    Return:
+        dataset_list: list of datasets associated with the specified account Name (list of string)
+    Action:
+        Returns list of datasets associated with the specified account Name ('accountname')
     """
-    # # current_user = bf._api._get('/user')
-    # # current_user_id = current_user['id']
-    # # for ds in bf.datasets():
-    # #     dataset_list.append(ds.name)
-    # dataset_list.sort(key=lambda v: v.upper()) # Returning the list of datasets in alphabetical order
-    # dataset_list.insert(0, ['Select dataset'])
-    # return dataset_list
+    try:
+        dataset_list = []
+        bf = Blackfynn(accountname)
+        current_user = bf._api._get('/user')
+        current_user_id = current_user['id']
+        for ds in bf.datasets():
+            dataset_list.append(ds.name)
+        dataset_list.sort(key=lambda v: v.upper()) # Returning the list of datasets in alphabetical order
+        dataset_list.insert(0, ['Select dataset'])
+        return dataset_list
+    except Exception as e:
+        raise e
 
-    bf = Blackfynn(accountname)
-    bfaccountid = bf.profile.id
-
-    filtered_datasets = []
-
-    for dataset in bf.datasets():
-        user_info = dataset.user_collaborators()
-        dataset_role = user_info[0].role
-
-        if dataset_role == selected_role.lower() and user_info[0].id == bfaccountid:
-            filtered_datasets.append(dataset.name)
-
-    filtered_datasets.sort(key=lambda v: v.upper()) # Returning the list of datasets in alphabetical
-    filtered_datasets.insert(0, ['Select dataset'])
-
-    return filtered_datasets
 
 def bf_account_details(accountname):
     """
@@ -1355,28 +1345,6 @@ def bf_account_details(accountname):
 
     except Exception as e:
         raise e
-
-# def filter_datasets_by_permission(accountname, selected_role):
-#     """
-#     This function filters dataset dropdowns across SODA by the permissions granted to users.
-#
-#     Input: BFaccountname and role
-#     Output: a filtered dataset list with objects as elements: {"name": dataset's name, "id": dataset's id}
-#
-#     """
-#     bf = Blackfynn(accountname)
-#     bfaccountid = bf.profile.id
-#
-#     filtered_datasets = []
-#
-#     for dataset in bf.datasets():
-#         user_info = dataset.user_collaborators()
-#         dataset_role = user_info[0].role
-#
-#         if dataset_role == selected_role and user_info[0].id == bfaccountid:
-#             filtered_datasets.append({"id": dataset.id, "name": dataset.name})
-#
-#     return filtered_datasets
 
 
 def bf_new_dataset_folder(datasetname, accountname):

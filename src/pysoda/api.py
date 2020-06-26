@@ -102,9 +102,9 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_bf_dataset_account(self, accountname, role):
+    def api_bf_dataset_account(self, accountname):
         try:
-            return bf_dataset_account(accountname, role)
+            return bf_dataset_account(accountname)
         except Exception as e:
             raise e
 
