@@ -204,7 +204,6 @@ const bfAddAccountBtn = document.getElementById('add-bf-account')
 const bfAddAccountStatus = document.querySelector('#para-add-account-status')
 const bfAddAccountInfo = document.querySelector('#add-account-progress')
 const bfAccountList = document.querySelector('#bfaccountlist')
-const datasetPermissionList = document.getElementById("select-permission-list")
 const bfUploadAccountList = document.querySelector('#bfuploadaccountlist')
 const bfAccountLoadProgress = document.querySelector('#div-bf-account-load-progress')
 const bfAccountLoadProgressCurate = document.querySelector('#div-bf-account-load-progress-curate')
@@ -3970,7 +3969,6 @@ function selectOptionColor(mylist){
 
 function showAccountDetails(bfLoadAccount){
   /// load and get permission for account
-  var datasetPermission = datasetPermissionList.options[datasetPermissionList.selectedIndex].text
   client.invoke("api_bf_account_details", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
     if(error) {
       log.error(error)
