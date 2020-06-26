@@ -2150,6 +2150,8 @@ importnewDatasetBtn.addEventListener("click", function() {
 })
 
 // Generate dataset //
+var displaySize = 1000
+
 curateDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-please-wait-curate").innerHTML = "Please wait..."
   document.getElementById("para-curate-progress-bar-error-status").innerHTML = ""
@@ -2223,7 +2225,6 @@ curateDatasetBtn.addEventListener('click', () => {
     destinationDataset = 'upload to blackfynn'
     pathDatasetValue = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
     newDatasetNameVar = bfUploadDatasetList.options[bfUploadDatasetList.selectedIndex].text
-    ipcRenderer.send('open-info-upload-limitations')
   }
 
   // Initiate curation by calling Python funtion
@@ -2254,6 +2255,7 @@ curateDatasetBtn.addEventListener('click', () => {
     }
   })
 
+
   // Progress tracking function
   var countDone = 0
   var timerProgress = setInterval(progressfunction, 1000)
@@ -2281,14 +2283,14 @@ curateDatasetBtn.addEventListener('click', () => {
           } else {
             var value = (curatedDatasetSize / totalDatasetSize) * 100
             progressBarCurate.value = value
-            if (totalDatasetSize < 1024){
+            if (totalDatasetSize < displaySize){
               var totalSizePrint = totalDatasetSize.toFixed(2) + ' B'
-            } else if (totalDatasetSize < 1024*1024){
-              var totalSizePrint = (totalDatasetSize/1024).toFixed(2) + ' KB'
-            } else if (totalDatasetSize < 1024*1024*1024){
-              var totalSizePrint = (totalDatasetSize/1024/1024).toFixed(2) + ' MB'
+            } else if (totalDatasetSize < displaySize*displaySize){
+              var totalSizePrint = (totalDatasetSize/displaySize).toFixed(2) + ' KB'
+            } else if (totalDatasetSize < displaySize*displaySize*displaySize){
+              var totalSizePrint = (totalDatasetSize/displaySize/displaySize).toFixed(2) + ' MB'
             } else {
-              var totalSizePrint = (totalDatasetSize/1024/1024/1024).toFixed(2) + ' GB'
+              var totalSizePrint = (totalDatasetSize/displaySize/displaySize/displaySize).toFixed(2) + ' GB'
             }
             document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + 'Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')'
             // console.log(value, totalDatasetSize, curatedDatasetSize)
@@ -2810,7 +2812,6 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-progress-bar-status").innerHTML = "Preparing files ..."
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text
-  ipcRenderer.send('open-info-upload-limitations')
   client.invoke("api_bf_submit_dataset", selectedbfaccount, selectedbfdataset, pathSubmitDataset.placeholder, (error, res) => {
     if (error) {
       document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
@@ -2854,14 +2855,14 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
           }  else {
             var value = (uploadedFileSize/totalFileSize)*100
             progressBarUploadBf.value = value
-            if (totalFileSize < 1024){
+            if (totalFileSize < displaySize){
               var totalSizePrint = totalFileSize.toFixed(2) + ' B'
-            } else if (totalFileSize < 1024*1024){
-              var totalSizePrint = (totalFileSize/1024).toFixed(2) + ' KB'
-            } else if (totalFileSize < 1024*1024*1024){
-              var totalSizePrint = (totalFileSize/1024/1024).toFixed(2) + ' MB'
+            } else if (totalFileSize < displaySize*displaySize){
+              var totalSizePrint = (totalFileSize/displaySize).toFixed(2) + ' KB'
+            } else if (totalFileSize < displaySize*displaySize*displaySize){
+              var totalSizePrint = (totalFileSize/displaySize/displaySize).toFixed(2) + ' MB'
             } else {
-              var totalSizePrint = (totalFileSize/1024/1024/1024).toFixed(2) + ' GB'
+              var totalSizePrint = (totalFileSize/displaySize/displaySize/displaySize).toFixed(2) + ' GB'
             }
             document.getElementById("para-progress-bar-status").innerHTML = res[0] + 'Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')'
             // console.log(value, totalFileSize, uploadedFileSize)
