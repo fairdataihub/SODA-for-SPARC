@@ -207,6 +207,7 @@ const bfAccountList = document.querySelector('#bfaccountlist')
 const bfUploadAccountList = document.querySelector('#bfuploadaccountlist')
 const bfAccountLoadProgress = document.querySelector('#div-bf-account-load-progress')
 const bfAccountLoadProgressCurate = document.querySelector('#div-bf-account-load-progress-curate')
+const datasetPermissionList = document.getElementById("select-permission-list")
 var myitem
 var datasetList
 const bfDatasetList = document.querySelector('#bfdatasetlist')
@@ -2634,16 +2635,23 @@ ipcRenderer.on('selected-savedvalidatorlocal', (event, filepath) => {
 
 // Add existing bf account(s) to dropdown list
 bfAccountCheckBtn.addEventListener('click', (event) => {
-  bfSelectAccountStatus.innerHTML = "Please wait..."
+  datasetList = []
+  bfAccountList.selectedIndex = 0
+  bfSelectAccountStatus.innerHTML = "Loading existing accounts..."
   bfAccountLoadProgress.style.display = 'block'
   bfAccountLoadProgressCurate.style.display = 'block'
+  datasetPermissionList.selectedIndex = 0
+  document.getElementById("para-filter-datasets-status").innerHTML = ""
   updateBfAccountList()
+  clearDatasetDropdowns()
 })
 
 bfUploadAccountCheckBtn.addEventListener('click', (event) => {
   bfSelectAccountStatus.innerHTML = "Please wait..."
   bfAccountLoadProgress.style.display = 'block'
   bfAccountLoadProgressCurate.style.display = 'block'
+  datasetPermissionList.selectedIndex = 0
+  document.getElementById("para-filter-datasets-status").innerHTML = ""
   updateBfAccountList()
 })
 
@@ -2671,16 +2679,19 @@ bfAddAccountBtn.addEventListener('click', () => {
 
 // Select bf account from dropdownlist and show existing dataset //
 bfAccountList.addEventListener('change', () => {
-  bfSelectAccountStatus.innerHTML = "Please wait..."
+  bfSelectAccountStatus.innerHTML = "Loading account details..."
+  document.getElementById("para-filter-datasets-status").innerHTML = "Loading datasets..."
   bfAccountLoadProgress.style.display = 'block'
   currentDatasetPermission.innerHTML = ''
   document.getElementById("div-filter-datasets-progress").style.display = "block"
+  datasetPermissionList.selectedIndex = 0
 
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
   if (selectedbfaccount == 'Select') {
     bfSelectAccountStatus.innerHTML = "";
     bfUploadSelectAccountStatus.innerHTML = "";
     bfAccountLoadProgress.style.display = 'none'
+    datasetPermissionList.disabled = true
   } else{
     var myitemselect = selectedbfaccount
     var option = document.createElement("option")
@@ -2689,7 +2700,7 @@ bfAccountList.addEventListener('change', () => {
     bfUploadAccountList.value = selectedbfaccount
     showAccountDetails(bfAccountLoadProgress)
   }
-  refreshAllBfDatasetLists()
+  // refreshAllBfDatasetLists()
   refreshBfUsersList()
   refreshBfTeamsList(bfListTeams)
 })
@@ -2711,7 +2722,7 @@ bfUploadAccountList.addEventListener('change', () => {
     bfAccountList.value = selectedbfaccount
     showAccountDetails(bfAccountLoadProgressCurate)
   }
-  refreshAllBfDatasetLists()
+  // refreshAllBfDatasetLists()
   refreshBfUsersList()
   refreshBfTeamsList(bfListTeams)
 })
@@ -2719,25 +2730,25 @@ bfUploadAccountList.addEventListener('change', () => {
 // Refresh lists of bf datasets (in case user create it online) //
 bfRefreshDatasetBtn.addEventListener('click', () => {
   currentDatasetPermission.innerHTML = ''
-  refreshAllBfDatasetLists()
+  // refreshAllBfDatasetLists()
 })
 bfUploadRefreshDatasetBtn.addEventListener('click', () => {
-  refreshAllBfDatasetLists()
+  // refreshAllBfDatasetLists()
 })
 bfRefreshDatasetMetadataBtn.addEventListener('click', () => {
-  refreshAllBfDatasetLists()
+  // refreshAllBfDatasetLists()
 })
 bfRefreshDatasetPermissionBtn.addEventListener('click', () => {
-  refreshAllBfDatasetLists()
+  // refreshAllBfDatasetLists()
 })
 
 bfRefreshDatasetStatusBtn.addEventListener('click', () => {
-  refreshAllBfDatasetLists()
+  // refreshAllBfDatasetLists()
 })
 
 bfRefreshDatasetRenameDatasetBtn.addEventListener('click', () => {
   renameDatasetName.value = ""
-  refreshAllBfDatasetLists()
+  // refreshAllBfDatasetLists()
 })
 
 
@@ -2765,11 +2776,11 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
           bfCreateNewDatasetBtn.disabled = false
         } else {
           bfCreateNewDatasetStatus.innerHTML = 'Success: created dataset' + " '" + bfNewDatasetName.value + "'" + smileyCan
-          refreshAllBfDatasetLists()
           currentDatasetPermission.innerHTML = ''
           bfCreateNewDatasetBtn.disabled = false
         }
       })
+    getDatasetList()
     }
   })
 })
@@ -2779,13 +2790,13 @@ bfRenameDatasetBtn.addEventListener('click', () => {
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var currentDatasetName = bfDatasetListRenameDataset.options[bfDatasetListRenameDataset.selectedIndex].text
   var renamedDatasetName = renameDatasetName.value
-  console.log(currentDatasetName)
   if (currentDatasetName ==='Select dataset'){
     emessage = 'Please select a valid dataset'
     bfRenameDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
   } else {
     bfRenameDatasetBtn.disabled = true
     bfRenameDatasetStatus.innerHTML = 'Renaming...'
+    // bfDatasetListRenameDataset.disabled = true
     client.invoke("api_bf_rename_dataset", selectedbfaccount, currentDatasetName, renamedDatasetName, (error, res) => {
       if (error) {
         log.error(error)
@@ -2794,9 +2805,11 @@ bfRenameDatasetBtn.addEventListener('click', () => {
         bfRenameDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
         bfRenameDatasetBtn.disabled = false
       } else {
-        refreshAllBfDatasetLists()
+        getDatasetList()
+        removeOptions(bfDatasetListRenameDataset)
+        addOption(bfDatasetListRenameDataset, "Select dataset", "Select dataset")
         renameDatasetName.value = ""
-        bfRenameDatasetStatus.innerHTML = 'Success: renamed dataset' + " '" + currentDatasetName + "'" + ' to' + " '" + renamedDatasetName + "'" + smileyCan
+        bfRenameDatasetStatus.innerHTML = 'Success: renamed dataset' + " '" + currentDatasetName + "'" + ' to' + " '" + renamedDatasetName + "'. Updating dataset list..."
         bfRenameDatasetBtn.disabled = false
       }
     })
@@ -2946,14 +2959,14 @@ bfDatasetList.addEventListener('change', () => {
 bfDatasetListRenameDataset.addEventListener('change', () => {
   renameDatasetlistChange()
   var listSelectedIndex = bfDatasetListRenameDataset.selectedIndex
-  bfDatasetList.selectedIndex = listSelectedIndex
-  bfDatasetListMetadata.selectedIndex = listSelectedIndex
-  metadataDatasetlistChange()
-  bfDatasetListPermission.selectedIndex = listSelectedIndex
-  permissionDatasetlistChange()
-  bfUploadDatasetList.selectedIndex = listSelectedIndex
-  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
-  datasetStatusListChange()
+  // bfDatasetList.selectedIndex = listSelectedIndex
+  // bfDatasetListMetadata.selectedIndex = listSelectedIndex
+  // // metadataDatasetlistChange()
+  // bfDatasetListPermission.selectedIndex = listSelectedIndex
+  // // permissionDatasetlistChange()
+  // bfUploadDatasetList.selectedIndex = listSelectedIndex
+  // bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
+  // datasetStatusListChange()
 })
 
 function renameDatasetlistChange(){
@@ -2997,6 +3010,17 @@ function metadataDatasetlistChange(){
 
 // Manage dataset permission
 bfDatasetListPermission.addEventListener('change', () => {
+  document.getElementById("para-dataset-permission-status").innerHTML = ""
+  document.getElementById("para-dataset-permission-current").innerHTML = ""
+  document.getElementById("para-dataset-permission-status-pi").innerHTML = ""
+  document.getElementById("para-dataset-permission-status-team").innerHTML = ""
+
+  bfListUsers.selectedIndex = 0
+  bfListRoles.selectedIndex = 0
+  bfListTeams.selectedIndex = 0
+  bfListRolesTeam.selectedIndex = 0
+  bfListUsersPI.selectedIndex = 0
+
   var listSelectedIndex = bfDatasetListPermission.selectedIndex
   bfDatasetListMetadata.selectedIndex = listSelectedIndex
   metadataDatasetlistChange()
@@ -3298,6 +3322,7 @@ ipcRenderer.on('warning-add-permission-owner-selection-PI', (event, index) => {
       datasetPermissionStatusPI.innerHTML = res
       showCurrentPermission()
       enableform(bfPermissionForm)
+      getDatasetList()
     }
   })
   } else {
@@ -3330,6 +3355,7 @@ ipcRenderer.on('warning-add-permission-owner-selection', (event, index) => {
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text
   if (index === 0) {
     addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, selectedRole)
+    getDatasetList()
   } else {
     bfCurrentPermissionProgress.style.display = 'none'
     enableform(bfPermissionForm)
@@ -3660,78 +3686,7 @@ function refreshBfDatasetList(bfdstlist, bfAccountList){
 }
 
 function refreshAllBfDatasetLists(){
-    var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text
-    if (accountSelected === "Select"){
-      removeOptions(bfDatasetList)
-      removeOptions(bfDatasetListMetadata)
-      removeOptions(bfDatasetListPermission)
-      removeOptions(bfUploadDatasetList)
-      removeOptions(bfDatasetListDatasetStatus)
-      removeOptions(bfDatasetListRenameDataset)
-      removeOptions(bfDatasetListPostCuration)
-      var optionSelect = document.createElement("option")
-      optionSelect.textContent = 'Select dataset'
-      bfDatasetList.appendChild(optionSelect)
-      var option2 = optionSelect.cloneNode(true)
-      var option3 = optionSelect.cloneNode(true)
-      var option4 = optionSelect.cloneNode(true)
-      var option5 = optionSelect.cloneNode(true)
-      var option6 = optionSelect.cloneNode(true)
-      var option7 = optionSelect.cloneNode(true)
-      var option8 = optionSelect.cloneNode(true)
-      bfDatasetListMetadata.appendChild(option2)
-      bfDatasetListPermission.appendChild(option3)
-      bfUploadDatasetList.appendChild(option4)
-      bfDatasetListDatasetStatus.appendChild(option5)
-      bfDatasetListRenameDataset.appendChild(option6)
-      datasetDescriptionFileDataset.appendChild(option7)
-      bfDatasetListPostCuration.appendChild(option8)
-    } else {
-        client.invoke("api_bf_dataset_account", accountSelected, (error, res) => {
-          if(error) {
-            log.error(error)
-            console.error(error)
-          } else {
-            removeOptions(bfDatasetList)
-            removeOptions(bfDatasetListMetadata)
-            removeOptions(bfDatasetListPermission)
-            removeOptions(bfUploadDatasetList)
-            removeOptions(bfDatasetListDatasetStatus)
-            removeOptions(bfDatasetListRenameDataset)
-            removeOptions(bfDatasetListPostCuration)
-            removeOptions(datasetDescriptionFileDataset)
-            for (myitem in res){
-              var myitemselect = res[myitem]
-              var option = document.createElement("option")
-              option.textContent = myitemselect
-              option.value = myitemselect
-              bfDatasetList.appendChild(option)
-              var option2 = option.cloneNode(true)
-              var option3 = option.cloneNode(true)
-              var option4 = option.cloneNode(true)
-              var option5 = option.cloneNode(true)
-              var option6 = option.cloneNode(true)
-              var option7 = option.cloneNode(true)
-              var option8 = option.cloneNode(true)
-              bfDatasetListMetadata.appendChild(option2)
-              bfDatasetListPermission.appendChild(option3)
-              bfUploadDatasetList.appendChild(option4)
-              bfDatasetListDatasetStatus.appendChild(option5)
-              bfDatasetListRenameDataset.appendChild(option6)
-              datasetDescriptionFileDataset.appendChild(option7)
-              bfDatasetListPostCuration.appendChild(option8)
-              renameDatasetlistChange()
-              metadataDatasetlistChange()
-              permissionDatasetlistChange()
-              postCurationListChange()
-              datasetStatusListChange()
-            }
-            document.getElementById("div-filter-datasets-progress").style.display = "none"
-            document.getElementById("para-filter-datasets-status").innerHTML = numberOfDatasetsRetrieved + " datasets filtered and loaded successfully on SODA!"
-            parentDSTagify.settings.whitelist = getParentDatasets();
-          }
-        })
-      }
+  refreshDatasetList()
 }
 
 function showCurrentSubtitle(){
@@ -3983,45 +3938,36 @@ function showAccountDetails(bfLoadAccount){
       bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
       bfLoadAccount.style.display = 'none'
     } else {
-      bfSelectAccountStatus.innerHTML = res[0];
-      bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
-      bfLoadAccount.style.display = 'none'
-      datasetList = res[1]
-      datasetList.sort()
-      datasetPermissionList.selectedIndex = 0
-      document.getElementById("div-permission-list").style.display = "block"
-      document.getElementById("div-filter-datasets-progress").style.display = "none"
+        datasetList = []
+        bfSelectAccountStatus.innerHTML = res[0];
+        bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
+        bfLoadAccount.style.display = 'none'
+        datasetList = res[1]
+        refreshDatasetList()
+        document.getElementById("div-permission-list").style.display = "block"
+        document.getElementById("div-filter-datasets-progress").style.display = "none"
+        document.getElementById("para-filter-datasets-status").innerHTML = "All datasets were loaded successfully in SODA's interface. " + smileyCan
     }
   })
 }
 
-function get_dataset_list(accountname) {
-  var selectedAccount = accountname
-
-  client.invoke("api_bf_dataset_account", selectedAccount, (error, res) => {
-    if (error) {
+function getDatasetList() {
+  client.invoke("api_bf_account_details", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
+    if(error) {
       log.error(error)
       console.error(error)
     } else {
-        // let promise = new Promise((resolve, reject) => {
-        //       setTimeout(() => resolve(res, 1000))
-        //     });
-        //
-        // let result = await promise
-
-        datasetList = res
-        datasetList.sort()
-        datasetPermissionList.selectedIndex = 0
+        datasetList = []
+        datasetList = res[1]
+        var numberOfDatasets = refreshDatasetList()
     }
-    console.log(datasetList)
   })
 }
 
-datasetPermissionList.addEventListener("change", function(e) {
+function refreshDatasetList() {
   var datasetPermission = datasetPermissionList.options[datasetPermissionList.selectedIndex].text
-  // var datasetOptions  = get_dataset_list(bfAccountList.options[bfAccountList.selectedIndex].text)
 
-  //// return dataset list based on roles
+  datasetList.sort()
   var filteredDatasets = [];
   if (datasetPermission.toLowerCase()==="all") {
     for (var i=0; i<datasetList.length; i++) {
@@ -4034,16 +3980,24 @@ datasetPermissionList.addEventListener("change", function(e) {
         }
       }
   }
-  console.log(filteredDatasets)
-  for (let list of [bfDatasetList, bfDatasetListMetadata, bfDatasetListMetadata, bfUploadDatasetList, bfDatasetListDatasetStatus, bfDatasetListRenameDataset, bfDatasetListPostCuration, datasetDescriptionFileDataset]) {
+  populateDatasetDropdowns(filteredDatasets)
+  parentDSTagify.settings.whitelist = getParentDatasets();
+  return filteredDatasets.length
+}
+
+//// De-populate dataset dropdowns to clear options
+function clearDatasetDropdowns() {
+  for (let list of [bfDatasetList, bfDatasetListMetadata, bfDatasetListMetadata, bfUploadDatasetList, bfDatasetListDatasetStatus, bfDatasetListRenameDataset, bfDatasetListPostCuration, datasetDescriptionFileDataset, bfDatasetListPermission]) {
     removeOptions(list)
     addOption(list, "Select dataset", "Select dataset")
   }
+}
 
-
-  /// populate the dropdowns
-  for (myitem in filteredDatasets){
-    var myitemselect = filteredDatasets[myitem]
+/// populate the dropdowns
+function populateDatasetDropdowns(mylist) {
+  clearDatasetDropdowns()
+  for (myitem in mylist){
+    var myitemselect = mylist[myitem]
     var option = document.createElement("option")
     option.textContent = myitemselect
     option.value = myitemselect
@@ -4068,7 +4022,23 @@ datasetPermissionList.addEventListener("change", function(e) {
     postCurationListChange()
     datasetStatusListChange()
   }
-  document.getElementById("para-filter-datasets-status").innerHTML = "<span>Done!</span>"
+}
+
+datasetPermissionList.addEventListener("change", function(e) {
+  var datasetPermission = datasetPermissionList.options[datasetPermissionList.selectedIndex].text
+
+  if (bfAccountList.options[bfAccountList.selectedIndex].text === "Select") {
+    document.getElementById("para-filter-datasets-status").innerHTML = "<span style='color:red'>Please select an account first!</span>"
+  } else {
+    for (let list of [bfDatasetList, bfDatasetListMetadata, bfDatasetListMetadata, bfUploadDatasetList, bfDatasetListDatasetStatus, bfDatasetListRenameDataset, bfDatasetListPostCuration, datasetDescriptionFileDataset]) {
+      removeOptions(list)
+      addOption(list, "Select dataset", "Select dataset")
+    }
+    var numberOfDatasetsRetrieved = refreshDatasetList()
+    document.getElementById("div-permission-list").style.display = "block"
+    document.getElementById("div-filter-datasets-progress").style.display = "none"
+    document.getElementById("para-filter-datasets-status").innerHTML = numberOfDatasetsRetrieved + " dataset(s) where you have " +  datasetPermission.toLowerCase() + " permissions were loaded successfully in SODA's interface. " + smileyCan
+  }
 })
 
 function showUploadAccountDetails(bfLoadAccount){
@@ -4104,7 +4074,8 @@ function loadDefaultAccount() {
           bfUploadAccountList.appendChild(option2)
           showAccountDetails(bfAccountLoadProgress)
           bfAccountLoadProgress.style.display = 'block'
-          refreshAllBfDatasetLists()
+          bfSelectAccountStatus.innerHTML = "Loading Blackfynn account details..."
+          // refreshAllBfDatasetLists()
           refreshBfUsersList()
           refreshBfTeamsList(bfListTeams)
       } else {
@@ -4114,12 +4085,14 @@ function loadDefaultAccount() {
           option.value = myitemselect
           bfAccountList.appendChild(option)
           var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
+          datasetPermissionList.disabled = true
       }
     }
   })
 }
 
 function updateBfAccountList(){
+  datasetPermissionList.disabled = true
   client.invoke("api_bf_account_list", (error, res) => {
   if(error) {
     log.error(error)
@@ -4140,13 +4113,14 @@ function updateBfAccountList(){
         bfUploadSelectAccountStatus.innerHTML = ""
         bfAccountLoadProgressCurate.style.display = 'none'
       }
+      datasetPermissionList.disabled = false
     }
     if (res[0] === "Select" && res.length === 1) {
       bfSelectAccountStatus.innerHTML = "No existing accounts to switch. Please add a new account!"
       bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
+      datasetPermissionList.disabled = true
     }
-
-    refreshAllBfDatasetLists()
+    // refreshAllBfDatasetLists()
     refreshBfUsersList()
     refreshBfTeamsList(bfListTeams)
 })
