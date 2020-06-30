@@ -10,7 +10,7 @@ from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_o
     bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load, bf_get_doi, bf_reserve_doi, \
     bf_get_publishing_status, bf_publish_dataset, \
     save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone,\
-    validate_dataset, create_folder_level_manifest
+    validate_dataset, create_folder_level_manifest, get_username
 
 
 import sys
@@ -113,6 +113,9 @@ class SodaApi(object):
             return bf_account_details(accountname)
         except Exception as e:
             raise e
+
+    def api_get_username(self, accountname):
+        return get_username(accountname)
 
     def api_bf_new_dataset_folder(self, datasetname, accountname):
         try:

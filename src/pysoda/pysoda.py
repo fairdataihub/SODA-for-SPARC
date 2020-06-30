@@ -1322,10 +1322,20 @@ def bf_dataset_account(accountname):
             if user_info[i].id == bfaccountname:
                 all_bf_datasets.append({"id": dataset.id, "name": dataset.name, "role": user_info[i].role})
 
-    # all_bf_datasets[].sort(key=lambda v: v.upper())
-    # all_bf_datasets.insert(0, {"name": 'Select dataset'})
-
     return all_bf_datasets
+
+
+def get_username(accountname):
+    """
+    Input: User's accountname and the name of the selected dataset
+
+    Output: User's name
+    """
+
+    bf = Blackfynn(accountname)
+    bfname = bf.profile.first_name + " " + bf.profile.last_name
+
+    return bfname
 
 
 def bf_account_details(accountname):
@@ -1356,7 +1366,7 @@ def bf_account_details(accountname):
             config.write(configfile)
 
         ## return account details and datasets where such an account has some permission
-        return [acc_details, bf_dataset_account(accountname)]
+        return {"account-details": acc_details, "datasets": bf_dataset_account(accountname)}
 
     except Exception as e:
         raise e
