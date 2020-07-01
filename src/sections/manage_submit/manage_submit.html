@@ -86,6 +86,30 @@ my-dropdown<!DOCTYPE html>
               <div class="indeterminatebar"></div>
             </div>
             <p id='para-select-account-status'> <p>
+
+          <div style="display:none" id="div-permission-list">
+            <h5> Filter visible datasets in the SODA interface based on your permission:
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">
+                  You will see multiple dropdown lists throughout the SODA interface listing the datasets on the connected Blackfynn account. You can filter those lists based on your permissions on the dataset. See our <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> on Blackfynn permissions for more information.
+                </span>
+              </div>
+            </h5>
+            <div class="demo-controls">
+              <select class="my-dropdown" style="width:80%;" id="select-permission-list">
+                <option default> All </option>
+                <option> Owner </option>
+                <option> Manager </option>
+                <option> Editor </option>
+                <option> Viewer </option>
+              </select>
+            </div>
+
+            <div id="div-filter-datasets-progress" class="progressdiv">
+              <div class="indeterminatebar"></div>
+            </div>
+            <p id='para-filter-datasets-status'> </p>
+
           </div>
 
         </div>
