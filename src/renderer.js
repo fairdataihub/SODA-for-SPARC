@@ -3892,6 +3892,17 @@ function addPermissionUser(selectedBfAccount, selectedBfDataset, selectedUser, s
             log.error(error)
             console.error(error)
           } else {
+
+              if (selectedRole === "owner" ) {
+                for (var i=0; i<datasetList.length; i++) {
+                  if (datasetList[i].name === selectedBfDataset) {
+                    datasetList[i].role = "manager"
+                    }
+                  }
+              refreshDatasetListChooseOption("#bfdatasetlist_permission", selectedBfDataset)
+              syncDatasetDropdownOption(bfDatasetListPermission)
+              }
+
               if (selectedUser === res1) {
                 // then change role of dataset and refresh dataset list
                 for (var i=0; i<datasetList.length; i++) {
