@@ -2680,10 +2680,8 @@ bfAddAccountBtn.addEventListener('click', () => {
 // Select bf account from dropdownlist and show existing dataset //
 bfAccountList.addEventListener('change', () => {
   bfSelectAccountStatus.innerHTML = "Loading account details..."
-  document.getElementById("para-filter-datasets-status").innerHTML = "Loading datasets..."
   bfAccountLoadProgress.style.display = 'block'
   currentDatasetPermission.innerHTML = ''
-  document.getElementById("div-filter-datasets-progress").style.display = "block"
   datasetPermissionList.selectedIndex = 0
 
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
@@ -2700,7 +2698,6 @@ bfAccountList.addEventListener('change', () => {
     bfUploadAccountList.value = selectedbfaccount
     showAccountDetails(bfAccountLoadProgress)
   }
-  // refreshAllBfDatasetLists()
   refreshBfUsersList()
   refreshBfTeamsList(bfListTeams)
 })
@@ -3968,16 +3965,27 @@ function showAccountDetails(bfLoadAccount){
       bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
       bfLoadAccount.style.display = 'none'
     } else {
-        datasetList = []
-        bfSelectAccountStatus.innerHTML = res["account-details"];
+        bfSelectAccountStatus.innerHTML = res;
         bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
         bfLoadAccount.style.display = 'none'
-        datasetList = res["datasets"]
-        refreshDatasetList()
         document.getElementById("div-permission-list").style.display = "block"
-        document.getElementById("div-filter-datasets-progress").style.display = "none"
-        document.getElementById("para-filter-datasets-status").innerHTML = "All datasets were loaded successfully in SODA's interface. " + smileyCan
-    }
+        document.getElementById("div-filter-datasets-progress").style.display = "block"
+        document.getElementById("para-filter-datasets-status").innerHTML = "Loading datasets for your account..."
+        client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, result) => {
+            if (error) {
+              log.error(error)
+              console.log(error)
+              var emessage = error
+              document.getElementById("para-filter-datasets-status").innerHTML = "<span style='color: red'>" + emessage + "</span>"
+            } else {
+                datasetList = []
+                datasetList = result
+                refreshDatasetList()
+                document.getElementById("div-filter-datasets-progress").style.display = "none"
+                document.getElementById("para-filter-datasets-status").innerHTML = "All datasets were loaded successfully in SODA's interface. " + smileyCan
+              }
+          })
+        }
   })
 }
 
@@ -4141,7 +4149,6 @@ function showUploadAccountDetails(bfLoadAccount){
 }
 
 function loadDefaultAccount() {
-  document.getElementById("div-filter-datasets-progress").style.display = "block"
   client.invoke("api_bf_default_account_load", (error, res) => {
     if(error) {
       log.error(error)

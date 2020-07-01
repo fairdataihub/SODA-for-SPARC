@@ -1322,7 +1322,9 @@ def bf_dataset_account(accountname):
             if user_info[i].id == bfaccountname:
                 all_bf_datasets.append({"id": dataset.id, "name": dataset.name, "role": user_info[i].role})
 
-    return all_bf_datasets
+    sorted_bf_datasets = sorted(all_bf_datasets, key=lambda k: k['name'].lower())
+
+    return sorted_bf_datasets
 
 
 def get_username(accountname):
@@ -1366,7 +1368,7 @@ def bf_account_details(accountname):
             config.write(configfile)
 
         ## return account details and datasets where such an account has some permission
-        return {"account-details": acc_details, "datasets": bf_dataset_account(accountname)}
+        return acc_details
 
     except Exception as e:
         raise e
