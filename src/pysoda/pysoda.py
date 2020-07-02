@@ -1322,7 +1322,7 @@ def bf_dataset_account(accountname):
             if user_info[i].id == bfaccountname:
                 all_bf_datasets.append({"id": dataset.id, "name": dataset.name, "role": user_info[i].role})
 
-    sorted_bf_datasets = sorted(all_bf_datasets, key=lambda k: k['name'].lower())
+    sorted_bf_datasets = sorted(all_bf_datasets, key=lambda k: k['name'].upper())
 
     return sorted_bf_datasets
 

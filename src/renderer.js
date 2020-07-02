@@ -3985,6 +3985,7 @@ function showAccountDetails(bfLoadAccount){
         document.getElementById("div-permission-list").style.display = "block"
         document.getElementById("div-filter-datasets-progress").style.display = "block"
         document.getElementById("para-filter-datasets-status").innerHTML = "Loading datasets from your account ..."
+        datasetPermissionList.disabled = true
         client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, result) => {
             if (error) {
               log.error(error)
@@ -3996,6 +3997,7 @@ function showAccountDetails(bfLoadAccount){
                 datasetList = result
                 refreshDatasetList()
                 document.getElementById("div-filter-datasets-progress").style.display = "none"
+                datasetPermissionList.disabled = false
                 document.getElementById("para-filter-datasets-status").innerHTML = "All datasets were loaded successfully in SODA's interface. " + smileyCan
               }
           })
@@ -4059,7 +4061,11 @@ function refreshDatasetList() {
         }
       }
   }
-  filteredDatasets.sort()
+
+  filteredDatasets.sort(function (a, b) {
+    return a.toLowerCase().localeCompare(b.toLowerCase());
+  });
+
   populateDatasetDropdowns(filteredDatasets)
   parentDSTagify.settings.whitelist = getParentDatasets();
 
