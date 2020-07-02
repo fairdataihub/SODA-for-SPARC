@@ -4694,11 +4694,11 @@ function dropAddToTable(e, myID){
   }
 }
 
-const allowedMedataFiles = ['submission.xlsx', 'submission.csv',
-  'dataset_description.xlsx', 'dataset_description.csv',
-  'subjects.xlsx', 'subjects.csv',
-  'samples.xlsx', 'samples.csv',
-  'README', 'CHANGES']
+const allowedMedataFiles = ['submission.xlsx', 'submission.csv', 'submission.json',
+  'dataset_description.xlsx', 'dataset_description.csv', 'dataset_description.json',
+  'subjects.xlsx', 'subjects.csv', 'subjects.json',
+  'samples.xlsx', 'samples.csv', 'samples.json',
+  'README.txt', 'CHANGES.txt']
 
 function dropAddToTableMetadata(e, myID){
   //e.target.style.color = 'inherit';

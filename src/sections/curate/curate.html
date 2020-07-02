@@ -89,7 +89,7 @@
           </div>
 
           <div id="div-organize-dataset" class="datasetsaveoption">
-            <h5> Specify files/folders to be included in you dataset under the table located below.
+            <h5> Specify files/folders to be included in your dataset under the table located below.
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">
                   All SPARC datasets must follow the SPARC Dataset Structure. You can accomplish that in SODA by adding files and folders in the table under the corresponding SPARC folder. This table will then be used by SODA to create your dataset when you reach the "Generate dataset" feature.
@@ -154,7 +154,7 @@
                       <button id="button-select-primary" class="demo-button-table">Select files </button>
                       <button id="button-select-primary-directory" class="demo-button-table">Select folders</button>
                       <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                        <span class="tooltiptext">primary: Folder containing all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines “raw (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders.
+                        <span class="tooltiptext">primary: Folder containing all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines “raw" (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders.
                         </span>
                       </div>
                     </th>
@@ -277,9 +277,9 @@
               <span class="tooltiptext">
               These files will be included in the main folder of your dataset.
               <br><br>
-              The "submission" and "dataset_description" files are mandatory for all datasets. Requirement of "samples" and/or "subjects" files is dataset-specific. All these files must be in xlsx or cvs formats. Visit the "Prepare Metadata" section of SODA to download templates of these files as provided by the Curation Team.
+              The "submission", "dataset_description", and "subjects" files are mandatory for all datasets. Requirement of "samples" files is dataset-specific. All these files must be in xlsx, cvs, or json formats. Visit the "Prepare Metadata" section of SODA to download templates of these files as provided by the Curation Team.
               <br><br>
-              Other authorized metadata files are "README" and "CHANGES".
+              Other authorized metadata files are "README.txt" and "CHANGES.txt".
               <br><br>
               No other files are allowed.
               </span>
