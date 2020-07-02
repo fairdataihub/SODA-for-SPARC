@@ -4059,6 +4059,7 @@ function refreshDatasetList() {
         }
       }
   }
+  filteredDatasets.sort()
   populateDatasetDropdowns(filteredDatasets)
   parentDSTagify.settings.whitelist = getParentDatasets();
 
