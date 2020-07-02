@@ -599,6 +599,7 @@ height: 80%;
   z-index: 1;
   top: -5px;
   right: 110%;
+  font-weight: bold;
 }
 
 .tooltipnew .tooltiptext::after {
