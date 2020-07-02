@@ -2776,7 +2776,10 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
           currentDatasetPermission.innerHTML = ''
           bfCreateNewDatasetBtn.disabled = false
           addNewDatasetToList(bfNewDatasetName.value)
-          refreshDatasetList()
+          datasetPermissionList.selectedIndex = "0"
+          document.getElementById("para-filter-datasets-status").innerHTML = ""
+          var numDatasets = refreshDatasetList()
+          bfNewDatasetName.value = ""
         }
       })
     }
@@ -4044,17 +4047,15 @@ function changeDatasetRolePI(selectedDataset) {
 function refreshDatasetList() {
   var datasetPermission = datasetPermissionList.options[datasetPermissionList.selectedIndex].text
 
-  var datasetListSorted = datasetList.sort()
-
   var filteredDatasets = [];
   if (datasetPermission.toLowerCase()==="all") {
-    for (var i=0; i<datasetListSorted.length; i++) {
-      filteredDatasets.push(datasetListSorted[i].name)
+    for (var i=0; i<datasetList.length; i++) {
+      filteredDatasets.push(datasetList[i].name)
     }
   } else {
-      for (var i=0; i<datasetListSorted.length; i++) {
-        if (datasetListSorted[i].role === datasetPermission.toLowerCase()) {
-          filteredDatasets.push(datasetListSorted[i].name)
+      for (var i=0; i<datasetList.length; i++) {
+        if (datasetList[i].role === datasetPermission.toLowerCase()) {
+          filteredDatasets.push(datasetList[i].name)
         }
       }
   }
