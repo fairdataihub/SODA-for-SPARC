@@ -3981,7 +3981,7 @@ function showAccountDetails(bfLoadAccount){
         bfLoadAccount.style.display = 'none'
         document.getElementById("div-permission-list").style.display = "block"
         document.getElementById("div-filter-datasets-progress").style.display = "block"
-        document.getElementById("para-filter-datasets-status").innerHTML = "Loading datasets for your account..."
+        document.getElementById("para-filter-datasets-status").innerHTML = "Loading datasets from your account ..."
         client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, result) => {
             if (error) {
               log.error(error)

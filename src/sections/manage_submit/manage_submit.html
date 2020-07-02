@@ -68,14 +68,17 @@ my-dropdown<!DOCTYPE html>
           <div id="div-select-account" class="datasetsaveoption" style="margin-left:20px">
             <h5> Select previously added account
              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                <span class="tooltiptext">Previously added account(s) will be displayed in this drop-down list. Default account (last selected account before app closed) will be loaded automatically at start if available. Click on "Switch Account" and select one from the drop-down list for changing to another account (in case multiple ones are connected with SODA).
-                <br><br>
-                To remove an account from the list, you would have to delete the associated API key from the Blackfynn webpage (under "My Settings").
+                <span class="tooltiptext">
+                  Previously added account(s) will be displayed in this drop-down list. Default account (last selected account before app closed) will be loaded automatically at start if available. 
+                  <br><br>
+                  Click on "Switch Account" and select one from the drop-down list for changing to another account (in case multiple ones are connected with SODA).
+                  <br><br>
+                  To remove an account from the list, you would have to delete the associated API key from the Blackfynn webpage (under "My Settings").
                 </span>
               </div>
             </h5>
             <div class="demo-controls">
-              <select class="my-dropdown" style="width:80%;" id="bfaccountlist">
+              <select class="my-dropdown" style="width:65%;" id="bfaccountlist">
                 <option> Select </option>
               </select>
               <p></p>
@@ -88,15 +91,19 @@ my-dropdown<!DOCTYPE html>
             <p id='para-select-account-status'> <p>
 
           <div style="display:none" id="div-permission-list">
-            <h5> Filter visible datasets in the SODA interface based on your permission:
+            <h5> Select permissions for filtering dataset lists
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">
-                  You will see multiple dropdown lists throughout the SODA interface listing the datasets on the connected Blackfynn account. You can filter those lists based on your permissions on the dataset. See our <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> on Blackfynn permissions for more information.
+                  You will see multiple dropdown lists throughout the SODA interface listing you Blackfynn datasets. You can filter those lists based on your permissions on the dataset. 
+                  <br><br>
+                  The default filter is "All" that shows you all the datasets for which you have permissions. You can then change the filter to more specific permissions.
+                  <br><br>
+                  See our <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> on Blackfynn permissions for more information.
                 </span>
               </div>
             </h5>
             <div class="demo-controls">
-              <select class="my-dropdown" style="width:80%;" id="select-permission-list">
+              <select class="my-dropdown" style="width:65%;" id="select-permission-list">
                 <option default> All </option>
                 <option> Owner </option>
                 <option> Manager </option>
@@ -247,7 +254,7 @@ my-dropdown<!DOCTYPE html>
 
           <p style="margin-top:-10px"></p>
           <div id="div-add-edit-subtitle" class="datasetsaveoption">
-            <h5> Enter subtitle below. Any existing subtitle will be displayed.
+            <h5> Enter subtitle (any existing subtitle will be displayed):
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">Add two or three sentences (limit of 256 characters) that describe the content of your dataset such that it is possible to differente it from other datasets. This field will become the short description visible immediately under the title of your dataset once it is published.
                 </span>
@@ -267,7 +274,7 @@ my-dropdown<!DOCTYPE html>
           </div>
 
           <div id="div-add-edit-description" class="datasetsaveoption">
-            <h5> Enter description below. Any existing description will be displayed.
+            <h5> Enter description below (any existing description will be displayed)
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">Provide a detailed description of your dataset. This description will be highly visible on the SPARC data portal once your dataset is published so it is recommended to use rich text (bold, italic, enumerated list, etc.)
                 </span>
@@ -366,7 +373,7 @@ my-dropdown<!DOCTYPE html>
                 <h5>
                   <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                     <span class="tooltiptext">
-                    Note: As per SPARC rules, you must assign the Creative Commons Attribution (CC-BY) license to your dataset.
+                    As per SPARC rules, you must assign the Creative Commons Attribution (CC-BY) license to all your SPARC datasets.
                     </span>
                   </div>
                 </h5>
@@ -620,6 +627,11 @@ my-dropdown<!DOCTYPE html>
 
         <div class="demo-box">
 
+          <div id="div-post-curation-display">
+            <p>Coming soon... </p>
+          </div>
+
+        <div id="div-post-curation-display-2" style="display:none">
           <h5> Select Blackfynn dataset </h5>
           <div class="demo-controls" style="margin-top: 15px">
             <select class="my-dropdown" style="width:80%" id="bfdatasetlist_postcuration">
@@ -744,6 +756,7 @@ my-dropdown<!DOCTYPE html>
 
         </div>
       </div>
+      </div>
     </div>
 
     <div class="demo">
@@ -759,7 +772,7 @@ my-dropdown<!DOCTYPE html>
           <h5> Select Blackfynn dataset
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">
-              The status of a dataset is used to allow easy communication between SPARC investigators and the SPARC Dataset Curation Team regarding the progress of a dataset through the curation process. There are 12 status options that each SPARC Dataset will go through one by one during the submission and curation process. Each status indicates which team is responsible for the step.
+              The status of a dataset is used to allow easy communication between SPARC investigators and the SPARC Dataset Curation Team regarding the progress of a dataset through the curation process. In the SPARC consortium organization, there are 12 status options that each SPARC Dataset will go through one by one during the submission and curation process. Each status indicates which team is responsible for the step.
               <br><br>
               Select the Blackfynn dataset for which you wish to change the status (sorted alphabetically).
               <br><br>
@@ -788,7 +801,7 @@ my-dropdown<!DOCTYPE html>
               Investigators should only have to change dataset status to one of the following four options:
                 <ul >
                   <li>"02. Work in Progress (Investigator)": Select to indicate that you are working on your dataset </li>
-                  <li> "03. Ready for Curation (Investigator)": Select to inform the SPARC Dataset Curation Team that your dataset is ready to be reviewed. You dataset will be added to the curation queue. Please note that the SPARC Dataset Curation Team will not look into your dataset until you change the status to this option. </li>
+                  <li> "03. Ready for Curation (Investigator)": Select to inform the SPARC Dataset Curation Team that your dataset is ready to be reviewed (done automatically in SODA when you click on "Share with Curation Team" under "Manage dataset permissions"). You dataset will be added to the curation queue. Please note that the SPARC Dataset Curation Team will not look into your dataset until you change the status to this option. </li>
                   <li> "11. Complete, Under Embargo (Investigator)": Select to share your dataset with the SPARC Consortium. This will give viewer permissions to the SPARC Embargoed Data Sharing Group and will therefore allow any SPARC investigator who has signed the SPARC Non-disclosure form to see your data. </li>
                   <li> "12. Published (Investigator)": Select this option once you have published your dataset. One year after the initial upload of your dataset, you must publish your dataset to Blackfynn Discover, which populates the SPARC Portal. To do this, open the dataset of interest on the Blackfynn webpage, click on the Settings tab on the left, and select Publish Dataset. </li>
                 </ul>
