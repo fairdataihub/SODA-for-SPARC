@@ -1757,7 +1757,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
             first_name = list_dataset_permission[i]['firstName']
             last_name = list_dataset_permission[i]['lastName']
             role = list_dataset_permission[i]['role']
-            list_dataset_permission_first_last_role.append('User ' +  first_name + ' ' + last_name + ' , role: ' + role)
+            list_dataset_permission_first_last_role.append('User: ' +  first_name + ' ' + last_name + ' , role: ' + role)
 
         # team permissions
         list_dataset_permission_teams = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/teams')
@@ -1766,7 +1766,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
             if 'role' in team_keys:
                 team_name = list_dataset_permission_teams[i]['name']
                 team_role = list_dataset_permission_teams[i]['role']
-                list_dataset_permission_first_last_role.append('Team ' + team_name + ', role: ' + team_role)
+                list_dataset_permission_first_last_role.append('Team: ' + team_name + ', role: ' + team_role)
 
         # Organization permissions
         list_dataset_permission_organizations = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/organizations')
@@ -1775,14 +1775,14 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
                 if 'role' in organization_keys:
                     organization_name = list_dataset_permission_organizations['name']
                     organization_role = list_dataset_permission_organizations['role']
-                    list_dataset_permission_first_last_role.append('Organization ' + organization_name + ', role: ' + organization_role)
+                    list_dataset_permission_first_last_role.append('Organization: ' + organization_name + ', role: ' + organization_role)
         else:
             for i in range(len(list_dataset_permission_organizations)):
                 organization_keys = list(list_dataset_permission_organizations[i].keys())
                 if 'role' in organization_keys:
                     organization_name = list_dataset_permission_organizations[i]['name']
                     organization_role = list_dataset_permission_organizations[i]['role']
-                    list_dataset_permission_first_last_role.append('Organization ' + organization_name + ', role: ' + organization_role)
+                    list_dataset_permission_first_last_role.append('Organization: ' + organization_name + ', role: ' + organization_role)
 
         return list_dataset_permission_first_last_role
 
