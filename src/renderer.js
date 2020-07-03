@@ -18,7 +18,8 @@ const Tagify = require('@yaireo/tagify');
 const https = require('https')
 const $ = require( "jquery" );
 const PDFDocument = require('pdfkit');
-const html2canvas = require("html2canvas")
+const html2canvas = require("html2canvas");
+const removeMd = require('remove-markdown');
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -1434,7 +1435,9 @@ function showDatasetDescription(){
         log.error(error)
         console.error(error)
       } else {
-        document.getElementById("ds-description").innerHTML = res
+        plainText = removeMd(res)
+        console.log(plainText)
+        document.getElementById("ds-description").innerHTML = plainText
       }
     })
   }
@@ -2830,7 +2833,7 @@ bfRenameDatasetBtn.addEventListener('click', () => {
         refreshDatasetListChooseOption("#bfdatasetlist_renamedataset", renamedDatasetName)
         syncDatasetDropdownOption(bfDatasetListRenameDataset)
         renameDatasetName.value = ""
-        bfRenameDatasetStatus.innerHTML = 'Success: renamed dataset' + " '" + currentDatasetName + "'" + ' to' + " '" + renamedDatasetName
+        bfRenameDatasetStatus.innerHTML = 'Success: renamed dataset' + " '" + currentDatasetName + "'" + ' to' + " '" + renamedDatasetName + "'"
         bfRenameDatasetBtn.disabled = false
       }
     })
@@ -4729,11 +4732,11 @@ function dropAddToTable(e, myID){
   }
 }
 
-const allowedMedataFiles = ['submission.xlsx', 'submission.csv',
-  'dataset_description.xlsx', 'dataset_description.csv',
-  'subjects.xlsx', 'subjects.csv',
-  'samples.xlsx', 'samples.csv',
-  'README', 'CHANGES']
+const allowedMedataFiles = ['submission.xlsx', 'submission.csv', 'submission.json',
+  'dataset_description.xlsx', 'dataset_description.csv', 'dataset_description.json',
+  'subjects.xlsx', 'subjects.csv', 'subjects.json',
+  'samples.xlsx', 'samples.csv', 'samples.json',
+  'README.txt', 'CHANGES.txt']
 
 function dropAddToTableMetadata(e, myID){
   //e.target.style.color = 'inherit';

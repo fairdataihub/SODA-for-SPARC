@@ -15,7 +15,6 @@ from time import strftime, localtime
 import shutil
 from shutil import copy2
 from configparser import ConfigParser
-# import threading
 import numpy as np
 from collections import defaultdict
 import subprocess
@@ -31,11 +30,15 @@ from blackfynn.api.agent import AgentError, check_port, socket_address
 from urllib.request import urlopen
 import json
 import collections
+from threading import Thread
 
 from openpyxl import load_workbook
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font
 from docx import Document
+
+import augpathlib as aug
+from datetime import datetime, timezone
 
 from validator_soda import pathToJsonStruct, validate_high_level_folder_structure, validate_high_level_metadata_files, \
 validate_sub_level_organization, validate_submission_file, validate_dataset_description_file
@@ -83,6 +86,9 @@ handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
 ### Internal functions
+def TZLOCAL():
+    return datetime.now(timezone.utc).astimezone().tzinfo
+
 def open_file(file_path):
     """
     Opening folder on all platforms
@@ -163,6 +169,8 @@ def create_folder_level_manifest(jsonpath, jsondescription):
         Creates manifest files in xslx format for each SPARC folder
     """
     global total_dataset_size
+    local_timezone = TZLOCAL()
+
     try:
         datasetpath = metadatapath
         shutil.rmtree(datasetpath) if isdir(datasetpath) else 0
@@ -200,11 +208,12 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                         for subdir, dirs, files in os.walk(paths):
                             for file in files:
                                 gevent.sleep(0)
-                                filepath = join(paths,subdir,file) #full local file path
-                                lastmodtime = getmtime(filepath)
-                                timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
-                                                                      localtime(lastmodtime)))
-                                fullfilename = basename(filepath)
+                                filepath = aug.LocalPath(paths, subdir, file)
+                                fs_meta = filepath.meta
+                                lastmodtime = fs_meta.updated.astimezone(local_timezone)
+                                timestamp.append(aug.meta.isoformat(lastmodtime))
+                                fullfilename = filepath.name
+
                                 if folder == 'main': # if file in main folder
                                     filename.append(fullfilename) if folder == '' else filename.append(join(folder, fullfilename))
                                 else:
@@ -222,11 +231,12 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                     else:
                         gevent.sleep(0)
                         countpath += 1
-                        file = basename(paths)
+                        filepath = aug.LocalPath(paths)
+                        file = filepath.name
                         filename.append(file)
-                        lastmodtime = getmtime(paths)
-                        timestamp.append(strftime('%Y-%m-%d %H:%M:%S',
-                                                  localtime(lastmodtime)))
+                        fs_meta = filepath.meta
+                        lastmodtime = fs_meta.updated.astimezone(local_timezone)
+                        timestamp.append(aug.meta.isoformat(lastmodtime))
                         filedescription.append(alldescription[countpath])
                         if isdir(paths):
                             filetype.append('folder')
@@ -967,7 +977,7 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
             raise Exception(error)
 
         try:
-            role = bf_get_current_user_permission(accountname, bfdataset)
+            role = bf_get_current_user_permission(bf, myds)
             if role not in ['owner', 'manager', 'editor']:
                 curatestatus = 'Done'
                 error = "Error: You don't have permissions for uploading to this Blackfynn dataset"
@@ -1309,7 +1319,7 @@ def bf_dataset_account(accountname):
     This function filters dataset dropdowns across SODA by the permissions granted to users.
 
     Input: BFaccountname
-    Output: a filtered dataset list with objects as elements: {"name": dataset's name, "id": dataset's id}
+    Output: a filtered dataset list with objects as elements: {"name": dataset's name, "id": dataset's id, "role": permission}
 
     """
     # # current_user = bf._api._get('/user')
@@ -1326,16 +1336,45 @@ def bf_dataset_account(accountname):
 
     all_bf_datasets = []
 
-    for dataset in datasets_list:
+    # for dataset in datasets_list:
 
-        ### user_collaborators() returns a list with all the collaborators for the dataset and their information
-        user_info = dataset.user_collaborators()
+    #     ### user_collaborators() returns a list with all the collaborators for the dataset and their information
+    #     # user_info = dataset.user_collaborators()
 
-        for i in range(len(user_info)):
-            if user_info[i].id == bfaccountname:
-                all_bf_datasets.append({"id": dataset.id, "name": dataset.name, "role": user_info[i].role})
+    #     # for i in range(len(user_info)):
+    #     #     if user_info[i].id == bfaccountname:
+    #     #         all_bf_datasets.append({"id": dataset.id, "name": dataset.name, "role": user_info[i].role})
+    #     selected_dataset_id = dataset.id
+    #     user_role = bf._api._get('/datasets/' + str(selected_dataset_id) + '/role')['role']
+    #     all_bf_datasets.append({"id": selected_dataset_id, "name": dataset.name, "role": user_role})
 
-    sorted_bf_datasets = sorted(all_bf_datasets, key=lambda k: k['name'].upper())
+    # sorted_bf_datasets = sorted(all_bf_datasets, key=lambda k: k['name'].upper())
+
+    def filter_dataset(datasets_list, store=None):
+        if store is None:
+            store = []
+        for dataset in datasets_list:
+            selected_dataset_id = dataset.id
+            user_role = bf._api._get('/datasets/' + str(selected_dataset_id) + '/role')['role']
+            store.append({"id": selected_dataset_id, "name": dataset.name, "role": user_role})
+        return store
+    
+    #filter_dataset(datasets_list)
+    store = []
+    threads = []
+    nthreads = 8
+    # create the threads
+    for i in range(nthreads):
+        sub_datasets_list = datasets_list[i::nthreads]
+        t = Thread(target=filter_dataset, args=(sub_datasets_list, store))
+        threads.append(t)
+    
+    # start the threads
+    [ t.start() for t in threads ]
+    # wait for the threads to finish
+    [ t.join() for t in threads ]
+
+    sorted_bf_datasets = sorted(store, key=lambda k: k['name'].upper())
 
     return sorted_bf_datasets
 
@@ -1447,14 +1486,6 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     error, c = '', 0
     datasetname = renamed_dataset_name.strip()
 
-    try:
-        role = bf_get_current_user_permission(accountname, current_dataset_name)
-        if role not in ['owner', 'manager']:
-            error = "Error: You don't have permissions to change the name of this Blackfynn dataset"
-            raise Exception(error)
-    except Exception as e:
-        raise(e)
-
     if check_forbidden_characters_bf(datasetname):
         error = error + 'Error: A Blackfynn dataset name cannot contain any of the following characters: ' + forbidden_characters_bf + "<br>"
         c += 1
@@ -1479,8 +1510,16 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     try:
         myds = bf.get_dataset(current_dataset_name)
     except Exception as e:
-        error = error + 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Blackfynn dataset'
         raise Exception(error)
+
+    try:
+        role = bf_get_current_user_permission(bf, myds)
+        if role not in ['owner', 'manager']:
+            error = "Error: You don't have permissions to change the name of this Blackfynn dataset"
+            raise Exception(error)
+    except Exception as e:
+        raise e
 
     dataset_list = []
     for ds in bf.datasets():
@@ -1602,7 +1641,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     total_file_size = total_file_size - 1
 
-    role = bf_get_current_user_permission(accountname, bfdataset)
+    role = bf_get_current_user_permission(bf, myds)
     if role not in ['owner', 'manager', 'editor']:
         submitdatastatus = 'Done'
         error = "Error: You don't have permissions for uploading to this Blackfynn dataset"
@@ -1802,45 +1841,23 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
     except Exception as e:
         raise e
 
-def bf_get_current_user_permission(selected_bfaccount, selected_bfdataset):
+def bf_get_current_user_permission(bf, myds):
 
     """
     Function to get the permission of currently logged in user for a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        bf: logged Blackfynn acccount (dict)
+        myds: selected Blackfynn dataset (dict)
     Output:
         permission of current user (string)
     """
 
     try:
-        bf = Blackfynn(selected_bfaccount)
-    except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
-        raise Exception(error)
-
-    try:
-        myds = bf.get_dataset(selected_bfdataset)
-    except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset' + '<br>'
-        raise Exception(error)
-
-    try:
-        # user permissions
-        current_user_email = bf.profile.email
         selected_dataset_id = myds.id
-        list_dataset_permission = bf._api._get('/datasets/' + str(selected_dataset_id) + '/collaborators/users')
-        c = 0
-        for i in range(len(list_dataset_permission)):
-            email = list_dataset_permission[i]['email']
-            role = list_dataset_permission[i]['role']
-            if current_user_email == email:
-                res = role
-                c +=1
-        if c == 0:
-            res = "No permission"
-        return res
+        user_role = bf._api._get('/datasets/' + str(selected_dataset_id) + '/role')['role']
+
+        return user_role
 
     except Exception as e:
         raise e
@@ -2097,7 +2114,7 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
         raise Exception(error)
 
     try:
-        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager']:
             error = "Error: You don't have permissions for editing metadata on this Blackfynn dataset"
             raise Exception(error)
@@ -2171,7 +2188,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
         raise Exception(error)
 
     try:
-        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager']:
             error = "Error: You don't have permissions for editing metadata on this Blackfynn dataset"
             raise Exception(error)
@@ -2249,7 +2266,7 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
         raise Exception(error)
 
     try:
-        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager']:
             error = "Error: You don't have permissions for editing metadata on this Blackfynn dataset"
             raise Exception(error)
@@ -2332,7 +2349,7 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
         raise Exception(error)
 
     try:
-        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager']:
             error = "Error: You don't have permissions for editing metadata on this Blackfynn dataset"
             raise Exception(error)
@@ -2427,7 +2444,7 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
         raise Exception(error)
 
     try:
-        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager']:
             error = "Error: You don't have permissions for changing the status of this Blackfynn dataset"
             raise Exception(error)
@@ -2481,7 +2498,7 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
         raise Exception(error)
 
     try:
-        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager']:
             error = "Error: You don't have permissions to view/edit DOI for this Blackfynn dataset"
             raise Exception(error)
@@ -2522,7 +2539,7 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         raise Exception(error)
 
     try:
-        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager']:
             error = "Error: You don't have permissions to view/edit DOI for this Blackfynn dataset"
             raise Exception(error)
@@ -2610,7 +2627,7 @@ def bf_publish_dataset(selected_bfaccount, selected_bfdataset):
         raise Exception(error)
 
     try:
-        role = bf_get_current_user_permission(selected_bfaccount, selected_bfdataset)
+        role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner']:
             error = "Error: You must be dataset owner to publish a dataset"
             raise Exception(error)
