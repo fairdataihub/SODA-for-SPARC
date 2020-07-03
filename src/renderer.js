@@ -140,6 +140,7 @@ const generateSubmissionBtn = document.getElementById("generate-submission")
 // Prepare Dataset Description File
 const dsAwardArray = document.getElementById("ds-description-award-list")
 const dsContributorArray = document.getElementById("ds-description-contributor-list")
+var contributorRoles = document.getElementById("input-con-role")
 const addCurrentContributorsBtn = document.getElementById("button-ds-add-contributor")
 const contactPerson = document.getElementById("ds-contact-person")
 const currentConTable = document.getElementById("table-current-contributors")
@@ -936,8 +937,8 @@ function changeAwardInput() {
   removeOptions(document.getElementById("selected-description-data"))
   addOption(document.getElementById('selected-milestone'), "Select an option", "Select")
   addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
-  addOption(document.getElementById('selected-milestone'), "Not specified in the Data Deliverables document", "N/A")
-  addOption(document.getElementById('selected-description-data'), "Not specified in the Data Deliverables document", "N/A")
+  addOption(document.getElementById('selected-milestone'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
+  addOption(document.getElementById('selected-description-data'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
 
   award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
   var informationJson = parseJson(milestonePath);
@@ -956,14 +957,14 @@ function changeAwardInput() {
     document.getElementById("para-save-submission-status").innerHTML = ""
     removeOptions(descriptionInput);
     document.getElementById("selected-milestone-date").value = ""
-    if (milestoneInput.value==="N/A") {
-      addOption(document.getElementById('selected-description-data'), "Not specified in the Data Deliverables document", "Not applicable")
+    if (milestoneInput.value==="Not specified in the Data Deliverables document") {
+      addOption(document.getElementById('selected-description-data'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
       // descriptionInput.value === "N/A"
       // descriptionInput.text === "Not specified in the Data Deliverables document"
-      dateInput.value = "N/A"
+      dateInput.value = "Not specified in the Data Deliverables document"
     } else {
         addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
-        addOption(document.getElementById('selected-description-data'), "Not specified in the Data Deliverables document", "Not applicable")
+        addOption(document.getElementById('selected-description-data'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
         for (var i=0;i<milestoneKey.length; i++) {
           if (milestoneKey[i] === milestoneInput.value) {
             //// Add description data to dropdowns
@@ -978,8 +979,8 @@ function changeAwardInput() {
   descriptionInput.addEventListener('input', function() {
     document.getElementById("para-save-submission-status").innerHTML = ""
     document.getElementById("selected-milestone-date").value = "";
-    if (descriptionInput.value === "Not applicable") {
-      dateInput.value = "N/A"
+    if (descriptionInput.value === "Not specified in the Data Deliverables document") {
+      dateInput.value = "Not specified in the Data Deliverables document"
     } else {
       for (var i=0;i<milestoneKey.length; i++) {
         for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
@@ -1057,19 +1058,6 @@ otherFundingTagify = new Tagify(otherFundingInput, {
     duplicates: false,
 })
 
-var contributorRoles = document.getElementById("input-con-role"),
-currentContributortagify = new Tagify(contributorRoles, {
-    whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
-    dropdown : {
-        classname : "color-blue",
-        enabled   : 0,         // show the dropdown immediately on focus
-        maxItems  : 25,
-        // position  : "text",    // place the dropdown near the typed text
-        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
-    },
-    duplicates: false
-});
-
 var parentDSTagify = new Tagify(parentDSDropdown, {
   enforceWhitelist: true,
   whitelist: [],
@@ -1080,6 +1068,8 @@ var parentDSTagify = new Tagify(parentDSDropdown, {
     closeOnSelect : true
   }
 })
+
+var currentContributortagify = new Tagify(contributorRoles)
 
 var completenessInput = document.getElementById('ds-completeness'),
 completenessTagify = new Tagify(completenessInput, {
@@ -1104,13 +1094,14 @@ function getParentDatasets() {
   return parentDatasets
 }
 
+// var currentContributortagify = document.getElementById("input-con-role")
 function clearCurrentConInfo() {
   document.getElementById("input-con-ID").value = "";
   document.getElementById("input-con-role").value = "";
   document.getElementById("input-con-affiliation").value = "";
-  if (currentContributortagify !== undefined) {
-    currentContributortagify.removeAllTags()
-  }
+  // if (currentContributortagify !== undefined) {
+  //   currentContributortagify.removeAllTags()
+  // }
   contactPerson.checked = false;
 }
 
@@ -1291,7 +1282,7 @@ function leaveFieldsEmpty(field, element) {
   if (field!==undefined) {
     element.value = field;
   } else {
-    element.innerHTML = ''
+    element.value = ''
   }
 }
 
@@ -1356,12 +1347,14 @@ dsContributorArray.addEventListener("change", function(e) {
   document.getElementById("para-save-contributor-status").innerHTML = '';
   document.getElementById("input-con-ID").value = '';
   document.getElementById("input-con-affiliation").value = '';
+  currentContributortagify.destroy()
+
   /// hide Other collaborators fields upon changing contributors
   document.getElementById("div-other-collaborators-1").style.display = "none"
   document.getElementById("div-other-collaborators-2").style.display = "none"
   document.getElementById("div-other-collaborators-3").style.display = "none"
 
-  currentContributortagify.removeAllTags();
+  // currentContributortagify.removeAllTags();
   contactPerson.checked = false;
 
   var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
@@ -1371,6 +1364,13 @@ dsContributorArray.addEventListener("change", function(e) {
     document.getElementById("div-other-collaborators-3").style.display = "flex"
   }
   else {
+    document.getElementById("input-con-ID").disabled = true
+    document.getElementById("input-con-affiliation").disabled = true
+    document.getElementById("input-con-role").disabled = true
+    document.getElementById("input-con-ID").value = "Loading..."
+    document.getElementById("input-con-affiliation").value = "Loading..."
+    document.getElementById("input-con-role").value = "Loading..."
+
     var airKeyContent = parseJson(airtableConfigPath)
     var airKeyInput = airKeyContent["api-key"]
     var airtableConfig = Airtable.configure({
@@ -1384,12 +1384,32 @@ dsContributorArray.addEventListener("change", function(e) {
       var conInfoObj = {};
       records.forEach(function(record) {
         conInfoObj["ID"] = record.get('ORCID');
-        // conInfoObj["Role"] = record.get('Project_Role');
+        conInfoObj["Role"] = record.get('Dataset_contributor_roles');
         conInfoObj["Affiliation"] = record.get('Institution');
       }),
       fetchNextPage();
+
+
       leaveFieldsEmpty(conInfoObj["ID"],document.getElementById("input-con-ID"));
+      leaveFieldsEmpty(conInfoObj["Role"],document.getElementById("input-con-role"));
       leaveFieldsEmpty(conInfoObj["Affiliation"],document.getElementById("input-con-affiliation"));
+
+      /// initiate tagify for contributor roles
+      currentContributortagify = new Tagify(contributorRoles, {
+          whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+          dropdown : {
+              classname : "color-blue",
+              enabled   : 0,         // show the dropdown immediately on focus
+              maxItems  : 25,
+              // position  : "text",    // place the dropdown near the typed text
+              closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+          },
+          duplicates: false
+        });
+
+      document.getElementById("input-con-ID").disabled = false
+      document.getElementById("input-con-affiliation").disabled = false
+      document.getElementById("input-con-role").disabled = false
     }),
     function done(err) {
       if (err) {
@@ -1581,6 +1601,7 @@ function grabCompletenessInfo() {
 datasetDescriptionFileDataset.addEventListener("change", function() {
   document.getElementById("ds-description").innerHTML = "Loading..."
   document.getElementById("ds-description").disabled = true;
+  syncDatasetDropdownOption(datasetDescriptionFileDataset)
   showDatasetDescription()
 })
 
@@ -3030,22 +3051,36 @@ function syncDatasetDropdownOption(dropdown) {
     bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
     bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
     bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+    datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
     metadataDatasetlistChange()
     permissionDatasetlistChange()
     datasetStatusListChange()
     renameDatasetlistChange()
     postCurationListChange()
   } else if (dropdown===bfDatasetListRenameDataset) {
-    var listSelectedIndex = bfDatasetListRenameDataset.selectedIndex
-    bfDatasetListMetadata.selectedIndex = listSelectedIndex
-    bfUploadDatasetList.selectedIndex = listSelectedIndex
-    bfDatasetList.selectedIndex = listSelectedIndex
-    bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
-    bfDatasetListPermission.selectedIndex = listSelectedIndex
-    bfDatasetListPostCuration.selectedIndex = listSelectedIndex
-    metadataDatasetlistChange()
-    permissionDatasetlistChange()
-    datasetStatusListChange()
+      var listSelectedIndex = bfDatasetListRenameDataset.selectedIndex
+      bfDatasetListMetadata.selectedIndex = listSelectedIndex
+      bfUploadDatasetList.selectedIndex = listSelectedIndex
+      bfDatasetList.selectedIndex = listSelectedIndex
+      bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
+      bfDatasetListPermission.selectedIndex = listSelectedIndex
+      bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+      datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
+      metadataDatasetlistChange()
+      permissionDatasetlistChange()
+      datasetStatusListChange()
+  } else {
+      var listSelectedIndex = datasetDescriptionFileDataset.selectedIndex
+      bfDatasetListMetadata.selectedIndex = listSelectedIndex
+      bfUploadDatasetList.selectedIndex = listSelectedIndex
+      bfDatasetList.selectedIndex = listSelectedIndex
+      bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
+      bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
+      bfDatasetListPermission.selectedIndex = listSelectedIndex
+      bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+      metadataDatasetlistChange()
+      permissionDatasetlistChange()
+      datasetStatusListChange()
   }
 }
 

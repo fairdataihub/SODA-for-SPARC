@@ -442,7 +442,13 @@ def rename_headers(workbook, keyword_array, contributor_role_array, funding_arra
     max_len = max(keyword_len, funding_len, link_len, no_contributors)
 
     if max_len > 3:
-        for i, column in zip(range(1, max_len+1), excel_columns()):
+
+        columns_list = excel_columns()
+
+        workbook[columns_list[0] + "1"] = "Value"
+
+        for i, column in zip(range(2, max_len+1), columns_list[1:]):
+
             workbook[column + "1"] = "Value " + str(i)
             cell = workbook[column + "1"]
 
@@ -702,7 +708,14 @@ def preview_file_organization(jsonpath):
         output.append(gevent.spawn(preview_func, folderrequired, preview_path))
         gevent.sleep(0)
         gevent.joinall(output)
-        open_file(preview_path)
+
+        if len(listdir(preview_path)) > 0:
+            folder_in_preview = listdir(preview_path)[0]
+
+            open_file(join(preview_path, folder_in_preview))
+
+        else:
+            open_file(preview_path)
 
         return preview_path
 
