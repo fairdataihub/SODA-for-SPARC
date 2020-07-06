@@ -1924,6 +1924,7 @@ const tuiInstance = new Editor({
   el: document.querySelector('#editorSection'),
   initialEditType: 'wysiwyg',
   previewStyle: 'vertical',
+  hideModeSwitch: true,
   height: '400px',
   toolbarItems: [
     'heading',
