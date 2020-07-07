@@ -52,11 +52,11 @@ SODA (Software for Organizing Data Automatically) for SPARC is a desktop softwar
 
 ## Downloading SODA
 SODA is distributed as an easy-to-install application. Use the links below to download the version suitable for your operating system:
-*   Windows (developed and tested on Windows 10) - [Click here](https://github.com/bvhpatel/SODA/releases/download/1.0.0-Windows/SODA-v1.0.0-Windows.zip)
+*   [Windows](https://github.com/bvhpatel/SODA/releases/download/1.0.0-Windows/SODA-v1.0.0-Windows.zip) (developed and tested on Windows 10)
 
-*   Mac  (developed and tested on Mojave 10.14) - [Click here](https://github.com/bvhpatel/SODA/releases/download/1.0.0-MAC/SODA-v1.0.0-MAC.dmg.zip)
+*   [Mac](https://github.com/bvhpatel/SODA/releases/download/1.0.0-MAC/SODA-v1.0.0-MAC.dmg.zip) (developed and tested on Mojave 10.14)
 
-*   Linux (developed and tested on Ubuntu 18.04.2 LTS) -  [Click here](https://github.com/bvhpatel/SODA/releases/download/1.0.0-Ubuntu/SODA-v1.0.0-Ubuntu.zip)
+*   [Ubuntu](https://github.com/bvhpatel/SODA/releases/download/1.0.0-Ubuntu/SODA-v1.0.0-Ubuntu.zip) (developed and tested on Ubuntu 18.04.2 LTS)
 
 All our releases are accessible in the [releases tab](https://github.com/bvhpatel/SODA/releases). Latest version: 1.0.0
 
