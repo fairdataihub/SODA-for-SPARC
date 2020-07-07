@@ -81,7 +81,7 @@ Although we would highly encourage you to use SODA for the entire organization a
 To report any issues with the software, suggest improvements, or request a new feature, please open a new issue via the [Issues tab](https://github.com/bvhpatel/SODA/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could also use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea). The feedback form is also accessible directly in the user interface of SODA.
 
 <p align="center">
-   <img src="/docs/SODA-feedback-form.PNG" alt="interface" width="600">
+   <img src="/docs/readme/feedback-form.PNG" alt="interface" width="600">
   <br/> 
   <i> A screenshot of our feedback form in the user interface of SODA. </i>
   </img>
