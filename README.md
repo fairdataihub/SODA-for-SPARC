@@ -93,7 +93,7 @@ To report any issues with the software, suggest improvements, or request a new f
 
 ## Using the Source Code
 
-If you want to suggest changes to SODA, modify SODA to better suit your needs, or compile it for an operating system not mentioned above, please follow the instructions provided in the [developer guidelines](https://github.com/bvhpatel/SODA/wiki/Using-the-Source-Code) of our documentation. 
+If you want to contribute, modify SODA to better suit your needs, or compile it for an operating system not mentioned above, please follow the instructions provided in the [developer guidelines](https://github.com/bvhpatel/SODA/wiki/Using-the-Source-Code) of our documentation. 
 
 ## License
 SODA is distributed under the MIT License. See [LICENSE](https://github.com/bvhpatel/SODA/blob/master/LICENSE) for more information.
