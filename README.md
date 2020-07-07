@@ -60,7 +60,7 @@ SODA is distributed as an easy-to-install application. Use the links below to do
 
 All our releases are accessible in the [releases tab](https://github.com/bvhpatel/SODA/releases). Latest version: 1.0.0
 
-#### Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed to upload datasets to Blackfynn through SODA.
+**Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed to upload datasets to Blackfynn through SODA.**
 
 Please follow the instructions given in [our documentation](https://github.com/bvhpatel/SODA/wiki/Download) if you need help with installing/uninstalling SODA. 
 
