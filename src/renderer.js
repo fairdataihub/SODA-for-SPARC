@@ -1436,7 +1436,6 @@ function showDatasetDescription(){
         console.error(error)
       } else {
         plainText = removeMd(res)
-        console.log(plainText)
         document.getElementById("ds-description").innerHTML = plainText
       }
     })
@@ -2940,6 +2939,8 @@ bfUploadDatasetList.addEventListener('change', () => {
   renameDatasetlistChange()
   bfDatasetListPostCuration.selectedIndex = listSelectedIndex
   postCurationListChange()
+  datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
+  showDatasetDescription()
 })
 
 selectLocalDsSubmit.addEventListener("click", function() {
@@ -2978,6 +2979,8 @@ bfDatasetList.addEventListener('change', () => {
   renameDatasetlistChange()
   bfDatasetListPostCuration.selectedIndex = listSelectedIndex
   postCurationListChange()
+  datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
+  showDatasetDescription()
 })
 
 // Rename dataset
@@ -3010,6 +3013,8 @@ bfDatasetListMetadata.addEventListener('change', () => {
   renameDatasetlistChange()
   bfDatasetListPostCuration.selectedIndex = listSelectedIndex
   postCurationListChange()
+  datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
+  showDatasetDescription()
 })
 
 function metadataDatasetlistChange(){
@@ -3061,6 +3066,7 @@ function syncDatasetDropdownOption(dropdown) {
     datasetStatusListChange()
     renameDatasetlistChange()
     postCurationListChange()
+    showDatasetDescription()
   } else if (dropdown===bfDatasetListRenameDataset) {
       var listSelectedIndex = bfDatasetListRenameDataset.selectedIndex
       bfDatasetListMetadata.selectedIndex = listSelectedIndex
@@ -3073,6 +3079,7 @@ function syncDatasetDropdownOption(dropdown) {
       metadataDatasetlistChange()
       permissionDatasetlistChange()
       datasetStatusListChange()
+      showDatasetDescription()
   } else {
       var listSelectedIndex = datasetDescriptionFileDataset.selectedIndex
       bfDatasetListMetadata.selectedIndex = listSelectedIndex
@@ -3085,6 +3092,7 @@ function syncDatasetDropdownOption(dropdown) {
       metadataDatasetlistChange()
       permissionDatasetlistChange()
       datasetStatusListChange()
+      showDatasetDescription()
   }
 }
 
@@ -3102,6 +3110,8 @@ bfDatasetListDatasetStatus.addEventListener('change', () => {
   renameDatasetlistChange()
   bfDatasetListPostCuration.selectedIndex = listSelectedIndex
   postCurationListChange()
+  datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
+  showDatasetDescription()
 })
 
 function datasetStatusListChange(){
@@ -3204,6 +3214,7 @@ bfAddDescriptionBtn.addEventListener('click', () => {
     } else {
       datasetDescriptionStatus.innerHTML = res
       bfCurrentMetadataProgress.style.display = 'none'
+      showDatasetDescription()
       enableform(bfMetadataForm)
     }
   })
