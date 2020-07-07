@@ -21,8 +21,6 @@
     <a href="https://github.com/bvhpatel/SODA/wiki"><strong>Explore our documentation »</strong></a>
     <br />
     <br />
-    <a href="https://www.youtube.com/channel/UCXLDJT6RNQYIjPSMuXEK6rA/playlists">Watch tutorial videos</a>
-    ·
     <a href="https://github.com/bvhpatel/SODA/issues">Report Issue</a>
     ·
     <a href="https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea">Submit feedback </a>
@@ -44,10 +42,10 @@
 <!-- ABOUT -->
 ## About
 
-SODA (Software for Organizing Data Automatically) for SPARC is a desktop software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators and thus promote the [FAIR Data Principles](https://www.go-fair.org/fair-principles/). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA is designed such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.sparc.science/submit_data.html) rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduce users' effort to a bare minimum during each step, often to just a few clicks. 
+SODA (Software for Organizing Data Automatically) for SPARC is a desktop software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators and thus promote the [FAIR Data Principles](https://www.go-fair.org/fair-principles/). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA for SPARC is designed such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.sparc.science/submit_data.html) rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduce users' effort to a bare minimum during each step, often to just a few clicks. 
 
 <p align="center">
-  <img src="/docs/SODA-interface.PNG" alt="interface" width="600"> 
+  <img src="/docs/readme/screenshot-soda.PNG" alt="interface" width="600"> 
   <br/> 
   <i> A screenshot of the user interface of SODA. </i>
   </img>
