@@ -394,7 +394,7 @@ def extract_milestone_info(datalist):
         elif milestone_key2 in row:
             milestone_key = milestone_key2
         else:
-            raise InvalidDeliverablesDocument("Please select a valid SPARC Deliverables Document!")
+            raise InvalidDeliverablesDocument("Please select a valid SPARC Deliverables Document! The following headers could not be found in a table of the document you selected: Related milestone, aim, or task, Description of data, and Expected date of completion.")
 
         key = row[milestone_key]
         if key != "":
@@ -1358,7 +1358,7 @@ def bf_dataset_account(accountname):
             user_role = bf._api._get('/datasets/' + str(selected_dataset_id) + '/role')['role']
             store.append({"id": selected_dataset_id, "name": dataset.name, "role": user_role})
         return store
-    
+
     #filter_dataset(datasets_list)
     store = []
     threads = []
@@ -1368,7 +1368,7 @@ def bf_dataset_account(accountname):
         sub_datasets_list = datasets_list[i::nthreads]
         t = Thread(target=filter_dataset, args=(sub_datasets_list, store))
         threads.append(t)
-    
+
     # start the threads
     [ t.start() for t in threads ]
     # wait for the threads to finish
