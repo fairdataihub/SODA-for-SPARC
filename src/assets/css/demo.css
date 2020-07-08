@@ -569,6 +569,14 @@ width: 80%;
 height: 80%;
 }
 
+.te-editor.te-tab-active {
+  width: 100% !important;
+}
+
+.te-md-splitter {
+  display: none !important
+}
+
 .tooltipnew {
   position: relative;
   display: inline-block;
