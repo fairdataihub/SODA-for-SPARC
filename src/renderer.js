@@ -1711,7 +1711,6 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
         for (let elementDS in datasetInfoValueArray) {
           dsSectionArray.push(datasetInfoValueArray[elementDS])
         }
-        
         //// grab entries from contributor info section and pass values to conSectionArray
         var contributorObj = grabConInfoEntries()
 
@@ -1934,9 +1933,8 @@ holderMetadata.addEventListener("drop", (event)=> {
 // New instance for description editor
 const tuiInstance = new Editor({
   el: document.querySelector('#editorSection'),
-  initialEditType: 'markdown',
+  initialEditType: 'wysiwyg',
   previewStyle: 'vertical',
-  hideModeSwitch: true,
   height: '400px',
   toolbarItems: [
     'heading',
