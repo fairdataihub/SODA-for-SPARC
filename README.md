@@ -64,7 +64,11 @@ Click on the image below and watch our video to quickly familiarize yourself wit
 </a>
 </p>
 
+Please see our [suggested workflow for preparing and submitting your SPARC dataset](https://github.com/bvhpatel/SODA/wiki/Organize-and-submit-SPARC-datasets-with-SODA) rapidly and accurately with SODA.
+
 Although we would highly encourage you to use SODA for the entire organization and submission process of your dataset, SODA is designed such that you are not bound to using the software for all of the steps: you can perform desired steps from SODA and others outside. 
+
+
 
 ## Full Documentation
 
