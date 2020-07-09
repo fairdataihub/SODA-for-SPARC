@@ -59,8 +59,8 @@ All our releases are also accessible in the [releases tab](https://github.com/bv
 Click on the image below and watch our video to quickly familiarize yourself with the user interface of SODA:
 
 <p align="center">
-<a href="https://www.youtube.com/watch?v=zpR37m8hjm4" target="_blank">
-<img src="https://img.youtube.com/vi/zpR37m8hjm4/0.jpg" />
+<a href="https://youtu.be/urZTp5L4F1g" target="_blank">
+<img src="https://img.youtube.com/vi/urZTp5L4F1g/0.jpg" />
 </a>
 </p>
 
