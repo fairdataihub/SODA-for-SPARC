@@ -31,13 +31,13 @@ from urllib.request import urlopen
 import json
 import collections
 from threading import Thread
+import pathlib
 
 from openpyxl import load_workbook
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font
 from docx import Document
 
-import augpathlib as aug
 from datetime import datetime, timezone
 
 from validator_soda import pathToJsonStruct, validate_high_level_folder_structure, validate_high_level_metadata_files, \
@@ -208,10 +208,10 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                         for subdir, dirs, files in os.walk(paths):
                             for file in files:
                                 gevent.sleep(0)
-                                filepath = aug.LocalPath(paths, subdir, file)
-                                fs_meta = filepath.meta
-                                lastmodtime = fs_meta.updated.astimezone(local_timezone)
-                                timestamp.append(aug.meta.isoformat(lastmodtime))
+                                filepath = pathlib.Path(paths) / subdir / file
+                                mtime = filepath.stat().st_mtime
+                                lastmodtime = datetime.fromtimestamp(mtime).astimezone(local_timezone)
+                                timestamp.append(lastmodtime.isoformat().replace('.', ',').replace('+00:00', 'Z'))
                                 fullfilename = filepath.name
 
                                 if folder == 'main': # if file in main folder
@@ -231,12 +231,12 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                     else:
                         gevent.sleep(0)
                         countpath += 1
-                        filepath = aug.LocalPath(paths)
+                        filepath = pathlib.Path(paths) / subdir / file
                         file = filepath.name
                         filename.append(file)
-                        fs_meta = filepath.meta
-                        lastmodtime = fs_meta.updated.astimezone(local_timezone)
-                        timestamp.append(aug.meta.isoformat(lastmodtime))
+                        mtime = filepath.stat().st_mtime
+                        lastmodtime = datetime.fromtimestamp(mtime).astimezone(local_timezone)
+                        timestamp.append(lastmodtime.isoformat().replace('.', ',').replace('+00:00', 'Z'))
                         filedescription.append(alldescription[countpath])
                         if isdir(paths):
                             filetype.append('folder')
