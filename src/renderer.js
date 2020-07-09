@@ -1070,7 +1070,19 @@ var parentDSTagify = new Tagify(parentDSDropdown, {
   }
 })
 
-var currentContributortagify = new Tagify(contributorRoles)
+
+/// initiate tagify for contributor roles
+var currentContributortagify = new Tagify(contributorRoles, {
+    whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+    dropdown : {
+        classname : "color-blue",
+        enabled   : 0,         // show the dropdown immediately on focus
+        maxItems  : 25,
+        // position  : "text",    // place the dropdown near the typed text
+        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+    },
+    duplicates: false
+});
 
 var completenessInput = document.getElementById('ds-completeness'),
 completenessTagify = new Tagify(completenessInput, {
@@ -1095,14 +1107,10 @@ function getParentDatasets() {
   return parentDatasets
 }
 
-// var currentContributortagify = document.getElementById("input-con-role")
 function clearCurrentConInfo() {
   document.getElementById("input-con-ID").value = "";
   document.getElementById("input-con-role").value = "";
   document.getElementById("input-con-affiliation").value = "";
-  // if (currentContributortagify !== undefined) {
-  //   currentContributortagify.removeAllTags()
-  // }
   contactPerson.checked = false;
 }
 
@@ -1344,27 +1352,31 @@ dsAwardArray.addEventListener("change", changeAwardInputDsDescription)
 
 /// Auto populate once a contributor is selected
 dsContributorArray.addEventListener("change", function(e) {
+
+
   ///clear old entries once a contributor option is changed
   document.getElementById("para-save-contributor-status").innerHTML = '';
   document.getElementById("input-con-ID").value = '';
   document.getElementById("input-con-affiliation").value = '';
-  currentContributortagify.destroy()
 
   /// hide Other collaborators fields upon changing contributors
   document.getElementById("div-other-collaborators-1").style.display = "none"
   document.getElementById("div-other-collaborators-2").style.display = "none"
   document.getElementById("div-other-collaborators-3").style.display = "none"
 
-  // currentContributortagify.removeAllTags();
+  currentContributortagify.removeAllTags()
   contactPerson.checked = false;
 
   var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
   if (contributorVal === "Other collaborators not listed") {
+    document.getElementById("input-con-others").value = '';
     document.getElementById("div-other-collaborators-1").style.display = "flex"
     document.getElementById("div-other-collaborators-2").style.display = "flex"
     document.getElementById("div-other-collaborators-3").style.display = "flex"
   }
   else {
+    currentContributortagify.destroy()
+
     document.getElementById("input-con-ID").disabled = true
     document.getElementById("input-con-affiliation").disabled = true
     document.getElementById("input-con-role").disabled = true
