@@ -93,7 +93,7 @@ function checkNewAppVersion() {
       console.log("Latest SODA version:", scrappedVersion)
 
       if (appVersion !== scrappedVersion){
-        ipcRenderer.send('warning-new-version')
+        ipcRenderer.send('warning-new-version', appVersion, scrappedVersion)
       }
     })
     .catch(error => {
@@ -220,6 +220,7 @@ const bfRefreshDatasetBtn = document.getElementById('button-refresh-dataset-list
 const bfRefreshDatasetMetadataBtn = document.getElementById('button-refresh-dataset-list-metadata')
 const bfRefreshDatasetPermissionBtn = document.getElementById('button-refresh-dataset-list-permission')
 const bfUploadRefreshDatasetBtn = document.getElementById('button-upload-refresh-dataset-list')
+const bfNewDatasetForm = document.getElementById('blackfynn-new-dataset-form')
 const bfNewDatasetName = document.querySelector('#bf-new-dataset-name')
 const bfCreateNewDatasetBtn = document.getElementById('button-create-bf-new-dataset')
 const bfCreateNewDatasetStatus = document.querySelector('#para-add-new-dataset-status')
@@ -2776,6 +2777,7 @@ bfRefreshDatasetRenameDatasetBtn.addEventListener('click', () => {
 // Add new dataset folder (empty) on bf //
 bfCreateNewDatasetBtn.addEventListener('click', () => {
   bfCreateNewDatasetBtn.disabled = true
+  disableform(bfNewDatasetForm)
   bfCreateNewDatasetStatus.innerHTML = 'Adding...'
   var selectedbfaccount = bfAccountList.options[bfAccountList.selectedIndex].text
   client.invoke("api_bf_new_dataset_folder", bfNewDatasetName.value, selectedbfaccount, (error, res) => {
@@ -2785,27 +2787,17 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
       var emessage = userError(error)
       bfCreateNewDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
       bfCreateNewDatasetBtn.disabled = false
+      enableform(bfNewDatasetForm)
     } else {
-        var inputSubtitle = ""
-        client.invoke("api_bf_add_subtitle", selectedbfaccount, bfNewDatasetName.value, inputSubtitle,
-        (error, res) => {
-        if(error) {
-          log.error(error)
-          console.error(error)
-          var emessage = userError(error)
-          bfCreateNewDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
-          bfCreateNewDatasetBtn.disabled = false
-        } else {
-          bfCreateNewDatasetStatus.innerHTML = 'Success: created dataset' + " '" + bfNewDatasetName.value + "'" + smileyCan
-          currentDatasetPermission.innerHTML = ''
-          bfCreateNewDatasetBtn.disabled = false
-          addNewDatasetToList(bfNewDatasetName.value)
-          datasetPermissionList.selectedIndex = "0"
-          document.getElementById("para-filter-datasets-status").innerHTML = ""
-          var numDatasets = refreshDatasetList()
-          bfNewDatasetName.value = ""
-        }
-      })
+      bfCreateNewDatasetStatus.innerHTML = 'Success: created dataset' + " '" + bfNewDatasetName.value + "'" + smileyCan
+      currentDatasetPermission.innerHTML = ''
+      bfCreateNewDatasetBtn.disabled = false
+      addNewDatasetToList(bfNewDatasetName.value)
+      datasetPermissionList.selectedIndex = "0"
+      document.getElementById("para-filter-datasets-status").innerHTML = ""
+      var numDatasets = refreshDatasetList()
+      bfNewDatasetName.value = ""
+      enableform(bfNewDatasetForm)
     }
   })
 })
@@ -3169,7 +3161,7 @@ bfListDatasetStatus.addEventListener('change', () => {
   })
 })
 
-// Add substitle //
+// Add subtitle //
 bfAddSubtitleBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'
   datasetSubtitleStatus.innerHTML = 'Please wait...'
