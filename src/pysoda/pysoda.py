@@ -231,7 +231,7 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                     else:
                         gevent.sleep(0)
                         countpath += 1
-                        filepath = pathlib.Path(paths) / subdir / file
+                        filepath = pathlib.Path(paths)
                         file = filepath.name
                         filename.append(file)
                         mtime = filepath.stat().st_mtime
