@@ -51,31 +51,24 @@ SODA (Software for Organizing Data Automatically) for SPARC is a desktop softwar
 </p>
 
 ## Downloading SODA
-SODA is distributed as an easy-to-install application. Use the links below to download the version suitable for your operating system:
-*   [Windows](https://github.com/bvhpatel/SODA/releases/download/1.0.0-Windows/SODA-v1.0.0-Windows.zip) (developed and tested on Windows 10)
+SODA is distributed as an easy-to-install application for Windows, Mac OS, and Ubuntu. Follow the instructions provided in [our dedicated documentation](https://github.com/bvhpatel/SODA/wiki/Download) to download the version suitable for your operating system.
 
-*   [Mac](https://github.com/bvhpatel/SODA/releases/download/1.0.0-MAC/SODA-v1.0.0-MAC.dmg.zip) (developed and tested on Mojave 10.14)
-
-*   [Ubuntu](https://github.com/bvhpatel/SODA/releases/download/1.0.0-Ubuntu/SODA-v1.0.0-Ubuntu.zip) (developed and tested on Ubuntu 18.04.2 LTS)
-
-All our releases are accessible in the [releases tab](https://github.com/bvhpatel/SODA/releases). Latest version: 2.0.0
-
-**Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed to upload datasets to Blackfynn through SODA.**
-
-Please follow the instructions given in [our documentation](https://github.com/bvhpatel/SODA/wiki/Download) if you need help with installing/uninstalling SODA. 
-
-The software may work on older operating system versions than those specified above but no testing has been done on those platforms. 
+All our releases are also accessible in the [releases tab](https://github.com/bvhpatel/SODA/releases). Latest version: 2.0.0
 
 ## Using SODA
 Click on the image below and watch our video to quickly familiarize yourself with the user interface of SODA:
 
 <p align="center">
-<a href="https://www.youtube.com/watch?v=zpR37m8hjm4" target="_blank">
-<img src="https://img.youtube.com/vi/zpR37m8hjm4/0.jpg" />
+<a href="https://youtu.be/urZTp5L4F1g" target="_blank">
+<img src="https://img.youtube.com/vi/urZTp5L4F1g/0.jpg" />
 </a>
 </p>
 
+Please see our [suggested workflow for preparing and submitting your SPARC dataset](https://github.com/bvhpatel/SODA/wiki/Organize-and-submit-SPARC-datasets-with-SODA) rapidly and accurately with SODA.
+
 Although we would highly encourage you to use SODA for the entire organization and submission process of your dataset, SODA is designed such that you are not bound to using the software for all of the steps: you can perform desired steps from SODA and others outside. 
+
+
 
 ## Full Documentation
 
