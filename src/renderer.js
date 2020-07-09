@@ -2,12 +2,12 @@
 // Import required modules
 //////////////////////////////////
 
-const zerorpc = require("zerorpc")
+const zerorpc = require("zerorpc-rotkehlchen")
 const fs = require("fs")
 const os = require("os")
 const path = require('path')
 const {ipcRenderer} = require('electron')
-const Editor = require('tui-editor')
+const Editor = require('@toast-ui/editor')
 const remote = require('electron').remote;
 const app = remote.app;
 const imageDataURI = require("image-data-uri");

@@ -43,6 +43,7 @@
     }
   },
   "dependencies": {
+    "@toast-ui/editor": "^2.2.0",
     "@yaireo/tagify": "^3.13.0",
     "airtable": "^0.8.1",
     "axios": "^0.19.2",
@@ -54,11 +55,11 @@
     "glob": "^7.1.6",
     "html2canvas": "^1.0.0-rc.5",
     "image-data-uri": "^2.0.1",
+    "jquery": "^3.5.1",
     "pdfkit": "^0.11.0",
     "remove-markdown": "^0.3.0",
-    "tui-editor": "^1.4.10",
     "v8-compile-cache": "^2.1.1",
-    "zerorpc": "^0.9.8"
+    "zerorpc-rotkehlchen": "^0.1.0"
   },
   "devDependencies": {
     "electron": "6.0.0",
