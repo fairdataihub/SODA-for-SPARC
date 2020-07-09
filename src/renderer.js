@@ -1710,7 +1710,7 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
         for (let elementDS in datasetInfoValueArray) {
           dsSectionArray.push(datasetInfoValueArray[elementDS])
         }
-
+        
         //// grab entries from contributor info section and pass values to conSectionArray
         var contributorObj = grabConInfoEntries()
 

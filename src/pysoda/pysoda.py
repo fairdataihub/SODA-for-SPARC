@@ -476,8 +476,8 @@ def populate_dataset_info(workbook, val_array):
     ## name, description, samples, subjects
     workbook["D2"] = val_array[0]
     workbook["D3"] = val_array[1]
-    workbook["D16"] = val_array[3]
-    workbook["D17"] = val_array[4]
+    workbook["D17"] = val_array[3]
+    workbook["D16"] = val_array[4]
 
     ## keywords
     for i, column in zip(range(len(val_array[2])), excel_columns()):
