@@ -58,7 +58,7 @@ SODA is distributed as an easy-to-install application. Use the links below to do
 
 *   [Ubuntu](https://github.com/bvhpatel/SODA/releases/download/1.0.0-Ubuntu/SODA-v1.0.0-Ubuntu.zip) (developed and tested on Ubuntu 18.04.2 LTS)
 
-All our releases are accessible in the [releases tab](https://github.com/bvhpatel/SODA/releases). Latest version: 1.0.0
+All our releases are accessible in the [releases tab](https://github.com/bvhpatel/SODA/releases). Latest version: 2.0.0
 
 **Important: the [Blackfynn agent](https://developer.blackfynn.io/agent/index.html) must be installed to upload datasets to Blackfynn through SODA.**
 
