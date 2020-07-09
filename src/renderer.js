@@ -1933,7 +1933,7 @@ holderMetadata.addEventListener("drop", (event)=> {
 // New instance for description editor
 const tuiInstance = new Editor({
   el: document.querySelector('#editorSection'),
-  initialEditType: 'wysiwyg',
+  initialEditType: 'markdown',
   previewStyle: 'vertical',
   height: '400px',
   toolbarItems: [
