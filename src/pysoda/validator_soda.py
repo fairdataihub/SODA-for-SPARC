@@ -564,7 +564,7 @@ class DictValidator:
 
         check1 = "Manifest files in xlsx, csv, or json format are included in EITHER all folders with at least one file or all high-level SPARC folders only"
 
-        check1f = "Please include manifest files according to one of the two allowable configurations"
+        check1f = "Please include manifest files according to one of the two allowable configurations. You can have manifest files auto-generated for your dataset under 'Prepare Dataset' section of SODA""
 
         check1c1 = "It is likely you chose the 'all folders with at least one file' option"
         check1c2 = "It is likely you chose the 'all high-level SPARC folders only' option"
