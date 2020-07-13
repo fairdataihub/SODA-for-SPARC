@@ -299,6 +299,7 @@ const currentDOI = document.querySelector('#input-current-doi')
 const reserveDOIStatus = document.querySelector('#para-reserve-doi-status')
 
 const bfPublishDatasetBtn = document.querySelector('#button-publish-dataset')
+const bfSubmitReviewDatasetBtn = document.querySelector('#button-submit-review-dataset')
 const bfRefreshPublishingDatasetStatusBtn = document.querySelector('#button-refresh-publishing-status')
 const publishingStatus = document.querySelector('#input-publishing-status')
 const publishDatasetStatus = document.querySelector('#para-publish-dataset-status')
@@ -3574,7 +3575,7 @@ bfReserveDOIBtn.addEventListener('click', () => {
 
 
 // Publish dataset
-bfPublishDatasetBtn.addEventListener('click', () => {
+bfSubmitReviewDatasetBtn.addEventListener('click', () => {
   if (publishingStatus.value === 'PUBLISH_IN_PROGRESS'){
     emessage = "Your dataset is currently being published. Please wait until it is completed."
     publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
@@ -3587,25 +3588,25 @@ bfPublishDatasetBtn.addEventListener('click', () => {
 
 ipcRenderer.on('warning-publish-dataset-selection', (event, index) => {
   if (index === 0) {
-    publishDataset()
+    submitReviewDataset()
   }
 })
 
 ipcRenderer.on('warning-publish-dataset-again-selection', (event, index) => {
   if (index === 0) {
-    publishDataset()
+    submitReviewDataset()
   }
 })
 
-function publishDataset(){
+function submitReviewDataset(){
   disableform(bfPostCurationForm)
-  bfPublishDatasetBtn.disabled = true
+  bfSubmitReviewDatasetBtn.disabled = true
   bfRefreshPublishingDatasetStatusBtn.disabled = true
   publishDatasetStatus.innerHTML = "Please wait..."
   bfPostCurationProgress.style.display = 'block'
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
-  client.invoke("api_bf_publish_dataset", selectedBfAccount, selectedBfDataset,
+  client.invoke("api_bf_submit_review_dataset", selectedBfAccount, selectedBfDataset,
     (error, res) => {
     if(error) {
       log.error(error)
@@ -3614,7 +3615,7 @@ function publishDataset(){
       publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfPostCurationProgress.style.display = 'none'
       enableform(bfPostCurationForm)
-      bfPublishDatasetBtn.disabled = false
+      bfSubmitReviewDatasetBtn.disabled = false
       bfRefreshPublishingDatasetStatusBtn.disabled = false
     } else {
       publishingStatus.value = res
@@ -3630,14 +3631,14 @@ function publishDataset(){
             publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
             bbfPostCurationProgress.style.display = 'none'
             enableform(bfPostCurationForm)
-            bfPublishDatasetBtn.disabled = false
+            bfSubmitReviewDatasetBtn.disabled = false
             bfRefreshPublishingDatasetStatusBtn.disabled = false
           } else {
             publishDatasetStatus.innerHTML = 'Success: Dataset is publishing (it may take some time to complete) and dataset status has been set to "Published"'
             showCurrentDatasetStatus()
             bfPostCurationProgress.style.display = 'none'
             enableform(bfPostCurationForm)
-            bfPublishDatasetBtn.disabled = false
+            bfSubmitReviewDatasetBtn.disabled = false
             bfRefreshPublishingDatasetStatusBtn.disabled = false
           }
         })
@@ -3645,7 +3646,7 @@ function publishDataset(){
         publishDatasetStatus.innerHTML = 'Success: Dataset is publishing (it may take some time to complete)'
         bfPostCurationProgress.style.display = 'none'
         enableform(bfPostCurationForm)
-        bfPublishDatasetBtn.disabled = false
+        bfSubmitReviewDatasetBtn.disabled = false
         bfRefreshPublishingDatasetStatusBtn.disabled = false
       }
     }
@@ -4304,14 +4305,14 @@ function showPublishingStatus(){
   publishingStatus.value = "Please wait..."
   publishDatasetStatus.innerHTML = ""
   bfPostCurationProgress.style.display = 'block'
-  bfPublishDatasetBtn.disabled = true
+  bfSubmitReviewDatasetBtn.disabled = true
   bfRefreshPublishingDatasetStatusBtn.disabled = true
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
     publishingStatus.value = '-------'
     bfPostCurationProgress.style.display = 'none'
-    bfPublishDatasetBtn.disabled = false
+    bfSubmitReviewDatasetBtn.disabled = false
     bfRefreshPublishingDatasetStatusBtn.disabled = false
   } else {
     client.invoke("api_bf_get_publishing_status", selectedBfAccount, selectedBfDataset,
@@ -4323,12 +4324,12 @@ function showPublishingStatus(){
         var emessage = userError(error)
         publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
         bfPostCurationProgress.style.display = 'none'
-        bfPublishDatasetBtn.disabled = false
+        bfSubmitReviewDatasetBtn.disabled = false
         bfRefreshPublishingDatasetStatusBtn.disabled = false
       } else {
         publishingStatus.value = res
         bfPostCurationProgress.style.display = 'none'
-        bfPublishDatasetBtn.disabled = false
+        bfSubmitReviewDatasetBtn.disabled = false
         bfRefreshPublishingDatasetStatusBtn.disabled = false
       }
     })

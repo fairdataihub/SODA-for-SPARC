@@ -623,16 +623,16 @@ my-dropdown<!DOCTYPE html>
           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps" >
             <img class="nav-video" src="assets/img/documentation-icon.png">
           </a>
-          <div class="demo-meta u-avoid-clicks"> Share with SPARC Consortium, Reserve DOI, and publish dataset </div>
+          <div class="demo-meta u-avoid-clicks"> Share with SPARC Consortium and publish dataset </div>
         </button>
 
         <div class="demo-box">
 
-          <div id="div-post-curation-display">
+<!--           <div id="div-post-curation-display">
             <p>Coming soon... </p>
-          </div>
+          </div> -->
 
-        <div id="div-post-curation-display-2" style="display:none">
+        <div id="div-post-curation-display-2">
           <h5> Select Blackfynn dataset </h5>
           <div class="demo-controls" style="margin-top: 15px">
             <select class="my-dropdown" style="width:80%" id="bfdatasetlist_postcuration">
@@ -650,10 +650,10 @@ my-dropdown<!DOCTYPE html>
             <div style = "padding:10px 0px" class="switch-field">
               <input class="input-switch" id="shareConsortium" type="radio" name="tabs">
               <label class="label-switch" for="shareConsortium">Share with SPARC Consortium </label>
-              <input class="input-switch" id="reserveDOI" type="radio" name="tabs">
-              <label class="label-switch" for="reserveDOI">Reserve a DOI </label>
+              <input class="input-switch" id="reserveDOI" type="radio" name="tabs" style="display:none">
+              <label class="label-switch" for="reserveDOI" style="display:none">Reserve a DOI </label>
               <input class="input-switch" id="publishDataset" type="radio" name="tabs">
-              <label class="label-switch" for="publishDataset">Publish dataset (make public)</label>
+              <label class="label-switch" for="publishDataset"> Submit dataset for pre-publishing review </label>
             </div>
           </form>
 
@@ -722,8 +722,8 @@ my-dropdown<!DOCTYPE html>
 
             <div class="demo-controls" style="margin-top:-30px">
               <div style="width: 200px; float: left;">
-                <h5> Click to publish dataset </h5>
-                <button id="button-publish-dataset" class="demo-button" style="width: 300px"> Publish dataset
+                <h5>  </h5>
+                <button id="button-submit-review-dataset" class="demo-button" style="width: 300px"> Submit for review
                 </button>
               </div>
 
