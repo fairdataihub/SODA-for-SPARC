@@ -6,6 +6,7 @@ the the SPARC curation team that automatically checks similar
 items, code passing this validator may not pass the official
 SPARC validator code.  The converse is not true however.
 To get a list of items that are checked, visit our dedicated page:
+https://github.com/bvhpatel/SODA/wiki/Validate-dataset/_edit#about-the-validator
 
 Bhavesh Patel
 California Medical Innovations Institute
