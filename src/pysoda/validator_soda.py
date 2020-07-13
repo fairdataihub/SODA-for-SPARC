@@ -5,47 +5,11 @@ Note that since this code is separate from the code used
 the the SPARC curation team that automatically checks similar
 items, code passing this validator may not pass the official
 SPARC validator code.  The converse is not true however.
-The code checks the following items:
+To get a list of items that are checked, visit our dedicated page: 
 
-1. The required files exist (completed)
-2. The required folders exist (completed)
-3. A manifest files exists either in the root folder or in each terminal folder (completed)
-4. The number of subject folders and that in the subjects info file agree (completed)
-5. Check that there are no empty folders (completed)
-6. Check that there are no DS.STORE files in the dataset (completed)
-7. Check that there are no empty files (completed)
-8. Check that all csv starts at first row and xlsx files start at (0,0) (completed)
-9. Check that all csv files are UTF-8 encoded. (completed)
-10. Check that all csv/xlsx files do not have any blank rows (completed)
-11. Check that the subjects and sample files have the mandatory column headings and they are in the
-    right order (completed)
-12. Check that mandatory fields are populated for each subject/sample (completed)
-13. Check that the number of samples is the same in the dataset_description and samples files
-    and that those numbers match the actual number of folders (completed)
-
-14. Check that the subjects/samples files have unique IDs (completed)
-15. Check that the submission file has all of the required columns (to do) and are populated (completed)
-16. Check that the dataset_description file has all of the required rows (completed) and are populated (completed)
-
-definitions:
-a) a terminal folder is one with no further subfolders
-
-variables:
-fPathList - list of the files including the path and extension
-fList - list of the filenames only
-dPathList - list of directories including the path
-fullFilePath - the filename with path, but without the extension
-fileExtension - the file extension
-
-code I/O:
-input: path to the folder selected by the user
-output: list of fatal errors and/or warnings, flags that signal whether the
-        folder organization and naming, file naming, and position of manifest
-        files is correct.
-
-ver 0.1 2020-01-13 (start)
-ver 0.2 2020-01-31 (1-9 checks)
-ver 0.3 2020-03-05 (1-13 checks)
+Bhavesh Patel
+California Medical Innovations Institute
+bpatel@acalmi2.org
 
 Karl G. Helmer
 Martinos Center for Biomedical Imaging
@@ -295,16 +259,15 @@ class DictValidator:
         check2f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format."
         
         check3 = "A 'dataset_description' metadata file is included in either xlsx, csv, or json format"
-        check3f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format."
-        
+        check3f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format. You can prepare it in the 'Prepare Metadata' section of SODA"        
         check4 = "A 'subjects' metadata file is included in either xlsx, csv, or json format"
-        check4f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format."
+        check4f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format. You can prepare it in the 'Prepare Metadata' section of SODA"
         
         check5 = "A 'samples' metadata file is included in either xlsx, csv, or json format"
         check5f = "This is NOT a mandatory file but must be included (and be in the correct format) if your study includes samples (e.g., tissue slices). "
         
         check6 = "A 'README' metadata file is included in txt format"
-        check6f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the txt format."
+        check6f = "This is NOT a mandatory file but suggested for all SPARC datasets. If included, it must be in the txt format."
         
         check7 = "All csv metadata files are UTF-8 encoded"
         check7f = "As per requirement from the SPARC Curation Team, please change the csv encoding format to UTF-8 for the following metadata files: "
@@ -339,7 +302,7 @@ class DictValidator:
             self.passes.append(check5)
             
         if not rm:
-            self.fatal.append(check6 + "--" + check6f)
+            self.warnings.append(check6 + "--" + check6f)
         else:
             self.passes.append(check6)
         
