@@ -258,13 +258,14 @@ class DictValidator:
         check1f = "Only SPARC metadata files are allowed in the high-level dataset folder. The following file(s) must be removed:"
 
         check2 = "A 'submission' metadata file is included in either xlsx, csv, or json format"
-        check2f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format."
-
+        check2f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format. You can prepare it in the 'Prepare Metadata' section of SODA."
+        
         check3 = "A 'dataset_description' metadata file is included in either xlsx, csv, or json format"
-        check3f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format. You can prepare it in the 'Prepare Metadata' section of SODA"
+        check3f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format. You can prepare it in the 'Prepare Metadata' section of SODA."        
+        
         check4 = "A 'subjects' metadata file is included in either xlsx, csv, or json format"
-        check4f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format. You can prepare it in the 'Prepare Metadata' section of SODA"
-
+        check4f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format."
+ 
         check5 = "A 'samples' metadata file is included in either xlsx, csv, or json format"
         check5f = "This is NOT a mandatory file but must be included (and be in the correct format) if your study includes samples (e.g., tissue slices). "
 
@@ -563,13 +564,14 @@ class DictValidator:
 
 
         check1 = "Manifest files in xlsx, csv, or json format are included in EITHER all folders with at least one file or all high-level SPARC folders only"
-
-        check1f = "Please include manifest files according to one of the two allowable configurations"
-
-        check1c1 = "It is likely you chose the 'all folders with at least one file' option"
-        check1c2 = "It is likely you chose the 'all high-level SPARC folders only' option"
-
-        check1f2 = "A manifest is missing in the following folders: "
+        
+        check1f = "Please include manifest files according to one of the two allowable configurations. They can be generated automatically from the 'Prepare Dataset' section of SODA."
+        
+        check1c1 = "It is likely you chose the 'all folders with at least one file' option" 
+        check1c2 = "It is likely you chose the 'all high-level SPARC folders only' option" 
+        
+        check1f2 = "A manifest is missing in the following folders: " 
+        
         check1f3 = "The manifest must be removed from the following folder(s) since they contain only folders or a 'README' file: "
         check1f4 = "Multiple manifest files are included in the following folder(s): "
 
@@ -749,6 +751,8 @@ class DictValidator:
         contributorsnameformatfailList = ""
         contributorinfofail = 0
         contributorinfofailList = ""
+        orcidformatfail = 0
+        orcidformatfailList = ""
         rolefail = 0
         rolefailList = ""
         contactpersonformatfail = 0
@@ -1041,33 +1045,33 @@ class DictValidator:
                                     if orcid == self.empty or affiliation == self.empty or role == self.empty  or contactperson == self.empty:
                                         contributorinfofail = 1
                                         contributorinfofailList = " " + name + ","
-
-                        # ORCID in the format https://orcid.org/0000-0002-5497-0243
-                        for orcid in orcidList:
-                            if orcid != self.empty:
-                                if 'https://orcid.org/' not in orcid:
-                                    orcidformatfail = 1
-                                    orcidformatfailList = " " + orcid + ","
-
-                        # There must be only one contributor role per column and each of them must be from the Data Cite list of roles
-                        for role in roleList:
-                            if role != self.empty:
-                                if role not in self.contributorRoles:
-                                        rolefail = 1
-                                        rolefailList += " " + role + ","
-
-                        # Contact person must be 'Yes' or 'No' and there must one and only one 'Yes'
-                        countYes = 0
-                        for contactperson in contactpersonList:
-                            if contactperson != self.empty:
-                                if contactperson not in self.contactPersonOptions:
-                                    contactpersonformatfail = 1
-                                    contactpersonformatfailList += " " + contactperson + ","
-                                elif contactperson == self.contactPersonOptions[0]:
-                                    countYes += 1
-                        if countYes != 1:
-                            contactpersonfail = 1
-
+                        
+                            # ORCID in the format https://orcid.org/0000-0002-5497-0243
+                            for orcid in orcidList:
+                                if orcid != self.empty:
+                                    if 'https://orcid.org/' not in orcid:
+                                        orcidformatfail = 1
+                                        orcidformatfailList = " " + orcid + ","
+                            
+                            # There must be only one contributor role per column and each of them must be from the Data Cite list of roles
+                            for role in roleList:
+                                if role != self.empty:
+                                    if role not in self.contributorRoles:
+                                            rolefail = 1
+                                            rolefailList += " " + role + ","
+                            
+                            # Contact person must be 'Yes' or 'No' and there must one and only one 'Yes'
+                            countYes = 0
+                            for contactperson in contactpersonList:
+                                if contactperson != self.empty:
+                                    if contactperson not in self.contactPersonOptions:
+                                        contactpersonformatfail = 1
+                                        contactpersonformatfailList += " " + contactperson + "," 
+                                    elif contactperson == self.contactPersonOptions[0]:
+                                        countYes += 1
+                            if countYes != 1:
+                                contactpersonfail = 1
+                        
                         # One funding source listed per column
                         selectedEl = self.ddCol0Req[8]
                         fundingList = dfv.loc[dfv[metadataEl] == selectedEl].iloc[0].values
@@ -1231,8 +1235,8 @@ class DictValidator:
         check_numsamples_f = "Ensure that an integer number is provided for the 'Number of samples' field in the 'Value' column"
 
         check_completness = "'Completeness of data set' is provided an allowable 'Value'"
-        check_completness_f = "Ensure that the 'Value' for 'Completeness of data set' is either empty, 'hasNext, or hasChildren'"
-
+        check_completness_f = "Ensure that the 'Value' for 'Completeness of data set' is either empty, 'hasNext', or 'hasChildren'"
+        
         check_parentID = "'Parent dataset ID' is only provided in the 'Value' column and is in the correct format or left empty"
         check_parentID_f1 = "'Parent dataset ID' must be only provided in the 'Value' column. Delete values in the following column: "
         check_parentID_f2 = "'Parent dataset ID' must be of the format 'N:dataset:xxxx' (Blackfynn dataset ID). Correct the following ID or delete it: "
