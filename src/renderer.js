@@ -1945,23 +1945,6 @@ const tuiInstance = new Editor({
     'divider',
     'ul',
     'ol',
-    'divider',
-    'hr',
-    'quote',
-    'code',
-    'codeblock',
-    'divider',
-    // First way to add a button
-    {
-      type: 'button',
-      options: {
-        $el: $('<div class="custom-button"><i class="fas fa-briefcase-medical"></i></div>'),
-        name: 'test2',
-        className: '',
-        command: 'Bold', // you can use "Bold"
-        tooltip: 'Bold'
-      }
-    }
   ]
 })
 
