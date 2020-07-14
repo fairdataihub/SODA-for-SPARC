@@ -463,8 +463,6 @@ my-dropdown<!DOCTYPE html>
               <input class="input-switch" id="team-permission" name="blackfynn-permission-sharing" type="radio"/>
               <label for="team-permission" class="label-switch"> Add/edit team permissions </label>
 
-              <input class="input-switch" id="curation-team" name="blackfynn-permission-sharing" type="radio"/>
-              <label for="curation-team" class="label-switch"> Share with Curation Team </label>
 
             </div>
           </form>
@@ -541,19 +539,15 @@ my-dropdown<!DOCTYPE html>
             </div>
           </div>
 
-          <div id="div-bf-share-curation-team" class="datasetsaveoption">
-              <h5>  </h5>
-              <div class="demo-controls">
-                <button id="button-add-permission-curation-team" class="demo-button" style="min-width: 250px"> Share with Curation Team </button>
-                <p id = "para-dataset-permission-status-curation-team"  style="padding: 0 0; margin: 0 0"> </p>
-              </div>
-          </div>
+
 
         <p></p>
         </div>
       </div>
     </div>
 
+
+                          <!-- Upload local dataset -->
 
     <div class="demo">
       <div class="demo-wrapper">
@@ -617,6 +611,75 @@ my-dropdown<!DOCTYPE html>
       </div>
     </div>
 
+
+                      <!-- View and change dataset status -->
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="button-new-window-dataset-status-demo-toggle" class="js-container-target demo-toggle-button"> View and change dataset status
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/View-and-change-dataset-status" >
+            <img class="nav-video" src="assets/img/documentation-icon.png">
+          </a>
+          <div class="demo-meta u-avoid-clicks"> Modify and track the status of your dataset as it moves through the curation process </div>
+        </button>
+        <div class="demo-box">
+
+          <h5> Select Blackfynn dataset
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">
+              The status of a dataset is used to allow easy communication between SPARC investigators and the SPARC Dataset Curation Team regarding the progress of a dataset through the curation process. In the SPARC consortium organization, there are 12 status options that each SPARC Dataset will go through one by one during the submission and curation process. Each status indicates which team is responsible for the step.
+              <br><br>
+              Select the Blackfynn dataset for which you wish to change the status (sorted alphabetically).
+              <br><br>
+              Note: You must have "owner" or "manager" permissions on the dataset to change dataset status. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+              </span>
+            </div>
+          </h5>
+
+          <br/>
+
+          <div class="demo-controls" style="margin-top: 15px">
+            <select class="my-dropdown" style="width:80%" id="bfdatasetlist_dataset_status">
+              <option> Select dataset </option>
+            </select>
+            <p></p>
+            <button id="button-refresh-dataset-status" style="width:150px;height:38px;display:none" class="demo-button"> Refresh List </button>
+          </div>
+
+          <div id=div-bf-current-dataset-status-progress class="progressdiv">
+            <div class="indeterminatebar"></div>
+          </div>
+
+          <h5> View/change status
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">
+              Investigators should only have to change dataset status to one of the following four options:
+                <ul >
+                  <li>"02. Work in Progress (Investigator)": Select to indicate that you are working on your dataset </li>
+                  <li> "03. Ready for Curation (Investigator)": Select to inform the SPARC Dataset Curation Team that your dataset is ready to be reviewed (done automatically in SODA when you click on "Share with Curation Team" under "Manage dataset permissions"). You dataset will be added to the curation queue. Please note that the SPARC Dataset Curation Team will not look into your dataset until you change the status to this option. </li>
+                  <li> "11. Complete, Under Embargo (Investigator)": Select to share your dataset with the SPARC Consortium. This will give viewer permissions to the SPARC Embargoed Data Sharing Group and will therefore allow any SPARC investigator who has signed the SPARC Non-disclosure form to see your data. </li>
+                  <li> "12. Published (Investigator)": Select this option once you have published your dataset. One year after the initial upload of your dataset, you must publish your dataset to Blackfynn Discover, which populates the SPARC Portal. To do this, open the dataset of interest on the Blackfynn webpage, click on the Settings tab on the left, and select Publish Dataset. </li>
+                </ul>
+              To find out more about dataset status, please visit <a href="https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd" style="color:white;"> docs.sparc.science </a>.
+              </span>
+            </div>
+          </h5>
+          <br/>
+          <div class="demo-controls">
+            <select class="my-dropdown" style="width:80%" id="bf_list_dataset_status">
+              <option>  </option>
+            </select>
+          </div>
+
+           <p id = "para-dataset-status-status"> </p>
+
+        </div>
+      </div>
+    </div>
+
+
+                            <!-- Complete post-curation steps -->
+
     <div class="demo">
       <div class="demo-wrapper">
         <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button"> Complete post-curation steps
@@ -648,6 +711,10 @@ my-dropdown<!DOCTYPE html>
           <h5></h5>
           <form id = 'blackfynn-post-curation'>
             <div style = "padding:10px 0px" class="switch-field">
+
+              <input class="input-switch" id="curation-team" type="radio" name="tabs" checked/>
+              <label for="curation-team" class="label-switch"> Share with Curation Team </label>
+
               <input class="input-switch" id="shareConsortium" type="radio" name="tabs">
               <label class="label-switch" for="shareConsortium">Share with SPARC Consortium </label>
               <input class="input-switch" id="reserveDOI" type="radio" name="tabs" style="display:none">
@@ -658,6 +725,14 @@ my-dropdown<!DOCTYPE html>
           </form>
 
           <br>
+
+          <div id="div-bf-share-curation-team" class="datasetsaveoption" style="margin-left:20px">
+              <!-- <h5>  </h5> -->
+              <div class="demo-controls">
+                <button id="button-add-permission-curation-team" class="demo-button" style="min-width: 250px"> Share with Curation Team </button>
+                <p id = "para-dataset-permission-status-curation-team"  style="padding: 0 0; margin: 0 0"> </p>
+              </div>
+          </div>
 
           <div id="div-share-consortium" class="datasetsaveoption" style="margin-left:20px">
 
@@ -760,68 +835,6 @@ my-dropdown<!DOCTYPE html>
       </div>
     </div>
 
-    <div class="demo">
-      <div class="demo-wrapper">
-        <button id="button-new-window-dataset-status-demo-toggle" class="js-container-target demo-toggle-button"> View and change dataset status
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/View-and-change-dataset-status" >
-            <img class="nav-video" src="assets/img/documentation-icon.png">
-          </a>
-          <div class="demo-meta u-avoid-clicks"> Modify and track the status of your dataset as it moves throught the curation process </div>
-        </button>
-        <div class="demo-box">
-
-          <h5> Select Blackfynn dataset
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">
-              The status of a dataset is used to allow easy communication between SPARC investigators and the SPARC Dataset Curation Team regarding the progress of a dataset through the curation process. In the SPARC consortium organization, there are 12 status options that each SPARC Dataset will go through one by one during the submission and curation process. Each status indicates which team is responsible for the step.
-              <br><br>
-              Select the Blackfynn dataset for which you wish to change the status (sorted alphabetically).
-              <br><br>
-              Note: You must have "owner" or "manager" permissions on the dataset to change dataset status. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
-              </span>
-            </div>
-          </h5>
-
-          <br/>
-
-          <div class="demo-controls" style="margin-top: 15px">
-            <select class="my-dropdown" style="width:80%" id="bfdatasetlist_dataset_status">
-              <option> Select dataset </option>
-            </select>
-            <p></p>
-            <button id="button-refresh-dataset-status" style="width:150px;height:38px;display:none" class="demo-button"> Refresh List </button>
-          </div>
-
-          <div id=div-bf-current-dataset-status-progress class="progressdiv">
-            <div class="indeterminatebar"></div>
-          </div>
-
-          <h5> View/change status
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">
-              Investigators should only have to change dataset status to one of the following four options:
-                <ul >
-                  <li>"02. Work in Progress (Investigator)": Select to indicate that you are working on your dataset </li>
-                  <li> "03. Ready for Curation (Investigator)": Select to inform the SPARC Dataset Curation Team that your dataset is ready to be reviewed (done automatically in SODA when you click on "Share with Curation Team" under "Manage dataset permissions"). You dataset will be added to the curation queue. Please note that the SPARC Dataset Curation Team will not look into your dataset until you change the status to this option. </li>
-                  <li> "11. Complete, Under Embargo (Investigator)": Select to share your dataset with the SPARC Consortium. This will give viewer permissions to the SPARC Embargoed Data Sharing Group and will therefore allow any SPARC investigator who has signed the SPARC Non-disclosure form to see your data. </li>
-                  <li> "12. Published (Investigator)": Select this option once you have published your dataset. One year after the initial upload of your dataset, you must publish your dataset to Blackfynn Discover, which populates the SPARC Portal. To do this, open the dataset of interest on the Blackfynn webpage, click on the Settings tab on the left, and select Publish Dataset. </li>
-                </ul>
-              To find out more about dataset status, please visit <a href="https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd" style="color:white;"> docs.sparc.science </a>.
-              </span>
-            </div>
-          </h5>
-          <br/>
-          <div class="demo-controls">
-            <select class="my-dropdown" style="width:80%" id="bf_list_dataset_status">
-              <option>  </option>
-            </select>
-          </div>
-
-           <p id = "para-dataset-status-status"> </p>
-
-        </div>
-      </div>
-    </div>
 
     <script type="text/javascript">
       require('./renderer-process/native-ui/dialogs/open-file')

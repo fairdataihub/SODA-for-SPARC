@@ -2984,7 +2984,6 @@ function renameDatasetlistChange(){
   }
 }
 
-
 // Add metadata to Blackfynn dataset
 bfDatasetListMetadata.addEventListener('change', () => {
   var listSelectedIndex = bfDatasetListMetadata.selectedIndex
