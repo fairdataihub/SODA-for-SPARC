@@ -8,13 +8,13 @@
           <img class="section-icon" src="assets/img/metadata-teal.png">
           Prepare Metadata
         </h1>
-        <h3>This interface will help you in preparing the SPARC metadata files (currently submission and dataset_description files) for your dataset. 
+        <h3>This interface will help you in preparing the SPARC metadata files (currently submission and dataset_description files) for your dataset.
          </h3>
       </div>
     </header>
 
 <!-- Provide info about award -->
-    <div class="demo">
+    <!-- <div class="demo">
       <div class="demo-wrapper">
         <button id="button-save-grant-info-demo-toggle" class="js-container-target demo-toggle-button">Connect to Airtable
           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Connect-to-Airtable">
@@ -27,12 +27,12 @@
         <div id="div-add-airtable-key">
           <h5> Enter your Airtable API key below and specify a key name to connect your Airtable account with SODA:
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext"> 
+              <span class="tooltiptext">
                 SODA make use of the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;"> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
                 <br><br>
                 To achieve that, create an Airtable account and request access to the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;">SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href="mailto:chorn@pitt.edu" style='color: white'> chorn@pitt.edu</a>)
                 <br><br>
-                Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a> to learn how to obtain or re-generate your API key. 
+                Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a> to learn how to obtain or re-generate your API key.
                 <br><br>
                 The account will then be remembered by SODA for all subsequent uses and you can move on directly to the "Provide award information" feature. Note that the account key will be stored on your computer only, so neither the SODA Team nor anyone else besides you will have access to your Airtable account.
                 <br><br>
@@ -71,7 +71,7 @@
          </div>
        </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="demo">
       <div class="demo-wrapper">
@@ -105,9 +105,9 @@
             <span style="color:black;margin-top:5px" id="para-add-airtable-key-status"></span>
 
             <div class="demo-controls" id="div-search-for-awards" style="display:none">
-              <h5> Search for award(s): 
+              <h5> Search for award(s):
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext"> 
+                  <span class="tooltiptext">
                     The list of active SPARC awards in this dropdown list is generated automatically from the SPARC Airtable sheet once SODA is connected with your Airtable account. Select your award(s) and click on "Add" to save it/them in SODA. You will only have to do this once. You can then view your award(s) and provide additional information in the "View you SPARC award(s)" tab.
                   </span>
                 </div>
@@ -127,7 +127,7 @@
           </div>
 
           <div id="div-select-existing-grant" class="datasetsaveoption" style="display:block;margin-top:70px;margin-left:10px">
-            <h5> Select award: 
+            <h5> Select award:
               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                 <span class="tooltiptext">
                   Select an award to provide additional information about it. You can delete an existing award from the list by clicking on the "Delete award" button. This will remove the award from your list of awards as well as delete any associated milestone information.
@@ -148,15 +148,15 @@
             <div id="div-show-milestone-info-no-existing" class="pathtable" style="display:none;width:100%">
               <h5>Data Deliverables document:
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext"> 
+                  <span class="tooltiptext">
                   The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document (usually kept by the PI of the SPARC award or the award manager).
                   <br><br>
-                  Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use. 
+                  Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use.
                   <br><br>
                   Note that you can import a new Dataset Deliverable to replace an existing one.
                   <br><br>
                   Click <a href=# id="a-DDD" style="color:white;">here</a> to download a template of the Data Deliverables document to see the expected format. Most importantly, at least one table with these exact three hearders is expected: "Related milestone, aim, or task", "Description of data", "Expected date of completion".
-                  <br><br>                 
+                  <br><br>
                   </span>
                 </div>
               </h5>
@@ -172,10 +172,10 @@
             </div>
             <br>
             <div id="div-show-current-milestones" style="display:none;width:100%">
-              <h5>Current Milestone Information: 
+              <h5>Current Milestone Information:
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                   <span class="tooltiptext">
-                  This table shows you the information extracted from your Data Deliverables document. It will be used in the next feature to help you generate your submission file.             
+                  This table shows you the information extracted from your Data Deliverables document. It will be used in the next feature to help you generate your submission file.
                   </span>
                 </div>
               </h5>
@@ -248,7 +248,7 @@
           <div class="form-container-ds"><font color="black"> Completion Date: </font> </div>
           <div class="tooltipnew"><img class="info" src="assets/img/info.png">
             <span class="tooltiptext">
-              This date is filled automatically using extracted information from the Data Deliverables document and based on the milestone/description of data selected above. 
+              This date is filled automatically using extracted information from the Data Deliverables document and based on the milestone/description of data selected above.
             </span>
           </div>
           <div class="demo-controls">
@@ -485,7 +485,7 @@
                 <br><br>
                 - Originating Article DOIs: DOIs of published articles that were generated from this dataset.
                 <br><br>
-                - Additional links: URLs of additional resources used by this dataset (e.g., a link to a code repository). 
+                - Additional links: URLs of additional resources used by this dataset (e.g., a link to a code repository).
                 <br><br>
                 Note that at least one "Protocol URLs or DOIs" link is mandatory. The remaining is optional.
               </span>
@@ -572,7 +572,7 @@
               <span class="tooltiptext">
                 Please give us a provisional title for the entire data set. Leave empty if not applicable.
                 <br><br>
-                After you complete all steps, click on "Generate" to generate your dataset description file. A warning message may show up if any mandatory fields are missing. You may decide to go back and address the issues or generate the file anyway (and address the issues later). 
+                After you complete all steps, click on "Generate" to generate your dataset description file. A warning message may show up if any mandatory fields are missing. You may decide to go back and address the issues or generate the file anyway (and address the issues later).
               </span>
             </div>
             <div class="demo-controls">

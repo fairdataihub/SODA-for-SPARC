@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<template class="task-template">
+  <section id="my_account-section" class="section js-section u-category-windows">
+    <header class="section-header">
+
+      <div class="section-wrapper">
+        <h1>
+          <img class="section-icon" src="assets/img/metadata-teal.png">
+          Account information
+        </h1>
+        <h3>This interface will help you in preparing the SPARC metadata files (currently submission and dataset_description files) for your dataset.
+         </h3>
+      </div>
+    </header>
+
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="button-new-window-login-demo-toggle" class="js-container-target demo-toggle-button">My Blackfynn account
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Blackfynn-account" >
+            <img class="nav-video" src="assets/img/documentation-icon.png">
+          </a>
+          <div class="demo-meta u-avoid-clicks"> Add a new Blackfynn account or manage your existing Blackfynn accounts</div>
+        </button>
+
+    <div class="demo-box">
+      <form id = 'blackfynn-account'>
+        <div style = "padding:10px 0px">
+        <input class="input-switch" id="addAccount" type="radio" name="tabs" checked>
+        <label class="label-switch" for="addAccount">Add new account</label>
+        <input class="input-switch" id="selectAccount" type="radio" name="tabs">
+        <label class="label-switch" for="selectAccount">Select existing account</label>
+      </div>
+      </form>
+
+      <br><br><br>
+      <div id="div-add-account" class="datasetsaveoption" style="margin-left:20px">
+        <h5> Generate <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients"> API key and secret</a> from your Blackfynn account and enter below
+          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+            <span class="tooltiptext">Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients" style="color:white;"> Blackfynn Help page</a>
+            for generating API key and secret and setting up your Blackfynn account in SODA during your first use. The account will then be remembered by SODA for all subsequent uses and be accessible under the "Select existing account" tab. Note that the account key and secret will be stored on your computer only, so neither the SODA Team nor anyone else besides you will have access to your Blackfynn account.
+            </span>
+          </div>
+        </h5> <br>
+
+        <div class="form-container"><font color="black"> Key name: </font> </div>
+        <div class="demo-controls">
+          <input class="form-container-input-bf" id="bf-key-name" style="width:80%;" />
+        </div>
+        <div class="form-container"><font color="black"> API Key: </font> </div>
+        <div class="demo-controls">
+          <input class="form-container-input-bf" id="bf-key" style="width:80%;" />
+        </div>
+        <div class="form-container"><font color="black"> API Secret: </font> </div>
+        <div class="demo-controls">
+          <input class="form-container-input-bf" id="bf-secret" style="width:80%;"  />
+        </div>
+        <p></p>
+        <div class="demo-controls">
+          <button class="demo-button" id="add-bf-account"> Add Account </button>
+        </div>
+        <p id="para-add-account-status"></p>
+      </div>
+
+      <div id="div-select-account" class="datasetsaveoption" style="margin-left:20px">
+        <h5> Select previously added account
+         <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+            <span class="tooltiptext">
+              Previously added account(s) will be displayed in this drop-down list. Default account (last selected account before app closed) will be loaded automatically at start if available.
+              <br><br>
+              Click on "Switch Account" and select one from the drop-down list for changing to another account (in case multiple ones are connected with SODA).
+              <br><br>
+              To remove an account from the list, you would have to delete the associated API key from the Blackfynn webpage (under "My Settings").
+            </span>
+          </div>
+        </h5>
+        <div class="demo-controls">
+          <select class="my-dropdown" style="width:65%;" id="bfaccountlist">
+            <option> Select </option>
+          </select>
+          <p></p>
+          <button id="button-check-bf-account-details" style="height:38px;width:180px" class="demo-button"> Switch Account </button>
+        </div>
+
+        <div id="div-bf-account-load-progress" class="progressdiv">
+          <div class="indeterminatebar"></div>
+        </div>
+        <p id='para-select-account-status'> <p>
+
+      <div style="display:none" id="div-permission-list">
+        <h5> Select permissions for filtering dataset lists
+          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+            <span class="tooltiptext">
+              You will see multiple dropdown lists throughout the SODA interface listing you Blackfynn datasets. You can filter those lists based on your permissions on the dataset.
+              <br><br>
+              The default filter is "All" that shows you all the datasets for which you have permissions. It may take some time (1-2 minutes) to load the datasets initially since we have to check permissions one by one (there is no faster way currently). You can then change the filter to more specific permissions.
+              <br><br>
+              See our <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> on Blackfynn permissions for more information.
+            </span>
+          </div>
+        </h5>
+        <div class="demo-controls">
+          <select class="my-dropdown" style="width:65%;" id="select-permission-list">
+            <option default> All </option>
+            <option> Owner </option>
+            <option> Manager </option>
+            <option> Editor </option>
+            <option> Viewer </option>
+          </select>
+        </div>
+
+        <div id="div-filter-datasets-progress" class="progressdiv">
+          <div class="indeterminatebar"></div>
+        </div>
+        <p id='para-filter-datasets-status'> </p>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+
+<div class="demo">
+  <div class="demo-wrapper">
+    <button id="button-save-grant-info-demo-toggle" class="js-container-target demo-toggle-button">My Airtable account
+      <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Connect-to-Airtable">
+        <img class="nav-video" src="assets/img/documentation-icon.png">
+      </a>
+      <div class="demo-meta u-avoid-clicks"> Connect your Airtable account with SODA </div>
+    </button>
+
+  <div class="demo-box">
+
+    <form id = 'blackfynn-account'>
+      <div style = "padding:10px 0px">
+      <input class="input-switch" id="addAirtableAccount" type="radio" name="tabs">
+      <label class="label-switch" for="addAirtableAccount">Add new account</label>
+      <input class="input-switch" id="showAirtableAccount" type="radio" name="tabs" checked>
+      <label class="label-switch" for="showAirtableAccount">Show existing account</label>
+    </div>
+    </form>
+
+
+    <div id="div-add-airtable-key" class="datasetsaveoption" style="margin-left:20px">
+      <br><br>
+      <h5> Enter your Airtable API key below and specify a key name to connect your Airtable account with SODA:
+        <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+          <span class="tooltiptext">
+            SODA make use of the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;"> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
+            <br><br>
+            To achieve that, create an Airtable account and request access to the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;">SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href="mailto:chorn@pitt.edu" style='color: white'> chorn@pitt.edu</a>)
+            <br><br>
+            Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a> to learn how to obtain or re-generate your API key.
+            <br><br>
+            The account will then be remembered by SODA for all subsequent uses and you can move on directly to the "Prepare metadata" feature. Note that the account key will be stored on your computer only, so neither the SODA Team nor anyone else besides you will have access to your Airtable account.
+            <br><br>
+            Please keep your group information up to date in the Airtable sheet, especially contributors' name, email, affiliation, and ORCID to help SODA help you!
+          </span>
+        </div>
+      </h5> <br>
+
+      <div class="form-container"><font color="black"> Key name: </font> </div>
+      <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+        <span class="tooltiptext">
+          Provide a name of your choice for your Airtable API Key. Your API Key will be stored under this key name.
+        </span>
+      </div>
+      <div class="demo-controls">
+        <input class="form-container-input-bf" id="airtable-key-name" />
+      </div>
+      <div class="form-container"><font color="black"> API Key: </font> </div>
+      <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+        <span class="tooltiptext">
+          To obtain or re-generate your API key to connect to SODA during your first use, check out the dedicated <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a>. Note that the key will be stored locally on your computer and the SODA Team will not have access to it.
+        </span>
+      </div>
+      <div class="demo-controls">
+        <input type="password" class="form-container-input-bf" id="airtable-api-key" />
+      </div>
+      <br>
+      <div class="demo-controls">
+        <button class="demo-button" id="button-add-airtable-key"> Connect </button>
+        <div style="display:none" id="div-airtable-connect-load-progress" class="progressdiv">
+          <div class="indeterminatebar"></div>
+        </div>
+        <p id="para-add-airtable-key"  style="float:right;margin: 0 0;padding: 3 3;"></p>
+      </div>
+
+     </div>
+
+     <div id="div-show-airtable-key" class="datasetsaveoption" style="display:block;margin-left:20px">
+       <br><br>
+       <p id="h-airtable-existing-keyname"></p>
+       <div style="display:none" id="div-airtable-existing-account-status" class="progressdiv" style="width: 15%">
+         <div class="indeterminatebar"></div>
+       </div>
+      </div>
+
+   </div>
+  </div>
+</div>
+
+
+<!-- Provide info about award -->
+    <!-- <div class="demo">
+      <div class="demo-wrapper">
+        <button id="button-save-grant-info-demo-toggle" class="js-container-target demo-toggle-button">Connect to Airtable
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Connect-to-Airtable">
+            <img class="nav-video" src="assets/img/documentation-icon.png">
+          </a>
+          <div class="demo-meta u-avoid-clicks"> Connect your Airtable account with SODA  </div>
+        </button>
+
+      <div class="demo-box">
+
+      </div>
+
+      </div>
+    </div> -->
+
+    </section>
+  </template>

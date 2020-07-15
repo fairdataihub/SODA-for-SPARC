@@ -1,5 +1,28 @@
 const {ipcRenderer} = require('electron')
 
+
+
+function addAirtableAccount(){
+  document.getElementById('div-add-airtable-key').style.display ='block';
+  document.getElementById('div-show-airtable-key').style.display ='none';
+}
+
+function showExistingAirtableAccount(){
+  document.getElementById('div-show-airtable-key').style.display ='block';
+  document.getElementById('div-add-airtable-key').style.display ='none';
+  document.getElementById('para-add-airtable-key').innerHTML = ""
+}
+
+document.querySelector('#addAirtableAccount').addEventListener('click', () => {
+  addAirtableAccount()
+})
+
+document.querySelector('#showAirtableAccount').addEventListener('click', () => {
+  showExistingAirtableAccount()
+})
+
+
+
 function showAddGrant(){
   document.getElementById('div-add-new-grant').style.display ='block';
   document.getElementById('div-select-existing-grant').style.display ='none';

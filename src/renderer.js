@@ -878,7 +878,9 @@ presavedAwardArray1.addEventListener('change', function() {
 // indicate to user that airtable records are being retrieved
 function loadAwardData() {
   document.getElementById("div-awards-load-progress").style.display = 'block'
+  document.getElementById("div-airtable-existing-account-status").style.display = "block"
   document.getElementById("para-add-airtable-key-status").innerHTML = "Checking..."
+  document.getElementById("h-airtable-existing-keyname").innerHTML = "<b>Checking...</b>"
   ///// Construct table from data
   var awardResultArray = [];
   ///// config and load live data from Airtable
@@ -886,7 +888,8 @@ function loadAwardData() {
   if (Object.keys(airKeyContent).length === 0) {
     document.getElementById("div-awards-load-progress").style.display = 'none';
     document.getElementById("para-add-airtable-key-status").innerHTML =  "<span style='color: red;'>Please add an API Key to connect to Airtable!</span>"
-    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>No Airtable API key found! Please connect to Airtable first!</span>";
+    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>No Airtable API key found! Please connect to Airtable first under Account Information!</span>";
+    document.getElementById("h-airtable-existing-keyname").innerHTML = "<span style='color: red;'>There is currently no existing Airtable account on SODA. Please add a new account!</span>"
   } else {
     var airKeyInput = airKeyContent["api-key"]
     var airKeyName = airKeyContent["key-name"]
@@ -908,9 +911,11 @@ function loadAwardData() {
     },
     function done(err) {
         document.getElementById("div-awards-load-progress").style.display = 'none';
+        document.getElementById("div-airtable-existing-account-status").style.display = "none"
         if (err) {
-          document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to load awards from Airtable. To add new SPARC award(s), please try re-connecting to Airtable under the Connect to Airtable tab above.</span>";
+          document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to load awards from Airtable. To add new SPARC award(s), please try re-connecting to Airtable under Account Information.</span>";
           document.getElementById("para-add-airtable-key-status").style.display = 'block';
+          document.getElementById("h-airtable-existing-keyname").innerHTML = "<span style='color: red;'>Failed to load existing Airtable accounts. Please check either your Internet connection or your Airtable credentials.</span>"
           log.error(err);
           console.log(err);
           return;
@@ -922,6 +927,7 @@ function loadAwardData() {
           awardArrayTagify.settings.whitelist = resultArray
           document.getElementById("div-search-for-awards").style.display = "block"
           document.getElementById("para-add-airtable-key-status").innerHTML = "<br><span style='color: black;'>Successfully connected to Airtable account " + airKeyName + "!" +smileyCan +"</span>";
+          document.getElementById("h-airtable-existing-keyname").innerHTML = "<span style='color: black;'>You are connected to Airtable account: " + airKeyName + "!" +smileyCan +"</span>"
         }
     });
   }
