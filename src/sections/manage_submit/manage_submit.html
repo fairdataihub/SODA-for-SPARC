@@ -356,6 +356,14 @@ my-dropdown<!DOCTYPE html>
               <p id = "para-dataset-license-current"> None </p>
             </div> -->
 
+            <h5>
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">
+                As per SPARC rules, you must assign the Creative Commons Attribution (CC-BY) license to all your SPARC datasets.
+                </span>
+              </div>
+            </h5>
+
             <div class="demo-controls" style="margin-top:-30px">
               <div style="width: 200px; float: left;">
                 <h5> Click to assign license </h5>
@@ -368,17 +376,6 @@ my-dropdown<!DOCTYPE html>
                 </h5>
                 <p id = "para-dataset-license-current"> None </p>
               </div>
-
-              <div style="position:absolute; right:30px";>
-                <h5>
-                  <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                    <span class="tooltiptext">
-                    As per SPARC rules, you must assign the Creative Commons Attribution (CC-BY) license to all your SPARC datasets.
-                    </span>
-                  </div>
-                </h5>
-              </div>
-
             </div>
 
             <br>
@@ -661,7 +658,8 @@ my-dropdown<!DOCTYPE html>
 
           <div id="div-share-consortium" class="datasetsaveoption" style="margin-left:20px">
 
-            <div class="demo-controls">
+
+            <div class="demo-controls" style="margin-top:20px">
               <button id="button-share-consortium" class="demo-button" style="min-width: 250px"> Share with Consortium
               </button>
 
@@ -680,17 +678,20 @@ my-dropdown<!DOCTYPE html>
               </div>
 
             </div>
+
           </div>
 
 
           <div id="div-reserve-doi" class="datasetsaveoption" style="margin-left:20px">
 
-            <div class="demo-controls" style="margin-top:-30px">
+            <div class="demo-controls" style="margin-top:-60px">
+
               <div style="width: 200px; float: left;">
                 <h5> Click to reserve DOI (optional) </h5>
                 <button id="button-reserve-doi" class="demo-button" style="width: 300px"> Reserve DataCite DOI
                 </button>
               </div>
+
               <div style="margin-left: 200px;">
                 <h5> Currently reserved DOI </h5>
                 <input id="input-current-doi" class="demo-response" value="-------" disabled>
@@ -720,39 +721,82 @@ my-dropdown<!DOCTYPE html>
 
           <div id="div-publish-dataset" class="datasetsaveoption" style="margin-left:20px">
 
-            <div class="demo-controls" style="margin-top:-30px">
-              <div style="width: 200px; float: left;">
-                <h5>  </h5>
+            <div style = "width:100%, padding-top:-60px">
+            <h5> 
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">
+                  One year after the dataset completion date (as per the Data Deliverables document) or right after publishing results from the dataset, whichever comes first, you must publish your dataset to Blackfynn Discover, which populates the SPARC Data Portal.
+                  <br><br>
+                  Publishing the dataset will make it visible to the public.
+                  <br><br>
+                  Note: You must be dataset "owner" and have your ORCID linked on Blackfynn in order to publish. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+                </span>
+              </div>
+            </h5>
+            </div>
+
+            <div  style="display: flex; position: relative;">
+              
+              <div style="width: 400px;">
+                <h5> </h5>
+                <h5> Click to submit or refresh </h5>
                 <button id="button-submit-review-dataset" class="demo-button" style="width: 300px"> Submit for review
                 </button>
+                <br>
+                <h5> </h5>
+                <button id="button-refresh-publishing-status" class="demo-button" style="width: 300px"> Refresh review status </button>
+                <br>
+                <h5> </h5>
+                <button id="button-withdraw-review-dataset" class="demo-button" style="width: 300px"> Withdraw from review </button>
               </div>
 
-              <div style="margin-left: 200px;">
-                <h5> Publishing status: </h5>
-                <input id="input-publishing-status" class="demo-response" value="-------" disabled>
-              </div>
-
-              <div style="position:absolute; right:30px">
-                <h5>
-                  <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                    <span class="tooltiptext">
-                      One year after the dataset completion date (as per the Data Deliverables document) or right after publishing results from the dataset, whichever comes first, you must publish your dataset to Blackfynn Discover, which populates the SPARC Data Portal.
-                      <br><br>
-                      Publishing the dataset will make it visible to the public.
-                      <br><br>
-                      Note: You must be dataset "owner" and have your ORCID linked on Blackfynn in order to publish. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
-                    </span>
-                  </div>
+              <div style="flex-grow: 1">
+                <h5> Review status: 
                 </h5>
+                <p id='para-review-dataset-info'> </p>
               </div>
 
             </div>
 
+            <!-- <div style="margin-top:-30px">
+              <h5>
+                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext">
+                    One year after the dataset completion date (as per the Data Deliverables document) or right after publishing results from the dataset, whichever comes first, you must publish your dataset to Blackfynn Discover, which populates the SPARC Data Portal.
+                    <br><br>
+                    Publishing the dataset will make it visible to the public.
+                    <br><br>
+                    Note: You must be dataset "owner" and have your ORCID linked on Blackfynn in order to publish. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+                  </span>
+                </div>
+              </h5>
+            </div> -->
+<!-- 
+            <h5></h5>
+            <div class="demo-controls" >
+
+              <div style="width: 200px; float: left;">
+                <h5> Click to submit or refresh </h5>
+                <br>
+                <button id="button-submit-review-dataset" class="demo-button" style="width: 300px"> Submit for review
+                </button>
+              </div>
+
+              <div style="margin-left: 220px;">
+                <h5> Review and publishing status: 
+                </h5>
+                <input id="input-publishing-status" class="demo-response" value="-------" disabled style="display:none">
+                <p id='para-review-dataset-info'> </p>
+              </div>
+
+            </div> -->
+
             <h5> </h5>
-            <button id="button-refresh-publishing-status" class="demo-button" style="width: 300px"> Refresh publishing status </button>
+            
             <p id='para-publish-dataset-status'> </p>
 
           </div>
+
 
 
         </div>
