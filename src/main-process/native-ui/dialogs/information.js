@@ -212,3 +212,16 @@ ipcMain.on('warning-publish-dataset-again', (event) => {
     event.sender.send('warning-publish-dataset-again-selection', index)
   })
 })
+
+
+ipcMain.on('warning-withdraw-dataset', (event) => {
+  const options = {
+    type: 'warning',
+    title: 'Withdrawing dataset from review',
+    message: "Your dataset will be removed from review. You will have to submit it again before publishing it. Would you like to continue?",
+    buttons: ['Yes', 'No']
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('warning-publish-dataset-selection', index)
+  })
+})
