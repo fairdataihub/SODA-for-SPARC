@@ -192,7 +192,7 @@ ipcMain.on('warning-publish-dataset', (event) => {
   const options = {
     type: 'warning',
     title: 'Publishing dataset',
-    message: "Your dataset will become public on Blackfynn Discover. This step must be done only once your dataset has been approved by the Curation Team. Would you like to continue?",
+    message: "Your dataset will be submitted for review to the Publishers within your organization. While under review, the dataset will become locked until it has either been approved or rejected for publication. Would you like to continue?",
     buttons: ['Yes', 'No']
   }
   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
@@ -205,7 +205,7 @@ ipcMain.on('warning-publish-dataset-again', (event) => {
   const options = {
     type: 'warning',
     title: 'Publishing new version of dataset',
-    message: "This dataset has already been published. Would you like to release a new version on Blackfynn Discover?",
+    message: "This dataset has already been published. This action will submit the dataset again for review to the Publishers. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published. Would you like to continue?",
     buttons: ['Yes', 'No']
   }
   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
