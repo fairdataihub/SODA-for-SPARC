@@ -52,7 +52,6 @@ document.getElementById("add-edit-subtitle").click()
 document.getElementById("pi-owner").click()
 document.getElementById("cloud-dataset").click()
 document.getElementById("organize-dataset").click()
-document.getElementById("shareConsortium").click()
 
 //log user's OS version //
 log.info("User OS:", os.type(), os.platform(), "version:", os.release())
@@ -286,9 +285,16 @@ const datasetStatusStatus = document.querySelector('#para-dataset-status-status'
 const bfRefreshDatasetStatusBtn = document.getElementById('button-refresh-dataset-status')
 
 //Blackfynn post curation
-const bfPostCurationForm = document.querySelector('#blackfynn-post-curation')
-const bfDatasetListPostCuration = document.querySelector('#bfdatasetlist_postcuration')
-const bfPostCurationProgress = document.querySelector('#div-bf-post-curation-progress')
+// const bfPostCurationForm = document.querySelector('#blackfynn-post-curation')
+const bfDatasetListPostCurationDOI = document.querySelector('#bfdatasetlist_postcuration-doi')
+const bfDatasetListPostCurationCuration = document.querySelector('#bfdatasetlist_postcuration-curation')
+const bfDatasetListPostCurationConsortium = document.querySelector('#bfdatasetlist_postcuration-consortium')
+const bfDatasetListPostCurationPublish = document.querySelector('#bfdatasetlist_postcuration-publish')
+
+const bfPostCurationProgressCuration = document.querySelector('#div-bf-post-curation-progress-curation')
+const bfPostCurationProgressConsortium = document.querySelector('#div-bf-post-curation-progress-consortium')
+const bfPostCurationProgressPublish = document.querySelector('#div-bf-post-curation-progress-publish')
+const bfPostCurationProgressDOI = document.querySelector('#div-bf-post-curation-progress-doi')
 
 const bfShareConsortiumBtn = document.querySelector('#button-share-consortium')
 const sharedWithConsortiumStatus = document.querySelector('#shared-with-consortium-status')
@@ -2923,7 +2929,9 @@ bfUploadDatasetList.addEventListener('change', () => {
   datasetStatusListChange()
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
-  bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
   postCurationListChange()
   datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
   showDatasetDescription()
@@ -2963,7 +2971,9 @@ bfDatasetList.addEventListener('change', () => {
   datasetStatusListChange()
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
-  bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
   postCurationListChange()
   datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
   showDatasetDescription()
@@ -3044,7 +3054,9 @@ function syncDatasetDropdownOption(dropdown) {
     bfDatasetList.selectedIndex = listSelectedIndex
     bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
     bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
-    bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+    bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
+    bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
+    bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
     datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
     metadataDatasetlistChange()
     permissionDatasetlistChange()
@@ -3059,7 +3071,9 @@ function syncDatasetDropdownOption(dropdown) {
       bfDatasetList.selectedIndex = listSelectedIndex
       bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
       bfDatasetListPermission.selectedIndex = listSelectedIndex
-      bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+      bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
+      bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
+      bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
       datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
       metadataDatasetlistChange()
       permissionDatasetlistChange()
@@ -3073,7 +3087,9 @@ function syncDatasetDropdownOption(dropdown) {
       bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
       bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
       bfDatasetListPermission.selectedIndex = listSelectedIndex
-      bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+      bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
+      bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
+      bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
       metadataDatasetlistChange()
       permissionDatasetlistChange()
       datasetStatusListChange()
@@ -3093,7 +3109,9 @@ bfDatasetListDatasetStatus.addEventListener('change', () => {
   datasetStatusListChange()
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
-  bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
   postCurationListChange()
   datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
   showDatasetDescription()
@@ -3105,8 +3123,44 @@ function datasetStatusListChange(){
 }
 
 // Post-curation
-bfDatasetListPostCuration.addEventListener('change', () => {
-  var listSelectedIndex = bfDatasetListPostCuration.selectedIndex
+bfDatasetListPostCurationCuration.addEventListener('change', () => {
+  var listSelectedIndex = bfDatasetListPostCurationCuration.selectedIndex
+  bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
+  bfDatasetListMetadata.selectedIndex = listSelectedIndex
+  metadataDatasetlistChange()
+  bfUploadDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetListPermission.selectedIndex = listSelectedIndex
+  permissionDatasetlistChange()
+  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
+  datasetStatusListChange()
+  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
+  renameDatasetlistChange()
+  postCurationListChange()
+})
+
+bfDatasetListPostCurationPublish.addEventListener('change', () => {
+  var listSelectedIndex = bfDatasetListPostCurationPublish.selectedIndex
+  bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
+  bfDatasetListMetadata.selectedIndex = listSelectedIndex
+  metadataDatasetlistChange()
+  bfUploadDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetListPermission.selectedIndex = listSelectedIndex
+  permissionDatasetlistChange()
+  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
+  datasetStatusListChange()
+  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
+  renameDatasetlistChange()
+  postCurationListChange()
+})
+
+bfDatasetListPostCurationConsortium.addEventListener('change', () => {
+  var listSelectedIndex = bfDatasetListPostCurationConsortium.selectedIndex
+  bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
   bfDatasetListMetadata.selectedIndex = listSelectedIndex
   metadataDatasetlistChange()
   bfUploadDatasetList.selectedIndex = listSelectedIndex
@@ -3448,7 +3502,7 @@ ipcRenderer.on('warning-share-with-curation-team-selection', (event, index) => {
 function shareWithCurationTeam(){
   datasetPermissionStatusCurationTeam.innerHTML = 'Please wait...'
   bfCurrentPermissionProgress.style.display = 'block'
-  disableform(bfPermissionForm)
+  // disableform(bfPermissionForm)
   bfAddPermissionCurationTeamBtn.disabled = true
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text
@@ -3502,11 +3556,11 @@ ipcRenderer.on('warning-share-with-consortium-selection', (event, index) => {
 
 function shareWithConsortium(){
   shareConsortiumStatus.innerHTML = 'Please wait...'
-  bfPostCurationProgress.style.display = 'block'
-  disableform(bfPostCurationForm)
+  bfPostCurationProgressConsortium.style.display = 'block'
+  // disableform(bfPostCurationForm)
   bfShareConsortiumBtn.disabled = true
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
-  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPostCurationConsortium.options[bfDatasetListPostCurationConsortium.selectedIndex].text
   var selectedTeam = 'SPARC Embargoed Data Sharing Group'
   var selectedRole = 'viewer'
   client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
@@ -3516,8 +3570,8 @@ function shareWithConsortium(){
       console.error(error)
       var emessage = userError(error)
       shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      bfPostCurationProgress.style.display = 'none'
-      enableform(bfPostCurationForm)
+      bfPostCurationProgressConsortium.style.display = 'none'
+      // enableform(bfPostCurationForm)
       bfShareConsortiumBtn.disabled = false
     } else {
       showCurrentPermission()
@@ -3529,14 +3583,14 @@ function shareWithConsortium(){
           console.error(error)
           var emessage = userError(error)
           shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-          bbfPostCurationProgress.style.display = 'none'
-          enableform(bfPostCurationForm)
+          bfPostCurationProgressConsortium.style.display = 'none'
+          // enableform(bfPostCurationForm)
           bfShareConsortiumBtn.disabled = false
         } else {
           shareConsortiumStatus.innerHTML = 'Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"'
           showCurrentDatasetStatus()
-          bfPostCurationProgress.style.display = 'none'
-          enableform(bfPostCurationForm)
+          bfPostCurationProgressConsortium.style.display = 'none'
+          // enableform(bfPostCurationForm)
           bfShareConsortiumBtn.disabled = false
         }
       })
@@ -3547,10 +3601,10 @@ function shareWithConsortium(){
 
 // Reserve DOI
 bfReserveDOIBtn.addEventListener('click', () => {
-  disableform(bfPostCurationForm)
+  // disableform(bfPostCurationForm)
   bfReserveDOIBtn.disabled = true
   reserveDOIStatus.innerHTML = "Please wait..."
-  bfPostCurationProgress.style.display = 'block'
+  bfPostCurationProgressDOI.style.display = 'block'
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
   client.invoke("api_bf_reserve_doi", selectedBfAccount, selectedBfDataset,
@@ -3560,13 +3614,13 @@ bfReserveDOIBtn.addEventListener('click', () => {
       console.error(error)
       var emessage = userError(error)
       reserveDOIStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      bfPostCurationProgress.style.display = 'none'
-      enableform(bfPostCurationForm)
+      bfPostCurationProgressDOI.style.display = 'none'
+      // enableform(bfPostCurationForm)
       bfReserveDOIBtn.disabled = false
     } else {
       reserveDOIStatus.innerHTML = res
       showCurrentDOI()
-      enableform(bfPostCurationForm)
+      // enableform(bfPostCurationForm)
       bfReserveDOIBtn.disabled = false
     }
   })
@@ -3598,13 +3652,13 @@ ipcRenderer.on('warning-publish-dataset-again-selection', (event, index) => {
 })
 
 function submitReviewDataset(){
-  disableform(bfPostCurationForm)
+  // disableform(bfPostCurationForm)
   bfSubmitReviewDatasetBtn.disabled = true
   bfRefreshPublishingDatasetStatusBtn.disabled = true
   publishDatasetStatus.innerHTML = "Please wait..."
-  bfPostCurationProgress.style.display = 'block'
+  bfPostCurationProgressPublish.style.display = 'block'
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
-  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPostCurationPublish.options[bfDatasetListPostCurationPublish.selectedIndex].text
   client.invoke("api_bf_submit_review_dataset", selectedBfAccount, selectedBfDataset,
     (error, res) => {
     if(error) {
@@ -3612,8 +3666,8 @@ function submitReviewDataset(){
       console.error(error)
       var emessage = userError(error)
       publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      bfPostCurationProgress.style.display = 'none'
-      enableform(bfPostCurationForm)
+      bfPostCurationProgressPublish.style.display = 'none'
+      // enableform(bfPostCurationForm)
       bfSubmitReviewDatasetBtn.disabled = false
       bfRefreshPublishingDatasetStatusBtn.disabled = false
     } else {
@@ -3628,23 +3682,23 @@ function submitReviewDataset(){
             console.error(error)
             var emessage = userError(error)
             publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-            bbfPostCurationProgress.style.display = 'none'
-            enableform(bfPostCurationForm)
+            bfPostCurationProgressPublish.style.display = 'none'
+            // enableform(bfPostCurationForm)
             bfSubmitReviewDatasetBtn.disabled = false
             bfRefreshPublishingDatasetStatusBtn.disabled = false
           } else {
             publishDatasetStatus.innerHTML = 'Success: Dataset is publishing (it may take some time to complete) and dataset status has been set to "Published"'
             showCurrentDatasetStatus()
-            bfPostCurationProgress.style.display = 'none'
-            enableform(bfPostCurationForm)
+            bfPostCurationProgressPublish.style.display = 'none'
+            // enableform(bfPostCurationForm)
             bfSubmitReviewDatasetBtn.disabled = false
             bfRefreshPublishingDatasetStatusBtn.disabled = false
           }
         })
       } else {
         publishDatasetStatus.innerHTML = 'Success: Dataset is publishing (it may take some time to complete)'
-        bfPostCurationProgress.style.display = 'none'
-        enableform(bfPostCurationForm)
+        bfPostCurationProgressPublish.style.display = 'none'
+        // enableform(bfPostCurationForm)
         bfSubmitReviewDatasetBtn.disabled = false
         bfRefreshPublishingDatasetStatusBtn.disabled = false
       }
@@ -4132,7 +4186,7 @@ function selectOptionDropdown(dropdown, selectedDataset) {
 
 //// De-populate dataset dropdowns to clear options
 function clearDatasetDropdowns() {
-  for (let list of [bfDatasetList, bfDatasetListMetadata, bfDatasetListMetadata, bfUploadDatasetList, bfDatasetListDatasetStatus, bfDatasetListRenameDataset, bfDatasetListPostCuration, datasetDescriptionFileDataset, bfDatasetListPermission]) {
+  for (let list of [bfDatasetList, bfDatasetListMetadata, bfDatasetListMetadata, bfUploadDatasetList, bfDatasetListDatasetStatus, bfDatasetListRenameDataset, bfDatasetListPostCurationPublish, bfDatasetListPostCurationCuration, bfDatasetListPostCurationConsortium, datasetDescriptionFileDataset, bfDatasetListPermission]) {
     removeOptions(list)
     addOption(list, "Select dataset", "Select dataset")
   }
@@ -4154,13 +4208,18 @@ function populateDatasetDropdowns(mylist) {
     var option6 = option.cloneNode(true)
     var option7 = option.cloneNode(true)
     var option8 = option.cloneNode(true)
+    var option9 = option.cloneNode(true)
+    var option10 = option.cloneNode(true)
+
     bfDatasetListMetadata.appendChild(option2)
     bfDatasetListPermission.appendChild(option3)
     bfUploadDatasetList.appendChild(option4)
     bfDatasetListDatasetStatus.appendChild(option5)
     bfDatasetListRenameDataset.appendChild(option6)
     datasetDescriptionFileDataset.appendChild(option7)
-    bfDatasetListPostCuration.appendChild(option8)
+    bfDatasetListPostCurationCuration.appendChild(option8)
+    bfDatasetListPostCurationConsortium.appendChild(option9)
+    bfDatasetListPostCurationPublish.appendChild(option10)
     renameDatasetlistChange()
     metadataDatasetlistChange()
     permissionDatasetlistChange()
@@ -4175,7 +4234,7 @@ datasetPermissionList.addEventListener("change", function(e) {
   if (bfAccountList.options[bfAccountList.selectedIndex].text === "Select") {
     document.getElementById("para-filter-datasets-status").innerHTML = "<span style='color:red'>Please select an account first!</span>"
   } else {
-    for (let list of [bfDatasetList, bfDatasetListMetadata, bfDatasetListMetadata, bfUploadDatasetList, bfDatasetListDatasetStatus, bfDatasetListRenameDataset, bfDatasetListPostCuration, datasetDescriptionFileDataset]) {
+    for (let list of [bfDatasetList, bfDatasetListMetadata, bfDatasetListMetadata, bfUploadDatasetList, bfDatasetListDatasetStatus, bfDatasetListRenameDataset, bfDatasetListPostCurationCuration, bfDatasetListPostCurationPublish, bfDatasetListPostCurationConsortium, datasetDescriptionFileDataset]) {
       removeOptions(list)
       addOption(list, "Select dataset", "Select dataset")
     }
@@ -4275,12 +4334,12 @@ function updateBfAccountList(){
 function showCurrentDOI(){
   currentDOI.value = "Please wait..."
   reserveDOIStatus.innerHTML = ""
-  bfPostCurationProgress.style.display = 'block'
+  bfPostCurationProgressDOI.style.display = 'block'
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
-  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPostCurationDOI.options[bfDatasetListPostCurationDOI.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
     currentDOI.value = '-------'
-    bfPostCurationProgress.style.display = 'none'
+    bfPostCurationProgressDOI.style.display = 'none'
   } else {
     client.invoke("api_bf_get_doi", selectedBfAccount, selectedBfDataset,
     (error, res) => {
@@ -4290,10 +4349,10 @@ function showCurrentDOI(){
         currentDOI.value = '-------'
         var emessage = userError(error)
         reserveDOIStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-        bfPostCurationProgress.style.display = 'none'
+        bfPostCurationProgressDOI.style.display = 'none'
       } else {
         currentDOI.value = res
-        bfPostCurationProgress.style.display = 'none'
+        bfPostCurationProgressDOI.style.display = 'none'
       }
     })
   }
@@ -4303,14 +4362,14 @@ function showCurrentDOI(){
 function showPublishingStatus(){
   publishingStatus.value = "Please wait..."
   publishDatasetStatus.innerHTML = ""
-  bfPostCurationProgress.style.display = 'block'
+  bfPostCurationProgressPublish.style.display = 'block'
   bfSubmitReviewDatasetBtn.disabled = true
   bfRefreshPublishingDatasetStatusBtn.disabled = true
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
-  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPostCurationPublish.options[bfDatasetListPostCurationPublish.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
     publishingStatus.value = '-------'
-    bfPostCurationProgress.style.display = 'none'
+    bfPostCurationProgressPublish.style.display = 'none'
     bfSubmitReviewDatasetBtn.disabled = false
     bfRefreshPublishingDatasetStatusBtn.disabled = false
   } else {
@@ -4322,12 +4381,12 @@ function showPublishingStatus(){
         publishingStatus.value = '-------'
         var emessage = userError(error)
         publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-        bfPostCurationProgress.style.display = 'none'
+        bfPostCurationProgressPublish.style.display = 'none'
         bfSubmitReviewDatasetBtn.disabled = false
         bfRefreshPublishingDatasetStatusBtn.disabled = false
       } else {
         publishingStatus.value = res
-        bfPostCurationProgress.style.display = 'none'
+        bfPostCurationProgressPublish.style.display = 'none'
         bfSubmitReviewDatasetBtn.disabled = false
         bfRefreshPublishingDatasetStatusBtn.disabled = false
       }

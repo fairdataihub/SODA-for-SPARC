@@ -1,4 +1,4 @@
-my-dropdown<!DOCTYPE html>
+<!DOCTYPE html>
 <template class="task-template">
   <section id="manage_submit-section" class="section js-section u-category-windows">
     <header class="section-header">
@@ -678,162 +678,6 @@ my-dropdown<!DOCTYPE html>
     </div>
 
 
-                            <!-- Complete post-curation steps -->
-
-    <div class="demo">
-      <div class="demo-wrapper">
-        <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button"> Complete post-curation steps
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps" >
-            <img class="nav-video" src="assets/img/documentation-icon.png">
-          </a>
-          <div class="demo-meta u-avoid-clicks"> Share with SPARC Consortium and publish dataset </div>
-        </button>
-
-        <div class="demo-box">
-
-<!--           <div id="div-post-curation-display">
-            <p>Coming soon... </p>
-          </div> -->
-
-        <div id="div-post-curation-display-2">
-          <h5> Select Blackfynn dataset </h5>
-          <div class="demo-controls" style="margin-top: 15px">
-            <select class="my-dropdown" style="width:80%" id="bfdatasetlist_postcuration">
-              <option> Select dataset </option>
-            </select>
-          </div>
-
-          <div id="div-bf-post-curation-progress" class="progressdiv">
-            <div class="indeterminatebar"></div>
-          </div>
-
-
-          <h5></h5>
-          <form id = 'blackfynn-post-curation'>
-            <div style = "padding:10px 0px" class="switch-field">
-
-              <input class="input-switch" id="curation-team" type="radio" name="tabs" checked/>
-              <label for="curation-team" class="label-switch"> Share with Curation Team </label>
-
-              <input class="input-switch" id="shareConsortium" type="radio" name="tabs">
-              <label class="label-switch" for="shareConsortium">Share with SPARC Consortium </label>
-              <input class="input-switch" id="reserveDOI" type="radio" name="tabs" style="display:none">
-              <label class="label-switch" for="reserveDOI" style="display:none">Reserve a DOI </label>
-              <input class="input-switch" id="publishDataset" type="radio" name="tabs">
-              <label class="label-switch" for="publishDataset"> Submit dataset for pre-publishing review </label>
-            </div>
-          </form>
-
-          <br>
-
-          <div id="div-bf-share-curation-team" class="datasetsaveoption" style="margin-left:20px">
-              <!-- <h5>  </h5> -->
-              <div class="demo-controls">
-                <button id="button-add-permission-curation-team" class="demo-button" style="min-width: 250px"> Share with Curation Team </button>
-                <p id = "para-dataset-permission-status-curation-team"  style="padding: 0 0; margin: 0 0"> </p>
-              </div>
-          </div>
-
-          <div id="div-share-consortium" class="datasetsaveoption" style="margin-left:20px">
-
-            <div class="demo-controls">
-              <button id="button-share-consortium" class="demo-button" style="min-width: 250px"> Share with Consortium
-              </button>
-
-              <p id='para-share-consortium-status'  style="padding: 0 0; margin: 0 0"> Please wait...</p>
-
-              <div style="position:absolute; right:30px;margin-top:-10px">
-                <h5>
-                  <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                    <span class="tooltiptext">
-                      Once your dataset is approved by the Curation Team, it is ready to be shared with the SPARC Consortium as embargoed dataset. Sharing will give "viewer" permissions to any SPARC investigator who has signed the SPARC Non-disclosure form and will allow them to see your data.
-                      <br><br>
-                      Note: You must have "owner" or "manager" permissions on the dataset to share with the SPARC consortium. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
-                    </span>
-                  </div>
-                </h5>
-              </div>
-
-            </div>
-          </div>
-
-
-          <div id="div-reserve-doi" class="datasetsaveoption" style="margin-left:20px">
-
-            <div class="demo-controls" style="margin-top:-30px">
-              <div style="width: 200px; float: left;">
-                <h5> Click to reserve DOI (optional) </h5>
-                <button id="button-reserve-doi" class="demo-button" style="width: 300px"> Reserve DataCite DOI
-                </button>
-              </div>
-              <div style="margin-left: 200px;">
-                <h5> Currently reserved DOI </h5>
-                <input id="input-current-doi" class="demo-response" value="-------" disabled>
-              </div>
-
-              <div style="position:absolute; right:30px">
-                <h5>
-                  <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                    <span class="tooltiptext">
-                      A Digital Object Identifier (DOI), is a string of numbers, letters and symbols used to permanently identify your dataset on the web.
-                      <br><br>
-                      The Blackfynn platform uses DataCite to help locate, identify, manage, and cite your research data.
-                      <br><br>
-                      A DOI can optionally be reserved prior to publication. Otherwise, it will be reserved automatically when you publish the dataset.
-                      <br><br>
-                      Note: You must have "owner" or "manager" permissions on the dataset to view/reserve a DOI. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
-                    </span>
-                  </div>
-                </h5>
-              </div>
-
-            </div>
-
-            <p id='para-reserve-doi-status'> </p>
-
-          </div>
-
-          <div id="div-publish-dataset" class="datasetsaveoption" style="margin-left:20px">
-
-            <div class="demo-controls" style="margin-top:-30px">
-              <div style="width: 200px; float: left;">
-                <h5>  </h5>
-                <button id="button-submit-review-dataset" class="demo-button" style="width: 300px"> Submit for review
-                </button>
-              </div>
-
-              <div style="margin-left: 200px;">
-                <h5> Publishing status: </h5>
-                <input id="input-publishing-status" class="demo-response" value="-------" disabled>
-              </div>
-
-              <div style="position:absolute; right:30px">
-                <h5>
-                  <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                    <span class="tooltiptext">
-                      One year after the dataset completion date (as per the Data Deliverables document) or right after publishing results from the dataset, whichever comes first, you must publish your dataset to Blackfynn Discover, which populates the SPARC Data Portal.
-                      <br><br>
-                      Publishing the dataset will make it visible to the public.
-                      <br><br>
-                      Note: You must be dataset "owner" and have your ORCID linked on Blackfynn in order to publish. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
-                    </span>
-                  </div>
-                </h5>
-              </div>
-
-            </div>
-
-            <h5> </h5>
-            <button id="button-refresh-publishing-status" class="demo-button" style="width: 300px"> Refresh publishing status </button>
-            <p id='para-publish-dataset-status'> </p>
-
-          </div>
-
-
-        </div>
-      </div>
-      </div>
-    </div>
 
 
     <script type="text/javascript">
@@ -847,18 +691,6 @@ my-dropdown<!DOCTYPE html>
     <script src="node_modules/jquery/dist/jquery.js"></script>
     <script>window.$ = window.jQuery = require('jquery');</script>
 
-    <!-- <script src='node_modules/@toast-ui/editor/dist/toastui-editor.js'></script> -->
-
-
-    <!-- <script src='node_modules/markdown-it/dist/markdown-it.js'></script>
-    <script src="node_modules/to-mark/dist/to-mark.js"></script>
-    <script src="node_modules/tui-code-snippet/dist/tui-code-snippet.js"></script>
-    <script src="node_modules/tui-color-picker/dist/tui-color-picker.js"></script>
-    <script src="node_modules/codemirror/lib/codemirror.js"></script>
-    <script src="node_modules/highlight.js/lib/highlight.js"></script>
-    <script src="node_modules/squire-rte/build/squire-raw.js"></script> -->
-<!--     <script src="node_modules/tui-editor/dist/tui-editor-Editor.js"></script> -->
-    <!-- <script src="node_modules/tui-editor/dist/tui-editor-Editor-all.min.js"></script> -->
 
   </section>
 </template>
