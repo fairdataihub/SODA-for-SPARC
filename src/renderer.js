@@ -614,6 +614,8 @@ function createMetadataDir() {
   }
 }
 
+createMetadataDir()
+
 // Function to add options to dropdown list
 function addOption(selectbox, text, value) {
     var opt = document.createElement("OPTION");
