@@ -2649,6 +2649,35 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset):
     except Exception as e:
         raise e
 
+def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
+
+    try:
+        bf = Blackfynn(selected_bfaccount)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn account'
+        raise Exception(error)
+
+    try:
+        myds = bf.get_dataset(selected_bfdataset)
+    except Exception as e:
+        error = 'Error: Please select a valid Blackfynn dataset'
+        raise Exception(error)
+
+    try:
+        role = bf_get_current_user_permission(bf, myds)
+        if role not in ['owner']:
+            error = "Error: You must be dataset owner to withdraw a dataset from review"
+            raise Exception(error)
+    except Exception as e:
+        raise e
+
+    try:
+        selected_dataset_id = myds.id
+        withdraw_review = bf._api._post('/datasets/' + str(selected_dataset_id) + '/publication/cancel?publicationType=' + 'publication')
+        return withdraw_review
+    except Exception as e:
+        raise e
+
 
 """
     DEPRECATED

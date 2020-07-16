@@ -287,9 +287,9 @@ const bfRefreshDatasetStatusBtn = document.getElementById('button-refresh-datase
 //Blackfynn post curation
 // const bfPostCurationForm = document.querySelector('#blackfynn-post-curation')
 const bfDatasetListPostCurationDOI = document.querySelector('#bfdatasetlist_postcuration-doi')
-const bfDatasetListPostCurationCuration = document.querySelector('#bfdatasetlist_postcuration-curation')
-const bfDatasetListPostCurationConsortium = document.querySelector('#bfdatasetlist_postcuration-consortium')
-const bfDatasetListPostCurationPublish = document.querySelector('#bfdatasetlist_postcuration-publish')
+const bfDatasetListPostCurationCuration = document.querySelector('#bfdatasetlist-postcuration-curation')
+const bfDatasetListPostCurationConsortium = document.querySelector('#bfdatasetlist-postcuration-consortium')
+const bfDatasetListPostCurationPublish = document.querySelector('#bfdatasetlist-postcuration-publish')
 
 const bfPostCurationProgressCuration = document.querySelector('#div-bf-post-curation-progress-curation')
 const bfPostCurationProgressConsortium = document.querySelector('#div-bf-post-curation-progress-consortium')
@@ -3008,7 +3008,9 @@ bfDatasetListMetadata.addEventListener('change', () => {
   datasetStatusListChange()
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
-  bfDatasetListPostCuration.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
   postCurationListChange()
   datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
   showDatasetDescription()
@@ -3503,7 +3505,7 @@ ipcRenderer.on('warning-share-with-curation-team-selection', (event, index) => {
 
 function shareWithCurationTeam(){
   datasetPermissionStatusCurationTeam.innerHTML = 'Please wait...'
-  bfCurrentPermissionProgress.style.display = 'block'
+  bfPostCurationProgressCuration.style.display = 'block'
   // disableform(bfPermissionForm)
   bfAddPermissionCurationTeamBtn.disabled = true
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
@@ -3517,7 +3519,7 @@ function shareWithCurationTeam(){
       console.error(error)
       var emessage = userError(error)
       datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      bfCurrentPermissionProgress.style.display = 'none'
+      bfPostCurationProgressCuration.style.display = 'none'
       enableform(bfPermissionForm)
       bfAddPermissionCurationTeamBtn.disabled = false
     } else {
@@ -3530,13 +3532,13 @@ function shareWithCurationTeam(){
           console.error(error)
           var emessage = userError(error)
           datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-          bfCurrentPermissionProgress.style.display = 'none'
+          bfPostCurationProgressCuration.style.display = 'none'
           bfAddPermissionCurationTeamBtn.disabled = false
         } else {
           datasetPermissionStatusCurationTeam.innerHTML = 'Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"'
           enableform(bfPermissionForm)
           showCurrentDatasetStatus()
-          bfCurrentPermissionProgress.style.display = 'none'
+          bfPostCurationProgressCuration.style.display = 'none'
           bfAddPermissionCurationTeamBtn.disabled = false
         }
       })
@@ -3601,37 +3603,37 @@ function shareWithConsortium(){
 }
 
 
-// Reserve DOI
-bfReserveDOIBtn.addEventListener('click', () => {
-  // disableform(bfPostCurationForm)
-  bfReserveDOIBtn.disabled = true
-  reserveDOIStatus.innerHTML = "Please wait..."
-  bfPostCurationProgressDOI.style.display = 'block'
-  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
-  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
-  client.invoke("api_bf_reserve_doi", selectedBfAccount, selectedBfDataset,
-    (error, res) => {
-    if(error) {
-      log.error(error)
-      console.error(error)
-      var emessage = userError(error)
-      reserveDOIStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      bfPostCurationProgressDOI.style.display = 'none'
-      // enableform(bfPostCurationForm)
-      bfReserveDOIBtn.disabled = false
-    } else {
-      reserveDOIStatus.innerHTML = res
-      showCurrentDOI()
-      // enableform(bfPostCurationForm)
-      bfReserveDOIBtn.disabled = false
-    }
-  })
-})
+// // Reserve DOI
+// bfReserveDOIBtn.addEventListener('click', () => {
+//   // disableform(bfPostCurationForm)
+//   bfReserveDOIBtn.disabled = true
+//   reserveDOIStatus.innerHTML = "Please wait..."
+//   bfPostCurationProgressDOI.style.display = 'block'
+//   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+//   var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+//   client.invoke("api_bf_reserve_doi", selectedBfAccount, selectedBfDataset,
+//     (error, res) => {
+//     if(error) {
+//       log.error(error)
+//       console.error(error)
+//       var emessage = userError(error)
+//       reserveDOIStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+//       bfPostCurationProgressDOI.style.display = 'none'
+//       // enableform(bfPostCurationForm)
+//       bfReserveDOIBtn.disabled = false
+//     } else {
+//       reserveDOIStatus.innerHTML = res
+//       showCurrentDOI()
+//       // enableform(bfPostCurationForm)
+//       bfReserveDOIBtn.disabled = false
+//     }
+//   })
+// })
 
 
 // Publish dataset
 bfSubmitReviewDatasetBtn.addEventListener('click', () => {
-  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPostCurationPublish.options[bfDatasetListPostCurationPublish.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
     reviewDatasetInfo.innerHTML = ""
     emessage = "Please select a valid dataset"
@@ -3673,6 +3675,7 @@ function submitReviewDataset(){
   // disableform(bfPostCurationForm)
   bfSubmitReviewDatasetBtn.disabled = true
   bfRefreshPublishingDatasetStatusBtn.disabled = true
+  bfWithdrawReviewDatasetBtn.disabled = true
   publishDatasetStatus.innerHTML = "Please wait..."
   bfPostCurationProgressPublish.style.display = 'block'
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
@@ -3688,33 +3691,34 @@ function submitReviewDataset(){
       // enableform(bfPostCurationForm)
       bfSubmitReviewDatasetBtn.disabled = false
       bfRefreshPublishingDatasetStatusBtn.disabled = false
+      bfWithdrawReviewDatasetBtn.disabled = false
     } else {
       publishDatasetStatus.innerHTML = 'Success: Dataset has been submitted for review to the Publishers within your organization'
-      bfPostCurationProgress.style.display = 'none'
+      bfPostCurationProgressPublish.style.display = 'none'
       showPublishingStatus('noClear')
     }
   })
 }
 
 
-// Review dataset from review
-// bfWithdrawReviewDatasetBtn.addEventListener('click', () => {
-//   var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
-//   if (selectedBfDataset === 'Select dataset'){
-//     reviewDatasetInfo.innerHTML = ""
-//     emessage = "Please select a valid dataset"
-//     publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-//   } else {
-//     showPublishingStatus(withdrawDatasetCheck)
-//   }
-// })
+//Withdraw dataset from review
+bfWithdrawReviewDatasetBtn.addEventListener('click', () => {
+  var selectedBfDataset = bfDatasetListPostCurationPublish.options[bfDatasetListPostCurationPublish.selectedIndex].text
+  if (selectedBfDataset === 'Select dataset'){
+    reviewDatasetInfo.innerHTML = ""
+    emessage = "Please select a valid dataset"
+    publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+  } else {
+    showPublishingStatus(withdrawDatasetCheck)
+  }
+})
 
 
 function withdrawDatasetCheck(res){
   var reviewstatus = res[0]
   if (reviewstatus !== 'requested'){
       emessage = "Your dataset is not currently under review"
-      publishDatasetStatus.innerHTML = emessage
+      publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
   } else {
     ipcRenderer.send("warning-withdraw-dataset")
   }
@@ -3726,29 +3730,27 @@ ipcRenderer.on('warning-withdraw-dataset-selection', (event, index) => {
   }
 })
 
-function submitReviewDataset(){
-  disableform(bfPostCurationForm)
+function withdrawReviewDataset(){
   bfSubmitReviewDatasetBtn.disabled = true
   bfRefreshPublishingDatasetStatusBtn.disabled = true
   bfWithdrawReviewDatasetBtn.disabled = true
   publishDatasetStatus.innerHTML = "Please wait..."
-  bfPostCurationProgress.style.display = 'block'
+  bfPostCurationProgressPublish.style.display = 'block'
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
-  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
-  client.invoke("api_bf_submit_review_dataset", selectedBfAccount, selectedBfDataset,
+  var selectedBfDataset = bfDatasetListPostCurationPublish.options[bfDatasetListPostCurationPublish.selectedIndex].text
+  client.invoke("api_bf_withdraw_review_dataset", selectedBfAccount, selectedBfDataset,
     (error, res) => {
     if(error) {
       log.error(error)
       console.error(error)
       var emessage = userError(error)
       publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      bfPostCurationProgress.style.display = 'none'
-      enableform(bfPostCurationForm)
+      bfPostCurationProgressPublish.style.display = 'none'
       bfSubmitReviewDatasetBtn.disabled = false
       bfRefreshPublishingDatasetStatusBtn.disabled = false
+      bfWithdrawReviewDatasetBtn.disabled = false
     } else {
-      publishDatasetStatus.innerHTML = 'Success: Dataset has been submitted for review to the Publishers within your organization'
-      bfPostCurationProgress.style.display = 'none'
+      publishDatasetStatus.innerHTML = 'Success: Dataset has been withdrawn from review'
       showPublishingStatus('noClear')
     }
   })
@@ -3756,7 +3758,7 @@ function submitReviewDataset(){
 
 // Refresh publishing dataset status
 bfRefreshPublishingDatasetStatusBtn.addEventListener('click', () => {
-  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPostCurationPublish.options[bfDatasetListPostCurationPublish.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
     reviewDatasetInfo.innerHTML = ""
     emessage = "Please select a valid dataset"
@@ -4422,6 +4424,7 @@ function showPublishingStatus(callback){
   bfPostCurationProgressPublish.style.display = 'block'
   bfSubmitReviewDatasetBtn.disabled = true
   bfRefreshPublishingDatasetStatusBtn.disabled = true
+  bfWithdrawReviewDatasetBtn.disabled = true
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPostCurationPublish.options[bfDatasetListPostCurationPublish.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
@@ -4429,6 +4432,7 @@ function showPublishingStatus(callback){
     bfPostCurationProgressPublish.style.display = 'none'
     bfSubmitReviewDatasetBtn.disabled = false
     bfRefreshPublishingDatasetStatusBtn.disabled = false
+    bfWithdrawReviewDatasetBtn.disabled = false
   } else {
     client.invoke("api_bf_get_publishing_status", selectedBfAccount, selectedBfDataset,
     (error, res) => {
@@ -4441,13 +4445,15 @@ function showPublishingStatus(callback){
         bfPostCurationProgressPublish.style.display = 'none'
         bfSubmitReviewDatasetBtn.disabled = false
         bfRefreshPublishingDatasetStatusBtn.disabled = false
+        bfWithdrawReviewDatasetBtn.disabled = false
       } else {
         reviewDatasetInfo.innerHTML = publishStatusOutputConversion(res)
         bfPostCurationProgressPublish.style.display = 'none'
         bfSubmitReviewDatasetBtn.disabled = false
         bfRefreshPublishingDatasetStatusBtn.disabled = false
+        bfWithdrawReviewDatasetBtn.disabled = false
 
-        if (callback === submitReviewDatasetCheck){
+        if (callback === submitReviewDatasetCheck || callback === withdrawDatasetCheck){
           callback(res)
         }
 
@@ -4462,10 +4468,10 @@ function publishStatusOutputConversion(res){
   var publishStatus = res[1]
 
   var outputMessage = ""
-  if (reviewStatus === 'draft' || 'cancelled'){
-    outputMessage += 'Dataset has not been submitted for review yet'
+  if (reviewStatus === 'draft' || reviewStatus === 'cancelled'){
+    outputMessage += 'Dataset is not under review currently'
   } else if (reviewStatus === 'requested'){
-    outputMessage += 'Dataset has been submitted to your Publishing Team for review'
+    outputMessage += 'Dataset is currently under review by your Publishing Team'
   } else if (reviewStatus === 'rejected'){
     outputMessage += 'Dataset has been rejected by your Publishing Team and may require revision'
   } else if (reviewStatus === 'accepted'){
