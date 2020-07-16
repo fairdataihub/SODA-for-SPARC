@@ -451,7 +451,6 @@ class DictValidator:
         utf8Check = 1
 
         f = fPathList
-        print ("PATH", f)
         fileNamePath, fileExtension = os.path.splitext(f)
 
         if fileExtension == ".csv":
@@ -468,7 +467,6 @@ class DictValidator:
             with open(f, 'rb') as fd:
                 # Join binary lines for specified number of lines;
                 rawdata = b''.join([fd.readline() for _ in range(3)])
-                print(chardet.detect(rawdata)['encoding'])
                 if 'UTF-8' not in chardet.detect(rawdata)['encoding']:
                         utf8Check = 0
 
@@ -780,7 +778,6 @@ class DictValidator:
         dDName = self.reqMetadataFileNames[1]
         expectedDDFullName = [(dDName + i) for i in self.metadataFileFormats1]
 
-        print(fullName)
         if fullName not in expectedDDFullName:
             raise Exception("Please select a valid dataset_description file")
 
@@ -913,7 +910,6 @@ class DictValidator:
                                 break
                             else:
                                 count += 1
-                print('sequence', hvaluesequencewrong)
 
                 # If column pass and headers pass continue
                 if c0empt == 0 and c0duplicate == 0 and c0mandmissing == 0 and c0optremove == 0 and cempty == 0:
@@ -1045,14 +1041,14 @@ class DictValidator:
                                 if name != self.empty:
                                     if orcid == self.empty or affiliation == self.empty or role == self.empty  or contactperson == self.empty:
                                         contributorinfofail = 1
-                                        contributorinfofailList = " " + name + ","
+                                        contributorinfofailList += " " + name + ";"
 
                             # ORCID in the format https://orcid.org/0000-0002-5497-0243
                             for orcid in orcidList:
                                 if orcid != self.empty:
                                     if 'https://orcid.org/' not in orcid:
                                         orcidformatfail = 1
-                                        orcidformatfailList = " " + orcid + ","
+                                        orcidformatfailList += " " + orcid + ","
 
                             # There must be only one contributor role per column and each of them must be from the Data Cite list of roles
                             for role in roleList:
@@ -1138,7 +1134,7 @@ class DictValidator:
                         selectedElList = [selectedEl]
                         dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
                         completeness = dfc[valueEl].values[0]
-                        if completeness not in self.completnessInfo or completeness != self.empty:
+                        if completeness not in self.completnessInfo and completeness != self.empty:
                             completenessformatfail = 1
 
                         # Parent dataset ID must be comma seperated list and each ID must be of the format N:dataset:xxxx
@@ -1147,7 +1143,7 @@ class DictValidator:
                         dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
 
                         for header in list(dfc):
-                            if header != metadataEl or item != valueEl:
+                            if header != metadataEl and header != valueEl:
                                 item = dfc[header].values[0]
                                 if item != self.empty:
                                     parentidvaluefail = 1
@@ -1157,6 +1153,7 @@ class DictValidator:
                         if parentIDList != self.empty:
                             if ',' in parentIDList:
                                 parentIDList = [parentID for parentID in parentIDList.split(',')]
+                                parentIDList = [parentID.strip() for parentID in parentIDList]
                             for parentID in parentIDList:
                                 if "N:dataset:" not in parentID:
                                     parentidformatfail = 1
@@ -1344,9 +1341,9 @@ class DictValidator:
                     if contactpersonformatfail == 0 and contactpersonfail == 0:
                         self.passes.append(msg)
                     else:
-                        if contactpersonformatfail == 0:
+                        if contactpersonformatfail == 1:
                             msg += '--' + check_contactperson_f1 + contactpersonformatfailList[:-1]
-                        if contactpersonfail == 0:
+                        if contactpersonfail == 1:
                             msg += '--' + check_contactperson_f2
                         self.fatal.append(msg)
 
@@ -1403,9 +1400,9 @@ class DictValidator:
                     if parentidvaluefail == 0 and parentidformatfail == 0:
                         self.passes.append(msg)
                     else:
-                        if parentidvaluefail == 0:
+                        if parentidvaluefail == 1:
                             msg += '--' + check_parentID_f1 + parentidvaluefailList[:-1]
-                        if parentidformatfail == 0:
+                        if parentidformatfail == 1:
                             msg += '--' + check_parentID_f2 + parentidformatfailList[:-1]
                         self.fatal.append(msg)
 

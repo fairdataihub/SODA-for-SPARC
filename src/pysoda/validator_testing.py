@@ -62,8 +62,8 @@ if isSubmission == 1:
     print('Pass')
     print(validatorObj.passes)                      
     
-ddFilePath = r'C:\Users\Calmi2\Desktop\DatasetTemplate\dataset_description.xlsx'
-ddFilePath = r'C:\Users\Calmi2\Downloads\dataset_description.xlsx'
+ddFilePath = r'C:\Users\Calmi2\Desktop\dataset_description.xlsx'
+#ddFilePath = r'C:\Users\Calmi2\Downloads\dataset_description.xlsx'
 validatorDatasetDescriptionFile = validate_dataset_description_file(ddFilePath)
 validatorObj = validatorDatasetDescriptionFile
 print('Fatal error')
