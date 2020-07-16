@@ -451,7 +451,6 @@ class DictValidator:
         utf8Check = 1
 
         f = fPathList
-        print ("PATH", f)
         fileNamePath, fileExtension = os.path.splitext(f)
 
         if fileExtension == ".csv":
@@ -468,7 +467,6 @@ class DictValidator:
             with open(f, 'rb') as fd:
                 # Join binary lines for specified number of lines;
                 rawdata = b''.join([fd.readline() for _ in range(3)])
-                print(chardet.detect(rawdata)['encoding'])
                 if 'UTF-8' not in chardet.detect(rawdata)['encoding']:
                         utf8Check = 0
 
@@ -780,7 +778,6 @@ class DictValidator:
         dDName = self.reqMetadataFileNames[1]
         expectedDDFullName = [(dDName + i) for i in self.metadataFileFormats1]
 
-        print(fullName)
         if fullName not in expectedDDFullName:
             raise Exception("Please select a valid dataset_description file")
 
@@ -802,7 +799,6 @@ class DictValidator:
             df = cleanDataFrame(df)
             # Column headers of the cleaned up df
             fileHeaders = list(df)
-            print(df['Value'])
 
             #check that first hearder is "Metadata element"
             if fileHeaders[0] != self.reqddHeaders[0]:
@@ -914,7 +910,6 @@ class DictValidator:
                                 break
                             else:
                                 count += 1
-                print('sequence', hvaluesequencewrong)
 
                 # If column pass and headers pass continue
                 if c0empt == 0 and c0duplicate == 0 and c0mandmissing == 0 and c0optremove == 0 and cempty == 0:
@@ -1050,7 +1045,6 @@ class DictValidator:
 
                             # ORCID in the format https://orcid.org/0000-0002-5497-0243
                             for orcid in orcidList:
-                                print(orcid)
                                 if orcid != self.empty:
                                     if 'https://orcid.org/' not in orcid:
                                         orcidformatfail = 1
@@ -1140,7 +1134,6 @@ class DictValidator:
                         selectedElList = [selectedEl]
                         dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
                         completeness = dfc[valueEl].values[0]
-                        print('COMP', completeness)
                         if completeness not in self.completnessInfo and completeness != self.empty:
                             completenessformatfail = 1
 
