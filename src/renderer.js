@@ -307,6 +307,8 @@ const reserveDOIStatus = document.querySelector('#para-reserve-doi-status')
 const bfPublishDatasetBtn = document.querySelector('#button-publish-dataset')
 const bfSubmitReviewDatasetBtn = document.querySelector('#button-submit-review-dataset')
 const bfRefreshPublishingDatasetStatusBtn = document.querySelector('#button-refresh-publishing-status')
+const bfWithdrawReviewDatasetBtn = document.querySelector('#button-withdraw-review-dataset')
+const reviewDatasetInfo = document.querySelector('#para-review-dataset-info')
 const publishingStatus = document.querySelector('#input-publishing-status')
 const publishDatasetStatus = document.querySelector('#para-publish-dataset-status')
 
@@ -3177,7 +3179,7 @@ bfDatasetListPostCurationConsortium.addEventListener('change', () => {
 function postCurationListChange(){
   reserveDOIStatus.innerHTML = ""
   publishDatasetStatus.innerHTML = ""
-  showCurrentDOI()
+  //showCurrentDOI()
   showPublishingStatus()
 }
 
@@ -3629,15 +3631,31 @@ bfReserveDOIBtn.addEventListener('click', () => {
 
 // Publish dataset
 bfSubmitReviewDatasetBtn.addEventListener('click', () => {
-  if (publishingStatus.value === 'PUBLISH_IN_PROGRESS'){
-    emessage = "Your dataset is currently being published. Please wait until it is completed."
+  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  if (selectedBfDataset === 'Select dataset'){
+    reviewDatasetInfo.innerHTML = ""
+    emessage = "Please select a valid dataset"
     publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-  } else if (publishingStatus.value === 'PUBLISH_SUCCEEDED'){
-    ipcRenderer.send("warning-publish-dataset-again")
   } else {
-    ipcRenderer.send("warning-publish-dataset")
+    showPublishingStatus(submitReviewDatasetCheck)
   }
 })
+
+function submitReviewDatasetCheck(res){
+  var reviewstatus = res[0]
+  var publishingStatus = res[1]
+  if (publishingStatus === 'PUBLISH_IN_PROGRESS'){
+      emessage = "Your dataset is currently being published. Please wait until it is completed."
+      publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+    } else if (reviewstatus ==='requested') {
+      emessage = "Your dataset is already under review. Please wait until the Publishers within your organization make a decision."
+      publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+    } else if (publishingStatus === 'PUBLISH_SUCCEEDED'){
+      ipcRenderer.send("warning-publish-dataset-again")
+    } else {
+      ipcRenderer.send("warning-publish-dataset")
+    }
+}
 
 ipcRenderer.on('warning-publish-dataset-selection', (event, index) => {
   if (index === 0) {
@@ -3671,47 +3689,82 @@ function submitReviewDataset(){
       bfSubmitReviewDatasetBtn.disabled = false
       bfRefreshPublishingDatasetStatusBtn.disabled = false
     } else {
-      publishingStatus.value = res
-      showCurrentDOI()
-      if (bfSelectAccountStatus.innerHTML.includes("SPARC Consortium")){
-        var selectedStatusOption = '12. Published (Investigator)'
-        client.invoke("api_bf_change_dataset_status", selectedBfAccount, selectedBfDataset, selectedStatusOption,
-          (error, res) => {
-          if(error) {
-            log.error(error)
-            console.error(error)
-            var emessage = userError(error)
-            publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-            bfPostCurationProgressPublish.style.display = 'none'
-            // enableform(bfPostCurationForm)
-            bfSubmitReviewDatasetBtn.disabled = false
-            bfRefreshPublishingDatasetStatusBtn.disabled = false
-          } else {
-            publishDatasetStatus.innerHTML = 'Success: Dataset is publishing (it may take some time to complete) and dataset status has been set to "Published"'
-            showCurrentDatasetStatus()
-            bfPostCurationProgressPublish.style.display = 'none'
-            // enableform(bfPostCurationForm)
-            bfSubmitReviewDatasetBtn.disabled = false
-            bfRefreshPublishingDatasetStatusBtn.disabled = false
-          }
-        })
-      } else {
-        publishDatasetStatus.innerHTML = 'Success: Dataset is publishing (it may take some time to complete)'
-        bfPostCurationProgressPublish.style.display = 'none'
-        // enableform(bfPostCurationForm)
-        bfSubmitReviewDatasetBtn.disabled = false
-        bfRefreshPublishingDatasetStatusBtn.disabled = false
-      }
+      publishDatasetStatus.innerHTML = 'Success: Dataset has been submitted for review to the Publishers within your organization'
+      bfPostCurationProgress.style.display = 'none'
+      showPublishingStatus('noClear')
     }
   })
 }
 
 
-// Refresh publishing dataset status
-bfRefreshPublishingDatasetStatusBtn.addEventListener('click', () => {
-  showPublishingStatus()
+// Review dataset from review
+// bfWithdrawReviewDatasetBtn.addEventListener('click', () => {
+//   var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+//   if (selectedBfDataset === 'Select dataset'){
+//     reviewDatasetInfo.innerHTML = ""
+//     emessage = "Please select a valid dataset"
+//     publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+//   } else {
+//     showPublishingStatus(withdrawDatasetCheck)
+//   }
+// })
+
+
+function withdrawDatasetCheck(res){
+  var reviewstatus = res[0]
+  if (reviewstatus !== 'requested'){
+      emessage = "Your dataset is not currently under review"
+      publishDatasetStatus.innerHTML = emessage
+  } else {
+    ipcRenderer.send("warning-withdraw-dataset")
+  }
+}
+
+ipcRenderer.on('warning-withdraw-dataset-selection', (event, index) => {
+  if (index === 0) {
+    withdrawReviewDataset()
+  }
 })
 
+function submitReviewDataset(){
+  disableform(bfPostCurationForm)
+  bfSubmitReviewDatasetBtn.disabled = true
+  bfRefreshPublishingDatasetStatusBtn.disabled = true
+  bfWithdrawReviewDatasetBtn.disabled = true
+  publishDatasetStatus.innerHTML = "Please wait..."
+  bfPostCurationProgress.style.display = 'block'
+  var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
+  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  client.invoke("api_bf_submit_review_dataset", selectedBfAccount, selectedBfDataset,
+    (error, res) => {
+    if(error) {
+      log.error(error)
+      console.error(error)
+      var emessage = userError(error)
+      publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+      bfPostCurationProgress.style.display = 'none'
+      enableform(bfPostCurationForm)
+      bfSubmitReviewDatasetBtn.disabled = false
+      bfRefreshPublishingDatasetStatusBtn.disabled = false
+    } else {
+      publishDatasetStatus.innerHTML = 'Success: Dataset has been submitted for review to the Publishers within your organization'
+      bfPostCurationProgress.style.display = 'none'
+      showPublishingStatus('noClear')
+    }
+  })
+}
+
+// Refresh publishing dataset status
+bfRefreshPublishingDatasetStatusBtn.addEventListener('click', () => {
+  var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
+  if (selectedBfDataset === 'Select dataset'){
+    reviewDatasetInfo.innerHTML = ""
+    emessage = "Please select a valid dataset"
+    publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+  } else {
+    showPublishingStatus()
+  }
+})
 
 //////////////////////////////////
 // Helper functions
@@ -4359,16 +4412,20 @@ function showCurrentDOI(){
 }
 
 
-function showPublishingStatus(){
-  publishingStatus.value = "Please wait..."
-  publishDatasetStatus.innerHTML = ""
+function showPublishingStatus(callback){
+  reviewDatasetInfo.innerHTML = "Please wait..."
+  if (callback == 'noClear'){
+    var nothing
+  } else {
+    publishDatasetStatus.innerHTML = ""
+  }
   bfPostCurationProgressPublish.style.display = 'block'
   bfSubmitReviewDatasetBtn.disabled = true
   bfRefreshPublishingDatasetStatusBtn.disabled = true
   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
   var selectedBfDataset = bfDatasetListPostCurationPublish.options[bfDatasetListPostCurationPublish.selectedIndex].text
   if (selectedBfDataset === 'Select dataset'){
-    publishingStatus.value = '-------'
+    reviewDatasetInfo.innerHTML = ''
     bfPostCurationProgressPublish.style.display = 'none'
     bfSubmitReviewDatasetBtn.disabled = false
     bfRefreshPublishingDatasetStatusBtn.disabled = false
@@ -4378,20 +4435,56 @@ function showPublishingStatus(){
       if(error) {
         log.error(error)
         console.error(error)
-        publishingStatus.value = '-------'
+        reviewDatasetInfo.innerHTML = ''
         var emessage = userError(error)
         publishDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
         bfPostCurationProgressPublish.style.display = 'none'
         bfSubmitReviewDatasetBtn.disabled = false
         bfRefreshPublishingDatasetStatusBtn.disabled = false
       } else {
-        publishingStatus.value = res
+        reviewDatasetInfo.innerHTML = publishStatusOutputConversion(res)
         bfPostCurationProgressPublish.style.display = 'none'
         bfSubmitReviewDatasetBtn.disabled = false
         bfRefreshPublishingDatasetStatusBtn.disabled = false
+
+        if (callback === submitReviewDatasetCheck){
+          callback(res)
+        }
+
       }
     })
   }
+}
+
+
+function publishStatusOutputConversion(res){
+  var reviewStatus = res[0]
+  var publishStatus = res[1]
+
+  var outputMessage = ""
+  if (reviewStatus === 'draft' || 'cancelled'){
+    outputMessage += 'Dataset has not been submitted for review yet'
+  } else if (reviewStatus === 'requested'){
+    outputMessage += 'Dataset has been submitted to your Publishing Team for review'
+  } else if (reviewStatus === 'rejected'){
+    outputMessage += 'Dataset has been rejected by your Publishing Team and may require revision'
+  } else if (reviewStatus === 'accepted'){
+    outputMessage += 'Dataset has been accepted for publication by your Publishing Team'
+  }
+
+  // outputMessage += '<br><br>'
+  // if (publishStatus === 'NOT_PUBLISHED'){
+  //   outputMessage += 'Dataset has not been published yet'
+  // } else if (publishStatus === 'PUBLISH_IN_PROGRESS'){
+  //   outputMessage += 'Dataset is being published. Publishing times can vary based on the size of your dataset. Your dataset will remain locked until publishing has completed.'
+  // } else if (publishStatus === 'PUBLISH_FAILED'){
+  //   outputMessage += 'Dataset failed to publish. Your Publishing team is made aware and will try again.'
+  // } else if (publishStatus === 'PUBLISHED'){
+  //   outputMessage += 'Dataset has been published'
+  // }
+
+  return outputMessage
+
 }
 
 

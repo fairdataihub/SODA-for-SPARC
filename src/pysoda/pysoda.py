@@ -1987,7 +1987,10 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
     try:
         if (selected_team == 'SPARC Data Curation Team'):
             if bf.context.name != 'SPARC Consortium':
-                raise Exception('Error: Please login under the SPARC Consortium organization to share with the Curation Team')
+                raise Exception('Error: Please login under the Blackfynn SPARC Consortium organization to share with the Curation Team')
+        if (selected_team == 'SPARC Embargoed Data Sharing Group'):
+            if bf.context.name != 'SPARC Consortium':
+                raise Exception('Error: Please login under the Blackfynn SPARC Consortium organization to share with the SPARC consortium group')
     except Exception as e:
         raise e
 
@@ -2572,13 +2575,13 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
 
 
 """
-    Function to get the publishing status of a dataset
+    Function to get the review request status and publishing status of a dataset
 
     Args:
         selected_bfaccount: name of selected Blackfynn acccount (string)
         selected_bfdataset: name of selected Blackfynn dataset (string)
     Return:
-        Current pusblishing status
+        Current reqpusblishing status
     """
 def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
 
@@ -2596,10 +2599,15 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
 
     try:
         selected_dataset_id = myds.id
-        publishing_status = bf._api._get('/datasets/' + str(selected_dataset_id) + '/published')
-        return publishing_status['status']
+        
+        review_request_status = bf._api._get('/datasets/' + str(selected_dataset_id))['publication']['status']
+        publishing_status = bf._api._get('/datasets/' + str(selected_dataset_id) + '/published')['status']
+
+
+        return [review_request_status, publishing_status]
     except Exception as e:
         raise e
+
 
 
 """
@@ -2636,8 +2644,8 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset):
 
     try:
         selected_dataset_id = myds.id
-        request_publish = bf._api._post('/datasets/' + str(selected_dataset_id) + '/publication/request')
-        return request_publish['status']
+        request_publish = bf._api._post('/datasets/' + str(selected_dataset_id) + '/publication/request?publicationType=' + 'publication')
+        return request_publish
     except Exception as e:
         raise e
 
