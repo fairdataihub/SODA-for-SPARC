@@ -1470,10 +1470,17 @@ function emptyDSInfoEntries() {
   var fieldSatisfied = true;
   var inforObj = grabDSInfoEntries()
   var emptyFieldArray = []
+  /// check for number of keywords
   for (var element in inforObj) {
-    if (inforObj[element].length===0 || inforObj[element]==="Select dataset") {
-      fieldSatisfied = false
-      emptyFieldArray.push(element)
+    if (element==="keywords") {
+      if (inforObj[element].length<3) {
+        emptyFieldArray.push("at least 3 keywords")
+      }
+    } else {
+        if (inforObj[element].length===0 || inforObj[element]==="Select dataset") {
+          fieldSatisfied = false
+          emptyFieldArray.push(element)
+        }
     }
   }
   return [fieldSatisfied, emptyFieldArray]
