@@ -1098,7 +1098,7 @@ var currentContributortagify = new Tagify(contributorRoles, {
 
 var completenessInput = document.getElementById('ds-completeness'),
 completenessTagify = new Tagify(completenessInput, {
-    whitelist : ["hasChild", "hasNext"],
+    whitelist : ["hasChildren", "hasNext"],
     enforceWhitelist: true,
     duplicates: false,
     maxTags   : 2,
@@ -1475,6 +1475,7 @@ function emptyDSInfoEntries() {
     if (element==="keywords") {
       if (inforObj[element].length<3) {
         emptyFieldArray.push("at least 3 keywords")
+        fieldSatisfied = false
       }
     } else {
         if (inforObj[element].length===0 || inforObj[element]==="Select dataset") {

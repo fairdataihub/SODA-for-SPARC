@@ -1149,15 +1149,22 @@ class DictValidator:
                                     parentidvaluefail = 1
                                     parentidvaluefailList += " " + header + ","
 
+
                         parentIDList = dfc[valueEl].values[0]
                         if parentIDList != self.empty:
                             if ',' in parentIDList:
                                 parentIDList = [parentID for parentID in parentIDList.split(',')]
                                 parentIDList = [parentID.strip() for parentID in parentIDList]
-                            for parentID in parentIDList:
-                                if "N:dataset:" not in parentID:
+                                for parentID in parentIDList:
+
+                                    if "N:dataset:" not in parentID:
+                                        parentidformatfail = 1
+                                        parentidformatfailList += " " + parentID + ","
+
+                            else:
+                                if "N:dataset:" not in parentIDList:
                                     parentidformatfail = 1
-                                    parentidformatfailList += " " + parentID + ","
+                                    parentidformatfailList += " " + parentIDList + ","
 
                         # Metadata version must be 1.2.3 as of 06/2020
                         selectedEl = self.ddCol0Req[12]
