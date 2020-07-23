@@ -451,9 +451,8 @@ def rename_headers(workbook, keyword_array, contributor_role_array, funding_arra
 
     max_len = max(keyword_len, funding_len, link_len, no_contributors)
 
+    columns_list = excel_columns()
     if max_len > 3:
-
-        columns_list = excel_columns()
 
         workbook[columns_list[0] + "1"] = "Value"
 
@@ -469,6 +468,13 @@ def rename_headers(workbook, keyword_array, contributor_role_array, funding_arra
             font = Font(bold=True)
             cell.fill = blueFill
             cell.font = font
+
+
+    else:
+
+        delete_range = len(columns_list) - max_len - 1
+        workbook.delete_cols(4+max_len, delete_range)
+
 
 ### Prepare dataset-description file
 
@@ -2599,7 +2605,7 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
 
     try:
         selected_dataset_id = myds.id
-        
+
         review_request_status = bf._api._get('/datasets/' + str(selected_dataset_id))['publication']['status']
         publishing_status = bf._api._get('/datasets/' + str(selected_dataset_id) + '/published')['status']
 

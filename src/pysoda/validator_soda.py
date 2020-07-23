@@ -1443,7 +1443,7 @@ def cleanDataFrame(df):
         elif np.isnan(df[column].iloc[0]):
             df[column].iloc[0] = "Empty." + str(empty_count)
             empty_count += 1
-            
+
         #Change all empty and nan cells to "empty" to handle them more easily
         for rownum in df.index.values[1:]:
             element = df[column].iloc[rownum]
@@ -1459,14 +1459,14 @@ def cleanDataFrame(df):
             df = df.drop(header, 1)
         else:
             break
-    
+
     #Trim last empty rows if imported (e.g. if user accidently include space)
     for rownum in df.index.values[::-1]:
         if len(set(df.iloc[rownum].values))==1 and df[list(df)[0]].iloc[rownum] == 'empty':
             df = df.drop(rownum)
         else:
             break
-        
+
     #Set first row as headers
     df = df.rename(columns=df.iloc[0], copy=False).iloc[1:].reset_index(drop=True)
     df.to_excel('testfile.xlsx')
