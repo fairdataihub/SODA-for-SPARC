@@ -888,6 +888,7 @@ presavedAwardArray1.addEventListener('change', function() {
 
 // indicate to user that airtable records are being retrieved
 function loadAwardData() {
+  document.getElementById("para-save-award-info").innerHTML = ""
   document.getElementById("div-awards-load-progress").style.display = 'block'
   document.getElementById("para-add-airtable-key-status").innerHTML = "Checking..."
   ///// Construct table from data
@@ -1007,6 +1008,8 @@ function changeAwardInput() {
             //// stringify date object
             var dateStrings = milestoneObj[milestoneKey[i]][j]["Expected date of completion"].toString()
             dateInput.value = dateStrings
+          } else {
+            dateInput.value = "Not specified in the Data Deliverables document"
           }
         }
       }

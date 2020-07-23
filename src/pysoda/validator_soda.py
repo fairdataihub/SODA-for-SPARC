@@ -1227,7 +1227,7 @@ class DictValidator:
         check_contributorrole = "There must be only one contributor role per column and each of them must be from the Data Cite list of roles"
         check_contributorrole_f = "The following role(s) do(es) not fit the requirements and must be corrected: "
 
-        check_contactperson = "'Is Contact Person' is either 'Yes' or 'No' and there is one and only one 'Yes' accross all contributors"
+        check_contactperson = "'Is Contact Person' is either 'Yes' or 'No' and there is one and only one 'Yes' across all contributors"
         check_contactperson_f1 = "The following 'Is Contact Person' element is not 'Yes' or 'No': "
         check_contactperson_f2 = "There must be one and only one 'Yes' for the 'Is Contact Person' field. Currently there is either none or more than one"
 
