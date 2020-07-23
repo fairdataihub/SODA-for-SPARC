@@ -848,11 +848,11 @@ class DictValidator:
                             c0optremoveList += " " + el + ","
 
                 #empty column check:
-                #Trim last empty columns if imported (e.g. if user accidently include space)
-                for header in list(df):
-                    if len(set(df[header].values))==1 and df[header].iloc[0]=='empty':
+                listh = list(df)
+                for i, header in enumerate(listh):
+                    if len(set(df.iloc[:,i].values))==1 and df.iloc[0, i]=='empty':
                         cempty = 1
-                        cemptyList += " " + header + ","
+                        cemptyList += " " + str(i+1) + ","
 
                 # HEADERS CHECK
 
@@ -1189,7 +1189,7 @@ class DictValidator:
         check1= "The first column header is 'Metadata element' and is located in the top left corner"
         check1f = "The header of the first column MUST be 'Metadata element' and must be located in cell A0. Rectify it."
 
-        check1_c = "The content of the first column 'Metadata element' match exactly with the template version 1.2.3 provided by the Curation Team."
+        check1_c = "The content of the first column 'Metadata element' match exactly with the template version 1.2.3 provided by the Curation Team and there are no empty columns."
         check1_c1 = "In the first column, the following row number element(s) is/are empty and must be populated or removed: "
         check1_c2 = "All elements in the first column must be unique. The following element(s) is/are duplicated: "
         check1_c3 = "The following standard element(s) is/are missing in the first column and MUST be included: "
@@ -1443,13 +1443,9 @@ def cleanDataFrame(df):
         elif np.isnan(df[column].iloc[0]):
             df[column].iloc[0] = "Empty." + str(empty_count)
             empty_count += 1
-
-    #Set first row as headers
-    df = df.rename(columns=df.iloc[0], copy=False).iloc[1:].reset_index(drop=True)
-
-    #Change all empty and nan cells to "empty" to handle them more easily
-    for rownum in df.index.values:
-        for column in list(df):
+            
+        #Change all empty and nan cells to "empty" to handle them more easily
+        for rownum in df.index.values[1:]:
             element = df[column].iloc[rownum]
             if type(element) == str:
                 if not element.strip():
@@ -1459,18 +1455,21 @@ def cleanDataFrame(df):
 
     #Trim last empty columns if imported (e.g. if user accidently include space)
     for header in list(df)[::-1]:
-        if "Empty." in header and len(set(df[header].values))==1 and df[header].iloc[0]=='empty':
+        if "Empty." in df[header].iloc[0] and len(set(df[header].values[1:]))==1 and df[header].iloc[1]=='empty':
             df = df.drop(header, 1)
         else:
             break
-
+    
     #Trim last empty rows if imported (e.g. if user accidently include space)
     for rownum in df.index.values[::-1]:
         if len(set(df.iloc[rownum].values))==1 and df[list(df)[0]].iloc[rownum] == 'empty':
             df = df.drop(rownum)
         else:
             break
-
+        
+    #Set first row as headers
+    df = df.rename(columns=df.iloc[0], copy=False).iloc[1:].reset_index(drop=True)
+    df.to_excel('testfile.xlsx')
     return df
 
 ######## Main validation functions called in pysoda #######################
