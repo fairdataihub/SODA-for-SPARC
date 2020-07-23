@@ -120,6 +120,7 @@ const downloadDDD = document.getElementById("a-DDD")
 
 /// save airtable api key
 const addAirtableKeyBtn = document.getElementById("button-add-airtable-key")
+const bfRefreshAirtableStatusBtn = document.querySelector('#button-refresh-airtable-status')
 
 // Save grant information
 const milestoneArray = document.getElementById("table-current-milestones")
@@ -936,6 +937,11 @@ function loadAwardData() {
     });
   }
 }
+
+// Refresh publishing dataset status
+bfRefreshAirtableStatusBtn.addEventListener('click', () => {
+  loadAwardData()
+})
 
 ///////////////// //////////////// //////////////// ////////////////
 ///////////////////////Submission file //////////////// ////////////////
