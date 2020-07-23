@@ -1118,16 +1118,26 @@ class DictValidator:
                         selectedElList = [selectedEl]
                         dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
                         numSubjects = dfc[valueEl].values[0]
-                        if not numSubjects.isdigit():
+                        try:
+                            numSubjects = int(numSubjects)
+                        except ValueError:
                             numsubjectsformatfail = 1
+                            print(f"Number of subjects: {numSubjects} is not a valid integer.")
+                        # if not numSubjects.isdigit():
+                        #     numsubjectsformatfail = 1
 
                         # Number of samples must be an integer
                         selectedEl = self.ddCol0Req[11]
                         selectedElList = [selectedEl]
                         dfc = dfv.loc[dfv[metadataEl].isin(selectedElList)]
                         numSamples = dfc[valueEl].values[0]
-                        if not numSamples.isdigit():
+                        try:
+                            numSamples = int(numSamples)
+                        except ValueError:
                             numsamplesformatfail = 1
+                            print(f"Number of samples: {numSamples} is not a valid integer.")
+                        # if not numSamples.isdigit():
+                        #     numsamplesformatfail = 1
 
                         # Completeness of data must be "empty", "hasNext", or "hasChildren"
                         selectedEl = self.ddCol0Opt[4]
@@ -1256,7 +1266,7 @@ class DictValidator:
 
             msg = check1_c
             if columnfail == 1:
-                if c0empt ==1:
+                if c0empt == 1:
                     msg += '--' + check1_c1 + c0emptList[:-1]
                 if c0duplicate == 1 :
                     msg += '--' + check1_c2 + c0duplicateList[:-1]
