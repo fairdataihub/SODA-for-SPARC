@@ -1469,7 +1469,7 @@ def cleanDataFrame(df):
 
     #Set first row as headers
     df = df.rename(columns=df.iloc[0], copy=False).iloc[1:].reset_index(drop=True)
-    df.to_excel('testfile.xlsx')
+    # df.to_excel('testfile.xlsx')
     return df
 
 ######## Main validation functions called in pysoda #######################
