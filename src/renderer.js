@@ -1008,7 +1008,7 @@ function changeAwardInput() {
             //// stringify date object
             var dateStrings = milestoneObj[milestoneKey[i]][j]["Expected date of completion"].toString()
             dateInput.value = dateStrings
-          } 
+          }
         }
       }
     }
@@ -1526,9 +1526,15 @@ function contactPersonCheck() {
 }
 
 function grabDSInfoEntries() {
-  var name = datasetDescriptionFileDataset.options[datasetDescriptionFileDataset.selectedIndex].value;
-  if (name==="Select dataset") {
+  var rawName = datasetDescriptionFileDataset.options[datasetDescriptionFileDataset.selectedIndex];
+  var name;
+  if (rawName===undefined) {
     name = "N/A"
+  } else {
+    name = rawName.value
+    if (name==="Select dataset") {
+      name = "N/A"
+    }
   }
   var description = document.getElementById("ds-description").value;
   var keywordArray = keywordTagify.value;
