@@ -538,15 +538,23 @@ def populate_completeness_info(workbook, val_array, bfaccountname):
 
     ## parent Datasets
     parentds_id_array = []
-    bf = Blackfynn(bfaccountname)
+    try:
+        bf = Blackfynn(bfaccountname)
 
-    for dataset in val_array["parentDS"]:
+        for dataset in val_array["parentDS"]:
 
-        myds = bf.get_dataset(dataset)
-        dataset_id = myds.id
-        parentds_id_array.append(dataset_id)
+            myds = bf.get_dataset(dataset)
+            dataset_id = myds.id
+            parentds_id_array.append(dataset_id)
 
-    workbook["D19"] = ", ".join(parentds_id_array)
+            workbook["D19"] = ", ".join(parentds_id_array)
+
+    except Exception as err:
+        # NOTE: blackfynn package 3.2.0 misspells 'invalid'
+        if 'Invalid profile name' in str(err) or "Invaid profile name" in str(err):
+            raise Exception("Please connect SODA with Blackfynn to use this feature!")
+        raise
+
 
 
 ### generate the file
