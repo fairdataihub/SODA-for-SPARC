@@ -1008,9 +1008,7 @@ function changeAwardInput() {
             //// stringify date object
             var dateStrings = milestoneObj[milestoneKey[i]][j]["Expected date of completion"].toString()
             dateInput.value = dateStrings
-          } else {
-            dateInput.value = "Not specified in the Data Deliverables document"
-          }
+          } 
         }
       }
     }
