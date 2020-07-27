@@ -2794,7 +2794,7 @@ bfRefreshDatasetStatusBtn.addEventListener('click', () => {
 })
 
 bfRefreshDatasetRenameDatasetBtn.addEventListener('click', () => {
-  renameDatasetName.value = ""
+  // renameDatasetName.value = ""
   // refreshAllBfDatasetLists()
 })
 
@@ -2849,7 +2849,7 @@ bfRenameDatasetBtn.addEventListener('click', () => {
         renameDatasetInList(currentDatasetName, renamedDatasetName)
         refreshDatasetListChooseOption("#bfdatasetlist_renamedataset", renamedDatasetName)
         syncDatasetDropdownOption(bfDatasetListRenameDataset)
-        renameDatasetName.value = ""
+        renameDatasetName.value = renamedDatasetName
         bfRenameDatasetStatus.innerHTML = 'Success: renamed dataset' + " '" + currentDatasetName + "'" + ' to' + " '" + renamedDatasetName + "'"
         bfRenameDatasetBtn.disabled = false
       }
