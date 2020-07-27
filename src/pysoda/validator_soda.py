@@ -22,6 +22,7 @@ import os
 import chardet #utf8 check for csv
 import pandas as pd
 import numpy as np
+from os.path import getsize
 
 class DictValidator:
 
@@ -150,10 +151,15 @@ class DictValidator:
     def check_high_level_metadata_files(self, jsonStruct):
         nofiles = 0
         subm = 0
+        subm0kb = 0
         dd = 0
+        dd0kb = 0
         subj = 0
+        subj0kb = 0
         sam = 0
+        sam0kb = 0
         rm = 0
+        rm0kb = 0
         chg = 0
         csvf = 0
         nonstand = 0
@@ -177,12 +183,16 @@ class DictValidator:
                 if cname == self.reqMetadataFileNames[0]: #submission file
                     if extension in self.metadataFileFormats1: #if in xlsx, csv, or json format
                         subm += 1
-                        if extension in self.metadataFileFormats1[1]:#if csv
-                            csvf = 1
-                            UTF8status = self.check_csv_utf8(filePath)
-                            if UTF8status == 0:
-                               nonUTF8 = 1
-                               nonUTF8Files = " " + c + ","
+                        if getsize(filePath)>0:
+                            print('Size sub', getsize(filePath))
+                            if extension in self.metadataFileFormats1[1]:#if csv
+                                csvf = 1
+                                UTF8status = self.check_csv_utf8(filePath)
+                                if UTF8status == 0:
+                                   nonUTF8 = 1
+                                   nonUTF8Files = " " + c + ","
+                        else:
+                           subm0kb = 1 
                     else:
                         nonstand = 1
                         nonStandardFiles += " " + c + ","
@@ -190,12 +200,16 @@ class DictValidator:
                 elif cname == self.reqMetadataFileNames[1]: #dataset_description file
                     if extension in self.metadataFileFormats1: #if in xlsx, csv, or json format
                         dd += 1
-                        if extension in self.metadataFileFormats1[1]: #if csv
-                            csvf = 1
-                            UTF8status = self.check_csv_utf8(filePath)
-                            if UTF8status == 0:
-                               nonUTF8 = 1
-                               nonUTF8Files = " " + c + ","
+                        if getsize(filePath)>0:
+                            print('Size dd', getsize(filePath))
+                            if extension in self.metadataFileFormats1[1]: #if csv
+                                csvf = 1
+                                UTF8status = self.check_csv_utf8(filePath)
+                                if UTF8status == 0:
+                                   nonUTF8 = 1
+                                   nonUTF8Files = " " + c + ","
+                        else:
+                           dd0kb = 1
                     else:
                         nonstand = 1
                         nonStandardFiles += " " + c + ","
@@ -203,12 +217,16 @@ class DictValidator:
                 elif cname == self.reqMetadataFileNames[2]: #subjects file
                     if extension in self.metadataFileFormats1: #if in xlsx, csv, or json format
                         subj += 1
-                        if extension in self.metadataFileFormats1[1]: #if csv
-                            csvf = 1
-                            UTF8status = self.check_csv_utf8(filePath)
-                            if UTF8status == 0:
-                               nonUTF8 = 1
-                               nonUTF8Files = " " + c + ","
+                        if getsize(filePath)>0:
+                            print('Size subj', getsize(filePath))
+                            if extension in self.metadataFileFormats1[1]: #if csv
+                                csvf = 1
+                                UTF8status = self.check_csv_utf8(filePath)
+                                if UTF8status == 0:
+                                   nonUTF8 = 1
+                                   nonUTF8Files = " " + c + ","
+                        else:
+                           subj0kb = 1
                     else: #if not in xlsx, csv, or json format
                         nonstand = 1
                         nonStandardFiles += " " + c + ","
@@ -216,18 +234,25 @@ class DictValidator:
                 elif cname == self.optMetadataFileNames[0]: #samples file
                     if extension in self.metadataFileFormats1: #if in xlsx, csv, or json format
                         sam += 1
-                        if extension in self.metadataFileFormats1[1]: #if csv
-                            csvf = 1
-                            UTF8status = self.check_csv_utf8(filePath)
-                            if UTF8status == 0:
-                               nonUTF8 = 1
-                               nonUTF8Files = " " + c + ","
+                        if getsize(filePath)>0:
+                            print('Size sam', getsize(filePath))
+                            if extension in self.metadataFileFormats1[1]: #if csv
+                                csvf = 1
+                                UTF8status = self.check_csv_utf8(filePath)
+                                if UTF8status == 0:
+                                   nonUTF8 = 1
+                                   nonUTF8Files = " " + c + ","
+                        else:
+                           sam0kb = 1
                     else:
                         nonstand = 1
                         nonStandardFiles += " " + c + ","
 
                 elif (fullFileName == self.reqMetadataFileNames[3] + self.metadataFileFormats2[0]): #README.txt file
-                    rm = 1
+                    if getsize(filePath)>0:
+                        rm = 1
+                    else:
+                        rm0kb = 1
 
                 elif (fullFileName == self.optMetadataFileNames[1] + self.metadataFileFormats2[0]): #CHANGES.txt file
                     chg = 1
@@ -258,21 +283,26 @@ class DictValidator:
         check1 = "All files are SPARC metadata files"
         check1f = "Only SPARC metadata files are allowed in the high-level dataset folder. The following file(s) must be removed:"
 
-        check2 = "A 'submission' metadata file is included in either xlsx, csv, or json format"
+        check2 = "A non-empty 'submission' metadata file is included in either xlsx, csv, or json format"
         check2f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format. You can prepare it in the 'Prepare Metadata' section of SODA."
-
+        check2f2 =  "Your file is empty (0 kb). Ensure that the required content is included in the file. You can prepare it in the 'Prepare Metadata' section of SODA."
+        
         check3 = "A 'dataset_description' metadata file is included in either xlsx, csv, or json format"
         check3f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format. You can prepare it in the 'Prepare Metadata' section of SODA."
-
+        check3f2 =  "Your file is empty (0 kb). Ensure that the required content is included in the file. You can prepare it in the 'Prepare Metadata' section of SODA."
+        
         check4 = "A 'subjects' metadata file is included in either xlsx, csv, or json format"
         check4f = "This is a mandatory file for ALL SPARC datasets. It must be included and be in the correct format."
-
+        check4f2 =  "Your file is empty (0 kb). Ensure that the required content is included in the file."
+        
         check5 = "A 'samples' metadata file is included in either xlsx, csv, or json format"
         check5f = "This is NOT a mandatory file but must be included (and be in the correct format) if your study includes samples (e.g., tissue slices). "
-
-        check6 = "A 'README' metadata file is included in txt format"
+        check5f2 =  "Your file is empty (0 kb). Ensure that the required content is included in the file."
+        
+        check6 = "A 'README' (all uppercase) metadata file is included in txt format"
         check6f = "This is NOT a mandatory file but suggested for all SPARC datasets. If included, it must be in the txt format."
-
+        check6f2 =  "Your file is empty (0 kb). This is not a mandatory file but if included, ensure that the required content is included in the file."
+        
         check7 = "All csv metadata files are UTF-8 encoded"
         check7f = "As per requirement from the SPARC Curation Team, please change the csv encoding format to UTF-8 for the following metadata files: "
 
@@ -285,28 +315,47 @@ class DictValidator:
             else:
                 self.passes.append(check1)
 
-        if not subm:
+        if subm == 1:
+            if subm0kb == 1:
+                subm = 0
+                self.fatal.append(check2 + "--" + check2f2)
+            else:
+                self.passes.append(check2) 
+        elif subm == 0:
             self.fatal.append(check2 + "--" + check2f)
-        else:
-            self.passes.append(check2)
-
-        if not dd:
+        
+        if dd == 1:
+            if dd0kb == 1:
+                dd = 0
+                self.fatal.append(check3 + "--" + check3f2)
+            else:
+                self.passes.append(check3) 
+        elif dd == 0:
             self.fatal.append(check3 + "--" + check3f)
-        else:
-            self.passes.append(check3)
-
-        if not subj:
+            
+        if subj == 1:
+            if subj0kb == 1:
+                subj = 0
+                self.fatal.append(check4 + "--" + check4f2)
+            else:
+                self.passes.append(check4) 
+        elif subj == 0:
             self.fatal.append(check4 + "--" + check4f)
-        else:
-            self.passes.append(check4)
-
-        if not sam:
-            self.warnings.append(check5 + "--" + check5f)
-        else:
-            self.passes.append(check5)
-
+            
+        if sam == 1:
+            if sam0kb == 1:
+                sam = 0
+                self.fatal.append(check5 + "--" + check5f2)
+            else:
+                self.passes.append(check5) 
+        elif sam == 0:
+            self.fatal.append(check5 + "--" + check5f)
+  
         if not rm:
-            self.warnings.append(check6 + "--" + check6f)
+            if rm0kb == 1:
+                self.fatal.append(check6 + "--" + check6f2)
+            else:
+                self.warnings.append(check6 + "--" + check6f)
         else:
             self.passes.append(check6)
 
@@ -321,6 +370,8 @@ class DictValidator:
                 self.fatal.append(check8 + "--" + check8f + nonUniqueFiles[:-1])
             else:
                 self.passes.append(check8)
+                
+        print('SUBM', subm)
 
         return subm, dd, subj, sam
 
@@ -397,7 +448,7 @@ class DictValidator:
                         nonExistFileList += " " + mainPath + ","
 
         check1 = "No empty files are included"
-        check1f = "The following empty file(s) must be removed:"
+        check1f = "The following empty file(s) must be removed or corrected:"
 
         check2 = "All file paths exist"
         check2f = "The following file path(s) are non-existent and must be removed: "
@@ -668,10 +719,11 @@ class DictValidator:
                     nonStandardHeaders += " " + header + ","
 
         check1 = "The submission file format matches with the template provided by the SPARC Curation Team"
+        check1f0 = "The above format error(s) must be corrected before further check of the file"
         check1f = "The first header (in cell A1) MUST be " +  self.reqSubmissionHeaders[0]
         check1f2 = "The first column items do not match exactly with the template, please correct them."
 
-        check1f3 = "A " + self.reqSubmissionHeaders[1] + " must be included"
+        check1f3 = "A " + self.reqSubmissionHeaders[1] + " header must be included"
 
         check1f4 = "Only the following headers are expected: " + str(self.reqSubmissionHeaders[0]) +  \
         str(self.reqSubmissionHeaders[1]) + "," + str(self.optSubmissionHeaders[0]) + \
@@ -697,6 +749,7 @@ class DictValidator:
                 user_msg += '--' + check1f3
             if nonstandardh == 1:
                 user_msg += '--' + check1f4
+            user_msg += '--' + check1f0
             self.fatal.append(user_msg)
             if valueh == 1:
                 if v == 1:
@@ -1187,14 +1240,15 @@ class DictValidator:
 
 
         check1= "The first column header is 'Metadata element' and is located in the top left corner"
-        check1f = "The header of the first column MUST be 'Metadata element' and must be located in cell A0. Rectify it."
+        check1f = "The header of the first column MUST be 'Metadata element' and must be located in cell A1. Rectify it."
+        check1f0 = "The above format error(s) must be corrected before further check of the file"
 
         check1_c = "The content of the first column 'Metadata element' match exactly with the template version 1.2.3 provided by the Curation Team and there are no empty columns."
         check1_c1 = "In the first column, the following row number element(s) is/are empty and must be populated or removed: "
         check1_c2 = "All elements in the first column must be unique. The following element(s) is/are duplicated: "
         check1_c3 = "The following standard element(s) is/are missing in the first column and MUST be included: "
         check1_c4 = "The following element(s) is/are not standard in the first column and MUST be removed: "
-        check1_c5 = "The following column(s) is/are empty and must be deleted or populated: "
+        check1_c5 = "The following column number is/are empty and must be deleted or populated: "
 
         check1_h = "The names of the column headers meet all requirements"
         check1_h1 = "The following mandatory header is missing: 'Value'"
@@ -1260,7 +1314,7 @@ class DictValidator:
         check_metadatav_f = "The 'Value' for 'Metadata Version DO NOT CHANGE' must be '1.2.3'. Correct it."
 
         if firsthnotstd == 1:
-            self.fatal.append(check1 + '--' + check1f)
+            self.fatal.append(check1 + '--' + check1f + '--' + check1f0)
         else:
             self.passes.append(check1)
 
@@ -1276,6 +1330,7 @@ class DictValidator:
                     msg += '--' + check1_c4 + c0optremoveList[:-1]
                 if cempty == 1:
                     msg += '--' + check1_c5 + cemptyList[:-1]
+                msg +=  '--' + check1f0
                 self.fatal.append(msg)
             else:
                 self.passes.append(msg)
@@ -1292,6 +1347,7 @@ class DictValidator:
                     msg += '--' + check1_h4 + hnotunqList[:-1]
                 if hvaluesequencewrong == 1:
                     msg += '--' + check1_h5
+                msg +=  '--' + check1f0
                 self.fatal.append(msg)
             else:
                 self.passes.append(msg)

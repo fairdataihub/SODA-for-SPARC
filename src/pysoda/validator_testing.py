@@ -12,11 +12,8 @@ from validator_soda import pathToJsonStruct, validate_high_level_folder_structur
 validate_sub_level_organization, validate_submission_file, validate_dataset_description_file
 
    
-rootFolder = r'C:\Users\Calmi2\Desktop\TRAVEL'
+rootFolder = r'C:\Users\Calmi2\Desktop\DatasetSODA'
 jsonStruct = pathToJsonStruct(rootFolder)
-
-for root, dirs, files in os.walk(rootFolder):
-    print(root, files)
 
 validatorHighLevelFolder = validate_high_level_folder_structure(jsonStruct)
 validatorObj = validatorHighLevelFolder
@@ -29,7 +26,7 @@ print(validatorObj.passes)
 
 
 validatorHighLevelMetadataFiles, isSubmission, isDatasetDescription, isSubjects, isSamples = \
- validate_high_level_metadata_files(jsonStruct)
+validate_high_level_metadata_files(jsonStruct)
 validatorObj = validatorHighLevelMetadataFiles
 print('Fatal error')
 print(validatorObj.fatal)
@@ -37,6 +34,7 @@ print('Warnings')
 print(validatorObj.warnings)
 print('Pass')
 print(validatorObj.passes)
+
 
 validatorSubLevelOrganization = validate_sub_level_organization(jsonStruct)
 validatorObj = validatorSubLevelOrganization
