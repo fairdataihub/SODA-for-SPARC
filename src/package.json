@@ -43,10 +43,12 @@
     }
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.14.0",
     "@toast-ui/editor": "^2.2.0",
     "@yaireo/tagify": "^3.13.0",
     "airtable": "^0.8.1",
     "axios": "^0.19.2",
+    "bootbox": "^5.4.0",
     "cropperjs": "^1.5.7",
     "electron-context-menu": "^0.13.0",
     "electron-log": "^4.2.2",
@@ -58,6 +60,7 @@
     "jquery": "^3.5.1",
     "pdfkit": "^0.11.0",
     "remove-markdown": "^0.3.0",
+    "spur-template": "^1.1.0",
     "v8-compile-cache": "^2.1.1",
     "zerorpc-rotkehlchen": "^0.1.0"
   },

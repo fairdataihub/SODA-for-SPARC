@@ -6,18 +6,21 @@
   left: 0;
   right: 0;
   bottom: 0;
+  max-height: 700px;
+  padding: 10px 10px;
+  box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto;
   color: var(--color-accent);
   background-color: var(--color-section);
-  border-top: 1px solid black;
+  /* border-top: 1px solid black; */
 
   /* Hide */
   pointer-events: none;
   visibility: hidden;
   opacity: 0;
   transform: translateX(-20px);
-  transition: visibility 0s .12s linear , opacity .12s ease-in, transform .12s ease-in;
+  transition: visibility 0s .12s linear , opacity .12s ease-in, transform .12s ease-in-out;
 }
 .section.is-shown {
   pointer-events: auto;

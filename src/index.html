@@ -12,45 +12,35 @@
     <link rel="stylesheet" href="assets/css/section.css">
     <link rel="stylesheet" href="assets/css/demo.css">
     <link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css">
-    <!-- <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css"> -->
-    <!-- <link rel="stylesheet" href="node_modules/highlight.js/styles/github.css"> -->
-    <!-- <link rel="stylesheet" href="node_modules/tui-editor/dist/tui-editor.css"> -->
-    <!-- <link rel="stylesheet" href="node_modules/tui-editor/dist/tui-editor-contents.css"> -->
+    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous"> -->
+    <!-- <link href="https://fonts.googleapis.com/css?family=Nunito:400,600|Open+Sans:400,600,700" rel="stylesheet"> -->
+    <link rel="stylesheet" href="spur.css">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.css">
     <link rel="stylesheet" href="node_modules/@toast-ui/editor/dist/toastui-editor.css">
     <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="node_modules/@yaireo/tagify/dist/tagify.css">
 
-    <link rel="import" href="sections/getting_started/getting_started.html">
-    <link rel="import" href="sections/prepare_metadata/prepare_metadata.html">
-    <link rel="import" href="sections/curate/curate.html">
-    <link rel="import" href="sections/manage_submit/manage_submit.html">
-    <link rel="import" href="sections/help/help.html">
-    <link rel="import" href="sections/post_curation/post_curation.html">
+    <link rel="import" href="sections/curate/organize_files.html">
+    <link rel="import" href="sections/curate/validate_datasets.html">
+
 
   </head>
 
 <body>
+    <nav id="main-nav" class="nav js-nav" style="width: 230px;background-color: hsl(339,90%,30%);">
 
-  <nav id="main-nav" class="nav js-nav">
+      <div class="nav-item u-category-windows">
 
-    <!-- <header class="nav-header">
-      <img class = "nav-center-logo-image" src="assets/img/logo-soda1024-white.png">
-      <h1 class="nav-title"><br />
-      <! <strong> -->
-      <!-- Software for Organizing Data Automatically -->
-      <!-- </strong> -->
-    <!-- </header> -->
+      <header>
+          <a href="#" class="spur-logo" style="border: none;">
+            <img id="button-soda-big-icon" class = "nav-center-logo-image" src="assets/img/logo-soda1024-white.png">
+          </a>
+      </header>
 
-    <div class="nav-item u-category-windows">
-      <div id="button-hamburger" class="hamburger" onclick="myFunction(this)">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
       <header class="nav-header">
         <div style="display:none" id="SODA-logo">
         <a href="#">
-        <img id="button-soda-big-icon" class = "nav-center-logo-image" src="assets/img/logo-soda1024-white.png">
         </a>
         <h1 class="nav-title">
           <strong>
@@ -59,31 +49,46 @@
         </strong>
         </div>
       </header>
-      <a href="#" style="border-bottom: var(--color-bg-plum)"><img src="assets/img/large-logo-can1024.png" id="button-soda-icon" class="nav-icon logo"/></a>
-      <br>
-      <button type="button" id="button-getting-started" data-section="getting_started" class="nav-button" style='background-image: url("assets/img/getting-started-white.png")'>
-        Getting Started <em></em>
-      </button>
-      <button type="button" id="button-crash-hang" data-section="manage_submit" class="nav-button" style='background-image: url("assets/img/manage-white.png")'>
-        Manage Datasets
-      </button>
-      <button type="button" id="button-prepare-metadata" data-section="prepare_metadata" class="nav-button" style='background-image: url("assets/img/metadata-white.png")'>
-        Prepare Metadata <em></em>
-      </button>
-      <button type="button" id="button-windows" data-section="curate" class="nav-button" style='background-image: url("assets/img/dataset-white.png")'>
-        Prepare Dataset <em></em>
-      </button>
-      <button type="button" id="button-post-curation" data-section="post_curation" class="nav-button" style='background-image: url("assets/img/disseminate-white.png")'>
-        Disseminate Dataset
-      </button>
-      <button type="button" id="button-menus" data-section="help" class="nav-button" style='background-image: url("assets/img/help-white.png")'>
-        Help
-      </button>
-    </div>
 
+      <nav class="dash-nav-list">
+          <div class="dash-nav-dropdown show">
+            <a href="#!" style="border:none;color: #fff;font-size: 21px" id="button-windows" class="dash-nav-item dash-nav-dropdown-toggle">
+              <i class="fas fa-sitemap" style="color: #fff;"></i> Curate </a>
+                <div class="dash-nav-dropdown-menu">
+                  <a href="#" class="dash-nav-dropdown-item" style="border: none;color: #fff" data-section="organize_files">Organize dataset</a>
+                  <a href="#" data-section="validate_datasets" style="border: none;color: #fff" class="dash-nav-dropdown-item">Validate dataset</a>
+                  <a href="#" data-section="upload_datasets" style="border: none;color: #fff" class="dash-nav-dropdown-item">Upload dataset</a>
+
+                </div>
+          </div>
+      </nav>
+    </nav>
+    </div>
   </nav>
 
-  <main id="content" class="content js-content"></main>
+  <div class="dash-app">
+      <header class="dash-toolbar">
+        <a href="#" class="menu-toggle" id="menu-sidebar-toggle" style="left: 240px;position:absolute;border: none;">
+          <i class="fas fa-bars"></i>
+        </a>
+        <div class="tools">
+            <a href="https://github.com/HackerThemes/spur-template" target="_blank" class="tools-item" style="border: none;">
+                <i class="fab fa-github"></i>
+            </a>
+
+            <div class="dropdown tools-item">
+                <a href="#" class="" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="border: none;">
+                    <i class="fas fa-user"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                    <a class="dropdown-item" href="#!">Profile</a>
+                    <a class="dropdown-item" href="login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+      </header>
+      <main id="content" class="content js-content" style="border:none;"></main>
+</div>
 
   <script> // Required js script are imported here
     require('./assets/imports') // Imports html files into app
@@ -100,7 +105,20 @@
 
 </body>
   <script>
-    require('./renderer.js') // js script for talking with Python back-end
+    // require('./scripts/renderer.js') // js script for talking with Python back-end
+    require('./scripts/command.js')
+    require('./scripts/spur.js')
+
+
   </script>
+  <script>window.$ = window.jQuery = require('jquery')</script>
+
+  <!-- Bootstrap 4 dependency -->
+ <!-- <script src="../src/node_modules/popper.js/dist/js/popper.min.js"></script> -->
+ <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+ <!-- bootbox code -->
+ <script src="../src/node_modules/bootbox/dist/bootbox.min.js"></script>
+ <!-- <script src="../src/node_modules/bootbox/dist/bootbox.locales.min.js"></script> -->
 
 </html>
