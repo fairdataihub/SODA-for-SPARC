@@ -24,10 +24,10 @@ function handleSectionTrigger (event) {
   const buttonId = event.target.getAttribute('id')
   settings.set('activeSectionButtonId', buttonId)
 }
-
-function activateDefaultSection () {
-  document.getElementById('button-windows').click()
-}
+//
+// function activateDefaultSection () {
+//   document.getElementById('button-windows').click()
+// }
 
 function showMainContent () {
   document.querySelector('.js-nav').classList.add('is-shown')
@@ -72,6 +72,6 @@ if (sectionId) {
   if (section) section.click()
 } else {
   showMainContent()
-  activateDefaultSection()
+  // activateDefaultSection()
   //displayAbout()
 }

@@ -8,6 +8,11 @@ const electron = require('electron')
 const bootbox = require('bootbox')
 const app = require('electron').app;
 
+// Navigator button //
+const buttonSidebar = document.getElementById("button-hamburger")
+// const buttonSidebarIcon = document.getElementById("button-soda-icon")
+const buttonSidebarBigIcon = document.getElementById("button-soda-big-icon")
+
 var backFolder = []
 var forwardFolder =[]
 
@@ -54,6 +59,7 @@ const resetProgress = document.getElementById("clear-progress")
 const saveProgress = document.getElementById("save-progress")
 const importProgress = document.getElementById("import-progress")
 const homePathButton = document.getElementById("home-path")
+
 
 listItems(jsonObjGlobal)
 getInFolder()

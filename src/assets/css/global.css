@@ -1,10 +1,11 @@
 /* Fonts ---------------------------- */
 
 @font-face {
-  font-family: 'Source Code Pro';
+  font-family: 'Josefin Sans', sans-serif;
+  /* font-family: 'Source Code Pro'; */
   font-style: normal;
   font-weight: 400;
-  src: local('Source Code Pro'), local('SourceCodePro'), url(fonts/SourceCodePro-Regular.ttf) format('truetype');
+  /* src: local('Source Code Pro'), local('SourceCodePro'), url(fonts/SourceCodePro-Regular.ttf) format('truetype'); */
 }
 
 
