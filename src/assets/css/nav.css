@@ -66,8 +66,8 @@ ul .curate-tab-show.show {
 
 .list-sidebar ul li a:focus {
   font-weight: bold;
-  color: var(--color-bg-plum);
-  background-color: #F5F5F5;
+  color: #953947;
+  background-color: #F0F0F0;
 }
 
 /* .list-sidebar ul li a .active {

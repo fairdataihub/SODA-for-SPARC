@@ -8,9 +8,9 @@
 </head>
 
 <body>
-<main class="dash-content" style="background: #F5F5F5;padding-top: 30px;z-index:5000">
+<main class="dash-content" style="background: #F2F2F2;padding-top: 20px;z-index:5000;padding-left:5px">
     <div class="container-fluid" style="height:100%">
-      <h2 class="dash-title" style="font-family: Roboto;margin-bottom:10px;color: #515151;">Organize dataset</h2>
+      <h4 class="dash-title" style="font-family: Montserrat,Helvetica Neue,Arial,sans-serif;;margin-bottom:10px;color: #08C260;font-weight:500">ORGANIZE DATASET</h4>
 
         <ul class="menu reg-folder off">
           <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
@@ -35,39 +35,45 @@
           <span class="hoverFullName" style="display: none"></span>
         </div>
 
-      <div class="main-window" style="height:auto;padding: 10px 10px">
+      <div class="main-window" style="height:auto;margin-left: 0; margin-top: 10px;margin-bottom: 10px">
 
         <div id="div-step-1-organize" style="margin: 0 15px">
 
-          <button id="button-back" class="button-back" style="background-color: #258193;color: #fff;height:30px;width:30px"><i class="fas fa-arrow-left fa-fw"></i></button>
-          <input style="border-radius: 3px;margin-left: 10px; margin-right: 50px;height: 30px; box-shadow: 0 0 2px #999;border: 1px solid #258193; font-family: sans-serif;font-size: 14px;font-weight:500;color:#258193;min-width: 320px;width: auto" id="input-global-path" value=" /" readonly></input></i>
+          <div>
+          <button id="button-back" class="button-back" style="background-color: #08C260;border-color:#08C260;color: #fff;height:30px;width:30px"><i class="fas fa-arrow-left fa-fw"></i></button>
+          <input style="border-radius: 3px;margin-left: 10px; margin-right: 25px;height: 30px; box-shadow: 0 0 2px #999;border: 1px solid #08C260; font-family: sans-serif;font-size: 14px;font-weight:500;color:#258193;width: 350px" id="input-global-path" value=" /" readonly></input></i>
+          <button id="organize-next-step" class="confirmButton" onclick="organizeNextStep()" style="width:170px;display: inline-block;font-size: 12px;background-color:#08C260;border-color: #08C260;margin: 0 0;float:right"><i class="fa fa-check" style="margin-right:10px"></i>SAVE AND PROCEED</button>
+          </div>
 
-          <div style="float:right">
-              <button type="button" id="new-folder" class="myButton second"><i class="fas fa-plus fa-fw"></i><b>New folder</b></button>
-              <div class="btn-group" role="group">
-                <button id="btnGroupDrop1" type="button" class="myButton" style="width:100px;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="fas fa-arrow-up fa-fw"></i><b>Import</b>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop1">
-                  <a class="dropdown-item" id="add-files" href="#">Files</a>
-                  <a class="dropdown-item" id="add-folders" href="#">Folders</a>
-                </div>
+          <hr>
+
+          <div style="padding: 0 0;margin:3px 3px;" align="right">
+            <button type="button" id="new-folder" class="myButton second" style="width:40px;border-radius:15px;color:#258193;background:transparent;border: 1px solid #258193"><i class="fas fa-plus fa-fw"></i><b></b></button>
+            <div class="btn-group" role="group">
+              <button id="btnGroupDrop1" type="button" class="myButton" style="width:40px;border-radius:15px;color:#fff;background:#258193;border: 1px solid #258193" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-arrow-up fa-fw"></i>
+              </button>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop1">
+                <a class="dropdown-item" id="add-files" href="#">Files</a>
+                <a class="dropdown-item" id="add-folders" href="#">Folders</a>
               </div>
-              <div class="btn-group" role="group">
-                <button id="btnGroupDrop2" type="button" class="myButton" style="width: 40px;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="fas fa-list"></i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop2">
-                  <a class="dropdown-item" id="import-progress" href="#">Import progress</a>
-                  <a class="dropdown-item" id="save-progress" href="#">Save progress</a>
-                  <a class="dropdown-item" id="clear-progress" href="#">Reset progress</a>
-                  <a class="dropdown-item" id="show-details" href="#">Show details</a>
-                </div>
+            </div>
+            <div class="btn-group" role="group">
+              <button id="btnGroupDrop2" type="button" class="myButton" style="width: 40px;color:#258193;background:transparent;border: 1px solid #258193" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-list"></i>
+              </button>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop2">
+                <a class="dropdown-item" id="import-progress" href="#">Import progress</a>
+                <a class="dropdown-item" id="save-progress" href="#">Save progress</a>
+                <a class="dropdown-item" id="clear-progress" href="#">Reset progress</a>
+                <a class="dropdown-item" id="show-details" href="#">Show details</a>
               </div>
+            </div>
 
           </div>
-          <hr>
-          <div id="items" style="width:100%;overflow:hidden;;height:auto;margin-top: 10px" ondrop="drop(event);" ondragover="allowDrop(event);">
+
+          <!-- <hr> -->
+          <div id="items" style="width:100%;overflow:hidden;;height:80%;" ondrop="drop(event);" ondragover="allowDrop(event);">
 
           </div>
 
@@ -83,11 +89,16 @@
             </label>
             <label id="label-manifest" class="labelradio-manifest" style="padding-left:10px;font-size:14px"> Include auto-generated manifest files
             </label>
-            <button class="myButton second" id="add-files" href="#" style="float:right;width: 90px;font-size:13px;font-weight:600;right:0"><i class="fas fa-arrow-up fa-fw"></i>Import</button>
-          </div>
+            <button id="organize-finalize" class="confirmButton" style="width:90px;display: none;border-color:#08C260;float:right;margin:0 0;background-color: #08C260"><i class="fa fa-check fa-fw" style="margin-right:8px"></i>Done</button>
+        </div>
+
           <hr>
 
-          <div id="items-metadata" style="width:100%;overflow:hidden;margin-top: 15px" ondrop="drop(event);" ondragover="allowDrop(event);">
+          <div align="right" style="margin: 3px 3px;">
+            <button class="myButton second" id="add-files" href="#" style="float:right;width: 40px;font-size:14px;border-radius:15px;color:#258193;background:transparent;border: 1px solid #258193"><i class="fas fa-arrow-up"></i></button>
+          </div>
+
+          <div id="items-metadata" style="width:100%;overflow:hidden;margin-top:5px" ondrop="drop(event);" ondragover="allowDrop(event);">
             <div class="single-item"><h1 class="myFile other" style="margin-bottom: 10px;opacity: 0.4"></h1><div class="folder_desc" style="opacity: 0.3">submission.xlsx</div></div>
             <div class="single-item"><h1 class="myFile other" style="margin-bottom: 10px;opacity: 0.4"></h1><div class="folder_desc" style="opacity: 0.3">subjects.xlsx</div></div>
             <div class="single-item"><h1 class="myFile other"style="margin-bottom: 10px;opacity: 0.4"></h1><div class="folder_desc" style="opacity: 0.3">samples.xlsx</div></div>
@@ -101,15 +112,11 @@
         </div>
 
         </div>
-
         <div align="center">
           <a href="#" style="cursor: pointer;border: none"><span class="step-dot active" id="step-1-organize" onclick="changeStepOrganize(this)"></span></a>
           <a href="#" style="cursor: pointer;border: none"><span class="step-dot" id="step-2-organize" onclick="changeStepOrganize(this)"></span></a>
-          <div align="right" style="padding:10px 25px;">
-            <button id="organize-next-step" class="confirmButton" onclick="organizeNextStep()" style="width:200px;display: inline-block"><i class="fa fa-check fa-fw"></i>Confirm and proceed</button>
-            <button id="organize-finalize" class="confirmButton" style="width:90px;display: none"><i class="fa fa-check fa-fw"></i>Done</button>
-          </div>
         </div>
+
 
 
    </main>

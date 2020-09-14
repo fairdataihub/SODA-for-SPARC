@@ -1200,7 +1200,7 @@ input::-webkit-calendar-picker-indicator {
 .slider:before {
   position: absolute;
   content: "";
-  height: 22px;
+  height: 23px;
   width: 22px;
   left: 3px;
   bottom: 3px;
@@ -1210,11 +1210,11 @@ input::-webkit-calendar-picker-indicator {
 }
 
 input:checked + .slider {
-  background-color: hsl(190, 60%, 36%);
+  background-color: #0BC260;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px #0BC260;
 }
 
 input:checked + .slider:before {
