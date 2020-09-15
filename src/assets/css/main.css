@@ -627,3 +627,14 @@ input:checked + .slider:before {
   box-shadow: 0 0 5px #3b5998;
   background-color: #258193
 }
+
+.dropdown-menu {
+    background-color: #222222;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    width: @full-width;
+  }

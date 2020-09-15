@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="node_modules/@yaireo/tagify/dist/tagify.css">
     <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
 
     <!-- <link rel="import" href="sections/account/account.html"> -->
     <link rel="import" href="sections/curate/organize_files.html">
@@ -31,114 +32,65 @@
   </head>
 
 <body>
-    <nav id="main-nav" class="nav js-nav" style="width: 220px;">
 
-      <div class="nav-item u-category-windows">
+      <nav id="main-nav" class="nav js-nav">
 
-        <!-- <div id="button-hamburger" class="hamburger" onclick="myFunction(this)">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div> -->
+        <div class="nav-item u-category-windows">
 
-      <header class="nav-header" style="padding-bottom: 30px">
-        <div style="display:block" id="SODA-logo">
-        <a href="#">
-        <img id="button-soda-big-icon" class = "nav-center-logo-image" src="assets/img/logo-soda1024-white.png">
-        </a>
-        <h1 class="nav-title">
-          <strong>
-        Software for Organizing
-          <br><span>Data Automatically</span>
-        </strong>
-        </div>
-      </header>
-
-        <!-- <header>
-          <a href="#">
-        <img id="button-soda-big-icon" class = "nav-center-logo-image" src="assets/img/logo-soda1024-white.png">
-        </a>
-        </header> -->
-        <ul class="list-sidebar">
-          <li><a href="#" data-section="account"><i class="fas fa-user" style="margin-right:27px"></i>Account</a></li>
-          <li><a href="#" class="curate-tab"><i class="fas fa-digital-tachograph"></i>Metadata
-          <span class="fas fa-caret-down"></span></a>
-            <ul class="curate-tab-show">
-              <li><a href="#" style="border: none;" data-section="organize_files">Award Info</a></li>
-              <li><a href="#" data-section="validate_datasets" style="border: none;">Submission</a></li>
-              <li><a href="#" data-section="upload_datasets" style="border: none;">Dataset_description</a></li>
-            </ul>
-          </li>
-            <li><a href="#" class="curate-tab"><i class="fas fa-sitemap"></i>Curate
-            <span class="fas fa-caret-down"></span></a>
-              <ul class="curate-tab-show">
-                <li><a href="#" style="border: none;" data-section="organize_files">Organize dataset</a></li>
-                <li><a href="#" data-section="validate_datasets" style="border: none;border-top-right-radius: 20px;">Validate dataset</a></li>
-                <li><a href="#" data-section="upload_datasets" style="border: none;">Upload dataset</a></li>
-              </ul>
-            </li>
-            <li><a href="#" class="curate-tab"><i class="fas fa-digital-tachograph"></i>Manage
-            <span class="fas fa-caret-down"></span></a>
-              <ul class="curate-tab-show">
-                <li><a href="#" style="border: none;" data-section="organize_files">Permissions</a></li>
-                <li><a href="#" data-section="validate_datasets" style="border: none;">Metadata</a></li>
-                <li><a href="#" data-section="upload_datasets" style="border: none;">Dataset status</a></li>
-              </ul>
-            </li>
-
-        </ul>
-      </div>
-      <!-- <nav class="dash-nav-list">
-
-          <div class="dash-nav-dropdown ">
-            <button class="dropdown-btn"><i class="fas fa-sitemap" style="color: #fff;margin-right:10px"></i>Curate
-              <i class="fa fa-caret-down"></i>
-            </button>
-                <div class="dash-nav-dropdown-menu">
-                  <a href="#" class="dash-nav-dropdown-item" style="border: none;" data-section="organize_files">Organize dataset</a>
-                  <a href="#" data-section="validate_datasets" style="border: none;" class="dash-nav-dropdown-item">Validate dataset</a>
-                  <a href="#" data-section="upload_datasets" style="border: none;" class="dash-nav-dropdown-item">Upload dataset</a>
-
-                </div>
-          </div>
-
-          <div class="dash-nav-dropdown">
-            <a href="#!" style="border:none;color: #fff;font-size: 18px" id="button-windows" class="dash-nav-item dash-nav-dropdown-toggle">
-              <i class="fas fa-sitemap" style="color: #fff;margin-right:10px"></i>Manage</a>
-                <div class="dash-nav-dropdown-menu">
-                  <a href="#" class="dash-nav-dropdown-item" style="border: none;" data-section="organize_files">Organize dataset</a>
-                  <a href="#" data-section="validate_datasets" style="border: none;" class="dash-nav-dropdown-item">Validate dataset</a>
-                  <a href="#" data-section="upload_datasets" style="border: none;" class="dash-nav-dropdown-item">Upload dataset</a>
-
-                </div>
-          </div>
-
-      </nav> -->
-    <!-- </nav> -->
-    </div>
-  </nav>
-
-
-  <div class="dash-app">
-      <!-- <header class="dash-toolbar" style="background: #f3f3f3; border-bottom: 1px solid rgba(211,211,211,0.3);"> -->
-        <!-- <div class="tools">
-            <a href="https://github.com/HackerThemes/spur-template" target="_blank" class="tools-item" style="border: none;">
-                <i class="fab fa-github"></i>
+          <!-- Sidebar Header -->
+          <div class="sidebar-header" style="padding-bottom: 30px">
+            <div style="display:block" id="SODA-logo">
+            <a href="#">
+            <img id="button-soda-big-icon" class = "nav-center-logo-image" src="assets/img/logo-soda1024-white.png">
             </a>
-
-            <div class="dropdown tools-item">
-                <a href="#" class="" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="border: none;">
-                    <i class="fas fa-user"></i>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
-                    <a class="dropdown-item" href="#!">Profile</a>
-                    <a class="dropdown-item" href="login.html">Logout</a>
-                </div>
+            <h1 class="nav-title">
+              <strong>
+            Software for Organizing
+              <br><span>Data Automatically</span>
+            </strong>
             </div>
-        </div> -->
-      <!-- </header> -->
-      <main id="content" class="content js-content" style="border:none; padding-top: 30px;padding-bottom:20px; background: #F0F0F0"></main>
+          </div>
+
+          <!-- Sidebar Links -->
+          <ul class="list-unstyled components">
+              <li><a href="#"><i class="fas fa-user"></i>Account</a></li>
+              <li>
+                  <a href="#curateSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fas fa-sitemap"></i>Curate</a>
+                  <ul class="collapse list-unstyled" id="curateSubmenu">
+                      <li><a href="#" data-section="organize_files">Organize dataset</a></li>
+                      <li><a href="#">Upload dataset</a></li>
+                  </ul>
+              <li>
+                  <a href="#" data-toggle="collapse" aria-expanded="false"><i class="fas fa-digital-tachograph"></i>Manage</a>
+                  <ul class="collapse list-unstyled" id="homeSubmenu">
+                      <li><a href="#" data-section="organize_files">Permissions</a></li>
+                  </ul>
+              </li>
+              <li><a href="#"><i class="fas fa-share-alt"></i>Disseminate</a></li>
+          </ul>
+
 </div>
+</nav>
+
+<!-- <header>
+  <a href="#">
+<img id="button-soda-big-icon" class = "nav-center-logo-image" src="assets/img/logo-soda1024-white.png">
+</a>
+</header> -->
+
+  <div class="dash-app" style="background: #fff">
+
+        <button type="button" id="sidebarCollapse" class="navbar-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+      <main id="content" class="content js-content" style="border:none; padding-top: 30px;padding-bottom:20px; background: #fff;max-width:100%"></main>
+</div>
+
+<!-- </div> -->
+
 
   <script> // Required js script are imported here
     require('./assets/imports') // Imports html files into app
@@ -151,6 +103,15 @@
     function myFunction(element) {
           element.classList.toggle("open");
     }
+
+
+    $(document).ready(function () {
+      $('#sidebarCollapse').on('click', function () {
+          $('#main-nav').toggleClass('active');
+          $(this).toggleClass('active');
+          // $('.dash-content').toggleClass('active');
+      });
+    });
   </script>
 
 </body>
@@ -161,6 +122,7 @@
 
 
   </script>
+
   <script>
   $(".curate-tab").click(function() {
     $(".curate-tab-show").addClass("show")

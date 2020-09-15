@@ -8,9 +8,9 @@
 </head>
 
 <body>
-<main class="dash-content" style="background: #F2F2F2;padding-top: 20px;z-index:5000;padding-left:5px">
+<main class="dash-content" style="background: #fff;padding-top: 20px;z-index:5000;padding-left:5px">
     <div class="container-fluid" style="height:100%">
-      <h4 class="dash-title" style="font-family: Montserrat,Helvetica Neue,Arial,sans-serif;;margin-bottom:10px;color: #08C260;font-weight:500">ORGANIZE DATASET</h4>
+      <h4 class="dash-title" style="font-family:'Montserrat', sans-serif;margin-bottom:10px;color: #258193;opacity:0.9;font-style:bold">Organize dataset</h4>
 
         <ul class="menu reg-folder off">
           <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
@@ -40,17 +40,18 @@
         <div id="div-step-1-organize" style="margin: 0 15px">
 
           <div>
-          <button id="button-back" class="button-back" style="background-color: #08C260;border-color:#08C260;color: #fff;height:30px;width:30px"><i class="fas fa-arrow-left fa-fw"></i></button>
-          <input style="border-radius: 3px;margin-left: 10px; margin-right: 25px;height: 30px; box-shadow: 0 0 2px #999;border: 1px solid #08C260; font-family: sans-serif;font-size: 14px;font-weight:500;color:#258193;width: 350px" id="input-global-path" value=" /" readonly></input></i>
-          <button id="organize-next-step" class="confirmButton" onclick="organizeNextStep()" style="width:170px;display: inline-block;font-size: 12px;background-color:#08C260;border-color: #08C260;margin: 0 0;float:right"><i class="fa fa-check" style="margin-right:10px"></i>SAVE AND PROCEED</button>
+          <i class="fas fa-home" style="font-size: 22px;color:#999999;height:23px"></i>
+          <input style="border-radius: 3px;margin-left: 10px; margin-right: 25px;height: 30px; box-shadow: 0 0 2px #999;border: 1px solid #999999; font-family: sans-serif;font-size: 14px;font-weight:500;color:#999999;width: 350px" id="input-global-path" value=" /" readonly></input></i>
+          <button id="organize-next-step" class="confirmButton" onclick="organizeNextStep()" style="width:170px;display: inline-block;font-size: 12px;color:#fff;background-color:#258193;border-color: #258193;margin: 0 0;float:right"><i class="fa fa-check" style="margin-right:10px"></i>SAVE AND PROCEED</button>
           </div>
 
           <hr>
 
           <div style="padding: 0 0;margin:3px 3px;" align="right">
-            <button type="button" id="new-folder" class="myButton second" style="width:40px;border-radius:15px;color:#258193;background:transparent;border: 1px solid #258193"><i class="fas fa-plus fa-fw"></i><b></b></button>
+            <button id="button-back" class="button-back" style="float:left;background-color: var(--color-bg-plum);border-color:var(--color-bg-plum);color: #fff;height:30px;width:30px"><i class="fas fa-arrow-left fa-fw"></i></button>
+            <button type="button" id="new-folder" class="myButton second" style="width:40px;border-radius:15px;color:var(--color-bg-plum);background:transparent;border: 1px solid var(--color-bg-plum)"><i class="fas fa-plus fa-fw"></i><b></b></button>
             <div class="btn-group" role="group">
-              <button id="btnGroupDrop1" type="button" class="myButton" style="width:40px;border-radius:15px;color:#fff;background:#258193;border: 1px solid #258193" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button id="btnGroupDrop1" type="button" class="myButton" style="width:40px;border-radius:15px;color:#fff;background:var(--color-bg-plum);border: 1px solid var(--color-bg-plum)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-arrow-up fa-fw"></i>
               </button>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop1">
@@ -59,7 +60,7 @@
               </div>
             </div>
             <div class="btn-group" role="group">
-              <button id="btnGroupDrop2" type="button" class="myButton" style="width: 40px;color:#258193;background:transparent;border: 1px solid #258193" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button id="btnGroupDrop2" type="button" class="myButton" style="width: 40px;color:var(--color-bg-plum);background:transparent;border: 1px solid var(--color-bg-plum)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-list"></i>
               </button>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop2">
@@ -89,7 +90,7 @@
             </label>
             <label id="label-manifest" class="labelradio-manifest" style="padding-left:10px;font-size:14px"> Include auto-generated manifest files
             </label>
-            <button id="organize-finalize" class="confirmButton" style="width:90px;display: none;border-color:#08C260;float:right;margin:0 0;background-color: #08C260"><i class="fa fa-check fa-fw" style="margin-right:8px"></i>Done</button>
+            <button id="organize-finalize" class="confirmButton" style="width:90px;display: none;border-color:#258193;float:right;margin:0 0;background-color: #258193"><i class="fa fa-check fa-fw" style="margin-right:8px"></i>Done</button>
         </div>
 
           <hr>

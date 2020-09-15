@@ -1,20 +1,224 @@
-/* Nav */
+/* Nav bootstrap */
+
+/* toggle button */
+#sidebarCollapse {
+   width: 40px;
+   height: 40px;
+   background: #f5f5f5;
+   position: relative;
+   left: 230px;
+   cursor: pointer
+}
+
+#sidebarCollapse span {
+   width: 80%;
+   height: 2px;
+   margin: 0 auto;
+   display: block;
+   background: #555;
+   transition: all 0.8s cubic-bezier(0.810, -0.330, 0.345, 1.375);
+}
+/* animate toggle button */
+#sidebarCollapse span:first-of-type {
+    /* rotate first one */
+    transform: rotate(45deg) translate(2px, 2px);
+}
+#sidebarCollapse span:nth-of-type(2) {
+    /* second one is not visible */
+    opacity: 0;
+}
+#sidebarCollapse span:last-of-type {
+    /* rotate third one */
+    transform: rotate(-45deg) translate(1px, -1px);
+}
+
+#sidebarCollapse.active span {
+    /* no rotation */
+    transform: none;
+    /* all bars are visible */
+    opacity: 1;
+    margin: 5px auto;
+}
+
+#main-nav {
+    min-width: 230px;
+    max-width: 230px;
+    background: #222c3c;
+    color: #f0f0f0;
+    font-family: "Source Sans Pro", sans-serif;
+    transition: all 0.6s cubic-bezier(0.945, 0.020, 0.270, 0.665);
+    transform-origin: center left; /* Set the transformed position of sidebar to center left side. */
+}
+
+#main-nav.active {
+    margin-left: -230px;
+    transform: rotateY(150deg); /* Rotate sidebar vertically by 100 degrees. */
+}
+
+.navbar-btn {
+  margin-right: 3px;
+  font-size: 14px;
+  color: #258193;
+  background-color: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 5px;
+  padding: 5px 5px;
+  cursor: pointer;
+  height:35px;
+  width:110px;
+  /* font-size:15px; */
+  /* box-shadow: 0 0 2px #999; */
+  background-position: center;
+  transition: background 0.8s;
+}
+
+.navbar-btn.active {
+  margin-left: -230px;
+}
+
+.dash-content.active {
+  /* transform: translateX(220px); */
+  margin-left: -230px;
+}
+
+a[data-toggle="collapse"] {
+    position: relative;
+}
+
+.dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+/*
+a, a:hover, a:focus {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s;
+} */
+
+#main-nav .sidebar-header {
+  margin-top: 20px;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #222c3c;
+}
+
+#main-nav ul.components {
+  /* border-bottom: 1px solid rgba(255,255,255,0.1); */
+  list-style: none;
+  padding-right: 0;
+  margin-right: 0;
+}
+
+#main-nav ul p {
+    color: #fff;
+    padding: 10px;
+}
+
+#main-nav ul li a {
+    /* padding: 10px; */
+    font-size: 17px;
+    display: block;
+    line-height: 50px;
+    padding-left: 15px;
+    text-align: left;
+    padding-right: 0;
+    color: #f0f0f0;
+    border: none;
+}
+
+#main-nav ul li a i {
+    margin-right: 25px;
+}
+
+#main-nav ul li a:hover {
+    color: #000;
+    background: #fff;
+    text-decoration: none;
+    border: none;
+}
+
+#main-nav ul li.active > a, a[aria-expanded="true"] {
+    color: #000;
+    background: #222c3c;
+    border-color: transparent
+}
+
+@media (max-width: 768px) {
+    /* Reversing the behavior of the sidebar:
+       it'll be rotated vertically and off canvas by default,
+       collapsing in on toggle button click with removal of
+       the vertical rotation.   */
+    #main-nav {
+        margin-left: -250px;
+        transform: rotateY(100deg);
+    }
+    #main-nav.active {
+        margin-left: 0;
+        transform: none;
+    }
+
+    /* Reversing the behavior of the bars:
+       Removing the rotation from the first,
+       last bars and reappear the second bar on default state,
+       and giving them a vertical margin */
+    #sidebarCollapse span:first-of-type,
+    #sidebarCollapse span:nth-of-type(2),
+    #sidebarCollapse span:last-of-type {
+        transform: none;
+        opacity: 1;
+        margin: 5px auto;
+    }
+
+    /* Removing the vertical margin and make the first and last bars rotate again when the sidebar is open, hiding the second bar */
+    #sidebarCollapse.active span {
+        margin: 0 auto;
+    }
+    #sidebarCollapse.active span:first-of-type {
+        transform: rotate(45deg) translate(2px, 2px);
+    }
+    #sidebarCollapse.active span:nth-of-type(2) {
+        opacity: 0;
+    }
+    #sidebarCollapse.active span:last-of-type {
+        transform: rotate(-45deg) translate(1px, -1px);
+    }
+}
+
+
+ul ul a {
+    font-size: 15px !important;
+    padding-left: 60px !important;
+    background: #222c3c;
+    text-align: center;
+}
+
+.list-unstyled {
+  list-style: none;
+  border-bottom: none;
+  /* display: none; */
+}
+
+/* Nav list-sidebar */
 
 .list-sidebar {
   width: 100%;
   height: 90%;
   padding-top: 10px;
-  padding-bottom: 30px;
+  padding-bottom: 20px;
   list-style: none;
-  background: var(--color-bg-plum);
-  padding-left: 10px;
+  background: #1a1a1a;
+  padding-left: 0;
   padding-right: 0;
   margin-right: 0;
   font-family: "Source Sans Pro", sans-serif;
 }
 
 .list-sidebar li a i {
-  margin-right:20px
+  margin-right:25px
 }
 
 ul .curate-tab-show.show {
@@ -27,26 +231,30 @@ ul .curate-tab-show.show {
   list-style: none;
   padding-right: 0;
   margin-right: 0;
-  width: 210px;
+  /* width: 210px; */
 }
 
 .list-sidebar ul {
   position: static;
   border-bottom: none;
   display: none;
-  /* padding-left: 10px; */
+  padding-left: 0;
   text-align: left;
+  padding-right: 0;
+  /* margin-right: 0; */
 }
 
 .list-sidebar ul li {
-  line-height: 42px;
+  line-height: 38px;
   border-bottom: none;
-  text-align: left;
   /* margin-top: 8px; */
   margin-bottom: 8px;
+  padding-right: 0;
+  margin-right: 0
 }
 
 .list-sidebar ul li a{
+  text-align: center;
   font-size: 15px;
   color: #F8F8FF;
   padding-left: 15px;
@@ -66,8 +274,8 @@ ul .curate-tab-show.show {
 
 .list-sidebar ul li a:focus {
   font-weight: bold;
-  color: #953947;
-  background-color: #F0F0F0;
+  color: #258193;
+  background-color: #fff;
 }
 
 /* .list-sidebar ul li a .active {
@@ -95,6 +303,7 @@ ul .curate-tab-show.show {
   font-size: 18px;
   transform: translateY(-50%);
   transition: transform 0.4s;
+  text-align: center;
 }
 
 .list-sidebar li a:active span {
@@ -106,12 +315,12 @@ ul .curate-tab-show.show {
   text-decoration: none;
   position: relative;
   list-style: none;
-  padding-left: 10px;
+  padding-left: 15px;
   font-size: 16px;
   font-weight: 500;
-  width: 190px;
   color: #F8F8FF;
   display: block;
+  text-align: left;
 }
 
 .list-sidebar li a:hover{
@@ -123,18 +332,30 @@ ul .curate-tab-show.show {
   /* border-color: #c8e2f8 */
 }
 
+a[data-toggle="collapse"] {
+    position: relative;
+}
+
+.dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
 .nav {
   padding: 0px 0px;
   padding-right: 0px;
   position: fixed;
   width: 230px;
-  height: 100%;
+  min-height: 100vh;
   /* overflow-x: hidden;
   overflow-y: auto; */
   color: var(--color-subtle);
   /* border-right: 2px solid rgba(211,211,211,0.3); */
-  background-color: var(--color-bg-plum);
-  visibility: hidden;
+  background-color: #1a1a1a;
+  visibility: visible;
   /* opacity: 0; */
   /* border-top: 1px solid black; */
   /* white-space: nowrap;
@@ -143,8 +364,10 @@ ul .curate-tab-show.show {
   left: 0;
   z-index: 1300;
   box-shadow: 0 0 0 2px #F5F5F5;
-
+  align-items: stretch;
+  display: flex
 }
+
 .nav.is-shown {
   visibility: visible;;
   opacity: 1
