@@ -355,18 +355,18 @@ buttonSidebarBigIcon.addEventListener('click', (event) => {
 })
 
 // Button selection to move on to next step under Prepare Dataset //
-document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
-  document.getElementById('button-specfy-dataset-demo-toggle').click()
-  if (getComputedStyle(document.getElementById('div-specify-metadata'), null).display === 'none'){
-    document.getElementById('button-specify-metadata-demo-toggle').click()
-  }
-})
-document.getElementById('button-specify-metadata-next-step').addEventListener('click', (event) => {
-  document.getElementById('button-specify-metadata-demo-toggle').click()
-  if (getComputedStyle(document.getElementById('div-validate-dataset'), null).display === 'none'){
-    document.getElementById('button-validate-dataset-demo-toggle').click()
-  }
-})
+// document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
+//   document.getElementById('button-specfy-dataset-demo-toggle').click()
+//   if (getComputedStyle(document.getElementById('div-specify-metadata'), null).display === 'none'){
+//     document.getElementById('button-specify-metadata-demo-toggle').click()
+//   }
+// })
+// document.getElementById('button-specify-metadata-next-step').addEventListener('click', (event) => {
+//   document.getElementById('button-specify-metadata-demo-toggle').click()
+//   if (getComputedStyle(document.getElementById('div-validate-dataset'), null).display === 'none'){
+//     document.getElementById('button-validate-dataset-demo-toggle').click()
+//   }
+// })
 document.getElementById('button-validate-dataset-next-step').addEventListener('click', (event) => {
   document.getElementById('button-validate-dataset-demo-toggle').click()
   if (getComputedStyle(document.getElementById('div-generate-dataset'), null).display === 'none'){

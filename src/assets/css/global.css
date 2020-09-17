@@ -1,7 +1,7 @@
 /* Fonts ---------------------------- */
 
 @font-face {
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   /* font-family: 'Source Code Pro'; */
   font-style: normal;
   font-weight: 400;
@@ -131,6 +131,11 @@ kbd {
   overflow: hidden;
   visibility: hidden;
   opacity: 0;
+  border:none;
+  padding-top: 30px;
+  padding-bottom:20px;
+  background: #fff;
+  max-width:100%
 }
 .content.is-shown {
   visibility: visible;;

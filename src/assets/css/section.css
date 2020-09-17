@@ -2,6 +2,7 @@
 
 .section {
   position: absolute;
+  /* font-size: 13px; */
   top: 0;
   left: 230px;
   right: 0;

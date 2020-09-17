@@ -65,13 +65,13 @@ function dragDone(event) {
 	event.target.style.backgroundColor = '';
 }
 
-document.getElementById("code_table").addEventListener("click", (event) => {
-	rowDisplay(event)
-});
-
-document.getElementById("table-organized").addEventListener("click", (event) => {
-	rowDisplay(event)
-});
+// document.getElementById("code_table").addEventListener("click", (event) => {
+// 	rowDisplay(event)
+// });
+//
+// document.getElementById("table-organized").addEventListener("click", (event) => {
+// 	rowDisplay(event)
+// });
 
 function rowDisplay(e) {
 	if (e.target.className === "table-header" || e.target.className === "table-header openfolder") {

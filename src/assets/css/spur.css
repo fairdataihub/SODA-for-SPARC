@@ -479,10 +479,13 @@ pre {
 
 .container-fluid {
   width: 100%;
-  padding-right: 15px;
-  padding-left: 0;
+  height: 85%;
+  padding-right: 20px;
+  padding-left: 20px;
   margin-right: auto;
-  margin-left: auto; }
+  margin-left: auto;
+  margin-top: 5px;
+}
 
 .row {
   display: -webkit-box;
@@ -8734,7 +8737,7 @@ body {
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-orient: vertical;
+   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   -webkit-flex-direction: column;
       -ms-flex-direction: column;
@@ -8742,11 +8745,12 @@ body {
   -webkit-box-flex: 2;
   -webkit-flex-grow: 2;
       -ms-flex-positive: 2;
-          flex-grow: 2;
-  margin-top: 84px; }
-  @media (min-width: 992px) {
+          flex-grow: 2; */
+  margin-top: 200px;
+}
+  @media (min-width: 800px) {
     .dash-app {
-      margin-left: 238px; }
+      margin-left: 0; }
       .dash-compact .dash-app {
         margin-left: 0; } }
 
@@ -8755,10 +8759,11 @@ body {
   -webkit-flex-grow: 2;
       -ms-flex-positive: 2;
           flex-grow: 2;
-  padding: 10px; }
-  @media (width: 100vh) {
+  padding: 25px;
+height: 100%}
+  @media (max-width: 780px) {
     .dash-content {
-      padding: 5px 0px; } }
+      padding: 15px 0px; } }
 
 .dash-row {
   margin-bottom: 30px; }
@@ -8906,8 +8911,8 @@ body {
           flex-direction: column; }
 
 .dash-nav-item {
-  min-height: 56px;
-  padding: 8px 20px 8px 70px;
+  min-height: 45px;
+  padding: 8px 20px 8px 20px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -8918,11 +8923,13 @@ body {
           align-items: center;
   letter-spacing: .02em; }
   .dash-nav-item i {
-    width: 36px;
-    font-size: 19px;
-    margin-left: -40px; }
+    width: 30px;
+    font-size: 18px;
+    margin-left: 5px;
+  }
   .dash-nav-dark .dash-nav-item:hover {
-    background: rgba(255, 255, 255, 0.04); }
+    background: rgba(255, 255, 255, 0.04);
+  text-decoration: none}
 
 .dash-nav-dropdown {
   display: -webkit-box;
@@ -8935,9 +8942,11 @@ body {
       -ms-flex-direction: column;
           flex-direction: column; }
   .dash-nav-dark .dash-nav-dropdown.show {
-    background: rgba(255, 255, 255, 0.04); }
+    background: rgba(255, 255, 255, 0.04);
+  display: block }
   .dash-nav-dropdown.show > .dash-nav-dropdown-toggle {
-    font-weight: bold; }
+    font-weight: bold;
+  text-decoration: none;}
     .dash-nav-dropdown.show > .dash-nav-dropdown-toggle:after {
       -webkit-transform: none;
            -o-transform: none;
@@ -8977,17 +8986,39 @@ body {
 
 .dash-nav-dropdown-item {
   min-height: 40px;
-  padding: 8px 20px 8px 70px;
+  max-width: 210px;
+  text-align: right;
+  items-align: center;
+  /* background-color: hsl(339,90%,30%); */
+  color: #fff;
+  font-size: 11px;
+  text-decoration: none;
+  margin: 5px 5px;
+  margin-left: 15px;
+  padding: 8px 40px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
+  /* box-shadow: 0 1px 15px 1px rgba(39,39,39,.1); */
   -webkit-box-align: center;
   -webkit-align-items: center;
       -ms-flex-align: center;
-          align-items: center; }
+          align-items: center;
+}
+
   .dash-nav-dropdown-item:hover {
-    background: rgba(255, 255, 255, 0.04); }
+    /* background: hsla(339,86.8%,38.6%, 0.7);
+    border-radius: 25px;
+    color: #fff; */
+    text-decoration: none;
+}
+  .dash-nav-dropdown-item:active, .dash-nav-dropdown-item:focus {
+    /* background-color: #fff;
+    color: hsl(339,90%,30%);
+    border-radius: 25px; */
+    text-decoration: none;
+  }
 
 .notifications {
   margin: -8px -32px; }
@@ -9084,7 +9115,8 @@ body {
   color: #fff; }
 
 .dash-toolbar {
-  min-height: 84px;
+  height: 60px;
+  width: 300px;
   background-color: #F3F3F3;
   display: -webkit-box;
   display: -webkit-flex;
@@ -9094,15 +9126,16 @@ body {
   -webkit-align-items: center;
       -ms-flex-align: center;
           align-items: center;
-  padding: 8px 27px;
-  position: fixed;
+  padding: 5px 20px;
   top: 0;
   right: 0;
   left: 0;
-  z-index: 1000; }
+  z-index: 1000;
+}
   @media (min-width: 992px) {
     .dash-toolbar {
-      left: 238px; }
+      left: 240px;
+  }
       .dash-compact .dash-toolbar {
         left: 0; } }
 

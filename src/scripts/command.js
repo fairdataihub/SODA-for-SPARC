@@ -13,6 +13,13 @@ const buttonSidebar = document.getElementById("button-hamburger")
 // const buttonSidebarIcon = document.getElementById("button-soda-icon")
 const buttonSidebarBigIcon = document.getElementById("button-soda-big-icon")
 
+// context menu
+let menuFolder = null;
+let menuFile = null;
+menuFolder = document.querySelector('.menu.reg-folder');
+menuFile = document.querySelector('.menu.file');
+menuHighLevelFolders = document.querySelector('.menu.high-level-folder');
+
 var backFolder = []
 var forwardFolder =[]
 
@@ -522,40 +529,42 @@ function updateManifestLabel(jsonObject) {
       }
     }
 }
+//
+// const organizeNextStepBtn = document.getElementById("organize-next-step")
+// const organizeFinalizeStepBtn = document.getElementById("organize-finalize")
 
-const organizeNextStepBtn = document.getElementById("organize-next-step")
-const organizeFinalizeStepBtn = document.getElementById("organize-finalize")
-
-function changeStepOrganize(step) {
-    if (step.id==="step-1-organize") {
-      document.getElementById("div-step-1-organize").style.display = "block";
-      document.getElementById("div-step-2-organize").style.display = "none";
-      document.getElementById("step-2-organize").classList.remove("active")
-      step.classList.add("active")
-      organizeNextStepBtn.style.display = "block"
-      organizeFinalizeStepBtn.style.display = "none"
-    } else {
-      document.getElementById("div-step-1-organize").style.display = "none";
-      document.getElementById("div-step-2-organize").style.display = "block";
-      document.getElementById("step-1-organize").classList.remove("active")
-      step.classList.add("active")
-      organizeFinalizeStepBtn.style.display = "block"
-      organizeNextStepBtn.style.display = "none"
-    }
-}
-
-function organizeNextStep() {
-  document.getElementById("div-step-2-organize").style.display = "block";
-  document.getElementById("div-step-1-organize").style.display = "none";
-  document.getElementById("step-2-organize").classList.add("active")
-  document.getElementById("step-1-organize").classList.remove("active")
-  organizeNextStepBtn.style.display = "none"
-  organizeFinalizeStepBtn.style.display = "block"
-}
-
-organizeFinalizeStepBtn.addEventListener("click", () => {
-  // jsonObjGlobal
-})
+// function changeStepOrganize(step) {
+//     if (step.id==="step-1-organize") {
+//       document.getElementById("div-step-1-organize").style.display = "block";
+//       document.getElementById("div-step-2-organize").style.display = "none";
+//       document.getElementById("step-2-organize").classList.remove("active")
+//       step.classList.add("active")
+//       document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>High-level folders"
+//       organizeNextStepBtn.style.display = "block"
+//       organizeFinalizeStepBtn.style.display = "none"
+//     } else {
+//       document.getElementById("div-step-1-organize").style.display = "none";
+//       document.getElementById("div-step-2-organize").style.display = "block";
+//       document.getElementById("step-1-organize").classList.remove("active")
+//       step.classList.add("active")
+//       document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>Metadata files"
+//       organizeFinalizeStepBtn.style.display = "block"
+//       organizeNextStepBtn.style.display = "none"
+//     }
+// }
+//
+// function organizeNextStep() {
+//   document.getElementById("div-step-2-organize").style.display = "block";
+//   document.getElementById("div-step-1-organize").style.display = "none";
+//   document.getElementById("step-2-organize").classList.add("active")
+//   document.getElementById("step-1-organize").classList.remove("active")
+//   organizeNextStepBtn.style.display = "none"
+//   organizeFinalizeStepBtn.style.display = "block"
+// }
+//
+// organizeFinalizeStepBtn.addEventListener("click", () => {
+//   // jsonObjGlobal
+// })
 
 //
 // document.getElementById("generate-manifest").addEventListener("click", function() {
@@ -814,12 +823,6 @@ ipcRenderer.on('save-file-organization-dialog', (event) => {
 ///////////////////////// CONTEXT MENU OPTIONS ///////////////////////////////
 //////////////////////////////////////////////////////////////////////////////
 
-let menuFolder = null;
-let menuFile = null;
-menuFolder = document.querySelector('.menu.reg-folder');
-menuFile = document.querySelector('.menu.file');
-menuHighLevelFolders = document.querySelector('.menu.high-level-folder');
-
 
 //// helper functions for hiding/showing context menus
 function showmenu(ev, category){
@@ -827,12 +830,12 @@ function showmenu(ev, category){
     ev.preventDefault();
     if (category === "folder") {
       menuFolder.style.display = "block";
-      menuFolder.style.top = `${ev.clientY - 10}px`;
-      menuFolder.style.left = `${ev.clientX + 15}px`;
+      menuFolder.style.top = `${ev.clientY - 2}px`;
+      menuFolder.style.left = `${ev.clientX + 2}px`;
     } else if (category === "high-level-folder") {
       menuHighLevelFolders.style.display = "block";
-      menuHighLevelFolders.style.top = `${ev.clientY - 10}px`;
-      menuHighLevelFolders.style.left = `${ev.clientX + 15}px`;
+      menuHighLevelFolders.style.top = `${ev.clientY - 20}px`;
+      menuHighLevelFolders.style.left = `${ev.clientX - 10}px`;
     } else {
         menuFile.style.display = "block";
         menuFile.style.top = `${ev.clientY - 10}px`;

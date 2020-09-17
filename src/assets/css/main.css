@@ -1,24 +1,28 @@
 body {
     margin: 0;
-    padding: 0;
     font-family: sans-serif;
 }
-/* .top-bar {
-    max-width: 150px auto;
-    padding: 10px;
-    background-color: #303030;
-} */
+
 .button-grp {
     display: inline-block;
     margin-right: 30px;
 }
-/*
-#add-folders:hover{
-  background-color: #258193;
-  border: none;
-  color: white;
+
+/* .nav.js-nav {
+  position: fixed;
 } */
 
+.nav.js-nav.hide{
+  display: none
+}
+
+.nav.js-nav.show{
+  display: block
+}
+
+a {
+  border: none;
+}
 
 .button-grp button {
     border: 1px #DBDBDB solid;
@@ -47,7 +51,7 @@ button[disabled]{
     /* background-color: #f0f8ff; */
     width:100%;
     height: calc(100vh - 90px);
-    /* padding: 20px; */
+    padding: 20px;
     /* height: calc(100vh - 110px); */
     /* overflow: scroll; */
 }
@@ -286,7 +290,7 @@ button[disabled]{
 
 .myFol:before {
   content: '';
-  background: url('../assets/close_folder.png') no-repeat;
+  background: url('../img/close_folder.png') no-repeat;
   background-size: 60px;
   position:absolute;
   width:60px;
@@ -297,9 +301,9 @@ button[disabled]{
 
 .myFol.empty:before{
   content: '';
-  background: url('../assets/folder.png');
+  background: url('../img/close_folder.png');
   opacity: 0.5;
-  background-size: cover;
+  background-size: 60px;
   position:absolute;
   width:60px;
   height:60px;
@@ -323,22 +327,12 @@ button[disabled]{
     line-height: 1.5;
     margin-right: 5px;
     margin-left: 5px;
+    color: black
 }
 .blue {
     color:rgb(255,165,0,0.8);
 }
-/*
-.file {
-    color: #D8D8D8;
-} */
 
-/* h1.folder.file {
-  height: 35px
-} */
-
-/* i.fas.fa-file::before {
-  height: 25px !important
-} */
 .red {
     color: red
 }
@@ -393,12 +387,12 @@ button[disabled]{
 }
 
 input:checked + .slider {
-  background-color: #0BC260;
+  background-color: hsl(190, 60%, 36%);
 }
 
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #0BC260;
+  box-shadow: 0 0 1px #2196F3;
 }
 
 input:checked + .slider:before {
@@ -431,7 +425,7 @@ input:checked + .slider:before {
   cursor: pointer;
   height:35px;
   width:35px;
-  font-size:15px;
+  font-size:14px;
   box-shadow: 0 0 2px #999;
   background-position: center;
   transition: background 0.8s;
@@ -454,9 +448,9 @@ input:checked + .slider:before {
 .myButton {
   margin-right: 3px;
   font-size: 13px;
-  color: #258193;
-  background-color: #fff;
-  border: 1px solid #258193;
+  color: #fff;
+  background-color:#bf3062;
+  border: 1px solid transparent;
   border-radius: 5px;
   /* padding: 15px 18px 30px 15px; */
   cursor: pointer;
@@ -466,6 +460,11 @@ input:checked + .slider:before {
   box-shadow: 0 0 2px #999;
   background-position: center;
   transition: background 0.8s;
+}
+
+.myButton.second {
+  background-color: #bf3062;
+  color: #fff
 }
 
 .myButton:hover {
@@ -484,12 +483,19 @@ input:checked + .slider:before {
   outline: none;
 }
 
+.myButton.second:hover {
+  background: #258193 radial-gradient(circle, transparent 1%, #258193 1%) center/15000%;
+  color: #fff;
+  box-shadow: 0 0 5px #3b5998;
+  transition: all 0.5s ease;
+}
+
 .confirmButton {
   /* margin-right: 3px; */
   font-size: 16px;
   color: #fff;
-  background-color: #228B22;
-  border: 2px solid #228B22;
+  background-color: #258193;
+  border: 2px solid #258193;
   border-radius: 5px;
   /* padding: 15px 18px 30px 15px; */
   cursor: pointer;
@@ -501,13 +507,11 @@ input:checked + .slider:before {
 }
 
 .confirmButton:hover {
-  box-shadow: 0 0 5px #228B22;
-  font-weight: bolder;
+  box-shadow: 0 0 5px #3b5998;
 }
 .confirmButton:active {
   background-size: 100%;
   transform: translateY(-3px);
-
 }
 .confirmButton:focus {
   outline: none;
@@ -521,7 +525,7 @@ input:checked + .slider:before {
 }
 
 .myFile.csv:before {
-  background: url('../assets/csv-file.png');
+  background: url('./assets/img/csv-file.png');
   content: '';
   background-size: cover;
   position:absolute;
@@ -530,7 +534,7 @@ input:checked + .slider:before {
   margin-left: 10px;
 }
 .myFile.doc:before {
-  background: url('../assets/doc-file.png');
+  background: url('./assets/img/doc-file.png');
   content: '';
   background-size: cover;
   position:absolute;
@@ -539,7 +543,7 @@ input:checked + .slider:before {
   margin-left: 10px;
 }
 .myFile.docx:before {
-  background: url('../assets/doc-file.png');
+  background: url('./assets/img/doc-file.png');
   content: '';
   background-size: cover;
   position:absolute;
@@ -548,7 +552,7 @@ input:checked + .slider:before {
   margin-left: 10px;
 }
 .myFile.png:before {
-  background: url('../assets/png-file.png');
+  background: url('./assets/img/png-file.png');
   content: '';
   background-size: cover;
   position:absolute;
@@ -557,7 +561,7 @@ input:checked + .slider:before {
   margin-left: 10px;
 }
 .myFile.jpg:before {
-  background: url('../assets/jpeg-file.png');
+  background: url('./assets/img/jpeg-file.png');
   content: '';
   background-size: cover;
   position:absolute;
@@ -566,7 +570,7 @@ input:checked + .slider:before {
   margin-left: 10px;
 }
 .myFile.pdf:before {
-  background: url('../assets/pdf-file.png');
+  background: url('./assets/img/pdf-file.png');
   content: '';
   background-size: cover;
   position:absolute;
@@ -575,7 +579,7 @@ input:checked + .slider:before {
   margin-left: 10px;
 }
 .myFile.txt:before {
-  background: url('../assets/txt-file.png');
+  background: url('./assets/img/txt-file.png');
   content: '';
   background-size: cover;
   position:absolute;
@@ -584,7 +588,7 @@ input:checked + .slider:before {
   margin-left: 10px;
 }
 .myFile.xlsx:before {
-  background: url('../assets/excel-file.png');
+  background: url('./assets/img/excel-file.png');
   content: '';
   background-size: cover;
   position:absolute;
@@ -592,8 +596,9 @@ input:checked + .slider:before {
   height:45px;
   margin-left: 10px;
 }
+
 .myFile.xls:before {
-  background: url('../assets/excel-file.png');
+  background: url('./assets/img/excel-file.png');
   content: '';
   background-size: cover;
   position:absolute;
@@ -601,8 +606,9 @@ input:checked + .slider:before {
   height:45px;
   margin-left: 10px;
 }
+
 .myFile.other:before {
-  background: url('../assets/other-file.png');
+  background: url('./assets/img/other-file.png');
   content: '';
   background-size: cover;
   position:absolute;
@@ -621,20 +627,10 @@ input:checked + .slider:before {
   background-color: #bbb;
   border-radius: 50%;
   display: inline-block;
+  /* visibility: hidden; */
 }
 
 .step-dot.active {
   box-shadow: 0 0 5px #3b5998;
   background-color: #258193
 }
-
-.dropdown-menu {
-    background-color: #222222;
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
-    margin: 0;
-    padding: 0;
-    position: relative;
-    width: @full-width;
-  }

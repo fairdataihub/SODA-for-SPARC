@@ -7,11 +7,12 @@
   --color-strong:   hsl(0,0%,11%);
   --color-link:     hsl(0,0%,22%);
   --color-bg:       hsl(0,0%,96%);
+  --color-sidebar:  #222c3c;
 
   --color-border:   hsl(0,0%,88%);
   --color-bg-plum:       hsl(339,90%,30%);
   /*--color-bg-plum:       hsl(339,86.8%,38.6%);*/
-  --color-strong-white:   hsl(0,100%,100%);  
+  --color-strong-white:   hsl(0,100%,100%);
 
   --color-section:  hsla(0, 0%, 100%);
 

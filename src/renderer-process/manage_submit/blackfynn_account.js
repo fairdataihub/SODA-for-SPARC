@@ -148,40 +148,40 @@ document.querySelector('#team-permission').addEventListener('click', () => {
 
 
 // Post curation tasks
-// function showShareConsortium(){
-//   document.getElementById('div-share-consortium').style.display ='block';
-//   document.getElementById('div-reserve-doi').style.display ='none';
-//   document.getElementById('div-bf-share-curation-team').style.display ='none';
-//   document.getElementById('div-publish-dataset').style.display ='none';
-//   document.getElementById('para-share-consortium-status').innerHTML = ""
-// }
-//
-// function showReserveNewDOI(){
-//   document.getElementById('div-share-consortium').style.display ='none';
-//   document.getElementById('div-reserve-doi').style.display ='block';
-//   document.getElementById('div-bf-share-curation-team').style.display ='none';
-//   document.getElementById('div-publish-dataset').style.display ='none';
-//   document.getElementById('para-reserve-doi-status').innerHTML = ""
-// }
-//
-// function showShareCurationTeam(){
-//   document.getElementById('div-bf-share-curation-team').style.display ='block';
-//   document.getElementById('div-share-consortium').style.display ='none';
-//   document.getElementById('div-reserve-doi').style.display ='none';
-//   document.getElementById('div-publish-dataset').style.display ='none';
-//   document.getElementById("para-dataset-permission-status-curation-team").innerHTML = ""
-//   document.getElementById('para-reserve-doi-status').innerHTML = ""
-//   document.getElementById('para-share-consortium-status').innerHTML = ""
-// }
-//
-// function showPublishDataset(){
-//   document.getElementById('div-share-consortium').style.display ='none';
-//   document.getElementById('div-reserve-doi').style.display ='none';
-//   document.getElementById('div-bf-share-curation-team').style.display ='none';
-//   document.getElementById('div-publish-dataset').style.display ='block';
-//   document.getElementById('para-publish-dataset-status').innerHTML = ""
-// }
+function showShareConsortium(){
+  document.getElementById('div-share-consortium').style.display ='block';
+  document.getElementById('div-reserve-doi').style.display ='none';
+  document.getElementById('div-bf-share-curation-team').style.display ='none';
+  document.getElementById('div-publish-dataset').style.display ='none';
+  document.getElementById('para-share-consortium-status').innerHTML = ""
+}
 
+function showReserveNewDOI(){
+  document.getElementById('div-share-consortium').style.display ='none';
+  document.getElementById('div-reserve-doi').style.display ='block';
+  document.getElementById('div-bf-share-curation-team').style.display ='none';
+  document.getElementById('div-publish-dataset').style.display ='none';
+  document.getElementById('para-reserve-doi-status').innerHTML = ""
+}
+
+function showShareCurationTeam(){
+  document.getElementById('div-bf-share-curation-team').style.display ='block';
+  document.getElementById('div-share-consortium').style.display ='none';
+  document.getElementById('div-reserve-doi').style.display ='none';
+  document.getElementById('div-publish-dataset').style.display ='none';
+  document.getElementById("para-dataset-permission-status-curation-team").innerHTML = ""
+  document.getElementById('para-reserve-doi-status').innerHTML = ""
+  document.getElementById('para-share-consortium-status').innerHTML = ""
+}
+
+function showPublishDataset(){
+  document.getElementById('div-share-consortium').style.display ='none';
+  document.getElementById('div-reserve-doi').style.display ='none';
+  document.getElementById('div-bf-share-curation-team').style.display ='none';
+  document.getElementById('div-publish-dataset').style.display ='block';
+  document.getElementById('para-publish-dataset-status').innerHTML = ""
+}
+// 
 // document.querySelector('#shareConsortium').addEventListener('click', () => {
 //   showShareConsortium()
 // })

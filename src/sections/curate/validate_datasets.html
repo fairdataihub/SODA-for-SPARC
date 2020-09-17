@@ -1,49 +1,252 @@
-
 <template class="task-template">
-  <section id="validate_datasets-section" class="section js-section u-category-windows">
+  <section id="validate-section" class="section js-section u-category-windows">
 
-<head>
-    <!-- <meta charset="utf-8"> -->
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
-    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:400,600|Open+Sans:400,600,700" rel="stylesheet"> -->
-    <!-- <link rel="stylesheet" href="assets/css/spur.css">
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/fontawesome.css"> -->
+    <header class="section-header">
+      <div class="section-wrapper">
+        <h1>
+          <img class="section-icon" src="assets/img/dataset-teal.png">
+          Prepare Dataset
+        </h1>
+        <h3>This interface will walk you through the steps for performing an initial curation of your dataset before review by the Curation Team. Specify successively your requirements, validate, and finally generate your SPARC dataset.
+        </h3>
+      </div>
+    </header>
 
-    <title>SODA - Keep calm and curate</title>
-</head>
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="button-validate-dataset-demo-toggle" class="js-container-target demo-toggle-button"> Validate dataset
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Validate-dataset" >
+            <img class="nav-video" src="assets/img/documentation-icon.png">
+          </a>
+          <div class="demo-meta u-avoid-clicks"> Check that information provided during the previous steps will generate a dataset without major errors or check a locally stored dataset. </div>
+        </button>
 
-<body>
+        <div id="div-validate-dataset-2" class="demo-box" style="display:none">
+          Coming soon...
+        </div>
 
-<main class="dash-content">
-    <div class="container-fluid">
-      <h2 class="dash-title" style="font-family: Roboto;margin-bottom:15px">Validate dataset</h2>
-      <div id="main-window-validate-datasets">
-        <a href="javascript:console.log(jsonObjGlobal)"></a>
+        <div id="div-validate-dataset" class="demo-box">
+          <form id = 'validator-form'>
+            <div style = "padding:10px 0px">
+              <input class="input-switch" id="validatorCurrent" type="radio" name="tabs" checked>
+              <label class="label-switch" style="width:250px;font-size:15px;padding-top: 6px;" for="validatorCurrent">Validate specified files in SODA</label>
+              <input class="input-switch" id="validatorLocal" type="radio" name="tabs">
+              <label class="label-switch" style="width:250px;font-size:15px;padding-top: 6px;" for="validatorLocal">Validate a local dataset</label>
+            </div>
+          </form>
+          <div id="div-validate-current-ds" class="datasetsaveoption" style="display:block;margin-top:70px">
+            <h5>Preview current dataset before validating:
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">
+                  In this feature, you will be able to check that the files specified in the SODA interface under "Specify dataset files" and "Specify metadata files" will generate a dataset without major errors.
+                </span>
+              </div>
+            </h5>
+            <div class="demo-controls" id="div-preview-current-ds-validator">
+              <button type="button" id="button-preview-local-ds" style="float:left;" class="demo-button">Preview</button>
+              <p id="para-preview-current-ds" style="margin-left:7px;padding: 2 2;margin: 0 0;"></p>
+            </div>
+            <br>
+            <h5> Proceed to dataset validation:
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">
+                  Click to check your dataset through the SODA validator. Note that the SODA validator is different from the validator developed and used by the Curation Team and some errors may still be identified by the Curation Team after submission. SODA, however, will check the dataset for high-level errors and errors commonly seen by the Curation Team.
+                </span>
+              </div>
+            </h5>
+          <div class="demo-controls">
+            <button id="button-validate-current-ds" style="float:left;" class="demo-button">Validate</button>
+            <div id=div-indetermiate-bar-validate-soda class="progressdiv">
+              <div class="indeterminatebar"></div>
+            </div>
+            <p id="para-validate-current-ds" style="margin-left:7px;padding: 2 2;margin: 0 0;"></p>
+          </div>
+          <br>
+          <div id="div-validation-report-current" class="demo-controls" style="display:none; user-select: all">
+            <!-- <textarea id="textarea-validate-dataset" class="validate-textarea" rows="10" readonly style="width:100%; max-width:100%"></textarea> -->
+            <p id='textarea-validate-current-dataset' style='background: white;max-width:630px;'> <p>
+          </div>
+          <div id="div-report-current" class="demo-controls" style="display:none;">
+            <button type="button" id="button-generate-report-current-ds" style="float:left;" class="demo-button">Generate report</button>
+            <p id="para-generate-report-current-ds" style="margin-left:7px;padding: 2 2;margin: 0 0;"></p>
+          </div>
+        </div>
+
+
+          <div id="div-validate-local-ds" class="datasetsaveoption" style="display:none;margin-top:70px">
+            <h5>Select a local dataset: </h5>
+            <div class="container-milestone-upload" style="display:flex;">
+              <input class="milestone-upload-text" id="input-local-ds-select" style="width:50%;text-align:center;height:40px" type="text" readonly placeholder="Select a folder"/>
+            </div>
+            <br>
+            <h5>Proceed to dataset validation:
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">
+                  Click to check your dataset through the SODA validator. Note that the SODA validator is different from the validator developed and used by the Curation Team and some errors may still be identified by the Curation Team after submission. SODA, however, will check the dataset for high-level errors and errors commonly seen by the Curation Team.
+                </span>
+              </div>
+            </h5>
+            <div style="display:flex;height:40px">
+            <button id="button-validate-local-ds" style="float:left;" class="demo-button">Validate</button>
+            <div id=div-indetermiate-bar-validate-local class="progressdiv">
+              <div class="indeterminatebar"></div>
+            </div>
+            <p id="para-local-ds-info" style="margin-left:7px;padding: 2 2;margin: 0 0;text-align:left;vertical-align:middle;"></p>
+            </div>
+            <br>
+
+            <div id="div-validation-report-local" class="demo-controls" style="display:none; user-select: all">
+              <!-- <textarea id="textarea-validate-dataset" class="validate-textarea" rows="10" readonly style="width:100%; max-width:100%"></textarea> -->
+              <p id='textarea-validate-local-dataset' style='background: white;max-width:630px;'> <p>
+            </div>
+            <div class="demo-controls"  id="div-report-local" style="display:none;">
+              <button id="button-generate-report-local-ds" style="float:left;" class="demo-button">Generate report</button>
+              <p id="para-generate-report-local-ds" style="margin-left:7px;padding: 2 2;margin: 0 0;"></p>
+            </div>
+
+          </div>
+
+          <div id="div-validate-dataset-next-step" align="right">
+            <h5> </h5>
+            <button id="button-validate-dataset-next-step" class="demo-button-next-step"> Next Step </button>
+          </div>
+
+        </div>
       </div>
     </div>
 
-   </main>
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="button-generate-dataset-demo-toggle" class="js-container-target demo-toggle-button"> Generate dataset
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Generate-dataset" >
+            <img class="nav-video" src="assets/img/documentation-icon.png">
+          </a>
+          <div class="demo-meta u-avoid-clicks"> Create dataset based on information specified during the previous steps </div>
+        </button>
 
-     <script>window.$ = window.jQuery = require('jquery')</script>
+        <div id="div-generate-dataset" class="demo-box">
 
-     <!-- Bootstrap 4 dependency -->
-    <script src="https://getbootstrap.com/docs/4.1/assets/js/vendor/popper.min.js"></script>
-    <!-- <script src="../../node_modules/bootstrap/dist/js/bootstrap.min.js"></script> -->
+          <div id = "div-existing-dataset" style="display:none">
+            <input id="existing-dataset" name="newdataset" type="radio" class="with-style" />
+            <label id = "label-existing-dataset" for="existing-dataset" class=labelradio> Modify current dataset</label>
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">This will add all changes to the current dataset folder.
+                <br>
+                This option will only be available when "Dataset already organized" option is selected.
+              </div>
+          </div>
 
-    <!-- bootbox code -->
-    <!-- <script src="../../node_modules/bootbox/dist/bootbox.min.js"></script>
-    <script src="../../node_modules/bootbox/dist/bootbox.locales.min.js"></script>
+          <form id = 'dataset-curate-form'>
+            <div style = "padding:10px 0px">
 
-     <script src="../../scripts/command.js" type="text/javascript"></script>
-     <script src="../../scripts/open-files.js" type="text/javascript"></script>
-     <script src="../../scripts/context-menu.js" type="text/javascript"></script>
-     <script src="../../scripts/import-files-folders.js" type="text/javascript"></script>
-     <script src="../../scripts/save-files.js" type="text/javascript"></script>
-     <script src="../../scripts/spur.js"></script> -->
+              <input class="input-switch" id="create-newdataset" name="newdataset" type="radio" checked/>
+              <label for="create-newdataset" style="width:230px" class="label-switch">Create new dataset on computer</label>
 
-</body>
+              <input class="input-switch" id="cloud-dataset" name="newdataset" type="radio"/>
+              <label for="cloud-dataset" style="width:240px" class="label-switch">Create new dataset directly on Blackfynn</label>
 
-</section>
+            </div>
+          </form>
+
+          <br><br><br>
+
+          <div id="div-create-new" class="datasetsaveoption">
+            <p></p>
+            <h5> Select destination folder for new dataset </h5>
+            <h5></h5>
+            <!-- <div class="demo-controls">
+              <button id="button-select-new-dataset" style="width:200px" class="demo-button"> Select Destination </button>
+              <textarea class="demo-response" style="resize:vertical;height:40px" id="selected-new-dataset"></textarea>
+            </div> -->
+            <div class="container-milestone-upload" style="display:flex;">
+              <input class="milestone-upload-text" id="selected-new-dataset" style="width:65%;text-align:center;height:40px" type="text" readonly placeholder="Select destination">
+              <button id="button-select-new-dataset" type="button" style="width:15%;height:40px" class="button-milestone-upload"><b>Confirm</b></button>
+              <p id="para-info-new-dataset" style="float:right;margin-top:0;margin-left:7px;padding: 2 2;width:20%;text-align:left;margin-bottom:0"></p>
+            </div>
+            <br>
+            <h5> Enter a name for the new dataset:  </h5>
+              <div class="demo-controls" style="width:80%">
+                <input id="new-dataset-name" class="demo-response" > </input>
+              </div>
+
+          </div>
+
+          <div id="div-create-cloud" class="datasetsaveoption">
+            <h5> </h5>
+            <p></p>
+            <!-- <button id="button-upload-check-bf-account-details" class="demo-button"> Load existing account(s) </button> -->
+            <h5> Select account </h5>
+            <div class="demo-controls">
+              <select id="bfuploadaccountlist" style="width:58%" class="my-dropdown">
+                <option> Select </option>
+              </select>
+              <p id="para-account-details"></p>
+              <button id="button-upload-check-bf-account-details" class="demo-button"> Switch Account </button>
+            </div>
+
+            <div id=div-bf-account-load-progress-curate class="progressdiv">
+              <div class="indeterminatebar"></div>
+            </div>
+            <p id='para-upload-select-account-status'> <p>
+
+            <h5> Select Blackfynn dataset for uploading
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically).
+                <br> <br>
+                Note: You must have "owner", "manager" or "editor" permissions on the dataset to upload. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+              </div>
+            </h5>
+            <div class="demo-controls" style="margin-top: 15px">
+              <select class="my-dropdown" id="bfuploaddatasetlist" style="width:80%">
+                <option> Select dataset </option>
+              </select>
+              <p></p>
+              <button id="button-upload-refresh-dataset-list" class="demo-button" style="display:none"> Refresh List </button>
+            </div>
+          </div>
+
+          <p> </p>
+
+          <div id="div-curate-button" class="datasetsaveoption">
+
+            <h5> Proceed </h5>
+            <button id="button-curate-dataset" class="demo-button"> Generate </button>
+            <p id="para-please-wait-curate"</p>
+          </div>
+
+          <div id="div-curate-progress-bar-error-status" class="datasetsaveoption">
+            <p id='para-curate-progress-bar-error-status'> <p>
+          </div>
+
+          <div id="div-curate-progress">
+          <div id="div-curate-meter-progress" class="datasetsaveoption">
+            <h5> Progress </h5>
+            <progress class=progresstrack id="progress-bar-curate" max="100" value="0"></progress>
+          </div>
+          <div id="div-curate-progress-bar-status" class="datasetsaveoption">
+            <p id='para-curate-progress-bar-status'> <p>
+          </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      require('./renderer-process/curate/radio-buttons-display')
+    </script>
+
+    <script type="text/javascript" src="./renderer-process/curate/table-script.js">
+    </script>
+
+    <script type="text/javascript">
+    //Manifest file label color change if checked
+      function updateManifestLabelColor(el){
+        document.getElementById('label-manifest').style.color = el.checked ? "inherit" : "#303030"
+        document.getElementById('label-manifest').style.fontWeight = el.checked ? "bold": "normal"
+        document.getElementById('label-manifest').style.fontSize = el.checked ? "1.1em": "1em"
+      }
+    </script>
+
+  </section>
 </template>

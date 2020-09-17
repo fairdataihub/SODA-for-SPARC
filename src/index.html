@@ -14,31 +14,30 @@
     <link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css">
     <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous"> -->
     <!-- <link href="https://fonts.googleapis.com/css?family=Nunito:400,600|Open+Sans:400,600,700" rel="stylesheet"> -->
-    <link rel="stylesheet" href="spur.css">
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="assets/css/spur.css">
+    <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.css">
     <link rel="stylesheet" href="node_modules/@toast-ui/editor/dist/toastui-editor.css">
     <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="node_modules/@yaireo/tagify/dist/tagify.css">
     <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@200&display=swap" rel="stylesheet">
 
-    <!-- <link rel="import" href="sections/account/account.html"> -->
+    <link rel="import" href="sections/account/account.html">
     <link rel="import" href="sections/curate/organize_files.html">
     <link rel="import" href="sections/curate/validate_datasets.html">
-
-
+    <link rel="import" href="sections/manage_submit/manage_submit.html">
+    <link rel="import" href="sections/post_curation/post_curation.html">
+    <link rel="import" href="sections/prepare_metadata/prepare_metadata.html">
 
   </head>
 
 <body>
-
       <nav id="main-nav" class="nav js-nav">
-
         <div class="nav-item u-category-windows">
-
           <!-- Sidebar Header -->
-          <div class="sidebar-header" style="padding-bottom: 30px">
+          <div class="sidebar-header">
             <div style="display:block" id="SODA-logo">
             <a href="#">
             <img id="button-soda-big-icon" class = "nav-center-logo-image" src="assets/img/logo-soda1024-white.png">
@@ -50,23 +49,23 @@
             </strong>
             </div>
           </div>
-
           <!-- Sidebar Links -->
           <ul class="list-unstyled components">
-              <li><a href="#"><i class="fas fa-user"></i>Account</a></li>
+              <li><a href="#" data-section="account"><i class="fas fa-user" style="margin-right: 31px"></i>Account</a></li>
+              <li><a href="#" data-section="prepare_metadata"><i class="fas fa-file-alt" style="margin-right: 31px"></i>Metadata</a></li>
               <li>
                   <a href="#curateSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fas fa-sitemap"></i>Curate</a>
                   <ul class="collapse list-unstyled" id="curateSubmenu">
                       <li><a href="#" data-section="organize_files">Organize dataset</a></li>
-                      <li><a href="#">Upload dataset</a></li>
+                      <li><a href="#" data-section="validate">Generate dataset</a></li>
                   </ul>
               <li>
-                  <a href="#" data-toggle="collapse" aria-expanded="false"><i class="fas fa-digital-tachograph"></i>Manage</a>
-                  <ul class="collapse list-unstyled" id="homeSubmenu">
-                      <li><a href="#" data-section="organize_files">Permissions</a></li>
-                  </ul>
+                  <a href="#" data-section="manage_submit"><i class="fas fa-digital-tachograph"></i>Manage</a>
+                  <!-- <ul class="collapse list-unstyled" id="manageSubmenu">
+                      <li><a href="#" data-section="manage_submit">Permissions</a></li>
+                  </ul> -->
               </li>
-              <li><a href="#"><i class="fas fa-share-alt"></i>Disseminate</a></li>
+              <li><a href="#" data-section="post_curation"><i class="fas fa-share-alt"></i>Disseminate</a></li>
           </ul>
 
 </div>
@@ -79,20 +78,15 @@
 </header> -->
 
   <div class="dash-app" style="background: #fff">
-
         <button type="button" id="sidebarCollapse" class="navbar-btn">
             <span></span>
             <span></span>
             <span></span>
         </button>
-
-      <main id="content" class="content js-content" style="border:none; padding-top: 30px;padding-bottom:20px; background: #fff;max-width:100%"></main>
+      <main id="content" class="content js-content"></main>
 </div>
 
-<!-- </div> -->
-
-
-  <script> // Required js script are imported here
+  <script>
     require('./assets/imports') // Imports html files into app
     require('./assets/ex-links') // Opens url into external chrome tab instead of in the app
     require('./assets/nav') // Side navigation menu control
@@ -103,70 +97,19 @@
     function myFunction(element) {
           element.classList.toggle("open");
     }
-
-
     $(document).ready(function () {
       $('#sidebarCollapse').on('click', function () {
           $('#main-nav').toggleClass('active');
           $(this).toggleClass('active');
-          // $('.dash-content').toggleClass('active');
       });
     });
   </script>
-
-</body>
   <script>
-    // require('./scripts/renderer.js') // js script for talking with Python back-end
-    require('./scripts/command.js')
-    require('./scripts/spur.js')
-
-
-  </script>
-
-  <script>
-  $(".curate-tab").click(function() {
-    $(".curate-tab-show").addClass("show")
-  })
-
-//   $("#menu-sidebar-toggle").click(function() {
-//     if ($(".nav .js-nav")
-//     .hasClass("active")
-//   ) {
-//     $(".nav .js-nav").removeClass("active");
-//     $(this)
-//     .parent()
-//     .removeClass("active");
-//   } else {
-//     $(".sidebar-dropdown").removeClass("active");
-//     $(this)
-//     .next(".sidebar-submenu")
-//     .slideDown(200);
-//     $(this)
-//     .parent()
-//     .addClass("active");
-//   }
-// });
-//     $("#main-nav").addClass("show")
-//   })
-//
-//
-//
-//  $("#close-sidebar").click(function() {
-//    $(".page-wrapper").removeClass("toggled");
-//  });
-//  $("#show-sidebar").click(function() {
-//    $(".page-wrapper").addClass("toggled");
-//  });
-
+  require('./scripts/renderer.js') // js script for talking with Python back-end
+  require('./scripts/command.js')
+  require('./scripts/popper.min.js')
   </script>
   <script>window.$ = window.jQuery = require('jquery')</script>
-
-  <!-- Bootstrap 4 dependency -->
- <!-- <script src="../src/node_modules/popper.js/dist/js/popper.min.js"></script> -->
- <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
- <!-- bootbox code -->
- <script src="../src/node_modules/bootbox/dist/bootbox.min.js"></script>
- <!-- <script src="../src/node_modules/bootbox/dist/bootbox.locales.min.js"></script> -->
-
+  <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

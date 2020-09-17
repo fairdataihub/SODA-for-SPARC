@@ -358,6 +358,43 @@ button.download-metadata:hover {
   height:20px
 }
 
+.dash-app {
+  /* font-family: 'Montserrat', sans-serif;
+  font-size: 15px */
+}
+
+.dash-title {
+  font-family:'Montserrat', sans-serif;
+  margin-bottom:15px !important;
+  color: #258193;
+  opacity:0.9;
+  font-style:bold;
+  border-bottom: 2px solid #258193;
+  padding-bottom:5px;
+  padding-top: 10px
+}
+
+div.main-window {
+  height:auto;
+  margin-left: 0;
+  width:100%;
+  padding-top:10px
+}
+
+.dash-content {
+  background: #fff;
+  padding-top: 10px !important;
+  z-index:5000;
+  padding: 15px 15px !important;
+}
+
+#items {
+  width:100%;
+  overflow:hidden;
+  height:80%;
+  padding-top: 10px;
+}
+
 /* ProTip ----------------------------- */
 .download {
 		background: #f5f5f5;
@@ -1259,4 +1296,106 @@ input:checked + .slider:before {
 
 .validatelist li.bulleterror :before{
   content: "\274C";
+}
+
+/* CONTEXT MENU */
+.menu {
+  background-color: #fff;
+  color: #333;
+  list-style: none;
+  position: absolute;
+  padding: 6px 0;
+  text-align: left;
+  border-radius: 5px;
+  cursor: pointer;
+  word-wrap: break-word;
+  margin-bottom: 0;
+  margin-top: 0;
+  margin-right: 4px;
+  z-index: 1000;
+  border: 1px solid rgba(0,0,0,.15);
+
+}
+
+.menu.reg-folder {
+    min-width: 110px;
+    height: auto;
+}
+
+.menu.reg-folder li {
+  padding: 3px 10px;
+  background-color: #fff;
+  font-size: 13px;
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+}
+
+/* .menu.reg-folder li:hover{
+  background-color: #fffff
+} */
+
+.menu.file {
+  min-width: 180px;
+  height: auto;
+}
+
+.menu.file li {
+  padding: 3px 10px;
+  background-color: #fff;
+  color: black;
+  font-size: 13px;
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+}
+
+.menu.file li:hover{
+  background-color: #F0F0F0 ;
+}
+
+.menu.reg-folder li:hover{
+  background-color: #F0F0F0 ;
+}
+
+.menu.high-level-folder li:hover{
+  background-color: #F0F0F0;
+
+}
+
+.menu.high-level-folder.off {
+  display: none;
+  top: -200%;
+  left: -200%;
+  /* margin-bottom: 0; */
+}
+
+.menu.high-level-folder {
+  width: 110px;
+  height: auto;
+}
+
+.menu.high-level-folder li {
+  padding: 3px 10px;
+  background-color: #fff;
+  font-size: 13px;
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+
+}
+
+/* .menu.high-level-folder li:hover{
+  background-color: #fffff;
+} */
+
+.menu.reg-folder.off{
+    display: none;
+    top: -200%;
+    left: -200%;
+}
+
+.menu.file.off{
+    display: none;
+    top: -210%;
+    left: -210%;
+}
+
+.menu.file li {
+  min-width: 180px;
+  background-color: #fff
 }

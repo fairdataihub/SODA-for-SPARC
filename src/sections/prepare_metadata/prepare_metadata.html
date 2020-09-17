@@ -14,64 +14,6 @@
     </header>
 
 <!-- Provide info about award -->
-    <div class="demo">
-      <div class="demo-wrapper">
-        <button id="button-save-grant-info-demo-toggle" class="js-container-target demo-toggle-button">Connect to Airtable
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Connect-to-Airtable">
-            <img class="nav-video" src="assets/img/documentation-icon.png">
-          </a>
-          <div class="demo-meta u-avoid-clicks"> Connect your Airtable account with SODA  </div>
-        </button>
-
-      <div class="demo-box">
-        <div id="div-add-airtable-key">
-          <h5> Enter your Airtable API key below and specify a key name to connect your Airtable account with SODA:
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">
-                SODA make use of the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;"> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
-                <br><br>
-                To achieve that, create an Airtable account and request access to the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;">SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href="mailto:chorn@pitt.edu" style='color: white'> chorn@pitt.edu</a>)
-                <br><br>
-                Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a> to learn how to obtain or re-generate your API key.
-                <br><br>
-                The account will then be remembered by SODA for all subsequent uses and you can move on directly to the "Provide award information" feature. Note that the account key will be stored on your computer only, so neither the SODA Team nor anyone else besides you will have access to your Airtable account.
-                <br><br>
-                Please keep your group information up to date in the Airtable sheet, especially contributors' name, email, affiliation, and ORCID to help SODA help you!
-              </span>
-            </div>
-          </h5> <br>
-
-          <div class="form-container"><font color="black"> Key name: </font> </div>
-          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-            <span class="tooltiptext">
-              Provide a name of your choice for your Airtable API Key. Your API Key will be stored under this key name.
-            </span>
-          </div>
-          <div class="demo-controls">
-            <input class="form-container-input-bf" id="airtable-key-name" />
-          </div>
-          <div class="form-container"><font color="black"> API Key: </font> </div>
-          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-            <span class="tooltiptext">
-              To obtain or re-generate your API key to connect to SODA during your first use, check out the dedicated <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a>. Note that the key will be stored locally on your computer and the SODA Team will not have access to it.
-            </span>
-          </div>
-          <div class="demo-controls">
-            <input type="password" class="form-container-input-bf" id="airtable-api-key" />
-          </div>
-          <br>
-          <div class="demo-controls">
-            <button class="demo-button" id="button-add-airtable-key"> Connect </button>
-            <div style="display:none" id="div-airtable-connect-load-progress" class="progressdiv">
-              <div class="indeterminatebar"></div>
-            </div>
-            <p id="para-add-airtable-key"  style="float:right;margin: 0 0;padding: 3 3;"></p>
-          </div>
-
-         </div>
-       </div>
-      </div>
-    </div>
 
     <div class="demo">
       <div class="demo-wrapper">
@@ -641,10 +583,10 @@
       <script type="text/javascript">
         require('./renderer-process/native-ui/dialogs/save')
         require('./renderer-process/prepare-metadata/save-information.js')
-        // require('./renderer-process/prepare-metadata/table-script.js')
+        require('./renderer-process/prepare-metadata/table-script.js')
       </script>
-      <script type="text/javascript" src="./renderer-process/prepare-metadata/table-script.js">
-      </script>
+      <!-- <script type="text/javascript" src="./renderer-process/prepare-metadata/table-script.js"> -->
+      <!-- </script> -->
 
   </section>
 </template>

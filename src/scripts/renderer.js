@@ -355,18 +355,18 @@ function openSidebar(buttonElement) {
 // })
 
 // Button selection to move on to next step under Prepare Dataset //
-document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
-  document.getElementById('button-specfy-dataset-demo-toggle').click()
-  if (getComputedStyle(document.getElementById('div-specify-metadata'), null).display === 'none'){
-    document.getElementById('button-specify-metadata-demo-toggle').click()
-  }
-})
-document.getElementById('button-specify-metadata-next-step').addEventListener('click', (event) => {
-  document.getElementById('button-specify-metadata-demo-toggle').click()
-  if (getComputedStyle(document.getElementById('div-validate-dataset'), null).display === 'none'){
-    document.getElementById('button-validate-dataset-demo-toggle').click()
-  }
-})
+// document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
+//   document.getElementById('button-specfy-dataset-demo-toggle').click()
+//   if (getComputedStyle(document.getElementById('div-specify-metadata'), null).display === 'none'){
+//     document.getElementById('button-specify-metadata-demo-toggle').click()
+//   }
+// })
+// document.getElementById('button-specify-metadata-next-step').addEventListener('click', (event) => {
+//   document.getElementById('button-specify-metadata-demo-toggle').click()
+//   if (getComputedStyle(document.getElementById('div-validate-dataset'), null).display === 'none'){
+//     document.getElementById('button-validate-dataset-demo-toggle').click()
+//   }
+// })
 document.getElementById('button-validate-dataset-next-step').addEventListener('click', (event) => {
   document.getElementById('button-validate-dataset-demo-toggle').click()
   if (getComputedStyle(document.getElementById('div-generate-dataset'), null).display === 'none'){
@@ -1784,183 +1784,183 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
 //////////////// //////////////// //////////////// //////////////// ////////////////////////
 
 // Select organized dataset folder and populate table //
-selectDatasetBtn.addEventListener('click', (event) => {
-  clearStrings()
-  ipcRenderer.send('open-file-dialog-dataset')
-})
-
-ipcRenderer.on('selected-dataset', (event, path) => {
-  if (path.length > 0) {
-    clearTable(tableOrganized)
-    pathDataset.innerHTML = ""
-    var folderChecking = checkFolderStruture(path[0])
-    if (folderChecking == true) {
-      pathDataset.innerHTML = path
-      var jsonFolder = organizedFolderToJson(path[0])
-      jsonToTableOrganized(tableOrganized, jsonFolder)
-    } else {
-      pathDataset.innerHTML = "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>" + sadCan
-    }
-  }
-})
+// selectDatasetBtn.addEventListener('click', (event) => {
+//   clearStrings()
+//   ipcRenderer.send('open-file-dialog-dataset')
+// })
+//
+// ipcRenderer.on('selected-dataset', (event, path) => {
+//   if (path.length > 0) {
+//     clearTable(tableOrganized)
+//     pathDataset.innerHTML = ""
+//     var folderChecking = checkFolderStruture(path[0])
+//     if (folderChecking == true) {
+//       pathDataset.innerHTML = path
+//       var jsonFolder = organizedFolderToJson(path[0])
+//       jsonToTableOrganized(tableOrganized, jsonFolder)
+//     } else {
+//       pathDataset.innerHTML = "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>" + sadCan
+//     }
+//   }
+// })
 
 //Select files/folders to be added to table for organizing //
 
 //code
-const selectCodeBtn = document.getElementById('button-select-code')
-selectCodeBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-file-dialog-code')
-})
-const selectCodeDirectoryBtn = document.getElementById('button-select-code-directory')
-selectCodeDirectoryBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-folder-dialog-code')
-})
-ipcRenderer.on('selected-code', (event, path) => {
-    insertFileToTable(tableNotOrganized, path, 'code')
-})
-
-//derivative
-const selectderivativeBtn = document.getElementById('button-select-derivative')
-selectderivativeBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-file-dialog-derivative')
-})
-const selectderivativeDirectoryBtn = document.getElementById('button-select-derivative-directory')
-selectderivativeDirectoryBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-folder-dialog-derivative')
-})
-ipcRenderer.on('selected-derivative', (event, path) => {
-    insertFileToTable(tableNotOrganized, path, 'derivative')
-})
-
-//docs
-const selectDocsBtn = document.getElementById('button-select-docs')
-selectDocsBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-file-dialog-docs')
-})
-const selectDocsDirectoryBtn = document.getElementById('button-select-docs-directory')
-selectDocsDirectoryBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-folder-dialog-docs')
-})
-ipcRenderer.on('selected-docs', (event, path) => {
-    insertFileToTable(tableNotOrganized, path, 'docs')
-})
-
-//primary
-const selectPrimaryBtn = document.getElementById('button-select-primary')
-selectPrimaryBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-file-dialog-primary')
-})
-const selectPrimaryDirectoryBtn = document.getElementById('button-select-primary-directory')
-selectPrimaryDirectoryBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-folder-dialog-primary')
-})
-ipcRenderer.on('selected-primary', (event, path) => {
-    insertFileToTable(tableNotOrganized, path, 'primary')
-})
-
-//protocol
-const selectProtocolBtn = document.getElementById('button-select-protocol')
-selectProtocolBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-file-dialog-protocol')
-})
-const selectProtocolDirectoryBtn = document.getElementById('button-select-protocol-directory')
-selectProtocolDirectoryBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-folder-dialog-protocol')
-})
-
-ipcRenderer.on('selected-protocol', (event, path) => {
-    insertFileToTable(tableNotOrganized, path, 'protocol')
-})
-
-//source
-const selectSourceBtn = document.getElementById('button-select-source')
-selectSourceBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-file-dialog-source')
-})
-const selectSourceDirectoryBtn = document.getElementById('button-select-source-directory')
-selectSourceDirectoryBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-folder-dialog-source')
-})
-ipcRenderer.on('selected-source', (event, path) => {
-    insertFileToTable(tableNotOrganized, path, 'source')
-})
-
-// Drag and drop //
-var holderCode = document.getElementById('code')
-holderCode.addEventListener("drop", (event)=> {
-   event.preventDefault()
-   var myID = holderCode.id
-   dropAddToTable(event, myID)
-})
-
-var holderderivative = document.getElementById('derivative')
-holderderivative.addEventListener("drop", (event)=> {
-   event.preventDefault()
-   var myID = holderderivative.id
-   dropAddToTable(event, myID)
-})
-
-var holderDocs = document.getElementById('docs')
-holderDocs.addEventListener("drop", (event)=> {
-   event.preventDefault()
-   var myID = holderDocs.id
-   dropAddToTable(event, myID)
-})
-
-var holderPrimary = document.getElementById('primary')
-holderPrimary.addEventListener("drop", (event)=> {
-   event.preventDefault()
-   var myID = holderPrimary.id
-   dropAddToTable(event, myID)
-})
-
-var holderProtocol = document.getElementById('protocol')
-holderProtocol.addEventListener("drop", (event)=> {
-   event.preventDefault()
-   var myID = holderProtocol.id
-   dropAddToTable(event, myID)
-})
-
-var holderSource = document.getElementById('source')
-holderSource.addEventListener("drop", (event)=> {
-   event.preventDefault()
-   var myID = holderSource.id
-   dropAddToTable(event, myID)
-})
-
-//Clear table //
-clearTableBtn.addEventListener('click', () => {
-  // Generate warning before continuing
-  clearStrings()
-  ipcRenderer.send('warning-clear-table')
-})
-ipcRenderer.on('warning-clear-table-selection', (event, index) => {
-  if (index === 0) {
-    if (alreadyOrganizedStatus.checked){
-      clearTable(tableOrganized)
-      pathDataset.innerHTML = ""
-    } else if (organizeDatasetStatus.checked) {
-      clearTable(tableNotOrganized)
-      clearStrings()
-    }
-  }
-})
+// const selectCodeBtn = document.getElementById('button-select-code')
+// selectCodeBtn.addEventListener('click', (event) => {
+//   ipcRenderer.send('open-file-dialog-code')
+// })
+// const selectCodeDirectoryBtn = document.getElementById('button-select-code-directory')
+// selectCodeDirectoryBtn.addEventListener('click', (event) => {
+//   ipcRenderer.send('open-folder-dialog-code')
+// })
+// ipcRenderer.on('selected-code', (event, path) => {
+//     insertFileToTable(tableNotOrganized, path, 'code')
+// })
+//
+// //derivative
+// const selectderivativeBtn = document.getElementById('button-select-derivative')
+// selectderivativeBtn.addEventListener('click', (event) => {
+//   ipcRenderer.send('open-file-dialog-derivative')
+// })
+// const selectderivativeDirectoryBtn = document.getElementById('button-select-derivative-directory')
+// selectderivativeDirectoryBtn.addEventListener('click', (event) => {
+//   ipcRenderer.send('open-folder-dialog-derivative')
+// })
+// ipcRenderer.on('selected-derivative', (event, path) => {
+//     insertFileToTable(tableNotOrganized, path, 'derivative')
+// })
+//
+// //docs
+// const selectDocsBtn = document.getElementById('button-select-docs')
+// selectDocsBtn.addEventListener('click', (event) => {
+//   ipcRenderer.send('open-file-dialog-docs')
+// })
+// const selectDocsDirectoryBtn = document.getElementById('button-select-docs-directory')
+// selectDocsDirectoryBtn.addEventListener('click', (event) => {
+//   ipcRenderer.send('open-folder-dialog-docs')
+// })
+// ipcRenderer.on('selected-docs', (event, path) => {
+//     insertFileToTable(tableNotOrganized, path, 'docs')
+// })
+//
+// //primary
+// const selectPrimaryBtn = document.getElementById('button-select-primary')
+// selectPrimaryBtn.addEventListener('click', (event) => {
+//   ipcRenderer.send('open-file-dialog-primary')
+// })
+// const selectPrimaryDirectoryBtn = document.getElementById('button-select-primary-directory')
+// selectPrimaryDirectoryBtn.addEventListener('click', (event) => {
+//   ipcRenderer.send('open-folder-dialog-primary')
+// })
+// ipcRenderer.on('selected-primary', (event, path) => {
+//     insertFileToTable(tableNotOrganized, path, 'primary')
+// })
+//
+// //protocol
+// const selectProtocolBtn = document.getElementById('button-select-protocol')
+// selectProtocolBtn.addEventListener('click', (event) => {
+//   ipcRenderer.send('open-file-dialog-protocol')
+// })
+// const selectProtocolDirectoryBtn = document.getElementById('button-select-protocol-directory')
+// selectProtocolDirectoryBtn.addEventListener('click', (event) => {
+//   ipcRenderer.send('open-folder-dialog-protocol')
+// })
+//
+// ipcRenderer.on('selected-protocol', (event, path) => {
+//     insertFileToTable(tableNotOrganized, path, 'protocol')
+// })
+//
+// //source
+// const selectSourceBtn = document.getElementById('button-select-source')
+// selectSourceBtn.addEventListener('click', (event) => {
+//   ipcRenderer.send('open-file-dialog-source')
+// })
+// const selectSourceDirectoryBtn = document.getElementById('button-select-source-directory')
+// selectSourceDirectoryBtn.addEventListener('click', (event) => {
+//   ipcRenderer.send('open-folder-dialog-source')
+// })
+// ipcRenderer.on('selected-source', (event, path) => {
+//     insertFileToTable(tableNotOrganized, path, 'source')
+// })
+//
+// // Drag and drop //
+// var holderCode = document.getElementById('code')
+// holderCode.addEventListener("drop", (event)=> {
+//    event.preventDefault()
+//    var myID = holderCode.id
+//    dropAddToTable(event, myID)
+// })
+//
+// var holderderivative = document.getElementById('derivative')
+// holderderivative.addEventListener("drop", (event)=> {
+//    event.preventDefault()
+//    var myID = holderderivative.id
+//    dropAddToTable(event, myID)
+// })
+//
+// var holderDocs = document.getElementById('docs')
+// holderDocs.addEventListener("drop", (event)=> {
+//    event.preventDefault()
+//    var myID = holderDocs.id
+//    dropAddToTable(event, myID)
+// })
+//
+// var holderPrimary = document.getElementById('primary')
+// holderPrimary.addEventListener("drop", (event)=> {
+//    event.preventDefault()
+//    var myID = holderPrimary.id
+//    dropAddToTable(event, myID)
+// })
+//
+// var holderProtocol = document.getElementById('protocol')
+// holderProtocol.addEventListener("drop", (event)=> {
+//    event.preventDefault()
+//    var myID = holderProtocol.id
+//    dropAddToTable(event, myID)
+// })
+//
+// var holderSource = document.getElementById('source')
+// holderSource.addEventListener("drop", (event)=> {
+//    event.preventDefault()
+//    var myID = holderSource.id
+//    dropAddToTable(event, myID)
+// })
+//
+// //Clear table //
+// clearTableBtn.addEventListener('click', () => {
+//   // Generate warning before continuing
+//   clearStrings()
+//   ipcRenderer.send('warning-clear-table')
+// })
+// ipcRenderer.on('warning-clear-table-selection', (event, index) => {
+//   if (index === 0) {
+//     if (alreadyOrganizedStatus.checked){
+//       clearTable(tableOrganized)
+//       pathDataset.innerHTML = ""
+//     } else if (organizeDatasetStatus.checked) {
+//       clearTable(tableNotOrganized)
+//       clearStrings()
+//     }
+//   }
+// })
 
 //Select files to be added to metadata files table //
-const selectMetadataBtn = document.getElementById('button-select-metadata')
-selectMetadataBtn.addEventListener('click', (event) => {
-  document.getElementById("para-preview-organization-status-metadata").innerHTML = ""
-  ipcRenderer.send('open-file-dialog-metadata')
-})
-ipcRenderer.on('selected-metadata', (event, path) => {
-    insertFileToMetadataTable(tableMetadata, path)
-})
-var holderMetadata = document.getElementById('metadata')
-holderMetadata.addEventListener("drop", (event)=> {
-   event.preventDefault()
-   var myID = holderMetadata.id
-   dropAddToTableMetadata(event, myID)
-})
+// const selectMetadataBtn = document.getElementById('button-select-metadata')
+// selectMetadataBtn.addEventListener('click', (event) => {
+//   document.getElementById("para-preview-organization-status-metadata").innerHTML = ""
+//   ipcRenderer.send('open-file-dialog-metadata')
+// })
+// ipcRenderer.on('selected-metadata', (event, path) => {
+//     insertFileToMetadataTable(tableMetadata, path)
+// })
+// var holderMetadata = document.getElementById('metadata')
+// holderMetadata.addEventListener("drop", (event)=> {
+//    event.preventDefault()
+//    var myID = holderMetadata.id
+//    dropAddToTableMetadata(event, myID)
+// })
 
 // New instance for description editor
 const tuiInstance = new Editor({
@@ -2017,166 +2017,166 @@ function enablePrepareDatasetButtons() {
 }
 
 // Action when user click on "Save" file organization button //
-selectSaveFileOrganizationBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('save-file-dialog-saveorganization', 'dataset')
-  clearStrings()
-})
-selectSaveFileOrganizationMetadataBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('save-file-dialog-saveorganization', 'metadata')
-  clearStrings()
-})
-ipcRenderer.on('selected-saveorganizationfile', (event, path, location) => {
-  if (path.length > 0){
-    if (alreadyOrganizedStatus.checked == true){
-      var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
-    } else {
-      var jsonvect = tableToJsonWithDescription(tableNotOrganized)
-    }
-    var jsonpath = jsonvect[0]
-    var jsondescription = jsonvect[1]
-    var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
-    if (location === 'dataset'){
-      document.getElementById("para-save-file-organization-status").innerHTML = "Please wait..."
-    } else if (location === 'metadata'){
-      document.getElementById("para-preview-organization-status-metadata").innerHTML = "Please wait..."
-    }
-    // Call python to save
-    if (path != null){
-      disablePrepareDatasetButtons()
-      client.invoke("api_save_file_organization", jsonpath, jsondescription, jsonpathMetadata, path, (error, res) => {
-          if(error) {
-            log.error(error)
-            console.error(error)
-            var emessage = userError(error)
-            if (location === 'dataset'){
-              document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-            } else if (location === 'metadata'){
-              document.getElementById("para-preview-organization-status-metadata").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-            }
-            enablePrepareDatasetButtons()
-          } else {
-            if (location === 'dataset'){
-              document.getElementById("para-save-file-organization-status").innerHTML = "Saved!"
-            } else if (location === 'metadata'){
-              document.getElementById("para-preview-organization-status-metadata").innerHTML = "Saved!"
-            }
-            enablePrepareDatasetButtons()
-          }
-      })
-    }
-  }
-})
-
-// Action when user click on "Import" button //
-selectImportFileOrganizationBtn.addEventListener('click', (event) => {
-  ipcRenderer.send('open-file-dialog-uploadorganization')
-  clearStrings()
-})
-ipcRenderer.on('selected-uploadorganization', (event, path) => {
-  if (path.length > 0) {
-    disablePrepareDatasetButtons()
-    document.getElementById("para-save-file-organization-status").innerHTML = "Please wait..."
-    var headerNames = sparcFolderNames.slice()
-    var lennames =  headerNames.length
-    for (var i = 0; i < lennames; i++) {
-    	headerNames.push(headerNames[i] + "_description")
-    }
-    headerNames.push("metadata")
-    client.invoke("api_import_file_organization", path[0], headerNames, (error, res) => {
-          if(error) {
-            log.error(error)
-            console.error(error)
-            var emessage = userError(error)
-            document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-            enablePrepareDatasetButtons()
-          } else {
-            var jsonpath = res[0]
-            jsonToTableWithDescription(tableNotOrganized, jsonpath)
-            var jsonpathMetadata = res[1]
-            jsonToTableMetadata(tableMetadata, jsonpathMetadata)
-            document.getElementById("para-save-file-organization-status").innerHTML = "Imported!";
-            enablePrepareDatasetButtons()
-          }
-    })
-  }
-})
-
-// Action when user click on "Preview" file organization button //
-selectPreviewBtn.addEventListener('click', () => {
-  previewProgressBar.style.display = 'block'
-  disablePrepareDatasetButtons()
-  clearStrings()
-  document.getElementById("para-save-file-organization-status").innerHTML = "Please wait..."
-  var jsonvect = tableToJsonWithDescription(tableNotOrganized)
-  var jsonpath = jsonvect[0]
-  if (manifestStatus.checked){
-    var keyvect = sparcFolderNames.slice()
-    for (var j = 0; j < keyvect.length; j++){
-      var folder = keyvect[j]
-      var folderPaths = jsonpath[folder]
-      if (folderPaths.length>0){
-        folderPaths.push(path.join(__dirname, "file_templates","manifest.xlsx"))
-      }
-    }
-  }
-  var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
-  jsonpath['main'] = jsonpathMetadata['metadata']
-  client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
-      if(error) {
-        log.error(error)
-        console.error(error)
-        var emessage = userError(error)
-        document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
-        enablePrepareDatasetButtons()
-        previewProgressBar.style.display = 'none'
-      } else {
-        document.getElementById("para-save-file-organization-status").innerHTML = "Preview folder is available in a new file explorer window!";
-        selectPreviewBtn.disabled = false
-        selectPreviewMetadataBtn.disabled = false
-        enablePrepareDatasetButtons()
-        previewProgressBar.style.display = 'none'
-      }
-  })
-})
-
-selectPreviewMetadataBtn.addEventListener('click', () => {
-  previewMetadataProgressBar.style.display = 'block'
-  disablePrepareDatasetButtons()
-  clearStrings()
-  document.getElementById("para-preview-organization-status-metadata").innerHTML = "Please wait..."
-  if (alreadyOrganizedStatus.checked) {
-    var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
-  } else if (organizeDatasetStatus.checked) {
-    var jsonvect = tableToJsonWithDescription(tableNotOrganized)
-  }
-  var jsonpath = jsonvect[0]
-  if (manifestStatus.checked){
-    var keyvect = sparcFolderNames.slice()
-    for (var j = 0; j < keyvect.length; j++){
-      var folder = keyvect[j]
-      var folderPaths = jsonpath[folder]
-      if (folderPaths.length>0){
-        folderPaths.push(path.join(__dirname, "file_templates","manifest.xlsx"))
-      }
-    }
-  }
-  var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
-  jsonpath['main'] = jsonpathMetadata['metadata']
-  client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
-      if(error) {
-        log.error(error)
-        console.error(error)
-        var emessage = userError(error)
-        document.getElementById("para-preview-organization-status-metadata").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
-        enablePrepareDatasetButtons()
-        previewMetadataProgressBar.style.display = 'none'
-      } else {
-        document.getElementById("para-preview-organization-status-metadata").innerHTML = "Preview folder is available in a new file explorer window!";
-        enablePrepareDatasetButtons()
-        previewMetadataProgressBar.style.display = 'none'
-      }
-  })
-})
+// selectSaveFileOrganizationBtn.addEventListener('click', (event) => {
+//   ipcRenderer.send('save-file-dialog-saveorganization', 'dataset')
+//   clearStrings()
+// })
+// selectSaveFileOrganizationMetadataBtn.addEventListener('click', (event) => {
+//   ipcRenderer.send('save-file-dialog-saveorganization', 'metadata')
+//   clearStrings()
+// })
+// ipcRenderer.on('selected-saveorganizationfile', (event, path, location) => {
+//   if (path.length > 0){
+//     if (alreadyOrganizedStatus.checked == true){
+//       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
+//     } else {
+//       var jsonvect = tableToJsonWithDescription(tableNotOrganized)
+//     }
+//     var jsonpath = jsonvect[0]
+//     var jsondescription = jsonvect[1]
+//     var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
+//     if (location === 'dataset'){
+//       document.getElementById("para-save-file-organization-status").innerHTML = "Please wait..."
+//     } else if (location === 'metadata'){
+//       document.getElementById("para-preview-organization-status-metadata").innerHTML = "Please wait..."
+//     }
+//     // Call python to save
+//     if (path != null){
+//       disablePrepareDatasetButtons()
+//       client.invoke("api_save_file_organization", jsonpath, jsondescription, jsonpathMetadata, path, (error, res) => {
+//           if(error) {
+//             log.error(error)
+//             console.error(error)
+//             var emessage = userError(error)
+//             if (location === 'dataset'){
+//               document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+//             } else if (location === 'metadata'){
+//               document.getElementById("para-preview-organization-status-metadata").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+//             }
+//             enablePrepareDatasetButtons()
+//           } else {
+//             if (location === 'dataset'){
+//               document.getElementById("para-save-file-organization-status").innerHTML = "Saved!"
+//             } else if (location === 'metadata'){
+//               document.getElementById("para-preview-organization-status-metadata").innerHTML = "Saved!"
+//             }
+//             enablePrepareDatasetButtons()
+//           }
+//       })
+//     }
+//   }
+// })
+//
+// // Action when user click on "Import" button //
+// selectImportFileOrganizationBtn.addEventListener('click', (event) => {
+//   ipcRenderer.send('open-file-dialog-uploadorganization')
+//   clearStrings()
+// })
+// ipcRenderer.on('selected-uploadorganization', (event, path) => {
+//   if (path.length > 0) {
+//     disablePrepareDatasetButtons()
+//     document.getElementById("para-save-file-organization-status").innerHTML = "Please wait..."
+//     var headerNames = sparcFolderNames.slice()
+//     var lennames =  headerNames.length
+//     for (var i = 0; i < lennames; i++) {
+//     	headerNames.push(headerNames[i] + "_description")
+//     }
+//     headerNames.push("metadata")
+//     client.invoke("api_import_file_organization", path[0], headerNames, (error, res) => {
+//           if(error) {
+//             log.error(error)
+//             console.error(error)
+//             var emessage = userError(error)
+//             document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+//             enablePrepareDatasetButtons()
+//           } else {
+//             var jsonpath = res[0]
+//             jsonToTableWithDescription(tableNotOrganized, jsonpath)
+//             var jsonpathMetadata = res[1]
+//             jsonToTableMetadata(tableMetadata, jsonpathMetadata)
+//             document.getElementById("para-save-file-organization-status").innerHTML = "Imported!";
+//             enablePrepareDatasetButtons()
+//           }
+//     })
+//   }
+// })
+//
+// // Action when user click on "Preview" file organization button //
+// selectPreviewBtn.addEventListener('click', () => {
+//   previewProgressBar.style.display = 'block'
+//   disablePrepareDatasetButtons()
+//   clearStrings()
+//   document.getElementById("para-save-file-organization-status").innerHTML = "Please wait..."
+//   var jsonvect = tableToJsonWithDescription(tableNotOrganized)
+//   var jsonpath = jsonvect[0]
+//   if (manifestStatus.checked){
+//     var keyvect = sparcFolderNames.slice()
+//     for (var j = 0; j < keyvect.length; j++){
+//       var folder = keyvect[j]
+//       var folderPaths = jsonpath[folder]
+//       if (folderPaths.length>0){
+//         folderPaths.push(path.join(__dirname, "file_templates","manifest.xlsx"))
+//       }
+//     }
+//   }
+//   var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
+//   jsonpath['main'] = jsonpathMetadata['metadata']
+//   client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
+//       if(error) {
+//         log.error(error)
+//         console.error(error)
+//         var emessage = userError(error)
+//         document.getElementById("para-save-file-organization-status").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
+//         enablePrepareDatasetButtons()
+//         previewProgressBar.style.display = 'none'
+//       } else {
+//         document.getElementById("para-save-file-organization-status").innerHTML = "Preview folder is available in a new file explorer window!";
+//         selectPreviewBtn.disabled = false
+//         selectPreviewMetadataBtn.disabled = false
+//         enablePrepareDatasetButtons()
+//         previewProgressBar.style.display = 'none'
+//       }
+//   })
+// })
+//
+// selectPreviewMetadataBtn.addEventListener('click', () => {
+//   previewMetadataProgressBar.style.display = 'block'
+//   disablePrepareDatasetButtons()
+//   clearStrings()
+//   document.getElementById("para-preview-organization-status-metadata").innerHTML = "Please wait..."
+//   if (alreadyOrganizedStatus.checked) {
+//     var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized)
+//   } else if (organizeDatasetStatus.checked) {
+//     var jsonvect = tableToJsonWithDescription(tableNotOrganized)
+//   }
+//   var jsonpath = jsonvect[0]
+//   if (manifestStatus.checked){
+//     var keyvect = sparcFolderNames.slice()
+//     for (var j = 0; j < keyvect.length; j++){
+//       var folder = keyvect[j]
+//       var folderPaths = jsonpath[folder]
+//       if (folderPaths.length>0){
+//         folderPaths.push(path.join(__dirname, "file_templates","manifest.xlsx"))
+//       }
+//     }
+//   }
+//   var jsonpathMetadata = tableToJsonMetadata(tableMetadata)
+//   jsonpath['main'] = jsonpathMetadata['metadata']
+//   client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
+//       if(error) {
+//         log.error(error)
+//         console.error(error)
+//         var emessage = userError(error)
+//         document.getElementById("para-preview-organization-status-metadata").innerHTML = "<span style='color: red;'>" + emessage +  "</span>"
+//         enablePrepareDatasetButtons()
+//         previewMetadataProgressBar.style.display = 'none'
+//       } else {
+//         document.getElementById("para-preview-organization-status-metadata").innerHTML = "Preview folder is available in a new file explorer window!";
+//         enablePrepareDatasetButtons()
+//         previewMetadataProgressBar.style.display = 'none'
+//       }
+//   })
+// })
 
 //// Select to generate a local dataset
 selectnewDatasetBtn.addEventListener("click", function() {
