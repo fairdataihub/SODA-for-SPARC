@@ -12,10 +12,10 @@
     <link rel="stylesheet" href="assets/css/section.css">
     <link rel="stylesheet" href="assets/css/demo.css">
     <link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css">
-    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous"> -->
-    <!-- <link href="https://fonts.googleapis.com/css?family=Nunito:400,600|Open+Sans:400,600,700" rel="stylesheet"> -->
     <link rel="stylesheet" href="assets/css/spur.css">
     <link rel="stylesheet" href="assets/css/main.css">
+    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous"> -->
+    <!-- <link href="https://fonts.googleapis.com/css?family=Nunito:400,600|Open+Sans:400,600,700" rel="stylesheet"> -->
     <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.css">
     <link rel="stylesheet" href="node_modules/@toast-ui/editor/dist/toastui-editor.css">
     <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css">
@@ -92,6 +92,9 @@
     require('./assets/nav') // Side navigation menu control
     require('./assets/demo-btns')
     require('./assets/normalize-shortcuts') // For normalizing shortcuts accross OS
+    require('./scripts/renderer.js') // js script for talking with Python back-end
+    require('./scripts/command.js')
+    require('./scripts/popper.min.js')
   </script>
   <script>
     function myFunction(element) {
@@ -103,11 +106,6 @@
           $(this).toggleClass('active');
       });
     });
-  </script>
-  <script>
-  require('./scripts/renderer.js') // js script for talking with Python back-end
-  require('./scripts/command.js')
-  require('./scripts/popper.min.js')
   </script>
   <script>window.$ = window.jQuery = require('jquery')</script>
   <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

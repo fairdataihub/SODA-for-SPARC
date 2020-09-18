@@ -35,15 +35,10 @@ var highLevelFolderToolTip = {
 }
 
 var jsonObjGlobal = {
-  "code": {
-    'empty_directory': {
-    }
-  },
+  "code": {},
   "derivative": {},
   "primary": {},
-  "source": {
-    'empty-directory': {}
-  },
+  "source": {},
   "docs": {},
   "protocols": {}
 }
@@ -72,7 +67,7 @@ listItems(jsonObjGlobal)
 getInFolder()
 
 function getGlobalPath() {
-  var currentPath = globalPath.value
+  var currentPath = globalPath.value.trim()
   var jsonPathArray = currentPath.split("/")
   var filtered = jsonPathArray.filter(function (el) {
     return el != "";
@@ -98,8 +93,8 @@ function parseJson(path) {
 
 /// back button
 backButton.addEventListener("click", function() {
-  event.preventDefault();
-  var currentPath = globalPath.value
+  var currentPath = globalPath.value.trim()
+  console.log(currentPath)
 
   if (currentPath !== "/") {
     var filtered = getGlobalPath()
@@ -128,7 +123,7 @@ backButton.addEventListener("click", function() {
 // Add folder button
 addNewFolder.addEventListener("click", function(event) {
   event.preventDefault();
-  if(globalPath.value!=="/") {
+  if(globalPath.value.trim()!=="/") {
     var newFolderName = "New Folder"
 
     // show prompt for name
@@ -374,7 +369,9 @@ function loadFileFolder(myPath) {
 function getRecursivePath(filteredList) {
   var myPath = jsonObjGlobal;
   for (var item of filteredList) {
-    myPath = myPath[item]
+    if (item.trim()!=="") {
+      myPath = myPath[item]
+    }
   }
   return myPath
 }
@@ -390,7 +387,7 @@ function getInFolder() {
       var currentPath = globalPath.value
       var jsonPathArray = currentPath.split("/")
       var filtered = jsonPathArray.filter(function (el) {
-        return el != "";
+        return el.trim() != "";
       });
 
       var myPath = getRecursivePath(filtered)
@@ -530,41 +527,35 @@ function updateManifestLabel(jsonObject) {
     }
 }
 //
-// const organizeNextStepBtn = document.getElementById("organize-next-step")
-// const organizeFinalizeStepBtn = document.getElementById("organize-finalize")
+const organizeNextStepBtn = document.getElementById("organize-next-step")
+const organizeFinalizeStepBtn = document.getElementById("organize-finalize")
 
-// function changeStepOrganize(step) {
-//     if (step.id==="step-1-organize") {
-//       document.getElementById("div-step-1-organize").style.display = "block";
-//       document.getElementById("div-step-2-organize").style.display = "none";
-//       document.getElementById("step-2-organize").classList.remove("active")
-//       step.classList.add("active")
-//       document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>High-level folders"
-//       organizeNextStepBtn.style.display = "block"
-//       organizeFinalizeStepBtn.style.display = "none"
-//     } else {
-//       document.getElementById("div-step-1-organize").style.display = "none";
-//       document.getElementById("div-step-2-organize").style.display = "block";
-//       document.getElementById("step-1-organize").classList.remove("active")
-//       step.classList.add("active")
-//       document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>Metadata files"
-//       organizeFinalizeStepBtn.style.display = "block"
-//       organizeNextStepBtn.style.display = "none"
-//     }
-// }
-//
-// function organizeNextStep() {
-//   document.getElementById("div-step-2-organize").style.display = "block";
-//   document.getElementById("div-step-1-organize").style.display = "none";
-//   document.getElementById("step-2-organize").classList.add("active")
-//   document.getElementById("step-1-organize").classList.remove("active")
-//   organizeNextStepBtn.style.display = "none"
-//   organizeFinalizeStepBtn.style.display = "block"
-// }
-//
-// organizeFinalizeStepBtn.addEventListener("click", () => {
-//   // jsonObjGlobal
-// })
+function changeStepOrganize(step) {
+    if (step.id==="step-1-organize") {
+      document.getElementById("div-step-1-organize").style.display = "block";
+      document.getElementById("div-step-2-organize").style.display = "none";
+      document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>High-level folders"
+      organizeNextStepBtn.style.display = "block"
+      organizeFinalizeStepBtn.style.display = "none"
+    } else {
+      document.getElementById("div-step-1-organize").style.display = "none";
+      document.getElementById("div-step-2-organize").style.display = "block";
+      document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>Metadata files"
+      organizeFinalizeStepBtn.style.display = "block"
+      organizeNextStepBtn.style.display = "none"
+    }
+}
+
+function organizeNextStep() {
+  document.getElementById("div-step-2-organize").style.display = "block";
+  document.getElementById("div-step-1-organize").style.display = "none";
+  organizeNextStepBtn.style.display = "none"
+  organizeFinalizeStepBtn.style.display = "block"
+}
+
+organizeFinalizeStepBtn.addEventListener("click", () => {
+  // jsonObjGlobal
+})
 
 //
 // document.getElementById("generate-manifest").addEventListener("click", function() {

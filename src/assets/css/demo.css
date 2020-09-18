@@ -359,6 +359,7 @@ button.download-metadata:hover {
 }
 
 .dash-app {
+  padding-bottom:10px !important;
   /* font-family: 'Montserrat', sans-serif;
   font-size: 15px */
 }
@@ -369,13 +370,15 @@ button.download-metadata:hover {
   color: #258193;
   opacity:0.9;
   font-style:bold;
+  font-size: 19px;
   border-bottom: 2px solid #258193;
   padding-bottom:5px;
-  padding-top: 10px
+  padding-top: 10px;
+  margin-top: 0;
 }
 
 div.main-window {
-  height:auto;
+  height:87%;
   margin-left: 0;
   width:100%;
   padding-top:10px
@@ -383,9 +386,12 @@ div.main-window {
 
 .dash-content {
   background: #fff;
-  padding-top: 10px !important;
+  padding-top: 0 !important;
+  padding-bottom: 10px !important;
   z-index:5000;
-  padding: 15px 15px !important;
+  padding-right: 15px !important;
+  padding-left: 15px !important;
+  height: 100%;
 }
 
 #items {
@@ -623,7 +629,7 @@ height: 80%;
   /* font-weight: bold; */
   color: black;
   padding: 8px 12px;
-  z-index: 5;
+  z-index: 2000;
 }
 
 .info {
@@ -634,14 +640,14 @@ height: 80%;
 
 .tooltipnew .tooltiptext {
   visibility: hidden;
-  width: 600px;
+  width: 400px;
   background-color: black;
   color: #fff;
   text-align: left;
   border-radius: 6px;
   padding: 5px 7px ;
   position: absolute;
-  z-index: 1;
+  z-index: 1700;
   top: -5px;
   right: 110%;
   font-weight: bold;

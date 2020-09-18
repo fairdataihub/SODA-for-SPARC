@@ -46,11 +46,11 @@ log.transports.file.maxSize = 1024*1024*10
 var homeDirectory = app.getPath('home')
 
 // Check default radio buttons //
-// document.getElementById("selectAccount").click()
-// document.getElementById("createDataset").click()
-// document.getElementById("add-edit-subtitle").click()
-// document.getElementById("pi-owner").click()
-// document.getElementById("cloud-dataset").click()
+document.getElementById("selectAccount").click()
+document.getElementById("createDataset").click()
+document.getElementById("add-edit-subtitle").click()
+document.getElementById("pi-owner").click()
+document.getElementById("cloud-dataset").click()
 // document.getElementById("organize-dataset").click()
 
 //log user's OS version //
