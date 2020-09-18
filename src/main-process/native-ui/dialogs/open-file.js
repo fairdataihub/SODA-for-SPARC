@@ -323,3 +323,17 @@ ipcMain.on('open-folder-dialog-save-DDD', (event, filename) => {
     }
   })
 })
+
+///////////////// ORGANIZE DATASETS *NEW* /////////////////////////////
+ipcMain.on('open-file-organization-dialog', (event) => {
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    filters: [
+      {name: 'JSON', extensions: ['json']}
+    ],
+    properties: ['openFile']
+  }, (file) => {
+    if (file) {
+      event.sender.send('selected-file-organization', file);
+    }
+  })
+})

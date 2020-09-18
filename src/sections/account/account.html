@@ -2,12 +2,17 @@
 <template class="task-template">
   <section id="account-section" class="section js-section u-category-windows">
 
-  <body>
-  <main class="dash-content">
-      <div class="container-fluid" style="height:100%">
-        <h4 class="dash-title" id="dash-title">Account Information
-          <!-- <i class="fas fa-caret-right" style="margin-left: 10px; margin-right: 10px"></i>High-level folders -->
-        </h4>
+    <header class="section-header">
+         <div class="section-wrapper">
+           <h1>
+
+            Account Information
+           </h1>
+
+
+           </h3>
+         </div>
+       </header>
 
     <div class="demo">
       <div class="demo-wrapper">
@@ -177,15 +182,6 @@
 </main>
 </body>
 
-
-    <script type="text/javascript">
-      require('./renderer-process/native-ui/dialogs/open-file')
-      require('./renderer-process/native-ui/dialogs/save')
-      require('./renderer-process/manage_submit/blackfynn_account')
-      require('./renderer-process/prepare-metadata/save-information.js')
-      require("./renderer-process/prepare-metadata/table-script.js")
-
-    </script>
 
 
     <script>window.$ = window.jQuery = require('jquery');</script>

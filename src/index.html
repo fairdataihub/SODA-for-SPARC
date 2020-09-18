@@ -25,11 +25,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@200&display=swap" rel="stylesheet">
 
     <link rel="import" href="sections/account/account.html">
+    <link rel="import" href="sections/getting_started/getting_started.html">
     <link rel="import" href="sections/curate/organize_files.html">
     <link rel="import" href="sections/curate/validate_datasets.html">
     <link rel="import" href="sections/manage_submit/manage_submit.html">
     <link rel="import" href="sections/post_curation/post_curation.html">
     <link rel="import" href="sections/prepare_metadata/prepare_metadata.html">
+    <link rel="import" href="sections/help/help.html">
 
   </head>
 
@@ -51,22 +53,28 @@
           </div>
           <!-- Sidebar Links -->
           <ul class="list-unstyled components">
+            <!-- <li><a href="#" data-section="getting_started"><i class="far fa-play-circle"></i>Getting started</a></li> -->
               <li><a href="#" data-section="account"><i class="fas fa-user" style="margin-right: 31px"></i>Account</a></li>
               <li><a href="#" data-section="prepare_metadata"><i class="fas fa-file-alt" style="margin-right: 31px"></i>Metadata</a></li>
               <li>
                   <a href="#curateSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fas fa-sitemap"></i>Curate</a>
                   <ul class="collapse list-unstyled" id="curateSubmenu">
                       <li><a href="#" data-section="organize_files">Organize dataset</a></li>
-                      <li><a href="#" data-section="validate">Generate dataset</a></li>
+                      <li><a href="#" data-section="validate">Prepare dataset</a></li>
                   </ul>
               <li>
                   <a href="#" data-section="manage_submit"><i class="fas fa-digital-tachograph"></i>Manage</a>
-                  <!-- <ul class="collapse list-unstyled" id="manageSubmenu">
-                      <li><a href="#" data-section="manage_submit">Permissions</a></li>
-                  </ul> -->
               </li>
               <li><a href="#" data-section="post_curation"><i class="fas fa-share-alt"></i>Disseminate</a></li>
           </ul>
+
+          <div class="help-section">
+            <ul class="list-unstyled components">
+            <li><a style="height:55px;width:40px;padding:0 0" href="https://github.com/bvhpatel/SODA"><i style="font-size:22px;margin-right:10px" class="fab fa-github"></i></a></li>
+            <li><a style="height:55px;width:40px;padding:0 0" href="#" data-section="getting_started"><i style="font-size:22px;margin-right:10px" class="far fa-play-circle"></i></a></li>
+            <li><a style="height:55px;width:40px;padding:0 0" href="#" data-section="help"><i style="font-size:22px;margin-right:10px" class="fas fa-question-circle"></i></a></li>
+          </ul>
+          </div>
 
 </div>
 </nav>
@@ -78,6 +86,7 @@
 </header> -->
 
   <div class="dash-app" style="background: #fff">
+    <!-- <div style="padding-right:25px; height:50px;background-color:#f0f0f0;vertical-align:center"> -->
         <button type="button" id="sidebarCollapse" class="navbar-btn">
             <span></span>
             <span></span>

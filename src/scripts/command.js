@@ -3,7 +3,6 @@ const path = require('path');
 const fs = require('fs');
 const $ = require('jquery');
 const {ipcRenderer} = require('electron')
-const dialog = require('electron').dialog
 const electron = require('electron')
 const bootbox = require('bootbox')
 const app = require('electron').app;
@@ -94,7 +93,6 @@ function parseJson(path) {
 /// back button
 backButton.addEventListener("click", function() {
   var currentPath = globalPath.value.trim()
-  console.log(currentPath)
 
   if (currentPath !== "/") {
     var filtered = getGlobalPath()
@@ -317,12 +315,14 @@ function listItems(jsonObj) {
             appendString = appendString + '<div class="single-item" onmouseover="hoverForPath(this)" onmouseleave="hideFullPath()"><h1 class="myFile '+extension+'" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">'+item+'</div></div>'
           }
           else {
-            folderID = item;
             var emptyFolder = "";
             if (! highLevelFolders.includes(item)) {
               if (JSON.stringify(sortedObj[item]) === '{}') {
-                emptyFolder = " empty"
+                emptyFolder = " empty";
+                folderID = item;
               }
+            } else {
+                folderID = 'high-level-' + item;
             }
             appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()" id=' + folderID + '><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
           }
@@ -352,12 +352,15 @@ function loadFileFolder(myPath) {
       appendString = appendString + '<div class="single-item" onmouseover="hoverForPath(this)" onmouseleave="hideFullPath()"><h1 class="myFile '+extension+'" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">'+item+'</div></div>'
     }
     else {
-      folderID = item;
+
       var emptyFolder = "";
       if (! highLevelFolders.includes(item)) {
         if (JSON.stringify(sortedObj[item]) === '{}') {
-          emptyFolder = " empty"
+          emptyFolder = " empty";
+          folderID = item;
         }
+      } else {
+        folderID = 'high-level-' + item;
       }
       appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()" id=' + folderID + '><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
     }
@@ -380,9 +383,10 @@ function getInFolder() {
   $('.single-item').dblclick(function(){
 
     if($(this).children("h1").hasClass("myFol")) {
-      var folder = this.id
+      var folderID = this.id
+      var folderName = folderID.slice(folderID.indexOf("high-level-"));
       var appendString = ''
-      globalPath.value = globalPath.value + folder + "/"
+      globalPath.value = globalPath.value + folderName + "/"
 
       var currentPath = globalPath.value
       var jsonPathArray = currentPath.split("/")
@@ -420,16 +424,11 @@ function checkSubArrayBool(parentArray, childArray) {
 
 /// import progress
 importProgress.addEventListener("click", function() {
+  ipcRenderer.send('open-file-organization-dialog')
+});
+
+ipcRenderer.on('selected-file-organization', (filePath) => {
   globalPath.value = "/"
-
-  var filePath = dialog.showOpenDialogSync(null, {
-    defaultPath: os.homedir(),
-    filters: [
-      {name: 'JSON', extensions: ['json']}
-    ],
-    properties: ['openFile']
-  });
-
   if (filePath !== undefined) {
     var progressData = fs.readFileSync(filePath[0])
     var content = JSON.parse(progressData.toString())
@@ -443,7 +442,6 @@ importProgress.addEventListener("click", function() {
       })
       return
     }
-
     var bootboxDialog = bootbox.dialog({
       message: '<p><i class="fa fa-spin fa-spinner"></i>Importing file organization...</p>'
     })
@@ -527,35 +525,35 @@ function updateManifestLabel(jsonObject) {
     }
 }
 //
-const organizeNextStepBtn = document.getElementById("organize-next-step")
-const organizeFinalizeStepBtn = document.getElementById("organize-finalize")
-
-function changeStepOrganize(step) {
-    if (step.id==="step-1-organize") {
-      document.getElementById("div-step-1-organize").style.display = "block";
-      document.getElementById("div-step-2-organize").style.display = "none";
-      document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>High-level folders"
-      organizeNextStepBtn.style.display = "block"
-      organizeFinalizeStepBtn.style.display = "none"
-    } else {
-      document.getElementById("div-step-1-organize").style.display = "none";
-      document.getElementById("div-step-2-organize").style.display = "block";
-      document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>Metadata files"
-      organizeFinalizeStepBtn.style.display = "block"
-      organizeNextStepBtn.style.display = "none"
-    }
-}
-
-function organizeNextStep() {
-  document.getElementById("div-step-2-organize").style.display = "block";
-  document.getElementById("div-step-1-organize").style.display = "none";
-  organizeNextStepBtn.style.display = "none"
-  organizeFinalizeStepBtn.style.display = "block"
-}
-
-organizeFinalizeStepBtn.addEventListener("click", () => {
-  // jsonObjGlobal
-})
+// const organizeNextStepBtn = document.getElementById("organize-next-step")
+// const organizeFinalizeStepBtn = document.getElementById("organize-finalize")
+//
+// function changeStepOrganize(step) {
+//     if (step.id==="step-1-organize") {
+//       document.getElementById("div-step-1-organize").style.display = "block";
+//       document.getElementById("div-step-2-organize").style.display = "none";
+//       document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>High-level folders"
+//       organizeNextStepBtn.style.display = "block"
+//       organizeFinalizeStepBtn.style.display = "none"
+//     } else {
+//       document.getElementById("div-step-1-organize").style.display = "none";
+//       document.getElementById("div-step-2-organize").style.display = "block";
+//       document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>Metadata files"
+//       organizeFinalizeStepBtn.style.display = "block"
+//       organizeNextStepBtn.style.display = "none"
+//     }
+// }
+//
+// function organizeNextStep() {
+//   document.getElementById("div-step-2-organize").style.display = "block";
+//   document.getElementById("div-step-1-organize").style.display = "none";
+//   organizeNextStepBtn.style.display = "none"
+//   organizeFinalizeStepBtn.style.display = "block"
+// }
+//
+// organizeFinalizeStepBtn.addEventListener("click", () => {
+//   // jsonObjGlobal
+// })
 
 //
 // document.getElementById("generate-manifest").addEventListener("click", function() {
