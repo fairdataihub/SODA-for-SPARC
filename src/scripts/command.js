@@ -41,12 +41,12 @@ var jsonObjGlobal = {
   "docs": {},
   "protocols": {}
 }
-
-var jsonMetadataGlobal = {
-  // any file's value is a list [full_path, added description, added metadata]
-  "submission.csv": ["C:/mypath/folder1/sub-folder-1/submission.csv", "This is my current description.", "This is my sample metadata for this file."],
-  "dataset_description.xlsx": ["C:/mypath/folder1/sub-folder-1/dataset_description.xlsx", "This is my current description.", "This is my sample metadata for this file."]
-}
+//
+// var jsonMetadataGlobal = {
+//   // any file's value is a list [full_path, added description, added metadata]
+//   "submission.csv": ["C:/mypath/folder1/sub-folder-1/submission.csv", "This is my current description.", "This is my sample metadata for this file."],
+//   "dataset_description.xlsx": ["C:/mypath/folder1/sub-folder-1/dataset_description.xlsx", "This is my current description.", "This is my sample metadata for this file."]
+// }
 
 const globalPath = document.getElementById("input-global-path")
 const backButton = document.getElementById("button-back")
@@ -275,6 +275,7 @@ document.addEventListener('onmouseover', function(e){
 function sortObjByKeys(object) {
   const orderedFolders = {};
   const orderedFiles = {};
+
   Object.keys(object).sort().forEach(function(key) {
   if (Array.isArray(object[key])) {
     orderedFiles[key] = object[key]
@@ -297,8 +298,6 @@ function sliceStringByValue(string, endingValue) {
 function listItems(jsonObj) {
 
         var appendString = ''
-        var folderID = ''
-
         var sortedObj = sortObjByKeys(jsonObj)
 
         for (var item in sortedObj) {
@@ -319,12 +318,12 @@ function listItems(jsonObj) {
             if (! highLevelFolders.includes(item)) {
               if (JSON.stringify(sortedObj[item]) === '{}') {
                 emptyFolder = " empty";
-                folderID = item;
+                // folderID = item;
               }
             } else {
-                folderID = 'high-level-' + item;
+                // folderID = 'high-level-' + item;
             }
-            appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()" id=' + folderID + '><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
+            appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
           }
         }
 
@@ -333,6 +332,7 @@ function listItems(jsonObj) {
   }
 
 function loadFileFolder(myPath) {
+
   var appendString = ""
 
   var sortedObj = sortObjByKeys(myPath)
@@ -357,12 +357,12 @@ function loadFileFolder(myPath) {
       if (! highLevelFolders.includes(item)) {
         if (JSON.stringify(sortedObj[item]) === '{}') {
           emptyFolder = " empty";
-          folderID = item;
+          // folderID = item;
         }
       } else {
-        folderID = 'high-level-' + item;
+        // folderID = 'high-level-' + item;
       }
-      appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()" id=' + folderID + '><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
+      appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
     }
   }
 
@@ -383,8 +383,7 @@ function getInFolder() {
   $('.single-item').dblclick(function(){
 
     if($(this).children("h1").hasClass("myFol")) {
-      var folderID = this.id
-      var folderName = folderID.slice(folderID.indexOf("high-level-"));
+      var folderName = this.innerText
       var appendString = ''
       globalPath.value = globalPath.value + folderName + "/"
 
@@ -582,22 +581,21 @@ function updateManifestLabel(jsonObject) {
 //////////// FILE BROWSERS to import existing files and folders /////////////////////
 
 addFiles.addEventListener("click", function() {
-   dialog.showOpenDialog({ properties: ['openFile', 'multiSelections']
- }).then(result => {
-      var filtered = getGlobalPath()
-      var myPath = getRecursivePath(filtered)
-      addFilesfunction(result.filePaths, myPath)
-  })
-})
-
+   ipcRenderer.send('open-files-organize-datasets-dialog')
+ })
+ ipcRenderer.on('selected-files-organize-datasets', (event, path) => {
+   var filtered = getGlobalPath()
+   var myPath = getRecursivePath(filtered)
+   addFilesfunction(path, myPath)
+ })
 
 addFolders.addEventListener("click", function() {
-  dialog.showOpenDialog({ properties: ['openDirectory', 'multiSelections']
-  }).then(result => {
-      var filtered = getGlobalPath()
-      var myPath = getRecursivePath(filtered)
-      addFoldersfunction(result.filePaths, myPath)
-  })
+  ipcRenderer.send('open-folders-organize-datasets-dialog')
+})
+ipcRenderer.on('selected-folders-organize-datasets', (event, path) => {
+  var filtered = getGlobalPath()
+  var myPath = getRecursivePath(filtered)
+  addFoldersfunction(path, myPath)
 })
 
 function addFoldersfunction(folderArray, currentLocation) {

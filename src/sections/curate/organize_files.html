@@ -62,10 +62,10 @@
               </div>
             </div>
             <div class="btn-group" role="group">
-              <button id="btnGroupDrop2" type="button" class="myButton" style="width: 37px;color:#fff;background:var(--color-bg-plum);opacity: 0.8;border: 1px solid var(--color-bg-plum)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <button id="button-details-organize" class="myButton" style="width: 37px;color:#fff;background:var(--color-bg-plum);opacity: 0.8;border: 1px solid var(--color-bg-plum)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-list"></i>
               </button>
-              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop2">
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="button-details-organize">
                 <a class="dropdown-item" id="import-progress" href="#">Import progress</a>
                 <a class="dropdown-item" id="save-progress" href="#">Save progress</a>
                 <a class="dropdown-item" id="clear-progress" href="#">Reset progress</a>
@@ -76,7 +76,7 @@
           </div>
 
           <!-- <hr> -->
-          <div id="items" style="" ondrop="drop(event);" ondragover="allowDrop(event);">
+          <div id="items" ondrop="drop(event);" ondragover="allowDrop(event);">
 
           </div>
 
@@ -123,7 +123,7 @@
 
      <script>window.$ = window.jQuery = require('jquery')</script>
      <script type="text/javascript">
-       require('./main-process/native-ui/dialogs/open-file')
+       require('./renderer-process/native-ui/dialogs/open-file')
      </script>
 
      <!-- Bootstrap 4 dependency -->

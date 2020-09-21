@@ -337,3 +337,24 @@ ipcMain.on('open-file-organization-dialog', (event) => {
     }
   })
 })
+
+ipcMain.on('open-files-organize-datasets-dialog', (event) => {
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ['openFile', 'multiSelections']
+  }, (files) => {
+    if (files) {
+      event.sender.send('selected-files-organize-datasets', files);
+    }
+  })
+})
+
+
+ipcMain.on('open-folders-organize-datasets-dialog', (event) => {
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ['openDirectory', 'multiSelections']
+  }, (folders) => {
+    if (folders) {
+      event.sender.send('selected-folders-organize-datasets', folders);
+    }
+  })
+})
