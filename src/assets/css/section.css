@@ -29,6 +29,11 @@
   transition: visibility 0s 0s linear , opacity .36s ease-out, transform .36s ease-out;
 }
 
+.section.fullShown {
+  transform: translateX(-230px);
+  width: 100%;
+}
+
 .section h3,
 .section p {
   color: var(--color);

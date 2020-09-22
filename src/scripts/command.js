@@ -198,11 +198,11 @@ function populateJSONObjFolder(jsonObject, folderPath) {
 }
 
 function showFullPath(ev, text) {
-  ev.preventDefault()
+  var mouseX = ev.pageX - 200;
+  var mouseY = ev.pageY;
   fullPathValue.style.display = "block";
-  fullPathValue.style.top = `${ev.clientY - 10}px`;
-  fullPathValue.style.left = `${ev.clientX + 15}px`;
   fullPathValue.innerHTML = text
+  $('.hoverPath').css({'top':mouseY,'left':mouseX}).fadeIn('slow');
 }
 
 function hideFullPath() {
@@ -231,11 +231,11 @@ function showFullName(ev, element, text) {
   /// check if the full name of the folder is overflowing or not, if so, show full name on hover
   var isOverflowing = element.clientWidth < element.scrollWidth || element.clientHeight < element.scrollHeight;
   if (isOverflowing) {
-    ev.preventDefault()
+    var mouseX = ev.pageX - 200;
+    var mouseY = ev.pageY;
     fullNameValue.style.display = "block";
-    fullNameValue.style.top = `${ev.clientY - 10}px`;
-    fullNameValue.style.left = `${ev.clientX + 15}px`;
     fullNameValue.innerHTML = text
+    $('.hoverFullName').css({'top':mouseY,'left':mouseX}).fadeIn('slow');
   }
 }
 
@@ -720,6 +720,7 @@ function drop(ev) {
             message: "Duplicate file name: " + itemName,
             centerVertical: true
           })
+          break
         } else {
             if (!["dataset_description.xlsx", "submission.xlsx", "samples.xlsx", "subjects.xlsx", "README.txt"].includes(itemName)) {
               bootbox.alert({
@@ -742,6 +743,7 @@ function drop(ev) {
             message: "Duplicate file name: " + itemName,
             centerVertical: true
           })
+          break
         } else {
           myPath[itemName] = [itemPath, "", ""]
 
@@ -815,18 +817,17 @@ ipcRenderer.on('save-file-organization-dialog', (event) => {
 function showmenu(ev, category){
     //stop the real right click menu
     ev.preventDefault();
+    var mouseX = ev.pageX - 210;
+    var mouseY = ev.pageY - 15;
     if (category === "folder") {
       menuFolder.style.display = "block";
-      menuFolder.style.top = `${ev.clientY - 2}px`;
-      menuFolder.style.left = `${ev.clientX + 2}px`;
+      $('.menu.reg-folder').css({'top':mouseY,'left':mouseX}).fadeIn('slow');
     } else if (category === "high-level-folder") {
       menuHighLevelFolders.style.display = "block";
-      menuHighLevelFolders.style.top = `${ev.clientY - 20}px`;
-      menuHighLevelFolders.style.left = `${ev.clientX - 10}px`;
+      $('.menu.high-level-folder').css({'top':mouseY,'left':mouseX}).fadeIn('slow');
     } else {
         menuFile.style.display = "block";
-        menuFile.style.top = `${ev.clientY - 10}px`;
-        menuFile.style.left = `${ev.clientX + 15}px`;
+        $('.menu.file').css({'top':mouseY,'left':mouseX}).fadeIn('slow');
       }
 }
 
@@ -840,7 +841,7 @@ function hideMenu(category){
     menuHighLevelFolders.style.top = "-220%";
     menuHighLevelFolders.style.left = '-220%';
   } else {
-    menuFile.style.display = "block";
+    menuFile.style.display = "none";
     menuFile.style.top = "-210%";
     menuFile.style.left = "-210%";
   }
@@ -947,7 +948,7 @@ $(document).bind("click", function (event) {
 //////// prompt for Manage description
 function triggerManageDescriptionPrompt(fileName, filePath) {
   bootbox.prompt({
-    title: "<h6>Please choose an option: </h6>",
+    title: "<h2>Please choose an option: </h2>",
     buttons: {
       cancel: {
             label: '<i class="fa fa-times"></i> Cancel'
@@ -973,7 +974,7 @@ function triggerManageDescriptionPrompt(fileName, filePath) {
       if (result==="metadata") {
         bootbox.dialog({
           message: "<div class='form-content'>" + "<form class='form' role='form'>" + "<div class='form-group>" + "<label for='metadata'>View/edit additional metadata below: </label>"+"<textarea style='min-height: 80px;margin-top: 10px;font-size: 13px !important' class='form-control' id='metadata'>"+filePath[fileName][2]+"</textarea>"+"</div>"+ "<br>" + "<div class='checkbox'>"+"<label>"+"<input name='apply-all-metadata' type='checkbox'> Apply this metadata to all files in this folder</label> "+" </div> "+"</form>"+"</div>",
-          title: "<h6>Adding additional metadata...</h6>",
+          title: "<h2>Adding additional metadata...</h2>",
           buttons: {
             success: {
               label: '<i class="fa fa-check"></i> Save',
@@ -1003,7 +1004,7 @@ function triggerManageDescriptionPrompt(fileName, filePath) {
       } else if (result==="description"){
           bootbox.dialog({
             message: "<div class='form-content'>" + "<form class='form' role='form'>" + "<div class='form-group>" + "<label for='description'>View/Edit your description below:</label> "+"<textarea style='min-height: 80px;margin-top: 10px;font-size: 13px !important' class='form-control' id='description'>"+filePath[fileName][1]+"</textarea>"+ "<br>" + "</div>"+"<div class='checkbox'>"+"<label>"+"<input name='apply-all-desc' type='checkbox'> Apply this description to all files in this folder</label> "+" </div> "+"</form>"+"</div>",
-            title: "<h6>Adding a description...</h6>",
+            title: "<h2>Adding a description...</h2>",
             buttons: {
               success: {
                 label: '<i class="fa fa-check"></i> Save',
@@ -1092,7 +1093,7 @@ function renameFolder(event1) {
   } else {
     // show prompt to enter a new name
     bootbox.prompt({
-      title: '<h6>Renaming '+ promptVar + "..." + '</h6>',
+      title: '<h2>Renaming '+ promptVar + "..." + '</h2>',
       message: '<p> Please enter a new name: </p>',
       buttons: {
         cancel: {
@@ -1237,13 +1238,3 @@ function showTooltips(ev) {
   })
   // dialog.showMessageBox(options)
 }
-
-
-
-$("#menu-sidebar-toggle").click(function(){
-    if (mobileBreakpoint.matches) {
-        $(".nav.js-nav").toggleClass("show");
-    } else {
-        $(".nav.js-nav").toggleClass("hide");
-    }
-});

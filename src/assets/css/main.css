@@ -14,8 +14,8 @@ body {
 }
 
 #items {
-  min-height:400px;
-  max-height: 600px
+  min-height:600px;
+  max-height: 800px
 }
 
 .button-grp {
@@ -230,18 +230,18 @@ button[disabled]{
 }
 
 .hoverPath {
-    /* min-width: 50px; */
-    max-width: auto;
+    width:auto;
     min-height: auto;
     background-color: #f4f4f4;
     color: #333;
     border: 1px solid #aaa;
     /* box-shadow: 2px 2px 2px #999; */
     border-radius: 3px;
-    position: absolute;
+    position: fixed;
     padding: 5px 5px;
-    font-size: 11px;
+    font-size: 12px;
     z-index: 5;
+    overflow:hidden;
 }
 
 .hoverFullName {
@@ -255,7 +255,7 @@ button[disabled]{
     border-radius: 3px;
     position: absolute;
     padding: 5px 5px;
-    font-size: 11px;
+    font-size: 12px;
     z-index: 1000;
 }
 
