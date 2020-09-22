@@ -27,9 +27,6 @@ ipcMain.on('save-file-dialog-saveorganization', (event, location) => {
 ipcMain.on('save-file-dialog-submission', (event) => {
   const options = {
     title: 'Saving your submission.xlsx'
-    // filters: [
-    //   { name: 'Excel', extensions: ['xlsx'] }
-    // ]
   }
   dialog.showSaveDialog(BrowserWindow.getFocusedWindow(), {
     properties: 'openDirectory'
@@ -70,5 +67,17 @@ ipcMain.on('save-file-dialog-validator-local', (event, location) => {
   }
   dialog.showSaveDialog(BrowserWindow.getFocusedWindow(), options, (filename) => {
     event.sender.send('selected-savedvalidatorlocal', filename)
+  })
+})
+
+ipcMain.on('save-file-saveorganization-dialog', (event, location) => {
+  const options = {
+    title: 'Save File Organization',
+    filters: [
+      { name: 'JSON', extensions: ['json'] }
+    ]
+  }
+  dialog.showSaveDialog(BrowserWindow.getFocusedWindow(), options, (filename) => {
+    event.sender.send('selected-fileorganization', filename)
   })
 })

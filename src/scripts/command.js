@@ -126,8 +126,8 @@ addNewFolder.addEventListener("click", function(event) {
 
     // show prompt for name
     bootbox.prompt({
-      title: "Adding a new folder...",
-      message: "<p>Please enter a name below: </p>",
+      title: "Add new folder...",
+      message: "Please enter a name below:",
       centerVertical: true,
       callback: function(result) {
 
@@ -426,7 +426,7 @@ importProgress.addEventListener("click", function() {
   ipcRenderer.send('open-file-organization-dialog')
 });
 
-ipcRenderer.on('selected-file-organization', (filePath) => {
+ipcRenderer.on('selected-file-organization', (event,filePath) => {
   globalPath.value = "/"
   if (filePath !== undefined) {
     var progressData = fs.readFileSync(filePath[0])
@@ -454,18 +454,18 @@ ipcRenderer.on('selected-file-organization', (filePath) => {
 
 // save progress
 saveProgress.addEventListener("click", function() {
-  var filePath = dialog.showSaveDialogSync(null, {
-    defaultPath: os.homedir(),
-    filters: [
-      {name: 'JSON', extensions: ['json']}
-    ]
-  });
-  if (filePath !== undefined) {
-    fs.writeFileSync(filePath, JSON.stringify(jsonObjGlobal))
-    bootbox.alert({
-      message: "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved file organization.",
-      centerVertical: true
-    })
+  ipcRenderer.send('save-file-saveorganization-dialog');
+})
+
+ipcRenderer.on('selected-fileorganization', (event, filePath) => {
+  if (filePath.length > 0){
+    if (filePath !== undefined){
+      fs.writeFileSync(filePath, JSON.stringify(jsonObjGlobal))
+      bootbox.alert({
+        message: "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved file organization.",
+        centerVertical: true
+      })
+    }
   }
 })
 
@@ -473,7 +473,7 @@ saveProgress.addEventListener("click", function() {
 /// reset progress
 resetProgress.addEventListener("click", function() {
   bootbox.confirm({
-    title: "Clearing progress",
+    title: "Reset progress",
     message: "<p>Are you sure you want to clear the current file organization?</p>",
     centerVertical: true,
     callback: function(r) {
@@ -948,7 +948,7 @@ $(document).bind("click", function (event) {
 //////// prompt for Manage description
 function triggerManageDescriptionPrompt(fileName, filePath) {
   bootbox.prompt({
-    title: "<h2>Please choose an option: </h2>",
+    title: "Please choose an option:",
     buttons: {
       cancel: {
             label: '<i class="fa fa-times"></i> Cancel'
@@ -962,7 +962,7 @@ function triggerManageDescriptionPrompt(fileName, filePath) {
     size: 'small',
     inputType: 'radio',
     inputOptions: [{
-        text: '<h7>Add/edit description</h7>',
+        text: 'Add/edit description',
         value: 'description',
         className: 'bootbox-input-text'
     },
@@ -974,7 +974,7 @@ function triggerManageDescriptionPrompt(fileName, filePath) {
       if (result==="metadata") {
         bootbox.dialog({
           message: "<div class='form-content'>" + "<form class='form' role='form'>" + "<div class='form-group>" + "<label for='metadata'>View/edit additional metadata below: </label>"+"<textarea style='min-height: 80px;margin-top: 10px;font-size: 13px !important' class='form-control' id='metadata'>"+filePath[fileName][2]+"</textarea>"+"</div>"+ "<br>" + "<div class='checkbox'>"+"<label>"+"<input name='apply-all-metadata' type='checkbox'> Apply this metadata to all files in this folder</label> "+" </div> "+"</form>"+"</div>",
-          title: "<h2>Adding additional metadata...</h2>",
+          title: "<h2>Add metadata...</h2>",
           buttons: {
             success: {
               label: '<i class="fa fa-check"></i> Save',
@@ -1004,7 +1004,7 @@ function triggerManageDescriptionPrompt(fileName, filePath) {
       } else if (result==="description"){
           bootbox.dialog({
             message: "<div class='form-content'>" + "<form class='form' role='form'>" + "<div class='form-group>" + "<label for='description'>View/Edit your description below:</label> "+"<textarea style='min-height: 80px;margin-top: 10px;font-size: 13px !important' class='form-control' id='description'>"+filePath[fileName][1]+"</textarea>"+ "<br>" + "</div>"+"<div class='checkbox'>"+"<label>"+"<input name='apply-all-desc' type='checkbox'> Apply this description to all files in this folder</label> "+" </div> "+"</form>"+"</div>",
-            title: "<h2>Adding a description...</h2>",
+            title: "Add description",
             buttons: {
               success: {
                 label: '<i class="fa fa-check"></i> Save',
@@ -1093,8 +1093,8 @@ function renameFolder(event1) {
   } else {
     // show prompt to enter a new name
     bootbox.prompt({
-      title: '<h2>Renaming '+ promptVar + "..." + '</h2>',
-      message: '<p> Please enter a new name: </p>',
+      title: 'Rename '+ promptVar,
+      message: 'Please enter a new name:',
       buttons: {
         cancel: {
               label: '<i class="fa fa-times"></i> Cancel'
@@ -1104,7 +1104,6 @@ function renameFolder(event1) {
               className: 'btn-success'
           }
       },
-      size: "small",
       value: nameWithoutExtension,
       centerVertical: true,
       callback: function (r) {
@@ -1178,7 +1177,9 @@ function renameFolder(event1) {
 ///////// Option to delete folders or files
 function delFolder(ev) {
 
-  var itemToDelete = ev.parentElement.parentElement.innerText
+  var itemToDelete = ev.parentElement.innerText
+  // console.log(itemToDelete)
+  // console.log(ev.parentElement.innerText)
   var promptVar;
   var highLevelFolderBool;
 
@@ -1189,9 +1190,9 @@ function delFolder(ev) {
     highLevelFolderBool = false
   }
 
-  if (ev.classList.value === "myFile") {
+  if (ev.classList.value.includes("myFile")) {
     promptVar = "file";
-  } else if (ev.classList.value === "fas fa-folder") {
+  } else if (ev.classList.value.includes("myFol")) {
     promptVar = "folder";
   }
 
@@ -1202,7 +1203,7 @@ function delFolder(ev) {
     })
   } else {
     bootbox.confirm({
-      title: "Deleting a "+ promptVar + "...",
+      title: "Delete "+ promptVar,
       message: "Are you sure you want to delete this " + promptVar + "?",
       onEscape: true,
       centerVertical: true,

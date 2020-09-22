@@ -203,15 +203,23 @@ button[disabled]{
 }
 
 .modal-body {
-  padding: 14px 14px;
+  padding: 10px 10px;
+  font-size: 15px;
 }
 
-.modal-content title{
+/* .modal-content title{
   font-size: 12px !important;
+} */
+
+.modal-title {
+  margin-top: 10px;
 }
 
 .modal-header {
-  padding: 10px 12px !important;
+  font-size: 17px !important;
+  font-weight: bold;
+  height: 60px;
+  padding: 8px 10px !important;
 }
 
 .modal-footer {
@@ -523,8 +531,8 @@ input:checked + .slider:before {
 
 /* file and folder */
 .myFile {
-  width: 45px;
-  height: 45px;
+  width: 55px;
+  height: 55px;
 }
 
 .myFile.csv:before {
@@ -532,8 +540,8 @@ input:checked + .slider:before {
   content: '';
   background-size: cover;
   position:absolute;
-  width:45px;
-  height:45px;
+  width:55px;
+  height:55px;
   margin-left: 10px;
 }
 .myFile.doc:before {
@@ -541,8 +549,8 @@ input:checked + .slider:before {
   content: '';
   background-size: cover;
   position:absolute;
-  width:45px;
-  height:45px;
+  width:55px;
+  height:55px;
   margin-left: 10px;
 }
 .myFile.docx:before {
@@ -550,8 +558,8 @@ input:checked + .slider:before {
   content: '';
   background-size: cover;
   position:absolute;
-  width:45px;
-  height:45px;
+  width:55px;
+  height:55px;
   margin-left: 10px;
 }
 .myFile.png:before {
@@ -559,8 +567,8 @@ input:checked + .slider:before {
   content: '';
   background-size: cover;
   position:absolute;
-  width:45px;
-  height:45px;
+  width:55px;
+  height:55px;
   margin-left: 10px;
 }
 .myFile.jpg:before {
@@ -568,8 +576,8 @@ input:checked + .slider:before {
   content: '';
   background-size: cover;
   position:absolute;
-  width:45px;
-  height:45px;
+  width:55px;
+  height:55px;
   margin-left: 10px;
 }
 .myFile.pdf:before {
@@ -577,8 +585,8 @@ input:checked + .slider:before {
   content: '';
   background-size: cover;
   position:absolute;
-  width:45px;
-  height:45px;
+  width:55px;
+  height:55px;
   margin-left: 10px;
 }
 .myFile.txt:before {
@@ -586,8 +594,8 @@ input:checked + .slider:before {
   content: '';
   background-size: cover;
   position:absolute;
-  width:45px;
-  height:45px;
+  width:55px;
+  height:55px;
   margin-left: 10px;
 }
 .myFile.xlsx:before {
@@ -595,8 +603,8 @@ input:checked + .slider:before {
   content: '';
   background-size: cover;
   position:absolute;
-  width:45px;
-  height:45px;
+  width:55px;
+  height:55px;
   margin-left: 10px;
 }
 
@@ -605,8 +613,8 @@ input:checked + .slider:before {
   content: '';
   background-size: cover;
   position:absolute;
-  width:45px;
-  height:45px;
+  width:55px;
+  height:55px;
   margin-left: 10px;
 }
 
@@ -615,8 +623,8 @@ input:checked + .slider:before {
   content: '';
   background-size: cover;
   position:absolute;
-  width:45px;
-  height:45px;
+  width:55px;
+  height:55px;
   margin-left: 10px;
 }
 
