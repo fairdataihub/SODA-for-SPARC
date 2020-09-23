@@ -74,15 +74,19 @@
 
           <!-- <hr> -->
           <div id="items" ondrop="drop(event);" ondragover="allowDrop(event);">
-
           </div>
-
+          <button id="button-organize-confirm-create" onclick="changeStepOrganize(this)" class="confirmButton" style="left:78%;width:210px"><i class="fas fa-arrow-right" style="margin-right:7px"></i>CONFIRM AND PROCEED</button>
 
         </div>
 
         <div id="div-step-2-organize" style="display:none;">
 
-          <div>
+          <div class="div-organize-generate-dataset">
+            <h3 style="margin-bottom:25px;color: #222c3c;">CHOOSE AN OPTION BELOW</h3>
+            <button id="btn-generate-locally" class="button-generate-dataset" onclick="generateDataset(this)">GENERATE DATASET LOCALLY</button>
+            <button id="btn-generate-BF" class="button-generate-dataset" onclick="generateDataset(this)">GENERATE DATASET ON BLACKFYNN</button>
+          </div>
+            <!-- <div>
             <label class="switch">
               <input id="generate-manifest" name="manifest" type="checkbox" class="with-style-manifest"/>
               <span class="slider round"></span>
@@ -90,12 +94,12 @@
             <label id="label-manifest" class="labelradio-manifest" style="padding-left:10px;font-size:13px;font-family:'Montserrat', sans-serif"> Include auto-generated manifest files
             </label>
             <button class="myButton second" id="add-files" href="#" style="float:right;width: 40px;font-size:14px;color:var(--color-bg-plum);background:transparent;border: 1px solid var(--color-bg-plum)"><i class="fas fa-arrow-up"></i></button>
-        </div>
+        </div> -->
 <!--
           <div align="right" style="margin: 3px 3px;">
           </div> -->
 
-          <div id="items-metadata" style="width:100%;overflow:hidden;margin-top:5px" ondrop="drop(event);" ondragover="allowDrop(event);">
+          <!-- <div id="items-metadata" style="width:100%;overflow:hidden;margin-top:5px" ondrop="drop(event);" ondragover="allowDrop(event);">
             <div class="single-item"><h1 class="myFile other" style="margin-bottom: 10px;opacity: 0.4"></h1><div class="folder_desc" style="opacity: 0.3">submission.xlsx</div></div>
             <div class="single-item"><h1 class="myFile other" style="margin-bottom: 10px;opacity: 0.4"></h1><div class="folder_desc" style="opacity: 0.3">subjects.xlsx</div></div>
             <div class="single-item"><h1 class="myFile other"style="margin-bottom: 10px;opacity: 0.4"></h1><div class="folder_desc" style="opacity: 0.3">samples.xlsx</div></div>
@@ -103,7 +107,9 @@
             <div class="single-item"><h1 class="myFile other" style="margin-bottom: 10px;opacity: 0.4"></h1><div class="folder_desc" style="opacity: 0.3">CHANGES.txt</div></div>
             <div class="single-item"><h1 class="myFile other" style="margin-bottom: 10px;opacity: 0.4"></h1><div class="folder_desc" style="opacity: 0.3">README.txt</div></div>
           </div>
-
+ -->
+        <button id="button-organize-prev" onclick="changeStepOrganize(this)" class="confirmButton" style="width:110px;display: none;left:5%;top: 93%;"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Previous</button>
+        <!-- <button id="button-organize-finalize" class="confirmButton" style="width:100px;display: none;"><i class="fa fa-check fa-fw" style="margin-right:6px"></i>CONFIRM</button> -->
 
         </div>
         </div>

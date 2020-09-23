@@ -178,6 +178,9 @@ ul ul a {
   padding-right: 10px;
 }
 
+.help-section a i {
+  font-size:17px;
+}
 
 .list-unstyled {
   list-style: none;

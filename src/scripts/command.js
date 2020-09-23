@@ -127,7 +127,7 @@ addNewFolder.addEventListener("click", function(event) {
     // show prompt for name
     bootbox.prompt({
       title: "Add new folder...",
-      message: "Please enter a name below:",
+      message: "Enter a name below:",
       centerVertical: true,
       callback: function(result) {
 
@@ -524,36 +524,64 @@ function updateManifestLabel(jsonObject) {
     }
 }
 //
-// const organizeNextStepBtn = document.getElementById("organize-next-step")
-// const organizeFinalizeStepBtn = document.getElementById("organize-finalize")
-//
-// function changeStepOrganize(step) {
-//     if (step.id==="step-1-organize") {
-//       document.getElementById("div-step-1-organize").style.display = "block";
-//       document.getElementById("div-step-2-organize").style.display = "none";
-//       document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>High-level folders"
-//       organizeNextStepBtn.style.display = "block"
-//       organizeFinalizeStepBtn.style.display = "none"
-//     } else {
-//       document.getElementById("div-step-1-organize").style.display = "none";
-//       document.getElementById("div-step-2-organize").style.display = "block";
-//       document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>Metadata files"
-//       organizeFinalizeStepBtn.style.display = "block"
-//       organizeNextStepBtn.style.display = "none"
-//     }
-// }
-//
-// function organizeNextStep() {
-//   document.getElementById("div-step-2-organize").style.display = "block";
-//   document.getElementById("div-step-1-organize").style.display = "none";
-//   organizeNextStepBtn.style.display = "none"
-//   organizeFinalizeStepBtn.style.display = "block"
-// }
-//
-// organizeFinalizeStepBtn.addEventListener("click", () => {
-//   // jsonObjGlobal
-// })
+const organizeNextStepBtn = document.getElementById("button-organize-confirm-create")
+const organizePrevStepBtn = document.getElementById("button-organize-prev")
+// const organizeFinalizeStepBtn = document.getElementById("button-organize-finalize")
 
+function changeStepOrganize(step) {
+    if (step.id==="button-organize-prev") {
+      document.getElementById("div-step-1-organize").style.display = "block";
+      document.getElementById("div-step-2-organize").style.display = "none";
+      document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>High-level folders"
+      organizeNextStepBtn.style.display = "block"
+      organizePrevStepBtn.style.display = "none"
+      // organizeFinalizeStepBtn.style.display = "none"
+    } else {
+      document.getElementById("div-step-1-organize").style.display = "none";
+      document.getElementById("div-step-2-organize").style.display = "block";
+      document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>Generate dataset"
+      // organizeFinalizeStepBtn.style.display = "block"
+      organizePrevStepBtn.style.display = "block"
+      organizeNextStepBtn.style.display = "none"
+    }
+}
+
+function generateDataset(button) {
+  if (button.id==="btn-generate-locally") {
+    $("#btn-generate-BF").removeClass("active");
+    $(button).toggleClass("active");
+    bootbox.prompt({
+      title: 'Generate dataset',
+      message: 'Please enter a name for the dataset:',
+      buttons: {
+        cancel: {
+              label: '<i class="fa fa-times"></i> Cancel'
+          },
+          confirm: {
+              label: '<i class="fa fa-check"></i> Confirm and Choose location',
+              className: 'btn-success'
+          }
+      },
+      centerVertical: true,
+      callback: function (r) {
+        if(r !== null && r.trim() !== ""){
+          ipcRenderer.send('open-file-dialog-newdataset')
+          }
+        }
+      })
+    } else {
+        $("#btn-generate-locally").removeClass("active");
+        $(button).toggleClass("active");
+    }
+}
+
+ipcRenderer.on('selected-new-dataset', (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null){
+      console.log(filepath)
+    }
+  }
+})
 //
 // document.getElementById("generate-manifest").addEventListener("click", function() {
 //
@@ -948,7 +976,7 @@ $(document).bind("click", function (event) {
 //////// prompt for Manage description
 function triggerManageDescriptionPrompt(fileName, filePath) {
   bootbox.prompt({
-    title: "Please choose an option:",
+    title: "Choose an option below:",
     buttons: {
       cancel: {
             label: '<i class="fa fa-times"></i> Cancel'
