@@ -11,7 +11,7 @@ from pysoda import submit_dataset_progress, curate_dataset_progress, save_file_o
     bf_get_publishing_status, bf_publish_dataset, bf_submit_review_dataset, bf_withdraw_review_dataset, \
     save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone,\
     validate_dataset, create_folder_level_manifest, get_username
-
+from organizedatasets import generate_dataset_locally
 
 import sys
 import zerorpc
@@ -30,6 +30,14 @@ class SodaApi(object):
     ### Save Description file
     def api_save_ds_description_file(self, bfaccount, filepath, val_arr1, val_arr2, val_arr3, val_arr4):
         return save_ds_description_file(bfaccount, filepath, val_arr1, val_arr2, val_arr3, val_arr4)
+
+    ### Generate dataset locally
+    def api_generate_dataset_locally(self, destinationdataset, pathdataset, newdatasetname, jsonpath):
+
+        try:
+            return generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, jsonpath)
+        except Exception as e:
+            raise e
 
     ### Curate dataset
     def api_save_file_organization(self, jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization):

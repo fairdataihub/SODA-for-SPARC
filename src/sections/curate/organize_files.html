@@ -75,17 +75,28 @@
           <!-- <hr> -->
           <div id="items" ondrop="drop(event);" ondragover="allowDrop(event);">
           </div>
-          <button id="button-organize-confirm-create" onclick="changeStepOrganize(this)" class="confirmButton" style="left:78%;width:210px"><i class="fas fa-arrow-right" style="margin-right:7px"></i>CONFIRM AND PROCEED</button>
+          <button id="button-organize-confirm-create" onclick="changeStepOrganize(this)" class="confirmButton" style="left:84%;width:130px"><i class="fas fa-arrow-right" style="margin-right:7px"></i>CONFIRM</button>
 
         </div>
 
         <div id="div-step-2-organize" style="display:none;">
 
           <div class="div-organize-generate-dataset">
-            <h3 style="margin-bottom:25px;color: #222c3c;">CHOOSE AN OPTION BELOW</h3>
-            <button id="btn-generate-locally" class="button-generate-dataset" onclick="generateDataset(this)">GENERATE DATASET LOCALLY</button>
-            <button id="btn-generate-BF" class="button-generate-dataset" onclick="generateDataset(this)">GENERATE DATASET ON BLACKFYNN</button>
+            <!-- <h3 style="margin-bottom:25px;color: #222c3c;">Choose where generate your dataset?</h3> -->
+            <button id="btn-generate-locally" class="button-generate-dataset" onclick="generateDataset(this)">
+              <i class="fas fa-tv" style="font-size: 58px"></i>
+              <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">GENERATE DATASET LOCALLY</p>
+
+            </button>
+            <button id="btn-generate-BF" class="button-generate-dataset" onclick="generateDataset(this)">
+              <i class="fas fa-cloud-upload-alt" style="font-size: 58px"></i>
+              <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">GENERATE DATASET ON BLACKFYNN</p>
+            </button>
           </div>
+    
+          <div class="alert alert-danger" style="margin-top:25px !important;display:none" id="para-organize-datasets-error" role="alert"></div>
+          <div class="alert alert-success" style="margin-top:25px !important;display:none" id="para-organize-datasets-success" role="alert"></div>
+
             <!-- <div>
             <label class="switch">
               <input id="generate-manifest" name="manifest" type="checkbox" class="with-style-manifest"/>
@@ -129,8 +140,7 @@
      <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
      <script src="../src/node_modules/bootbox/dist/bootbox.min.js"></script>
-    <script src="../src/scripts/command.js" type="text/javascript"></script>
-    <!-- <script src="../src/scripts/renderer.js" type="text/javascript"></script> -->
+    <script src="../src/scripts/renderer.js" type="text/javascript"></script>
 
    <script type="text/javascript">
      require('./renderer-process/native-ui/dialogs/open-file')

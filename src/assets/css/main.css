@@ -6,8 +6,8 @@ body {
 .container-fluid {
   width: 100%;
   height: 85%;
-  padding-right: 20px;
-  padding-left: 20px;
+  padding-right: 10px;
+  padding-left: 0;
   margin-right: auto;
   margin-left: auto;
   margin-top: 5px;
@@ -507,8 +507,8 @@ input:checked + .slider:before {
   position:absolute;
   font-family:'Montserrat', sans-serif;
   width:190px;
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 15px;
+  /* font-weight: 600; */
   color:#fff;
   background-color:#258193;
   border: 2px solid #258193;
@@ -522,7 +522,8 @@ input:checked + .slider:before {
 
 .confirmButton:hover {
   box-shadow: 0 0 7px #3b5998;
-  font-weight: 600;
+  /* font-weight: 600; */
+  font-size: 16px;
 }
 .confirmButton:active {
   background-size: 100%;
@@ -535,35 +536,62 @@ input:checked + .slider:before {
 .div-organize-generate-dataset {
   text-align: center;
   min-width: 450px;
-  margin-top: 50px;
+  margin-top: 80px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .button-generate-dataset {
   width:250px;
-  height:150px;
+  height:250px;
   border: 1px solid #BEBEBE;
   background-color:#F5F5F5;
-  font-size:16px;
-  border-radius: 12px;
-  padding: 30px 30px;
+  font-size:15px;
+  border-radius: 50%;
+  padding: 15px 15px;
   margin-right:30px;
   color: #222c3c;
-  opacity: 0.7
+  opacity: 0.7;
+  position:relative;
 }
 
 .button-generate-dataset:hover {
-  box-shadow: 0 0 4px var(--color-bg-plum);
+  box-shadow: 0 2px 6px #C3c3c3;
   color: var(--color-bg-plum);
-  opacity: 1
+  background-color: #fff;
+  opacity: 1;
+  transform: scale(1.05);
 }
+
+.button-generate-dataset:hover .fas.fa-tv {
+  color: #FFA500;
+}
+
+.button-generate-dataset:hover .fas.fa-cloud-upload-alt {
+  color: #1E90FF
+}
+
+.button-generate-dataset.active .fas.fa-tv {
+  color: #FFA500;
+}
+
+.button-generate-dataset.active .fas.fa-cloud-upload-alt {
+  color: #1E90FF
+}
+
 
 .button-generate-dataset.active{
   border: 2px solid #258193;
   color: #258193;
-  box-shadow: 0 0 4px #3b5998;
+  box-shadow: 0 2px 6px #3b5998;
   font-weight: bold;
   opacity: 1;
-  outline: none
+  outline: none;
+}
+
+.button-generate-dataset.active p{
+  color: #258193;
 }
 
 /* file and folder */

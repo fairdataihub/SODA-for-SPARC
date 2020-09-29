@@ -112,8 +112,8 @@ a[data-toggle="collapse"] {
 #main-nav ul.components {
   /* border-bottom: 1px solid rgba(255,255,255,0.1); */
   list-style: none;
-  padding-right: 0;
-  padding-left: 20px;
+  padding-right: 10px;
+  padding-left: 10px;
   margin-right: 0;
 }
 
@@ -124,15 +124,23 @@ a[data-toggle="collapse"] {
 
 #main-nav ul li a {
     /* padding: 10px; */
-    font-size: 17px;
+    font-size: 15px;
     display: block;
-    line-height: 50px;
-    padding-left: 5px;
+    line-height: 45px;
+    padding-left: 15px;
+    margin-bottom: 5px;
     text-align: left;
-    padding-right: 0;
+    padding-right: 10px;
     color: #E0E0E0;
     border: none;
-    background: #222c3c
+    background: #222c3c;
+    border-radius: 4px;
+}
+
+#main-nav ul li a a {
+  padding-left: 10px;
+  text-align: left;
+  padding-right: 10px;
 }
 
 #main-nav ul li a i {
@@ -142,6 +150,7 @@ a[data-toggle="collapse"] {
 #main-nav ul li a:hover {
     color: #fff;
     text-decoration: none;
+    background: #414A57
 }
 
 #main-nav ul li.active > a, a[aria-expanded="true"] {
@@ -149,33 +158,38 @@ a[data-toggle="collapse"] {
     background: #222c3c;
     border-color: transparent
 }
-/*
+
 #main-nav ul li a.is-selected {
   color: #000;
   background: #fff;
-  border-color: transparent
-} */
+  border-color: transparent;
+  opacity: 0.9;
+  font-weight: bold
+}
 
 ul ul a {
-    font-size: 15px !important;
-    padding-left: 10px !important;
+    font-size: 14px !important;
+    padding-left: 14px !important;
     background: #222c3c;
-    text-align: center;
 }
 
 .help-section {
   bottom:2px;
   position:absolute;
-  /* padding-right:51px; */
-  /* height:50px; */
   width:230px;
+}
+
+.help-section ul {
+  padding-left: 15px !important
 }
 
 .help-section a{
   text-decoration: none;
   border: none;
   color:#f0f0f0;
-  padding-right: 10px;
+  width: 40px !important;
+  padding-right: 3px !important;
+  padding-left: 3px !important;
 }
 
 .help-section a i {
