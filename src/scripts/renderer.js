@@ -5556,14 +5556,14 @@ function changeStepOrganize(step) {
 
 var newDSName;
 function generateDataset(button) {
+  document.getElementById("para-organize-datasets-success").style.display = "none"
+  document.getElementById("para-organize-datasets-error").style.display = "none"
   if (button.id==="btn-generate-locally") {
-
     $("#btn-generate-BF").removeClass("active");
     $(button).toggleClass("active");
-
     bootbox.prompt({
       title: 'Generate dataset locally',
-      message: '<h3>Please enter a name for the dataset:</h3>',
+      message: 'Enter a name for the dataset:',
       buttons: {
         cancel: {
               label: '<i class="fa fa-times"></i> Cancel'
@@ -5590,19 +5590,17 @@ function generateDataset(button) {
 ipcRenderer.on('selected-new-dataset', (event, filepath) => {
   if (filepath.length > 0) {
     if (filepath != null){
-      var bootboxDialog = bootbox.dialog({
-        message: '<p><i class="fa fa-spin fa-spinner"></i>Please wait...</p>',
-      })
+      document.getElementById("para-organize-datasets-loading").style.display = "block"
+      document.getElementById("para-organize-datasets-loading").innerHTML = "<span>Please wait...</span>"
       client.invoke("api_generate_dataset_locally", "create new", filepath[0], newDSName, jsonObjGlobal, (error, res) => {
+        document.getElementById("para-organize-datasets-loading").style.display = "none"
         if(error) {
-          bootboxDialog.modal('hide');
           log.error(error)
           console.error(error)
           document.getElementById("para-organize-datasets-success").style.display = "none"
           document.getElementById("para-organize-datasets-error").style.display = "block"
           document.getElementById("para-organize-datasets-error").innerHTML = "<span> " + error + "</span>";
         } else {
-          bootboxDialog.modal('hide');
           document.getElementById("para-organize-datasets-error").style.display = "none"
           document.getElementById("para-organize-datasets-success").style.display = "block"
           document.getElementById("para-organize-datasets-success").innerHTML = "<span>Generated successfully!</span>";

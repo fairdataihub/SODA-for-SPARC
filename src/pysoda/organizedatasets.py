@@ -135,6 +135,13 @@ def createFiles(jsonpath, fileKey, distdir, listallfiles):
     distfile = distdir
     listallfiles.append([srcfile, distfile])
 
+def ignore_empty_high_level_folders(jsonObject):
+    items_to_delete = [folder for folder in jsonObject.keys() if len(jsonObject[folder].keys()) == 0]
+
+    for item in items_to_delete:
+        del jsonObject[item]
+
+    return jsonObject
 
 def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, jsonpath):
     """
@@ -171,6 +178,8 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
     start_submit = 0
     initial_bfdataset_size = 0
 
+    jsonstructure_non_empty = ignore_empty_high_level_folders(jsonpath)
+
     if destinationdataset == 'create new':
         if not isdir(pathdataset):
             curatestatus = 'Done'
@@ -185,7 +194,7 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
     total_dataset_size = 1
 
     # check if path in jsonpath are valid and calculate total dataset size
-    total_dataset_size = traverseForLeafNodes(jsonpath)
+    total_dataset_size = traverseForLeafNodes(jsonstructure_non_empty)
     total_dataset_size = total_dataset_size - 1
 
     # Add metadata to jsonpath
@@ -197,6 +206,7 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
     #     except Exception as e:
     #         curatestatus = 'Done'
     #         raise e
+
 
     # CREATE NEW
     if destinationdataset == 'create new':
@@ -213,7 +223,7 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
 
             pathdataset = pathnewdatasetfolder
             mkdir(pathdataset)
-            create_dataset(pathdataset, jsonpath, listallfiles)
+            create_dataset(pathdataset, jsonstructure_non_empty, listallfiles)
 
             curateprogress = 'New dataset created'
             curateprogress = 'Success: COMPLETED!'

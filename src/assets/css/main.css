@@ -556,7 +556,6 @@ input:checked + .slider:before {
 .button-generate-dataset:hover {
   box-shadow: 0 2px 8px #258193;
   color: var(--color-bg-plum);
-  background-color: #fff;
   opacity: 1;
   transform: scale(1.05);
 }
@@ -719,7 +718,7 @@ input:checked + .slider:before {
       100% { transform: scale(1,1)      translateY(0); }
     }
 .soda-can-welcome {
-  max-width:300px;
+  max-width:350px;
   max-height:350px;
   margin:0 auto;
   animation-name: bounce-7;
