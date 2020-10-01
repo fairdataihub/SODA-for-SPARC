@@ -41,7 +41,7 @@
 
 ## About
 
-SODA (Software for Organizing Data Automatically) for SPARC is a desktop software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators and thus promote the [FAIR Data Principles](https://www.go-fair.org/fair-principles/). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA for SPARC is designed such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.sparc.science/submit_data.html) rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduce users' effort to a bare minimum during each step, often to just a few clicks. 
+SODA (Software to Organize Data Automatically) for SPARC is a desktop software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators and thus promote the [FAIR Data Principles](https://www.go-fair.org/fair-principles/). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA for SPARC is designed such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.sparc.science/submit_data.html) rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduce users' effort to a bare minimum during each step, often to just a few clicks. 
 
 <p align="center">
   <img src="/docs/readme/screenshot-soda.PNG" alt="interface" width="600"> 
@@ -115,3 +115,9 @@ SODA is distributed under the MIT License. See [LICENSE](https://github.com/bvhp
 [issues-url]: https://github.com/bvhpatel/SODA/issues
 [license-shield]: https://img.shields.io/github/license/bvhpatel/SODA.svg?style=flat-square
 [license-url]: https://github.com/bvhpatel/SODA/blob/master/LICENSE
+
+## Developers
+* Bhavesh Patel (California Medical Innovations Institute)
+* Tram Ngo (California Medical Innovations Institute)
+* Parya Aghasafari (UC Davis)
+* Karl Helmer (Harvard Medical School/Massachusetts General Hospital)
