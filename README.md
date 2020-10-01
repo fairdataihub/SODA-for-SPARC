@@ -115,3 +115,9 @@ SODA is distributed under the MIT License. See [LICENSE](https://github.com/bvhp
 [issues-url]: https://github.com/bvhpatel/SODA/issues
 [license-shield]: https://img.shields.io/github/license/bvhpatel/SODA.svg?style=flat-square
 [license-url]: https://github.com/bvhpatel/SODA/blob/master/LICENSE
+
+## Developers
+* Bhavesh Patel (California Medical Innovations Institute)
+* Tram Ngo (California Medical Innovations Institute)
+* Parya Aghasafari (UC Davis)
+* Karl Helmer (Harvard Medical School/Massachusetts General Hospital)
