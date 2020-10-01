@@ -28,6 +28,7 @@
     <link rel="import" href="sections/prepare_metadata/prepare_metadata.html">
     <link rel="import" href="sections/help/help.html">
 
+
   </head>
 
 <body>
@@ -60,7 +61,7 @@
               <li>
                   <a href="#" data-section="manage_submit"><i class="fas fa-digital-tachograph"></i>Manage</a>
               </li>
-              <li><a href="#" data-section="post_curation"><i class="fas fa-share-alt"></i>Disseminate</a></li>
+              <li><a href="#" data-section="post_curation"><i class="fas fa-share-alt" style="margin-right: 29px;"></i>Disseminate</a></li>
           </ul>
 
           <div class="help-section">
@@ -80,7 +81,14 @@
             <span></span>
             <span></span>
         </button>
-      <main id="content" class="content js-content"></main>
+      <main id="content" class="content js-content">
+        <div style="width: 100%;height:100%;display:flex;flex-direction:column;justify-content:flex-start;margin-top:120px;margin-left:130px">
+          <h1 align="center" style="font-weight:600;font-size:33px">Welcome to</h1>
+          <img src="assets/img/logo-soda1024.png" class="soda-can-welcome">
+          <br>
+          <p styles="font-size:20px;" align="center">SODA is a desktop software intended to facilitate the data organization and submission process</p>
+        </div>
+      </main>
 </div>
 
   <script>
@@ -100,6 +108,12 @@
           $('#main-nav').toggleClass('active');
           $(this).toggleClass('active');
           $(".section").toggleClass('fullShown');
+      });
+    });
+    $(document).ready(function () {
+      $('a').on('click', function () {
+          $(this).toggleClass('is-selected');
+          $('a').removeClass('is-selected');
       });
     });
   </script>

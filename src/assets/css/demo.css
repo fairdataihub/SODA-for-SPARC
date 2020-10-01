@@ -366,7 +366,7 @@ button.download-metadata:hover {
 
 .dash-title {
   font-family:'Montserrat', sans-serif;
-  margin-bottom:15px !important;
+  margin-bottom:10px !important;
   color: #258193;
   opacity:0.9;
   font-style:bold;
@@ -385,6 +385,9 @@ div.main-window {
 }
 
 .dash-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 8% 10% auto 10%;
   background: #fff;
   padding-top: 0 !important;
   padding-bottom: 10px !important;

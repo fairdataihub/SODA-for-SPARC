@@ -5029,13 +5029,13 @@ a.close.disabled {
   margin-bottom: 0;
   line-height: 1.5; }
 
-.modal-body {
+/* .modal-body {
   position: relative;
   -webkit-box-flex: 1;
   -webkit-flex: 1 1 auto;
       -ms-flex: 1 1 auto;
           flex: 1 1 auto;
-  padding: 1rem; }
+  padding: 1rem; } */
 
 .modal-footer {
   display: -webkit-box;
@@ -8495,7 +8495,7 @@ a.text-dark:hover, a.text-dark:focus {
   img {
     page-break-inside: avoid; }
   p,
-  h2,
+  /* h2,
   h3 {
     orphans: 3;
     widows: 3; }
@@ -8503,7 +8503,7 @@ a.text-dark:hover, a.text-dark:focus {
   h3 {
     page-break-after: avoid; }
   @page {
-    size: a3; }
+    size: a3; } */
   body {
     min-width: 992px !important; }
   .container {
@@ -8596,9 +8596,9 @@ a.text-dark:hover, a.text-dark:focus {
     .spur-card-body-chart {
       padding: 12px 5px; } }
 
-h1 {
+/* h1 {
   font-family: "Nunito", sans-serif;
-  font-weight: normal; }
+  font-weight: normal; } */
 
 .dash-title {
   margin-bottom: 30px; }
