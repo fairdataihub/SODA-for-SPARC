@@ -43,7 +43,8 @@
 #main-nav {
     min-width: 230px;
     max-width: 230px;
-    background: #222c3c;
+    background: #000;
+    opacity: 0.9;
     color: #f0f0f0;
     font-family: "Source Sans Pro", sans-serif;
     transition: all 0.1s cubic-bezier(0.945, 0.020, 0.270, 0.665);
@@ -105,7 +106,7 @@ a[data-toggle="collapse"] {
   margin-top: 20px;
   margin-bottom: 30px;
   padding: 20px;
-  background: #222c3c;
+  /* background: #222c3c; */
   padding-bottom: 30px;
 }
 
@@ -124,7 +125,7 @@ a[data-toggle="collapse"] {
 
 #main-nav ul li a {
     /* padding: 10px; */
-    font-size: 15px;
+    font-size: 14px;
     display: block;
     line-height: 45px;
     padding-left: 15px;
@@ -133,7 +134,7 @@ a[data-toggle="collapse"] {
     padding-right: 10px;
     color: #E0E0E0;
     border: none;
-    background: #222c3c;
+    /* background: #222c3c; */
     border-radius: 4px;
 }
 
@@ -150,28 +151,29 @@ a[data-toggle="collapse"] {
 #main-nav ul li a:hover {
     color: #fff;
     text-decoration: none;
-    background: #414A57
+    background: #222c3c;
+    opacity: 0.7
 }
 
-#main-nav ul li.active > a, a[aria-expanded="true"] {
+/* #main-nav ul li.active > a, a[aria-expanded="true"] {
     color: #000;
-    background: #222c3c;
-    border-color: transparent
-}
+    /* background: #222c3c; */
+    /* border-color: transparent */
+/* }  */
 
 #main-nav ul li a.is-selected {
-  color: #000;
-  background: #fff;
+  color: #fff;
+  background: linear-gradient(to right, rgba(25,150,175,1) 0%, rgba(63,184,208,1) 56%, rgba(39,212,212,1) 100%);
   border-color: transparent;
   opacity: 0.9;
   font-weight: bold
 }
 
-ul ul a {
+/* ul ul a {
     font-size: 14px !important;
     padding-left: 14px !important;
     background: #222c3c;
-}
+} */
 
 .help-section {
   bottom:2px;
@@ -278,14 +280,21 @@ ul ul a {
   font-size: 18px;
   line-height: 1;
   margin: 0;
-  color: var(--color-strong-white);
+  color: #33b3cc;
   margin-top: 1rem;
   vertical-align: middle;
 }
 
+
 .nav-title strong {
   /* font-weight: 600; */
-  color: var(--color-strong-white);
+  color: #20b2aa;
+  opacity: 0.8;
+  transition: color 0.1s ease-in;
+}
+
+.nav-title strong:hover {
+  color: linear-gradient(90deg, rgba(37,129,147,1) 0%, rgba(52,207,196,1) 51%);
 }
 
 .nav-header-icon {
@@ -300,6 +309,7 @@ ul ul a {
 .nav-item {
   padding: .5em 0;
   vertical-align: middle;
+  width: 225px !important;
 }
 
 .nav-icon {
@@ -513,10 +523,10 @@ ul ul a {
 
 .nav-center-logo-image {
   display: block;
-  margin-left: 20px;
-  margin-bottom:5px;
-  margin-top: 15px;
-  /* margin-right: auto; */
-  height: 50px;
-  width: 155px;
+  margin-left: auto;
+  margin-bottom:20px;
+  margin-top: 10px;
+  margin-right: auto;
+  height: 90px;
+  width: 100px;
 }

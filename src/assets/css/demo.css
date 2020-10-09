@@ -367,11 +367,11 @@ button.download-metadata:hover {
 .dash-title {
   font-family:'Montserrat', sans-serif;
   margin-bottom:10px !important;
-  color: #258193;
-  opacity:0.9;
+  color: #000;
+  opacity:0.8;
   font-style:bold;
   font-size: 19px;
-  border-bottom: 2px solid #258193;
+  border-bottom: 2px solid #000;
   padding-bottom:5px;
   padding-top: 10px;
   margin-top: 0;

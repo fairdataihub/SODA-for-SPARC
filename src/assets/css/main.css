@@ -442,6 +442,7 @@ input:checked + .slider:before {
 .button-back:hover {
   background:#258193 radial-gradient(circle, transparent 1%, #258193 1%) center/15000%;
   color: white;
+  box-shadow: 0 0 5px #3b5998;
 }
 .button-back:active {
   background-color:#292d3e;
@@ -504,24 +505,26 @@ input:checked + .slider:before {
   position:absolute;
   font-family:'Montserrat', sans-serif;
   width:190px;
-  font-size: 15px;
-  /* font-weight: 600; */
-  color:#fff;
-  background-color:#258193;
-  border: 2px solid #258193;
+  font-size: 14px;
+  font-weight: 600;
+  color:#20b2aa;
+  background-color:#fff;
+  border: 2px solid #20b2aa;
   margin: 0 0;
   height:35px;
-  background-position: center;
-  transition: background 0.8s;
   cursor: pointer;
   border-radius: 5px;
+  /* "to left" / "to right" - affects initial color */
+  background: linear-gradient(to left, #fff 50%, #20b2aa 50%) right;
+  background-size: 200%;
+  transition: .5s ease-out;
 }
 
 .confirmButton:hover {
-  box-shadow: 0 0 7px #3b5998;
-  /* font-weight: 600; */
-  font-size: 16px;
+  color:#fff;
+  background-position: left;
 }
+
 .confirmButton:active {
   background-size: 100%;
   transform: translateY(-3px);
