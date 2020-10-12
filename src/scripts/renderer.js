@@ -20,7 +20,12 @@ const $ = require( "jquery" );
 const PDFDocument = require('pdfkit');
 const html2canvas = require("html2canvas");
 const removeMd = require('remove-markdown');
-
+const electron = require('electron')
+const bootbox = require('bootbox')
+//
+// const { getGlobalPath, loadFileFolder, sortObjByKeys, sliceStringByValue,
+//          getRecursivePath, checkSubArrayBool, addFilesfunction, hideFullName,
+//          listItems, getInFolder, hideMenu, triggerManageDescriptionPrompt} = require('./organizeDS.js');
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -150,6 +155,25 @@ const generateDSBtn = document.getElementById("button-generate-ds-description")
 const addAdditionalLinkBtn = document.getElementById("button-ds-add-link")
 const datasetDescriptionFileDataset = document.getElementById('ds-name')
 const parentDSDropdown = document.getElementById("input-parent-ds")
+
+/////// New Organize Datasets /////////////////////
+const organizeDSglobalPath = document.getElementById("input-global-path")
+const organizeDSbackButton = document.getElementById("button-back")
+const organizeDSaddFiles = document.getElementById("add-files")
+const organizeDSaddNewFolder = document.getElementById("new-folder")
+const organizeDSaddFolders = document.getElementById("add-folders")
+const contextMenu = document.getElementById("mycontext")
+const fullPathValue = document.querySelector(".hoverPath")
+const fullNameValue = document.querySelector(".hoverFullName")
+const resetProgress = document.getElementById("clear-progress")
+const saveProgress = document.getElementById("save-progress")
+const importProgress = document.getElementById("import-progress")
+const homePathButton = document.getElementById("home-path")
+const menuFolder = document.querySelector('.menu.reg-folder');
+const menuFile = document.querySelector('.menu.file');
+const menuHighLevelFolders = document.querySelector('.menu.high-level-folder');
+const organizeNextStepBtn = document.getElementById("button-organize-confirm-create")
+const organizePrevStepBtn = document.getElementById("button-organize-prev")
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -5017,16 +5041,6 @@ function clearTable(table){
 //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
 
-const electron = require('electron')
-const bootbox = require('bootbox')
-
-// context menu
-let menuFolder = null;
-let menuFile = null;
-menuFolder = document.querySelector('.menu.reg-folder');
-menuFile = document.querySelector('.menu.file');
-menuHighLevelFolders = document.querySelector('.menu.high-level-folder');
-
 var backFolder = []
 var forwardFolder =[]
 
@@ -5042,68 +5056,23 @@ var highLevelFolderToolTip = {
 }
 
 var jsonObjGlobal = {
-  "code": {},
-  "derivative": {},
-  "primary": {},
-  "source": {},
-  "docs": {},
-  "protocols": {}
-}
-//
-// var jsonMetadataGlobal = {
-//   // any file's value is a list [full_path, added description, added metadata]
-//   "submission.csv": ["C:/mypath/folder1/sub-folder-1/submission.csv", "This is my current description.", "This is my sample metadata for this file."],
-//   "dataset_description.xlsx": ["C:/mypath/folder1/sub-folder-1/dataset_description.xlsx", "This is my current description.", "This is my sample metadata for this file."]
-// }
-
-const organizeDSglobalPath = document.getElementById("input-global-path")
-const organizeDSbackButton = document.getElementById("button-back")
-const organizeDSaddFiles = document.getElementById("add-files")
-const organizeDSaddNewFolder = document.getElementById("new-folder")
-const organizeDSaddFolders = document.getElementById("add-folders")
-const contextMenu = document.getElementById("mycontext")
-const fullPathValue = document.querySelector(".hoverPath")
-const fullNameValue = document.querySelector(".hoverFullName")
-const resetProgress = document.getElementById("clear-progress")
-const saveProgress = document.getElementById("save-progress")
-const importProgress = document.getElementById("import-progress")
-const homePathButton = document.getElementById("home-path")
-
-
-listItems(jsonObjGlobal)
-getInFolder()
-
-function getGlobalPath() {
-  var currentPath = organizeDSglobalPath.value.trim()
-  var jsonPathArray = currentPath.split("/")
-  var filtered = jsonPathArray.filter(function (el) {
-    return el != "";
-  });
-  return filtered
+                    "code": {},
+                    "derivative": {},
+                    "primary": {},
+                    "source": {},
+                    "docs": {},
+                    "protocols": {}
 }
 
-// load and parse existing json progress file
-function parseJson(path) {
-  if (!fs.existsSync(path)) {
-    return {}
-  }
-  try {
-    var content = fs.readFileSync(path);
-    contentJson = JSON.parse(content);
-    return contentJson
-  } catch (error) {
-    // log.error(error)
-    console.log(error);
-    return {}
-  }
-}
+listItems(jsonObjGlobal, '#items')
+getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
 
 /// back button
 organizeDSbackButton.addEventListener("click", function() {
   var currentPath = organizeDSglobalPath.value.trim()
 
   if (currentPath !== "/") {
-    var filtered = getGlobalPath()
+    var filtered = getGlobalPath(organizeDSglobalPath)
     if (filtered.length === 1) {
       organizeDSglobalPath.value = "/"
     } else {
@@ -5121,8 +5090,9 @@ organizeDSbackButton.addEventListener("click", function() {
     $('#items').html(appendString)
 
     // reconstruct div with new elements
-    listItems(myPath)
-    getInFolder()
+    listItems(myPath, '#items')
+    getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+
   }
 })
 
@@ -5131,17 +5101,14 @@ organizeDSaddNewFolder.addEventListener("click", function(event) {
   event.preventDefault();
   if(organizeDSglobalPath.value.trim()!=="/") {
     var newFolderName = "New Folder"
-
     // show prompt for name
     bootbox.prompt({
       title: "Add new folder...",
       message: "Enter a name below:",
       centerVertical: true,
       callback: function(result) {
-
         if(result !== null && result!== "") {
           newFolderName = result.trim()
-
           // check for duplicate or files with the same name
           var duplicate = false
           var itemDivElements = document.getElementById("items").children
@@ -5151,7 +5118,6 @@ organizeDSaddNewFolder.addEventListener("click", function(event) {
               break
             }
           }
-
           if (duplicate) {
             bootbox.alert({
               message: "Duplicate folder name: " + newFolderName,
@@ -5159,7 +5125,7 @@ organizeDSaddNewFolder.addEventListener("click", function(event) {
             })
           } else {
             var appendString = '';
-            appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">'+ newFolderName +'</div></div>'
+            appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName('+fullNameValue+')"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">'+ newFolderName +'</div></div>'
             $(appendString).appendTo('#items');
 
             /// update jsonObjGlobal
@@ -5169,14 +5135,16 @@ organizeDSaddNewFolder.addEventListener("click", function(event) {
               return el != "";
             });
 
-            var myPath = getRecursivePath(filtered)
+            var myPath = getRecursivePath(filtered, jsonObjGlobal)
 
             // update Json object with new folder created
             var renamedNewFolder = newFolderName
             myPath[renamedNewFolder] = {}
 
-            listItems(myPath)
-            getInFolder()
+            listItems(myPath,'#items')
+            getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+            hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+            hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
           }
         }
       }
@@ -5227,7 +5195,7 @@ function hoverForPath(ev) {
       return el != "";
     });
 
-    var myPath = getRecursivePath(filtered)
+    var myPath = getRecursivePath(filtered, jsonObjGlobal)
 
     // get full path from JSON object
     var fullPath = myPath[ev.innerText]
@@ -5247,16 +5215,9 @@ function showFullName(ev, element, text) {
   }
 }
 
-function hideFullName() {
-  fullNameValue.style.display = "none";
-  fullNameValue.style.top = '-250%';
-  fullNameValue.style.left = '-250%';
-}
-
 /// hover over a function for full name
 function hoverForFullName(ev) {
     var fullPath = ev.innerText
-
     // ev.children[1] is the child element folder_desc of div.single-item,
     // which we will put through the overflowing check in showFullName function
     showFullName(event, ev.children[1], fullPath)
@@ -5275,159 +5236,9 @@ document.addEventListener('onmouseover', function(e){
   if (e.target.classList.value === "fas fa-folder") {
     hoverForFullName(e)
   } else {
-    hideFullName()
+    hideFullName(fullNameValue)
   }
 });
-
-// sort JSON objects by keys alphabetically (folder by folder, file by file)
-function sortObjByKeys(object) {
-  const orderedFolders = {};
-  const orderedFiles = {};
-
-  Object.keys(object).sort().forEach(function(key) {
-  if (Array.isArray(object[key])) {
-    orderedFiles[key] = object[key]
-  } else {
-      orderedFolders[key] = object[key];
-  }
-  });
-  const orderedObject = {
-    ...orderedFolders,
-    ...orderedFiles
-  }
-  return orderedObject
-}
-
-function sliceStringByValue(string, endingValue) {
-  var newString = string.slice(string.indexOf(endingValue) + 1)
-  return newString
-}
-
-function listItems(jsonObj) {
-
-        var appendString = ''
-        var sortedObj = sortObjByKeys(jsonObj)
-
-        for (var item in sortedObj) {
-          if (Array.isArray(sortedObj[item])) {
-            // not the auto-generated manifest
-            if (sortedObj[item].length !== 1) {
-              var extension = sliceStringByValue(sortedObj[item][0],  ".")
-              if (!["docx", "doc", "pdf", "txt", "jpg", "JPG", "xlsx", "xls", "csv", "png", "PNG"].includes(extension)) {
-                extension = "other"
-              }
-            } else {
-              extension = "other"
-            }
-            appendString = appendString + '<div class="single-item" onmouseover="hoverForPath(this)" onmouseleave="hideFullPath()"><h1 class="myFile '+extension+'" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">'+item+'</div></div>'
-          }
-          else {
-            var emptyFolder = "";
-            if (! highLevelFolders.includes(item)) {
-              if (JSON.stringify(sortedObj[item]) === '{}') {
-                emptyFolder = " empty";
-                // folderID = item;
-              }
-            } else {
-                // folderID = 'high-level-' + item;
-            }
-            appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
-          }
-        }
-
-        $('#items').empty()
-        $('#items').html(appendString)
-  }
-
-function loadFileFolder(myPath) {
-
-  var appendString = ""
-
-  var sortedObj = sortObjByKeys(myPath)
-
-
-  for (var item in sortedObj) {
-    if (Array.isArray(sortedObj[item])) {
-      // not the auto-generated manifest
-      if (sortedObj[item].length !== 1) {
-        var extension = sliceStringByValue(sortedObj[item][0],  ".")
-        if (!["docx", "doc", "pdf", "txt", "jpg", "xlsx", "xls", "csv", "png"].includes(extension)) {
-          extension = "other"
-        }
-      } else {
-        extension = "other"
-      }
-      appendString = appendString + '<div class="single-item" onmouseover="hoverForPath(this)" onmouseleave="hideFullPath()"><h1 class="myFile '+extension+'" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">'+item+'</div></div>'
-    }
-    else {
-
-      var emptyFolder = "";
-      if (! highLevelFolders.includes(item)) {
-        if (JSON.stringify(sortedObj[item]) === '{}') {
-          emptyFolder = " empty";
-          // folderID = item;
-        }
-      } else {
-        // folderID = 'high-level-' + item;
-      }
-      appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
-    }
-  }
-
-  return appendString
-}
-
-function getRecursivePath(filteredList) {
-  var myPath = jsonObjGlobal;
-  for (var item of filteredList) {
-    if (item.trim()!=="") {
-      myPath = myPath[item]
-    }
-  }
-  return myPath
-}
-
-function getInFolder() {
-  $('.single-item').dblclick(function(){
-
-    if($(this).children("h1").hasClass("myFol")) {
-      var folderName = this.innerText
-      var appendString = ''
-      organizeDSglobalPath.value = organizeDSglobalPath.value + folderName + "/"
-
-      var currentPath = organizeDSglobalPath.value
-      var jsonPathArray = currentPath.split("/")
-      var filtered = jsonPathArray.filter(function (el) {
-        return el.trim() != "";
-      });
-
-      var myPath = getRecursivePath(filtered)
-
-      var appendString = loadFileFolder(myPath)
-
-      $('#items').empty()
-      $('#items').html(appendString)
-
-      // reconstruct folders and files (child elements after emptying the Div)
-      listItems(myPath)
-      getInFolder()
-      hideMenu("folder")
-      hideMenu("high-level-folder")
-    }
-  })
-}
-
-/// check if an array contains another array
-function checkSubArrayBool(parentArray, childArray) {
-  var bool = true
-  for (var element of childArray) {
-    if (!parentArray.includes(element)) {
-      bool = false
-      break
-    }
-  }
-  return bool
-}
 
 /// import progress
 importProgress.addEventListener("click", function() {
@@ -5449,12 +5260,12 @@ ipcRenderer.on('selected-file-organization', (event,filePath) => {
       })
       return
     }
-    var bootboxDialog = bootbox.dialog({
-      message: '<p><i class="fa fa-spin fa-spinner"></i>Importing file organization...</p>'
-    })
+    var bootboxDialog = bootbox.dialog({message: '<p><i class="fa fa-spin fa-spinner"></i>Importing file organization...</p>'})
     bootboxDialog.init(function(){
-      listItems(jsonObjGlobal)
-      getInFolder()
+      listItems(jsonObjGlobal, '#items')
+      getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
       bootboxDialog.find('.bootbox-body').html("<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully loaded!");
     })
   }
@@ -5464,7 +5275,6 @@ ipcRenderer.on('selected-file-organization', (event,filePath) => {
 saveProgress.addEventListener("click", function() {
   ipcRenderer.send('save-file-saveorganization-dialog');
 })
-
 ipcRenderer.on('selected-fileorganization', (event, filePath) => {
   if (filePath.length > 0){
     if (filePath !== undefined){
@@ -5476,7 +5286,6 @@ ipcRenderer.on('selected-fileorganization', (event, filePath) => {
     }
   }
 })
-
 
 /// reset progress
 resetProgress.addEventListener("click", function() {
@@ -5495,46 +5304,33 @@ resetProgress.addEventListener("click", function() {
           "docs": {},
           "protocols": {}
         }
-        listItems(jsonObjGlobal)
-        getInFolder()
+        listItems(jsonObjGlobal, '#items')
+        getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
       }
     }
   })
 })
 
-function loadingDialog(text1, text2, func) {
-  var bootboxDialog = bootbox.dialog({
-    message: '<p><i class="fa fa-spin fa-spinner"></i> '+text1+'</p>',
-  })
-  bootboxDialog.init(function(){
-    setTimeout(function(){
-      func;
-      bootboxDialog.find('.bootbox-body').html("<i style='margin-right: 5px !important' class='fas fa-check'></i>"+text2+"");
-  }, 2000);
-  })
-}
-
 /// if users choose to include manifest files
 /// this function will first add manifest files to the UI
 /// and update the JSON object with files "manifest": ["auto-generated manifest"]
 /// TODO: not allow context menu for manifest files with value === array (lenght=1)
-function updateManifestLabel(jsonObject) {
-  /// first, add manifest files to UI
-  var elements = Object.keys(jsonObject)
-  for (var key of elements) {
-      if (typeof jsonObject[key] === "object" && !(Array.isArray(jsonObject[key]))) {
-        if (Object.keys(jsonObject[key]).length !== 0) {
-          jsonObject[key]["manifest.xlsx"] = ["auto-generated"]
-          /// if this folder is not empty, then recursively add manifest file
-          updateManifestLabel(jsonObject[key])
-        }
-      }
-    }
-}
+// function updateManifestLabel(jsonObject) {
+//   /// first, add manifest files to UI
+//   var elements = Object.keys(jsonObject)
+//   for (var key of elements) {
+//       if (typeof jsonObject[key] === "object" && !(Array.isArray(jsonObject[key]))) {
+//         if (Object.keys(jsonObject[key]).length !== 0) {
+//           jsonObject[key]["manifest.xlsx"] = ["auto-generated"]
+//           /// if this folder is not empty, then recursively add manifest file
+//           updateManifestLabel(jsonObject[key])
+//         }
+//       }
+//     }
+// }
 //
-const organizeNextStepBtn = document.getElementById("button-organize-confirm-create")
-const organizePrevStepBtn = document.getElementById("button-organize-prev")
-// const organizeFinalizeStepBtn = document.getElementById("button-organize-finalize")
 
 function changeStepOrganize(step) {
     if (step.id==="button-organize-prev") {
@@ -5543,12 +5339,10 @@ function changeStepOrganize(step) {
       document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>High-level folders"
       organizeNextStepBtn.style.display = "block"
       organizePrevStepBtn.style.display = "none"
-      // organizeFinalizeStepBtn.style.display = "none"
     } else {
       document.getElementById("div-step-1-organize").style.display = "none";
       document.getElementById("div-step-2-organize").style.display = "block";
       document.getElementById("dash-title").innerHTML = "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>Generate dataset"
-      // organizeFinalizeStepBtn.style.display = "block"
       organizePrevStepBtn.style.display = "block"
       organizeNextStepBtn.style.display = "none"
     }
@@ -5612,22 +5406,21 @@ ipcRenderer.on('selected-new-dataset', (event, filepath) => {
 
 
 //////////// FILE BROWSERS to import existing files and folders /////////////////////
-
 organizeDSaddFiles.addEventListener("click", function() {
    ipcRenderer.send('open-files-organize-datasets-dialog')
  })
  ipcRenderer.on('selected-files-organize-datasets', (event, path) => {
-   var filtered = getGlobalPath()
-   var myPath = getRecursivePath(filtered)
-   addFilesfunction(path, myPath)
+   var filtered = getGlobalPath(organizeDSglobalPath)
+   var myPath = getRecursivePath(filtered, jsonObjGlobal)
+   addFilesfunction(path, myPath, organizeDSglobalPath, '#items', '.single-item', jsonObjGlobal)
  })
 
 organizeDSaddFolders.addEventListener("click", function() {
   ipcRenderer.send('open-folders-organize-datasets-dialog')
 })
 ipcRenderer.on('selected-folders-organize-datasets', (event, path) => {
-  var filtered = getGlobalPath()
-  var myPath = getRecursivePath(filtered)
+  var filtered = getGlobalPath(organizeDSglobalPath)
+  var myPath = getRecursivePath(filtered, jsonObjGlobal)
   addFoldersfunction(path, myPath)
 })
 
@@ -5662,56 +5455,19 @@ function addFoldersfunction(folderArray, currentLocation) {
         currentLocation[baseName] = {}
         populateJSONObjFolder(currentLocation[baseName], folderArray[i])
 
-        var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+baseName+'</div></div>'
+        var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName('+ fullNameValue +')"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+baseName+'</div></div>'
 
         $('#items').html(appendString)
 
-        listItems(currentLocation)
-        getInFolder()
+        listItems(currentLocation, '#items')
+        getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
       }
     }
   }
 }
 
-function addFilesfunction(fileArray, currentLocation) {
-
-  // check for duplicate or files with the same name
-    for (var i=0; i<fileArray.length;i++) {
-      var baseName = path.basename(fileArray[i])
-
-      if (organizeDSglobalPath.value === "/" && (!["dataset_description.xlsx", "dataset_description.csv", "dataset_description.json", "submission.xlsx", "submission.json", "submission.csv", "samples.xlsx", "samples.csv", "samples.json", "subjects.xlsx", "subjects.csv", "subjects.json", "CHANGES.txt", "README.txt"].includes(baseName))) {
-        bootbox.alert({
-          message: "<p>Invalid file(s). Only SPARC metadata files are allowed in the high-level dataset folder.<br> <ul><li>dataset_description (.xslx/.csv/.json)</li><li>submission (.xslx/.csv/.json)</li><li>subjects (.xslx/.csv/.json)</li><li>samples (.xslx/.csv/.json)</li><li>CHANGES.txt</li><li>README.txt</li></ul></p>",
-          centerVertical: true
-        })
-        break
-      } else {
-        var duplicate = false;
-        for (var objKey in currentLocation) {
-          if (Array.isArray(currentLocation[objKey])) {
-            if (baseName === objKey) {
-              duplicate = true
-              break
-            }
-          }
-        }
-        if (duplicate) {
-          bootbox.alert({
-            message: 'Duplicate file name: ' + baseName,
-            centerVertical: true
-          })
-        } else {
-          currentLocation[baseName] = [fileArray[i], "", ""]
-          var appendString = '<div class="single-item" onmouseover="hoverForPath(this)" onmouseleave="hideFullPath()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+baseName+'</div></div>'
-
-          $('#items').html(appendString)
-
-          listItems(currentLocation)
-          getInFolder()
-        }
-      }
-  }
-}
 
 
 //// Add files or folders with drag&drop
@@ -5726,7 +5482,7 @@ function drop(ev) {
   var filtered = jsonPathArray.filter(function (el) {
     return el != "";
   });
-  var myPath = getRecursivePath(filtered)
+  var myPath = getRecursivePath(filtered, jsonObjGlobal)
   ev.preventDefault();
 
   for (var i=0; i<ev.dataTransfer.files.length;i++) {
@@ -5762,12 +5518,12 @@ function drop(ev) {
               })
             } else {
               myPath[itemName] = [itemPath, "", ""]
-
               var appendString = '<div class="single-item" onmouseover="hoverForPath(this)" onmouseleave="hideFullPath()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
               $(appendString).appendTo(ev.target);
-
-              listItems(myPath)
-              getInFolder()
+              listItems(myPath, '#items')
+              getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+              hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+              hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
             }
         }
       } else {
@@ -5779,12 +5535,12 @@ function drop(ev) {
           break
         } else {
           myPath[itemName] = [itemPath, "", ""]
-
           var appendString = '<div class="single-item" onmouseover="hoverForPath(this)" onmouseleave="hideFullPath()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
           $(appendString).appendTo(ev.target);
-
-          listItems(myPath)
-          getInFolder()
+          listItems(myPath, '#items')
+          getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+          hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
         }
       }
     } else if (statsObj.isDirectory()) {
@@ -5807,25 +5563,21 @@ function drop(ev) {
             return el != "";
           });
 
-          var myPath = getRecursivePath(filtered)
-
+          var myPath = getRecursivePath(filtered, jsonObjGlobal)
           var folderJsonObject = {};
-
           populateJSONObjFolder(folderJsonObject, itemPath)
-
           myPath[itemName] = folderJsonObject
-
-          var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
+          var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName('+fullNameValue+')"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
           $(appendString).appendTo(ev.target);
-
-          listItems(myPath)
-          getInFolder()
+          listItems(myPath, '#items')
+          getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+          hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
         }
       }
     }
   }
 }
-
 
 // SAVE FILE ORG
 ipcRenderer.on('save-file-organization-dialog', (event) => {
@@ -5864,73 +5616,58 @@ function showmenu(ev, category){
       }
 }
 
-function hideMenu(category){
-  if (category === "folder") {
-    menuFolder.style.display = "none";
-    menuFolder.style.top = "-200%";
-    menuFolder.style.left = '-200%';
-  } else if (category === "high-level-folder") {
-    menuHighLevelFolders.style.display = "none";
-    menuHighLevelFolders.style.top = "-220%";
-    menuHighLevelFolders.style.left = '-220%';
-  } else {
-    menuFile.style.display = "none";
-    menuFile.style.top = "-210%";
-    menuFile.style.left = "-210%";
-  }
-}
-
-////// function to trigger action for each context menu option
-
 /// options for regular sub-folders
 function folderContextMenu(event) {
   $(".menu.reg-folder li").unbind().click(function(){
     if ($(this).attr('id') === "folder-rename") {
-        renameFolder(event)
+        var itemDivElements = document.getElementById("items").children
+        renameFolder(event, organizeDSglobalPath, itemDivElements, jsonObjGlobal, '#items', '.single-item')
       } else if ($(this).attr('id') === "folder-delete") {
-        delFolder(event)
+        delFolder(event, organizeDSglobalPath, '#items', '.single-item', jsonObjGlobal)
       }
      // Hide it AFTER the action was triggered
-     hideMenu("folder")
-     hideMenu("high-level-folder")
-     hideFullName()
+     hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+     hideFullName(fullNameValue)
  });
 
  /// options for high-level folders
  $(".menu.high-level-folder li").unbind().click(function(){
    if ($(this).attr('id') === "folder-rename") {
-       renameFolder(event)
+     var itemDivElements = document.getElementById("items").children
+      renameFolder(event, organizeDSglobalPath, itemDivElements, jsonObjGlobal, '#items', '.single-item')
      } else if ($(this).attr('id') === "folder-delete") {
-       delFolder(event)
+       delFolder(event, organizeDSglobalPath, '#items', '.single-item', jsonObjGlobal)
      } else if ($(this).attr('id') === "tooltip-folders") {
        showTooltips(event)
      }
     // Hide it AFTER the action was triggered
-    hideMenu("folder")
-    hideMenu("high-level-folder")
-    hideFullName()
+    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+    hideFullName(fullNameValue)
 
 });
 /// hide both menus after an option is clicked
- hideMenu("folder")
- hideMenu("high-level-folder")
- hideFullName()
+  hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+  hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+  hideFullName(fullNameValue)
 }
 
 //////// options for files
 function fileContextMenu(event) {
   $(".menu.file li").unbind().click(function(){
     if ($(this).attr('id') === "file-rename") {
-        renameFolder(event)
+        var itemDivElements = document.getElementById("items").children
+        renameFolder(event, organizeDSglobalPath, itemDivElements, jsonObjGlobal, '#items', '.single-item')
       } else if ($(this).attr('id') === "file-delete") {
-        delFolder(event)
+        delFolder(event, organizeDSglobalPath, '#items', '.single-item', jsonObjGlobal)
       } else if ($(this).attr('id') === "file-description") {
         manageDesc(event)
       }
      // Hide it AFTER the action was triggered
-     hideMenu("file")
+     hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
  });
- hideMenu("file")
+ hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
 }
 
 // Trigger action when the contexmenu is about to be shown
@@ -5948,335 +5685,47 @@ $(document).bind("contextmenu", function (event) {
     if (event.target.classList[0] === "myFol") {
       if (highLevelFolderBool) {
         showmenu(event, "high-level-folder")
-        hideMenu("file")
+        hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
       } else {
         showmenu(event, "folder")
-        hideMenu("file")
+        hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
       }
     } else if (event.target.classList[0] === "myFile") {
       showmenu(event, "file")
-      hideMenu("folder")
-      hideMenu("high-level-folder")
+      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
       // otherwise, do not show any menu
     } else {
-      hideMenu("folder")
-      hideMenu("high-level-folder")
-      hideMenu("file")
+      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+      hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
       hideFullPath()
-      hideFullName()
+      hideFullName(fullNameValue)
     }
 });
 
 $(document).bind("click", function (event) {
   if (event.target.classList[0] !== "myFol" &&
       event.target.classList[0] !== "myFile") {
-        hideMenu("folder")
-        hideMenu("high-level-folder")
-        hideMenu("file")
+        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+        hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
         hideFullPath()
-        hideFullName()
+        hideFullName(fullNameValue)
       }
 })
 
-//////// prompt for Manage description
-function triggerManageDescriptionPrompt(fileName, filePath) {
-  bootbox.prompt({
-    title: "Choose an option below:",
-    buttons: {
-      cancel: {
-            label: '<i class="fa fa-times"></i> Cancel'
-        },
-        confirm: {
-            label: '<i class="fa fa-check"></i> Continue',
-            className: 'btn-success'
-        }
-    },
-    centerVertical: true,
-    size: 'small',
-    inputType: 'radio',
-    inputOptions: [{
-        text: 'Add/edit description',
-        value: 'description',
-        className: 'bootbox-input-text'
-    },
-    {
-        text: 'Add/edit additional metadata',
-        value: 'metadata'
-    }],
-    callback: function (result) {
-      if (result==="metadata") {
-        bootbox.dialog({
-          message: "<div class='form-content'>" + "<form class='form' role='form'>" + "<div class='form-group>" + "<label for='metadata'>View/edit additional metadata below: </label>"+"<textarea style='min-height: 80px;margin-top: 10px;font-size: 13px !important' class='form-control' id='metadata'>"+filePath[fileName][2]+"</textarea>"+"</div>"+ "<br>" + "<div class='checkbox'>"+"<label>"+"<input name='apply-all-metadata' type='checkbox'> Apply this metadata to all files in this folder</label> "+" </div> "+"</form>"+"</div>",
-          title: "<h2>Add metadata...</h2>",
-          buttons: {
-            success: {
-              label: '<i class="fa fa-check"></i> Save',
-              className: "btn-success",
-              callback: function () {
-                var metadata = $('#metadata').val();
-                var applyToAllMetadataBoolean = $("input[name='apply-all-metadata']:checked").val()
-
-                filePath[fileName][2] = metadata.trim()
-
-                if (applyToAllMetadataBoolean==="on") {
-                  for (var element in filePath) {
-                    if (Array.isArray(filePath[element])) {
-                      filePath[element][2] = metadata.trim()
-                    }
-                  }
-                  bootbox.alert({
-                    message: "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully added!",
-                    centerVertical: true
-                  })
-                }
-              }
-            },
-            cancel: {
-              label: 'Cancel',
-              className: "btn btn-default pull-left"
-            }
-          },
-        centerVertical: true,
-      });
-      } else if (result==="description"){
-          bootbox.dialog({
-            message: "<div class='form-content'>" + "<form class='form' role='form'>" + "<div class='form-group>" + "<label for='description'>View/Edit your description below:</label> "+"<textarea style='min-height: 80px;margin-top: 10px;font-size: 13px !important' class='form-control' id='description'>"+filePath[fileName][1]+"</textarea>"+ "<br>" + "</div>"+"<div class='checkbox'>"+"<label>"+"<input name='apply-all-desc' type='checkbox'> Apply this description to all files in this folder</label> "+" </div> "+"</form>"+"</div>",
-            title: "Add description",
-            buttons: {
-              success: {
-                label: '<i class="fa fa-check"></i> Save',
-                className: "btn-success",
-                callback: function () {
-                  var description = $("#description").val();
-                  var applyToAllDescBoolean = $("input[name='apply-all-desc']:checked").val()
-
-                  filePath[fileName][1] = description.trim()
-                  if (applyToAllDescBoolean==="on") {
-                    for (var element in filePath) {
-                      if (Array.isArray(filePath[element])) {
-                        filePath[element][1] = description.trim()
-                      }
-                    }
-                    bootbox.alert({
-                      message: "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully added!",
-                      centerVertical: true
-                    })
-                  }
-                }
-              },
-              cancel: {
-                label: "Cancel",
-                className: "btn btn-default pull-left"
-              }
-            },
-          value: filePath[fileName][1],
-          centerVertical: true,
-        });
-      }
-    }
-  });
-}
-
 ///// Option to manage description for files
 function manageDesc(ev) {
-
   var fileName = ev.parentElement.innerText
-
   /// get current location of files in JSON object
   var filtered = getGlobalPath()
-  var myPath = getRecursivePath(filtered)
-
+  var myPath = getRecursivePath(filtered, jsonObjGlobal)
   /// prompt for Manage description
-  triggerManageDescriptionPrompt(fileName, myPath)
-
+  triggerManageDescriptionPrompt(fileName, myPath, )
   /// list Items again with new updated JSON structure
-  listItems(myPath)
-  getInFolder(myPath)
-}
-
-
-///// Option to rename a folder
-function renameFolder(event1) {
-
-  var promptVar;
-  var type;
-  var newName;
-  var currentName = event1.parentElement.innerText
-  var nameWithoutExtension;
-  var highLevelFolderBool;
-  var duplicate = false
-
-  if (highLevelFolders.includes(currentName)) {
-    highLevelFolderBool = true
-  } else {
-    highLevelFolderBool = false
-  }
-
-  if (event1.classList[0] === "myFile") {
-    promptVar = "file";
-    type = "file";
-  } else if (event1.classList[0] === "myFol") {
-    promptVar = "folder";
-    type = "folder";
-  }
-
-  if (type==="file") {
-    nameWithoutExtension = currentName.slice(0,currentName.indexOf("."))
-  } else {
-    nameWithoutExtension = currentName
-  }
-
-  if (highLevelFolderBool) {
-    bootbox.alert({
-      message: "High-level SPARC folders cannot be renamed!",
-      centerVertical: true
-    })
-  } else {
-    // show prompt to enter a new name
-    bootbox.prompt({
-      title: 'Rename '+ promptVar,
-      message: 'Please enter a new name:',
-      buttons: {
-        cancel: {
-              label: '<i class="fa fa-times"></i> Cancel'
-          },
-          confirm: {
-              label: '<i class="fa fa-check"></i> Save',
-              className: 'btn-success'
-          }
-      },
-      value: nameWithoutExtension,
-      centerVertical: true,
-      callback: function (r) {
-        if(r!==null){
-          // if renaming a file
-          if (type==="file") {
-            newName = r.trim() + currentName.slice(currentName.indexOf("."))
-
-            // check for duplicate or files with the same name
-            var itemDivElements = document.getElementById("items").children
-            for (var i=0;i<itemDivElements.length;i++) {
-              if (newName === itemDivElements[i].innerText) {
-                duplicate = true
-                break
-              }
-            }
-            if (duplicate) {
-              bootbox.alert({
-                message:"Duplicate file name: " + newName,
-                centerVertical: true
-              })
-            } else {
-              if (organizeDSglobalPath.value === "/" && !(["dataset_description", "submission", "README", "CHANGES", "samples", "subjects"].includes(newName))) {
-                bootbox.alert({
-                  message:"Invalid name for a metadata file! Required names for metadata files are: <b>'dataset_description', 'submission', 'samples', 'subjects', 'README', 'CHANGES'</b>. Please try renaming your file again.",
-                  centerVertical: true
-                })
-                return
-              }
-            }
-
-          //// if renaming a folder
-          } else {
-              // check for duplicate folder as shown in the UI
-              var itemDivElements = document.getElementById("items").children
-              for (var i=0;i<itemDivElements.length;i++) {
-                if (r.trim() === itemDivElements[i].innerText) {
-                  duplicate = true
-                  break
-                }
-              }
-              if (duplicate) {
-                bootbox.alert({
-                  message:"Duplicate folder name: " + r.trim(),
-                  centerVertical: true
-                })
-                return
-              } else {
-                newName = r.trim()
-              }
-          }
-
-          /// assign new name to folder or file in the UI
-          event1.parentElement.parentElement.innerText = newName
-          /// get location of current file or folder in JSON obj
-          var filtered = getGlobalPath()
-          var myPath = getRecursivePath(filtered)
-          /// update jsonObjGlobal with the new name
-          storedValue = myPath[currentName]
-          delete myPath[currentName];
-          myPath[newName] = storedValue
-          /// list items again with updated JSON obj
-          listItems(myPath)
-          getInFolder(myPath)
-        }
-    }
-  })
-  }
-}
-
-///////// Option to delete folders or files
-function delFolder(ev) {
-
-  var itemToDelete = ev.parentElement.innerText
-  // console.log(itemToDelete)
-  // console.log(ev.parentElement.innerText)
-  var promptVar;
-  var highLevelFolderBool;
-
-  /// check for high-level folders (if so, folders cannot be deleted from the current UI)
-  if (highLevelFolders.includes(itemToDelete)) {
-    highLevelFolderBool = true
-  } else {
-    highLevelFolderBool = false
-  }
-
-  if (ev.classList.value.includes("myFile")) {
-    promptVar = "file";
-  } else if (ev.classList.value.includes("myFol")) {
-    promptVar = "folder";
-  }
-
-  if (highLevelFolderBool) {
-    bootbox.alert({
-      message: "High-level SPARC folders cannot be deleted!",
-      centerVertical: true
-    })
-  } else {
-    bootbox.confirm({
-      title: "Delete "+ promptVar,
-      message: "Are you sure you want to delete this " + promptVar + "?",
-      onEscape: true,
-      centerVertical: true,
-      callback: function(result) {
-      if(result !== null && result === true) {
-
-        /// get current location of folders or files
-        var filtered = getGlobalPath()
-        var myPath = getRecursivePath(filtered)
-        // update Json object with new folder created
-        delete myPath[itemToDelete];
-        // update UI with updated jsob obj
-        listItems(myPath)
-        getInFolder(myPath)
-        }
-      }
-    })
-  }
-}
-
-
-//// option to show tool-tips for high-level folders
-function showTooltips(ev) {
-  var folderName = ev.parentElement.innerText;
-  bootbox.alert({
-    message: highLevelFolderToolTip[folderName],
-    button: {
-      ok: {
-        className: 'btn-primary'
-      }
-    },
-    centerVertical: true
-  })
-  // dialog.showMessageBox(options)
+  listItems(myPath, '#items')
+  getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+  hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+  hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
 }

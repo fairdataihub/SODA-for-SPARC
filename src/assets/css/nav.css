@@ -41,8 +41,8 @@
 }
 
 #main-nav {
-    min-width: 230px;
-    max-width: 230px;
+    min-width: 210px;
+    max-width: 210px;
     background: #000;
     opacity: 0.9;
     color: #f0f0f0;
@@ -309,7 +309,7 @@ a[data-toggle="collapse"] {
 .nav-item {
   padding: .5em 0;
   vertical-align: middle;
-  width: 225px !important;
+  width: 210px !important;
 }
 
 .nav-icon {
