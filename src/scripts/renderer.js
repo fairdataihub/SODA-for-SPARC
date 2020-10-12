@@ -394,8 +394,6 @@ var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-/////// Load SPARC airtable data
-var airtableHostname = 'api.airtable.com'
 
 function sendHTTPsRequestAirtable(options, varSuccess) {
   https.get(options, res => {
@@ -434,7 +432,7 @@ addAirtableKeyBtn.addEventListener("click", function() {
     https.get(optionsSparcTable, res => {
       if (res.statusCode === 200) {
         /// updating api key in SODA's storage
-        createMetadataDir();
+        createMetadataDir(metadataPath);
         var content = parseJson(airtableConfigPath);
         content["api-key"] = apiKeyInput;
         content["key-name"] = keyName
@@ -533,7 +531,7 @@ document.getElementById("button-import-milestone").addEventListener("click", fun
     }
     else {
       milestoneObj = res;
-      createMetadataDir();
+      createMetadataDir(metadataPath);
       var informationJson = {};
       informationJson = parseJson(milestonePath);
       informationJson[award] = milestoneObj;
@@ -599,41 +597,8 @@ presavedAwardArray1.addEventListener('change', function() {
   }
 })
 
-// load and parse json file
-function parseJson(path) {
-  if (!fs.existsSync(path)) {
-    return {}
-  }
-  try {
-    var content = fs.readFileSync(path);
-    contentJson = JSON.parse(content);
-    return contentJson
-  } catch (error) {
-    log.error(error)
-    console.log(error);
-    return {}
-  }
-}
 
-// function to make directory if metadata path does not exist
-function createMetadataDir() {
-  try {
-  fs.mkdirSync(metadataPath, { recursive: true } );
-  } catch (error) {
-    log.error(error)
-    console.log(error)
-  }
-}
-
-createMetadataDir()
-
-// Function to add options to dropdown list
-function addOption(selectbox, text, value) {
-    var opt = document.createElement("OPTION");
-    opt.text = text;
-    opt.value = value;
-    selectbox.options.add(opt);
-}
+createMetadataDir(metadataPath)
 
 // Function to auto load existing awards
 function loadAwards() {
@@ -650,19 +615,6 @@ function loadAwards() {
   }
 }
 loadAwards()
-
-/// function to grab row index
-function getRowIndex(table) {
-  var rowcount = table.rows.length;
-  if (rowcount===2) {
-    // start at 1 to skip the header
-    var rowIndex = 1;
-  } else {
-    /// append row to table from the bottom
-    var rowIndex = rowcount-1;
-  }
-  return rowIndex
-}
 
 
 //// initiate a tagify Award list
@@ -704,7 +656,7 @@ addAwardBtn.addEventListener('click', function() {
       awardNoAray.push(keyValuePair)
     }
     // create empty milestone json files for newly added award
-    createMetadataDir();
+    createMetadataDir(metadataPath);
     var awardsJson = {};
     awardsJson = parseJson(awardPath);
     var duplicateList = [];
@@ -736,15 +688,6 @@ addAwardBtn.addEventListener('click', function() {
 })
 
 /////// Delete an Award///////////
-function deleteOptionByValue (dropdown, value) {
-    for (var i = 0; i < dropdown.length; i++) {
-        if (dropdown.options[i].value === value) {
-            dropdown.remove(i)
-        }
-    }
-    return null
-}
-
 deleteAwardBtn.addEventListener('click', function() {
   award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
   if (award==="Select") {
@@ -785,30 +728,7 @@ ipcRenderer.on('warning-delete-award-selection', (event, index) => {
     }
 })
 
-//// function to make a selected award the default award
-function makeDefaultAward(award) {
-  var defaultObj = {};
-  var defaultObj = parseJson(defaultAwardPath);
-  defaultObj["default"] = award
-  fs.writeFileSync(defaultAwardPath, JSON.stringify(defaultObj));
-}
-
-/// When SODA launches, load default award
-function loadDefaultAward() {
-  var award;
-  var defaultObj = parseJson(defaultAwardPath);
-  try {
-    award = defaultObj["default"]
-    return award
-  }
-  catch (error) {
-    log.error(error)
-    console.log(error);
-    return ""
-  }
-}
-
-var defaultAward = loadDefaultAward()
+var defaultAward = loadDefaultAward(defaultAwardPath)
 loadMilestoneInfo(defaultAward)
 
 function loadMilestoneInfo(awardNumber) {
@@ -820,7 +740,7 @@ function loadMilestoneInfo(awardNumber) {
     document.getElementById("div-show-current-milestones").style.display = "none"
   } else {
     ///// first, make the selected award the default so next time SODA will auto-load it.
-    makeDefaultAward(awardNumber)
+    makeDefaultAward(awardNumber, defaultAwardPath)
     /// clear old table before loading new table
     while (milestoneArray.rows.length>1) {
       milestoneArray.deleteRow(1)
@@ -887,62 +807,14 @@ presavedAwardArray1.addEventListener('change', function() {
   loadMilestoneInfo(currentAward)
 })
 
-// indicate to user that airtable records are being retrieved
-function loadAwardData() {
-  document.getElementById("para-save-award-info").innerHTML = ""
-  document.getElementById("div-awards-load-progress").style.display = 'block'
-  document.getElementById("para-add-airtable-key-status").innerHTML = "Checking..."
-  ///// Construct table from data
-  var awardResultArray = [];
-  ///// config and load live data from Airtable
-  var airKeyContent = parseJson(airtableConfigPath)
-  if (Object.keys(airKeyContent).length === 0) {
-    document.getElementById("div-awards-load-progress").style.display = 'none';
-    document.getElementById("para-add-airtable-key-status").innerHTML =  "<span style='color: red;'>Please add an API Key to connect to Airtable!</span>"
-    document.getElementById("para-save-award-info").innerHTML = "<span style='color: red;'>No Airtable API key found! Please connect to Airtable first!</span>";
-  } else {
-    var airKeyInput = airKeyContent["api-key"]
-    var airKeyName = airKeyContent["key-name"]
-    Airtable.configure({
-        endpointUrl: 'https://' + airtableHostname,
-        apiKey: airKeyInput
-    });
-    var base = Airtable.base('appiYd1Tz9Sv857GZ');
-    base("sparc_members").select({
-        view: 'Grid view'
-    }).eachPage(function page(records, fetchNextPage) {
-        records.forEach(function(record) {
-          if (record.get('Project_title')!==undefined) {
-            item = record.get('SPARC_Award_#').concat(" (", record.get('Project_title'), ")");
-            awardResultArray.push(item);
-          }
-        }),
-      fetchNextPage();
-    },
-    function done(err) {
-        document.getElementById("div-awards-load-progress").style.display = 'none';
-        if (err) {
-          document.getElementById("para-add-airtable-key-status").innerHTML = "<span style='color: red;'>Failed to load awards from Airtable. To add new SPARC award(s), please try re-connecting to Airtable under the Connect to Airtable tab above.</span>";
-          document.getElementById("para-add-airtable-key-status").style.display = 'block';
-          log.error(err);
-          console.log(err);
-          return;
-        }
-        else {
-          // create set to remove duplicates
-          var awardSet = new Set(awardResultArray)
-          var resultArray = [...awardSet]
-          awardArrayTagify.settings.whitelist = resultArray
-          document.getElementById("div-search-for-awards").style.display = "block"
-          document.getElementById("para-add-airtable-key-status").innerHTML = "<br><span style='color: black;'>Successfully connected to Airtable account " + airKeyName + "!" +smileyCan +"</span>";
-        }
-    });
-  }
-}
 
 // Refresh publishing dataset status
 bfRefreshAirtableStatusBtn.addEventListener('click', () => {
-  loadAwardData()
+  var para1 = document.getElementById("para-save-award-info");
+  var para2 = document.getElementById("div-awards-load-progress");
+  var para3 = document.getElementById("para-add-airtable-key-status");
+  var div1 = document.getElementById("div-search-for-awards");
+  loadAwardData(para1, para2, para3, div1, airtableConfigPath, awardArrayTagify)
 })
 
 ///////////////// //////////////// //////////////// ////////////////
@@ -3798,15 +3670,6 @@ bfRefreshPublishingDatasetStatusBtn.addEventListener('click', () => {
 
 // General //
 
-function removeOptions(selectbox)
-{
-    var i;
-    for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
-    {
-        selectbox.remove(i);
-    }
-}
-
 function disableform(formId) {
   var f = formId.elements;
   for (var i=0;i<f.length;i++)
@@ -6213,70 +6076,4 @@ function renameFolder(event1) {
     }
   })
   }
-}
-
-///////// Option to delete folders or files
-function delFolder(ev) {
-
-  var itemToDelete = ev.parentElement.innerText
-  // console.log(itemToDelete)
-  // console.log(ev.parentElement.innerText)
-  var promptVar;
-  var highLevelFolderBool;
-
-  /// check for high-level folders (if so, folders cannot be deleted from the current UI)
-  if (highLevelFolders.includes(itemToDelete)) {
-    highLevelFolderBool = true
-  } else {
-    highLevelFolderBool = false
-  }
-
-  if (ev.classList.value.includes("myFile")) {
-    promptVar = "file";
-  } else if (ev.classList.value.includes("myFol")) {
-    promptVar = "folder";
-  }
-
-  if (highLevelFolderBool) {
-    bootbox.alert({
-      message: "High-level SPARC folders cannot be deleted!",
-      centerVertical: true
-    })
-  } else {
-    bootbox.confirm({
-      title: "Delete "+ promptVar,
-      message: "Are you sure you want to delete this " + promptVar + "?",
-      onEscape: true,
-      centerVertical: true,
-      callback: function(result) {
-      if(result !== null && result === true) {
-
-        /// get current location of folders or files
-        var filtered = getGlobalPath()
-        var myPath = getRecursivePath(filtered)
-        // update Json object with new folder created
-        delete myPath[itemToDelete];
-        // update UI with updated jsob obj
-        listItems(myPath)
-        getInFolder(myPath)
-        }
-      }
-    })
-  }
-}
-
-
-//// option to show tool-tips for high-level folders
-function showTooltips(ev) {
-  var folderName = ev.parentElement.innerText;
-  bootbox.alert({
-    message: highLevelFolderToolTip[folderName],
-    button: {
-      ok: {
-        className: 'btn-primary'
-      }
-    },
-    centerVertical: true
-  })
-  // dialog.showMessageBox(options)
 }
