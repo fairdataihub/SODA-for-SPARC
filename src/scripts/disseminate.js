@@ -1,5 +1,0 @@
-
-
-
-
-export { cube, foo, graph };

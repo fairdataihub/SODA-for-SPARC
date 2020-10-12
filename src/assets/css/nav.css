@@ -104,7 +104,7 @@ a[data-toggle="collapse"] {
 
 #main-nav .sidebar-header {
   margin-top: 20px;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
   padding: 20px;
   /* background: #222c3c; */
   padding-bottom: 30px;
@@ -132,8 +132,7 @@ a[data-toggle="collapse"] {
     margin-bottom: 5px;
     text-align: left;
     padding-right: 10px;
-    color: #fff;
-    opacity: 0.8;
+    color: #E0E0E0;
     border: none;
     /* background: #222c3c; */
     border-radius: 4px;
@@ -151,7 +150,6 @@ a[data-toggle="collapse"] {
 
 #main-nav ul li a:hover {
     color: #fff;
-    opacity: 1;
     text-decoration: none;
     background: #222c3c;
     opacity: 0.7
