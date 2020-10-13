@@ -142,6 +142,7 @@ const generateSubmissionBtn = document.getElementById("generate-submission")
 const dsAwardArray = document.getElementById("ds-description-award-list")
 const dsContributorArray = document.getElementById("ds-description-contributor-list")
 var contributorRoles = document.getElementById("input-con-role")
+const affiliationInput = document.getElementById("input-con-affiliation")
 const addCurrentContributorsBtn = document.getElementById("button-ds-add-contributor")
 const contactPerson = document.getElementById("ds-contact-person")
 const currentConTable = document.getElementById("table-current-contributors")
@@ -226,7 +227,7 @@ const bfCreateNewDatasetBtn = document.getElementById('button-create-bf-new-data
 const bfCreateNewDatasetStatus = document.querySelector('#para-add-new-dataset-status')
 const bfSubmitDatasetBtn = document.getElementById('button-submit-dataset')
 const selectLocalDsSubmit = document.getElementById("selected-local-dataset-submit")
-const importLocalDsSubmit = document.getElementById("button-import-local-ds-submit")
+// const importLocalDsSubmit = document.getElementById("button-import-local-ds-submit")
 const bfSubmitDatasetInfo = document.querySelector('#progresssubmit')
 const pathSubmitDataset = document.querySelector('#selected-local-dataset-submit')
 const progressUploadBf = document.getElementById("div-progress-submit")
@@ -666,10 +667,12 @@ function getRowIndex(table) {
 
 //// initiate a tagify Award list
 var awardArrayTagify = new Tagify(awardInputField, {
+  delimiters: null,
   enforceWhitelist: true,
   whitelist: [],
   duplicates: false,
   dropdown : {
+    classname : "color-blue",
     maxItems: Infinity,
     enabled   : 0,
     closeOnSelect : true
@@ -908,7 +911,7 @@ function loadAwardData() {
     });
     var base = Airtable.base('appiYd1Tz9Sv857GZ');
     base("sparc_members").select({
-        view: 'Grid view'
+        view: 'All members'
     }).eachPage(function page(records, fetchNextPage) {
         records.forEach(function(record) {
           if (record.get('Project_title')!==undefined) {
@@ -1103,6 +1106,16 @@ var currentContributortagify = new Tagify(contributorRoles, {
     duplicates: false
 });
 
+var currentAffliationtagify = new Tagify(affiliationInput, {
+    dropdown : {
+        classname : "color-blue",
+        enabled   : 0,         // show the dropdown immediately on focus
+        maxItems  : 25,
+        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+    },
+    duplicates: false
+});
+
 var completenessInput = document.getElementById('ds-completeness'),
 completenessTagify = new Tagify(completenessInput, {
     whitelist : ["hasChildren", "hasNext"],
@@ -1184,7 +1197,7 @@ function createCurrentConTable(table) {
     name = conVal
   }
   var id = document.getElementById("input-con-ID").value
-  var affiliation = document.getElementById("input-con-affiliation").value
+  var affiliation = currentAffliationtagify.value
   var role = currentContributortagify.value
   //// check if any field is empty
   if (name.length===0 || id.length===0 || affiliation.length===0 || role.length===0) {
@@ -1194,6 +1207,10 @@ function createCurrentConTable(table) {
     var roleVal = []
     for (var i=0;i<role.length;i++) {
       roleVal.push(role[i].value)
+    }
+    var affliationVal = []
+    for (var i=0;i<affiliation.length;i++) {
+      affliationVal.push(affiliation[i].value)
     }
     var contactPersonStatus = "No"
     if (contactPerson.checked) {
@@ -1229,7 +1246,7 @@ function createCurrentConTable(table) {
       if (contactPersonStatus==="Yes") {
           if (!existingContactPersonStatus) {
             roleVal.push("ContactPerson");
-            var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td class='grab' id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+            var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td class='grab' id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affliationVal.join('; ') +"</td><td id='role-row"+rowIndex+"'>"+ roleVal.join(', ')+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
             document.getElementById("div-current-contributors").style.display = "block"
             return table
 
@@ -1238,7 +1255,7 @@ function createCurrentConTable(table) {
           }
 
       } else {
-            var row = table.insertRow(rowIndex).outerHTML="<tr  id='row-current-name"+rowIndex+"'style='color: #000000;'><td class='grab' id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+            var row = table.insertRow(rowIndex).outerHTML="<tr  id='row-current-name"+rowIndex+"'style='color: #000000;'><td class='grab' id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affliationVal.join('; ') +"</td><td id='role-row"+rowIndex+"'>"+ roleVal.join(', ')+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
 
             document.getElementById("div-current-contributors").style.display = "block"
             return table
@@ -1371,12 +1388,9 @@ dsAwardArray.addEventListener("change", changeAwardInputDsDescription)
 
 /// Auto populate once a contributor is selected
 dsContributorArray.addEventListener("change", function(e) {
-
-
   ///clear old entries once a contributor option is changed
   document.getElementById("para-save-contributor-status").innerHTML = '';
   document.getElementById("input-con-ID").value = '';
-  document.getElementById("input-con-affiliation").value = '';
 
   /// hide Other collaborators fields upon changing contributors
   document.getElementById("div-other-collaborators-1").style.display = "none"
@@ -1384,6 +1398,7 @@ dsContributorArray.addEventListener("change", function(e) {
   document.getElementById("div-other-collaborators-3").style.display = "none"
 
   currentContributortagify.removeAllTags()
+  currentAffliationtagify.removeAllTags()
   contactPerson.checked = false;
 
   var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
@@ -1395,12 +1410,12 @@ dsContributorArray.addEventListener("change", function(e) {
   }
   else {
     currentContributortagify.destroy()
-
+    currentAffliationtagify.destroy()
     document.getElementById("input-con-ID").disabled = true
-    document.getElementById("input-con-affiliation").disabled = true
+    affiliationInput.disabled = true
     document.getElementById("input-con-role").disabled = true
     document.getElementById("input-con-ID").value = "Loading..."
-    document.getElementById("input-con-affiliation").value = "Loading..."
+    affiliationInput.value = "Loading..."
     document.getElementById("input-con-role").value = "Loading..."
 
     var airKeyContent = parseJson(airtableConfigPath)
@@ -1421,10 +1436,9 @@ dsContributorArray.addEventListener("change", function(e) {
       }),
       fetchNextPage();
 
-
       leaveFieldsEmpty(conInfoObj["ID"],document.getElementById("input-con-ID"));
       leaveFieldsEmpty(conInfoObj["Role"],document.getElementById("input-con-role"));
-      leaveFieldsEmpty(conInfoObj["Affiliation"],document.getElementById("input-con-affiliation"));
+      leaveFieldsEmpty(conInfoObj["Affiliation"], affiliationInput);
 
       /// initiate tagify for contributor roles
       currentContributortagify = new Tagify(contributorRoles, {
@@ -1438,9 +1452,19 @@ dsContributorArray.addEventListener("change", function(e) {
           },
           duplicates: false
         });
+        /// initiate tagify for affiliations
+        currentAffliationtagify = new Tagify(affiliationInput, {
+            dropdown : {
+                classname : "color-blue",
+                enabled   : 0,         // show the dropdown immediately on focus
+                maxItems  : 25,
+                closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+            },
+            duplicates: false
+          });
 
       document.getElementById("input-con-ID").disabled = false
-      document.getElementById("input-con-affiliation").disabled = false
+      affiliationInput.disabled = false
       document.getElementById("input-con-role").disabled = false
     }),
     function done(err) {
@@ -1565,24 +1589,16 @@ function grabConInfoEntries() {
   var rowcountCon = currentConTable.rows.length;
   var currentConInfo = []
   for (i=1; i<rowcountCon; i++) {
-    var conRoleInfo = currentConTable.rows[i].cells[3].innerHTML.split(",");
+    var conRoleInfo = currentConTable.rows[i].cells[3].innerHTML;
+    var conAffliationInfo = currentConTable.rows[i].cells[2].innerHTML;
     var myCurrentCon = {"conName": currentConTable.rows[i].cells[0].innerHTML.trim(),
                         "conID": currentConTable.rows[i].cells[1].innerHTML.trim(),
-                        "conAffliation": currentConTable.rows[i].cells[2].innerHTML.trim(),
-                         "conRole": conRoleInfo[0],
-                        "conContact": currentConTable.rows[i].cells[4].innerHTML}
+                        "conAffliation": conAffliationInfo,
+                         "conRole": conRoleInfo,
+                        "conContact": currentConTable.rows[i].cells[4].innerHTML
+                        }
     currentConInfo.push(myCurrentCon);
-    if (conRoleInfo.length>1) {
-      for (var j=1;j<conRoleInfo.length;j++) {
-        myCurrentCon = {"conName": "",
-                        "conID": "",
-                        "conAffliation": "",
-                         "conRole": conRoleInfo[j],
-                        "conContact": ""}
-        currentConInfo.push(myCurrentCon);
-      }
-    }
-  };
+    };
   contributorObj["funding"] = fundingArray
   contributorObj["acknowledgment"] = acknowledgment
   contributorObj["contributors"] = currentConInfo
@@ -2863,6 +2879,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-progress-bar-error-status").innerHTML = ""
   progressBarUploadBf.value = 0
   bfSubmitDatasetBtn.disabled = true
+  pathSubmitDataset.disabled = true
   var err = false
   var completionStatus = 'Solving'
   document.getElementById("para-progress-bar-status").innerHTML = "Preparing files ..."
@@ -2880,6 +2897,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       log.error(error)
       console.error(error)
       bfSubmitDatasetBtn.disabled = false
+      pathSubmitDataset.disabled = false
     } else {
       // document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
       log.info('Completed submit function')
@@ -2934,6 +2952,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
         document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
         clearInterval(timerProgress)
         bfSubmitDatasetBtn.disabled = false
+        pathSubmitDataset.disabled = false
       }
     }
   }
@@ -2971,15 +2990,6 @@ ipcRenderer.on('selected-submit-dataset', (event, filepath) => {
       document.getElementById("para-info-local-submit").innerHTML = ""
       document.getElementById("selected-local-dataset-submit").placeholder = filepath[0];
     }
-  }
-})
-
-importLocalDsSubmit.addEventListener("click", function() {
-  var filepath = document.getElementById("selected-local-dataset-submit").placeholder;
-  if (filepath === "Select a folder") {
-    document.getElementById("para-info-local-submit").innerHTML = "<span style='color: red ;'>" + "Please select a folder!</span>"
-  } else {
-    document.getElementById("para-info-local-submit").innerHTML = "Imported!"
   }
 })
 
