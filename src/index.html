@@ -37,15 +37,17 @@
           <!-- Sidebar Header -->
           <div class="sidebar-header">
             <div style="display:block" id="SODA-logo">
-            <a href="#">
-            <img id="button-soda-big-icon" class = "nav-center-logo-image" src="assets/img/logo-can1024.png">
-            </a>
-            <h1 class="nav-title">
-              <strong>
-                SODA for SPARC
-              <!-- <br><span>Data Automatically</span> -->
-            </strong>
-            </div>
+              <!-- <a href="#"> -->
+                <img id="button-soda-big-icon" class = "nav-center-logo-image" src="assets/img/logo-can1024.png"/>
+              <!-- </a> -->
+              <div class="center-outer">
+                <div class="center-inner">
+                  <div class="bubbles">
+                    <h1 style="color: #20b2aa;width: 80px;">SODA for SPARC</h1>
+                  </div>
+                </div>
+              </div>
+          </div>
           </div>
           <!-- Sidebar Links -->
           <ul class="list-unstyled components">
@@ -115,6 +117,45 @@
           $('a').removeClass('is-selected');
       });
     });
+    // var myAnimation;
+    // // Function to select random array element
+    // // Used within the setInterval a few times
+    // function randomValue(arr) {
+    //     var newValue = arr[Math.floor(Math.random() * arr.length)];
+    //     return newValue + 4
+    // }
+    // // Define a blank array for the effect positions. This will be populated based on width of the title.
+    // var bArray = [];
+    // // Define a size array, this will be used to vary bubble sizes
+    // var sArray = [1,2,3,4];
+    // // Push the header width values to bArray
+    // for (var i = 0; i < 140; i++) {
+    //     bArray.push(i);
+    // }
+  //   $("#button-soda-big-icon").click(
+  //     function(){
+  //       // setInterval function used to create new bubble every 350 milliseconds
+  //       myAnimation = setInterval(function(){
+  //           // Get a random size, defined as variable so it can be used for both width and height
+  //           var size = randomValue(sArray);
+  //           // New bubble appeneded to div with it's size and left position being set inline
+  //           // Left value is set through getting a random value from bArray
+  //           $('.bubbles').append('<div class="individual-bubble" style="left: ' + randomValue(bArray) + 'px; width: ' + size + 'px; height:' + size + 'px;z-index:1"></div>');
+  //           // Animate each bubble to the top (bottom 100%) and reduce opacity as it moves
+  //           // Callback function used to remove finsihed animations from the page
+  //           $('.individual-bubble').animate({
+  //               'bottom': '100%',
+  //               'opacity' : '-=0.7'
+  //           }, 4000, function(){
+  //               $(this).remove()
+  //           }
+  //           );
+  //       }, 500);
+  // });
+  // $("#button-soda-big-icon").on(
+  //   function() {
+  //   clearInterval(myAnimation)
+  // })
   </script>
   <script>window.$ = window.jQuery = require('jquery')</script>
   <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
