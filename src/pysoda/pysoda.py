@@ -25,8 +25,9 @@ import re
 import gevent
 from blackfynn import Blackfynn
 from blackfynn.log import get_logger
-from blackfynn.api.agent import agent_cmd
+from blackfynn.api.agent import agent_cmd, validate_agent_installation
 from blackfynn.api.agent import AgentError, check_port, socket_address
+from blackfynn import Settings
 from urllib.request import urlopen
 import json
 import collections
@@ -428,7 +429,7 @@ def save_submission_file(filepath, json_str):
 
     ## change header names
     columns_list = excel_columns()
-    
+
     for i, column in zip(range(2, len(val_arr) + 1), columns_list[0:]):
 
         ws1[column + "1"] = "Value " + str(i)
@@ -1010,9 +1011,14 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         except Exception as e:
             raise e
 
+        validate_agent_installation(Settings())
         clear_queue()
         try:
+            ## check if agent is installed
+            # validate_agent_installation(Settings())
+            ## check if agent is running in the background
             agent_running()
+
             def calluploaddirectly():
 
                 try:
@@ -1560,6 +1566,7 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
 
 
 def clear_queue():
+
     command = [agent_cmd(), "upload-status", "--cancel-all"]
 
     proc = subprocess.run(command, check=True)   # env=agent_env(?settings?)
@@ -1672,8 +1679,12 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error = "Error: You don't have permissions for uploading to this Blackfynn dataset"
         raise Exception(error)
 
+    validate_agent_installation(Settings())
     clear_queue()
     try:
+        ## check if agent is installed
+        # validate_agent_installation(Settings())
+        ## check if agent is running in the background
         agent_running()
         def calluploadfolder():
 
