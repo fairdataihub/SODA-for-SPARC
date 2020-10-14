@@ -513,8 +513,20 @@ ipcRenderer.on('selected-DDD-download-folder', (event, path, filename) => {
 //////////////// //////////////// //////////////// //////////////// ///////////
 
 ////////////////////////Import Milestone Info//////////////////////////////////
+const descriptionDateInput = document.getElementById("selected-milestone-date");
+const milestoneInput = document.getElementById('selected-milestone')
+var milestoneTagify = new Tagify(milestoneInput, {
+      duplicates: false,
+      delimiters: null,
+      dropdown : {
+        classname : "color-blue",
+        maxItems: Infinity,
+        enabled   : 0,
+        closeOnSelect : true
+      }
+})
 
-//// when users click on Import but haven't specified a path
+//// when users click on Import
 document.getElementById("button-import-milestone").addEventListener("click", function() {
   document.getElementById("para-milestone-document-info-long").style.display = "none"
   document.getElementById("para-milestone-document-info").innerHTML = "";
@@ -560,11 +572,11 @@ document.getElementById("button-import-milestone").addEventListener("click", fun
           }
           rowIndex++;
         }
+      removeOptions(descriptionDateInput);
+      milestoneTagify.removeAllTags()
+      milestoneTagify.settings.whitelist = []
       document.getElementById("table-current-milestones").style.display = "block";
       document.getElementById("presaved-award-list").value = "Select"
-      removeOptions(document.getElementById("selected-milestone"));
-      removeOptions(document.getElementById("selected-description-data"));
-      document.getElementById("selected-milestone-date").value = ""
       document.getElementById("input-milestone-select").placeholder = "Select a file"
       return milestoneArray
     }
@@ -951,72 +963,62 @@ bfRefreshAirtableStatusBtn.addEventListener('click', () => {
 ///////////////////////Submission file //////////////// ////////////////
 
 function changeAwardInput() {
-  document.getElementById("selected-milestone").value = "";
   document.getElementById("selected-milestone-date").value = "";
-  document.getElementById("selected-description-data").value = "";
   document.getElementById("para-save-submission-status").innerHTML = "";
+  milestoneTagify.removeAllTags()
+  milestoneTagify.settings.whitelist = [];
+  removeOptions(descriptionDateInput);
+  addOption(descriptionDateInput, "Select an option", "Select")
 
-  removeOptions(document.getElementById("selected-milestone"))
-  removeOptions(document.getElementById("selected-description-data"))
-  addOption(document.getElementById('selected-milestone'), "Select an option", "Select")
-  addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
-  addOption(document.getElementById('selected-milestone'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
-  addOption(document.getElementById('selected-description-data'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
+  // removeOptions(document.getElementById("selected-milestone"))
+  // addOption(document.getElementById('selected-milestone'), "Select an option", "Select")
+  // addOption(document.getElementById('selected-milestone'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
 
   award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
   var informationJson = parseJson(milestonePath);
-  var milestoneInput = document.getElementById("selected-milestone");
-  var descriptionInput = document.getElementById("selected-description-data");
-  var dateInput = document.getElementById("selected-milestone-date");
+  // var tagifyArray = milestoneTagify.value;
+  // var milestoneInput = document.getElementById("selected-milestone");
   if (award in informationJson) {
     var milestoneObj = informationJson[award];
     // Load milestone values once users choose an award number
     var milestoneKey = Object.keys(milestoneObj)
+    var completionDateArray = []
+    var milestoneValueArray = ["Not specified in the Data Deliverables document"]
     for (var i=0;i<milestoneKey.length;i++) {
-      addOption(document.getElementById('selected-milestone'), milestoneKey[i], milestoneKey[i]);
-    }
-    // populate description field based on milestone selected
-    milestoneInput.addEventListener('input', function() {
-    document.getElementById("para-save-submission-status").innerHTML = ""
-    removeOptions(descriptionInput);
-    document.getElementById("selected-milestone-date").value = ""
-    if (milestoneInput.value==="Not specified in the Data Deliverables document") {
-      addOption(document.getElementById('selected-description-data'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
-      // descriptionInput.value === "N/A"
-      // descriptionInput.text === "Not specified in the Data Deliverables document"
-      dateInput.value = "Not specified in the Data Deliverables document"
-    } else {
-        addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
-        addOption(document.getElementById('selected-description-data'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
-        for (var i=0;i<milestoneKey.length; i++) {
-          if (milestoneKey[i] === milestoneInput.value) {
-            //// Add description data to dropdowns
-            for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
-              addOption(descriptionInput, milestoneObj[milestoneKey[i]][j]["Description of data"], milestoneObj[milestoneKey[i]][j]["Description of data"])
-            }
-        }
+      milestoneValueArray.push(milestoneKey[i])
+      for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
+        completionDateArray.push(milestoneObj[milestoneKey[i]][j]["Expected date of completion"])
       }
     }
-  })
-  //// populate date field
-  descriptionInput.addEventListener('input', function() {
-    document.getElementById("para-save-submission-status").innerHTML = ""
-    document.getElementById("selected-milestone-date").value = "";
-    if (descriptionInput.value === "Not specified in the Data Deliverables document") {
-      dateInput.value = "Not specified in the Data Deliverables document"
+    milestoneTagify.settings.whitelist = milestoneValueArray
+    // milestoneTagify.settings.enforceWhitelist = true
+    if (completionDateArray.length === 1) {
+      descriptionDateInput.value = completionDateArray[0]
     } else {
-      for (var i=0;i<milestoneKey.length; i++) {
-        for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
-          if (milestoneObj[milestoneKey[i]][j]["Description of data"] === descriptionInput.value) {
-            //// stringify date object
-            var dateStrings = milestoneObj[milestoneKey[i]][j]["Expected date of completion"].toString()
-            dateInput.value = dateStrings
-          }
-        }
+      for (var i=0; i<completionDateArray.length;i++) {
+        addOption(descriptionDateInput, completionDateArray[i], completionDateArray[i])
       }
     }
-  })
   }
+  // //// populate date field
+  // descriptionInput.addEventListener('input', function() {
+  //   document.getElementById("para-save-submission-status").innerHTML = ""
+  //   document.getElementById("selected-milestone-date").value = "";
+  //   if (descriptionInput.value === "Not specified in the Data Deliverables document") {
+  //     dateInput.value = "Not specified in the Data Deliverables document"
+  //   } else {
+  //     for (var i=0;i<milestoneKey.length; i++) {
+  //       for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
+  //         if (milestoneObj[milestoneKey[i]][j]["Description of data"] === descriptionInput.value) {
+  //           //// stringify date object
+  //           var dateStrings = milestoneObj[milestoneKey[i]][j]["Expected date of completion"].toString()
+  //           dateInput.value = dateStrings
+  //         }
+  //       }
+  //     }
+  //   }
+  // })
+  // }
 }
 
 /////// Populate Submission file fields from presaved information
@@ -1026,10 +1028,9 @@ presavedAwardArray2.addEventListener('change', changeAwardInput)
 generateSubmissionBtn.addEventListener('click', (event) => {
   document.getElementById("para-save-submission-status").innerHTML = ""
   awardVal = document.getElementById("presaved-award-list").value;
-  milestoneVal = document.getElementById("selected-milestone").value;
-  descriptionVal = document.getElementById("selected-description-data").value;
+  milestoneVal = milestoneTagify.value;
   dateVal = document.getElementById("selected-milestone-date").value;
-  if (descriptionVal==='Select'|| dateVal==='' || awardVal==='Select' || milestoneVal==='Select') {
+  if (dateVal==='Select' || awardVal==='Select' || milestoneVal==='Select') {
     document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Please fill in all fields to generate!</span>"
   } else {
     ipcRenderer.send('open-folder-dialog-save-submission', "submission.xlsx")
@@ -1044,12 +1045,27 @@ ipcRenderer.on('selected-metadata-submission', (event, dirpath, filename) => {
     }
     else {
       var award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
-      var milestone = document.getElementById("selected-milestone").value;
+      var milestoneValue = []
+      for (var i=0;i<milestoneVal.length;i++) {
+        milestoneValue.push(milestoneVal[i].value)
+      }
       var date = document.getElementById("selected-milestone-date").value;
       var json_arr = [];
-      json_arr.push(award);
-      json_arr.push(milestone);
-      json_arr.push(date);
+      json_arr.push({
+        "award": award,
+        "date": date,
+        "milestone": milestoneValue[0]
+      });
+      if (milestoneValue.length > 0) {
+        for (var index = 1;index<milestoneValue.length;index++) {
+          json_arr.push({
+            "award": "",
+            "date": "",
+            "milestone": milestoneValue[index]
+          });
+        }
+      }
+
       json_str = JSON.stringify(json_arr)
       if (dirpath != null){
         client.invoke("api_save_submission_file", destinationPath, json_str, (error, res) => {

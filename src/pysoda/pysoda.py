@@ -38,6 +38,9 @@ from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font
 from docx import Document
 
+from string import ascii_uppercase
+import itertools
+
 from datetime import datetime, timezone
 
 from validator_soda import pathToJsonStruct, validate_high_level_folder_structure, validate_high_level_metadata_files, \
@@ -412,17 +415,34 @@ def save_submission_file(filepath, json_str):
     # write to excel file
     wb = load_workbook(destination)
     ws1 = wb['Sheet1']
-    # date_obj = datetime.strptime(val_arr[2], "%Y-%m")
-    # date_new = date_obj.strftime("%m-%Y")
-    ws1["C2"] = val_arr[0]
-    ws1["C3"] = val_arr[1]
-    ws1["C4"] = val_arr[2]
+
+    ws1["C2"] = val_arr[0]["award"]
+    ws1["C3"] = val_arr[0]["milestone"]
+    ws1["C4"] = val_arr[0]["date"]
+
+    ### Contributors
+    for index, column in zip(range(1, len(val_arr)), excel_columns()):
+            ws1[column + "2"] = val_arr[index]["award"]
+            ws1[column + "3"] = val_arr[index]["milestone"]
+            ws1[column + "4"] = val_arr[index]["date"]
+
+    ## change header names
+    columns_list = excel_columns()
+    
+    for i, column in zip(range(2, len(val_arr) + 1), columns_list[0:]):
+
+        ws1[column + "1"] = "Value " + str(i)
+        cell = ws1[column + "1"]
+
+        blueFill = PatternFill(start_color='9CC2E5',
+                           end_color='9CC2E5',
+                           fill_type='solid')
+
+        font = Font(bold=True)
+        cell.fill = blueFill
+        cell.font = font
 
     wb.save(destination)
-
-from string import ascii_uppercase
-import itertools
-
 
 def excel_columns():
     """
@@ -433,25 +453,15 @@ def excel_columns():
     two_letter = [a + b for a,b in itertools.product(ascii_uppercase, ascii_uppercase)]
     return single_letter + two_letter
 
-def rename_headers(workbook, keyword_array, contributor_role_array, funding_array, total_link_array):
+def rename_headers(workbook, keyword_len, no_contributors, funding_len, link_len):
     """
     Rename header columns if values exceed 3. Change Additional Values to Value 4, 5,...
     """
-    # keywords
-    keyword_len = len(keyword_array)
-
-    # contributors
-    no_contributors = len(contributor_role_array)
-
-    # funding = SPARC award + other funding sources
-    funding_len = len(funding_array)
-
-    # total links added
-    link_len = len(total_link_array)
 
     max_len = max(keyword_len, funding_len, link_len, no_contributors)
 
     columns_list = excel_columns()
+
     if max_len > 3:
 
         workbook[columns_list[0] + "1"] = "Value"
@@ -468,7 +478,6 @@ def rename_headers(workbook, keyword_array, contributor_role_array, funding_arra
             font = Font(bold=True)
             cell.fill = blueFill
             cell.font = font
-
 
     else:
 
@@ -501,6 +510,7 @@ def populate_contributor_info(workbook, val_array):
 
     ### Contributors
     for contributor, column in zip(val_array['contributors'], excel_columns()):
+
         workbook[column + "5"] = contributor["conName"]
         workbook[column + "6"] = contributor["conID"]
         workbook[column + "7"] = contributor["conAffliation"]
@@ -512,6 +522,7 @@ def populate_contributor_info(workbook, val_array):
 def populate_links_info(workbook, val_array):
     ## originating DOI, Protocol DOI
     total_link_array = val_array["Originating Article DOI"] + val_array["Protocol URL or DOI*"] + val_array["Additional Link"]
+
     for i, column in zip(range(len(total_link_array)), excel_columns()):
         if total_link_array[i]["link type"] == "Originating Article DOI":
             workbook[column + "12"] = total_link_array[i]["link"]
@@ -578,7 +589,7 @@ def save_ds_description_file(bfaccountname, filepath, dataset_str, misc_str, opt
     ret_val_3 = populate_links_info(ws1, val_arr_misc)
     populate_completeness_info(ws1, val_arr_optional, bfaccountname)
 
-    rename_headers(ws1, ret_val_1, ret_val_2[1], ret_val_2[0], ret_val_3)
+    rename_headers(ws1, len(ret_val_1), len(ret_val_2[1]), len(ret_val_2[0]), len(ret_val_3))
 
     wb.save(destination)
 
