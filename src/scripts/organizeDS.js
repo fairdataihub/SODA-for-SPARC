@@ -1,7 +1,3 @@
-// const fs = require('fs')
-// const $ = require( 'jquery' );
-// const bootbox = require('bootbox')
-
 // const { highLevelFolderToolTip, highLevelFolders  } = require('./renderer.js');
 
 //// option to show tool-tips for high-level folders

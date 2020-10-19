@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="assets/css/nav.css">
     <link rel="stylesheet" href="assets/css/section.css">
     <link rel="stylesheet" href="assets/css/demo.css">
+    <link rel="stylesheet" href="assets/css/individualtab.css">
     <link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css">
     <link rel="stylesheet" href="assets/css/spur.css">
     <link rel="stylesheet" href="assets/css/main.css">
@@ -19,9 +20,14 @@
     <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css">
     <link rel="stylesheet" href="node_modules/@yaireo/tagify/dist/tagify.css">
 
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans&display=swap" rel="stylesheet">
+
     <link rel="import" href="sections/account/account.html">
     <link rel="import" href="sections/getting_started/getting_started.html">
+    <link rel="import" href="sections/curate/highlevel_folders.html">
     <link rel="import" href="sections/curate/organize_files.html">
+    <link rel="import" href="sections/curate/metadata_files.html">
+    <link rel="import" href="sections/curate/generate_dataset.html">
     <link rel="import" href="sections/curate/validate_datasets.html">
     <link rel="import" href="sections/manage_submit/manage_submit.html">
     <link rel="import" href="sections/post_curation/post_curation.html">
@@ -57,8 +63,11 @@
               <li>
                   <a href="#curateSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fas fa-sitemap"></i>Curate</a>
                   <ul class="collapse list-unstyled" id="curateSubmenu">
-                      <li><a href="#" data-section="organize_files">Organize dataset</a></li>
-                      <li><a href="#" data-section="validate">Prepare dataset</a></li>
+                    <li><a href="#" data-section="highlevel_folders">High-level folders</a></li>
+                    <li><a href="#" data-section="organize_files">Organize dataset</a></li>
+                    <li><a href="#" data-section="metadata_files">Metadata files</a></li>
+                    <li><a href="#" data-section="generate_dataset">Generate dataset</a></li>
+                    <li><a href="#" data-section="validate">Prepare dataset</a></li>
                   </ul>
               <li>
                   <a href="#" data-section="manage_submit"><i class="fas fa-digital-tachograph"></i>Manage</a>
@@ -78,18 +87,18 @@
 </nav>
 
   <div class="dash-app" style="background: #fff;border-top:1px solid #C3C3C3">
-        <button type="button" id="sidebarCollapse" class="navbar-btn">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
+    <button type="button" id="sidebarCollapse" class="navbar-btn">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
       <main id="content" class="content js-content">
-        <div style="width: 100%;height:100%;display:flex;flex-direction:column;justify-content:flex-start;margin-top:120px;margin-left:130px">
+        <!-- <div style="width: 100%;height:100%;display:flex;flex-direction:column;justify-content:flex-start;margin-top:120px;margin-left:130px">
           <h1 align="center" style="font-weight:600;font-size:33px">Welcome to</h1>
           <img src="assets/img/logo-soda1024.png" class="soda-can-welcome">
           <br>
           <p styles="font-size:20px;" align="center">SODA is a desktop software intended to facilitate the data organization and submission process</p>
-        </div>
+        </div> -->
       </main>
 </div>
 
@@ -159,6 +168,5 @@
   </script>
   <script>window.$ = window.jQuery = require('jquery')</script>
   <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- <script src="./scripts/organizeDS.js"></script> -->
 </body>
 </html>

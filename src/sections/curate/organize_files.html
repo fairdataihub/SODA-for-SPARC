@@ -8,8 +8,8 @@
 </head>
 
 <main class="dash-content">
-  <h5 class="dash-title" id="dash-title">Organize dataset
-    <i class="fas fa-caret-right" style="margin-left: 10px; margin-right: 10px"></i>High-level folders
+  <h5 class="dash-title" id="dash-title">Prepare dataset
+    <i class="fas fa-caret-right" style="margin-left: 10px; margin-right: 10px"></i>Organize dataset
   </h5>
     <div class="container-fluid" style="height:100%">
 
@@ -36,13 +36,6 @@
       <div class="main-window">
 
         <div id="div-step-1-organize" style="margin: 0 15px">
-
-          <!-- <div> -->
-          <!-- <i class="fas fa-home" style="font-size: 22px;color:#999999;height:23px"></i>
-          <input style="border-radius: 3px;margin-left: 10px; margin-right: 25px;height: 30px; box-shadow: 0 0 2px #999;border: 1px solid #999999; font-family: sans-serif;font-size: 14px;font-weight:500;color:#999999;width: 350px" id="input-global-path" value=" /" readonly></input></i> -->
-          <!-- </div> -->
-
-          <!-- <hr> -->
 
           <div style="padding: 0 0;margin:3px 3px;" align="right">
             <button id="button-back" class="button-back" style="float:left;background-color: #fff;border-color:var(--color-bg-plum);color: var(--color-bg-plum);opacity: 0.8;height:30px;width:30px"><i class="fas fa-arrow-left fa-fw"></i></button>
@@ -77,57 +70,6 @@
           </div>
           <button id="button-organize-confirm-create" onclick="changeStepOrganize(this)" class="confirmButton" style="left:84%;width:130px"><i class="fas fa-arrow-right" style="margin-right:7px"></i>CONFIRM</button>
 
-        </div>
-
-        <div id="div-step-2-organize" style="display:none;">
-
-          <div class="div-organize-generate-dataset">
-            <!-- <h3 style="margin-bottom:25px;color: #222c3c;">Choose where generate your dataset?</h3> -->
-            <button id="btn-generate-locally" class="button-generate-dataset locally" onclick="generateDataset(this)">
-              <i class="fas fa-tv" style="font-size: 58px"></i>
-              <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">GENERATE DATASET LOCALLY</p>
-
-            </button>
-            <button id="btn-generate-BF" class="button-generate-dataset" onclick="generateDataset(this)">
-              <i class="fas fa-cloud-upload-alt" style="font-size: 58px"></i>
-              <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">GENERATE DATASET ON BLACKFYNN</p>
-            </button>
-          </div>
-          <div class="alert alert-primary" style="margin-top:25px !important;display:none" id="para-organize-datasets-loading" role="alert"></div>
-          <div class="alert alert-danger" style="margin-top:25px !important;display:none" id="para-organize-datasets-error" role="alert"></div>
-          <div class="alert alert-success" style="margin-top:25px !important;display:none" id="para-organize-datasets-success" role="alert"></div>
-
-            <!-- <div>
-            <label class="switch">
-              <input id="generate-manifest" name="manifest" type="checkbox" class="with-style-manifest"/>
-              <span class="slider round"></span>
-            </label>
-            <label id="label-manifest" class="labelradio-manifest" style="padding-left:10px;font-size:13px;font-family:'Montserrat', sans-serif"> Include auto-generated manifest files
-            </label>
-            <button class="myButton second" id="add-files" href="#" style="float:right;width: 40px;font-size:14px;color:var(--color-bg-plum);background:transparent;border: 1px solid var(--color-bg-plum)"><i class="fas fa-arrow-up"></i></button>
-        </div> -->
-<!--
-          <div align="right" style="margin: 3px 3px;">
-          </div> -->
-
-          <!-- <div id="items-metadata" style="width:100%;overflow:hidden;margin-top:5px" ondrop="drop(event);" ondragover="allowDrop(event);">
-            <div class="single-item"><h1 class="myFile other" style="margin-bottom: 10px;opacity: 0.4"></h1><div class="folder_desc" style="opacity: 0.3">submission.xlsx</div></div>
-            <div class="single-item"><h1 class="myFile other" style="margin-bottom: 10px;opacity: 0.4"></h1><div class="folder_desc" style="opacity: 0.3">subjects.xlsx</div></div>
-            <div class="single-item"><h1 class="myFile other"style="margin-bottom: 10px;opacity: 0.4"></h1><div class="folder_desc" style="opacity: 0.3">samples.xlsx</div></div>
-            <div class="single-item"><h1 class="myFile other" style="margin-bottom: 10px;opacity: 0.4"></h1><div class="folder_desc" style="opacity: 0.3">dataset_description.xlsx</div></div>
-            <div class="single-item"><h1 class="myFile other" style="margin-bottom: 10px;opacity: 0.4"></h1><div class="folder_desc" style="opacity: 0.3">CHANGES.txt</div></div>
-            <div class="single-item"><h1 class="myFile other" style="margin-bottom: 10px;opacity: 0.4"></h1><div class="folder_desc" style="opacity: 0.3">README.txt</div></div>
-          </div>
- -->
-
-
-        </div>
-        </div>
-
-                            <!-- <div align="right">
-                              <button id="organize-next-step" class="confirmButton" onclick="organizeNextStep()" style="font-family:'Montserrat', sans-serif;width:170px;display: inline-block;font-size: 12px;color:#fff;background-color:#258193;border-color: #258193;margin: 0 0;"><i class="fa fa-check" style="margin-right:10px"></i>SAVE AND PROCEED</button>
-                              <button id="organize-finalize" class="confirmButton" style="width:90px;font-size:14px;display: none;border-color:#258193;float:right;margin:0 0;font-family:'Montserrat', sans-serif;background-color: #258193"><i class="fa fa-check fa-fw" style="margin-right:6px"></i>Done</button>
-                            </div> -->
         </div>
 
         <button id="button-organize-prev" onclick="changeStepOrganize(this)" class="confirmButton" style="width:110px;display: none;left:15px"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Previous</button>
