@@ -12,7 +12,7 @@ dependencies:
   - pandas == 0.25.2
   - openpyxl == 3.0.0
   - zerorpc == 0.6.3
-  - blackfynn == 3.2.0
+  - blackfynn == 4.0.1
   - configparser == 4.0.2
   - python-docx == 0.8.10
   - xlrd == 1.2.0
