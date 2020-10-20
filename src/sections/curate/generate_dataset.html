@@ -11,16 +11,16 @@
     <i class="fas fa-caret-right" style="margin-left: 10px; margin-right: 10px"></i>Generate dataset
   </h5>
     <div class="container-high-level-folders">
-      <div id="div-step-2-organize">
+      <div id="div-step-2-organize" style="margin: 0 auto">
+        <h3 style="margin-bottom:15px;color: #222c3c;text-align:center">Where would you like to <br> <strong style="color: var(--color-bg-plum)">generate your dataset?</strong></h3>
         <div class="div-organize-generate-dataset">
-          <!-- <h3 style="margin-bottom:25px;color: #222c3c;">Choose where generate your dataset?</h3> -->
-          <button id="btn-generate-locally" class="button-generate-dataset locally" onclick="generateDataset(this)">
-            <i class="fas fa-tv" style="font-size: 58px"></i>
-            <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">GENERATE DATASET LOCALLY</p>
+          <button id="btn-generate-locally" class="button-generate-dataset second" onclick="generateDataset(this)">
+            <i class="fas fa-tv" style="font-size: 50px;color: orange"></i>
+            <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">LOCALLY ON MY COMPUTER</p>
           </button>
-          <button id="btn-generate-BF" class="button-generate-dataset" onclick="generateDataset(this)">
-            <i class="fas fa-cloud-upload-alt" style="font-size: 58px"></i>
-            <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">GENERATE DATASET ON BLACKFYNN</p>
+          <button id="btn-generate-BF" class="button-generate-dataset active" onclick="generateDataset(this)">
+            <i class="fas fa-cloud-upload-alt" style="font-size: 50px;color: #1DA1F2"></i>
+            <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">UPLOAD TO BLACKFYNN</p>
           </button>
         </div>
         <div class="alert alert-primary" style="margin-top:25px !important;display:none" id="para-organize-datasets-loading" role="alert"></div>

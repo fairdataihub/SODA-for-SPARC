@@ -543,43 +543,75 @@ input:checked + .slider:before {
 }
 
 .button-generate-dataset {
-  width:250px;
-  height:250px;
-  border: 1px solid #BEBEBE;
-  background-color:#F5F5F5;
-  font-size:15px;
-  border-radius: 50%;
+  width:200px;
+  height:150px;
+  border: 2px solid rgba(39,212,212,1);
+  background-color:#fff;
+  font-size:13px;
+  font-weight: 600;
+  border-radius: 3px;
   padding: 15px 15px;
   margin-right:30px;
-  color: #222c3c;
-  opacity: 0.7;
+  color: rgba(39,212,212,1);
+  opacity: 1;
   position:relative;
 }
+/*
+.button-generate-dataset.second {
+  background-color:rgba(39,212,212,1);
+  color: #fff;
+} */
 
 .button-generate-dataset:hover {
-  box-shadow: 0 2px 8px #258193;
-  color: var(--color-bg-plum);
-  opacity: 1;
-  transform: scale(1.05);
+  box-shadow: 0 0 3px 0px rgba(39,212,212,1);
+  color: #fff;
+  /* transform: scale(1.05); */
+  background: rgba(39,212,212,1);
 }
 
-.button-generate-dataset:hover .fas.fa-tv {
-  color: #FFA500;
+.button-generate-dataset.active {
+  box-shadow: 0 0 3px 0px rgba(39,212,212,1);
+  color: #fff;
+  /* transform: scale(1.05); */
+  background: rgba(39,212,212,1);
 }
 
-.button-generate-dataset:hover .fas.fa-cloud-upload-alt {
-  color: #1E90FF
+.button-generate-dataset:focus {
+  box-shadow: 0 0 3px 0px rgba(39,212,212,1);
+  color: #fff;
+  /* transform: scale(1.05); */
+  background: rgba(39,212,212,1);
 }
 
-.button-generate-dataset.active .fas.fa-tv {
-  color: #FFA500;
+.button-generate-dataset:focus p {
+  color: #fff !important;
+}
+.button-generate-dataset:hover p {
+  color: #fff !important;
+}
+.button-generate-dataset.active p {
+  color: #fff !important;
 }
 
-.button-generate-dataset.active .fas.fa-cloud-upload-alt {
-  color: #1E90FF
+.button-generate-dataset p {
+  color: rgba(39,212,212,1);
+  font-weight: 600;
+  font-size: 14px
 }
 
 
+.button-generate-dataset:hover i {
+  color: #fff !important;
+}
+
+.button-generate-dataset.active i {
+  color: #fff !important;
+}
+.button-generate-dataset:focus i {
+  color: #fff !important;
+}
+
+/*
 .button-generate-dataset.active{
   border: 2px solid #258193;
   color: #258193;
@@ -591,7 +623,7 @@ input:checked + .slider:before {
 
 .button-generate-dataset.active p{
   color: #258193;
-}
+} */
 
 /* file and folder */
 .myFile {

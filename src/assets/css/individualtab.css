@@ -89,7 +89,8 @@
 }
 
 .option-card.checked {
-  border: 1px solid #20b2aa
+  border: 1px solid #20b2aa;
+  box-shadow: 0px 0px 3px 0px #20b2aa
 }
 
 .container-body {
@@ -122,7 +123,7 @@
   color: #000;
   opacity: 0.8;
   padding-top: 30px;
-  font-family: sans-serif;
+  /* font-family: sans-serif; */
   font-size: 18px
 }
 
