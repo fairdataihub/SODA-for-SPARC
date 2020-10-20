@@ -964,11 +964,14 @@ bfRefreshAirtableStatusBtn.addEventListener('click', () => {
 
 function changeAwardInput() {
   document.getElementById("selected-milestone-date").value = "";
+  document.getElementById("input-milestone-date").value = "";
+  actionEnterNewDate('none')
   document.getElementById("para-save-submission-status").innerHTML = "";
   milestoneTagify.removeAllTags()
   milestoneTagify.settings.whitelist = [];
   removeOptions(descriptionDateInput);
   addOption(descriptionDateInput, "Select an option", "Select")
+  descriptionDateInput.options[0].disabled = true;
 
   // removeOptions(document.getElementById("selected-milestone"))
   // addOption(document.getElementById('selected-milestone'), "Select an option", "Select")
@@ -976,50 +979,50 @@ function changeAwardInput() {
 
   award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
   var informationJson = parseJson(milestonePath);
-  // var tagifyArray = milestoneTagify.value;
-  // var milestoneInput = document.getElementById("selected-milestone");
+
+  var completionDateArray = []
+  var milestoneValueArray = []
+  completionDateArray.push('Enter a date')
+
+  /// when DD is provided
   if (award in informationJson) {
     var milestoneObj = informationJson[award];
     // Load milestone values once users choose an award number
     var milestoneKey = Object.keys(milestoneObj)
-    var completionDateArray = []
-    var milestoneValueArray = ["Not specified in the Data Deliverables document"]
+
+    /// add milestones to Tagify suggestion tag list and options to completion date dropdown
     for (var i=0;i<milestoneKey.length;i++) {
       milestoneValueArray.push(milestoneKey[i])
       for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
         completionDateArray.push(milestoneObj[milestoneKey[i]][j]["Expected date of completion"])
       }
     }
-    milestoneTagify.settings.whitelist = milestoneValueArray
-    // milestoneTagify.settings.enforceWhitelist = true
-    if (completionDateArray.length === 1) {
-      descriptionDateInput.value = completionDateArray[0]
-    } else {
-      for (var i=0; i<completionDateArray.length;i++) {
-        addOption(descriptionDateInput, completionDateArray[i], completionDateArray[i])
-      }
-    }
+    milestoneValueArray.push("Not specified in the Data Deliverables document")
   }
-  // //// populate date field
-  // descriptionInput.addEventListener('input', function() {
-  //   document.getElementById("para-save-submission-status").innerHTML = ""
-  //   document.getElementById("selected-milestone-date").value = "";
-  //   if (descriptionInput.value === "Not specified in the Data Deliverables document") {
-  //     dateInput.value = "Not specified in the Data Deliverables document"
-  //   } else {
-  //     for (var i=0;i<milestoneKey.length; i++) {
-  //       for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
-  //         if (milestoneObj[milestoneKey[i]][j]["Description of data"] === descriptionInput.value) {
-  //           //// stringify date object
-  //           var dateStrings = milestoneObj[milestoneKey[i]][j]["Expected date of completion"].toString()
-  //           dateInput.value = dateStrings
-  //         }
-  //       }
-  //     }
-  //   }
-  // })
-  // }
+  milestoneTagify.settings.whitelist = milestoneValueArray
+  for (var i=0; i<completionDateArray.length;i++) {
+    addOption(descriptionDateInput, completionDateArray[i], completionDateArray[i])
+  }
+  descriptionDateInput.value = completionDateArray[1]
 }
+
+descriptionDateInput.addEventListener("change", function() {
+  document.getElementById("input-milestone-date").value = ''
+  if (descriptionDateInput.value === 'Enter a date') {
+    actionEnterNewDate('flex')
+  } else {
+    actionEnterNewDate('none')
+  }
+})
+
+const submissionDateInput = document.getElementById("input-milestone-date")
+
+function actionEnterNewDate(action) {
+  document.getElementById("div-submission-enter-different-date-1").style.display = action
+  document.getElementById("div-submission-enter-different-date-2").style.display = action
+  document.getElementById("div-submission-enter-different-date-3").style.display = action
+}
+
 
 /////// Populate Submission file fields from presaved information
 presavedAwardArray2.addEventListener('change', changeAwardInput)
@@ -1030,12 +1033,15 @@ generateSubmissionBtn.addEventListener('click', (event) => {
   awardVal = document.getElementById("presaved-award-list").value;
   milestoneVal = milestoneTagify.value;
   dateVal = document.getElementById("selected-milestone-date").value;
-  if (dateVal==='Select' || awardVal==='Select' || milestoneVal==='Select') {
+
+  var missingDateBool = dateVal === "Enter a date" && submissionDateInput.value === ''
+  if (awardVal==='Select' || milestoneVal.length === 0 || dateVal === 'Select' || missingDateBool) {
     document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Please fill in all fields to generate!</span>"
   } else {
     ipcRenderer.send('open-folder-dialog-save-submission', "submission.xlsx")
   }
 });
+
 ipcRenderer.on('selected-metadata-submission', (event, dirpath, filename) => {
   if (dirpath.length > 0) {
     var destinationPath = path.join(dirpath[0], filename)
@@ -1049,7 +1055,12 @@ ipcRenderer.on('selected-metadata-submission', (event, dirpath, filename) => {
       for (var i=0;i<milestoneVal.length;i++) {
         milestoneValue.push(milestoneVal[i].value)
       }
-      var date = document.getElementById("selected-milestone-date").value;
+      var date;
+      if (document.getElementById("selected-milestone-date").value === 'Enter a date') {
+        date = document.getElementById("input-milestone-date").value;
+      } else {
+        date = document.getElementById("selected-milestone-date").value;
+      }
       var json_arr = [];
       json_arr.push({
         "award": award,
@@ -1065,7 +1076,6 @@ ipcRenderer.on('selected-metadata-submission', (event, dirpath, filename) => {
           });
         }
       }
-
       json_str = JSON.stringify(json_arr)
       if (dirpath != null){
         client.invoke("api_save_submission_file", destinationPath, json_str, (error, res) => {
@@ -1170,6 +1180,7 @@ function changeAwardInputDsDescription() {
   };
   removeOptions(dsContributorArray)
   addOption(dsContributorArray, "Select", "Select an option")
+  descriptionDateInput.options[0].disabled = true;
   addOption(dsContributorArray, "Other collaborators", "Other collaborators not listed")
   var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value
   var airKeyContent = parseJson(airtableConfigPath)

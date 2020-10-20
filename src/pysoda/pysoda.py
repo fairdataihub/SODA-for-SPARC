@@ -417,9 +417,16 @@ def save_submission_file(filepath, json_str):
     wb = load_workbook(destination)
     ws1 = wb['Sheet1']
 
+    try:
+        raw_date = val_arr[0]["date"]
+        converted_date = datetime.strptime(raw_date, '%Y-%m-%d').strftime('%m/%d/%Y')
+
+    except ValueError:
+        converted_date = raw_date
+
     ws1["C2"] = val_arr[0]["award"]
     ws1["C3"] = val_arr[0]["milestone"]
-    ws1["C4"] = val_arr[0]["date"]
+    ws1["C4"] = converted_date
 
     ### Contributors
     for index, column in zip(range(1, len(val_arr)), excel_columns()):
@@ -839,6 +846,9 @@ def create_dataset(jsonpath, pathdataset):
         raise e
 
 
+class AgentInstallationError(Exception):
+    pass
+
 def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetname,\
         manifeststatus, jsonpath, jsondescription):
     """
@@ -1011,11 +1021,14 @@ def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetnam
         except Exception as e:
             raise e
 
-        validate_agent_installation(Settings())
+        ## check if agent is installed
+        try:
+            validate_agent_installation(Settings())
+        except AgentError:
+            raise AgentInstallationError('The Blackfynn agent is not installed on your computer. Visit the Blackfynn Agent website at "https://developer.blackfynn.io/agent" for installation instructions.')
+
         clear_queue()
         try:
-            ## check if agent is installed
-            # validate_agent_installation(Settings())
             ## check if agent is running in the background
             agent_running()
 
@@ -1679,11 +1692,14 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error = "Error: You don't have permissions for uploading to this Blackfynn dataset"
         raise Exception(error)
 
-    validate_agent_installation(Settings())
+    ## check if agent is installed
+    try:
+        validate_agent_installation(Settings())
+    except AgentError:
+        raise AgentInstallationError('The Blackfynn agent is not installed on your computer. Visit the Blackfynn Agent website at "https://developer.blackfynn.io/agent" for installation instructions.')
+
     clear_queue()
     try:
-        ## check if agent is installed
-        # validate_agent_installation(Settings())
         ## check if agent is running in the background
         agent_running()
         def calluploadfolder():

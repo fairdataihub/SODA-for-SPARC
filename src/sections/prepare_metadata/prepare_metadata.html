@@ -242,8 +242,19 @@
             </span>
           </div>
           <div class="demo-controls">
-            <select style="font-size:13px;line-height: 2;height:28px;" id="selected-milestone-date"  class="form-container-input-bf"></select>
+            <select style="font-size:13px;height:28px;width:100%" id="selected-milestone-date" class="form-container-input-bf"></select>
           </div>
+
+          <div style='display:none;' id="div-submission-enter-different-date-1" class="form-container-ds"><font color="black"> Enter Date: </font> </div>
+          <div class="tooltipnew" style='display:none;' id="div-submission-enter-different-date-2"><img class="info" src="assets/img/info.png">
+            <span class="tooltiptext">
+              This date is filled automatically using extracted information from the Data Deliverables document and based on the milestone/description of data selected above.
+            </span>
+          </div>
+          <div class="demo-controls" style='display:none;' id="div-submission-enter-different-date-3">
+            <input type="date" id="input-milestone-date" style="font-family: inherit" class="form-container-input-bf"></input>
+          </div>
+
           <br>
           <div align="right">
             <button class="demo-button" style="margin-right:0;width:140px;float:right" id="generate-submission"> Generate </button>
