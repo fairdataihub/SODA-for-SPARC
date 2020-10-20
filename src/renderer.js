@@ -1035,7 +1035,7 @@ generateSubmissionBtn.addEventListener('click', (event) => {
   dateVal = document.getElementById("selected-milestone-date").value;
 
   var missingDateBool = dateVal === "Enter a date" && submissionDateInput.value === ''
-  if (awardVal==='Select' || milestoneVal.length === 0 || dateVal === 'Select' || missingDateBool) {
+  if (awardVal==='Select' || milestoneVal.length === 0 || dateVal === '' || missingDateBool) {
     document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Please fill in all fields to generate!</span>"
   } else {
     ipcRenderer.send('open-folder-dialog-save-submission', "submission.xlsx")
