@@ -201,7 +201,7 @@ function loadFileFolder(myPath) {
       // not the auto-generated manifest
       if (sortedObj[item].length !== 1) {
         var extension = sliceStringByValue(sortedObj[item][0],  ".")
-        if (!["docx", "doc", "pdf", "txt", "jpg", "xlsx", "xls", "csv", "png"].includes(extension)) {
+        if (!["docx", "doc", "pdf", "txt", "jpg", "xlsx", "xls", "csv", "png", "PNG"].includes(extension)) {
           extension = "other"
         }
       } else {

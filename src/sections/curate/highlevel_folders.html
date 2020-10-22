@@ -1,4 +1,3 @@
-
 <template class="task-template">
   <section id="highlevel_folders-section" class="section js-section u-category-windows">
 
@@ -7,127 +6,114 @@
 </head>
 
 <main class="dash-content">
-  <h5 class="dash-title">Prepare dataset
-    <i class="fas fa-caret-right" style="margin-left: 10px; margin-right: 10px"></i>High-level folders
+  <h5 class="dash-title" style="border-bottom:none;font-size:20px">Curate dataset
   </h5>
+  <h5 style="text-align:center">This will be the overall progress bar for each tab</h5>
+  <div class="form-tabs tab-active" id="high-level-folders-tab">
+    <h5 class="question-title">Which <b style="color:var(--color-bg-plum)">SPARC high-level folders</b><br>
+      would you like <b style="color:var(--color-bg-plum)">to add to your dataset?</b></h5>
     <div class="container-body">
-      <h2 class="question-title">Which <b style="color:var(--color-bg-plum)">SPARC high-level folders</b><br>
-        would you like <b style="color:var(--color-bg-plum)">to add to your dataset?</b></h2>
       <div class="first-three-high-level-folders">
         <div class="option-card">
-          <div class='folders-checkmark'></div>
-          <div class="card-head">
-            <h2 style="color: #000;"><i class="fas fa-folder"></i>code</h2>
-          </div>
-          <div class="card-body">
-            <!-- <i class="fas fa-dove" style="color: orange"></i> -->
-            <p>Accomplish only the desired curation and sharing steps of your choice</p>
-          </div>
-          <div class="card-end">
-            <button type="button" class="main-buttons add-folders">Add</button>
-          </div>
-      </div>
-
-      <div class="option-card">
-        <div class='folders-checkmark'></div>
+        <div class="folder-checkbox">
+          <input class="folder-input-check" id="code-check" type="checkbox">
+          <label for="code-check"></label>
+        </div>
         <div class="card-head">
-          <h2 style="color: #000"><i class="fas fa-folder"></i>primary</h2>
+          <h2><i class="fas fa-folder"></i>code</h2>
         </div>
         <div class="card-body">
-            <!-- <i class="far fa-compass" style="color: green"></i> -->
-            <p>Identify and go through the suitable curation and sharing processes for your data type</p>
-        </div>
-        <div class="card-end">
-          <button type="button" class="main-buttons add-folders">Add</button>
-        </div>
-      </div>
-
-      <div class="option-card">
-        <div class='folders-checkmark'></div>
-        <div class="card-head">
-          <h2 style="color: #000;"><i class="fas fa-folder"></i>source</h2>
-        </div>
-        <div class="card-body">
-          <!-- <i class="fas fa-dove" style="color: orange"></i> -->
           <p>Accomplish only the desired curation and sharing steps of your choice</p>
         </div>
-        <div class="card-end">
-          <button type="button" class="main-buttons add-folders">Add</button>
+      </div>
+      <div class="option-card">
+        <div class="folder-checkbox">
+          <input class="folder-input-check" id="primary-check" type="checkbox">
+          <label for="primary-check"></label>
+        </div>
+        <div class="card-head">
+          <h2><i class="fas fa-folder"></i>primary</h2>
+        </div>
+        <div class="card-body">
+            <p>Identify and go through the suitable curation and sharing processes for your data type</p>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="folder-checkbox">
+          <input class="folder-input-check" id="source-check" type="checkbox">
+          <label for="source-check"></label>
+        </div>
+        <div class="card-head">
+          <h2><i class="fas fa-folder"></i>source</h2>
+        </div>
+        <div class="card-body">
+          <p>Accomplish only the desired curation and sharing steps of your choice</p>
         </div>
       </div>
     </div>
-
     <div class="first-three-high-level-folders">
       <div class="option-card">
-        <div class='folders-checkmark'></div>
+        <div class="folder-checkbox">
+          <input class="folder-input-check" id="docs-check" type="checkbox">
+          <label for="docs-check"></label>
+        </div>
         <div class="card-head">
-          <h2 style="color: #000;"><i class="fas fa-folder"></i>docs</h2>
+          <h2><i class="fas fa-folder"></i>docs</h2>
         </div>
         <div class="card-body">
-          <!-- <i class="fas fa-dove" style="color: orange"></i> -->
           <p>Accomplish only the desired curation and sharing steps of your choice</p>
-        </div>
-        <div class="card-end">
-          <button type="button" class="main-buttons add-folders">Add</button>
         </div>
       </div>
-
       <div class="option-card">
-        <div class='folders-checkmark'></div>
+        <div class="folder-checkbox">
+          <input class="folder-input-check" id="protocol-check" type="checkbox">
+          <label for="protocol-check"></label>
+        </div>
         <div class="card-head">
-          <h2 style="color: #000;"><i class="fas fa-folder"></i>protocol</h2>
+          <h2><i class="fas fa-folder"></i>protocol</h2>
         </div>
         <div class="card-body">
-          <!-- <i class="fas fa-dove" style="color: orange"></i> -->
           <p>Accomplish only the desired curation and sharing steps of your choice</p>
-        </div>
-        <div class="card-end">
-          <button type="button" class="main-buttons add-folders">Add</button>
         </div>
       </div>
-
       <div class="option-card">
-        <div class='folders-checkmark'></div>
+        <div class="folder-checkbox">
+          <input class="folder-input-check" id="derivatives-check" type="checkbox">
+          <label for="derivatives-check"></label>
+        </div>
         <div class="card-head">
-          <h2 style="color: #000;"><i class="fas fa-folder"></i>derivatives</h2>
+          <h2><i class="fas fa-folder"></i>derivatives</h2>
         </div>
         <div class="card-body">
-          <!-- <i class="fas fa-dove" style="color: orange"></i> -->
           <p>Accomplish only the desired curation and sharing steps of your choice</p>
-        </div>
-        <div class="card-end">
-          <button type="button" class="main-buttons add-folders">Add</button>
         </div>
       </div>
       </div>
     </div>
     <div class="container-end">
-      <!-- <button type="button" class="main-buttons"></button> -->
+      <button type="button" class="transition-btn">Previous</button>
       <button style="float:right" type="button" class="transition-btn">Next</button>
     </div>
-   </main>
+  </div>
+  </main>
 
-     <script>window.$ = window.jQuery = require('jquery')</script>
-
-     <script>
-
-       $(document).ready(function () {
-         $('.main-buttons, .add-folders').on('click', function () {
-           if ($(this).hasClass('is-selected')) {
-             $(this).html('Add');
-             $(this).removeClass('is-selected');
-           } else {
-             $(this).html('Remove');
-             $(this).toggleClass('is-selected');
-           }
-           $(this).parent().parent().toggleClass('checked');
-           $($(this).parent().parent().children()[0]).toggleClass('is-checked')
-         });
+   <script>window.$ = window.jQuery = require('jquery')</script>
+   <script>
+     $(document).ready(function () {
+       $('.option-card').on('click', function () {
+         var checkmarkBox = $(this).children()[0].children[0]
+         if ($(this).hasClass('checked')) {
+           $(this).removeClass('checked');
+           $(checkmarkBox).prop('checked', false);
+         } else {
+           $(this).toggleClass('checked')
+           $(checkmarkBox).prop('checked', true);
+         }
        });
-     </script>
-
-     <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-     <script src="../src/node_modules/bootbox/dist/bootbox.min.js"></script>
+     });
+   </script>
+   <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+   <script src="../src/node_modules/bootbox/dist/bootbox.min.js"></script>
 
 </section>
 </template>

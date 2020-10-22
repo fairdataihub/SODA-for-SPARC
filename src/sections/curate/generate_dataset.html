@@ -11,16 +11,18 @@
     <i class="fas fa-caret-right" style="margin-left: 10px; margin-right: 10px"></i>Generate dataset
   </h5>
     <div class="container-high-level-folders">
-      <div id="div-step-2-organize" style="margin: 0 auto">
-        <h3 style="margin-bottom:15px;color: #222c3c;text-align:center">Where would you like to <br> <strong style="color: var(--color-bg-plum)">generate your dataset?</strong></h3>
+      <div id="div-step-2-organize" style="margin: 80px auto">
+        <h3 class='question-title'>Where would you like to <br> <strong style="color: var(--color-bg-plum)">generate your dataset?</strong></h3>
         <div class="div-organize-generate-dataset">
-          <button id="btn-generate-locally" class="button-generate-dataset second" onclick="generateDataset(this)">
-            <i class="fas fa-tv" style="font-size: 50px;color: orange"></i>
+          <button id="btn-generate-locally" class="button-generate-dataset" onclick="generateDataset(this)">
+            <i class="fas fa-tv" style="font-size: 50px;color:#258193"></i>
             <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">LOCALLY ON MY COMPUTER</p>
+            <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
           </button>
-          <button id="btn-generate-BF" class="button-generate-dataset active" onclick="generateDataset(this)">
-            <i class="fas fa-cloud-upload-alt" style="font-size: 50px;color: #1DA1F2"></i>
+          <button id="btn-generate-BF" class="button-generate-dataset" onclick="generateDataset(this)">
+            <i class="fas fa-cloud-upload-alt" style="font-size: 50px;color: #258193"></i>
             <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">UPLOAD TO BLACKFYNN</p>
+            <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
           </button>
         </div>
         <div class="alert alert-primary" style="margin-top:25px !important;display:none" id="para-organize-datasets-loading" role="alert"></div>

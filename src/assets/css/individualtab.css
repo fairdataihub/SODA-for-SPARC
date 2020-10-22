@@ -1,17 +1,19 @@
 .option-card {
-  max-height: 210px;
-  max-width: 200px;
+  max-height: 180px;
+  min-height: 150px;
+  max-width: 180px;
   flex-direction: column;
-  justify-content: space-between; */
+  justify-content: space-between;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 15% auto 15%;
+  grid-template-rows: 8% 20% 72%;
   padding: 5px;
   border-radius: 6px;
   font-size: 12px;
   background: #f5f5f5;
   margin: 10px;
   color: white;
+  opacity: 0.7;
   border: 1px solid #c0c0c0;
   position: relative;
 }
@@ -22,6 +24,10 @@
   font-size: 11px;
 }
 
+.card-head h2 {
+  color: #000;
+}
+
 .card-head i {
   color: orange;
   opacity: 0.7;
@@ -29,25 +35,43 @@
   margin: 5px;
 }
 
-.folders-checkmark {
-    content: "";
-    position: absolute;
-    width: 25px;
-    height: 10px;
-    border-bottom: 2px solid #258193;
-    border-left: 2px solid #258193;
-    top: 0%;
-    left: 92%;
-    transform-origin: bottom left;
-    transform: rotate(-45deg);
-    opacity: 0;
-    transition: all ease-out 200ms;
-    display:none
+.folder-input-check {
+  position: absolute;
+  display: none;
 }
 
-.folders-checkmark.is-checked {
-  opacity: 1;
-  display:block;
+.folder-input-check + label {
+  display: block;
+  margin: 0.2em;
+  cursor: pointer;
+  padding: 0.2em;
+}
+
+.folder-input-check + label:before {
+  content: "\2714";
+  border: 0.1em solid #c0c0c0;
+  border-radius: 50%;
+  display: inline-block;
+  width: 19px;
+  height: 18px;
+  float: right;
+  font-size: 17px;
+  padding-left: 0.2em;
+  padding-bottom: 0.3em;
+  margin-right: 0.2em;
+  vertical-align: bottom;
+  color: transparent;
+  transition: .2s;
+}
+
+.folder-input-check + label:active:before {
+  transform: scale(0);
+}
+
+.folder-input-check:checked + label:before {
+  background-color: #20b2aa;
+  border-color: #20b2aa;
+  color: #fff;
 }
 
 .card-body {
@@ -90,12 +114,13 @@
 
 .option-card.checked {
   border: 1px solid #20b2aa;
-  box-shadow: 0px 0px 3px 0px #20b2aa
+  box-shadow: 0px 0px 3px 0px #20b2aa;
+  opacity: 1;
 }
 
 .container-body {
   width: 100%;
-  height: auto;
+  max-height:470px;
   padding-right: 10px;
   padding-left: 0;
   margin-right: auto;
@@ -122,9 +147,7 @@
   text-align: center;
   color: #000;
   opacity: 0.8;
-  padding-top: 30px;
-  /* font-family: sans-serif; */
-  font-size: 18px
+  font-size: 16px
 }
 
 .container-end {
@@ -137,8 +160,8 @@
   background: #20b2aa;
   font-size: 15px;
   font-weight: 600;
-  width: 90px;
-  height: 38px;
+  width: 100px;
+  height: 42px;
   padding: 10px;
   border: 1px solid #20b2aa;
   border-radius: 5px;
@@ -149,4 +172,24 @@
 .transition-btn:hover{
   transform: scale(1.05);
   font-weight: 600;
+}
+
+.form-tabs {
+  display:grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 8% 82% 10%;
+  margin: 80px 0xp auto;
+  height: auto;
+  border-top: 1px solid #f0f0f0;
+}
+
+.form-tabs.tab-active {
+  display:block
+}
+
+#validate li {
+  min-height: 280px;
+  max-width: 240px;
+  border: 1px dashed #3d3d3d !important;
+  margin: 20px auto
 }

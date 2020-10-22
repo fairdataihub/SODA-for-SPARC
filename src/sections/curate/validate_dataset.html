@@ -1,0 +1,80 @@
+
+
+<template class="task-template">
+  <section id="validate_dataset-section" class="section js-section u-category-windows">
+
+<head>
+    <title>SODA - Keep calm and curate</title>
+</head>
+
+<main class="dash-content">
+  <h5 class="dash-title" style="border-bottom:none;font-size:22px">Curate dataset
+  </h5>
+  <h3>Progress here</h3>
+  <div class="form-tabs tab-active" id="curate">
+    <h3 class='question-title'>What would you like to <br> <strong style="color: var(--color-bg-plum)">accomplish </strong>today?</h3>
+    <div class="container-body">
+    <div class="div-organize-generate-dataset">
+      <button class="button-generate-dataset" onclick="changeTabs('organize', 'curate')">
+        <i class="fas fa-sitemap" style="font-size: 50px;color:#258193"></i>
+        <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">ORGANIZE DATASET</p>
+        <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
+      </button>
+      <button class="button-generate-dataset" onclick="changeTabs('validate', 'curate')">
+        <i class="fas fa-clipboard-check" style="font-size: 50px;color: #258193"></i>
+        <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">VALIDATE DATASET</p>
+        <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
+      </button>
+    </div>
+    <div class="container-end">
+      <button type="button" class="transition-btn">Previous</button>
+      <button style="float:right" type="button" class="transition-btn">Next</button>
+    </div>
+  </div>
+
+  <div class="form-tabs" style="display:none" id="organize">
+    <h5 class="dash-title" style="border-bottom:none;font-size:22px">Organize dataset
+    </h5>
+      <div class="container-body">
+      </div>
+      <div class="container-end">
+        <button type="button" class="transition-btn">Previous</button>
+        <button style="float:right" type="button" class="transition-btn">Next</button>
+      </div>
+  </div>
+
+   <div class="form-tabs" style="display:none" id="validate">
+     <h5 class="dash-title" style="border-bottom:none;font-size:22px">Validate dataset
+     </h5>
+       <div class="container-body">
+         <h3 class='question-title'>Please upload <br> <strong style="color: var(--color-bg-plum)">your dataset for validation</strong></h3>
+           <li id="submission" class="selected" style="display: flex; flex-direction: column;justify-content: space-between;border: 1px solid #258193;padding: 20px">
+             <p>Upload <br>existing dataset</p>
+             <div><i style="font-size: 70px" class="fas fa-cloud-upload-alt"></i></div>
+             <p style="font-size:13px">Drag and drop your <br>
+               folder here OR</p>
+               <button>Choose folder</button>
+           </li>
+       </div>
+       <div class="container-end">
+         <button type="button" class="transition-btn">Previous</button>
+         <button style="float:right" type="button" class="transition-btn">Next</button>
+       </div>
+    </div>
+ </div>
+
+
+</main>
+<script>
+  function changeTabs(idNext, idCurrent){
+    $('#'+idCurrent).toggleClass('tab-active')
+    $('#'+idNext).toggleClass('tab-active')
+};
+</script>
+
+ <script>window.$ = window.jQuery = require('jquery')</script>
+ <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+ <script src="../src/node_modules/bootbox/dist/bootbox.min.js"></script>
+
+</section>
+</template>

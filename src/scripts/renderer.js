@@ -22,10 +22,6 @@ const html2canvas = require("html2canvas");
 const removeMd = require('remove-markdown');
 const electron = require('electron')
 const bootbox = require('bootbox')
-//
-// const { getGlobalPath, loadFileFolder, sortObjByKeys, sliceStringByValue,
-//          getRecursivePath, checkSubArrayBool, addFilesfunction, hideFullName,
-//          listItems, getInFolder, hideMenu, triggerManageDescriptionPrompt} = require('./organizeDS.js');
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -933,7 +929,7 @@ function loadAwardData() {
     });
     var base = Airtable.base('appiYd1Tz9Sv857GZ');
     base("sparc_members").select({
-        view: 'Grid view'
+        view: 'All members (ungrouped)'
     }).eachPage(function page(records, fetchNextPage) {
         records.forEach(function(record) {
           if (record.get('Project_title')!==undefined) {
@@ -5045,7 +5041,6 @@ var backFolder = []
 var forwardFolder =[]
 
 var highLevelFolders = ["code", "derivative", "docs", "source", "primary", "protocols"]
-
 var highLevelFolderToolTip = {
   "code": "code: This folder contains all the source code used in the study (e.g., Python, MATLAB, etc.)",
   "derivative": "derivative: This folder contains data files derived from raw data (e.g., processed image stacks that are annotated via the MBF tools, segmentation files, smoothed overlays of current and voltage that demonstrate a particular effect, etc.)",
@@ -5056,12 +5051,12 @@ var highLevelFolderToolTip = {
 }
 
 var jsonObjGlobal = {
-                    "code": {},
-                    "derivative": {},
-                    "primary": {},
-                    "source": {},
-                    "docs": {},
-                    "protocols": {}
+  "code": {},
+  "derivative": {},
+  "primary": {},
+  "source": {},
+  "docs": {},
+  "protocols": {}
 }
 
 listItems(jsonObjGlobal, '#items')
@@ -5070,7 +5065,6 @@ getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
 /// back button
 organizeDSbackButton.addEventListener("click", function() {
   var currentPath = organizeDSglobalPath.value.trim()
-
   if (currentPath !== "/") {
     var filtered = getGlobalPath(organizeDSglobalPath)
     if (filtered.length === 1) {
@@ -5194,9 +5188,7 @@ function hoverForPath(ev) {
     var filtered = jsonPathArray.filter(function (el) {
       return el != "";
     });
-
     var myPath = getRecursivePath(filtered, jsonObjGlobal)
-
     // get full path from JSON object
     var fullPath = myPath[ev.innerText]
     showFullPath(event, fullPath[0])
@@ -5312,25 +5304,6 @@ resetProgress.addEventListener("click", function() {
     }
   })
 })
-
-/// if users choose to include manifest files
-/// this function will first add manifest files to the UI
-/// and update the JSON object with files "manifest": ["auto-generated manifest"]
-/// TODO: not allow context menu for manifest files with value === array (lenght=1)
-// function updateManifestLabel(jsonObject) {
-//   /// first, add manifest files to UI
-//   var elements = Object.keys(jsonObject)
-//   for (var key of elements) {
-//       if (typeof jsonObject[key] === "object" && !(Array.isArray(jsonObject[key]))) {
-//         if (Object.keys(jsonObject[key]).length !== 0) {
-//           jsonObject[key]["manifest.xlsx"] = ["auto-generated"]
-//           /// if this folder is not empty, then recursively add manifest file
-//           updateManifestLabel(jsonObject[key])
-//         }
-//       }
-//     }
-// }
-//
 
 function changeStepOrganize(step) {
     if (step.id==="button-organize-prev") {
@@ -5594,7 +5567,7 @@ ipcRenderer.on('save-file-organization-dialog', (event) => {
 
 
 //////////////////////////////////////////////////////////////////////////////
-///////////////////////// CONTEXT MENU OPTIONS ///////////////////////////////
+/////////////////// CONTEXT MENU OPTIONS FOR FOLDERS AND FILES ///////////////
 //////////////////////////////////////////////////////////////////////////////
 
 

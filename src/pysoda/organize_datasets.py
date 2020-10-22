@@ -197,17 +197,6 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
     total_dataset_size = traverseForLeafNodes(jsonstructure_non_empty)
     total_dataset_size = total_dataset_size - 1
 
-    # Add metadata to jsonpath
-    # curateprogress = 'Generating metadata'
-
-    # if manifeststatus:
-    #     try:
-    #         jsonpath = create_folder_level_manifest(jsonpath, jsondescription)
-    #     except Exception as e:
-    #         curatestatus = 'Done'
-    #         raise e
-
-
     # CREATE NEW
     if destinationdataset == 'create new':
         try:
@@ -228,11 +217,9 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
             curateprogress = 'New dataset created'
             curateprogress = 'Success: COMPLETED!'
             curatestatus = 'Done'
-            # shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
 
         except Exception as e:
             curatestatus = 'Done'
-            # shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
             raise e
 
 
