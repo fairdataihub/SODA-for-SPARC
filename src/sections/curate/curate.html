@@ -4,35 +4,295 @@
 
 <head>
     <title>SODA - Keep calm and curate</title>
+    <!-- <link rel="import" href="sections/curate/organize_files.html"> -->
 </head>
 
-<main class="dash-content">
-  <!-- <h5 class="dash-title" id="dash-title">Prepare dataset
-    <i class="fas fa-caret-right" style="margin-left: 10px; margin-right: 10px"></i>Generate dataset
-  </h5> -->
-    <div class="container-high-level-folders">
-      <div id="div-step-2-organize" style="margin: 80px auto">
-        <h3 class='question-title'>What would you like to <br> <strong style="color: var(--color-bg-plum)">accomplish </strong>today?</h3>
-        <div class="div-organize-generate-dataset">
-          <button class="button-generate-dataset">
-            <i class="fas fa-sitemap" style="font-size: 50px;color:#258193"></i>
-            <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">ORGANIZE<br>MY DATASET</p>
-            <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
-          </button>
-          <button class="button-generate-dataset">
-            <i class="fas fa-clipboard-check" style="font-size: 50px;color: #258193"></i>
-            <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">VALIDATE<br>MY DATASET</p>
-            <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
-          </button>
-        </div>
+<main class="dash-content main show" id="curate_main">
+  <h5 class="dash-title" style="border-bottom:none;font-size:17px">Curate dataset
+    <div style="height:1px;width:140px;margin:0 auto;border:1px solid #258193"></div>
+  </h5>
+<!-- These are the main tab for each step -->
+  <div class="form-tabs tab-active" id="curate-tab">
+    <h3 class='question-title'>What would you like to <br> <span style="color: var(--color-bg-plum)">accomplish </span>today?
+    </h3>
+    <div class="div-organize-generate-dataset">
+      <button class="button-generate-dataset" onclick="changeMainContent('curate_main', 'organize_main')">
+        <i class="fas fa-sitemap" style="font-size: 50px;color:#258193"></i>
+        <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">ORGANIZE DATASET</p>
+        <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
+      </button>
+      <button class="button-generate-dataset" onclick="changeMainContent('curate_main', 'validate_main')">
+        <i class="fas fa-clipboard-check" style="font-size: 50px;color: #258193"></i>
+        <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">VALIDATE DATASET</p>
+        <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
+      </button>
+    </div>
+  </div>
+  <div>
+    <button type="button" class="transition-btn">Previous</button>
+    <button style="float:right" type="button" class="transition-btn">Next</button>
+  </div>
+</main>
 
+<main class="dash-content" id="organize_main">
+  <h5 class="dash-title" style="border-bottom:none;font-size:17px">Organize dataset
+    <div style="height:1px;width:140px;margin:0 auto;border:1px solid #258193"></div>
+  </h5>
+  <ul id="myprogressbar">
+      <li id="li_specify_folders" class="active" onclick="onClickTabs('high-level-folders-tab', ['organize-dataset-tab', 'metadata-files-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab'], this.id)"><strong>Specify folders</strong></li>
+      <li id="li-organize-dataset" onclick="onClickTabs('organize-dataset-tab', ['high-level-folders-tab', 'metadata-files-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab'], this.id)"><strong>Organize</strong></li>
+      <li id="li-metadata-files" onclick="onClickTabs('metadata-files-tab', ['organize-dataset-tab', 'high-level-folders', 'generate-dataset-tab', 'generate-dataset-locally-tab'], this.id)"><strong>Metadata files</strong></li>
+      <li id="li-generate-dataset" onclick="onClickTabs('generate-dataset-tab', ['organize-dataset-tab', 'metadata-files-tab', 'high-level-folders', 'generate-dataset-locally-tab'], this.id)"><strong>Generate</strong></li>
+      <li id="li-submit-dataset" onclick="onClickTabs('generate-dataset-locally-tab', ['organize-dataset-tab', 'metadata-files-tab', 'high-level-folders','generate-dataset-tab'], this.id)"><strong>Submit</strong></li>
+  </ul>
+<!-- These are the main tab for each step -->
+
+<!-- 1. Specify high Level folders -->
+  <div class="form-tabs tab-active" id="high-level-folders-tab" style="grid-template-rows:10% 90%">
+    <div class="container-body condensed" style="min-height:450px">
+      <h5 class="question-title">Which <span style="color:var(--color-bg-plum)">SPARC high-level folders</span><br>
+        would you like <span style="color:var(--color-bg-plum)">to add to your dataset?</span></h5>
+      <div>
+      <div class="first-three-high-level-folders">
+        <div class="option-card">
+        <div class="folder-checkbox">
+          <input class="folder-input-check" id="code-check" type="checkbox">
+          <label for="code-check"></label>
+        </div>
+        <div class="card-head">
+          <h2><i class="fas fa-folder"></i>code</h2>
+        </div>
+        <div class="card-body">
+          <p>Accomplish only the desired curation and sharing steps of your choice</p>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="folder-checkbox">
+          <input class="folder-input-check" id="primary-check" type="checkbox">
+          <label for="primary-check"></label>
+        </div>
+        <div class="card-head">
+          <h2><i class="fas fa-folder"></i>primary</h2>
+        </div>
+        <div class="card-body">
+            <p>Identify and go through the suitable curation and sharing processes for your data type</p>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="folder-checkbox">
+          <input class="folder-input-check" id="source-check" type="checkbox">
+          <label for="source-check"></label>
+        </div>
+        <div class="card-head">
+          <h2><i class="fas fa-folder"></i>source</h2>
+        </div>
+        <div class="card-body">
+          <p>Accomplish only the desired curation and sharing steps of your choice</p>
+        </div>
       </div>
     </div>
+    <div class="first-three-high-level-folders">
+      <div class="option-card">
+        <div class="folder-checkbox">
+          <input class="folder-input-check" id="docs-check" type="checkbox">
+          <label for="docs-check"></label>
+        </div>
+        <div class="card-head">
+          <h2><i class="fas fa-folder"></i>docs</h2>
+        </div>
+        <div class="card-body">
+          <p>Accomplish only the desired curation and sharing steps of your choice</p>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="folder-checkbox">
+          <input class="folder-input-check" id="protocol-check" type="checkbox">
+          <label for="protocol-check"></label>
+        </div>
+        <div class="card-head">
+          <h2><i class="fas fa-folder"></i>protocol</h2>
+        </div>
+        <div class="card-body">
+          <p>Accomplish only the desired curation and sharing steps of your choice</p>
+        </div>
+      </div>
+      <div class="option-card">
+        <div class="folder-checkbox">
+          <input class="folder-input-check" id="derivatives-check" type="checkbox">
+          <label for="derivatives-check"></label>
+        </div>
+        <div class="card-head">
+          <h2><i class="fas fa-folder"></i>derivatives</h2>
+        </div>
+        <div class="card-body">
+          <p>Accomplish only the desired curation and sharing steps of your choice</p>
+        </div>
+      </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+  <!-- 2. Organize dataset -->
+  <div class="form-tabs condensed" id="organize-dataset-tab" style="grid-template-rows: 10% 90%">
+    <div style="padding: 20px 0;margin:3px 3px;" align="right">
+      <button id="button-back" class="button-back" style="float:left;background-color: #fff;border-color:var(--color-bg-plum);color: var(--color-bg-plum);opacity: 0.8;height:30px;width:30px"><i class="fas fa-arrow-left fa-fw"></i></button>
+      <input style="float:left;border-radius: 3px;margin-left: 15px;height: 30px; box-shadow: 0 0 2px #999;border: 1px solid var(--color-bg-plum); font-family: sans-serif;font-size: 14px;font-weight:500;color:#999999;width: 300px" id="input-global-path" value="/" readonly></input>
+      <button type="button" id="new-folder" class="myButton second" style="width:37px;color:#fff;background:var(--color-bg-plum);opacity: 0.8;border: 1px solid var(--color-bg-plum)"><i class="fas fa-plus fa-fw"></i><b></b></button>
+      <div class="btn-group" role="group">
+        <button id="btnGroupDrop1" type="button" class="myButton" style="width:37px;color:var(--color-bg-plum);background:#fff;opacity: 0.8;border: 1px solid var(--color-bg-plum)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-arrow-up fa-fw"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop1">
+          <a class="dropdown-item" id="add-files" href="#">Files</a>
+          <a class="dropdown-item" id="add-folders" href="#">Folders</a>
+        </div>
+      </div>
+      <div class="btn-group" role="group">
+        <button id="button-details-organize" class="myButton" style="width: 37px;color:#fff;background:var(--color-bg-plum);opacity: 0.8;border: 1px solid var(--color-bg-plum)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-list"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="button-details-organize">
+          <a class="dropdown-item" id="import-progress" href="#">Import progress</a>
+          <a class="dropdown-item" id="save-progress" href="#">Save progress</a>
+          <a class="dropdown-item" id="clear-progress" href="#">Reset progress</a>
+          <a class="dropdown-item" id="show-details" href="#">Show details</a>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid" style="height:100%">
+      <!-- These are the context menu options, will not appear on the UI until prompted -->
+        <ul class="menu reg-folder off">
+          <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
+          <li id="folder-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
+        </ul>
+        <ul class="menu high-level-folder off">
+          <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
+          <li id="folder-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
+          <li id="tooltip-folders"><i class="fas fa-info fa-fw"></i>More info</li>
+        </ul>
+        <ul class="menu file off">
+          <li id="file-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
+          <li id="file-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
+          <li id="file-description"><i class="far fa-plus-square fa-fw"></i>Manage description</li>
+        </ul>
+        <span class="hoverPath" style="display: none"></span>
+        <span class="hoverFullName" style="display: none"></span>
+      <!-- END -->
+        <div id="items" ondrop="drop(event);" ondragover="allowDrop(event);">
+        </div>
+      </div>
+    </div>
+
+<!-- 3. Metadata files -->
+<div class="form-tabs condensed" id="metadata-files-tab" style="grid-template-rows: 15% 85%;">
+  <div class="metadata-progress-box">
+    <!-- <div id="metadata_progress"styles="display: flex;flex-direction: row;justify-content: space-between"> -->
+    <div><div class='progress-box checked'>1</div><span>submission</span></div>
+    <div><div class='progress-box'>2</div><span>dataset description</span></div>
+    <div><div class='progress-box'>3</div><span>samples</span></div>
+    <div><div class='progress-box'>4</div><span>subjects</span></div>
+    <div><div class='progress-box'>5</div><span>README</span></div>
+    <div><div class='progress-box'>6</div><span>CHANGES</span></div>
+  </div>
+  <div class="container-body">
+    <h5 class="question-title">Which <span style="color:var(--color-bg-plum)">metadata files</span><br>
+      would you like <span style="color:var(--color-bg-plum)">to add to your dataset?</span></h5>
+      <ul id="metadata-content">
+        <h1 style="font-size:14px">submission (.csv, .xlsx, .json)</h1>
+        <li id="submission" class="selected" style="display: flex; flex-direction: column;justify-content: space-between;border: 1px solid #258193;padding: 20px">
+          <p>Upload <br>existing file</p>
+          <div><i style="font-size: 70px" class="fas fa-cloud-upload-alt"></i></div>
+          <p style="font-size:13px">Drag and drop your <br>
+            file here OR</p>
+            <button>Choose file</button>
+        </li>
+        <li id="dataset_description"></li>
+        <li id="subjects"></li>
+        <li id="samples"></li>
+        <li id="readme"></li>
+        <li id="changes"></li>
+      </ul>
+    </div>
+  </div>
+  <!-- 4. Generate dataset -->
+  <div class="form-tabs" id="generate-dataset-tab">
+      <h3 class='question-title'>Where would you like to <br> <span style="color: var(--color-bg-plum)">generate your dataset?</span></h3>
+      <div class="div-organize-generate-dataset">
+        <button id="btn-generate-locally" class="button-generate-dataset" onclick="onClickTabs('generate-dataset-locally-tab', ['organize-dataset-tab', 'metadata-files-tab', 'generate-dataset-tab', 'high-level-folders-tab'], this.id)">
+          <i class="fas fa-tv" style="font-size: 50px;color:#258193"></i>
+          <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">LOCALLY ON MY COMPUTER</p>
+          <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
+        </button>
+        <button id="btn-generate-BF" class="button-generate-dataset" onclick="onClickTabs('high-level-folders-tab', ['organize-dataset-tab', 'metadata-files-tab', 'generate-dataset-tab'], this.id)">
+          <i class="fas fa-cloud-upload-alt" style="font-size: 50px;color: #258193"></i>
+          <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">UPLOAD TO BLACKFYNN</p>
+          <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Generate locally -->
+    <div class="form-tabs" id="generate-dataset-locally-tab">
+        <h3 class='question-title'>Choose <span style="color: var(--color-bg-plum)">a local destination</span> for your dataset</h3>
+        <div>
+          <div class="container-milestone-upload" style="display:flex;">
+            <input class="milestone-upload-text" style="width:65%;text-align:center;height:40px" type="text" readonly placeholder="Select destination">
+            <button type="button" style="width:15%;height:40px" class="button-milestone-upload"><b>Confirm</b></button>
+            <p id="para-info-new-dataset" style="float:right;margin-top:0;margin-left:7px;padding: 2 2;width:20%;text-align:left;margin-bottom:0"></p>
+          </div>
+          <h5> Enter a name for the new dataset:  </h5>
+          <div style="width:80%">
+            <input class="demo-response" > </input>
+          </div>
+          <div class="alert alert-primary" style="margin-top:25px !important;display:none" id="para-organize-datasets-loading" role="alert"></div>
+          <div class="alert alert-danger" style="margin-top:25px !important;display:none" id="para-organize-datasets-error" role="alert"></div>
+          <div class="alert alert-success" style="margin-top:25px !important;display:none" id="para-organize-datasets-success" role="alert"></div>
+          <br>
+          <div>
+            <h5> Proceed </h5>
+            <button class="demo-button"> Generate </button>
+            <p</p>
+          </div>
+        </div>
+      </div>
+
+
+  <div>
+    <button type="button" class="transition-btn">Previous</button>
+    <button style="float:right" type="button" class="transition-btn">Next</button>
+  </div>
+</main>
+
+<main class="dash-content main" id="validate_main">
+  <h5 class="dash-title" style="border-bottom:none;font-size:17px">Validate dataset</h5>
+   <div class="form-tabs tab-active"id="validate-tab">
+     <h3 class="question-title">Upload <span style="color:var(--color-bg-plum)">your dataset</span>
+       <br> below to <span style="color:var(--color-bg-plum)">validate</span></h3>
+       <div class = "div-organize-generate-dataset">
+         <li class="folder-upload-div">
+           <p>Upload dataset</p>
+           <div><i style="font-size: 60px" class="fas fa-cloud-upload-alt"></i></div>
+           <p style="font-size:11px">Drag and drop your <br>
+             folder here</p> <p style="font-size:12px">OR</p>
+             <button>Choose folder</button>
+         </li>
+        </div>
+       </div>
+
+ <div>
+   <button type="button" class="transition-btn">Previous</button>
+   <button style="float:right" type="button" class="transition-btn">Next</button>
+ </div>
 </main>
 
  <script>window.$ = window.jQuery = require('jquery')</script>
  <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
  <script src="../src/node_modules/bootbox/dist/bootbox.min.js"></script>
+
+ <script>
+
+   </script>
 
 </section>
 </template>

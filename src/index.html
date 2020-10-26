@@ -5,6 +5,8 @@
 
     <title>SODA - Keep Calm and Curate </title>
 
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css'>
+
     <link rel="stylesheet" href="assets/css/variables.css">
     <link rel="stylesheet" href="assets/css/nativize.css">
     <link rel="stylesheet" href="assets/css/global.css">
@@ -30,7 +32,8 @@
     <link rel="import" href="sections/curate/metadata_files.html">
     <link rel="import" href="sections/curate/generate_dataset.html">
     <link rel="import" href="sections/curate/validate_dataset.html">
-    <link rel="import" href="sections/curate/validate_datasets.html">
+    <link rel="import" href="sections/curate/account.html">
+    <link rel="import" href="sections/curate/prepare_dataset.html">
     <link rel="import" href="sections/manage_submit/manage_submit.html">
     <link rel="import" href="sections/post_curation/post_curation.html">
     <link rel="import" href="sections/prepare_metadata/prepare_metadata.html">
@@ -40,6 +43,11 @@
   </head>
 
 <body>
+  <button type="button" id="sidebarCollapse" class="navbar-btn">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
   <nav id="main-nav" class="nav js-nav">
     <div class="nav-item u-category-windows">
       <!-- Sidebar Header -->
@@ -56,13 +64,10 @@
         <li>
           <a href="#curateSubmenu" data-toggle="collapse" aria-expanded="false"><i class="fas fa-sitemap"></i>Curate</a>
           <ul class="collapse list-unstyled" id="curateSubmenu">
+            <li><a href="#" data-section="BFaccount">Account</a></li>
             <li><a href="#" data-section="curate">Curate</a></li>
-            <li><a href="#" data-section="highlevel_folders">High-level folders</a></li>
-            <li><a href="#" data-section="organize_files">Organize dataset</a></li>
-            <li><a href="#" data-section="metadata_files">Metadata files</a></li>
-            <li><a href="#" data-section="generate_dataset">Generate dataset</a></li>
             <li><a href="#" data-section="validate_dataset">Validate dataset</a></li>
-            <li><a href="#" data-section="validate">Prepare dataset</a></li>
+            <li><a href="#" data-section="prepare_dataset">Prepare dataset</a></li>
           </ul>
         <li>
           <a href="#" data-section="manage_submit"><i class="fas fa-digital-tachograph"></i>Manage</a>
@@ -83,11 +88,7 @@
 </nav>
 
   <div class="dash-app" style="background: #fff;border-top:1px solid #C3C3C3">
-    <button type="button" id="sidebarCollapse" class="navbar-btn">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
+
     <main id="content" class="content js-content"></main>
 </div>
 

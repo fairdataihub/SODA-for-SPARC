@@ -15,7 +15,7 @@ body {
 
 #items {
   min-height:440px;
-  padding-top:20px;
+  padding-top:0;
 }
 
 .button-grp {
@@ -431,7 +431,7 @@ button[disabled]{
 .div-organize-generate-dataset {
   text-align: center;
   min-width: 450px;
-  margin-top: 60px;
+  margin-top: 0;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -441,7 +441,7 @@ button[disabled]{
   width:200px;
   height:195px;
   border: 1px solid #d5d5d5;
-  background-color:#fff;
+  background-color:#f0f0f0;
   font-size:13px;
   font-weight: 600;
   border-radius: 5px;
@@ -605,9 +605,9 @@ button[disabled]{
 	}
 #metadata-content {
 	max-width: 100%;
-	height: 600px;
+	height: auto;
 	overflow: hidden;
-  margin: 50px auto;
+  margin: 10px auto;
   /* float:left */
   padding: 0
 }
@@ -654,6 +654,42 @@ button[disabled]{
   list-style: none;
  text-align: center;
  display: block;
+}
+
+.folder-upload-div {
+  list-style: none;
+  text-align: center;
+  width:200px;
+  height:210px;
+  border: 1px dashed #c0c0c0;
+  background-color:#fff;
+  font-size:13px;
+  font-weight: 600;
+  border-radius: 5px;
+  padding: 5px 10px;
+  margin:0 auto;
+  color: var(--color-teal);
+  opacity: 1;
+  position:relative;
+}
+
+.folder-upload-div button {
+  width: 100px;
+  height: 25px;
+  background: #fff;
+  color: var(--color-light-green);
+  border: 1px solid var(--color-light-green);
+  border-radius: 3px;
+  box-shadow: 0 0 3px 0 var(--color-light-green);
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+.folder-upload-div p {
+  margin: 5px auto;
+  font-size: 16px;
+  opacity: 0.7;
+  color: #000;
 }
 
 .progress-box {

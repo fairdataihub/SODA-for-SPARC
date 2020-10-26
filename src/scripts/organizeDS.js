@@ -1,5 +1,3 @@
-// const { highLevelFolderToolTip, highLevelFolders  } = require('./renderer.js');
-
 //// option to show tool-tips for high-level folders
 function showTooltips(ev) {
   var folderName = ev.parentElement.innerText;
