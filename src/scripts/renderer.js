@@ -5133,7 +5133,7 @@ organizeDSaddNewFolder.addEventListener("click", function(event) {
             })
           } else {
             var appendString = '';
-            appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName('+fullNameValue+')"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">'+ newFolderName +'</div></div>'
+            appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">'+ newFolderName +'</div></div>'
             $(appendString).appendTo('#items');
 
             /// update jsonObjGlobal
@@ -5195,6 +5195,12 @@ function hideFullPath() {
   fullPathValue.style.left = '-210%';
 }
 
+function hideFullName() {
+  fullNameValue.style.display = "none";
+  fullNameValue.style.top = '-250%';
+  fullNameValue.style.left = '-250%';
+}
+
 /// hover for a full path
 function hoverForPath(ev) {
     var currentPath = organizeDSglobalPath.value
@@ -5242,7 +5248,7 @@ document.addEventListener('onmouseover', function(e){
   if (e.target.classList.value === "fas fa-folder") {
     hoverForFullName(e)
   } else {
-    hideFullName(fullNameValue)
+    hideFullName()
   }
 });
 
@@ -5442,7 +5448,7 @@ function addFoldersfunction(folderArray, currentLocation) {
         currentLocation[baseName] = {}
         populateJSONObjFolder(currentLocation[baseName], folderArray[i])
 
-        var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName('+ fullNameValue +')"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+baseName+'</div></div>'
+        var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+baseName+'</div></div>'
 
         $('#items').html(appendString)
 
@@ -5554,7 +5560,7 @@ function drop(ev) {
           var folderJsonObject = {};
           populateJSONObjFolder(folderJsonObject, itemPath)
           myPath[itemName] = folderJsonObject
-          var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName('+fullNameValue+')"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
+          var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
           $(appendString).appendTo(ev.target);
           listItems(myPath, '#items')
           getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
@@ -5615,7 +5621,7 @@ function folderContextMenu(event) {
      // Hide it AFTER the action was triggered
      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-     hideFullName(fullNameValue)
+     hideFullName()
  });
 
  /// options for high-level folders
@@ -5631,13 +5637,13 @@ function folderContextMenu(event) {
     // Hide it AFTER the action was triggered
     hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-    hideFullName(fullNameValue)
+    hideFullName()
 
 });
 /// hide both menus after an option is clicked
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-  hideFullName(fullNameValue)
+  hideFullName()
 }
 
 //////// options for files
@@ -5687,7 +5693,7 @@ $(document).bind("contextmenu", function (event) {
       hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
       hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
       hideFullPath()
-      hideFullName(fullNameValue)
+      hideFullName()
     }
 });
 
@@ -5698,7 +5704,7 @@ $(document).bind("click", function (event) {
         hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
         hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
         hideFullPath()
-        hideFullName(fullNameValue)
+        hideFullName()
       }
 })
 

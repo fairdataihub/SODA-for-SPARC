@@ -319,12 +319,6 @@ function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, u
   }
 }
 
-function hideFullName(value) {
-  value.style.display = "none";
-  value.style.top = '-250%';
-  value.style.left = '-250%';
-}
-
 function listItems(jsonObj, uiItem) {
     var appendString = ''
     var sortedObj = sortObjByKeys(jsonObj)
@@ -349,7 +343,7 @@ function listItems(jsonObj, uiItem) {
           }
         } else {
         }
-        appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName('+fullNameValue+')"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
+        appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
       }
     }
     $(uiItem).empty()
