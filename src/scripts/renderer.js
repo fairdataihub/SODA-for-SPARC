@@ -50,8 +50,8 @@ function changeMainContent(currentMain, nextMain) {
 function onClickTabs(currentTab, siblingTabs, liID) {
   siblingTabs.forEach(item => $('#'+item).removeClass('tab-active'));
   $('#'+ currentTab).addClass('tab-active');
-  if (! $('#' + liID).hasClass('active')) {
-  $('#' + liID).addClass('active')
+  if (! $('#' + liID).hasClass('is-active')) {
+  $('#' + liID).addClass('is-active')
   }
   // $('#' + liID).addClass('current')
 }

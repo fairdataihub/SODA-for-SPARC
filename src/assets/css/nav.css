@@ -1,13 +1,16 @@
 /* Nav bootstrap */
 /* toggle button */
 #sidebarCollapse {
-   width: 40px;
-   height: 40px;
-   background: #f5f5f5;
+   width: 35px;
+   height: 35px;
+   border-radius: 50%;
+   background: transparent;
    position: relative;
-   left: 210px;
+   top:8px;
+   left: 165px;
    cursor: pointer;
-   border-color: transparent;
+   border: 1px solid var(--color-light-green);
+   z-index: 2;
 }
 
 #sidebarCollapse span {
@@ -15,7 +18,7 @@
    height: 2px;
    margin: 0 auto;
    display: block;
-   background: #555;
+   background: var(--color-light-green);
    transition: all 0.8s cubic-bezier(0.810, -0.330, 0.345, 1.375);
 }
 /* animate toggle button */
@@ -47,11 +50,11 @@
 }
 
 #main-nav.active {
-    margin-left: -200px;
+    width: 0;
     transform: rotateY(150deg); /* Rotate sidebar vertically by 100 degrees. */
 }
 
-.navbar-btn {
+/* .navbar-btn {
   margin-right: 3px;
   font-size: 14px;
   color: var(--color-teal);
@@ -64,10 +67,10 @@
   width:110px;
   background-position: center;
   transition: background 0.1s;
-}
+} */
 
 .navbar-btn.active {
-  margin-left: -210px;
+  margin-left: -160px;
 }
 
 .navbar-btn:focus{
@@ -230,9 +233,15 @@ a[data-toggle="collapse"] {
   color: var(--color-subtle);
   visibility: visible;
   left: 0;
-  z-index: 1300;
+  z-index: 1;
   align-items: stretch;
   display: flex;
+  transition: 0.5s;
+}
+
+@media screen and (max-height: 500px) {
+  #main-nav {padding-top: 15px;}
+  #main-nav a {font-size: 13px;}
 }
 
 .nav.is-shown {

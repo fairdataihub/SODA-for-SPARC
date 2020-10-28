@@ -3,11 +3,13 @@
 .section {
   position: absolute;
   top: 0;
-  left: 230px;
+  left: 200px;
   right: 0;
   bottom: 0;
-  max-height: 100vh;
-  padding: 0 10px;
+  max-height: 100%;
+  margin-right: 0;
+  padding: 10px;
+  padding-right: 15px;
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto;
@@ -30,8 +32,8 @@
 }
 
 .section.fullShown {
-  transform: translateX(-230px);
-  width: 100%;
+  left: 160px;
+max-width: 100%;
 }
 
 .section h3,

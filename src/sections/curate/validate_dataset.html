@@ -7,12 +7,21 @@
 
 <main class="dash-content main show" style="visibility:visible">
   <h5 class="dash-title" style="border-bottom:none;font-size:17px">Validate dataset
-    <div style="height:1px;width:140px;margin:0 auto;border:1px solid #258193"></div>
+    <div style="height:1px;width:140px;border:1px solid var(--color-bg-plum)"></div>
   </h5>
    <div class="form-tabs tab-active">
-     <h3 class="question-title">Upload <span style="color:var(--color-bg-plum)">your dataset</span>
-       <br> below to <span style="color:var(--color-bg-plum)">validate</span></h3>
-       <div class = "div-organize-generate-dataset">
+     <h3 class="question-title">Import <span style="color:var(--color-bg-plum)">your dataset</span>
+       below to <br> <span style="color:var(--color-bg-plum)">validate</span></h3>
+       <div id="div-validate-local-dataset" class="div-metadata-import">
+         <div class="div-file-import">
+           <p style="font-weight:bold">Import <br>existing dataset</p>
+           <div><i style="font-size: 70px" class="fas fa-cloud-upload-alt"></i></div>
+           <p style="font-size:12px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
+             dataset here OR</p>
+             <button style="font-size:13px;">Choose folder</button>
+         </div>
+       </div>
+       <!-- <div class = "div-organize-generate-dataset">
          <li class="folder-upload-div">
            <p>Upload dataset</p>
            <div><i style="font-size: 60px" class="fas fa-cloud-upload-alt"></i></div>
@@ -20,7 +29,7 @@
              folder here</p> <p style="font-size:12px">OR</p>
              <button>Choose folder</button>
          </li>
-        </div>
+        </div> -->
        </div>
        <div>
          <!-- <button type="button" class="transition-btn">Previous</button> -->

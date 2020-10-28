@@ -1,12 +1,12 @@
 .option-card {
-  max-height: 160px;
+  max-height: 150px;
   min-height: 140px;
-  max-width: 170px;
+  max-width: 160px;
   flex-direction: column;
   justify-content: space-between;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 8% 20% 72%;
+  grid-template-rows: 20% auto;
   padding: 5px;
   border-radius: 6px;
   font-size: 12px;
@@ -19,14 +19,18 @@
 }
 
 .card-head {
-  text-align: center;
-  padding-top: 10px;
+  /* text-align: center; */
+  padding-top: 5px;
   font-size: 11px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .card-head h2 {
   color: #000;
   font-size: 14px;
+  padding-left: 20px
 }
 
 .card-head i {
@@ -56,7 +60,7 @@
   width: 15px;
   height: 14px;
   float: right;
-  font-size: 15px;
+  font-size: 14px;
   padding-left: 0.2em;
   padding-bottom: 0.3em;
   margin-right: 0.2em;
@@ -129,7 +133,7 @@
   margin-top: 5px;
   display:flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 .first-three-high-level-folders {
@@ -200,25 +204,91 @@
   margin: 20px auto
 }
 
-.overall-progress-bar {
-    margin: 20px auto
+.multi-steps {
+	display: table;
+	table-layout: fixed;
+	width: 90%;
+  counter-reset: section;
+  padding-left: 5px;
+  padding-top: 0;
+  margin: 0 auto
 }
 
-.overall-progress-bar-ul li i {
-  font-size: 36px;
+.multi-steps > li {
+	text-align: center;
+	display: table-cell;
+	position: relative;
+	color: #c0c0c0;
+  z-index: 0
 }
 
-/* .overall-progress-bar-ul li .fas::after {
-  content: '';
-  background: #ccc;
-  height: 2px;
-  width: 100%;
-  display: block;
-  position: absolute;
-  left: 0;
-  top: 57px;
-  z-index: ;
-} */
+.multi-steps > li:before {
+	content: '\f00c';
+	content: '\2713;';
+	content: '\10003';
+	content: '\10004';
+	content: '\2713';
+  counter-increment: section;
+  content: counters(section,".") " ";
+	display: block;
+	margin: 0 auto 4px;
+	background-color: #fff;
+	width: 28px;
+	height: 28px;
+	line-height: 28px;
+	text-align: center;
+	font-weight: bold;
+	border-width: 2px;
+	border-style: solid;
+	border-color: #c0c0c0;
+	border-radius: 50%;
+}
+
+.multi-steps > li:after {
+	content: '';
+	height: 2px;
+	width: 100%;
+	background-color: #c0c0c0;
+	position: absolute;
+	top: 16px;
+	left: 50%;
+	z-index: -1;
+}
+
+.multi-steps > li:last-child:after {
+	display: none;
+}
+
+.multi-steps > li.is-active:before {
+	background-color: var(--color-light-green);
+	border-color: var(--color-light-green);
+  color: #fff;
+  content: '\2713';
+  font-size: 18px;
+  box-shadow: 0 0 4px 0 var(--color-light-green)
+}
+
+
+.multi-steps > li.is-active:after {
+  	background-color:var(--color-light-green);
+}
+
+.multi-steps > li strong {
+  font-size: 13px;
+}
+
+.multi-steps > li.is-active strong {
+  color: var(--color-light-green);
+}
+
+.nav.nav-tabs {
+  list-style: none;
+  border-bottom: 1px solid #dee2e6 !important
+}
+
+.nav.nav-tabs.nav-item {
+  height: 50px !important
+}
 
 .circle-icon {
     background: #f0f0f0;
@@ -353,3 +423,70 @@
   display: inline-block;
   width: 100px;
 } */
+
+.form-control {
+  width: 65% !important;
+  margin: 0 auto !important;
+  height: 35px !important;
+  background: #f5f5f5 !important;
+  border-radius: 5px !important;
+  text-align: center !important
+}
+
+.form-group label {
+  margin: 0 auto !important;
+}
+
+.label-switch.metadata {
+  font-size: 14px;
+  margin: 10px !important;
+}
+
+.input-switch.metadata:checked + label {
+  font-size: 14px;
+}
+
+.div-metadata-import {
+  width:100%;
+  height:370px;
+  margin:0 auto
+}
+
+.div-metadata-import h5 {
+  text-align: center
+}
+
+.div-file-import {
+  text-align:center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border: 1px dashed #258193;
+  padding: 20px;
+  width:200px;
+  border-radius: 5px;
+  margin: 0 auto
+}
+
+.div-file-import p {
+  margin-top:0;
+  font-size: 15px;
+}
+
+.div-file-import button {
+  background: var(--color-bg-light-green-button);
+  color: var(--color-teal);
+  border: 1px solid var(--color-bg-light-green-button);
+  border-radius: 5px;
+  margin: 0 auto;
+  width: 70%;
+  padding: 7px;
+  cursor: pointer;
+}
+
+.div-file-import button:hover {
+  background: var(--color-light-green);
+  color: #fff;
+  font-weight: 600;
+  border: 1px solid var(--color-light-green);
+}

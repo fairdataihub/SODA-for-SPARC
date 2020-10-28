@@ -2,14 +2,14 @@
 <template class="task-template">
   <section id="curate-section" class="section js-section u-category-windows">
 
-<head>
-    <title>SODA - Keep calm and curate</title>
-    <!-- <link rel="import" href="sections/curate/organize_files.html"> -->
-</head>
+  <head>
+      <title>SODA - Keep calm and curate</title>
+      <!-- <link rel="import" href="sections/curate/organize_files.html"> -->
+  </head>
 
 <main class="dash-content main show" id="curate_main">
-  <h5 class="dash-title" style="border-bottom:none;font-size:17px">Curate dataset
-    <div style="height:1px;width:140px;margin:0 auto;border:1px solid #258193"></div>
+  <h5 class="dash-title" style="border-bottom:none;font-size:17px">Curate
+    <div style="height:1px;width:55px;border:1px solid var(--color-bg-plum)"></div>
   </h5>
 <!-- These are the main tab for each step -->
   <div class="form-tabs tab-active" id="curate-tab">
@@ -34,57 +34,60 @@
   </div>
 </main>
 
-<main class="dash-content" id="organize_main">
-  <h5 class="dash-title" style="border-bottom:none;font-size:17px">Organize dataset
-    <div style="height:1px;width:140px;margin:0 auto;border:1px solid #258193"></div>
+<main class="dash-content" id="organize_main" style="grid-template-rows:12% auto 5%">
+  <div style="border-bottom:1px solid #f0f0f0">
+  <h5 class="dash-title" style="border-bottom:none;font-size:17px;width:290px;float:left">Curate<i class="fas fa-caret-right" style="margin:auto 10px"></i>Organize dataset
+    <div style="height:1px;width:220px;border:1px solid var(--color-bg-plum)"></div>
   </h5>
-  <ul id="myprogressbar">
-      <li id="li_specify_folders" class="active" onclick="onClickTabs('high-level-folders-tab', ['organize-dataset-tab', 'metadata-files-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab'], this.id)"><strong>Specify folders</strong></li>
-      <li id="li-organize-dataset" onclick="onClickTabs('organize-dataset-tab', ['high-level-folders-tab', 'metadata-files-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab'], this.id)"><strong>Organize</strong></li>
-      <li id="li-metadata-files" onclick="onClickTabs('metadata-files-tab', ['organize-dataset-tab', 'high-level-folders', 'generate-dataset-tab', 'generate-dataset-locally-tab'], this.id)"><strong>Metadata files</strong></li>
-      <li id="li-generate-dataset" onclick="onClickTabs('generate-dataset-tab', ['organize-dataset-tab', 'metadata-files-tab', 'high-level-folders', 'generate-dataset-locally-tab'], this.id)"><strong>Generate</strong></li>
-      <li id="li-submit-dataset" onclick="onClickTabs('generate-dataset-locally-tab', ['organize-dataset-tab', 'metadata-files-tab', 'high-level-folders','generate-dataset-tab'], this.id)"><strong>Submit</strong></li>
+  <ul class="list-unstyled multi-steps" style="width:50%;float:right">
+    <li id="li_specify_folders" class="is-active" onclick="onClickTabs('high-level-folders-tab', ['organize-dataset-tab', 'metadata-files-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab', 'generate-dataset-blackfynn-tab'], this.id)"><strong>Specify folders</strong></li>
+    <li id="li-organize-dataset" onclick="onClickTabs('organize-dataset-tab', ['high-level-folders-tab', 'metadata-files-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab', 'generate-dataset-blackfynn-tab'], this.id)"><strong>Organize</strong></li>
+    <li id="li-metadata-files" onclick="onClickTabs('metadata-files-tab', ['organize-dataset-tab', 'high-level-folders-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab', 'generate-dataset-blackfynn-tab'], this.id)"><strong>Metadata files</strong></li>
+    <li id="li-generate-dataset" onclick="onClickTabs('generate-dataset-tab', ['organize-dataset-tab', 'metadata-files-tab', 'high-level-folders-tab', 'generate-dataset-locally-tab', 'generate-dataset-blackfynn-tab'], this.id)"><strong>Generate</strong></li>
+    <!-- <li id="li-submit-dataset" onclick="onClickTabs('generate-dataset-locally-tab', ['organize-dataset-tab', 'metadata-files-tab', 'high-level-folders-tab','generate-dataset-tab', 'generate-dataset-blackfynn-tab'], this.id)"><strong>Submit</strong></li> -->
   </ul>
+  </div>
+
 <!-- These are the main tab for each step -->
 
 <!-- 1. Specify high Level folders -->
-  <div class="form-tabs tab-active" id="high-level-folders-tab" style="grid-template-rows:10% 90%">
+  <div class="form-tabs tab-active" id="high-level-folders-tab" style="grid-template-rows:10% 90%;margin-top:20px">
     <div class="container-body condensed" style="min-height:450px">
       <h5 class="question-title">Which <span style="color:var(--color-bg-plum)">SPARC high-level folders</span><br>
         would you like <span style="color:var(--color-bg-plum)">to add to your dataset?</span></h5>
       <div>
       <div class="first-three-high-level-folders">
         <div class="option-card">
-        <div class="folder-checkbox">
-          <input class="folder-input-check" id="code-check" type="checkbox">
-          <label for="code-check"></label>
-        </div>
         <div class="card-head">
           <h2><i class="fas fa-folder"></i>code</h2>
+          <div class="folder-checkbox" style="float:right">
+            <input class="folder-input-check" id="code-check" type="checkbox">
+            <label for="code-check"></label>
+          </div>
         </div>
         <div class="card-body">
           <p>Accomplish only the desired curation and sharing steps of your choice</p>
         </div>
       </div>
       <div class="option-card">
-        <div class="folder-checkbox">
-          <input class="folder-input-check" id="primary-check" type="checkbox">
-          <label for="primary-check"></label>
-        </div>
         <div class="card-head">
           <h2><i class="fas fa-folder"></i>primary</h2>
+          <div class="folder-checkbox">
+            <input class="folder-input-check" id="primary-check" type="checkbox">
+            <label for="primary-check"></label>
+          </div>
         </div>
         <div class="card-body">
             <p>Identify and go through the suitable curation and sharing processes for your data type</p>
         </div>
       </div>
       <div class="option-card">
-        <div class="folder-checkbox">
-          <input class="folder-input-check" id="source-check" type="checkbox">
-          <label for="source-check"></label>
-        </div>
         <div class="card-head">
           <h2><i class="fas fa-folder"></i>source</h2>
+          <div class="folder-checkbox">
+            <input class="folder-input-check" id="source-check" type="checkbox">
+            <label for="source-check"></label>
+          </div>
         </div>
         <div class="card-body">
           <p>Accomplish only the desired curation and sharing steps of your choice</p>
@@ -93,36 +96,36 @@
     </div>
     <div class="first-three-high-level-folders">
       <div class="option-card">
-        <div class="folder-checkbox">
-          <input class="folder-input-check" id="docs-check" type="checkbox">
-          <label for="docs-check"></label>
-        </div>
         <div class="card-head">
           <h2><i class="fas fa-folder"></i>docs</h2>
+          <div class="folder-checkbox">
+            <input class="folder-input-check" id="docs-check" type="checkbox">
+            <label for="docs-check"></label>
+          </div>
         </div>
         <div class="card-body">
           <p>Accomplish only the desired curation and sharing steps of your choice</p>
         </div>
       </div>
       <div class="option-card">
-        <div class="folder-checkbox">
-          <input class="folder-input-check" id="protocol-check" type="checkbox">
-          <label for="protocol-check"></label>
-        </div>
         <div class="card-head">
           <h2><i class="fas fa-folder"></i>protocol</h2>
+          <div class="folder-checkbox">
+            <input class="folder-input-check" id="protocol-check" type="checkbox">
+            <label for="protocol-check"></label>
+          </div>
         </div>
         <div class="card-body">
           <p>Accomplish only the desired curation and sharing steps of your choice</p>
         </div>
       </div>
       <div class="option-card">
-        <div class="folder-checkbox">
-          <input class="folder-input-check" id="derivatives-check" type="checkbox">
-          <label for="derivatives-check"></label>
-        </div>
         <div class="card-head">
-          <h2><i class="fas fa-folder"></i>derivatives</h2>
+          <h2 style="padding-left:15px"><i class="fas fa-folder"></i>derivatives</h2>
+          <div class="folder-checkbox">
+            <input class="folder-input-check" id="derivatives-check" type="checkbox">
+            <label for="derivatives-check"></label>
+          </div>
         </div>
         <div class="card-body">
           <p>Accomplish only the desired curation and sharing steps of your choice</p>
@@ -186,45 +189,57 @@
 
 <!-- 3. Metadata files -->
 <div class="form-tabs condensed" id="metadata-files-tab" style="grid-template-rows: 15% 85%;">
-  <div class="metadata-progress-box">
+  <!-- <div class="metadata-progress-box">
     <!-- <div id="metadata_progress"styles="display: flex;flex-direction: row;justify-content: space-between"> -->
-    <div><div class='progress-box checked'>1</div><span>submission</span></div>
+    <!-- <div><div class='progress-box checked'>1</div><span>submission</span></div>
     <div><div class='progress-box'>2</div><span>dataset description</span></div>
     <div><div class='progress-box'>3</div><span>samples</span></div>
     <div><div class='progress-box'>4</div><span>subjects</span></div>
     <div><div class='progress-box'>5</div><span>README</span></div>
     <div><div class='progress-box'>6</div><span>CHANGES</span></div>
-  </div>
+  </div>  -->
+  <form>
+    <div style = "padding:10px 0px;max-width:800px;min-width:450px;margin:0 auto" class="switch-field">
+      <input class="input-switch metadata" id="submission-metadata-file" name="organize-add-metadata-files" type="radio" checked/>
+      <label for="submission-metadata-file" class="label-switch metadata"> submission </label>
+      <input class="input-switch metadata" id="ds-description-metadata-file" name="organize-add-metadata-files" type="radio" />
+      <label for="ds-description-metadata-file" class="label-switch metadata" style="width:300px"> dataset description </label>
+      <input class="input-switch metadata" id="subjects-metadata-file" name="organize-add-metadata-files" type="radio" />
+      <label for="subjects-metadata-file" class="label-switch metadata"> samples </label>
+      <input class="input-switch metadata" id="samples-metadata-file" name="organize-add-metadata-files" type="radio" />
+      <label for="samples-metadata-file" class="label-switch metadata"> subjects </label>
+      <input class="input-switch metadata" id="samples-metadata-file" name="organize-add-metadata-files" type="radio" />
+      <label for="readme-metadata-file" class="label-switch metadata"> README </label>
+      <input class="input-switch metadata" id="samples-metadata-file" name="organize-add-metadata-files" type="radio" />
+      <label for="changes-metadata-file" class="label-switch metadata"> CHANGES </label>
+    </div>
+  </form>
+
   <div class="container-body">
-    <h5 class="question-title">Which <span style="color:var(--color-bg-plum)">metadata files</span><br>
-      would you like <span style="color:var(--color-bg-plum)">to add to your dataset?</span></h5>
-      <ul id="metadata-content">
-        <h1 style="font-size:14px">submission (.csv, .xlsx, .json)</h1>
-        <li id="submission" class="selected" style="display: flex; flex-direction: column;justify-content: space-between;border: 1px solid #258193;padding: 20px">
-          <p>Upload <br>existing file</p>
+    <h5 class="question-title">Import your <span style="color:var(--color-bg-plum)">metadata files</span><br>
+      below <span style="color:var(--color-bg-plum)">to add to your dataset</span></h5>
+      <div id="div-submission-metadata-file" class="div-metadata-import">
+        <h5>submission (.csv, .xlsx, .json)</h5>
+        <div class="div-file-import" id="submission">
+          <p style="font-weight:bold">Import <br>existing file</p>
           <div><i style="font-size: 70px" class="fas fa-cloud-upload-alt"></i></div>
-          <p style="font-size:13px">Drag and drop your <br>
+          <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
             file here OR</p>
             <button>Choose file</button>
-        </li>
-        <li id="dataset_description"></li>
-        <li id="subjects"></li>
-        <li id="samples"></li>
-        <li id="readme"></li>
-        <li id="changes"></li>
-      </ul>
+        </div>
+      </div>
     </div>
   </div>
   <!-- 4. Generate dataset -->
   <div class="form-tabs" id="generate-dataset-tab">
       <h3 class='question-title'>Where would you like to <br> <span style="color: var(--color-bg-plum)">generate your dataset?</span></h3>
       <div class="div-organize-generate-dataset">
-        <button id="btn-generate-locally" class="button-generate-dataset" onclick="onClickTabs('generate-dataset-locally-tab', ['organize-dataset-tab', 'metadata-files-tab', 'generate-dataset-tab', 'high-level-folders-tab'], this.id)">
+        <button id="btn-generate-locally" class="button-generate-dataset" onclick="onClickTabs('generate-dataset-locally-tab', ['organize-dataset-tab', 'metadata-files-tab', 'generate-dataset-tab', 'high-level-folders-tab', 'generate-dataset-blackfynn-tab'], this.id)">
           <i class="fas fa-tv" style="font-size: 50px;color:#258193"></i>
           <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">LOCALLY ON MY COMPUTER</p>
           <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
         </button>
-        <button id="btn-generate-BF" class="button-generate-dataset" onclick="onClickTabs('high-level-folders-tab', ['organize-dataset-tab', 'metadata-files-tab', 'generate-dataset-tab'], this.id)">
+        <button id="btn-generate-BF" class="button-generate-dataset" onclick="onClickTabs('generate-dataset-blackfynn-tab', ['high-level-folders-tab','organize-dataset-tab', 'metadata-files-tab', 'generate-dataset-tab'], this.id)">
           <i class="fas fa-cloud-upload-alt" style="font-size: 50px;color: #258193"></i>
           <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">UPLOAD TO BLACKFYNN</p>
           <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
@@ -234,27 +249,80 @@
 
     <!-- Generate locally -->
     <div class="form-tabs" id="generate-dataset-locally-tab">
-        <h3 class='question-title'>Choose <span style="color: var(--color-bg-plum)">a local destination</span> for your dataset</h3>
+        <h3 class='question-title' style="padding: 35px;">Choose <span style="color: var(--color-bg-plum)">a local destination</span> for your dataset</h3>
         <div>
-          <div class="container-milestone-upload" style="display:flex;">
-            <input class="milestone-upload-text" style="width:65%;text-align:center;height:40px" type="text" readonly placeholder="Select destination">
-            <button type="button" style="width:15%;height:40px" class="button-milestone-upload"><b>Confirm</b></button>
-            <p id="para-info-new-dataset" style="float:right;margin-top:0;margin-left:7px;padding: 2 2;width:20%;text-align:left;margin-bottom:0"></p>
-          </div>
-          <h5> Enter a name for the new dataset:  </h5>
-          <div style="width:80%">
-            <input class="demo-response" > </input>
-          </div>
+          <form style="line-height:2">
+            <div class="form-row">
+              <div class="form-group" style="line-height: 50px;display: flex !important;flex-direction:column">
+                <label for="inputLocalDestination"><b style="color: var(--color-bg-plum)">Destination:</b></label>
+                <input class="form-control" id="inputLocalDestination" type="text" readonly placeholder="Browse here">
+                <!-- <input type="email"  id="inputEmail4" placeholder="Email"> -->
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group" style="line-height: 50px;display: flex !important;flex-direction:column">
+                <label for="inputNewNameDataset"><b style="color: var(--color-bg-plum)">Dataset name:</b></label>
+                <input type="text" class="form-control" style="background: #fff !important;" id="inputNewNameDataset" placeholder="Enter here">
+              </div>
+            </div>
+          </form>
           <div class="alert alert-primary" style="margin-top:25px !important;display:none" id="para-organize-datasets-loading" role="alert"></div>
           <div class="alert alert-danger" style="margin-top:25px !important;display:none" id="para-organize-datasets-error" role="alert"></div>
           <div class="alert alert-success" style="margin-top:25px !important;display:none" id="para-organize-datasets-success" role="alert"></div>
           <br>
-          <div>
-            <h5> Proceed </h5>
-            <button class="demo-button"> Generate </button>
-            <p</p>
-          </div>
         </div>
+      </div>
+
+      <div id="generate-dataset-blackfynn-tab" class="form-tabs" style="margin-top:20px;grid-template-rows: 10% auto">
+        <h3 class='question-title' style="padding: 35px;">Choose <span style="color: var(--color-bg-plum)">a Blackfynn account and dataset</span> to upload your dataset</h3>
+        <div id="div-create-cloud">
+          <h5> </h5>
+          <p></p>
+          <h5> Select account </h5>
+          <div class="demo-controls">
+            <select id="bfuploadaccountlist" style="width:58%" class="my-dropdown">
+              <option> Select </option>
+            </select>
+            <button id="button-upload-check-bf-account-details" class="demo-button"> Switch Account </button>
+            <p id="para-account-details"></p>
+          </div>
+          <div id=div-bf-account-load-progress-curate class="progressdiv">
+            <div class="indeterminatebar"></div>
+          </div>
+          <p id='para-upload-select-account-status'> <p>
+          <h5> Select Blackfynn dataset for uploading
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically).
+              <br> <br>
+              Note: You must have "owner", "manager" or "editor" permissions on the dataset to upload. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+            </div>
+          </h5>
+          <div class="demo-controls" style="margin-top: 15px">
+            <select class="my-dropdown" id="bfuploaddatasetlist" style="width:80%">
+              <option> Select dataset </option>
+            </select>
+            <p></p>
+            <button id="button-upload-refresh-dataset-list" class="demo-button" style="display:none"> Refresh List </button>
+          </div>
+          <p> </p>
+          <div id="div-curate-button" class="datasetsaveoption">
+            <h5> Proceed </h5>
+            <button id="button-curate-dataset" class="demo-button"> Generate </button>
+            <p id="para-please-wait-curate"</p>
+            </div>
+            <div id="div-curate-progress-bar-error-status" class="datasetsaveoption">
+              <p id='para-curate-progress-bar-error-status'> <p>
+            </div>
+            <div id="div-curate-progress">
+              <div id="div-curate-meter-progress" class="datasetsaveoption">
+                <h5> Progress </h5>
+                <progress class=progresstrack id="progress-bar-curate" max="100" value="0"></progress>
+              </div>
+              <div id="div-curate-progress-bar-status" class="datasetsaveoption">
+                <p id='para-curate-progress-bar-status'> <p>
+              </div>
+            </div>
+          </div>
       </div>
 
 
@@ -289,6 +357,7 @@
  <script>window.$ = window.jQuery = require('jquery')</script>
  <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
  <script src="../src/node_modules/bootbox/dist/bootbox.min.js"></script>
+
 
  <script>
 
