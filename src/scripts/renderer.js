@@ -5070,7 +5070,8 @@ var jsonObjGlobal = {
   "primary": {},
   "source": {},
   "docs": {},
-  "protocols": {}
+  "protocols": {},
+  "submission.xlsx": ["C:\\Users\\Tram Ngo\\Desktop\\Misc\\demo\\primary", "This is my description, This is my descriptionmThis is my description, This is my description", "this is my metadata"]
 }
 
 listItems(jsonObjGlobal, '#items')
@@ -5251,6 +5252,11 @@ document.addEventListener('onmouseover', function(e){
     hideFullName()
   }
 });
+
+// if a file is clicked -> show details in right "sidebar"
+function showDetails() {
+  $('.div-display-details').toggleClass('show')
+}
 
 /// import progress
 importProgress.addEventListener("click", function() {
@@ -5708,17 +5714,27 @@ $(document).bind("click", function (event) {
       }
 })
 
+var fileNameForEdit;
 ///// Option to manage description for files
 function manageDesc(ev) {
   var fileName = ev.parentElement.innerText
   /// get current location of files in JSON object
-  var filtered = getGlobalPath()
+  var filtered = getGlobalPath(organizeDSglobalPath)
   var myPath = getRecursivePath(filtered, jsonObjGlobal)
-  /// prompt for Manage description
-  triggerManageDescriptionPrompt(fileName, myPath, )
+  //// load existing metadata/description
+  loadDetailsContextMenu(fileName, myPath, 'textarea-file-description', 'textarea-file-metadata', 'para-local-path-file')
+  showDetails()
+  hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+  hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+  fileNameForEdit = fileName
+}
+
+function addDetailsForFile(ev) {
+  var fileName = fileNameForEdit;
+  var filtered = getGlobalPath(organizeDSglobalPath)
+  var myPath = getRecursivePath(filtered, jsonObjGlobal)
+  triggerManageDetailsPrompts(ev.id, fileName, myPath, 'textarea-file-description', 'textarea-file-metadata')
   /// list Items again with new updated JSON structure
   listItems(myPath, '#items')
   getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
-  hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-  hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
 }

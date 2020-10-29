@@ -36,16 +36,15 @@
 
 <main class="dash-content" id="organize_main" style="grid-template-rows:12% auto 5%">
   <div style="border-bottom:1px solid #f0f0f0">
-  <h5 class="dash-title" style="border-bottom:none;font-size:17px;width:290px;float:left">Curate<i class="fas fa-caret-right" style="margin:auto 10px"></i>Organize dataset
-    <div style="height:1px;width:220px;border:1px solid var(--color-bg-plum)"></div>
-  </h5>
-  <ul class="list-unstyled multi-steps" style="width:50%;float:right">
-    <li id="li_specify_folders" class="is-active" onclick="onClickTabs('high-level-folders-tab', ['organize-dataset-tab', 'metadata-files-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab', 'generate-dataset-blackfynn-tab'], this.id)"><strong>Specify folders</strong></li>
-    <li id="li-organize-dataset" onclick="onClickTabs('organize-dataset-tab', ['high-level-folders-tab', 'metadata-files-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab', 'generate-dataset-blackfynn-tab'], this.id)"><strong>Organize</strong></li>
-    <li id="li-metadata-files" onclick="onClickTabs('metadata-files-tab', ['organize-dataset-tab', 'high-level-folders-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab', 'generate-dataset-blackfynn-tab'], this.id)"><strong>Metadata files</strong></li>
-    <li id="li-generate-dataset" onclick="onClickTabs('generate-dataset-tab', ['organize-dataset-tab', 'metadata-files-tab', 'high-level-folders-tab', 'generate-dataset-locally-tab', 'generate-dataset-blackfynn-tab'], this.id)"><strong>Generate</strong></li>
-    <!-- <li id="li-submit-dataset" onclick="onClickTabs('generate-dataset-locally-tab', ['organize-dataset-tab', 'metadata-files-tab', 'high-level-folders-tab','generate-dataset-tab', 'generate-dataset-blackfynn-tab'], this.id)"><strong>Submit</strong></li> -->
-  </ul>
+    <h5 class="dash-title" style="border-bottom:none;font-size:17px;width:290px;float:left">Curate<i class="fas fa-caret-right" style="margin:auto 10px"></i>Organize dataset
+      <div style="height:1px;width:220px;border:1px solid var(--color-bg-plum)"></div>
+    </h5>
+    <ul class="list-unstyled multi-steps" style="width:50%;float:right">
+      <li id="li_specify_folders" class="is-active" onclick="onClickTabs('high-level-folders-tab', ['organize-dataset-tab', 'metadata-files-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab', 'generate-dataset-blackfynn-tab'], this.id)"><strong>Specify folders</strong></li>
+      <li id="li-organize-dataset" onclick="onClickTabs('organize-dataset-tab', ['high-level-folders-tab', 'metadata-files-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab', 'generate-dataset-blackfynn-tab'], this.id)"><strong>Organize</strong></li>
+      <li id="li-metadata-files" onclick="onClickTabs('metadata-files-tab', ['organize-dataset-tab', 'high-level-folders-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab', 'generate-dataset-blackfynn-tab'], this.id)"><strong>Metadata files</strong></li>
+      <li id="li-generate-dataset" onclick="onClickTabs('generate-dataset-tab', ['organize-dataset-tab', 'metadata-files-tab', 'high-level-folders-tab', 'generate-dataset-locally-tab', 'generate-dataset-blackfynn-tab'], this.id)"><strong>Generate</strong></li>
+    </ul>
   </div>
 
 <!-- These are the main tab for each step -->
@@ -136,6 +135,7 @@
     </div>
   </div>
 
+
   <!-- 2. Organize dataset -->
   <div class="form-tabs condensed" id="organize-dataset-tab" style="grid-template-rows: 10% 90%">
     <div style="padding: 20px 0;margin:3px 3px;" align="right">
@@ -172,32 +172,38 @@
         <ul class="menu high-level-folder off">
           <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
           <li id="folder-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
-          <li id="tooltip-folders"><i class="fas fa-info fa-fw"></i>More info</li>
+          <li id="tooltip-folders"><i class="fas fa-info fa-fw"></i>Details</li>
         </ul>
         <ul class="menu file off">
           <li id="file-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
           <li id="file-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
-          <li id="file-description"><i class="far fa-plus-square fa-fw"></i>Manage description</li>
+          <li id="file-description"><i class="far fa-plus-square fa-fw"></i>Details</li>
         </ul>
         <span class="hoverPath" style="display: none"></span>
         <span class="hoverFullName" style="display: none"></span>
       <!-- END -->
-        <div id="items" ondrop="drop(event);" ondragover="allowDrop(event);">
+        <div id="items" class="div-organize-items" ondrop="drop(event);" ondragover="allowDrop(event);">
         </div>
+        <div id="div-folder-file-information" class="div-display-details">
+          <button class="button-display-details" id="button-organize-display-details">X</button>
+
+          <b>Local path: <br><p style="margin: 0 0;" id="para-local-path-file"></p></b>
+          <div>
+            <label><b>Description: </b></label>
+            <textarea id="textarea-file-description" readonly></textarea>
+            <button id="button-add-file-description" onclick="addDetailsForFile(this)" class="transition-btn" style="width:50%;margin:10px auto;height:30px;font-size:13px;padding:5px;">Add / Edit</button>
+          </div>
+          <div>
+            <label><b>Additional metadata:</b></label>
+            <textarea id="textarea-file-metadata" readonly></textarea>
+            <button id="button-add-file-metadata" onclick="addDetailsForFile(this)" class="transition-btn" style="width:50%;margin:10px auto;height:30px;font-size:13px;padding:5px;">Add/Edit</button>
+          </div>
       </div>
     </div>
+  </div>
 
 <!-- 3. Metadata files -->
 <div class="form-tabs condensed" id="metadata-files-tab" style="grid-template-rows: 15% 85%;">
-  <!-- <div class="metadata-progress-box">
-    <!-- <div id="metadata_progress"styles="display: flex;flex-direction: row;justify-content: space-between"> -->
-    <!-- <div><div class='progress-box checked'>1</div><span>submission</span></div>
-    <div><div class='progress-box'>2</div><span>dataset description</span></div>
-    <div><div class='progress-box'>3</div><span>samples</span></div>
-    <div><div class='progress-box'>4</div><span>subjects</span></div>
-    <div><div class='progress-box'>5</div><span>README</span></div>
-    <div><div class='progress-box'>6</div><span>CHANGES</span></div>
-  </div>  -->
   <form>
     <div style = "padding:10px 0px;max-width:800px;min-width:450px;margin:0 auto" class="switch-field">
       <input class="input-switch metadata" id="submission-metadata-file" name="organize-add-metadata-files" type="radio" checked/>
@@ -225,7 +231,7 @@
           <div><i style="font-size: 70px" class="fas fa-cloud-upload-alt"></i></div>
           <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
             file here OR</p>
-            <button>Choose file</button>
+            <button class="div-file-import-button">Choose file</button>
         </div>
       </div>
     </div>
@@ -360,7 +366,9 @@
 
 
  <script>
-
+   $('#button-organize-display-details').click(function() {
+     $('.div-display-details').toggleClass('show')
+   })
    </script>
 
 </section>
