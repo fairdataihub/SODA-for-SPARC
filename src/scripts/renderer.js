@@ -173,7 +173,7 @@ const organizeDSaddFiles = document.getElementById("add-files")
 const organizeDSaddNewFolder = document.getElementById("new-folder")
 const organizeDSaddFolders = document.getElementById("add-folders")
 const contextMenu = document.getElementById("mycontext")
-const fullPathValue = document.querySelector(".hoverPath")
+// const fullPathValue = document.querySelector(".hoverPath")
 const fullNameValue = document.querySelector(".hoverFullName")
 const resetProgress = document.getElementById("clear-progress")
 const saveProgress = document.getElementById("save-progress")
@@ -5182,19 +5182,19 @@ function populateJSONObjFolder(jsonObject, folderPath) {
     });
 }
 
-function showFullPath(ev, text) {
-  var mouseX = ev.pageX - 200;
-  var mouseY = ev.pageY;
-  fullPathValue.style.display = "block";
-  fullPathValue.innerHTML = text
-  $('.hoverPath').css({'top':mouseY,'left':mouseX}).fadeIn('slow');
-}
-
-function hideFullPath() {
-  fullPathValue.style.display = "none";
-  fullPathValue.style.top = '-210%';
-  fullPathValue.style.left = '-210%';
-}
+// function showFullPath(ev, text) {
+//   var mouseX = ev.pageX - 200;
+//   var mouseY = ev.pageY;
+//   fullPathValue.style.display = "block";
+//   fullPathValue.innerHTML = text
+//   $('.hoverPath').css({'top':mouseY,'left':mouseX}).fadeIn('slow');
+// }
+//
+// function hideFullPath() {
+//   fullPathValue.style.display = "none";
+//   fullPathValue.style.top = '-210%';
+//   fullPathValue.style.left = '-210%';
+// }
 
 function hideFullName() {
   fullNameValue.style.display = "none";
@@ -5202,18 +5202,18 @@ function hideFullName() {
   fullNameValue.style.left = '-250%';
 }
 
-/// hover for a full path
-function hoverForPath(ev) {
-    var currentPath = organizeDSglobalPath.value
-    var jsonPathArray = currentPath.split("/")
-    var filtered = jsonPathArray.filter(function (el) {
-      return el != "";
-    });
-    var myPath = getRecursivePath(filtered, jsonObjGlobal)
-    // get full path from JSON object
-    var fullPath = myPath[ev.innerText]
-    showFullPath(event, fullPath[0])
-}
+// /// hover for a full path
+// function hoverForPath(ev) {
+//     var currentPath = organizeDSglobalPath.value
+//     var jsonPathArray = currentPath.split("/")
+//     var filtered = jsonPathArray.filter(function (el) {
+//       return el != "";
+//     });
+//     var myPath = getRecursivePath(filtered, jsonObjGlobal)
+//     // get full path from JSON object
+//     var fullPath = myPath[ev.innerText]
+//     showFullPath(event, fullPath[0])
+// }
 
 //// HOVER FOR FULL NAME (FOLDERS WITH WRAPPED NAME IN UI)
 function showFullName(ev, element, text) {
@@ -5236,14 +5236,14 @@ function hoverForFullName(ev) {
     showFullName(event, ev.children[1], fullPath)
 }
 
-// If the document is clicked somewhere
-document.addEventListener('onmouseover', function(e){
-  if (e.target.classList.value !== "myFile") {
-    hideFullPath()
-  } else {
-    hoverForPath(e)
-  }
-});
+// // If the document is clicked somewhere
+// document.addEventListener('onmouseover', function(e){
+//   if (e.target.classList.value !== "myFile") {
+//     hideFullPath()
+//   } else {
+//     hoverForPath(e)
+//   }
+// });
 
 document.addEventListener('onmouseover', function(e){
   if (e.target.classList.value === "fas fa-folder") {
@@ -5517,7 +5517,7 @@ function drop(ev) {
               })
             } else {
               myPath[itemName] = [itemPath, "", ""]
-              var appendString = '<div class="single-item" onmouseover="hoverForPath(this)" onmouseleave="hideFullPath()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
+              var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
               $(appendString).appendTo(ev.target);
               listItems(myPath, '#items')
               getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
@@ -5534,7 +5534,7 @@ function drop(ev) {
           break
         } else {
           myPath[itemName] = [itemPath, "", ""]
-          var appendString = '<div class="single-item" onmouseover="hoverForPath(this)" onmouseleave="hideFullPath()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
+          var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
           $(appendString).appendTo(ev.target);
           listItems(myPath, '#items')
           getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
@@ -5654,6 +5654,9 @@ function folderContextMenu(event) {
 
 //////// options for files
 function fileContextMenu(event) {
+  if ($(".div-display-details.file").hasClass('show')) {
+    $(".div-display-details.file").removeClass('show')
+  }
   $(".menu.file li").unbind().click(function(){
     if ($(this).attr('id') === "file-rename") {
         var itemDivElements = document.getElementById("items").children
@@ -5698,7 +5701,7 @@ $(document).bind("contextmenu", function (event) {
       hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
       hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
       hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
-      hideFullPath()
+      // hideFullPath()
       hideFullName()
     }
 });
@@ -5709,7 +5712,7 @@ $(document).bind("click", function (event) {
         hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
         hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
         hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
-        hideFullPath()
+        // hideFullPath()
         hideFullName()
       }
 })
@@ -5723,7 +5726,7 @@ function manageDesc(ev) {
   var myPath = getRecursivePath(filtered, jsonObjGlobal)
   //// load existing metadata/description
   loadDetailsContextMenu(fileName, myPath, 'textarea-file-description', 'textarea-file-metadata', 'para-local-path-file')
-  showDetails()
+  showDetailsFile()
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
   fileNameForEdit = fileName

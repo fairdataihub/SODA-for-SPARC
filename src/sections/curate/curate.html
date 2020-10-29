@@ -179,15 +179,17 @@
           <li id="file-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
           <li id="file-description"><i class="far fa-plus-square fa-fw"></i>Details</li>
         </ul>
-        <span class="hoverPath" style="display: none"></span>
+        <!-- <span class="hoverPath" style="display: none"></span> -->
         <span class="hoverFullName" style="display: none"></span>
       <!-- END -->
         <div id="items" class="div-organize-items" ondrop="drop(event);" ondragover="allowDrop(event);">
         </div>
-        <div id="div-folder-file-information" class="div-display-details">
-          <button class="button-display-details" id="button-organize-display-details">X</button>
-
-          <b>Local path: <br><p style="margin: 0 0;" id="para-local-path-file"></p></b>
+        <div class="div-display-details file">
+          <button class="button-display-details">X</button>
+          <div>
+            <label><b>Local path: <br></b></label>
+            <p style="margin: 10px 0;" id="para-local-path-file"></p>
+          </div>
           <div>
             <label><b>Description: </b></label>
             <textarea id="textarea-file-description" readonly></textarea>
@@ -199,6 +201,13 @@
             <button id="button-add-file-metadata" onclick="addDetailsForFile(this)" class="transition-btn" style="width:50%;margin:10px auto;height:30px;font-size:13px;padding:5px;">Add/Edit</button>
           </div>
       </div>
+      <!-- <div class="div-display-details folders">
+        <button class="button-display-details">X</button>
+
+        <b>Local path: <br><p style="margin: 0 0;" id="para-local-path-folder"></p></b>
+        <b>Other details: <br><p style="margin: 0 0;" id="para-other-details-folder"></p></b>
+
+    </div> -->
     </div>
   </div>
 
@@ -366,8 +375,8 @@
 
 
  <script>
-   $('#button-organize-display-details').click(function() {
-     $('.div-display-details').toggleClass('show')
+   $('.button-display-details').click(function() {
+     $(this).parent().toggleClass('show')
    })
    </script>
 
