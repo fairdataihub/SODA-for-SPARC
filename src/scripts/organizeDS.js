@@ -192,30 +192,27 @@ function loadFileFolder(myPath) {
 
   var appendString = ""
   var sortedObj = sortObjByKeys(myPath)
-  for (var item in sortedObj) {
-    if (Array.isArray(sortedObj[item])) {
-      // not the auto-generated manifest
-      if (sortedObj[item].length !== 1) {
-        var extension = sliceStringByValue(sortedObj[item][0],  ".")
-        if (!["docx", "doc", "pdf", "txt", "jpg", "xlsx", "xls", "csv", "png", "PNG"].includes(extension)) {
-          extension = "other"
-        }
-      } else {
+
+  for (var item in sortedObj["files"]) {
+    // not the auto-generated manifest
+    if (sortedObj["files"][item].length !== 1) {
+      var extension = sliceStringByValue(sortedObj["files"][item]["path"],  ".")
+      if (!["docx", "doc", "pdf", "txt", "jpg", "JPG", "xlsx", "xls", "csv", "png", "PNG"].includes(extension)) {
         extension = "other"
       }
-      appendString = appendString + '<div class="single-item"><h1 class="myFile '+extension+'" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">'+item+'</div></div>'
+    } else {
+      extension = "other"
     }
-    else {
-
-      var emptyFolder = "";
-      if (! highLevelFolders.includes(item)) {
-        if (JSON.stringify(sortedObj[item]) === '{}') {
-          emptyFolder = " empty";
-        }
-      } else {
+    appendString = appendString + '<div class="single-item"><h1 class="myFile '+extension+'" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">'+item+'</div></div>'
+  }
+  for (var item in sortedObj["folders"]) {
+    var emptyFolder = "";
+    if (! highLevelFolders.includes(item)) {
+      if (!sortedObj["folders"][item]) {
+        emptyFolder = " empty";
       }
-      appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
     }
+    appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
   }
 
   return appendString
@@ -225,17 +222,21 @@ function loadFileFolder(myPath) {
 function sortObjByKeys(object) {
   const orderedFolders = {};
   const orderedFiles = {};
-
-  Object.keys(object).sort().forEach(function(key) {
-  if (Array.isArray(object[key])) {
-    orderedFiles[key] = object[key]
-  } else {
-      orderedFolders[key] = object[key];
+  /// sort the files in objects
+  if (object.hasOwnProperty("files")) {
+    Object.keys(object["files"]).sort().forEach(function(key) {
+      orderedFiles[key] = object["files"][key]
+    });
   }
-  });
+  if (object.hasOwnProperty("folders")) {
+    Object.keys(object["folders"]).sort().forEach(function(key) {
+      orderedFolders[key] = object["folders"][key]
+    });
+  }
   const orderedObject = {
-    ...orderedFolders,
-    ...orderedFiles
+    "folders": orderedFolders,
+    "files": orderedFiles,
+    "type": "virtual"
   }
   return orderedObject
 }
@@ -250,7 +251,7 @@ function getRecursivePath(filteredList, inputObj) {
   var myPath = inputObj;
   for (var item of filteredList) {
     if (item.trim()!=="") {
-      myPath = myPath[item]
+      myPath = myPath["folders"][item]
     }
   }
   return myPath
@@ -292,12 +293,10 @@ function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, u
         break
       } else {
         var duplicate = false;
-        for (var objKey in currentLocation) {
-          if (Array.isArray(currentLocation[objKey])) {
-            if (baseName === objKey) {
-              duplicate = true
-              break
-            }
+        for (var objKey in currentLocation["files"]) {
+          if (baseName === objKey) {
+            duplicate = true
+            break
           }
         }
         if (duplicate) {
@@ -306,7 +305,7 @@ function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, u
             centerVertical: true
           })
         } else {
-          currentLocation[baseName] = [fileArray[i], "", ""]
+          currentLocation["files"][baseName] = {"path": fileArray[i], "type": "local", "description":"", "additional-metadata":""}
           var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+baseName+'</div></div>'
 
           $(uiItem).html(appendString)
@@ -320,29 +319,26 @@ function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, u
 function listItems(jsonObj, uiItem) {
     var appendString = ''
     var sortedObj = sortObjByKeys(jsonObj)
-    for (var item in sortedObj) {
-      if (Array.isArray(sortedObj[item])) {
-        // not the auto-generated manifest
-        if (sortedObj[item].length !== 1) {
-          var extension = sliceStringByValue(sortedObj[item][0],  ".")
-          if (!["docx", "doc", "pdf", "txt", "jpg", "JPG", "xlsx", "xls", "csv", "png", "PNG"].includes(extension)) {
-            extension = "other"
-          }
-        } else {
+    for (var item in sortedObj["files"]) {
+      // not the auto-generated manifest
+      if (sortedObj["files"][item].length !== 1) {
+        var extension = sliceStringByValue(sortedObj["files"][item]["path"],  ".")
+        if (!["docx", "doc", "pdf", "txt", "jpg", "JPG", "xlsx", "xls", "csv", "png", "PNG"].includes(extension)) {
           extension = "other"
         }
-        appendString = appendString + '<div class="single-item"><h1 class="myFile '+extension+'" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">'+item+'</div></div>'
+      } else {
+        extension = "other"
       }
-      else {
-        var emptyFolder = "";
-        if (! highLevelFolders.includes(item)) {
-          if (JSON.stringify(sortedObj[item]) === '{}') {
-            emptyFolder = " empty";
-          }
-        } else {
+      appendString = appendString + '<div class="single-item"><h1 class="myFile '+extension+'" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">'+item+'</div></div>'
+    }
+    for (var item in sortedObj["folders"]) {
+      var emptyFolder = "";
+      if (! highLevelFolders.includes(item)) {
+        if (!sortedObj["folders"][item]) {
+          emptyFolder = " empty";
         }
-        appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
       }
+      appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
     }
     $(uiItem).empty()
     $(uiItem).html(appendString)
@@ -394,9 +390,9 @@ function hideMenu(category, menu1, menu2, menu3){
 ///// function to load details to show in display once
 ///// users click Show details
 function loadDetailsContextMenu(fileName, filePath, textareaID1, textareaID2, paraLocalPath) {
-  document.getElementById(textareaID1).value = filePath[fileName][1];
-  document.getElementById(textareaID2).value = filePath[fileName][2];
-  document.getElementById(paraLocalPath).innerHTML = filePath[fileName][0];
+  document.getElementById(textareaID1).value = filePath["files"][fileName]["description"];
+  document.getElementById(textareaID2).value = filePath["files"][fileName]["additional-metadata"];
+  document.getElementById(paraLocalPath).innerHTML = filePath["files"][fileName]["path"];
 }
 
 function triggerManageDetailsPrompts(id, fileName, filePath, textareaID1, textareaID2) {

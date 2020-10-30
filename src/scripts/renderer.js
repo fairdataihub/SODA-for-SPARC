@@ -5065,14 +5065,83 @@ var highLevelFolderToolTip = {
 }
 
 var jsonObjGlobal = {
-  "code": {},
-  "derivative": {},
-  "primary": {},
-  "source": {},
-  "docs": {},
-  "protocols": {},
-  "submission.xlsx": ["C:\\Users\\Tram Ngo\\Desktop\\Misc\\demo\\primary", "This is my description, This is my descriptionmThis is my description, This is my description", "this is my metadata"]
+  "folders": {
+    "code": {
+        "type": "virtual",
+        "folders": {
+            "codefolder1": {
+                "type": "virtual",
+                "folders": {
+                    "subfolder1": {
+                        "type": "virtual",
+                        "files": {
+                            "some-jpg-image.jpg":{
+                                "type": "local",
+                                "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\codefolder1\subfolder1\some-jpg-image.jpg",
+                                "description": "my jpg description",
+                                "additional-metadata": "my additional jpg metadata",
+                            },
+                        },
+                    },
+                    "subfolder2-renamed": {
+                        "type": "local",
+                        "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\codefolder1\subfolder2",
+                        "folders": {
+                            "subsubfolder1":{
+                                "type": "virtual",
+                                "files": {
+                                    "some-source-data.csv":{
+                                        "type": "local",
+                                        "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\codefolder1\subfolder2\subsubfolder1\some-source-data.csv",
+                                        "description": "my csv description",
+                                        "additional-metadata": "my additional csv metadata",
+                                    },
+                                },
+                            },
+                        },
+                        "files": {
+                            "some-png-image.png":{
+                                "type": "local",
+                                "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\codefolder1\subfolder2\some-png-image.png",
+                            },
+                        },
+                    },
+
+                },
+                "files": {}
+             },
+             "codefolder2": {
+                "type": "local",
+                "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\codefolder2",
+                "files": {
+                    "random-text-file.txt":{
+                        "type": "local",
+                        "description": "",
+                        "additional-metadata": "",
+                        "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\codefolder2\random-text-file.txt"
+                    }
+                },
+            },
+          },
+        "files":{
+            "some-abaqus-input-renamed.inp": {
+                "type": "local",
+                "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\some-abaqus-input.inp",
+                "description": "my inp description",
+                "additional-metadata": "my additional inp metadata",
+            },
+            "some-abaqus-model.cae": {
+                "type": "local",
+                "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\some-abaqus-model.cae",
+                "description": "my cae description",
+                "additional-metadata": "my additional cae metadata",
+            },
+        },
+    }
+  },
 }
+
+
 
 listItems(jsonObjGlobal, '#items')
 getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
@@ -5174,10 +5243,10 @@ function populateJSONObjFolder(jsonObject, folderPath) {
       var statsObj = fs.statSync(path.join(folderPath, element))
       var addedElement = path.join(folderPath, element)
       if (statsObj.isDirectory()) {
-        jsonObject[element] = {}
+        jsonObject["folders"][element] = {"type": "virtual", "folders": {}, "files": {}}
         populateJSONObjFolder(jsonObject[element], addedElement)
       } else if (statsObj.isFile()) {
-          jsonObject[element] = [addedElement, "", ""]
+          jsonObject["files"][element] = {"path": addedElement, "description": "", "additional-metadata":""}
         }
     });
 }
@@ -5315,12 +5384,16 @@ resetProgress.addEventListener("click", function() {
       if (r!==null) {
         organizeDSglobalPath.value = "/"
         jsonObjGlobal = {
-          "code": {},
-          "derivative": {},
-          "primary": {},
-          "source": {},
-          "docs": {},
-          "protocols": {}
+          "type": "virtual",
+          "folders": {
+            "code": {"type": "virtual", "folders": {}, "files": {}},
+            "derivative": {"type": "virtual", "folders": {}, "files": {}},
+            "primary": {"type": "virtual", "folders": {}, "files": {}},
+            "source": {"type": "virtual", "folders": {}, "files": {}},
+            "docs": {"type": "virtual", "folders": {}, "files": {}},
+            "protocols": {"type": "virtual", "folders": {}, "files": {}}
+          },
+          "files": {}
         }
         listItems(jsonObjGlobal, '#items')
         getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
@@ -5436,12 +5509,10 @@ function addFoldersfunction(folderArray, currentLocation) {
     for (var i=0; i<folderArray.length;i++) {
       var baseName = path.basename(folderArray[i])
       var duplicate = false;
-      for (var objKey in currentLocation) {
-        if (typeof currentLocation[objKey] === "object") {
-          if (baseName === objKey) {
-            duplicate = true
-            break
-          }
+      for (var objKey in currentLocation["folders"]) {
+        if (baseName === objKey) {
+          duplicate = true
+          break
         }
       }
       if (duplicate) {
@@ -5450,10 +5521,8 @@ function addFoldersfunction(folderArray, currentLocation) {
           centerVertical: true
         })
       } else {
-
-        currentLocation[baseName] = {}
+        currentLocation["folders"][baseName] = {"type": "virtual", "folders": {}, "files": {}}
         populateJSONObjFolder(currentLocation[baseName], folderArray[i])
-
         var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+baseName+'</div></div>'
 
         $('#items').html(appendString)
