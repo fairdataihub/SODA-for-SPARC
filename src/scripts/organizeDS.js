@@ -18,6 +18,7 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
   var itemToDelete = ev.parentElement.innerText
   var promptVar;
   var highLevelFolderBool;
+  var type; // renaming files or folders
 
   /// check for high-level folders (if so, folders cannot be deleted from the current UI)
   if (highLevelFolders.includes(itemToDelete)) {
@@ -28,8 +29,10 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
 
   if (ev.classList.value.includes("myFile")) {
     promptVar = "file";
+    type = "files"
   } else if (ev.classList.value.includes("myFol")) {
     promptVar = "folder";
+    type = "folders"
   }
 
   if (highLevelFolderBool) {
@@ -50,7 +53,7 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
         var filtered = getGlobalPath(organizeCurrentLocation)
         var myPath = getRecursivePath(filtered, inputGlobal)
         // update Json object with new folder created
-        delete myPath[itemToDelete];
+        delete myPath[type][itemToDelete];
         // update UI with updated jsob obj
         listItems(myPath, uiItem)
         getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal)
@@ -64,12 +67,12 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
 function renameFolder(event1, organizeCurrentLocation, itemElement, inputGlobal, uiItem, singleUIItem) {
 
   var promptVar;
-  var type;
+  var type; // renaming files or folders
   var newName;
   var currentName = event1.parentElement.innerText
   var nameWithoutExtension;
   var highLevelFolderBool;
-  var duplicate = false
+  var duplicate = false;
 
   if (highLevelFolders.includes(currentName)) {
     highLevelFolderBool = true
@@ -79,13 +82,13 @@ function renameFolder(event1, organizeCurrentLocation, itemElement, inputGlobal,
 
   if (event1.classList[0] === "myFile") {
     promptVar = "file";
-    type = "file";
+    type = "files";
   } else if (event1.classList[0] === "myFol") {
     promptVar = "folder";
-    type = "folder";
+    type = "folders";
   }
 
-  if (type==="file") {
+  if (type==="files") {
     nameWithoutExtension = currentName.slice(0,currentName.indexOf("."))
   } else {
     nameWithoutExtension = currentName
@@ -115,7 +118,7 @@ function renameFolder(event1, organizeCurrentLocation, itemElement, inputGlobal,
       callback: function (r) {
         if(r!==null){
           // if renaming a file
-          if (type==="file") {
+          if (type==="files") {
             newName = r.trim() + currentName.slice(currentName.indexOf("."))
 
             // check for duplicate or files with the same name
@@ -167,9 +170,9 @@ function renameFolder(event1, organizeCurrentLocation, itemElement, inputGlobal,
           var filtered = getGlobalPath(organizeCurrentLocation)
           var myPath = getRecursivePath(filtered, inputGlobal)
           /// update jsonObjGlobal with the new name
-          storedValue = myPath[currentName]
-          delete myPath[currentName];
-          myPath[newName] = storedValue
+          storedValue = myPath[type][currentName]
+          delete myPath[type][currentName];
+          myPath[type][newName] = storedValue
           /// list items again with updated JSON obj
           listItems(myPath, uiItem)
           getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal)
@@ -193,6 +196,18 @@ function loadFileFolder(myPath) {
   var appendString = ""
   var sortedObj = sortObjByKeys(myPath)
 
+  for (var item in sortedObj["folders"]) {
+    var emptyFolder = "";
+    if (! highLevelFolders.includes(item)) {
+      if (
+        JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
+        JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
+    ) {
+        emptyFolder = " empty";
+      }
+    }
+    appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
+  }
   for (var item in sortedObj["files"]) {
     // not the auto-generated manifest
     if (sortedObj["files"][item].length !== 1) {
@@ -204,15 +219,6 @@ function loadFileFolder(myPath) {
       extension = "other"
     }
     appendString = appendString + '<div class="single-item"><h1 class="myFile '+extension+'" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">'+item+'</div></div>'
-  }
-  for (var item in sortedObj["folders"]) {
-    var emptyFolder = "";
-    if (! highLevelFolders.includes(item)) {
-      if (!sortedObj["folders"][item]) {
-        emptyFolder = " empty";
-      }
-    }
-    appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
   }
 
   return appendString
@@ -236,7 +242,7 @@ function sortObjByKeys(object) {
   const orderedObject = {
     "folders": orderedFolders,
     "files": orderedFiles,
-    "type": "virtual"
+    "type": ""
   }
   return orderedObject
 }
@@ -319,6 +325,18 @@ function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, u
 function listItems(jsonObj, uiItem) {
     var appendString = ''
     var sortedObj = sortObjByKeys(jsonObj)
+    for (var item in sortedObj["folders"]) {
+      var emptyFolder = "";
+      if (! highLevelFolders.includes(item)) {
+        if (
+          JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
+          JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
+        ) {
+          emptyFolder = " empty";
+        }
+      }
+      appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
+    }
     for (var item in sortedObj["files"]) {
       // not the auto-generated manifest
       if (sortedObj["files"][item].length !== 1) {
@@ -331,15 +349,7 @@ function listItems(jsonObj, uiItem) {
       }
       appendString = appendString + '<div class="single-item"><h1 class="myFile '+extension+'" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">'+item+'</div></div>'
     }
-    for (var item in sortedObj["folders"]) {
-      var emptyFolder = "";
-      if (! highLevelFolders.includes(item)) {
-        if (!sortedObj["folders"][item]) {
-          emptyFolder = " empty";
-        }
-      }
-      appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
-    }
+
     $(uiItem).empty()
     $(uiItem).html(appendString)
 }
@@ -406,7 +416,7 @@ function triggerManageDetailsPrompts(id, fileName, filePath, textareaID1, textar
 //////// prompt for Manage description
 function triggerFileMetadataPrompt(fileName, filePath, textareaID2) {
       bootbox.dialog({
-        message: "<div class='form-content'>" + "<form class='form' role='form'>" + "<div class='form-group>" + "<label for='metadata'>View/edit additional metadata below: </label>"+"<textarea style='min-height: 80px;margin-top: 10px;font-size: 13px !important' class='form-control' id='textarea-metadata-prompt'>"+filePath[fileName][2]+"</textarea>"+"</div>"+ "<br>" + "<div class='checkbox'>"+"<label>"+"<input name='apply-all-metadata' type='checkbox'> Apply this metadata to all files in this folder</label> "+" </div> "+"</form>"+"</div>",
+        message: "<div class='form-content'>" + "<form class='form' role='form'>" + "<div class='form-group>" + "<label for='metadata'>View/edit additional metadata below: </label>"+"<textarea style='min-height: 80px;margin-top: 10px;font-size: 13px !important' class='form-control' id='textarea-metadata-prompt'>"+filePath["files"][fileName]["additional-metadata"]+"</textarea>"+"</div>"+ "<br>" + "<div class='checkbox'>"+"<label>"+"<input name='apply-all-metadata' type='checkbox'> Apply this metadata to all files in this folder</label> "+" </div> "+"</form>"+"</div>",
         title: "<h2>Add metadata...</h2>",
         buttons: {
           success: {
@@ -415,12 +425,11 @@ function triggerFileMetadataPrompt(fileName, filePath, textareaID2) {
             callback: function () {
               var metadata = $('#textarea-metadata-prompt').val();
               var applyToAllMetadataBoolean = $("input[name='apply-all-metadata']:checked").val()
-              filePath[fileName][2] = metadata.trim()
+              filePath["files"][fileName]["additional-metadata"] = metadata.trim()
               document.getElementById(textareaID2).value = metadata.trim();
               if (applyToAllMetadataBoolean==="on") {
-                for (var element in filePath) {
-                  if (Array.isArray(filePath[element])) {
-                    filePath[element][2] = metadata.trim();
+                for (var element in filePath["files"]) {
+                    filePath["files"][element]["additional-metadata"] = metadata.trim()
                   }
                 }
                 bootbox.alert({
@@ -433,16 +442,15 @@ function triggerFileMetadataPrompt(fileName, filePath, textareaID2) {
           cancel: {
             label: 'Cancel',
             className: "btn btn-default pull-left"
-          }
-        },
-      value: filePath[fileName][2],
+          },
+      value: filePath["files"][fileName]["additional-metadata"],
       centerVertical: true,
     });
 }
 
 function triggerFileDescriptionPrompt(fileName, filePath, textareaID1) {
   bootbox.dialog({
-    message: "<div class='form-content'>" + "<form class='form' role='form'>" + "<div class='form-group>" + "<label for='description'>View/Edit your description below:</label> "+"<textarea style='min-height: 80px;margin-top: 10px;font-size: 13px !important' class='form-control' id='textarea-description-prompt'>"+filePath[fileName][1]+"</textarea>"+ "<br>" + "</div>"+"<div class='checkbox'>"+"<label>"+"<input name='apply-all-desc' type='checkbox'> Apply this description to all files in this folder</label> "+" </div> "+"</form>"+"</div>",
+    message: "<div class='form-content'>" + "<form class='form' role='form'>" + "<div class='form-group>" + "<label for='description'>View/Edit your description below:</label> "+"<textarea style='min-height: 80px;margin-top: 10px;font-size: 13px !important' class='form-control' id='textarea-description-prompt'>"+filePath["files"][fileName]["description"]+"</textarea>"+ "<br>" + "</div>"+"<div class='checkbox'>"+"<label>"+"<input name='apply-all-desc' type='checkbox'> Apply this description to all files in this folder</label> "+" </div> "+"</form>"+"</div>",
     title: "Add description",
     buttons: {
       success: {
@@ -451,12 +459,11 @@ function triggerFileDescriptionPrompt(fileName, filePath, textareaID1) {
         callback: function () {
           var description = $("#textarea-description-prompt").val();
           var applyToAllDescBoolean = $("input[name='apply-all-desc']:checked").val()
-          filePath[fileName][1] = description.trim();
+          filePath["files"][fileName]["description"] = description.trim();
           document.getElementById(textareaID1).value = description.trim();
           if (applyToAllDescBoolean==="on") {
-            for (var element in filePath) {
-              if (Array.isArray(filePath[element])) {
-                filePath[element][1] = description.trim()
+            for (var element in filePath["files"]) {
+                filePath["files"][element]["description"] = description.trim()
               }
             }
             bootbox.alert({
@@ -469,9 +476,8 @@ function triggerFileDescriptionPrompt(fileName, filePath, textareaID1) {
       cancel: {
         label: "Cancel",
         className: "btn btn-default pull-left"
-      }
-    },
-  value: filePath[fileName][1],
+      },
+  value: filePath["files"][fileName]["description"],
   centerVertical: true,
   });
 }

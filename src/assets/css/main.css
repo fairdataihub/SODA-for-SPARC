@@ -262,7 +262,7 @@ button[disabled]{
 .single-item:hover {
   border: #c0c0c0;
   background-color: #F5F5F5;
-  transform: translateY(-6px);
+  /* transform: translateY(-6px); */
 }
 
 .single-item:hover + #myspan {
@@ -765,6 +765,7 @@ button[disabled]{
   width: 250px;
   height: 65%;
   margin-top: 20px;
+  /* margin-right: 20px; */
   right: 0;
   border-radius: 10px 0 0 10px;
   border:1px solid #f0f0f0;
@@ -776,8 +777,20 @@ button[disabled]{
   transform: translateX(255px);
   transition: transform 1s ease-in-out;
   display: grid;
-  grid-template-rows: 25% auto;
-  text-align: center
+  grid-template-rows: auto;
+  text-align: center;
+  overflow-wrap: break-word;
+}
+
+.div-display-details div {
+  max-width: 90%;
+  margin-right: 10px;
+  margin-left: 10px;
+  overflow-x: auto
+}
+
+.div-display-details.folders {
+  grid-template-rows: 50% 50%;
 }
 
 .div-display-details p {

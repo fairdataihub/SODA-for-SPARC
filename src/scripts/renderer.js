@@ -5158,7 +5158,7 @@ organizeDSbackButton.addEventListener("click", function() {
     }
     var myPath = jsonObjGlobal;
     for (var item of filtered.slice(0,filtered.length-1)) {
-      myPath = myPath[item]
+      myPath = myPath["folders"][item]
     }
     // construct UI with files and folders
     var appendString = loadFileFolder(myPath)
@@ -5214,10 +5214,9 @@ organizeDSaddNewFolder.addEventListener("click", function(event) {
             });
 
             var myPath = getRecursivePath(filtered, jsonObjGlobal)
-
             // update Json object with new folder created
             var renamedNewFolder = newFolderName
-            myPath[renamedNewFolder] = {}
+            myPath["folders"][renamedNewFolder] = {"folders": {}, "files": {}, "type":"virtual"}
 
             listItems(myPath,'#items')
             getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
@@ -5243,7 +5242,7 @@ function populateJSONObjFolder(jsonObject, folderPath) {
       var statsObj = fs.statSync(path.join(folderPath, element))
       var addedElement = path.join(folderPath, element)
       if (statsObj.isDirectory()) {
-        jsonObject["folders"][element] = {"type": "virtual", "folders": {}, "files": {}}
+        jsonObject["folders"][element] = {"type": "", "folders": {}, "files": {}}
         populateJSONObjFolder(jsonObject[element], addedElement)
       } else if (statsObj.isFile()) {
           jsonObject["files"][element] = {"path": addedElement, "description": "", "additional-metadata":""}
@@ -5322,10 +5321,15 @@ document.addEventListener('onmouseover', function(e){
   }
 });
 
-// if a file is clicked -> show details in right "sidebar"
-function showDetails() {
-  $('.div-display-details').toggleClass('show')
+// if a file/folder is clicked -> show details in right "sidebar"
+function showDetailsFile() {
+  $('.div-display-details.file').toggleClass('show');
+  // $(".div-display-details.folders").hide()
 }
+// function showDetailsFolder() {
+//   $('.div-display-details.folders').toggleClass('show');
+//   $(".div-display-details.file").hide()
+// }
 
 /// import progress
 importProgress.addEventListener("click", function() {
@@ -5337,8 +5341,8 @@ ipcRenderer.on('selected-file-organization', (event,filePath) => {
   if (filePath !== undefined) {
     var progressData = fs.readFileSync(filePath[0])
     var content = JSON.parse(progressData.toString())
-    var contentKeys = Object.keys(content)
-    if (checkSubArrayBool(contentKeys, highLevelFolders)) {
+    var contentKeys = Object.keys(content["folders"])
+    if (checkSubArrayBool(highLevelFolders, contentKeys)) {
       jsonObjGlobal = content
     } else {
       bootbox.alert({
@@ -5521,8 +5525,8 @@ function addFoldersfunction(folderArray, currentLocation) {
           centerVertical: true
         })
       } else {
-        currentLocation["folders"][baseName] = {"type": "virtual", "folders": {}, "files": {}}
-        populateJSONObjFolder(currentLocation[baseName], folderArray[i])
+        currentLocation["folders"][baseName] = {"type": "", "folders": {}, "files": {}}
+        populateJSONObjFolder(currentLocation["folders"][baseName], folderArray[i])
         var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+baseName+'</div></div>'
 
         $('#items').html(appendString)
@@ -5585,7 +5589,7 @@ function drop(ev) {
                 centerVertical: true
               })
             } else {
-              myPath[itemName] = [itemPath, "", ""]
+              myPath["files"][itemName] = {"path": itemPath, "description": "","additional-metadata": ""}
               var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
               $(appendString).appendTo(ev.target);
               listItems(myPath, '#items')
@@ -5602,7 +5606,7 @@ function drop(ev) {
           })
           break
         } else {
-          myPath[itemName] = [itemPath, "", ""]
+          myPath["files"][itemName] = {"path": itemPath, "description":"","additional-metadata":""}
           var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
           $(appendString).appendTo(ev.target);
           listItems(myPath, '#items')
@@ -5632,9 +5636,9 @@ function drop(ev) {
           });
 
           var myPath = getRecursivePath(filtered, jsonObjGlobal)
-          var folderJsonObject = {};
+          var folderJsonObject = {"folders": {}, "files": {}, "type":""};
           populateJSONObjFolder(folderJsonObject, itemPath)
-          myPath[itemName] = folderJsonObject
+          myPath["folders"][itemName] = folderJsonObject
           var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
           $(appendString).appendTo(ev.target);
           listItems(myPath, '#items')
