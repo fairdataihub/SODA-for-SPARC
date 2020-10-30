@@ -176,8 +176,25 @@
 }
 
 .transition-btn:hover{
-  transform: scale(1.05);
+  /* transform: scale(1.05); */
   font-weight: 600;
+}
+
+.sub-tabs {
+  display:none;
+  grid-template-columns: 1fr;
+  grid-template-rows: 20% 80%;
+  margin-top: 70px;
+  height: auto;
+}
+
+.sub-tabs.condensed {
+  margin-top: 20px
+}
+
+.sub-tabs.tab-active {
+  display: grid;
+  visibility: visible;
 }
 
 .form-tabs {
@@ -260,7 +277,7 @@
 	display: none;
 }
 
-.multi-steps > li.is-active:before {
+.multi-steps > li.is-done:before {
 	background-color: var(--color-light-green);
 	border-color: var(--color-light-green);
   color: #fff;
@@ -269,7 +286,17 @@
   box-shadow: 0 0 4px 0 var(--color-light-green)
 }
 
-.multi-steps > li.is-active:after {
+.multi-steps > li.is-current:before {
+  border-color: var(--color-light-green) !important;
+  color: var(--color-light-green) !important;
+  background-color: #fff !important
+}
+
+.multi-steps > li.is-current strong {
+  color: var(--color-light-green);
+}
+
+.multi-steps > li.is-done:after {
   	background-color:var(--color-light-green);
 }
 
@@ -277,7 +304,7 @@
   font-size: 13px;
 }
 
-.multi-steps > li.is-active strong {
+.multi-steps > li.is-done strong {
   color: var(--color-light-green);
 }
 

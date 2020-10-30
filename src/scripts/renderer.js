@@ -41,20 +41,6 @@ client.invoke("echo", "server ready", (error, res) => {
 //////////////////////////////////
 // App launch actions
 //////////////////////////////////
-//// change between tabs (steps) in the UI for the Curate feature
-function changeMainContent(currentMain, nextMain) {
-  $('#'+ currentMain).toggleClass('show');
-  $('#'+ nextMain).toggleClass('show');
-}
-
-function onClickTabs(currentTab, siblingTabs, liID) {
-  siblingTabs.forEach(item => $('#'+item).removeClass('tab-active'));
-  $('#'+ currentTab).addClass('tab-active');
-  if (! $('#' + liID).hasClass('is-active')) {
-  $('#' + liID).addClass('is-active')
-  }
-  // $('#' + liID).addClass('current')
-}
 
 // Log file settings //
 log.transports.console.level = false
