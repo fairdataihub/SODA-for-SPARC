@@ -153,7 +153,8 @@
   text-align: center;
   color: #000;
   opacity: 0.8;
-  font-size: 16px
+  font-size: 16px;
+  font-family: "Raleway", sans-serif;
 }
 
 .container-end {
@@ -170,7 +171,7 @@
   height: 42px;
   padding: 10px;
   border: 1px solid #20b2aa;
-  border-radius: 5px;
+  border-radius: 20px;
   color: #fff;
   cursor: pointer;
 }
@@ -178,6 +179,9 @@
 .transition-btn:hover{
   /* transform: scale(1.05); */
   font-weight: 600;
+  color: var(--color-light-green);
+  border: 2px solid #20b2aa;
+  background: #fff
 }
 
 .sub-tabs {
@@ -228,7 +232,8 @@
   counter-reset: section;
   padding-left: 5px;
   padding-top: 0;
-  margin: 0 auto
+  margin: 0 auto;
+  font-family: "Raleway", sans-serif;
 }
 
 .multi-steps > li {
@@ -251,9 +256,9 @@
 	display: block;
 	margin: 0 auto 4px;
 	background-color: #fff;
-	width: 28px;
-	height: 28px;
-	line-height: 28px;
+	width: 25px;
+	height: 25px;
+	line-height: 25px;
 	text-align: center;
 	font-weight: bold;
 	border-width: 2px;

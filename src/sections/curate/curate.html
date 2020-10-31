@@ -8,8 +8,7 @@
   </head>
 
 <main class="dash-content main show" id="curate_main">
-  <h5 class="dash-title" style="border-bottom:none;font-size:17px">Curate
-    <div style="height:1px;width:55px;border:1px solid var(--color-bg-plum)"></div>
+  <h5 class="dash-title" style="border-bottom:none;font-size:17px"><i class="fas fa-chevron-right" style="margin-right:10px"></i>Curate
   </h5>
 <!-- These are the main tab for each step -->
   <div class="form-tabs tab-active" id="curate-tab">
@@ -32,12 +31,12 @@
 </div>
 </main>
 
-<main class="dash-content" id="organize_main" style="grid-template-rows:12% auto 5%">
+<main class="dash-content" id="organize_main" style="grid-template-rows:15% auto 5%">
   <div style="border-bottom:1px solid #f0f0f0">
-    <h5 class="dash-title" style="border-bottom:none;font-size:17px;width:290px;float:left">Curate<i class="fas fa-caret-right" style="margin:auto 10px"></i>Organize dataset
-      <div style="height:1px;width:220px;border:1px solid var(--color-bg-plum)"></div>
+    <h5 class="dash-title" style="color: #222c3c;border-bottom:none;font-size:17px;"><i class="fas fa-chevron-right" style="margin-right:10px"></i>Organize dataset
+      <!-- <div style="height:1px;width:220px;border:1px solid var(--color-bg-plum)"></div> -->
     </h5>
-    <ul class="list-unstyled multi-steps" style="width:50%;float:right">
+    <ul class="list-unstyled multi-steps" style="width:50%;margin-top:10px">
       <li class="progress-li is-current" onclick="onClickTabs('high-level-folders-tab', ['organize-dataset-tab', 'metadata-files-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab', 'generate-dataset-blackfynn-tab'], this)"><strong>Specify folders</strong></li>
       <li class="progress-li"onclick="onClickTabs('organize-dataset-tab', ['high-level-folders-tab', 'metadata-files-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab', 'generate-dataset-blackfynn-tab'], this)"><strong>Organize</strong></li>
       <li class="progress-li" onclick="onClickTabs('metadata-files-tab', ['organize-dataset-tab', 'high-level-folders-tab', 'generate-dataset-tab', 'generate-dataset-locally-tab', 'generate-dataset-blackfynn-tab'], this)"><strong>Metadata files</strong></li>
@@ -191,13 +190,15 @@
           <div>
             <label><b>Description: </b></label>
             <textarea id="textarea-file-description" readonly></textarea>
-            <button id="button-add-file-description" onclick="addDetailsForFile(this)" class="transition-btn" style="width:50%;margin:10px auto;height:30px;font-size:13px;padding:5px;">Add / Edit</button>
+            <input type="checkbox" style="color:#000;float:left"></input><label style="color:#000;float:left">Apply to all files in this folder</label>
+            <!-- <button id="button-add-file-description" onclick="addDetailsForFile(this)" class="transition-btn" style="width:100px;margin:10px auto;height:30px;font-size:13px;padding:5px;">Confirm</button> -->
           </div>
           <div>
             <label><b>Additional metadata:</b></label>
             <textarea id="textarea-file-metadata" readonly></textarea>
-            <button id="button-add-file-metadata" onclick="addDetailsForFile(this)" class="transition-btn" style="width:50%;margin:10px auto;height:30px;font-size:13px;padding:5px;">Add/Edit</button>
+            <input type="checkbox" style="color:#000;float:left"></input><label style="color:#000;float:left">Apply to all files in this folder</label>
           </div>
+          <button id="button-add-file-metadata" onclick="addDetailsForFile(this)" class="transition-btn" style="width:100px;margin:10px auto;height:30px;font-size:13px;padding:5px;">Confirm</button>
       </div>
       <!-- <div class="div-display-details folders">
         <button class="button-display-details">X</button>
@@ -346,7 +347,7 @@
 </main>
 
 <main class="dash-content main" id="validate_main">
-  <h5 class="dash-title" style="border-bottom:none;font-size:17px">Validate dataset</h5>
+  <h5 class="dash-title" style="border-bottom:none;font-size:17px"><i class="fas fa-chevron-right" style="margin-right:10px"></i>Validate dataset</h5>
    <div class="form-tabs tab-active"id="validate-tab">
      <h3 class="question-title">Upload <span style="color:var(--color-bg-plum)">your dataset</span>
        <br> below to <span style="color:var(--color-bg-plum)">validate</span></h3>

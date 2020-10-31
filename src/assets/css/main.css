@@ -762,8 +762,8 @@ button[disabled]{
 
 .div-display-details {
   position:absolute;
-  width: 250px;
-  height: 65%;
+  width: 350px;
+  height: auto;
   margin-top: 20px;
   /* margin-right: 20px; */
   right: 0;
@@ -774,7 +774,7 @@ button[disabled]{
   padding: 20px;
   line-height: 1.5;
   float:right;
-  transform: translateX(255px);
+  transform: translateX(350px);
   transition: transform 1s ease-in-out;
   display: grid;
   grid-template-rows: auto;
