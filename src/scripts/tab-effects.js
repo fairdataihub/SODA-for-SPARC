@@ -64,3 +64,24 @@ function fixStepDone(n) {
   var x = document.getElementsByClassName("progress-li");
   $(x[n]).addClass('is-done')
 }
+
+//
+// // High level folders check mark effect
+$(".option-card").click(function() {
+  // $(this).toggleClass('checked');
+  if ($(this).hasClass('checked')) {
+    $(this).children()[0].children[1].children[0].checked = true
+  } else {
+    $(this).children()[0].children[1].children[0].checked = false
+  }
+})
+
+$(".folder-input-check").click(function() {
+  var highLevelFolderCard = $(this).parents()[2];
+  $(highLevelFolderCard).toggleClass('checked')
+  if ($(this).checked) {
+    $(this).checked = false;
+  } else {
+      $(this).checked = true;
+  }
+})
