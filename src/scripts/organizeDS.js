@@ -405,79 +405,19 @@ function loadDetailsContextMenu(fileName, filePath, textareaID1, textareaID2, pa
   document.getElementById(paraLocalPath).innerHTML = filePath["files"][fileName]["path"];
 }
 
-function triggerManageDetailsPrompts(id, fileName, filePath, textareaID1, textareaID2) {
-  if (id==='button-add-file-description') {
-     triggerFileDescriptionPrompt(fileName, filePath, textareaID1)
-   } else if (id==='button-add-file-metadata') {
-    triggerFileMetadataPrompt(fileName, filePath, textareaID2);
-  }
+function triggerManageDetailsPrompts(ev, fileName, filePath, textareaID1, textareaID2) {
+  filePath["files"][fileName]["additional-metadata"] = document.getElementById(textareaID2).value.trim();
+  filePath["files"][fileName]["description"] = document.getElementById(textareaID1).value.trim();
+  // check for "Apply to all files"
+  if (document.getElementById("input-add-file-metadata").checked) {
+    for (var file in filePath["files"]) {
+        filePath["files"][file]["additional-metadata"] = document.getElementById(textareaID2).value.trim();
+      }
+    }
+  if (document.getElementById("input-add-file-description").checked) {
+    for (var file in filePath["files"]) {
+        filePath["files"][file]["description"] = document.getElementById(textareaID1).value.trim();
+      }
+    }
+   // $(this).html("Done <i class='fas fa-check'></i>");
 };
-
-//////// prompt for Manage description
-function triggerFileMetadataPrompt(fileName, filePath, textareaID2) {
-      bootbox.dialog({
-        message: "<div class='form-content'>" + "<form class='form' role='form'>" + "<div class='form-group>" + "<label for='metadata'>View/edit additional metadata below: </label>"+"<textarea style='min-height: 80px;margin-top: 10px;font-size: 13px !important' class='form-control' id='textarea-metadata-prompt'>"+filePath["files"][fileName]["additional-metadata"]+"</textarea>"+"</div>"+ "<br>" + "<div class='checkbox'>"+"<label>"+"<input name='apply-all-metadata' type='checkbox'> Apply this metadata to all files in this folder</label> "+" </div> "+"</form>"+"</div>",
-        title: "<h2>Add metadata...</h2>",
-        buttons: {
-          success: {
-            label: '<i class="fa fa-check"></i> Save',
-            className: "btn-success",
-            callback: function () {
-              var metadata = $('#textarea-metadata-prompt').val();
-              var applyToAllMetadataBoolean = $("input[name='apply-all-metadata']:checked").val()
-              filePath["files"][fileName]["additional-metadata"] = metadata.trim()
-              document.getElementById(textareaID2).value = metadata.trim();
-              if (applyToAllMetadataBoolean==="on") {
-                for (var element in filePath["files"]) {
-                    filePath["files"][element]["additional-metadata"] = metadata.trim()
-                  }
-                }
-                bootbox.alert({
-                  message: "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully added!",
-                  centerVertical: true
-                })
-              }
-            }
-          },
-          cancel: {
-            label: 'Cancel',
-            className: "btn btn-default pull-left"
-          },
-      value: filePath["files"][fileName]["additional-metadata"],
-      centerVertical: true,
-    });
-}
-
-function triggerFileDescriptionPrompt(fileName, filePath, textareaID1) {
-  bootbox.dialog({
-    message: "<div class='form-content'>" + "<form class='form' role='form'>" + "<div class='form-group>" + "<label for='description'>View/Edit your description below:</label> "+"<textarea style='min-height: 80px;margin-top: 10px;font-size: 13px !important' class='form-control' id='textarea-description-prompt'>"+filePath["files"][fileName]["description"]+"</textarea>"+ "<br>" + "</div>"+"<div class='checkbox'>"+"<label>"+"<input name='apply-all-desc' type='checkbox'> Apply this description to all files in this folder</label> "+" </div> "+"</form>"+"</div>",
-    title: "Add description",
-    buttons: {
-      success: {
-        label: '<i class="fa fa-check"></i> Save',
-        className: "btn-success",
-        callback: function () {
-          var description = $("#textarea-description-prompt").val();
-          var applyToAllDescBoolean = $("input[name='apply-all-desc']:checked").val()
-          filePath["files"][fileName]["description"] = description.trim();
-          document.getElementById(textareaID1).value = description.trim();
-          if (applyToAllDescBoolean==="on") {
-            for (var element in filePath["files"]) {
-                filePath["files"][element]["description"] = description.trim()
-              }
-            }
-            bootbox.alert({
-              message: "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully added!",
-              centerVertical: true
-            })
-          }
-        }
-      },
-      cancel: {
-        label: "Cancel",
-        className: "btn btn-default pull-left"
-      },
-  value: filePath["files"][fileName]["description"],
-  centerVertical: true,
-  });
-}

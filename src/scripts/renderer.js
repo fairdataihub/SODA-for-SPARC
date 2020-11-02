@@ -5489,6 +5489,7 @@ ipcRenderer.on('selected-folders-organize-datasets', (event, path) => {
 function addFoldersfunction(folderArray, currentLocation) {
 
   if (organizeDSglobalPath.value === "/") {
+
     bootbox.alert({
       message: "Other non-SPARC folders cannot be added to this dataset level!",
       centerVertical: true
@@ -5793,9 +5794,9 @@ function manageDesc(ev) {
 
 function addDetailsForFile(ev) {
   var fileName = fileNameForEdit;
-  var filtered = getGlobalPath(organizeDSglobalPath)
+  var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered, jsonObjGlobal)
-  triggerManageDetailsPrompts(ev.id, fileName, myPath, 'textarea-file-description', 'textarea-file-metadata')
+  triggerManageDetailsPrompts(ev, fileName, myPath, 'textarea-file-description', 'textarea-file-metadata')
   /// list Items again with new updated JSON structure
   listItems(myPath, '#items')
   getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)

@@ -215,6 +215,7 @@ button[disabled]{
 
 .dropdown-item {
   font-size: 13px !important;
+  line-height: 2;
 }
 
 .hoverPath {
@@ -364,6 +365,7 @@ button[disabled]{
 .myButton {
   margin-right: 3px;
   font-size: 13px;
+  font-weight: 600;
   color: #fff;
   background-color:#bf3062;
   border: 1px solid transparent;
