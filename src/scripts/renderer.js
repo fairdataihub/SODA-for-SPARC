@@ -5229,45 +5229,19 @@ function populateJSONObjFolder(jsonObject, folderPath) {
       var addedElement = path.join(folderPath, element)
       if (statsObj.isDirectory()) {
         jsonObject["folders"][element] = {"type": "", "folders": {}, "files": {}}
-        populateJSONObjFolder(jsonObject[element], addedElement)
+        populateJSONObjFolder(jsonObject["folders"][element], addedElement)
       } else if (statsObj.isFile()) {
           jsonObject["files"][element] = {"path": addedElement, "description": "", "additional-metadata":""}
         }
     });
 }
 
-// function showFullPath(ev, text) {
-//   var mouseX = ev.pageX - 200;
-//   var mouseY = ev.pageY;
-//   fullPathValue.style.display = "block";
-//   fullPathValue.innerHTML = text
-//   $('.hoverPath').css({'top':mouseY,'left':mouseX}).fadeIn('slow');
-// }
-//
-// function hideFullPath() {
-//   fullPathValue.style.display = "none";
-//   fullPathValue.style.top = '-210%';
-//   fullPathValue.style.left = '-210%';
-// }
 
 function hideFullName() {
   fullNameValue.style.display = "none";
   fullNameValue.style.top = '-250%';
   fullNameValue.style.left = '-250%';
 }
-
-// /// hover for a full path
-// function hoverForPath(ev) {
-//     var currentPath = organizeDSglobalPath.value
-//     var jsonPathArray = currentPath.split("/")
-//     var filtered = jsonPathArray.filter(function (el) {
-//       return el != "";
-//     });
-//     var myPath = getRecursivePath(filtered, jsonObjGlobal)
-//     // get full path from JSON object
-//     var fullPath = myPath[ev.innerText]
-//     showFullPath(event, fullPath[0])
-// }
 
 //// HOVER FOR FULL NAME (FOLDERS WITH WRAPPED NAME IN UI)
 function showFullName(ev, element, text) {
