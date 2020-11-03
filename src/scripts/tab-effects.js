@@ -14,17 +14,31 @@ function onClickTabs(currentTab, siblingTabs, liItem) {
   $(liItem).toggleClass('is-current');
 }
 
-function showTab(n) {
+function showParentTab(n) {
   // This function will display the specified tab of the form ...
-  var x = document.getElementsByClassName("sub-tabs");
+  var x = document.getElementsByClassName("parent-tabs");
+  document.getElementById("nextBtn").disabled = false;
+
   $(x[n]).addClass('tab-active');
+  var inActiveTabArray = [0,1,2,3,4].filter( function( element ) {
+  return ![n].includes(element);
+  });
+
+  for (var i of inActiveTabArray) {
+    $(x[i]).removeClass('tab-active');
+  }
+
   if (n == 0) {
     document.getElementById("prevBtn").style.display = "none";
-  } else {
+  } else if (n == 1){
+    document.getElementById("nextBtn").innerHTML = "Confirm";
+    document.getElementById("nextBtn").disabled = true;
+    checkHighLevelFoldersInput()
+} else {
     document.getElementById("prevBtn").style.display = "inline";
   }
   if (n == (x.length - 1)) {
-    document.getElementById("nextBtn").innerHTML = "Submit";
+    document.getElementById("nextBtn").style.display = "none";
   } else {
     document.getElementById("nextBtn").innerHTML = "Next";
   }
@@ -32,10 +46,25 @@ function showTab(n) {
   fixStepDone(n-1)
 }
 
+function checkHighLevelFoldersInput() {
+  var optionCards = document.getElementsByClassName("option-card");
+  var checked = false;
+  for (var card of optionCards) {
+    if ($(card).hasClass('checked')) {
+      checked = true;
+      break
+    }
+  }
+  if (checked) {
+    document.getElementById("nextBtn").disabled = false;
+  } else {
+    document.getElementById("nextBtn").disabled = true;
+  }
+}
+
 function nextPrev(n) {
   // This function will figure out which tab to display
-  var x = document.getElementsByClassName("sub-tabs");
-  // if (n == 1 && !validateForm()) return false;
+  var x = document.getElementsByClassName("parent-tabs");
   // Hide the current tab:
   $(x[currentTab]).removeClass('tab-active');
   // Increase or decrease the current tab by 1:
@@ -47,7 +76,7 @@ function nextPrev(n) {
     return false;
   }
   // Otherwise, display the correct tab:
-  showTab(currentTab);
+  showParentTab(currentTab);
 }
 
 function fixStepIndicator(n) {
@@ -74,6 +103,7 @@ $(".option-card").click(function() {
   } else {
     $(this).children()[0].children[1].children[0].checked = false
   }
+  checkHighLevelFoldersInput()
 })
 
 $(".folder-input-check").click(function() {
@@ -84,4 +114,29 @@ $(".folder-input-check").click(function() {
   } else {
       $(this).checked = true;
   }
+  checkHighLevelFoldersInput()
 })
+
+function showSubTab(section, tab, input){
+  var tabArray;
+  if (section === "metadata") {
+    tabArray = ["div-submission-metadata-file", "div-dataset-description-metadata-file", "div-subjects-metadata-file",
+                "div-samples-metadata-file", "div-changes-metadata-file", "div-readme-metadata-file",
+                "div-manifest-metadata-file"]
+  }
+  var inActiveTabArray = tabArray.filter( function( element ) {
+  return ![tab].includes(element);
+  });
+  for (var id of inActiveTabArray) {
+    document.getElementById(id).style.display = "none";
+  }
+  document.getElementById(input).checked = true;
+  document.getElementById(tab).style.display = "block";
+}
+
+// check which prev next button it currently is
+function checkPrevNextButton(button) {
+  if (button.innerHTML === "Confirm") {
+
+  }
+}
