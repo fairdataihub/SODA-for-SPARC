@@ -364,16 +364,6 @@ function openSidebar(buttonElement) {
     open = false;
   }
 }
-// Open/Close Sidebar effect
-// buttonSidebar.addEventListener('click', (event) => {
-//   openSidebar(buttonSidebar)
-// })
-// buttonSidebarIcon.addEventListener('click', (event) => {
-//   buttonSidebar.click()
-// })
-// buttonSidebarBigIcon.addEventListener('click', (event) => {
-//   buttonSidebar.click()
-// })
 
 // Button selection to move on to next step under Prepare Dataset //
 document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
@@ -5050,87 +5040,30 @@ var highLevelFolderToolTip = {
   "protocol": "protocol: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>."
 }
 
-var jsonObjGlobal = {
-  "folders": {
-    "code": {
-        "type": "virtual",
-        "folders": {
-            "codefolder1": {
-                "type": "virtual",
-                "folders": {
-                    "subfolder1": {
-                        "type": "virtual",
-                        "files": {
-                            "some-jpg-image.jpg":{
-                                "type": "local",
-                                "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\codefolder1\subfolder1\some-jpg-image.jpg",
-                                "description": "my jpg description",
-                                "additional-metadata": "my additional jpg metadata",
-                            },
-                        },
-                    },
-                    "subfolder2-renamed": {
-                        "type": "local",
-                        "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\codefolder1\subfolder2",
-                        "folders": {
-                            "subsubfolder1":{
-                                "type": "virtual",
-                                "files": {
-                                    "some-source-data.csv":{
-                                        "type": "local",
-                                        "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\codefolder1\subfolder2\subsubfolder1\some-source-data.csv",
-                                        "description": "my csv description",
-                                        "additional-metadata": "my additional csv metadata",
-                                    },
-                                },
-                            },
-                        },
-                        "files": {
-                            "some-png-image.png":{
-                                "type": "local",
-                                "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\codefolder1\subfolder2\some-png-image.png",
-                            },
-                        },
-                    },
-
-                },
-                "files": {}
-             },
-             "codefolder2": {
-                "type": "local",
-                "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\codefolder2",
-                "files": {
-                    "random-text-file.txt":{
-                        "type": "local",
-                        "description": "",
-                        "additional-metadata": "",
-                        "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\codefolder2\random-text-file.txt"
-                    }
-                },
-            },
-          },
-        "files":{
-            "some-abaqus-input-renamed.inp": {
-                "type": "local",
-                "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\some-abaqus-input.inp",
-                "description": "my inp description",
-                "additional-metadata": "my additional inp metadata",
-            },
-            "some-abaqus-model.cae": {
-                "type": "local",
-                "path": "C:\Users\Bhavesh\OneDrive - Calmi2\Bhavesh\SPARC\SODA - Phase 2\Code\test-data\virtual_dataset\code\some-abaqus-model.cae",
-                "description": "my cae description",
-                "additional-metadata": "my additional cae metadata",
-            },
-        },
-    }
-  },
+var datasetStructureJSONObj = {
+  "folders":{},
 }
 
-
-
-listItems(jsonObjGlobal, '#items')
-getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+var sodaJSONObj = {
+  "bf-account-selected": {
+        "account-name": "",
+    },
+    "bf-dataset-selected": {
+        "dataset-name": "",
+    },
+    "dataset-structure": {},
+    "metadata-files": {},
+    "manifest-files": {
+      "destination": "",
+      "existing": ""
+    },
+    "generate-dataset": {
+        "destination": "",
+        "path": "",
+        "dataset-name": "",
+        "duplicate-handling": "",
+    }
+}
 
 /// back button
 organizeDSbackButton.addEventListener("click", function() {
@@ -5142,7 +5075,7 @@ organizeDSbackButton.addEventListener("click", function() {
     } else {
       organizeDSglobalPath.value = "/" + filtered.slice(0,filtered.length-1).join("/") + "/"
     }
-    var myPath = jsonObjGlobal;
+    var myPath = datasetStructureJSONObj;
     for (var item of filtered.slice(0,filtered.length-1)) {
       myPath = myPath["folders"][item]
     }
@@ -5155,7 +5088,7 @@ organizeDSbackButton.addEventListener("click", function() {
 
     // reconstruct div with new elements
     listItems(myPath, '#items')
-    getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+    getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
 
   }
 })
@@ -5192,20 +5125,20 @@ organizeDSaddNewFolder.addEventListener("click", function(event) {
             appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">'+ newFolderName +'</div></div>'
             $(appendString).appendTo('#items');
 
-            /// update jsonObjGlobal
+            /// update datasetStructureJSONObj
             var currentPath = organizeDSglobalPath.value
             var jsonPathArray = currentPath.split("/")
             var filtered = jsonPathArray.filter(function (el) {
               return el != "";
             });
 
-            var myPath = getRecursivePath(filtered, jsonObjGlobal)
+            var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
             // update Json object with new folder created
             var renamedNewFolder = newFolderName
             myPath["folders"][renamedNewFolder] = {"folders": {}, "files": {}, "type":"virtual"}
 
             listItems(myPath,'#items')
-            getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+            getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
             hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
             hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
           }
@@ -5303,7 +5236,7 @@ ipcRenderer.on('selected-file-organization', (event,filePath) => {
     var content = JSON.parse(progressData.toString())
     var contentKeys = Object.keys(content["folders"])
     if (checkSubArrayBool(highLevelFolders, contentKeys)) {
-      jsonObjGlobal = content
+      datasetStructureJSONObj = content
     } else {
       bootbox.alert({
         message: "<p>Please import a valid file organization!</p>",
@@ -5313,8 +5246,8 @@ ipcRenderer.on('selected-file-organization', (event,filePath) => {
     }
     var bootboxDialog = bootbox.dialog({message: '<p><i class="fa fa-spin fa-spinner"></i>Importing file organization...</p>'})
     bootboxDialog.init(function(){
-      listItems(jsonObjGlobal, '#items')
-      getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+      listItems(datasetStructureJSONObj, '#items')
+      getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
       hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
       hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
       bootboxDialog.find('.bootbox-body').html("<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully loaded!");
@@ -5329,7 +5262,7 @@ saveProgress.addEventListener("click", function() {
 ipcRenderer.on('selected-fileorganization', (event, filePath) => {
   if (filePath.length > 0){
     if (filePath !== undefined){
-      fs.writeFileSync(filePath, JSON.stringify(jsonObjGlobal))
+      fs.writeFileSync(filePath, JSON.stringify(datasetStructureJSONObj))
       bootbox.alert({
         message: "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved file organization.",
         centerVertical: true
@@ -5347,7 +5280,7 @@ resetProgress.addEventListener("click", function() {
     callback: function(r) {
       if (r!==null) {
         organizeDSglobalPath.value = "/"
-        jsonObjGlobal = {
+        datasetStructureJSONObj = {
           "type": "virtual",
           "folders": {
             "code": {"type": "virtual", "folders": {}, "files": {}},
@@ -5359,8 +5292,8 @@ resetProgress.addEventListener("click", function() {
           },
           "files": {}
         }
-        listItems(jsonObjGlobal, '#items')
-        getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+        listItems(datasetStructureJSONObj, '#items')
+        getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
         hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
         hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
       }
@@ -5422,7 +5355,7 @@ ipcRenderer.on('selected-new-dataset', (event, filepath) => {
     if (filepath != null){
       document.getElementById("para-organize-datasets-loading").style.display = "block"
       document.getElementById("para-organize-datasets-loading").innerHTML = "<span>Please wait...</span>"
-      client.invoke("api_generate_dataset_locally", "create new", filepath[0], newDSName, jsonObjGlobal, (error, res) => {
+      client.invoke("api_generate_dataset_locally", "create new", filepath[0], newDSName, datasetStructureJSONObj, (error, res) => {
         document.getElementById("para-organize-datasets-loading").style.display = "none"
         if(error) {
           log.error(error)
@@ -5447,8 +5380,8 @@ organizeDSaddFiles.addEventListener("click", function() {
  })
  ipcRenderer.on('selected-files-organize-datasets', (event, path) => {
    var filtered = getGlobalPath(organizeDSglobalPath)
-   var myPath = getRecursivePath(filtered, jsonObjGlobal)
-   addFilesfunction(path, myPath, organizeDSglobalPath, '#items', '.single-item', jsonObjGlobal)
+   var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
+   addFilesfunction(path, myPath, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
  })
 
 organizeDSaddFolders.addEventListener("click", function() {
@@ -5456,7 +5389,7 @@ organizeDSaddFolders.addEventListener("click", function() {
 })
 ipcRenderer.on('selected-folders-organize-datasets', (event, path) => {
   var filtered = getGlobalPath(organizeDSglobalPath)
-  var myPath = getRecursivePath(filtered, jsonObjGlobal)
+  var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
   addFoldersfunction(path, myPath)
 })
 
@@ -5493,7 +5426,7 @@ function addFoldersfunction(folderArray, currentLocation) {
         $('#items').html(appendString)
 
         listItems(currentLocation, '#items')
-        getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+        getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
         hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
         hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
       }
@@ -5515,7 +5448,7 @@ function drop(ev) {
   var filtered = jsonPathArray.filter(function (el) {
     return el != "";
   });
-  var myPath = getRecursivePath(filtered, jsonObjGlobal)
+  var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
   ev.preventDefault();
 
   for (var i=0; i<ev.dataTransfer.files.length;i++) {
@@ -5554,7 +5487,7 @@ function drop(ev) {
               var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
               $(appendString).appendTo(ev.target);
               listItems(myPath, '#items')
-              getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+              getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
               hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
               hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
             }
@@ -5571,7 +5504,7 @@ function drop(ev) {
           var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
           $(appendString).appendTo(ev.target);
           listItems(myPath, '#items')
-          getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+          getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
           hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
           hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
         }
@@ -5596,14 +5529,14 @@ function drop(ev) {
             return el != "";
           });
 
-          var myPath = getRecursivePath(filtered, jsonObjGlobal)
+          var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
           var folderJsonObject = {"folders": {}, "files": {}, "type":""};
           populateJSONObjFolder(folderJsonObject, itemPath)
           myPath["folders"][itemName] = folderJsonObject
           var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
           $(appendString).appendTo(ev.target);
           listItems(myPath, '#items')
-          getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+          getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
           hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
           hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
         }
@@ -5654,9 +5587,9 @@ function folderContextMenu(event) {
   $(".menu.reg-folder li").unbind().click(function(){
     if ($(this).attr('id') === "folder-rename") {
         var itemDivElements = document.getElementById("items").children
-        renameFolder(event, organizeDSglobalPath, itemDivElements, jsonObjGlobal, '#items', '.single-item')
+        renameFolder(event, organizeDSglobalPath, itemDivElements, datasetStructureJSONObj, '#items', '.single-item')
       } else if ($(this).attr('id') === "folder-delete") {
-        delFolder(event, organizeDSglobalPath, '#items', '.single-item', jsonObjGlobal)
+        delFolder(event, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
       }
      // Hide it AFTER the action was triggered
      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
@@ -5668,9 +5601,9 @@ function folderContextMenu(event) {
  $(".menu.high-level-folder li").unbind().click(function(){
    if ($(this).attr('id') === "folder-rename") {
      var itemDivElements = document.getElementById("items").children
-      renameFolder(event, organizeDSglobalPath, itemDivElements, jsonObjGlobal, '#items', '.single-item')
+      renameFolder(event, organizeDSglobalPath, itemDivElements, datasetStructureJSONObj, '#items', '.single-item')
      } else if ($(this).attr('id') === "folder-delete") {
-       delFolder(event, organizeDSglobalPath, '#items', '.single-item', jsonObjGlobal)
+       delFolder(event, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
      } else if ($(this).attr('id') === "tooltip-folders") {
        showTooltips(event)
      }
@@ -5694,9 +5627,9 @@ function fileContextMenu(event) {
   $(".menu.file li").unbind().click(function(){
     if ($(this).attr('id') === "file-rename") {
         var itemDivElements = document.getElementById("items").children
-        renameFolder(event, organizeDSglobalPath, itemDivElements, jsonObjGlobal, '#items', '.single-item')
+        renameFolder(event, organizeDSglobalPath, itemDivElements, datasetStructureJSONObj, '#items', '.single-item')
       } else if ($(this).attr('id') === "file-delete") {
-        delFolder(event, organizeDSglobalPath, '#items', '.single-item', jsonObjGlobal)
+        delFolder(event, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
       } else if ($(this).attr('id') === "file-description") {
         manageDesc(event)
       }
@@ -5757,7 +5690,7 @@ function manageDesc(ev) {
   var fileName = ev.parentElement.innerText
   /// get current location of files in JSON object
   var filtered = getGlobalPath(organizeDSglobalPath)
-  var myPath = getRecursivePath(filtered, jsonObjGlobal)
+  var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
   //// load existing metadata/description
   loadDetailsContextMenu(fileName, myPath, 'textarea-file-description', 'textarea-file-metadata', 'para-local-path-file')
   showDetailsFile()
@@ -5769,9 +5702,9 @@ function manageDesc(ev) {
 function addDetailsForFile(ev) {
   var fileName = fileNameForEdit;
   var filtered = getGlobalPath(organizeDSglobalPath);
-  var myPath = getRecursivePath(filtered, jsonObjGlobal)
+  var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
   triggerManageDetailsPrompts(ev, fileName, myPath, 'textarea-file-description', 'textarea-file-metadata')
   /// list Items again with new updated JSON structure
   listItems(myPath, '#items')
-  getInFolder('.single-item', '#items', organizeDSglobalPath, jsonObjGlobal)
+  getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
 }
