@@ -138,16 +138,13 @@
     </div>
   </div>
 
-<!-- This is the loading div (Creating your SPARC folders...) -->
-  <!-- <div class="loading-tabs" id="div-loading-tab" style="display:block">
-    <div class="spinner-border text-success" role="status">
-      <span id="loading-status" class="sr-only"></span>
-    </div>
-  </div> -->
-
 
   <!-- 3. Organize dataset -->
-  <div class="parent-tabs condensed" id="organize-dataset-tab" style="grid-template-rows: 10% 90%">
+  <div class="parent-tabs condensed" id="organize-dataset-tab" style="grid-template-rows: auto">
+    <h3 class="question-title" style="color: #808080;font-size:15px;text-align:center">Step 3: Organize dataset<br><br>
+    <span style="margin-top:0;color: #000;font-size:22px;"> You can start organizing your dataset by <br>
+    drag&drop or import files below</span>
+    </h3>
     <div style="padding: 20px 0;margin:3px 3px;" align="right">
       <button id="button-back" class="button-back" style="float:left;background-color: #fff;border-color:var(--color-bg-plum);color: var(--color-bg-plum);opacity: 0.8;height:30px;width:30px"><i class="fas fa-arrow-left fa-fw"></i></button>
       <input style="float:left;border-radius: 3px;margin-left: 15px;height: 30px; box-shadow: 0 0 2px #999;border: 1px solid var(--color-bg-plum); font-family: sans-serif;font-size: 14px;font-weight:500;color:#999999;width: 300px" id="input-global-path" value="/" readonly></input>
@@ -222,208 +219,215 @@
     </div>
   </div>
 
-<!-- 4. Metadata files -->
-<div class="parent-tabs condensed" id="metadata-files-tab" style="grid-template-rows: 15% 85%;">
-  <form>
-    <div style = "padding:10px 0px;max-width:800px;min-width:450px;margin:0 auto" class="switch-field">
-      <input class="input-switch metadata" name="organize-add-metadata-files" id="input-submission-metadata-file" type="radio" checked/>
-      <label for="submission-metadata-file" onclick="showSubTab('metadata', 'div-submission-metadata-file', 'input-submission-metadata-file')" class="label-switch metadata"> submission </label>
+  <!-- 4. Metadata files -->
+  <div class="parent-tabs condensed" id="metadata-files-tab" style="grid-template-rows: 15% 85%;">
+    <form>
+      <div style = "padding:10px 0px;max-width:800px;min-width:450px;margin:0 auto" class="switch-field">
+        <input class="input-switch metadata" name="organize-add-metadata-files" id="input-submission-metadata-file" type="radio" checked/>
+        <label for="submission-metadata-file" onclick="showSubTab('metadata', 'div-submission-metadata-file', 'input-submission-metadata-file')" class="label-switch metadata"> submission </label>
 
-      <input class="input-switch metadata" name="organize-add-metadata-files" id="input-dataset-description-metadata-file" type="radio" />
-      <label for="ds-description-metadata-file" onclick="showSubTab('metadata', 'div-dataset-description-metadata-file', 'input-dataset-description-metadata-file')" class="label-switch metadata" style="width:300px"> dataset description </label>
+        <input class="input-switch metadata" name="organize-add-metadata-files" id="input-dataset-description-metadata-file" type="radio" />
+        <label for="ds-description-metadata-file" onclick="showSubTab('metadata', 'div-dataset-description-metadata-file', 'input-dataset-description-metadata-file')" class="label-switch metadata" style="width:300px"> dataset description </label>
 
-      <input class="input-switch metadata" name="organize-add-metadata-files" id="input-samples-metadata-file" type="radio" />
-      <label for="subjects-metadata-file" onclick="showSubTab('metadata', 'div-samples-metadata-file', 'input-samples-metadata-file')" class="label-switch metadata"> samples </label>
+        <input class="input-switch metadata" name="organize-add-metadata-files" id="input-samples-metadata-file" type="radio" />
+        <label for="subjects-metadata-file" onclick="showSubTab('metadata', 'div-samples-metadata-file', 'input-samples-metadata-file')" class="label-switch metadata"> samples </label>
 
-      <input class="input-switch metadata" name="organize-add-metadata-files" id="input-subjects-metadata-file" type="radio" />
-      <label for="samples-metadata-file"  onclick="showSubTab('metadata', 'div-subjects-metadata-file', 'input-subjects-metadata-file')" class="label-switch metadata"> subjects </label>
+        <input class="input-switch metadata" name="organize-add-metadata-files" id="input-subjects-metadata-file" type="radio" />
+        <label for="samples-metadata-file"  onclick="showSubTab('metadata', 'div-subjects-metadata-file', 'input-subjects-metadata-file')" class="label-switch metadata"> subjects </label>
 
-      <input class="input-switch metadata" name="organize-add-metadata-files" id="input-readme-metadata-file" type="radio" />
-      <label for="readme-metadata-file" onclick="showSubTab('metadata', 'div-readme-metadata-file', 'input-readme-metadata-file')" class="label-switch metadata"> README </label>
+        <input class="input-switch metadata" name="organize-add-metadata-files" id="input-readme-metadata-file" type="radio" />
+        <label for="readme-metadata-file" onclick="showSubTab('metadata', 'div-readme-metadata-file', 'input-readme-metadata-file')" class="label-switch metadata"> README </label>
 
-      <input class="input-switch metadata" name="organize-add-metadata-files" id="input-changes-metadata-file" type="radio" />
-      <label for="changes-metadata-file" onclick="showSubTab('metadata', 'div-changes-metadata-file', 'input-changes-metadata-file')" class="label-switch metadata"> CHANGES </label>
+        <input class="input-switch metadata" name="organize-add-metadata-files" id="input-changes-metadata-file" type="radio" />
+        <label for="changes-metadata-file" onclick="showSubTab('metadata', 'div-changes-metadata-file', 'input-changes-metadata-file')" class="label-switch metadata"> CHANGES </label>
 
-      <input class="input-switch metadata" name="organize-add-metadata-files" id="input-manifest-metadata-file" type="radio" />
-      <label for="manifest-metadata-file" onclick="showSubTab('metadata', 'div-manifest-metadata-file', 'input-manifest-metadata-file')" class="label-switch metadata"> manifest </label>
-    </div>
-  </form>
+        <input class="input-switch metadata" name="organize-add-metadata-files" id="input-manifest-metadata-file" type="radio" />
+        <label for="manifest-metadata-file" onclick="showSubTab('metadata', 'div-manifest-metadata-file', 'input-manifest-metadata-file')" class="label-switch metadata"> manifest </label>
+      </div>
+    </form>
 
-  <div class="container-body">
-    <h5 class="question-title">Import your <span style="color:var(--color-bg-plum)">metadata files</span><br>
-      below <span style="color:var(--color-bg-plum)">to add to your dataset</span></h5>
-      <div id="div-submission-metadata-file" style="display: block;" class="div-metadata-import">
-        <h5>submission (.csv, .xlsx, .json)</h5>
-        <div class="div-file-import" id="submission">
-          <p style="font-weight:bold">Import <br>existing file</p>
-          <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
-          <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
-            file here OR</p>
-            <button class="div-file-import-button">Choose file</button>
+    <div class="container-body">
+      <h5 class="question-title">Import your <span style="color:var(--color-bg-plum)">metadata files</span><br>
+        below <span style="color:var(--color-bg-plum)">to add to your dataset</span></h5>
+        <div id="div-submission-metadata-file" style="display: block;" class="div-metadata-import">
+          <h5>submission (.csv, .xlsx, .json)</h5>
+          <div class="div-file-import" id="submission">
+            <p style="font-weight:bold">Import <br>existing file</p>
+            <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
+            <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
+              file here OR</p>
+              <button class="div-file-import-button">Choose file</button>
+          </div>
+        </div>
+        <div id="div-dataset-description-metadata-file" class="div-metadata-import">
+          <h5>dataset description (.csv, .xlsx, .json)</h5>
+          <div class="div-file-import" id="submission">
+            <p style="font-weight:bold">Import <br>existing file</p>
+            <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
+            <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
+              file here OR</p>
+              <button class="div-file-import-button">Choose file</button>
+          </div>
+        </div>
+        <div id="div-subjects-metadata-file" class="div-metadata-import">
+          <h5>subjects (.csv, .xlsx, .json)</h5>
+          <div class="div-file-import" id="submission">
+            <p style="font-weight:bold">Import <br>existing file</p>
+            <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
+            <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
+              file here OR</p>
+              <button class="div-file-import-button">Choose file</button>
+          </div>
+        </div>
+        <div id="div-samples-metadata-file" class="div-metadata-import">
+          <h5>samples (.csv, .xlsx, .json)</h5>
+          <div class="div-file-import" id="submission">
+            <p style="font-weight:bold">Import <br>existing file</p>
+            <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
+            <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
+              file here OR</p>
+              <button class="div-file-import-button">Choose file</button>
+          </div>
+        </div>
+        <div id="div-readme-metadata-file" class="div-metadata-import">
+          <h5>README (.csv, .xlsx, .json)</h5>
+          <div class="div-file-import" id="submission">
+            <p style="font-weight:bold">Import <br>existing file</p>
+            <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
+            <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
+              file here OR</p>
+              <button class="div-file-import-button">Choose file</button>
+          </div>
+        </div>
+        <div id="div-changes-metadata-file" class="div-metadata-import">
+          <h5>CHANGES (.csv, .xlsx, .json)</h5>
+          <div class="div-file-import" id="submission">
+            <p style="font-weight:bold">Import <br>existing file</p>
+            <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
+            <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
+              file here OR</p>
+              <button class="div-file-import-button">Choose file</button>
+          </div>
+        </div>
+        <div id="div-manifest-metadata-file" class="div-metadata-import">
+          <h5>manifest (.csv, .xlsx, .json)</h5>
+          <div class="demo-controls">
+            <label class="switch">
+              <input id="generate-manifest" name="manifest" type="checkbox" class="with-style-manifest" onclick="updateManifestLabelColor(this)"/>
+              <span class="slider round"></span>
+            </label>
+            <label id="label-manifest" class="labelradio-manifest" style="padding-left:10px"> Include auto-generated manifest files
+            </label>
+          </div>
         </div>
       </div>
-      <div id="div-dataset-description-metadata-file" class="div-metadata-import">
-        <h5>dataset description (.csv, .xlsx, .json)</h5>
-        <div class="div-file-import" id="submission">
-          <p style="font-weight:bold">Import <br>existing file</p>
-          <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
-          <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
-            file here OR</p>
-            <button class="div-file-import-button">Choose file</button>
-        </div>
-      </div>
-      <div id="div-subjects-metadata-file" class="div-metadata-import">
-        <h5>subjects (.csv, .xlsx, .json)</h5>
-        <div class="div-file-import" id="submission">
-          <p style="font-weight:bold">Import <br>existing file</p>
-          <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
-          <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
-            file here OR</p>
-            <button class="div-file-import-button">Choose file</button>
-        </div>
-      </div>
-      <div id="div-samples-metadata-file" class="div-metadata-import">
-        <h5>samples (.csv, .xlsx, .json)</h5>
-        <div class="div-file-import" id="submission">
-          <p style="font-weight:bold">Import <br>existing file</p>
-          <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
-          <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
-            file here OR</p>
-            <button class="div-file-import-button">Choose file</button>
-        </div>
-      </div>
-      <div id="div-readme-metadata-file" class="div-metadata-import">
-        <h5>README (.csv, .xlsx, .json)</h5>
-        <div class="div-file-import" id="submission">
-          <p style="font-weight:bold">Import <br>existing file</p>
-          <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
-          <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
-            file here OR</p>
-            <button class="div-file-import-button">Choose file</button>
-        </div>
-      </div>
-      <div id="div-changes-metadata-file" class="div-metadata-import">
-        <h5>CHANGES (.csv, .xlsx, .json)</h5>
-        <div class="div-file-import" id="submission">
-          <p style="font-weight:bold">Import <br>existing file</p>
-          <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
-          <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
-            file here OR</p>
-            <button class="div-file-import-button">Choose file</button>
-        </div>
-      </div>
-      <div id="div-manifest-metadata-file" class="div-metadata-import">
-        <h5>manifest (.csv, .xlsx, .json)</h5>
-        <div class="demo-controls">
-          <label class="switch">
-            <input id="generate-manifest" name="manifest" type="checkbox" class="with-style-manifest" onclick="updateManifestLabelColor(this)"/>
-            <span class="slider round"></span>
-          </label>
-          <label id="label-manifest" class="labelradio-manifest" style="padding-left:10px"> Include auto-generated manifest files
-          </label>
-        </div>
-      </div>
-    </div>
   </div>
+
   <!-- 5. Generate dataset -->
   <div class="parent-tabs" id="generate-dataset-tab">
-      <h3 class='question-title'>Where would you like to <br> <span style="color: var(--color-bg-plum)">generate your dataset?</span></h3>
-      <div class="div-organize-generate-dataset">
-        <button class="button-generate-dataset" onclick="showSubTab('generate-dataset-locally-tab')">
-          <i class="fas fa-tv" style="font-size: 50px;color:#258193"></i>
-          <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">LOCALLY ON MY COMPUTER</p>
-          <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
-        </button>
-        <button class="button-generate-dataset" onclick="showSubTab('generate-dataset-blackfynn-tab')">
-          <i class="fas fa-cloud-upload-alt" style="font-size: 50px;color: #258193"></i>
-          <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">UPLOAD TO BLACKFYNN</p>
-          <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Generate locally -->
-    <div class="sub-tabs" id="generate-dataset-locally-tab">
-        <h3 class='question-title' style="padding: 35px;">Choose <span style="color: var(--color-bg-plum)">a local destination</span> for your dataset</h3>
-        <div>
-          <form style="line-height:2">
-            <div class="form-row">
-              <div class="form-group" style="line-height: 50px;display: flex !important;flex-direction:column">
-                <label for="inputLocalDestination"><b style="color: var(--color-bg-plum)">Destination:</b></label>
-                <input class="form-control" id="inputLocalDestination" type="text" readonly placeholder="Browse here">
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group" style="line-height: 50px;display: flex !important;flex-direction:column">
-                <label for="inputNewNameDataset"><b style="color: var(--color-bg-plum)">Dataset name:</b></label>
-                <input type="text" class="form-control" style="background: #fff !important;" id="inputNewNameDataset" placeholder="Enter here">
-              </div>
-            </div>
-          </form>
-          <div class="alert alert-primary" style="margin-top:25px !important;display:none" id="para-organize-datasets-loading" role="alert"></div>
-          <div class="alert alert-danger" style="margin-top:25px !important;display:none" id="para-organize-datasets-error" role="alert"></div>
-          <div class="alert alert-success" style="margin-top:25px !important;display:none" id="para-organize-datasets-success" role="alert"></div>
-          <br>
+        <h3 class='question-title'>Where would you like to <br> <span style="color: var(--color-bg-plum)">generate your dataset?</span></h3>
+        <div class="div-organize-generate-dataset">
+          <button class="button-generate-dataset" onclick="showSubTab('generate-dataset-locally-tab')">
+            <i class="fas fa-tv" style="font-size: 50px;color:#258193"></i>
+            <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">LOCALLY ON MY COMPUTER</p>
+            <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
+          </button>
+          <button class="button-generate-dataset" onclick="showSubTab('generate-dataset-blackfynn-tab')">
+            <i class="fas fa-cloud-upload-alt" style="font-size: 50px;color: #258193"></i>
+            <p style="margin-top:30px;font-family:'Montserrat', sans-serif;">UPLOAD TO BLACKFYNN</p>
+            <i class="fas fa-arrow-right" style="font-size: 20px;color: #258193;"></i>
+          </button>
         </div>
-      </div>
-
-      <div id="generate-dataset-blackfynn-tab" class="sub-tabs" style="margin-top:20px;grid-template-rows: 10% auto">
-        <h3 class='question-title' style="padding: 35px;">Choose <span style="color: var(--color-bg-plum)">a Blackfynn account and dataset</span> to upload your dataset</h3>
-        <div id="div-create-cloud">
-          <h5> </h5>
-          <p></p>
-          <h5> Select account </h5>
-          <div class="demo-controls">
-            <select id="bfuploadaccountlist" style="width:58%" class="my-dropdown">
-              <option> Select </option>
-            </select>
-            <button id="button-upload-check-bf-account-details" class="demo-button"> Switch Account </button>
-            <p id="para-account-details"></p>
-          </div>
-          <div id=div-bf-account-load-progress-curate class="progressdiv">
-            <div class="indeterminatebar"></div>
-          </div>
-          <p id='para-upload-select-account-status'> <p>
-          <h5> Select Blackfynn dataset for uploading
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically).
-              <br> <br>
-              Note: You must have "owner", "manager" or "editor" permissions on the dataset to upload. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
-            </div>
-          </h5>
-          <div class="demo-controls" style="margin-top: 15px">
-            <select class="my-dropdown" id="bfuploaddatasetlist" style="width:80%">
-              <option> Select dataset </option>
-            </select>
-            <p></p>
-            <button id="button-upload-refresh-dataset-list" class="demo-button" style="display:none"> Refresh List </button>
-          </div>
-          <p> </p>
-          <div id="div-curate-button" class="datasetsaveoption">
-            <h5> Proceed </h5>
-            <button id="button-curate-dataset" class="demo-button"> Generate </button>
-            <p id="para-please-wait-curate"</p>
-            </div>
-            <div id="div-curate-progress-bar-error-status" class="datasetsaveoption">
-              <p id='para-curate-progress-bar-error-status'> <p>
-            </div>
-            <div id="div-curate-progress">
-              <div id="div-curate-meter-progress" class="datasetsaveoption">
-                <h5> Progress </h5>
-                <progress class=progresstrack id="progress-bar-curate" max="100" value="0"></progress>
+        <!-- Generate locally -->
+        <div class="sub-tabs" id="generate-dataset-locally-tab">
+          <h3 class='question-title' style="padding: 35px;">Choose <span style="color: var(--color-bg-plum)">a local destination</span> for your dataset</h3>
+          <div>
+            <form style="line-height:2">
+              <div class="form-row">
+                <div class="form-group" style="line-height: 50px;display: flex !important;flex-direction:column">
+                  <label for="inputLocalDestination"><b style="color: var(--color-bg-plum)">Destination:</b></label>
+                  <input class="form-control" id="inputLocalDestination" type="text" readonly placeholder="Browse here">
+                </div>
               </div>
-              <div id="div-curate-progress-bar-status" class="datasetsaveoption">
-                <p id='para-curate-progress-bar-status'> <p>
+              <div class="form-row">
+                <div class="form-group" style="line-height: 50px;display: flex !important;flex-direction:column">
+                  <label for="inputNewNameDataset"><b style="color: var(--color-bg-plum)">Dataset name:</b></label>
+                  <input type="text" class="form-control" style="background: #fff !important;" id="inputNewNameDataset" placeholder="Enter here">
+                </div>
               </div>
-            </div>
+            </form>
+            <div class="alert alert-primary" style="margin-top:25px !important;display:none" id="para-organize-datasets-loading" role="alert"></div>
+            <div class="alert alert-danger" style="margin-top:25px !important;display:none" id="para-organize-datasets-error" role="alert"></div>
+            <div class="alert alert-success" style="margin-top:25px !important;display:none" id="para-organize-datasets-success" role="alert"></div>
+            <br>
           </div>
-      </div>
-
-
-  <div>
-    <button type="button" onclick="nextPrev(-1)" id="prevBtn" class="transition-btn" style="display:none">Previous</button>
-    <button style="float:right" onclick="nextPrev(1)" id="nextBtn" type="button" class="transition-btn">Next</button>
+        </div>
   </div>
+  </div>
+
+  <div class="me">
+    <div class="not-me done">
+      <span>1</span>
+      <span>
+        <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
+      <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+        </svg>
+      </span>
+    </div>
+    <div class="not-me is-current">
+      <span>2</span>
+      <span>
+        <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
+      <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+        </svg>
+      </span>
+    </div>
+    <div class="not-me">
+      <span>3</span>
+      <span>
+        <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
+      <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+        </svg>
+      </span>
+    </div>
+    <div class="not-me">
+      <span>4</span>
+      <span>
+        <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
+      <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+        </svg>
+      </span>
+    </div>
+    <div class="not-me last">
+      <span>5</span>
+      <span>
+        <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
+      <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+        </svg>
+      </span>
+    </div>
+  </div>
+
+</div>
+
+<div style="border-top:1px solid #f0f0f0;padding:10px;padding-top:15px;height:70px;">
+  <button type="button" onclick="nextPrev(-1)" id="prevBtn" class="transition-btn prev"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
+  <button style="float:right" onclick="nextPrev(1)" id="nextBtn" type="button" class="transition-btn">Continue</button>
+  </div>
+
+
+    <!-- </div> -->
+
+  <!-- <div style="border-bottom:1px solid #f0f0f0">
+    <ul class="list-unstyled multi-steps" style="width:60%;margin-top:10px">
+      <li class="progress-li is-current"><strong>Getting started</strong></li>
+      <li class="progress-li disabled"><strong>Specify folders</strong></li>
+      <li class="progress-li disabled"><strong>Organize</strong></li>
+      <li class="progress-li disabled"><strong>Metadata files</strong></li>
+      <li class="progress-li disabled"><strong>Generate</strong></li>
+    </ul>
+  </div> -->
+
 </main>
 
 <main class="dash-content main" id="validate_main">
@@ -443,7 +447,7 @@
        </div>
 
  <div>
-   <button type="button" class="transition-btn">Previous</button>
+   <button type="button" class="transition-btn prev"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
    <button style="float:right" type="button" class="transition-btn">Next</button>
  </div>
 </main>

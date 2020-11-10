@@ -149,7 +149,7 @@ a[data-toggle="collapse"] {
 
 #main-nav ul li a.is-selected {
   color: #fff;
-  background: linear-gradient(to right, rgba(25,150,175,1) 0%, rgba(63,184,208,1) 56%, rgba(39,212,212,1) 100%);
+  background: var(--color-light-green);
   border-color: transparent;
   opacity: 0.9;
   font-weight: bold

@@ -443,50 +443,69 @@ button[disabled]{
 .div-organize-generate-dataset {
   text-align: center;
   min-width: 450px;
-  margin-top: 0;
+  margin-top: 20px;
   display: flex;
   flex-direction: row;
   justify-content: center;
 }
 
 .button-generate-dataset {
-  width:200px;
-  height:195px;
-  border: 1px solid #d5d5d5;
-  background-color:#f5f5f5;
+  width:180px;
+  height:180px;
+  border: none;
+  background-color:#fff;
   font-size:13px;
   font-weight: 600;
-  border-radius: 5px;
-  padding: 15px 15px;
+  border-radius: 13px;
+  padding-top: 30px;
+  padding-bottom: 5px;
+  padding-right: 20px;
+  padding-left: 20px;
   margin-right:30px;
   color: var(--color-teal);
   opacity: 1;
   position:relative;
-  box-shadow: 0 0 3px 0 #c0c0c0;
-}
-
-.button-generate-dataset .fas.fa-arrow-right {
-  opacity: 0;
-  transition: transform 0.4s ease-in-out;
-}
-
-.button-generate-dataset:hover, .button-generate-dataset:active, .button-generate-dataset:focus {
-  box-shadow: 0 0 3px 0px rgba(39,212,212,1);
-  color: var(--color-teal);
-  outline:none;
-  border: 1px solid var(--color-teal);
-  transition: border 0.5s ease-in-out;
-  background: #e9f2f4;
-}
-
-.button-generate-dataset:hover .fas.fa-arrow-right {
-  opacity: 1;
-  transform: translate(5px);
+  box-shadow: 0px 0px 10px #d5d5d5;
 }
 
 .button-generate-dataset p {
-  color: var(--color-teal);
+  color: #222c3c
+}
+/*
+.button-generate-dataset .fas.fa-arrow-right {
+  opacity: 0;
+  transition: transform 0.4s ease-in-out;
+} */
+
+.button-generate-dataset:hover, .button-generate-dataset:active, .button-generate-dataset:focus {
+  /* box-shadow: 0 0 3px 0px rgba(39,212,212,1); */
+  color: #fff;
+  outline:none;
+  border: none;
+  /* transition: border 0.5s ease-in-out; */
+  background: var(--color-light-green);
+}
+
+.button-generate-dataset:hover p {
+  color: #fff;
   font-weight: 600;
+}
+
+.button-generate-dataset:hover i {
+  color: #fff !important;
+  opacity: 1 !important;
+  font-weight: 600;
+  /* font-weight: 600; */
+}
+
+/* .button-generate-dataset:hover .fas.fa-arrow-right {
+  opacity: 1;
+  transform: translate(5px);
+} */
+
+.button-generate-dataset p {
+  color: #000;
+  font-weight: 500;
   font-size: 14px;
   line-height: 1.5
 }

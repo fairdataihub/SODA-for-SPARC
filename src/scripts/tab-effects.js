@@ -17,6 +17,7 @@ function changeMainContent(currentMain, nextMain) {
   $('#'+ nextMain).toggleClass('show');
 }
 
+
 function showParentTab(n) {
   // This function will display the specified tab of the form ...
   var x = document.getElementsByClassName("parent-tabs");
@@ -24,6 +25,9 @@ function showParentTab(n) {
 
   // // update JSON structure
   // updateOverallJSONStructure(x[currentTab].id)
+  //
+  fixStepIndicator(n)
+  fixStepDone(n-1)
 
   $(x[n]).addClass('tab-active');
   var inActiveTabArray = [0,1,2,3,4].filter( function( element ) {
@@ -33,27 +37,28 @@ function showParentTab(n) {
   for (var i of inActiveTabArray) {
     $(x[i]).removeClass('tab-active');
   }
+  document.getElementById("nextBtn").style.display = "inline";
+  document.getElementById("prevBtn").style.display = "inline";
+  document.getElementById("nextBtn").innerHTML = "Continue";
 
   if (n == 0) {
     document.getElementById("prevBtn").style.display = "none";
-    document.getElementById("nextBtn").innerHTML = "Next";
+    // document.getElementById("nextBtn").style.display = "none";
+    document.getElementById("nextBtn").disabled = true;
+
   } else if (n == 1){
-    document.getElementById("nextBtn").innerHTML = "Confirm";
     document.getElementById("nextBtn").disabled = true;
     checkHighLevelFoldersInput();
     highLevelFoldersDisableOptions();
-} else {
-    document.getElementById("prevBtn").style.display = "inline";
-    document.getElementById("nextBtn").style.display = "inline";
-    document.getElementById("nextBtn").innerHTML = "Next";
-  }
+}
 
   if (n == (x.length - 1)) {
     document.getElementById("nextBtn").style.display = "none";
   }
-  fixStepIndicator(n)
-  fixStepDone(n-1)
-
+  //
+  // if (n == 2) {
+  //   updateOverallJSONStructure('high-level-folders-tab')
+  // }
 }
 
 function checkHighLevelFoldersInput() {
@@ -70,6 +75,7 @@ function checkHighLevelFoldersInput() {
   } else {
     document.getElementById("nextBtn").disabled = true;
   }
+  return checked
 }
 
 function nextPrev(n) {
@@ -97,8 +103,8 @@ function nextPrev(n) {
 }
 
 function fixStepIndicator(n) {
-  // This function removes the "current" class of all steps...
-  var i, x = document.getElementsByClassName("progress-li");
+  // This function removes the "is-current" class of all steps...
+  var i, x = document.getElementsByClassName("not-me");
   for (i = 0; i < x.length; i++) {
     x[i].className = x[i].className.replace(" is-current", "");
   }
@@ -107,8 +113,9 @@ function fixStepIndicator(n) {
 }
 
 function fixStepDone(n) {
-  var x = document.getElementsByClassName("progress-li");
-  $(x[n]).addClass('is-done')
+  var x = document.getElementsByClassName("not-me");
+  // $(x[n+1]).removeClass('disabled')
+  $(x[n]).addClass('done');
 }
 
 //

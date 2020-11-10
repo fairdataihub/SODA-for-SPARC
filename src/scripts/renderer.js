@@ -5030,7 +5030,7 @@ function clearTable(table){
 var backFolder = []
 var forwardFolder =[]
 
-var highLevelFolders = ["code", "derivative", "docs", "source", "primary", "protocols"]
+var highLevelFolders = ["code", "derivative", "docs", "source", "primary", "protocol"]
 var highLevelFolderToolTip = {
   "code": "code: This folder contains all the source code used in the study (e.g., Python, MATLAB, etc.)",
   "derivative": "derivative: This folder contains data files derived from raw data (e.g., processed image stacks that are annotated via the MBF tools, segmentation files, smoothed overlays of current and voltage that demonstrate a particular effect, etc.)",
@@ -5042,7 +5042,12 @@ var highLevelFolderToolTip = {
 
 var datasetStructureJSONObj = {
   "folders":{},
+  "files":{},
+  "type":""
 }
+
+listItems(datasetStructureJSONObj, '#items')
+getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
 
 var sodaJSONObj = {
   "bf-account-selected": {

@@ -390,12 +390,13 @@ button.download-metadata:hover {
 }
 
 .dash-content.show {
-  display: grid;
+  display: flex;
   visibility: visible;
 }
 
 .dash-content.main {
-  grid-template-rows: 15% auto 5%;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* ProTip ----------------------------- */
