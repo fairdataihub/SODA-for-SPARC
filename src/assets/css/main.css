@@ -445,8 +445,35 @@ button[disabled]{
   min-width: 450px;
   margin-top: 20px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
+}
+
+.div-organize-generate-dataset.metadata {
+  justify-content:space-around;
+  flex-wrap: wrap;
+  margin-top: 50px !important;
+  margin: 0 auto;
+}
+
+.div-organize-generate-dataset.metadata button {
+  width: 150px;
+  height:155px;
+}
+
+.div-organize-generate-dataset.metadata i {
+  color: orange !important;
+  font-size: 50px !important
+}
+
+.div-organize-generate-dataset.metadata p {
+  /* color: orange; */
+  font-size: 12px
+}
+
+.div-organize-generate-dataset.metadata div {
+  display: flex;
+  flex-direction: row;
 }
 
 .button-generate-dataset {

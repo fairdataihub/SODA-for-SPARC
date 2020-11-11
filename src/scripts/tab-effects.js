@@ -43,7 +43,7 @@ function showParentTab(n) {
 
   if (n == 0) {
     document.getElementById("prevBtn").style.display = "none";
-    // document.getElementById("nextBtn").style.display = "none";
+    document.getElementById("nextBtn").style.display = "none";
     document.getElementById("nextBtn").disabled = true;
 
   } else if (n == 1){
@@ -203,5 +203,73 @@ function updateOverallJSONStructure(id) {
     datasetStructureJSONObj = newDatasetStructureJSONObj;
     listItems(datasetStructureJSONObj, '#items')
     getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+  }
+}
+
+
+
+
+
+// ////////////// THIS IS FOR THE SUB-TABS OF GETTING STARTED /////////////////////////
+// var currentSubTab = 0; // Current tab is set to be the first tab (0)
+// showMySubTab(currentSubTab); // Display the current tab
+//
+// function showMySubTab(n) {
+//   // This function will display the specified tab of the form ...
+//   var x = document.getElementsByClassName("tab");
+//   x[n].style.display = "block";
+//   // ... and fix the Previous/Next buttons:
+//   if (n == 0) {
+//     document.getElementById("subPrev").style.display = "none";
+//     document.getElementById("subNext").style.display = "none";
+//   } else {
+//     document.getElementById("subPrev").style.display = "inline";
+//   }
+//   if (n == (x.length - 1)) {
+//     document.getElementById("subNext").innerHTML = "Confirm";
+//   } else {
+//     document.getElementById("subNext").innerHTML = "Next";
+//   }
+// }
+//
+// function nextSubPrev(n) {
+//   // This function will figure out which tab to display
+//   var x = document.getElementsByClassName("tab");
+//   // Hide the current tab:
+//   x[currentSubTab].style.display = "none";
+//   // Increase or decrease the current tab by 1:
+//   currentSubTab = currentSubTab + n;
+//   // if you have reached the end of the form... :
+//   if (currentSubTab >= x.length) {
+//     //...the form gets submitted:
+//
+//   }
+//   // Otherwise, display the correct tab:
+//   showMySubTab(currentSubTab);
+// }
+
+function transitionQuestions(ev, category, id) {
+  var buttons = document.getElementsByClassName('question-buttons');
+  var individualQuestions = document.getElementsByClassName('individual-question');
+  var target = ev.getAttribute('data-next');
+  for (var j = 0; j < individualQuestions.length; j++) {
+    var question = individualQuestions[j];
+    question.classList.remove("show");
+    // $(question).hide();
+    if (question.id === target) {
+      question.classList.add("show");
+      // $(question).();
+      if (category==='question') {
+        document.getElementById('getting-started-summary-message').innerHTML += "<p style='color:var(--color-light-green);margin-top:20px'><i class='far fa-check-circle' style='margin-right:5px'></i>"+ $(ev).children()[1].innerText +"</p>"
+      }
+      else if (category==='dropdown') {
+        var selectEle = document.getElementById(id);
+        document.getElementById('getting-started-summary-message').innerHTML += "<p style='color:var(--color-light-green);margin-top:20px'><i class='far fa-check-circle' style='margin-right:5px'></i>"+ selectEle.name + ": <b>" + selectEle.options[selectEle.selectedIndex].text +"</b></p>"
+      }
+    }
+    if (category==='final step') {
+      document.getElementById("nextBtn").disabled = false;
+      $(this).prop('value', "f00c")
+    }
   }
 }
