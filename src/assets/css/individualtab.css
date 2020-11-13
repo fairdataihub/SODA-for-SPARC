@@ -211,7 +211,8 @@
   flex-direction: column;
   margin-top: 70px;
   height: 100%;
-  width: 100%
+  width: 100%;
+  margin-top: 0
 }
 
 .parent-tabs.condensed {
@@ -708,14 +709,101 @@
   visibility: visible;
   flex-direction:column;
   justify-content: center;
-  transition: scale-display .3s;
+  /* transition: scale-display .3s; */
+  transition: transform 0.7s ease-out !important;
+  /* margin: 0 auto */
 }
 
 .individual-question.show {
   display: flex;
+  height: 50%;
+  /* transform: translateY(-50px) */
 }
 
-.magictime.slideUp {
-    animation-duration: 2s;
+.individual-question.show .ui.form .inline.fields .question-label {
+  color: var(--color-bg-plum) !important
+}
 
+.question-buttons.active {
+  background: var(--color-light-teal);
+  padding: 20px
+}
+
+.question-buttons.active p {
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.question-buttons.active i {
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.individual-question.previous {
+  display: flex;
+  transition: transform 0.7s ease-out;
+  /* transform: scale(1) translateY(-50px); */
+}
+
+/* .individual-question.previous .inline.fields {
+  margin: 0 auto
+} */
+
+/* .individual-question.previous button {
+  /* transform: scale(0.8); */
+  /* width: 250px;
+  height:80px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+} */
+
+.individual-question.previous .ui.form .inline.fields .question-label {
+  font-size: 15px !important;
+  margin-top: 15px !important;
+  color: #898989 !important;
+}
+
+.individual-question.previous p {
+  margin-top: 0 !important
+}
+
+.individual-question.previous i {
+  font-size: 16px !important
+}
+
+.inline.fields label {
+  color: var(--color-bg-plum);
+  margin-right: 80px
+}
+
+.ui.radio.checkbox input:checked~label:after {
+  background-color:var(--color-light-green) !important;
+}
+
+.ui.radio.checkbox label:after {
+  top: -3px !important;
+  left: -4px !important;
+  width: 23px !important;
+  height: 23px !important;
+}
+
+.ui.form .inline.fields {
+  align-items: baseline !important;
+}
+
+.ui.form {
+  width: 100% !important;
+}
+
+.question-label {
+  width: 25% !important;
+}
+
+.field select {
+  width: 100%
+}
+
+.field {
+  width: 50%
 }

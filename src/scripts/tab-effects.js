@@ -43,7 +43,7 @@ function showParentTab(n) {
 
   if (n == 0) {
     document.getElementById("prevBtn").style.display = "none";
-    document.getElementById("nextBtn").style.display = "none";
+    // document.getElementById("nextBtn").style.display = "none";
     document.getElementById("nextBtn").disabled = true;
 
   } else if (n == 1){
@@ -100,6 +100,7 @@ function nextPrev(n) {
     highLevelFoldersDisableOptions()
   }
   showParentTab(currentTab);
+  document.getElementById("nextBtn").disabled = false;
 }
 
 function fixStepIndicator(n) {
@@ -249,27 +250,72 @@ function updateOverallJSONStructure(id) {
 // }
 
 function transitionQuestions(ev, category, id) {
-  var buttons = document.getElementsByClassName('question-buttons');
+
+  // var buttons = document.getElementsByClassName('question-buttons');
   var individualQuestions = document.getElementsByClassName('individual-question');
   var target = ev.getAttribute('data-next');
-  for (var j = 0; j < individualQuestions.length; j++) {
-    var question = individualQuestions[j];
-    question.classList.remove("show");
-    // $(question).hide();
-    if (question.id === target) {
-      question.classList.add("show");
-      // $(question).();
-      if (category==='question') {
-        document.getElementById('getting-started-summary-message').innerHTML += "<p style='color:var(--color-light-green);margin-top:20px'><i class='far fa-check-circle' style='margin-right:5px'></i>"+ $(ev).children()[1].innerText +"</p>"
-      }
-      else if (category==='dropdown') {
-        var selectEle = document.getElementById(id);
-        document.getElementById('getting-started-summary-message').innerHTML += "<p style='color:var(--color-light-green);margin-top:20px'><i class='far fa-check-circle' style='margin-right:5px'></i>"+ selectEle.name + ": <b>" + selectEle.options[selectEle.selectedIndex].text +"</b></p>"
+  var height;
+
+  // check if current $(ev).parents()[2] has "previous" in class,
+   //  if YES, target.addClass('show') & all others.removeClass('show'), and removeClass('previous')
+   // else, do the rest
+
+  if ($($(ev).parents()[5]).hasClass("previous")) {
+
+
+    for (var j = 0; j < individualQuestions.length; j++) {
+
+      var question = individualQuestions[j];
+
+      if (! (question === $(ev).parents()[5])) {
+        $(question).removeClass('show');
+        $(question).removeClass('previous');
       }
     }
-    if (category==='final step') {
-      document.getElementById("nextBtn").disabled = false;
-      $(this).prop('value', "f00c")
+    document.getElementById(target).className = document.getElementById(target).className + ' show'
+  } else {
+    for (var j = 0; j < individualQuestions.length; j++) {
+
+      var question = individualQuestions[j];
+
+      if (question.id === target) {
+        if (j>0) {
+          previousQuestion = individualQuestions[j-1]
+          previousQuestion.classList.add("previous");
+          if (j == 2) {
+            height = -30*j - 10;
+          } else {
+            height = -30*j + 10;
+          }
+          $(previousQuestion).css("transform", "translateY("+height+"px)");
+          $(previousQuestion).css("transtition", "transform 0.4s ease-out");
+        }
+
+        question.classList.add("show");
+        $(question).css("transform", "translateY(-40%)");
+        $(question).css("transtition", "transform 0.4s ease-out");
+
+        if (category==='dropdown') {
+          var selectEle = document.getElementById(id);
+          var answer = selectEle.options[selectEle.selectedIndex].text;
+          $(ev).hide()
+          // document.getElementById('getting-started-summary-message').innerHTML += "<p style='color:var(--color-light-green);margin-top:20px'><i class='far fa-check-circle' style='margin-right:5px'></i>"+ selectEle.name + ": <b>" + selectEle.options[selectEle.selectedIndex].text +"</b></p>"
+        }
+      } else {
+        question.classList.remove("show");
+      }
+
+      if (target === "") {
+        document.getElementById("nextBtn").disabled = false;
+        $(ev).hide()
+        previousQuestion = $(ev).parents()[1];
+        previousQuestion.classList.add("previous");
+        height = -30*j + 10;
+        $(previousQuestion).css("transform", "translateY(-85%)");
+        $(previousQuestion).css("transtition", "transform 0.4s ease-out");
+
+        break
+      }
     }
   }
 }
