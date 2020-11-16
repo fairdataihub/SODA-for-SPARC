@@ -20,8 +20,10 @@ button:focus {
 .div-organize-items {
   min-height:440px;
   padding-top:0;
-  width: 80%;
+  width: 100%;
   float:left;
+  border:1px solid #f0f0f0;
+  box-shadow: 0 0 2px #d5d5d5
 }
 
 .div-organize-items.full {
@@ -216,6 +218,7 @@ button[disabled]{
 .dropdown-item {
   font-size: 13px !important;
   line-height: 2;
+  color: #404040
 }
 
 .hoverPath {
@@ -477,14 +480,14 @@ button[disabled]{
 }
 
 .button-generate-dataset {
-  width:180px;
-  height:180px;
+  width:200px;
+  height:200px;
   border: none;
   background-color:#fff;
   font-size:13px;
   font-weight: 600;
-  border-radius: 13px;
-  padding-top: 30px;
+  border-radius: 5px;
+  padding-top: 0;
   padding-bottom: 5px;
   padding-right: 20px;
   padding-left: 20px;
@@ -496,7 +499,10 @@ button[disabled]{
 }
 
 .button-generate-dataset p {
-  color: #222c3c
+  color: #222c3c;
+  font-size: 13px;
+  margin-top: 15px;
+  font-family:'Raleway', sans-serif
 }
 /*
 .button-generate-dataset .fas.fa-arrow-right {
@@ -506,24 +512,25 @@ button[disabled]{
 
 .button-generate-dataset:hover, .button-generate-dataset:active, .button-generate-dataset:focus {
   /* box-shadow: 0 0 3px 0px rgba(39,212,212,1); */
-  color: #fff;
+  /* color: #fff; */
   outline:none;
-  border: none;
+  border: 1px solid #20b2aa;
+  box-shadow: 0px 0px 3px 0px #20b2aa;
   /* transition: border 0.5s ease-in-out; */
-  background: var(--color-light-green);
+  /* background: #fff; */
 }
-
+/*
 .button-generate-dataset:hover p {
   color: #fff;
-  font-weight: 600;
-}
+  /* font-weight: 600; */
+/* }  */
 
-.button-generate-dataset:hover i {
+/* .button-generate-dataset:hover i {
   color: #fff !important;
   opacity: 1 !important;
   font-weight: 600;
   /* font-weight: 600; */
-}
+/* } */
 
 /* .button-generate-dataset:hover .fas.fa-arrow-right {
   opacity: 1;

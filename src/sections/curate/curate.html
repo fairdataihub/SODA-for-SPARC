@@ -16,12 +16,14 @@
     </h3>
     <div class="div-organize-generate-dataset" style="flex-direction:row">
       <button class="button-generate-dataset" onclick="changeMainContent('curate_main', 'organize_main')">
-        <i class="fab fa-airbnb" style="font-size: 65px;color:var(--tagify-dd-color-primary)"></i>
-        <p style="margin-top:30px;font-family:'Raleway', sans-serif">Organize my dataset</p>
+        <h5 style="font-family:'Raleway', sans-serif;color:#585858;font-size:17px">Organize dataset</h5>
+        <i class="fab fa-airbnb" style="font-size: 50px;color:var(--tagify-dd-color-primary)"></i>
+        <p>This is the detailed description of this section</p>
       </button>
       <button class="button-generate-dataset" onclick="changeMainContent('curate_main', 'validate_main')">
-        <i class="fas fa-bullseye" style="opacity: 0.9;font-size: 65px;color: var(--color-bg-plum)"></i>
-        <p style="margin-top:30px;font-family:'Raleway', sans-serif">Validate my dataset</p>
+        <h5 style="font-family:'Raleway', sans-serif;color:#585858;font-size:17px">Validate dataset</h5>
+        <i class="fas fa-bullseye" style="opacity: 0.9;font-size: 50px;color:var(--color-bg-yellow)"></i>
+        <p>This is the detailed description of this section</p>
       </button>
     </div>
   </div>
@@ -79,19 +81,19 @@
     </div>
 
   <!-- 1. Getting started tab -->
-  <div class="parent-tabs condensed" id="getting-started-tab" style="flex-direction:column;justify-content:flex-start;height:100%;margin-left:70px">
+  <div class="parent-tabs condensed" id="getting-started-tab" style="flex-direction:column;justify-content:flex-start;height:100%;">
     <h3 id="getting-started-summary-message" class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:60px;font-weight:600">Step 1: Getting started <br>
       <span style="color: #898989;font-size:13px;font-weight:500">Please answer the below questions: </span>
     </h3>
-      <div class="individual-question show" id="Question1">
+      <div class="individual-question show">
         <!-- <h3 class="question-title" style="text-align:center">
         <!-- <span style="margin-top:0;color: #222c3c;font-size:22px;"> What would you like to do today?</span><br> -->
           <!-- <span style="color: #696969;font-size:13px">Please select one: </span>
         </h3> -->
         <div style="display:flex;flex-direction:row;justify-content:center;margin-top:10px;">
           <div class="ui form" style="width:100%">
-            <div class="inline fields">
-              <label class="question-label" style="font-size:16px;width: 35% !important">First, I would like to: </label><br>
+            <div class="grouped fields">
+              <label class="question-label" style="font-size:16px;">First, I would like to: </label><br>
               <div class="field" style="margin:15px 0">
                 <div class="ui radio checkbox">
                   <input type="radio" name="getting-started-step1" onclick="transitionQuestions(this, 'question', '')" data-next="Question2">
@@ -125,8 +127,8 @@
         </h3>  -->
           <div style="display:flex;flex-direction:row;justify-content:center;margin-top:30px">
             <div class="ui form" style="width:100%">
-              <div class="inline fields">
-                <label class="question-label" style="font-size:16px;width: 35% !important">The dataset is: </label>
+              <div class="grouped fields">
+                <label class="question-label" style="font-size:16px;">The dataset is: </label>
                 <!-- <div> -->
                 <div class="field" style="margin:15px 0">
                   <div class="ui radio checkbox">
@@ -156,11 +158,11 @@
       <div class="individual-question" id="Question3">
         <!-- Let's connect your Blackfynn account with SODA: -->
         <div class="ui form" style="width:100%">
-        <div class="inline fields">
+        <div class="grouped fields">
           <label class="question-label" style="font-size:15px">My Blackfynn account:</label>
-          <div class="field" style="margin:15px 0;width:75%">
+          <div class="field" style="margin:15px 0;">
             <div style="display:flex;justify-content:flex-start">
-              <select id="bfuploadaccountlist" name="Blackfynn account" class='ui selection dropdown' style="width:70%;border-radius:7px;padding:8px">
+              <select id="bfuploadaccountlist" name="Blackfynn account" class='ui selection dropdown' style="width:80%;border-radius:7px;padding:8px">
                 <option> Select </option>
               </select>
               <button onclick="transitionQuestions(this, 'dropdown', 'bfuploadaccountlist')" style="float:right;height:38px;cursor:pointer;border-radius: 8px;margin:0 10px; width: 40px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;border:1px solid var(--color-bg-plum)"><i class="fas fa-sign-out-alt"></i></button>
@@ -206,9 +208,9 @@
       <div class="individual-question" id="Question4">
         <!-- <h3 class="question-title" style="text-align:center">Please choose your <span style="color:var(--color-bg-plum)">Blackfynn dataset:</span></h3> -->
         <div class="ui form" style="width:100%">
-        <div class="inline fields">
+        <div class="grouped fields">
           <label class="question-label" style="font-size:15px">My Blackfynn dataset:</label>
-          <div class="field" style="margin:15px 0;width: 75%">
+          <div class="field" style="margin:15px 0;">
         <!-- <div class="demo-controls" style="justify-content:center"> -->
           <select id="bfuploaddatasetlist" name="Blackfynn dataset" class="ui search dropdown" style="width:80%;border-radius:7px;padding:8px">
             <option value=""> Loading... </option>
@@ -216,7 +218,7 @@
         <!-- </div> -->
           </div>
         </div>
-        <button onclick="transitionQuestions(this, '', '')" data-next='' style="margin:0 auto;display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm dataset</button>
+        <button onclick="transitionQuestions(this, '', '')" data-next='' style="margin:0 auto;display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm dataset</button>
           <!-- <button type="button" onclick="transitionQuestions(this, '', '')" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:30px auto; width: 180px;height:40px;background: var(--color-bg-light-green-button);color:var(--color-light-green);font-weight:600;border:none" data-next="">Confirm dataset</button> -->
         </div>
       </div>
@@ -227,9 +229,9 @@
 
       <div class="individual-question" id="Question6">
         <div class="ui form" style="width:100%">
-        <div class="inline fields">
+        <div class="grouped fields">
           <label class="question-label" style="font-size:15px">My dataset is located at:</label>
-          <div class="field" style="margin:15px 0;width: 75%">
+          <div class="field" style="margin:15px 0">
             <div class="container-milestone-upload" style="display:flex;">
               <input class="milestone-upload-text" id="input-local-ds-select" style="width:80%;text-align:center;height:40px;border:1px solid #d5d5d5;margin:0 auto" type="text" readonly placeholder="Browse here"/>
             </div>
@@ -253,7 +255,7 @@
 
   <!-- 2. Specify high Level folders -->
   <div class="parent-tabs" id="high-level-folders-tab" style="flex-direction:column;justify-content:flex-start;height:100%;margin-right:50px">
-    <h3 class="question-title" style="color: #808080;font-size:15px;text-align:center;margin-bottom:50px">Step 2: Specify high-level folders</h3>
+    <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:50px;font-weight:600;">Step 2: Specify high-level folders</h3>
     <div class="container-body condensed" style="min-height:450px">
       <h3 class="question-title" style="text-align:center">
        Which <span style="margin-top:0;color: var(--color-bg-plum);font-size:22px;">SPARC high-level folders</span><br>
@@ -344,37 +346,36 @@
 
   <!-- 3. Organize dataset -->
   <div class="parent-tabs condensed" id="organize-dataset-tab" style="grid-template-rows: auto">
-    <h3 class="question-title" style="color: #808080;font-size:15px;text-align:center">Step 3: Organize dataset<br><br>
-      <span style="margin-top:0;color: #000;font-size:17px;"> You can start organizing your dataset by <br>
+    <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center; font-weight:600;">Step 3: Organize dataset<br><br>
+      <span style="margin-top:0;color: #000;font-size:14px;font-weight:500"> You can start organizing your dataset by <br>
       drag&drop or import files below</span>
     </h3>
-    <div style="padding: 0 0;margin:3px 3px;" align="right">
 
-      <button id="button-back" class="button-back" style="float:left;background-color: #fff;border-color:var(--color-bg-plum);color: var(--color-bg-plum);opacity: 0.8;height:30px;width:30px"><i class="fas fa-arrow-left fa-fw"></i></button>
-      <input style="float:left;border-radius: 3px;margin-left: 15px;height: 30px; box-shadow: 0 0 2px #999;border: 1px solid var(--color-bg-plum); font-family: sans-serif;font-size: 14px;font-weight:500;color:#999999;width: 300px" id="input-global-path" value="/" readonly></input>
-      <div class="btn-group" role="group">
-        <button id="btnGroupDrop1" type="button" class="myButton" style="width: 90px;color:#fff;background:var(--color-bg-plum);border: 1px solid var(--color-bg-plum)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-arrow-up fa-fw" style="margin-right:5px"></i>New
-        </button>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop1">
-          <a class="dropdown-item" id="new-folder" href="#"><i class="fas fa-folder-plus" style="margin-right:5px"></i>New folder</a>
-          <a class="dropdown-item" id="add-files" href="#"><i class="fas fa-upload" style="margin-right:5px"></i>Import files</a>
-          <a class="dropdown-item" id="add-folders" href="#"><i class="fas fa-upload" style="margin-right:5px"></i>Import folders</a>
-        </div>
+    <div style="border-top:1px solid #f0f0f0;padding: 0 0;margin:3px 3px;margin-left:60px;display:flex;flex-direction:row;justify-content:space-between">
+    <div style="width:100%;display:flex;flex-direction:row">
+    <div class="container-fluid" style="margin-top:40px;height:100%;border-radius:3px;">
+      <div>
+        <h5 style="cursor: pointer;float:left;text-decoration:underline;font-size:15px;color:var(--tagify-dd-color-primary)">My dataset <i class="fas fa-chevron-right" style="margin-left:5px;margin-right:5px;font-size:12px;"></i></h5>
+        <!-- <button id="button-back" class="button-back" style="float:left;background-color: #fff;border-color:var(--color-bg-plum);color: var(--color-bg-plum);opacity: 0.8;height:30px;width:30px"><i class="fas fa-arrow-left fa-fw"></i></button>
+          <input style="display:flex;flex-direction:column;float:left;border-radius: 3px;margin-left: 15px;height: 30px; box-shadow: 0 0 2px #999;border: 1px solid var(--color-bg-plum); font-family: sans-serif;font-size: 14px;font-weight:500;color:#999999;width: 300px" id="input-global-path" value="/" readonly></input> -->
+
+
+          <div class="div-organize-dataset-menu">
+            <button style="float:right;margin-right:10px;background:var(--tagify-dd-color-primary);color:#fff;font-weight:600;border:none"><i class="fas fa-folder-plus"></i> New folder</button>
+            <div class="btn-group" role="group">
+              <button id="btnGroupDrop1" type="button" style="width: 120px;color:var(--tagify-dd-color-primary);background:#fff;border: 1px solid var(--tagify-dd-color-primary);font-weight:600" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-arrow-up fa-fw" style="margin-right:5px"></i>Import
+              </button>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop1">
+                <a class="dropdown-item" id="add-files" href="#"><i class="fas fa-upload" style="margin-right:5px"></i>Import files</a>
+                <a class="dropdown-item" id="add-folders" href="#"><i class="fas fa-upload" style="margin-right:5px"></i>Import folders</a>
+              </div>
+            </div>
+            <!-- <button style="width:100px;font-weight:600"><i class="fas fa-upload" style="margin-right:15px"></i>Import</button> -->
+            <!-- <button><i class="fas fa-upload"></i>Import files</button>
+              <button><i class="fas fa-undo"></i>Reset progress</button> -->
+            </div>
       </div>
-      <div class="btn-group" role="group">
-        <button id="button-details-organize" class="myButton" style="width: 90px;color:var(--color-bg-plum);background:#fff;border: 1px solid var(--color-bg-plum)" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-list" style="margin-right:7px"></i>More
-        </button>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="button-details-organize">
-          <a class="dropdown-item" id="import-progress" href="#">Import progress</a>
-          <a class="dropdown-item" id="save-progress" href="#">Save progress</a>
-          <a class="dropdown-item" id="clear-progress" href="#">Reset progress</a>
-          <a class="dropdown-item" id="show-details" href="#">Show details</a>
-        </div>
-      </div>
-    </div>
-    <div class="container-fluid" style="height:100%">
       <!-- These are the context menu options, will not appear on the UI until prompted -->
         <ul class="menu reg-folder off">
           <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
@@ -420,19 +421,22 @@
         <b>Other details: <br><p style="margin: 0 0;" id="para-other-details-folder"></p></b>
 
     </div> -->
+
+    </div>
+  </div>
     </div>
   </div>
 
   <!-- 4. Metadata files -->
   <div class="parent-tabs condensed" id="metadata-files-tab" style="grid-template-rows: 10% 90%;">
-    <h3 class="question-title" style="color: #808080;font-size:15px;text-align:center">Step 4: Specify metadata<br><br>
+    <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;font-weight:600;">Step 4: Specify metadata<br><br>
     </h3>
     <div class="div-organize-generate-dataset metadata">
       <h3 class="question-title">
       Specify
         <span style="color: var(--color-bg-plum);">SPARC high-level metadata files</span><br>
         to add to your dataset<br>
-        <span style="color: #696969;font-size:13px">Click each file to add.<br>Files with an asterisk are SPARC mandatory.</span>
+        <span style="color: #696969;font-size:13px">Click each file to add.</span>
         </h3>
       <div style="margin-bottom:15px;">
       <button class="button-generate-dataset questions-button" data_next="submissionUpload">
@@ -554,56 +558,151 @@
   </div>
 
   <!-- 5. Generate dataset -->
-  <div class="parent-tabs" id="generate-dataset-tab">
-      <h3 class="question-title" style="color: #808080;font-size:15px;text-align:center;margin-bottom:70px">Step 5: Generate dataset<br><br>
+  <div class="parent-tabs" id="generate-dataset-tab" style="overflow-y:scroll;">
+      <h3 class="question-title" style="color: var(--color-bg-plum);font-weight:600;font-size:15px;text-align:center;margin-bottom:70px">Step 5: Generate dataset<br><br>
         </h3>
-        <div class="div-organize-generate-dataset">
-          <h3 class="question-title">
-          Where would you like to <span style="color:var(--color-bg-plum)">generate your dataset?</span>
+        <div class="individual-question show" id="Question-generate-dataset" data-id="generate-question-1">
+            <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:15px;color:var(--color-bg-plum);text-align:center">Where would you like to generate your dataset?
+              <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
+              <div style="display:flex;flex-direction:row;">
+                <div style="margin:15px 0;width: 220px">
+                    <div class="option-card radio-button" data-next="Question-generate-dataset-locally-destination" onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-question')">
+                        <div class="card-head">
+                          <div class="folder-checkbox">
+                            <input class="folder-input-check" name="generate" id="protocol-check" type="radio">
+                            <label for="protocol-check"></label>
+                          </div>
+                        </div>
+                        <div class="card-body">
+                          <i class="fas fa-desktop"></i>
+                          <h2>Locally on my computer</h2>
+                        </div>
+                      </div>
+                    </div>
 
-            <span style="color: #696969;font-size:13px"><br>Please select one:</span>
-          </h3>
-          <div class="individual-questions">
-            <button class="question-buttons button-generate-dataset" onclick="showSubTab('generate-dataset-locally-tab')">
-              <i class="fas fa-tv" style="font-size: 50px;color:orange"></i>
-              <p style="margin-top:30px;font-family:'Raleway', sans-serif;">Generate locally on my computer</p>
-            </button>
-          <button class="question-buttons button-generate-dataset" onclick="showSubTab('generate-dataset-blackfynn-tab')">
-            <i class="fas fa-cloud-upload-alt" style="font-size: 50px;color: var(--tagify-dd-color-primary)"></i>
-            <p style="margin-top:30px;font-family:'Raleway', sans-serif;">Generate and upload to Blackfynn</p>
-          </button>
+              <div style="margin:15px 0;">
+                <!-- <button> -->
+                <div class="option-card radio-button" data-next="Question-generate-dataset-BF-account" onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-question')">
+                    <div class="card-head">
+                      <div class="folder-checkbox">
+                        <input class="folder-input-check" id="protocol-check" name="generate" type="radio">
+                        <label for="protocol-check"></label>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <i class="fas fa-desktop"></i>
+                      <h2>Upload to Blackfynn</h2>
+                    </div>
+                </div>
+
+              </div>
+              </div>
+
         </div>
+        </div>
+      </div>
+      </div>
+
         <!-- Generate locally -->
-        <div class="sub-tabs" id="generate-dataset-locally-tab">
-          <h3 class='question-title' style="padding: 35px;">Choose <span style="color: var(--color-bg-plum)">a local destination</span> for your dataset</h3>
-          <div>
-            <form style="line-height:2">
-              <div class="form-row">
-                <div class="form-group" style="line-height: 50px;display: flex !important;flex-direction:column">
-                  <label for="inputLocalDestination"><b style="color: var(--color-bg-plum)">Destination:</b></label>
-                  <input class="form-control" id="inputLocalDestination" type="text" readonly placeholder="Browse here">
-                </div>
+        <div class="individual-question" id="Question-generate-dataset-locally-destination" data-id="generate-question-2">
+            <div class="ui form" style="width:450px">
+            <div class="grouped fields">
+              <label style="font-size:15px;color:var(--color-bg-plum);text-align:center;">At which location should we generate the dataset?</label>
+              <div class="field" style="margin:15px 0;">
+                <input class="form-control" style="width:400px !important" id="inputLocalDestination" type="text" readonly placeholder="Browse here">
               </div>
-              <div class="form-row">
-                <div class="form-group" style="line-height: 50px;display: flex !important;flex-direction:column">
-                  <label for="inputNewNameDataset"><b style="color: var(--color-bg-plum)">Dataset name:</b></label>
-                  <input type="text" class="form-control" style="background: #fff !important;" id="inputNewNameDataset" placeholder="Enter here">
-                </div>
-              </div>
-            </form>
-            <div class="alert alert-primary" style="margin-top:25px !important;display:none" id="para-organize-datasets-loading" role="alert"></div>
+            </div>
+
+
+            <!-- </form> -->
+            <!-- <div class="alert alert-primary" style="margin-top:25px !important;display:none" id="para-organize-datasets-loading" role="alert"></div>
             <div class="alert alert-danger" style="margin-top:25px !important;display:none" id="para-organize-datasets-error" role="alert"></div>
-            <div class="alert alert-success" style="margin-top:25px !important;display:none" id="para-organize-datasets-success" role="alert"></div>
+            <div class="alert alert-success" style="margin-top:25px !important;display:none" id="para-organize-datasets-success" role="alert"></div> -->
             <br>
+            <div style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
+              <button class="transition-btn" onclick="transitionSubQuestions(this, 'Question-generate-dataset-locally-destination', 'generate-dataset-tab', 'delete', 'generate-question')" data-next="Question-generate-dataset-button" style="display:flex;flex-direction:row;justify-content:center;width: 100px;height:40px;">Confirm</button>
+            </div>
           </div>
         </div>
+
+        <div class="individual-question" id="Question-generate-dataset-locally-name" data-id="generate-question-3">
+            <div class="ui form" style="width:450px">
+              <div class="grouped fields">
+                <label style="font-size:15px;color:var(--color-bg-plum);width:35%;text-align:center">Choose dataset name:</label>
+                <div class="field" style="margin:15px 0;">
+                  <input type="text" class="form-control" style="background: #fff !important;width:400px !important" id="inputNewNameDataset" placeholder="Enter here">
+                </div>
+              </div>
+            <br>
+            <div style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
+              <button onclick="transitionSubQuestions(this, 'Question-generate-dataset-locally-name', 'generate-dataset-tab', 'delete', 'generate-question')" data-next="Question-generate-dataset-button" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Generate BF -->
+        <div class="individual-question" id="Question-generate-dataset-BF-account" data-id="generate-question-4">
+          <div class="ui form" style="width:100%">
+          <div class="grouped fields">
+            <label style="font-size:15px;color:var(--color-bg-plum);text-align:center">What is your Blackfynn account?</label>
+            <div class="field" style="margin:15px 0;width:450px;">
+              <div style="display:flex;justify-content:flex-start">
+                <select id="bfuploadaccountlist" name="Blackfynn account" class='ui selection dropdown' style="width:400px !important;border-radius:7px;padding:8px">
+                  <option> Select </option>
+                </select>
+                <button style="float:right;height:38px;cursor:pointer;border-radius: 8px;margin:0 10px; width: 40px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;border:1px solid var(--color-bg-plum)"><i class="fas fa-sign-out-alt"></i></button>
+              </div>
+              <div>
+              <p id="para-account-details"></p>
+              <div id=div-bf-account-load-progress-curate class="progressdiv">
+                <div class="indeterminatebar"></div>
+              </div>
+              <p id='para-upload-select-account-status' style="margin-top:20px;text-align:left"> </p>
+              <p id="para-account-details"></p>
+              </div>
+            </div>
+            </div>
+            <div style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
+              <button onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'generate-question')"  data-next="Question-generate-dataset-BF-dataset" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm account</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="individual-question" id="Question-generate-dataset-BF-dataset" data-id="generate-question-5">
+          <div class="ui form" style="width:100%">
+          <div class="grouped fields">
+            <label style="font-size:15px;color:var(--color-bg-plum);">What is your Blackfynn dataset?</label>
+            <div class="field" style="margin:15px 0;">
+            <select id="bfuploaddatasetlist" name="Blackfynn dataset" class="ui search dropdown" style="width:400px;border-radius:7px;padding:8px">
+              <option value=""> Loading... </option>
+            </select>
+            </div>
+          </div>
+          <button onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-dataset', 'generate-dataset-tab', 'delete', 'generate-question')" data-next="Question-generate-dataset-button" style="margin:0 auto;display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm dataset</button>
+          </div>
+        </div>
+
+        <div class="individual-question" id="Question-generate-dataset-button" data-id="generate-question-6">
+          <div class="ui form" style="width:100%">
+          <div class="grouped fields">
+            <label style="font-size:15px;color:var(--color-bg-plum);">Proceed to generate:</label>
+            <div class="field" style="margin:15px 0;">
+              <button style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 auto; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Continue</button>
+            </div>
+          </div>
+          </div>
+        </div>
+
+
+      </div>
+
+
   </div>
-  </div>
+<!-- </div> -->
 
-
-</div>
-
-<div style="border-top:1px solid #f0f0f0;padding:10px;padding-top:15px;height:70px;">
+<div style="border-top:1px solid #f0f0f0;padding:10px;padding-top:15px;height:50px;">
   <button type="button" onclick="nextPrev(-1)" id="prevBtn" class="transition-btn prev"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
   <button style="float:right" onclick="nextPrev(1)" id="nextBtn" type="button" class="transition-btn">Continue</button>
   </div>

@@ -122,13 +122,14 @@ function fixStepDone(n) {
 //
 // // High level folders check mark effect
 $(".option-card").click(function() {
-  // $(this).toggleClass('checked');
-  if ($(this).hasClass('checked')) {
-    $(this).children()[0].children[1].children[0].checked = true
-  } else {
-    $(this).children()[0].children[1].children[0].checked = false
+  if (!($(this).hasClass('radio-button'))) {
+    if ($(this).hasClass('checked')) {
+      $(this).children()[0].children[1].children[0].checked = true
+    } else {
+      $(this).children()[0].children[1].children[0].checked  = false
+    }
+    checkHighLevelFoldersInput()
   }
-  checkHighLevelFoldersInput()
 })
 
 $(".folder-input-check").click(function() {
@@ -141,6 +142,7 @@ $(".folder-input-check").click(function() {
   }
   checkHighLevelFoldersInput()
 })
+
 
 function showSubTab(section, tab, input){
   var tabArray;
@@ -208,7 +210,17 @@ function updateOverallJSONStructure(id) {
 }
 
 
+// // High level folders check mark effect
 
+$(".folder-input-check").click(function() {
+  var highLevelFolderCard = $(this).parents()[2];
+  $(highLevelFolderCard).toggleClass('checked')
+  if ($(this).checked) {
+    $(this).checked = false;
+  } else {
+      $(this).checked = true;
+  }
+})
 
 
 // ////////////// THIS IS FOR THE SUB-TABS OF GETTING STARTED /////////////////////////
@@ -251,6 +263,7 @@ function updateOverallJSONStructure(id) {
 
 function transitionQuestions(ev, category, id) {
 
+
   // var buttons = document.getElementsByClassName('question-buttons');
   var individualQuestions = document.getElementsByClassName('individual-question');
   var target = ev.getAttribute('data-next');
@@ -268,7 +281,7 @@ function transitionQuestions(ev, category, id) {
       var question = individualQuestions[j];
 
       if (! (question === $(ev).parents()[5])) {
-        $(question).removeClass('show');
+        // $(question).removeClass('show');
         $(question).removeClass('previous');
       }
     }
@@ -292,7 +305,7 @@ function transitionQuestions(ev, category, id) {
         }
 
         question.classList.add("show");
-        $(question).css("transform", "translateY(-40%)");
+        $(question).css("transform", "translateY(-45%)");
         $(question).css("transtition", "transform 0.4s ease-out");
 
         if (category==='dropdown') {
@@ -311,7 +324,7 @@ function transitionQuestions(ev, category, id) {
         previousQuestion = $(ev).parents()[1];
         previousQuestion.classList.add("previous");
         height = -30*j + 10;
-        $(previousQuestion).css("transform", "translateY(-85%)");
+        $(previousQuestion).css("transform", "translateY(-80%)");
         $(previousQuestion).css("transtition", "transform 0.4s ease-out");
 
         break
