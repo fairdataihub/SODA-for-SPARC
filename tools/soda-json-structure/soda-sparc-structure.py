@@ -43,7 +43,7 @@ generate-dataset: contains info about the dataset to be generated
 1. Has a key "destination" which is a string with value either "local" (generate the file locally) or "bf" (generate the dataset on bf, look for the bf account and dataset keys for info)
 2. If "destination" is "local", a "destination-path" subkey must be included which includes the path of the folder where the dataset will be generated
 3. If "destination" is "local", a "dataset-name" key must be included with the name of the dataset
-3. If "destination" is "local", a "if-existing" key must be included with string value either "new" (create new dataset, added (2) etc. behind the dataset name if already exists) or "merge" (decide to modify existing dataset)
+4. If "destination" is "local", an "if-existing" key must be included with string value either "new" (create new dataset, added (2) etc. behind the dataset name if already exists) or "merge" (decide to modify existing dataset)
 
 """
 
