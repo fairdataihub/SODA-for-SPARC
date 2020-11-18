@@ -5071,32 +5071,32 @@ var sodaJSONObj = {
 }
 
 /// back button
-organizeDSbackButton.addEventListener("click", function() {
-  var currentPath = organizeDSglobalPath.value.trim()
-  if (currentPath !== "/") {
-    var filtered = getGlobalPath(organizeDSglobalPath)
-    if (filtered.length === 1) {
-      organizeDSglobalPath.value = "/"
-    } else {
-      organizeDSglobalPath.value = "/" + filtered.slice(0,filtered.length-1).join("/") + "/"
-    }
-    var myPath = datasetStructureJSONObj;
-    for (var item of filtered.slice(0,filtered.length-1)) {
-      myPath = myPath["folders"][item]
-    }
-    // construct UI with files and folders
-    var appendString = loadFileFolder(myPath)
-
-    /// empty the div
-    $('#items').empty()
-    $('#items').html(appendString)
-
-    // reconstruct div with new elements
-    listItems(myPath, '#items')
-    getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-
-  }
-})
+// organizeDSbackButton.addEventListener("click", function() {
+//   var currentPath = organizeDSglobalPath.value.trim()
+//   if (currentPath !== "/") {
+//     var filtered = getGlobalPath(organizeDSglobalPath)
+//     if (filtered.length === 1) {
+//       organizeDSglobalPath.value = "/"
+//     } else {
+//       organizeDSglobalPath.value = "/" + filtered.slice(0,filtered.length-1).join("/") + "/"
+//     }
+//     var myPath = datasetStructureJSONObj;
+//     for (var item of filtered.slice(0,filtered.length-1)) {
+//       myPath = myPath["folders"][item]
+//     }
+//     // construct UI with files and folders
+//     var appendString = loadFileFolder(myPath)
+//
+//     /// empty the div
+//     $('#items').empty()
+//     $('#items').html(appendString)
+//
+//     // reconstruct div with new elements
+//     listItems(myPath, '#items')
+//     getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+//
+//   }
+// })
 
 // Add folder button
 organizeDSaddNewFolder.addEventListener("click", function(event) {
@@ -5230,81 +5230,81 @@ function showDetailsFile() {
 // }
 
 /// import progress
-importProgress.addEventListener("click", function() {
-  ipcRenderer.send('open-file-organization-dialog')
-});
-
-ipcRenderer.on('selected-file-organization', (event,filePath) => {
-  organizeDSglobalPath.value = "/"
-  if (filePath !== undefined) {
-    var progressData = fs.readFileSync(filePath[0])
-    var content = JSON.parse(progressData.toString())
-    var contentKeys = Object.keys(content["folders"])
-    if (checkSubArrayBool(highLevelFolders, contentKeys)) {
-      datasetStructureJSONObj = content
-    } else {
-      bootbox.alert({
-        message: "<p>Please import a valid file organization!</p>",
-        centerVertical: true
-      })
-      return
-    }
-    var bootboxDialog = bootbox.dialog({message: '<p><i class="fa fa-spin fa-spinner"></i>Importing file organization...</p>'})
-    bootboxDialog.init(function(){
-      listItems(datasetStructureJSONObj, '#items')
-      getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-      bootboxDialog.find('.bootbox-body').html("<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully loaded!");
-    })
-  }
-})
-
-// save progress
-saveProgress.addEventListener("click", function() {
-  ipcRenderer.send('save-file-saveorganization-dialog');
-})
-ipcRenderer.on('selected-fileorganization', (event, filePath) => {
-  if (filePath.length > 0){
-    if (filePath !== undefined){
-      fs.writeFileSync(filePath, JSON.stringify(datasetStructureJSONObj))
-      bootbox.alert({
-        message: "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved file organization.",
-        centerVertical: true
-      })
-    }
-  }
-})
-
-/// reset progress
-resetProgress.addEventListener("click", function() {
-  bootbox.confirm({
-    title: "Reset progress",
-    message: "<p>Are you sure you want to clear the current file organization?</p>",
-    centerVertical: true,
-    callback: function(r) {
-      if (r!==null) {
-        organizeDSglobalPath.value = "/"
-        datasetStructureJSONObj = {
-          "type": "virtual",
-          "folders": {
-            "code": {"type": "virtual", "folders": {}, "files": {}},
-            "derivative": {"type": "virtual", "folders": {}, "files": {}},
-            "primary": {"type": "virtual", "folders": {}, "files": {}},
-            "source": {"type": "virtual", "folders": {}, "files": {}},
-            "docs": {"type": "virtual", "folders": {}, "files": {}},
-            "protocols": {"type": "virtual", "folders": {}, "files": {}}
-          },
-          "files": {}
-        }
-        listItems(datasetStructureJSONObj, '#items')
-        getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-      }
-    }
-  })
-})
+// importProgress.addEventListener("click", function() {
+//   ipcRenderer.send('open-file-organization-dialog')
+// });
+//
+// ipcRenderer.on('selected-file-organization', (event,filePath) => {
+//   organizeDSglobalPath.value = "/"
+//   if (filePath !== undefined) {
+//     var progressData = fs.readFileSync(filePath[0])
+//     var content = JSON.parse(progressData.toString())
+//     var contentKeys = Object.keys(content["folders"])
+//     if (checkSubArrayBool(highLevelFolders, contentKeys)) {
+//       datasetStructureJSONObj = content
+//     } else {
+//       bootbox.alert({
+//         message: "<p>Please import a valid file organization!</p>",
+//         centerVertical: true
+//       })
+//       return
+//     }
+//     var bootboxDialog = bootbox.dialog({message: '<p><i class="fa fa-spin fa-spinner"></i>Importing file organization...</p>'})
+//     bootboxDialog.init(function(){
+//       listItems(datasetStructureJSONObj, '#items')
+//       getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+//       hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+//       hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+//       bootboxDialog.find('.bootbox-body').html("<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully loaded!");
+//     })
+//   }
+// })
+//
+// // save progress
+// saveProgress.addEventListener("click", function() {
+//   ipcRenderer.send('save-file-saveorganization-dialog');
+// })
+// ipcRenderer.on('selected-fileorganization', (event, filePath) => {
+//   if (filePath.length > 0){
+//     if (filePath !== undefined){
+//       fs.writeFileSync(filePath, JSON.stringify(datasetStructureJSONObj))
+//       bootbox.alert({
+//         message: "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved file organization.",
+//         centerVertical: true
+//       })
+//     }
+//   }
+// })
+//
+// /// reset progress
+// resetProgress.addEventListener("click", function() {
+//   bootbox.confirm({
+//     title: "Reset progress",
+//     message: "<p>Are you sure you want to clear the current file organization?</p>",
+//     centerVertical: true,
+//     callback: function(r) {
+//       if (r!==null) {
+//         organizeDSglobalPath.value = "/"
+//         datasetStructureJSONObj = {
+//           "type": "virtual",
+//           "folders": {
+//             "code": {"type": "virtual", "folders": {}, "files": {}},
+//             "derivative": {"type": "virtual", "folders": {}, "files": {}},
+//             "primary": {"type": "virtual", "folders": {}, "files": {}},
+//             "source": {"type": "virtual", "folders": {}, "files": {}},
+//             "docs": {"type": "virtual", "folders": {}, "files": {}},
+//             "protocols": {"type": "virtual", "folders": {}, "files": {}}
+//           },
+//           "files": {}
+//         }
+//         listItems(datasetStructureJSONObj, '#items')
+//         getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+//         hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+//         hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+//       }
+//     }
+//   })
+// })
 
 function changeStepOrganize(step) {
     if (step.id==="button-organize-prev") {

@@ -459,6 +459,10 @@ button[disabled]{
   margin: 0 auto;
 }
 
+.div-organize-generate-dataset.metadata.hide {
+  display:none;
+}
+
 .div-organize-generate-dataset.metadata button {
   width: 150px;
   height:155px;
@@ -471,12 +475,23 @@ button[disabled]{
 
 .div-organize-generate-dataset.metadata p {
   /* color: orange; */
-  font-size: 12px
+  font-size: 13px;
+  margin-top: 20px !important
 }
 
 .div-organize-generate-dataset.metadata div {
   display: flex;
   flex-direction: row;
+}
+
+.div-individual-metadata {
+  display: none
+}
+
+.div-individual-metadata.show {
+  display: flex;
+  flex-direction: column;
+  margin: 30px auto
 }
 
 .button-generate-dataset {
@@ -501,7 +516,7 @@ button[disabled]{
 .button-generate-dataset p {
   color: #222c3c;
   font-size: 13px;
-  margin-top: 15px;
+  margin-top: 25px;
   font-family:'Raleway', sans-serif
 }
 /*
@@ -519,29 +534,25 @@ button[disabled]{
   /* transition: border 0.5s ease-in-out; */
   /* background: #fff; */
 }
-/*
-.button-generate-dataset:hover p {
-  color: #fff;
-  /* font-weight: 600; */
-/* }  */
-
-/* .button-generate-dataset:hover i {
-  color: #fff !important;
-  opacity: 1 !important;
-  font-weight: 600;
-  /* font-weight: 600; */
-/* } */
-
-/* .button-generate-dataset:hover .fas.fa-arrow-right {
-  opacity: 1;
-  transform: translate(5px);
-} */
-
 .button-generate-dataset p {
   color: #000;
   font-weight: 500;
   font-size: 14px;
   line-height: 1.5
+}
+
+.metadata-button.button-generate-dataset.done {
+  border: 1px solid var(--color-light-green);
+}
+
+.metadata-button.button-generate-dataset.done p{
+  color: var(--color-light-green);
+}
+
+.metadata-button.button-generate-dataset.done i:before {
+  content: '\f560' !important;
+  color: var(--color-light-green);
+  font-family: "Font Awesome 5 Free";
 }
 
 /* file and folder */

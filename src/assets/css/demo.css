@@ -377,9 +377,7 @@ button.download-metadata:hover {
 }
 
 .dash-content {
-  display: none;
-  grid-template-columns: 1fr;
-  grid-template-rows: 5% 10% auto 5%;
+  display: flex;
   background: var(--color-bg-white);
   padding-top: 0 !important;
   padding-bottom: 10px !important;
@@ -1244,15 +1242,15 @@ input::-webkit-calendar-picker-indicator {
   content: "";
   height: 23px;
   width: 22px;
-  left: 3px;
-  bottom: 3px;
+  left: 4px;
+  bottom: 2px;
   background-color: white;
   -webkit-transition: .4s;
   transition: .4s;
 }
 
 input:checked + .slider {
-  background-color: #0BC260;
+  background-color: var(--color-light-green);
 }
 
 input:focus + .slider {
@@ -1267,7 +1265,7 @@ input:checked + .slider:before {
 
 /* Rounded sliders */
 .slider.round {
-  border-radius: 22px;
+  border-radius: 21px;
 }
 
 .slider.round:before {

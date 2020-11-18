@@ -11,21 +11,16 @@ var allParentStepsJSON = {
 var currentTab = 0; // Current tab is set to be the first tab (0)
 showParentTab(0)
 
-//// change between tabs (steps) in the UI for the Curate feature
-function changeMainContent(currentMain, nextMain) {
-  $('#'+ currentMain).toggleClass('show');
-  $('#'+ nextMain).toggleClass('show');
-}
+// //// change between tabs (steps) in the UI for the Curate feature
+// function changeMainContent(currentMain, nextMain) {
+//   $('#'+ currentMain).toggleClass('show');
+//   $('#'+ nextMain).toggleClass('show');
+// }
 
 
 function showParentTab(n) {
   // This function will display the specified tab of the form ...
   var x = document.getElementsByClassName("parent-tabs");
-  document.getElementById("nextBtn").disabled = false;
-
-  // // update JSON structure
-  // updateOverallJSONStructure(x[currentTab].id)
-  //
   fixStepIndicator(n)
   fixStepDone(n-1)
 
@@ -43,26 +38,23 @@ function showParentTab(n) {
 
   if (n == 0) {
     document.getElementById("prevBtn").style.display = "none";
-    // document.getElementById("nextBtn").style.display = "none";
     document.getElementById("nextBtn").disabled = true;
 
   } else if (n == 1){
     document.getElementById("nextBtn").disabled = true;
     checkHighLevelFoldersInput();
     highLevelFoldersDisableOptions();
+} else {
+    document.getElementById("nextBtn").disabled = false;
 }
 
   if (n == (x.length - 1)) {
     document.getElementById("nextBtn").style.display = "none";
   }
-  //
-  // if (n == 2) {
-  //   updateOverallJSONStructure('high-level-folders-tab')
-  // }
 }
 
 function checkHighLevelFoldersInput() {
-  var optionCards = document.getElementsByClassName("option-card");
+  var optionCards = document.getElementsByClassName("option-card high-level-folders");
   var checked = false;
   for (var card of optionCards) {
     if ($(card).hasClass('checked')) {
@@ -115,26 +107,34 @@ function fixStepIndicator(n) {
 
 function fixStepDone(n) {
   var x = document.getElementsByClassName("not-me");
-  // $(x[n+1]).removeClass('disabled')
   $(x[n]).addClass('done');
 }
 
 //
 // // High level folders check mark effect
-$(".option-card").click(function() {
-  if (!($(this).hasClass('radio-button'))) {
-    if ($(this).hasClass('checked')) {
-      $(this).children()[0].children[1].children[0].checked = true
-    } else {
-      $(this).children()[0].children[1].children[0].checked  = false
-    }
-    checkHighLevelFoldersInput()
+$(".option-card.high-level-folders").click(function() {
+  $(this).toggleClass('checked');
+  if ($(this).hasClass('checked')) {
+    $(this).children()[0].children[1].children[0].checked = true
+  } else {
+    $(this).children()[0].children[1].children[0].checked  = false
+  }
+  checkHighLevelFoldersInput()
+})
+
+// Other radio buttons check mark effect
+$(".option-card.radio-button").click(function() {
+  $(this).toggleClass('checked');
+  if ($(this).hasClass('checked')) {
+    $(this).children()[0].children[0].children[0].checked = true
+  } else {
+    $(this).children()[0].children[0].children[0].checked = false
   }
 })
 
 $(".folder-input-check").click(function() {
-  var highLevelFolderCard = $(this).parents()[2];
-  $(highLevelFolderCard).toggleClass('checked')
+  var parentCard = $(this).parents()[2];
+  $(parentCard).toggleClass('checked')
   if ($(this).checked) {
     $(this).checked = false;
   } else {
@@ -187,7 +187,7 @@ function highLevelFoldersDisableOptions() {
 
 function updateOverallJSONStructure(id) {
   if (id === allParentStepsJSON["high-level-folders"]) {
-    var optionCards = document.getElementsByClassName("option-card");
+    var optionCards = document.getElementsByClassName("option-card high-level-folders");
     var newDatasetStructureJSONObj = {"folders": {}};
     var keys = [];
     for (var card of optionCards) {
@@ -223,55 +223,13 @@ $(".folder-input-check").click(function() {
 })
 
 
-// ////////////// THIS IS FOR THE SUB-TABS OF GETTING STARTED /////////////////////////
-// var currentSubTab = 0; // Current tab is set to be the first tab (0)
-// showMySubTab(currentSubTab); // Display the current tab
-//
-// function showMySubTab(n) {
-//   // This function will display the specified tab of the form ...
-//   var x = document.getElementsByClassName("tab");
-//   x[n].style.display = "block";
-//   // ... and fix the Previous/Next buttons:
-//   if (n == 0) {
-//     document.getElementById("subPrev").style.display = "none";
-//     document.getElementById("subNext").style.display = "none";
-//   } else {
-//     document.getElementById("subPrev").style.display = "inline";
-//   }
-//   if (n == (x.length - 1)) {
-//     document.getElementById("subNext").innerHTML = "Confirm";
-//   } else {
-//     document.getElementById("subNext").innerHTML = "Next";
-//   }
-// }
-//
-// function nextSubPrev(n) {
-//   // This function will figure out which tab to display
-//   var x = document.getElementsByClassName("tab");
-//   // Hide the current tab:
-//   x[currentSubTab].style.display = "none";
-//   // Increase or decrease the current tab by 1:
-//   currentSubTab = currentSubTab + n;
-//   // if you have reached the end of the form... :
-//   if (currentSubTab >= x.length) {
-//     //...the form gets submitted:
-//
-//   }
-//   // Otherwise, display the correct tab:
-//   showMySubTab(currentSubTab);
-// }
-
+// ////////////// THIS IS FOR THE SUB-TABS OF GETTING STARTED and GENERATE DATASET sections /////////////////////////
 function transitionQuestions(ev, category, id) {
-
 
   // var buttons = document.getElementsByClassName('question-buttons');
   var individualQuestions = document.getElementsByClassName('individual-question');
   var target = ev.getAttribute('data-next');
   var height;
-
-  // check if current $(ev).parents()[2] has "previous" in class,
-   //  if YES, target.addClass('show') & all others.removeClass('show'), and removeClass('previous')
-   // else, do the rest
 
   if ($($(ev).parents()[5]).hasClass("previous")) {
 
@@ -312,7 +270,6 @@ function transitionQuestions(ev, category, id) {
           var selectEle = document.getElementById(id);
           var answer = selectEle.options[selectEle.selectedIndex].text;
           $(ev).hide()
-          // document.getElementById('getting-started-summary-message').innerHTML += "<p style='color:var(--color-light-green);margin-top:20px'><i class='far fa-check-circle' style='margin-right:5px'></i>"+ selectEle.name + ": <b>" + selectEle.options[selectEle.selectedIndex].text +"</b></p>"
         }
       } else {
         question.classList.remove("show");
@@ -332,3 +289,96 @@ function transitionQuestions(ev, category, id) {
     }
   }
 }
+
+
+var divList = [];
+
+function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
+
+  // uncheck the other radio buttons
+  $(ev).siblings().find('.option-card.radio-button').removeClass('checked');
+  console.log($(ev))
+
+  // first, handle target or the next div to show
+  var target = document.getElementById(ev.getAttribute('data-next'));
+  hidePrevDivs(currentDiv, category);
+
+
+
+  target.className = target.className + ' show';
+
+  // append to parentDiv
+  document.getElementById(parentDiv).appendChild(target);
+  setTimeout(()=> target.classList.add("test2"), 100);
+
+  document.getElementById(currentDiv).classList.add("prev");
+  // handle buttons (if buttons are confirm buttons -> delete after users confirm)
+  if (button==='delete') {
+    $(ev).hide();
+  }
+  // auto-scroll to bottom of div
+  document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
+
+  if (ev.getAttribute('data-next') === "Question-getting-started-final") {
+    document.getElementById("nextBtn").disabled = false;
+  }
+}
+
+function obtainDivsbyCategory(category) {
+  var individualQuestions = document.getElementsByClassName('individual-question');
+  var categoryQuestionList = [];
+
+  for (var i = 0; i < individualQuestions.length; i++) {
+    var question = individualQuestions[i];
+
+    if (question.getAttribute('data-id') !== null) {
+      if (question.getAttribute('data-id').includes(category)) {
+        categoryQuestionList.push(question.id);
+      }
+    }
+  }
+  return categoryQuestionList
+}
+
+function hidePrevDivs(currentDiv, category) {
+
+  var individualQuestions = document.getElementsByClassName(category);
+
+  // hide all other siblings
+  for (var i = 0; i < individualQuestions.length; i++) {
+    if (currentDiv === individualQuestions[i].id) {
+      $("#"+currentDiv).nextAll().removeClass("show");
+      $("#"+currentDiv).nextAll().removeClass("prev");
+      $("#"+currentDiv).nextAll().removeClass("test2");
+
+      /// remove all checkmarks and previous data input
+      $("#"+currentDiv).nextAll().find('.option-card.radio-button').removeClass('checked');
+      var childElements1 = $("#"+currentDiv).nextAll().find('.folder-input-check');
+      for (var child of childElements1) {
+        document.getElementById(child.id).checked = false;
+      }
+      var childElements2 = $("#"+currentDiv).nextAll().find('.form-control');
+      for (var child of childElements2) {
+        document.getElementById(child.id).value = "";
+      };
+      $("#"+currentDiv).nextAll().find('button').show();
+      break
+    }
+  }
+}
+
+$(".metadata-button").click(function() {
+  $(".div-organize-generate-dataset.metadata").addClass('hide');
+  var target = $(this).attr('data-next');
+  $("#"+target).toggleClass('show');
+})
+
+$(".button-individual-metadata").click(function() {
+  $($(this).parents()[1]).removeClass('show');
+  $(".div-organize-generate-dataset.metadata").removeClass('hide');
+})
+
+$(".button-individual-metadata.cancel").click(function() {
+  $($(this).parents()[1]).removeClass('show');
+  $(".div-organize-generate-dataset.metadata").removeClass('hide');
+})

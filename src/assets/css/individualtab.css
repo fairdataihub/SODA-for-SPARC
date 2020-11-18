@@ -37,8 +37,9 @@
 }
 
 .option-card.radio-button {
-  width: 160px  !important;
+  width: 140px  !important;
   height: 140px !important;
+  grid-template-rows: 10% auto !important
 }
 
 .option-card.radio-button .card-body {
@@ -48,19 +49,21 @@
 }
 
 .option-card.radio-button .card-body i {
-  font-size: 30px;
+  font-size: 36px;
+  color: var(--color-bg-orange)
 }
 
 .option-card.radio-button .card-body h2 {
-  font-size: 14px
+  font-size: 13px
 }
 
 .option-card.radio-button .card-head {
   justify-content: flex-end;
 }
 
-.option-card.radio-button:hover, .option-card.radio-button:focus, .option-card.radio-button:active p{
-  color: var(--color-light-green)
+.option-card.radio-button:hover, .option-card.radio-button:focus, .option-card.radio-button:active {
+  color: var(--color-light-green);
+  border: 1px solid #20b2aa;
 }
 
 .option-card.radio-button:hover, .option-card.radio-button:focus, .option-card.radio-button:active i{
@@ -216,8 +219,8 @@
 
 .question-title {
   text-align: center;
-  color: #000;
-  font-size: 19px;
+  color: var(--color);
+  font-size: 17px;
   font-family: "Raleway", sans-serif;
   font-weight: 500;
 }
@@ -273,7 +276,7 @@
 }
 
 .parent-tabs.condensed {
-  margin-top: 20px
+  margin-top: 0
 }
 
 .parent-tabs.tab-active {
@@ -796,39 +799,6 @@
   font-weight: 600 !important;
 }
 
-.individual-question.previous {
-  display: flex;
-  transition: transform 0.3s ease-out;
-  /* transform: scale(1) translateY(-50px); */
-}
-
-/* .individual-question.previous .inline.fields {
-  margin: 0 auto
-} */
-
-/* .individual-question.previous button {
-  /* transform: scale(0.8); */
-  /* width: 250px;
-  height:80px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-} */
-
-.individual-question.previous .ui.form .inline.fields .question-label {
-  font-size: 15px !important;
-  margin-top: 15px !important;
-  color: #898989 !important;
-}
-
-.individual-question.previous p {
-  margin-top: 0 !important
-}
-
-.individual-question.previous i {
-  font-size: 16px !important
-}
-
 .inline.fields label {
   color: var(--color-bg-plum);
   margin-right: 80px
@@ -896,7 +866,6 @@
 }
 
 .individual-question.prev {
-  /* transform: translateY(-60px); */
   display:flex;
 }
 
@@ -911,18 +880,20 @@
 }
 
 .individual-question.prev label {
-  color: #696969 !important
+  color: #696969 !important;
+  font-size: 16px !important;
 }
 
 .individual-question.test2 {
   /* margin-top:40px; */
-  transform: translateY(-10px);
+  transform: translateY(-8px);
   transition: transform 0.2s ease-in-out;
   height: 50%;
 }
 
 #Question-generate-dataset {
-  display: flex !important
+  display: flex !important;
+  margin-bottom: 30px;
 }
 
 .ui.form .grouped.fields {

@@ -7,7 +7,7 @@
    background: transparent;
    position: relative;
    top:8px;
-   left: 165px;
+   left: 200px;
    cursor: pointer;
    border: 1px solid var(--color-light-green);
    z-index: 2;
@@ -39,8 +39,8 @@
 }
 
 #main-nav {
-    min-width: 210px;
-    max-width: 210px;
+    min-width: 240px;
+    max-width: 240px;
     background: #000;
     opacity: 0.9;
     color: #f0f0f0;
@@ -54,23 +54,8 @@
     transform: rotateY(150deg); /* Rotate sidebar vertically by 100 degrees. */
 }
 
-/* .navbar-btn {
-  margin-right: 3px;
-  font-size: 14px;
-  color: var(--color-teal);
-  background-color: #fff;
-  border: 1px solid #f0f0f0;
-  border-radius: 5px;
-  padding: 5px 5px;
-  cursor: pointer;
-  height:35px;
-  width:110px;
-  background-position: center;
-  transition: background 0.1s;
-} */
-
 .navbar-btn.active {
-  margin-left: -160px;
+  margin-left: -190px;
 }
 
 .navbar-btn:focus{
@@ -138,6 +123,7 @@ a[data-toggle="collapse"] {
 
 #main-nav ul li a i {
     margin-right: 25px;
+    font-size: 17px
 }
 
 #main-nav ul li a:hover {
@@ -228,7 +214,7 @@ a[data-toggle="collapse"] {
 .nav {
   padding: 0px 0px;
   position: fixed;
-  width: 230px;
+  width: 240px;
   min-height: 100vh;
   color: var(--color-subtle);
   visibility: visible;
@@ -277,7 +263,7 @@ a[data-toggle="collapse"] {
 .nav-item {
   padding: .5em 0;
   vertical-align: middle;
-  width: 210px !important;
+  width: 240px !important;
 }
 
 .nav-icon {

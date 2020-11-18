@@ -29,12 +29,6 @@
     <link rel="import" href="sections/account/account.html">
     <link rel="import" href="sections/getting_started/getting_started.html">
     <link rel="import" href="sections/curate/curate.html">
-    <link rel="import" href="sections/curate/highlevel_folders.html">
-    <link rel="import" href="sections/curate/organize_files.html">
-    <link rel="import" href="sections/curate/metadata_files.html">
-    <link rel="import" href="sections/curate/generate_dataset.html">
-    <link rel="import" href="sections/curate/validate_dataset.html">
-    <link rel="import" href="sections/curate/account.html">
     <link rel="import" href="sections/curate/prepare_dataset.html">
     <link rel="import" href="sections/manage_submit/manage_submit.html">
     <link rel="import" href="sections/post_curation/post_curation.html">
@@ -61,27 +55,17 @@
       </div>
       <!-- Sidebar Links -->
       <ul class="list-unstyled components">
-        <li><a href="#" data-section="account"><i class="fas fa-user" style="margin-right: 31px"></i>Account</a></li>
-        <li><a href="#" data-section="prepare_metadata"><i class="fas fa-file-alt" style="margin-right: 31px"></i>Metadata</a></li>
-        <li>
-          <a href="#" data-section="curate"><i class="fas fa-sitemap"></i>Curate</a>
-          <!-- <ul class="collapse list-unstyled" id="curateSubmenu"> -->
-            <!-- <li><a href="#" data-section="BFaccount">Account</a></li> -->
-            <!-- <li><a href="#" data-section="curate">Curate</a></li> -->
-            <!-- <li><a href="#" data-section="prepare_dataset">Prepare dataset</a></li> -->
-          <!-- </ul> -->
-        <li>
-          <a href="#" data-section="manage_submit"><i class="fas fa-digital-tachograph"></i>Manage</a>
-        </li>
-        <li>
-          <a href="#" data-section="post_curation"><i class="fas fa-share-alt" style="margin-right: 29px;"></i>Disseminate</a>
-        </li>
+        <li><a href="#" data-section="getting_started"><i class="far fa-play-circle" style="margin-right:28px"></i>Getting started</a></li>
+        <li><a href="#" data-section="manage_submit"><i class="fas fa-digital-tachograph"></i>Manage dataset</a></li>
+        <!-- <li><a href="#" data-section="account"><i class="fas fa-user" style="margin-right: 31px"></i>Account</a></li> -->
+        <li><a href="#" data-section="prepare_metadata"><i class="fas fa-file-alt" style="margin-right: 31px"></i>Prepare metadata</a></li>
+        <li><a href="#" data-section="curate"><i class="fas fa-sitemap"></i>Prepare dataset</a></li>
+        <li><a href="#" data-section="post_curation"><i class="fas fa-share-alt" style="margin-right: 29px;"></i>Disseminate dataset</a></li>
       </ul>
 
       <div class="help-section">
         <ul class="list-unstyled components" style="height:50px;margin-bottom:0;margin-left:35px;display:flex;">
           <li><a href="https://github.com/bvhpatel/SODA"><i class="fab fa-github"></i></a></li>
-          <li><a href="#" data-section="getting_started"><i class="far fa-play-circle"></i></a></li>
           <li><a href="#" data-section="help"><i class="fas fa-question-circle fa-fw"></i></a></li>
       </ul>
       </div>
@@ -90,7 +74,8 @@
 
   <div class="dash-app" style="background: #fff;border-top:1px solid #C3C3C3">
 
-    <main id="content" class="content js-content"></main>
+    <main id="content" class="content js-content">
+    </main>
 </div>
 
   <script>
@@ -116,6 +101,8 @@
     });
   </script>
   <script>window.$ = window.jQuery = require('jquery')</script>
-  <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- <script src="../src/scripts/renderer.js"></script> -->
+
+  <!-- <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script> -->
 </body>
 </html>
