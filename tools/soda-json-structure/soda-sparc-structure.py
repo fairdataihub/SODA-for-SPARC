@@ -51,7 +51,7 @@ generate-dataset: contains info about the dataset to be generated
 """
 Notes:
 
-1. Adding bf or any accounts will be done outside from the json structure (i.e., user enter API key, we add account)
+1. Adding new bf or Airtable accounts will be done outside from the json structure (i.e., user enter API key, we add account)
 2. Creating/renaming Blackfynn account will be done outside and not recorded in the json structure
 
 """
