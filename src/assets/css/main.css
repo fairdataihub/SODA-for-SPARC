@@ -195,10 +195,11 @@ button[disabled]{
 
 .modal-title {
   margin-top: 10px;
+  font-size: 17px;
 }
 
 .modal-header {
-  font-size: 17px !important;
+  font-size: 17px;
   font-weight: bold;
   height: 60px;
   padding: 8px 10px !important;
@@ -326,8 +327,9 @@ button[disabled]{
 .switch {
   position: relative;
   display: inline-block;
-  width: 52px;
-  height: 28px;
+  width: 60px;
+  height: 32px;
+  padding: 5px
 }
 
 .btn.btn-success:hover {
@@ -337,28 +339,21 @@ button[disabled]{
   }
 
 .button-back {
-  color: var(--color-teal);
+  color: var(--tagify-dd-color-primary);
   background-color: #fff;
-  border: 1px solid var(--color-teal);
-  border-radius: 50%;
-  cursor: pointer;
+  border: 1px solid var(--tagify-dd-color-primary);
+  border-radius: 5px;
   height:35px;
-  width:35px;
+  width:40px;
   font-size:14px;
-  box-shadow: 0 0 2px #999;
   background-position: center;
   transition: background 0.8s;
 }
 
 .button-back:hover {
-  background:var(--color-teal) radial-gradient(circle, transparent 1%, var(--color-teal) 1%) center/15000%;
-  color: white;
-  box-shadow: 0 0 5px #3b5998;
+  box-shadow: 0 0 3px 0px #585858;
 }
 .button-back:active {
-  background-color:#292d3e;
-  background-size: 100%;
-  transition: background 0s;
     transform: translateY(-4px);
 }
 .button-back:focus {
@@ -550,10 +545,17 @@ button[disabled]{
 }
 
 .metadata-button.button-generate-dataset.done i:before {
-  content: '\f058' !important;
+  content: '\f560' !important;
   color: var(--color-light-green);
   font-family: "Font Awesome 5 Free";
 }
+
+.form-group.row {
+  margin-bottom:10px;
+  margin-left: 5px;
+}
+
+
 
 /* file and folder */
 .myFile {

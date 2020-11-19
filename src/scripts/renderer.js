@@ -5364,6 +5364,34 @@ function showDetailsFile() {
   $('.div-display-details.file').toggleClass('show');
   // $(".div-display-details.folders").hide()
 }
+
+function showBFAddAccountBootbox() {
+  bootbox.confirm({
+    title: "Adding Blackfynn account",
+    message: "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='password' /></div></div></form>",
+    buttons: {
+        cancel: {
+            label: '<i class="fa fa-times"></i> Cancel'
+        },
+        confirm: {
+            label: '<i class="fa fa-check"></i> Add'
+        }
+    },
+    centerVertical: true,
+    callback: function (result) {
+        console.log('This was logged in the callback: ' + result);
+    }
+});
+}
+//   var bootboxHtml = $('#js-exampleDiv').html().replace('js-exampleForm', 'js-bootboxForm');
+//   bootboxHtml.title = "Adding new Blackfynn account";
+//   bootbox.confirm(bootboxHtml, function(result) {
+//     console.log($('#bootbox-api-key', '.js-bootboxForm').val());
+//     console.log($('#bootbox-api-secret', '.js-bootboxForm').val());
+//     console.log($('#bootbox-key-name', '.js-bootboxForm').val());
+//   });
+// }
+
 // function showDetailsFolder() {
 //   $('.div-display-details.folders').toggleClass('show');
 //   $(".div-display-details.file").hide()

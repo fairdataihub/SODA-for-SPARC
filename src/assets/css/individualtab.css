@@ -273,7 +273,8 @@
   margin-top: 70px;
   height: 100%;
   width: 100%;
-  margin-top: 0
+  margin-top: 0;
+  overflow: auto;
 }
 
 .parent-tabs.condensed {
@@ -448,8 +449,8 @@
 }
 
 .form-control {
-  width: 65% !important;
-  margin: 0 auto !important;
+  /* width: 65% !important; */
+  /* margin: 0 auto !important; */
   height: 35px !important;
   background: #f5f5f5 !important;
   border-radius: 5px !important;
@@ -457,7 +458,7 @@
 }
 
 .form-group label {
-  margin: 0 auto !important;
+  margin: 0 auto;
 }
 
 .label-switch.metadata {
@@ -776,4 +777,22 @@
 
 .ui.form .grouped.fields>label {
   text-align: center;
+}
+
+/* Manifest toggle button */
+
+.labelradiocurate {
+  color: #696969;
+}
+
+.labelradiocurate-manifest {
+  color: #696969;
+  font-size: 18px;
+  padding:10px;
+  margin-right:20px;
+  margin-left:20px;
+}
+
+#generate-manifest-curate:checked .labelradiocurate-manifest.yes {
+  color: var(--color-light-green) !important;
 }
