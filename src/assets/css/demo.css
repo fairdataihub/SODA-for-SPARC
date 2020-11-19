@@ -1,5 +1,9 @@
 /* Demo */
 
+button {
+  cursor: pointer;
+}
+
 .demo:first-of-type {
   margin-top: 2rem;
 }
@@ -1207,7 +1211,6 @@ input::-webkit-calendar-picker-indicator {
   border-bottom: 2px solid var(--color-teal);
   text-decoration: none;
   color: var(--color-teal);
-  box-shadow: 0 0 3px 0 var(--color-teal);;
   font-size: 16px;
   border-radius: 0
 }

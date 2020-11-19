@@ -550,7 +550,7 @@ button[disabled]{
 }
 
 .metadata-button.button-generate-dataset.done i:before {
-  content: '\f560' !important;
+  content: '\f058' !important;
   color: var(--color-light-green);
   font-family: "Font Awesome 5 Free";
 }

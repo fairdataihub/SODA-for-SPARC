@@ -295,15 +295,18 @@ var divList = [];
 
 function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
 
+  // $("#"+currentDiv).children().find('.folder-input-check')
+  // ($(ev).find('.folder-input-check')[0]).id
+
+  document.getElementById("nextBtn").disabled = true;
   // uncheck the other radio buttons
-  $(ev).siblings().find('.option-card.radio-button').removeClass('checked');
-  console.log($(ev))
+  $($(ev).parents()[0]).siblings().find('.option-card.radio-button').removeClass('checked');
+  // $("#"+currentDiv).children().find('.folder-input-check')).prop('checked', false);
+   $(ev).children().find('.folder-input-check').prop('checked', true);
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute('data-next'));
   hidePrevDivs(currentDiv, category);
-
-
 
   target.className = target.className + ' show';
 
@@ -353,15 +356,13 @@ function hidePrevDivs(currentDiv, category) {
 
       /// remove all checkmarks and previous data input
       $("#"+currentDiv).nextAll().find('.option-card.radio-button').removeClass('checked');
-      var childElements1 = $("#"+currentDiv).nextAll().find('.folder-input-check');
-      for (var child of childElements1) {
-        document.getElementById(child.id).checked = false;
-      }
+      $("#"+currentDiv).nextAll().find('.folder-input-check').prop('checked', false);
       var childElements2 = $("#"+currentDiv).nextAll().find('.form-control');
       for (var child of childElements2) {
         document.getElementById(child.id).value = "";
       };
       $("#"+currentDiv).nextAll().find('button').show();
+
       break
     }
   }

@@ -3,12 +3,13 @@
 .section {
   position: absolute;
   top: 0;
-  left: 235px;
+  left: 210px;
   right: 0;
   bottom: 0;
   max-height: 100%;
   margin-right: 0;
   padding: 0;
+  padding-top:15px;
   padding-right: 0;
   box-sizing: border-box;
   overflow-x: hidden;

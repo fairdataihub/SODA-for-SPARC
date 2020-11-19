@@ -1,6 +1,6 @@
 
 <template class="task-template">
-  <section id="curate-section" class="section js-section u-category-windows">
+  <section id="curate-section" class="section js-section u-category-windows" style="left:235px;">
 
   <head>
       <title>SODA - Keep calm and curate</title>
@@ -8,7 +8,7 @@
   </head>
 
 <main class="dash-content main show" id="curate_main" style="grid-template-columns: 1% 84% 15%">
-<h3 style="color: #222c3c;margin-bottom:0;margin-left:30px"><i class="fas fa-sitemap" style="margin-right:9px"></i>Curate</h3>
+<h3 style="color: #222c3c;margin-bottom:0;"><i class="fas fa-sitemap" style="margin-right:9px"></i>Curate</h3>
 <!-- These are the main tab for each step -->
   <div class="form-tabs tab-active" id="curate-tab">
     <h3 class='question-title'><br>
@@ -30,10 +30,10 @@
 </main>
 </section>
 
-<section id="organize-section" class="section js-section u-category-windows">
+<section id="organize-section" class="section js-section u-category-windows" style="left:235px;">
 
 <main class="dash-content" id="organize_main" style="flex-direction:column;justify-content:space-between">
-  <h3 style="color: #222c3c;margin-bottom:0;margin-left:30px"><i class="fab fa-airbnb" style="margin-right:10px"></i>Organize dataset</h3>
+  <h3 style="color: #222c3c;margin-bottom:0;"><i class="fab fa-airbnb" style="margin-right:10px"></i>Organize dataset</h3>
 
 <!-- These are the main tab for each step -->
 
@@ -181,7 +181,7 @@
         <div class="grouped fields">
           <label style="font-size:17px;color:var(--color-bg-plum);text-align:center;">Where is the dataset located?</label>
           <div class="field" style="margin:15px 0;">
-            <input class="form-control" style="width:400px !important" id="selected-new-dataset" type="text" readonly placeholder="Browse here">
+            <input class="form-control" style="width:450px !important" id="selected-new-dataset" type="text" readonly placeholder="Browse here">
           </div>
         </div>
           <br>
@@ -211,24 +211,24 @@
         <div class="grouped fields">
           <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">What is your Blackfynn account?</label>
           <div class="field" style="margin:5px 0;width:450px;">
-            <div style="display:flex;justify-content:flex-start">
-              <select id="bfuploadaccountlist" name="Blackfynn account" class='ui selection dropdown' style="width:400px !important;border-radius:7px;padding:8px">
+            <!-- <div style="display:flex;justify-content:flex-start"> -->
+              <select id="bfallaccountlist" name="Blackfynn account" class='ui selection dropdown' style="width:450px !important;border-radius:7px;padding:8px">
                 <option> Select </option>
               </select>
-              <button style="float:right;height:38px;cursor:pointer;border-radius: 8px;margin:0 10px; width: 40px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;border:1px solid var(--color-bg-plum)"><i class="fas fa-sign-out-alt"></i></button>
-            </div>
+            <!-- </div> -->
             <div>
-              <p id="para-account-details"></p>
-              <div id=div-bf-account-load-progress-curate class="progressdiv">
+              <p id="para-account-details-curate"></p>
+              <div id="div-bf-account-load-progress-curate" class="progressdiv">
                 <div class="indeterminatebar"></div>
               </div>
-              <p id='para-upload-select-account-status' style="margin-top:20px;text-align:left"> </p>
-              <p id="para-account-details"></p>
+              <p id='para-select-account-status-curate' style="margin-top:20px;text-align:left"> </p>
+              <p id="para-account-details-curate"></p>
             </div>
           </div>
         </div>
         <div style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
-          <button onclick="transitionSubQuestions(this, 'Question-getting-started-BF-account', 'getting-started-tab', 'delete', 'individual-question getting-started')"  data-next="Question-getting-started-BF-dataset" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm account</button>
+          <button onclick="transitionSubQuestions(this, 'Question-getting-started-BF-account', 'getting-started-tab', 'delete', 'individual-question getting-started')" style="float:right;border-radius: 8px;margin:0 10px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;width: 160px;border:1px solid var(--color-bg-plum)">Add account</button>
+          <button onclick="transitionSubQuestions(this, 'Question-getting-started-BF-account', 'getting-started-tab', 'delete', 'individual-question getting-started')"  data-next="Question-getting-started-BF-dataset" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 160px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm account</button>
         </div>
       </div>
     </div>
@@ -238,12 +238,12 @@
         <div class="grouped fields">
           <label style="font-size:17px;color:var(--color-bg-plum);">What is your Blackfynn dataset?</label>
           <div class="field" style="margin:15px 0;">
-            <select id="bfuploaddatasetlist" name="Blackfynn dataset" class="ui search dropdown" style="width:400px;border-radius:7px;padding:8px">
-              <option value=""> Loading... </option>
+            <select id="curatebfdatasetlist" name="Blackfynn dataset" class="ui search dropdown" style="width:450px;border-radius:7px;padding:8px">
+              <option value="" disabled> Loading... </option>
             </select>
           </div>
         </div>
-        <button onclick="transitionSubQuestions(this, 'Question-getting-started-BF-dataset', 'getting-started-tab', 'delete', 'individual-question getting-started')" data-next="Question-getting-started-final" style="margin:0 auto;display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm dataset</button>
+        <button onclick="transitionSubQuestions(this, 'Question-getting-started-BF-dataset', 'getting-started-tab', 'delete', 'individual-question getting-started')" data-next="Question-getting-started-final" style="margin:0 auto;display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px; width: 160px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm dataset</button>
       </div>
     </div>
 
@@ -356,9 +356,11 @@
     <div class="container-fluid" style="margin-top:40px;height:100%;border-radius:3px;">
       <div>
         <!-- <div> -->
-        <h5 style="cursor: pointer;float:left;font-size:15px;color:var(--tagify-dd-color-primary)">
+        <!-- <h5 style="cursor: pointer;float:left;font-size:15px;color:var(--tagify-dd-color-primary)">
           <a style="text-decoration:underline" id="globa-path-folder-1">My dataset </a><i class="fas fa-chevron-right" style="margin-left:5px;margin-right:5px;font-size:12px;"></i>
-        </h5>
+        </h5> -->
+        <button id="button-back" class="button-back" style="float:left;background-color: #fff;border-color:var(--color-bg-plum);color: var(--color-bg-plum);opacity: 0.8;height:30px;width:30px"><i class="fas fa-arrow-left fa-fw"></i></button>
+      <input style="float:left;border-radius: 3px;margin-left: 15px;height: 30px; box-shadow: 0 0 2px #999;border: 1px solid var(--color-bg-plum); font-family: sans-serif;font-size: 14px;font-weight:500;color:#999999;width: 300px" id="input-global-path" value="/" readonly></input>
 
           <div class="div-organize-dataset-menu">
             <button id="new-folder" style="float:right;margin-right:10px;background:var(--tagify-dd-color-primary);color:#fff;font-weight:600;border:none"><i class="fas fa-folder-plus"></i> New folder</button>
@@ -411,13 +413,6 @@
           </div>
           <button onclick="addDetailsForFile(this)" class="transition-btn" style="width:100px;margin:10px auto;height:30px;font-size:13px;padding:5px;">Confirm</button>
       </div>
-      <!-- <div class="div-display-details folders">
-        <button class="button-display-details">X</button>
-
-        <b>Local path: <br><p style="margin: 0 0;" id="para-local-path-folder"></p></b>
-        <b>Other details: <br><p style="margin: 0 0;" id="para-other-details-folder"></p></b>
-
-    </div> -->
 
     </div>
   </div>
@@ -468,10 +463,6 @@
 
       </div>
       </div>
-      <!-- <button class="button-generate-dataset">
-        <i class="fas fa-file-medical" style="font-size: 65px;color:var(--tagify-dd-color-primary)"></i>
-        <p style="margin-top:30px;font-family:'Raleway', sans-serif">manifest (.xlsx, .csv)</p>
-      </button> -->
 
     <!-- submission -->
     <div id="submissionUpload" class="div-individual-metadata">
@@ -599,14 +590,19 @@
       <h5 style="text-align:center;color:var(--color);font-size:17px"> Would you like SODA to <span style="color: var(--color-bg-plum)">auto-generate your manifest files</span>? </h5>
       <div style="height:150px;text-align:center;margin:100px">
       <!-- <h5 style="text-align:center;color:#585858">manifest (.xlsx, .csv)</h5> -->
-      <div style="margin-top:30px">
+      <div class="col-sm-5">
+        <button type="button" class="btn btn-lg btn-toggle" data-toggle="button" aria-pressed="false" autocomplete="off">
+          <div class="handle"></div>
+        </button>
+      </div>
+      <!-- <div style="margin-top:30px">
         <label class="switch">
           <input id="generate-manifest" name="manifest" type="checkbox" class="with-style-manifest" onclick="updateManifestLabelColor(this)"/>
           <span class="slider round"></span>
         </label>
         <label id="label-manifest" class="labelradio-manifest" style="padding-left:10px"> Include auto-generated manifest files
         </label>
-      </div>
+      </div> -->
       </div>
       <!-- <div style="margin-top:15px;display:flex;flex-direction:column">
         <button class="button-individual-metadata transition-btn" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;">Confirm</button>
@@ -668,7 +664,7 @@
           <div class="grouped fields">
             <label style="font-size:17px;color:var(--color-bg-plum);text-align:center;">At which location should we generate the dataset?</label>
             <div class="field" style="margin:15px 0;">
-              <input class="form-control" style="width:400px !important" id="selected-new-dataset" type="text" readonly placeholder="Browse here">
+              <input class="form-control" style="width:450px !important" id="selected-new-dataset" type="text" readonly placeholder="Browse here">
             </div>
           </div>
             <br>
@@ -687,7 +683,7 @@
               <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">What is your Blackfynn account?</label>
               <div class="field" style="margin:5px 0;width:450px;">
                 <div style="display:flex;justify-content:flex-start">
-                  <select id="bfuploadaccountlist" name="Blackfynn account" class='ui selection dropdown' style="width:400px !important;border-radius:7px;padding:8px">
+                  <select id="bfuploadaccountlist" name="Blackfynn account" class='ui selection dropdown' style="width:450px !important;border-radius:7px;padding:8px">
                     <option> Select </option>
                   </select>
                   <button style="float:right;height:38px;cursor:pointer;border-radius: 8px;margin:0 10px; width: 40px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;border:1px solid var(--color-bg-plum)"><i class="fas fa-sign-out-alt"></i></button>
@@ -713,7 +709,7 @@
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);">What is your Blackfynn dataset?</label>
               <div class="field" style="margin:15px 0;">
-                <select id="bfuploaddatasetlist" name="Blackfynn dataset" class="ui search dropdown" style="width:400px;border-radius:7px;padding:8px">
+                <select id="bfuploaddatasetlist" name="Blackfynn dataset" class="ui search dropdown" style="width:450px;border-radius:7px;padding:8px">
                   <option value=""> Loading... </option>
                 </select>
               </div>
@@ -770,9 +766,6 @@
 </section>
 
  <script>window.$ = window.jQuery = require('jquery')</script>
- <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
- <script src="../src/node_modules/bootbox/dist/bootbox.min.js"></script>
- <script src="../src/node_modules/fomantic-ui/dist/semantic.min.js"></script>
 
  <script src="../src/scripts/tab-effects.js"></script>
 
