@@ -12,7 +12,8 @@ dataset-strucuture: contains info about the dataset structure
 3. The files/folders in each folder are stored in a "files"/"folders" key, respectively.
 4. Each file/folder has a subkey "type" which is a string with value either "virtual" (only for folders, if created in SODA), "local", or "bf"
 5. Each non virtual file/folder has a subkey "path" with is a string with value being the absolute path (for local files) or blackfynn id 
-6. Each non virtual file/folder has a subkey "action" which is an array containing one or more of the following terms strings: "existing" (if it from an existing local or bf dataset) or new (if imported), renamed, moved (if an existing file/folder is moved)
+6. Each non virtual file/folder has a subkey "action" which is an array containing "existing" (if it from an existing local or bf dataset) or "new" (if imported).
+7. If "new", additional "action" could be "renamed". If "existing", addtional "action" could be "renamed", "moved" (if an existing file/folder is moved), and/or "deleted" (if delete is requested in the UI)
 7. If provided, a file with have the subkeys "description" and "additional-metadata" each contain a string value to be later included in the manifest files, if requested
 
 """
