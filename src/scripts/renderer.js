@@ -2693,6 +2693,146 @@ ipcRenderer.on('selected-savedvalidatorlocal', (event, filepath) => {
 // Manage Dataset
 //////////////////////////////////
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////// This is the part where similar functions are being modified for the new ///////////////
+//////////////////////////////////// Prepare dataset UI ////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/// Add all BF accounts to the dropdown list, and then choose by default one option ('global' account)
+const curateBFaccountList = document.getElementById('bfallaccountlist');
+const curateBFAccountLoad = document.getElementById("div-bf-account-load-progress-curate");
+const curateBFAccountLoadStatus = document.getElementById('para-select-account-status-curate');
+const curateBFAccountDetails = document.getElementById('para-account-details-curate');
+const curateDatasetDropdown = document.getElementById('curatebfdatasetlist');
+
+loadAllBFAccounts()
+
+curateBFaccountList.addEventListener('change', function() {
+  curateBFAccountLoadStatus.innerHTML = "Loading account details...";
+  curateBFAccountLoad.style.display = 'block';
+  // remove all datasets from current list
+  removeOptions(curateDatasetDropdown);
+  addOption(curateDatasetDropdown, "Loading", "Loading");
+
+  var selectedbfaccount = curateBFaccountList.options[curateBFaccountList.selectedIndex].text
+  if (selectedbfaccount == 'Select') {
+    curateBFAccountLoadStatus.innerHTML = "";
+    curateBFAccountLoad.style.display = 'none'
+  } else{
+    var myitemselect = selectedbfaccount
+    var option = document.createElement("option")
+    option.textContent = myitemselect
+    option.value = myitemselect
+    curateBFaccountList.value = selectedbfaccount
+    curateShowAccountDetails(curateBFaccountList)
+    curateBFAccountLoadStatus.innerHTML = ""
+    updateDatasetCurate(curateDatasetDropdown, curateBFaccountList)
+  }
+})
+
+function loadAllBFAccounts() {
+  bfSelectAccountStatus.innerHTML = "Loading existing accounts..."
+  bfAccountLoadProgress.style.display = 'block'
+  bfAccountLoadProgressCurate.style.display = 'block'
+  document.getElementById("para-filter-datasets-status").innerHTML = ""
+  updateAllBfAccountList(curateBFaccountList)
+}
+
+function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
+  client.invoke("api_bf_dataset_account", bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text, (error, result) => {
+      if (error) {
+        log.error(error)
+        console.log(error)
+        var emessage = error
+        curateBFAccountLoadStatus.innerHTML = "<span style='color: red'>" + emessage + "</span>"
+      } else {
+        // clear and populate dataset list
+          populateDatasetDropdownCurate(datasetDropdown, result)
+        }
+    })
+}
+
+//// De-populate dataset dropdowns to clear options for CURATE
+function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
+  removeOptions(datasetDropdown);
+
+  /// making the first option: "Select" disabled
+  addOption(datasetDropdown, "Select dataset", "Select dataset");
+  var options = datasetDropdown.getElementsByTagName("option");
+  options[0].disabled = true;
+
+  for (var myitem of datasetlist){
+    var myitemselect = myitem.name;
+    var option = document.createElement("option")
+    option.textContent = myitemselect
+    option.value = myitemselect
+    datasetDropdown.appendChild(option)
+  }
+}
+
+function updateAllBfAccountList(dropdown){
+  // datasetPermissionList.disabled = true
+  client.invoke("api_bf_account_list", (error, res) => {
+  if(error) {
+    log.error(error)
+    console.error(error)
+  } else {
+    removeOptions(dropdown)
+    for (myitem in res){
+      var myitemselect = res[myitem]
+      var option = document.createElement("option")
+      option.textContent = myitemselect
+      option.value = myitemselect
+      dropdown.appendChild(option)
+      curateBFAccountLoad.style.display = 'none'
+      curateBFAccountLoadStatus.innerHTML = ""
+      curateBFAccountLoad.style.display = 'none'
+    }
+    if (res[0] === "Select" && res.length === 1) {
+      curateBFAccountLoadStatus.innerHTML = "No existing accounts to load. Please add a new account!"
+    }
+    // refreshAllBfDatasetLists()
+    refreshBfUsersList()
+    refreshBfTeamsList(bfListTeams)
+
+    client.invoke("api_bf_default_account_load", (error, result) => {
+      if(error) {
+        log.error(error)
+        console.error(error)
+      } else {
+        if (result.length > 0) {
+          var myitemselect = result[0];
+          $('#bfallaccountlist option[value='+myitemselect+']').attr('selected','selected');
+          curateShowAccountDetails(curateBFaccountList)
+          curateBFAccountLoad.style.display = 'block'
+          updateDatasetCurate(curateDatasetDropdown, curateBFaccountList)
+        }
+      }
+    })
+  }
+})
+}
+
+function curateShowAccountDetails(dropdown){
+  /// load and get permission for account
+  client.invoke("api_bf_account_details", dropdown.options[dropdown.selectedIndex].value, (error, res) => {
+    if(error) {
+      log.error(error)
+      console.error(error)
+      curateBFAccountDetails.innerHTML = "<span style='color: red;'> " + error + "</span>"
+      curateBFAccountLoad.style.display = 'none'
+    } else {
+        curateBFAccountDetails.innerHTML = res;
+        curateBFAccountLoad.style.display = 'none'
+
+        }
+  })
+}
+
+///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
+
 
 // Add existing bf account(s) to dropdown list
 bfAccountCheckBtn.addEventListener('click', (event) => {
@@ -4147,7 +4287,7 @@ function selectOptionColor(mylist){
 }
 
 
-function showAccountDetails(bfLoadAccount){
+function showAccountDetails(loadProgress){
   /// load and get permission for account
   client.invoke("api_bf_account_details", bfAccountList.options[bfAccountList.selectedIndex].text, (error, res) => {
     if(error) {
@@ -4155,11 +4295,11 @@ function showAccountDetails(bfLoadAccount){
       console.error(error)
       bfSelectAccountStatus.innerHTML = "<span style='color: red;'> " + error + "</span>"
       bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
-      bfLoadAccount.style.display = 'none'
+      loadProgress.style.display = 'none'
     } else {
         bfSelectAccountStatus.innerHTML = res;
         bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
-        bfLoadAccount.style.display = 'none'
+        loadProgress.style.display = 'none'
         document.getElementById("div-permission-list").style.display = "block"
         document.getElementById("div-filter-datasets-progress").style.display = "block"
         document.getElementById("para-filter-datasets-status").innerHTML = "Loading datasets from your account ..."
@@ -4336,19 +4476,19 @@ datasetPermissionList.addEventListener("change", function(e) {
 
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
-function showUploadAccountDetails(bfLoadAccount){
-  client.invoke("api_bf_account_details",
-    bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text, (error, res) => {
-    if(error) {
-      log.error(error)
-      console.error(error)
-      bfLoadAccount.style.display = 'none'
-    } else {
-      bfUploadSelectAccountStatus.innerHTML = res["account-details"];
-      bfLoadAccount.style.display = 'none'
-    }
-  })
-}
+// function showUploadAccountDetails(loadProgress){
+//   client.invoke("api_bf_account_details",
+//     bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text, (error, res) => {
+//     if(error) {
+//       log.error(error)
+//       console.error(error)
+//       loadProgress.style.display = 'none'
+//     } else {
+//       bfUploadSelectAccountStatus.innerHTML = res["account-details"];
+//       loadProgress.style.display = 'none'
+//     }
+//   })
+// }
 
 function loadDefaultAccount() {
   client.invoke("api_bf_default_account_load", (error, res) => {
@@ -5071,32 +5211,32 @@ var sodaJSONObj = {
 }
 
 /// back button
-// organizeDSbackButton.addEventListener("click", function() {
-//   var currentPath = organizeDSglobalPath.value.trim()
-//   if (currentPath !== "/") {
-//     var filtered = getGlobalPath(organizeDSglobalPath)
-//     if (filtered.length === 1) {
-//       organizeDSglobalPath.value = "/"
-//     } else {
-//       organizeDSglobalPath.value = "/" + filtered.slice(0,filtered.length-1).join("/") + "/"
-//     }
-//     var myPath = datasetStructureJSONObj;
-//     for (var item of filtered.slice(0,filtered.length-1)) {
-//       myPath = myPath["folders"][item]
-//     }
-//     // construct UI with files and folders
-//     var appendString = loadFileFolder(myPath)
-//
-//     /// empty the div
-//     $('#items').empty()
-//     $('#items').html(appendString)
-//
-//     // reconstruct div with new elements
-//     listItems(myPath, '#items')
-//     getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-//
-//   }
-// })
+organizeDSbackButton.addEventListener("click", function() {
+  var currentPath = organizeDSglobalPath.value.trim()
+  if (currentPath !== "/") {
+    var filtered = getGlobalPath(organizeDSglobalPath)
+    if (filtered.length === 1) {
+      organizeDSglobalPath.value = "/"
+    } else {
+      organizeDSglobalPath.value = "/" + filtered.slice(0,filtered.length-1).join("/") + "/"
+    }
+    var myPath = datasetStructureJSONObj;
+    for (var item of filtered.slice(0,filtered.length-1)) {
+      myPath = myPath["folders"][item]
+    }
+    // construct UI with files and folders
+    var appendString = loadFileFolder(myPath)
+
+    /// empty the div
+    $('#items').empty()
+    $('#items').html(appendString)
+
+    // reconstruct div with new elements
+    listItems(myPath, '#items')
+    getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+
+  }
+})
 
 // Add folder button
 organizeDSaddNewFolder.addEventListener("click", function(event) {
