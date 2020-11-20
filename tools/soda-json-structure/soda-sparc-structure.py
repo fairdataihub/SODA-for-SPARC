@@ -14,7 +14,7 @@ dataset-strucuture: contains info about the dataset structure
 5. Each non virtual file/folder has a subkey "path" with is a string with value being the absolute path (for local files) or blackfynn id 
 6. Each non virtual file/folder has a subkey "action" which is an array containing "existing" (if it from an existing local or bf dataset) or "new" (if imported).
 7. If "new", additional "action" could be "renamed". If "existing", addtional "action" could be "renamed", "moved" (if an existing file/folder is moved), and/or "deleted" (if delete is requested in the UI)
-7. If provided, a file with have the subkeys "description" and "additional-metadata" each contain a string value to be later included in the manifest files, if requested
+8. If provided, a file with have the subkeys "description" and "additional-metadata" each contain a string value to be later included in the manifest files, if requested
 
 """
 
@@ -23,10 +23,10 @@ metadata-files: contains info about the high-level metadata files
 
 1. Each major key is the name of the metadata file specified by the user (including the extension)
 2. Each file has a subkey "type" with is a string value either "local" (imported file) or "soda-form" (generated through SODA)
-3. Each file has a subkey "action" which is a string with value either "new" or "existing" (if the metadata file is already in the existing local or Blackfynn dataset)
+3. Each file has a subkey "action" which is a string with value either "new" (if imported or created with the SODA form) or "existing" (if the metadata file is already in the existing local or Blackfynn dataset)
 4. If "type" is local, a "path" subkey must be included which include the absolute path of the file
-4. Each file has a subkey "destination" which is a string with value either "generate-dataset" (meaning it is part of the curate process and destination info is available in the "generate-dataset" main key), "local" (generate the file locally), or "bf" (generate the dataset on bf, look for the bf account and dataset keys for info)
-5. If "destination" is "local", a "destination-path" subkey must be included which includes the path of the folder where the file should be created
+5. Each file has a subkey "destination" which is a string with value either "generate-dataset" (meaning it is part of the curate process and destination info is available in the "generate-dataset" main key), "local" (generate the file locally), or "bf" (generate the dataset on bf, look for the bf account and dataset keys for info)
+6. If "destination" is "local", a "destination-path" subkey must be included which includes the path of the folder where the file should be created
 
 """
 
