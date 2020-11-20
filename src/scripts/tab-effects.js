@@ -327,9 +327,9 @@ function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
   if (button==='delete') {
     if ($(ev).siblings().length>0) {
-      $(ev).hide();
       $(ev).siblings().hide()
     }
+    $(ev).hide();
   }
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;

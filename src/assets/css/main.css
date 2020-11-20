@@ -255,6 +255,7 @@ button[disabled]{
     text-align: center;
     width: 120px;
     height: 100px;
+    position: relative !important;
     margin-right: 5px;
     margin-top: 5px;
     padding: 10px 0px 10px 0px;
