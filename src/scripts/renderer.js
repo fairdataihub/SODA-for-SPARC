@@ -5913,6 +5913,32 @@ function listItems(jsonObj, uiItem) {
     $(uiItem).html(appendString)
 }
 
+function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
+  $(singleUIItem).dblclick(function(){
+    if($(this).children("h1").hasClass("myFol")) {
+      var folderName = this.innerText
+      var appendString = ''
+      currentLocation.value = currentLocation.value + folderName + "/"
+
+      var currentPath = currentLocation.value
+      var jsonPathArray = currentPath.split("/")
+      var filtered = jsonPathArray.slice(1).filter(function (el) {
+        return el.trim() != "";
+      });
+      var myPath = getRecursivePath(filtered, globalObj)
+      var appendString = loadFileFolder(myPath)
+
+      $(uiItem).empty()
+      $(uiItem).html(appendString)
+
+      // reconstruct folders and files (child elements after emptying the Div)
+      listItems(myPath, uiItem)
+      getInFolder(singleUIItem, uiItem, currentLocation, globalObj)
+    }
+  })
+}
+
+
 
 function sliceStringByValue(string, endingValue) {
   var newString = string.slice(string.indexOf(endingValue) + 1)

@@ -488,6 +488,7 @@
   justify-content: flex-start;
   border: 1px dashed #258193;
   padding: 20px;
+  padding-top:15px;
   width:200px;
   height: 220px;
   border-radius: 5px;

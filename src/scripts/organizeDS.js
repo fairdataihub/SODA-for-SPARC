@@ -298,30 +298,6 @@ function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, u
   }
 }
 
-function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
-  $(singleUIItem).dblclick(function(){
-    if($(this).children("h1").hasClass("myFol")) {
-      var folderName = this.innerText
-      var appendString = ''
-      currentLocation.value = currentLocation.value + folderName + "/"
-
-      var currentPath = currentLocation.value
-      var jsonPathArray = currentPath.split("/")
-      var filtered = jsonPathArray.slice(1).filter(function (el) {
-        return el.trim() != "";
-      });
-      var myPath = getRecursivePath(filtered, globalObj)
-      var appendString = loadFileFolder(myPath)
-
-      $(uiItem).empty()
-      $(uiItem).html(appendString)
-
-      // reconstruct folders and files (child elements after emptying the Div)
-      listItems(myPath, uiItem)
-      getInFolder(singleUIItem, uiItem, currentLocation, globalObj)
-    }
-  })
-}
 
 ////// function to trigger action for each context menu option
 function hideMenu(category, menu1, menu2, menu3){
