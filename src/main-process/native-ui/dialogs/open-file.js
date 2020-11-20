@@ -10,6 +10,27 @@ ipcMain.on('open-file-dialog-dataset', (event) => {
   })
 })
 
+
+ipcMain.on('open-file-dialog-newdataset-curate', (event) => {
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ['openDirectory']
+  }, (files) => {
+    if (files) {
+      event.sender.send('selected-new-datasetCurate', files);
+    }
+  })
+})
+
+ipcMain.on('open-file-dialog-local-destination-curate', (event) => {
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ['openDirectory']
+  }, (files) => {
+    if (files) {
+      event.sender.send('selected-local-destination-datasetCurate', files);
+    }
+  })
+})
+
 ///// SPARC folders
 
 //code
@@ -163,6 +184,17 @@ ipcMain.on('open-file-dialog-metadata', (event) => {
   }, (files) => {
     if (files) {
       event.sender.send('selected-metadata', files)
+    }
+  })
+})
+
+
+ipcMain.on('open-file-dialog-metadata-curate', (event) => {
+  dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ['openFile'],
+  }, (files) => {
+    if (files) {
+      event.sender.send('selected-metadataCurate', files)
     }
   })
 })

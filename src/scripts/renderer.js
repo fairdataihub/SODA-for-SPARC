@@ -5196,32 +5196,31 @@ var sodaJSONObj = {
     "bf-dataset-selected": {
         "dataset-name": "",
     },
-    "dataset-structure": {},
+    "dataset-structure": {"folders": {}, "files": {}},
     "metadata-files": {},
-    "manifest-files": {
-      "destination": "",
-      "existing": ""
-    },
     "generate-dataset": {
         "destination": "",
         "path": "",
         "dataset-name": "",
-        "duplicate-handling": "",
+        "if-existing": "",
     }
 }
 
+
 /// back button
 organizeDSbackButton.addEventListener("click", function() {
-  var currentPath = organizeDSglobalPath.value.trim()
-  if (currentPath !== "/") {
+  // var currentPath = organizeDSglobalPath.value.trim()
+  // if (currentPath !== "/") {
+  var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+  if (slashCount !== 1) {
     var filtered = getGlobalPath(organizeDSglobalPath)
     if (filtered.length === 1) {
-      organizeDSglobalPath.value = "/"
+      organizeDSglobalPath.value = filtered[0] + "/"
     } else {
-      organizeDSglobalPath.value = "/" + filtered.slice(0,filtered.length-1).join("/") + "/"
+      organizeDSglobalPath.value = filtered.slice(0,filtered.length-1).join("/") + "/"
     }
     var myPath = datasetStructureJSONObj;
-    for (var item of filtered.slice(0,filtered.length-1)) {
+    for (var item of filtered.slice(1,filtered.length-1)) {
       myPath = myPath["folders"][item]
     }
     // construct UI with files and folders
@@ -5234,14 +5233,14 @@ organizeDSbackButton.addEventListener("click", function() {
     // reconstruct div with new elements
     listItems(myPath, '#items')
     getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-
   }
 })
 
 // Add folder button
 organizeDSaddNewFolder.addEventListener("click", function(event) {
   event.preventDefault();
-  if(organizeDSglobalPath.value.trim()!=="/") {
+  var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+  if(slashCount !== 1) {
     var newFolderName = "New Folder"
     // show prompt for name
     bootbox.prompt({
@@ -5273,7 +5272,7 @@ organizeDSaddNewFolder.addEventListener("click", function(event) {
             /// update datasetStructureJSONObj
             var currentPath = organizeDSglobalPath.value
             var jsonPathArray = currentPath.split("/")
-            var filtered = jsonPathArray.filter(function (el) {
+            var filtered = jsonPathArray.slice(1).filter(function (el) {
               return el != "";
             });
 
@@ -5306,10 +5305,10 @@ function populateJSONObjFolder(jsonObject, folderPath) {
       var statsObj = fs.statSync(path.join(folderPath, element))
       var addedElement = path.join(folderPath, element)
       if (statsObj.isDirectory()) {
-        jsonObject["folders"][element] = {"type": "", "folders": {}, "files": {}}
+        jsonObject["folders"][element] = {"type": "local", "folders": {}, "files": {}, "action":["new"]}
         populateJSONObjFolder(jsonObject["folders"][element], addedElement)
       } else if (statsObj.isFile()) {
-          jsonObject["files"][element] = {"path": addedElement, "description": "", "additional-metadata":""}
+          jsonObject["files"][element] = {"path": addedElement, "description": "", "additional-metadata":"", "type": "local", "action":["new"]}
         }
     });
 }
@@ -5367,7 +5366,7 @@ function showDetailsFile() {
 
 function showBFAddAccountBootbox() {
   bootbox.confirm({
-    title: "Adding Blackfynn account",
+    title: "Adding Blackfynn account<br><span style='font-size:12px'>Please enter your Blackfynn API key and name below:</span>",
     message: "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='password' /></div></div></form>",
     buttons: {
         cancel: {
@@ -5553,7 +5552,7 @@ organizeDSaddFiles.addEventListener("click", function() {
  })
  ipcRenderer.on('selected-files-organize-datasets', (event, path) => {
    var filtered = getGlobalPath(organizeDSglobalPath)
-   var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
+   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
    addFilesfunction(path, myPath, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
  })
 
@@ -5562,14 +5561,14 @@ organizeDSaddFolders.addEventListener("click", function() {
 })
 ipcRenderer.on('selected-folders-organize-datasets', (event, path) => {
   var filtered = getGlobalPath(organizeDSglobalPath)
-  var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
+  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
   addFoldersfunction(path, myPath)
 })
 
 function addFoldersfunction(folderArray, currentLocation) {
 
-  if (organizeDSglobalPath.value === "/") {
-
+  var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+  if (slashCount === 1) {
     bootbox.alert({
       message: "Other non-SPARC folders cannot be added to this dataset level!",
       centerVertical: true
@@ -5592,7 +5591,7 @@ function addFoldersfunction(folderArray, currentLocation) {
           centerVertical: true
         })
       } else {
-        currentLocation["folders"][baseName] = {"type": "", "folders": {}, "files": {}}
+        currentLocation["folders"][baseName] = {"type": "local", "folders": {}, "files": {}, "action": ["new"]}
         populateJSONObjFolder(currentLocation["folders"][baseName], folderArray[i])
         var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+baseName+'</div></div>'
 
@@ -5618,7 +5617,7 @@ function drop(ev) {
   // get global path
   var currentPath = organizeDSglobalPath.value
   var jsonPathArray = currentPath.split("/")
-  var filtered = jsonPathArray.filter(function (el) {
+  var filtered = jsonPathArray.slice(1).filter(function (el) {
     return el != "";
   });
   var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
@@ -5642,7 +5641,8 @@ function drop(ev) {
 
     /// check for File duplicate
     if (statsObj.isFile()) {
-      if (organizeDSglobalPath.value === "/") {
+      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+      if (slashCount === 1) {
         if (duplicate) {
           bootbox.alert({
             message: "Duplicate file name: " + itemName,
@@ -5656,7 +5656,7 @@ function drop(ev) {
                 centerVertical: true
               })
             } else {
-              myPath["files"][itemName] = {"path": itemPath, "description": "","additional-metadata": ""}
+              myPath["files"][itemName] = {"path": itemPath, "description": "","additional-metadata": "", "type": "local", "action":["new"]}
               var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
               $(appendString).appendTo(ev.target);
               listItems(myPath, '#items')
@@ -5673,7 +5673,7 @@ function drop(ev) {
           })
           break
         } else {
-          myPath["files"][itemName] = {"path": itemPath, "description":"","additional-metadata":""}
+          myPath["files"][itemName] = {"path": itemPath, "description":"","additional-metadata":"", "type": "local", "action":["new"]}
           var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
           $(appendString).appendTo(ev.target);
           listItems(myPath, '#items')
@@ -5684,7 +5684,8 @@ function drop(ev) {
       }
     } else if (statsObj.isDirectory()) {
       /// drop a folder
-      if (organizeDSglobalPath.value === "/") {
+      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+      if (slashCount === 1) {
         bootbox.alert({
           message: "Other non-SPARC folders cannot be added to this dataset level!",
           centerVertical: true
@@ -5698,12 +5699,12 @@ function drop(ev) {
         } else {
           var currentPath = organizeDSglobalPath.value
           var jsonPathArray = currentPath.split("/")
-          var filtered = jsonPathArray.filter(function (el) {
+          var filtered = jsonPathArray.slice(1).filter(function (el) {
             return el != "";
           });
 
           var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
-          var folderJsonObject = {"folders": {}, "files": {}, "type":""};
+          var folderJsonObject = {"folders": {}, "files": {}, "type":"local", "action":["new"]};
           populateJSONObjFolder(folderJsonObject, itemPath)
           myPath["folders"][itemName] = folderJsonObject
           var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
@@ -5857,13 +5858,74 @@ $(document).bind("click", function (event) {
       }
 })
 
+// sort JSON objects by keys alphabetically (folder by folder, file by file)
+function sortObjByKeys(object) {
+  const orderedFolders = {};
+  const orderedFiles = {};
+  /// sort the files in objects
+  if (object.hasOwnProperty("files")) {
+    Object.keys(object["files"]).sort().forEach(function(key) {
+      orderedFiles[key] = object["files"][key]
+    });
+  }
+  if (object.hasOwnProperty("folders")) {
+    Object.keys(object["folders"]).sort().forEach(function(key) {
+      orderedFolders[key] = object["folders"][key]
+    });
+  }
+  const orderedObject = {
+    "folders": orderedFolders,
+    "files": orderedFiles,
+    "type": ""
+  }
+  return orderedObject
+}
+
+function listItems(jsonObj, uiItem) {
+    var appendString = ''
+    var sortedObj = sortObjByKeys(jsonObj)
+    for (var item in sortedObj["folders"]) {
+      var emptyFolder = "";
+      if (! highLevelFolders.includes(item)) {
+        if (
+          JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
+          JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
+        ) {
+          emptyFolder = " empty";
+        }
+      }
+      appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
+    }
+    for (var item in sortedObj["files"]) {
+      // not the auto-generated manifest
+      if (sortedObj["files"][item].length !== 1) {
+        var extension = sliceStringByValue(sortedObj["files"][item]["path"],  ".")
+        if (!["docx", "doc", "pdf", "txt", "jpg", "JPG", "xlsx", "xls", "csv", "png", "PNG"].includes(extension)) {
+          extension = "other"
+        }
+      } else {
+        extension = "other"
+      }
+      appendString = appendString + '<div class="single-item"><h1 class="myFile '+extension+'" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">'+item+'</div></div>'
+    }
+
+    $(uiItem).empty()
+    $(uiItem).html(appendString)
+}
+
+
+function sliceStringByValue(string, endingValue) {
+  var newString = string.slice(string.indexOf(endingValue) + 1)
+  return newString
+}
+
 var fileNameForEdit;
 ///// Option to manage description for files
 function manageDesc(ev) {
   var fileName = ev.parentElement.innerText
   /// get current location of files in JSON object
   var filtered = getGlobalPath(organizeDSglobalPath)
-  var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
+  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
   //// load existing metadata/description
   loadDetailsContextMenu(fileName, myPath, 'textarea-file-description', 'textarea-file-metadata', 'para-local-path-file')
   showDetailsFile()
@@ -5875,9 +5937,88 @@ function manageDesc(ev) {
 function addDetailsForFile(ev) {
   var fileName = fileNameForEdit;
   var filtered = getGlobalPath(organizeDSglobalPath);
-  var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
+  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
   triggerManageDetailsPrompts(ev, fileName, myPath, 'textarea-file-description', 'textarea-file-metadata')
   /// list Items again with new updated JSON structure
   listItems(myPath, '#items')
   getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
 }
+
+// document.getElementById('button-sub').addEventListener('click', (event) => {
+//     ipcRenderer.send('open-file-dialog-metadata-curate');
+// })
+// ipcRenderer.on('selected-metadataCurate', (event, path) => {
+//   console.log(path)
+// })
+
+//// Select to choose a local dataset
+document.getElementById("location-new-dataset").addEventListener("click", function() {
+  document.getElementById("location-new-dataset").placeholder = "Browse here"
+  ipcRenderer.send('open-file-dialog-newdataset-curate');
+})
+
+ipcRenderer.on('selected-new-datasetCurate', (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null){
+      document.getElementById("location-new-dataset").placeholder = filepath[0];
+      document.getElementById("div-confirm-location-new-dataset").style.display = "flex";
+    }
+  }
+})
+
+document.getElementById('inputNewNameDataset').addEventListener('keydown', function() {
+  document.getElementById('div-confirm-inputNewNameDataset').style.display = "flex"
+})
+
+//// Select to choose a local dataset
+document.getElementById("input-destination-generate-dataset-locally").addEventListener("click", function() {
+  document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here"
+  ipcRenderer.send('open-file-dialog-local-destination-curate');
+})
+
+ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null){
+      document.getElementById("input-destination-generate-dataset-locally").placeholder = filepath[0];
+      document.getElementById("div-confirm-destination-locally").style.display = "flex";
+    }
+  }
+})
+
+const progressBarNewCurate = document.getElementById('progress-bar-new-curate');
+
+document.getElementById('button-generate').addEventListener('click', function() {
+
+  // updateJSON structure after Generate dataset tab
+  updateJSONStructureGenerate();
+  $($($(this).parent()[0]).parents()[0]).removeClass('tab-active');
+  document.getElementById('prevBtn').style.display = "none";
+  document.getElementById('generate-dataset-progress-tab').style.display = "flex";
+
+  //  from here you can modify
+  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait..."
+  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = ""
+
+  progressBarNewCurate.value = 0;
+
+  // Initiate curation by calling Python funtion
+  // document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ..."
+  // client.invoke("api_generate_dataset", sodaJSONObj,
+  //   (error, res) => {
+  //   if (error) {
+  //     document.getElementById("para-please-wait-new-curate").innerHTML = ""
+  //     var emessage = userError(error)
+  //     document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
+  //     document.getElementById("para-new-curate-progress-bar-status").innerHTML = ""
+  //     document.getElementById("para-please-wait-new-curate").innerHTML = "";
+  //     document.getElementById('div-new-curate-progress').style.display = "none";
+  //     progressBarNewCurate.value = 0;
+  //     log.error(error)
+  //     console.error(error)
+  //   } else {
+  //     document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
+  //     log.info('Completed curate function')
+  //     console.log('Completed curate function')
+  //   }
+  // })
+})

@@ -30,7 +30,7 @@
 </main>
 </section>
 
-<section id="organize-section" class="section js-section u-category-windows" style="left:235px;">
+<section id="organize-section" class="section js-section u-category-windows" style="padding-left:15px">
 
 <main class="dash-content" id="organize_main" style="flex-direction:column;justify-content:space-between">
   <h3 style="color: #222c3c;margin-bottom:0;"><i class="fab fa-airbnb" style="margin-right:10px"></i>Organize dataset</h3>
@@ -161,7 +161,7 @@
             <div class="option-card radio-button" data-next="Question-getting-started-BF-account" onclick="transitionSubQuestions(this, 'Question-getting-started-existing-dataset', 'getting-started-tab', '', 'individual-question getting-started')">
                 <div class="card-head">
                   <div class="folder-checkbox">
-                    <input class="folder-input-check" id="curate-new-dataset" name="getting-started-2" type="radio">
+                    <input class="folder-input-check" id="existing-BF" name="getting-started-2" type="radio">
                     <label for="curate-new-dataset"></label>
                   </div>
                 </div>
@@ -181,11 +181,11 @@
         <div class="grouped fields">
           <label style="font-size:17px;color:var(--color-bg-plum);text-align:center;">Where is the dataset located?</label>
           <div class="field" style="margin:15px 0;">
-            <input class="form-control" style="width:450px !important" id="selected-new-dataset" type="text" readonly placeholder="Browse here">
+            <input class="form-control" style="width:450px !important" id="location-new-dataset" type="text" readonly placeholder="Browse here">
           </div>
         </div>
           <br>
-          <div style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
+          <div id="div-confirm-location-new-dataset" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
             <button class="transition-btn" onclick="transitionSubQuestions(this, 'Question-getting-started-locally-destination', 'getting-started-tab', 'delete', 'individual-question getting-started')" data-next="Question-getting-started-final" style="display:flex;flex-direction:row;justify-content:center;width: 100px;height:40px;">Confirm</button>
           </div>
         </div>
@@ -200,23 +200,23 @@
           </div>
         </div>
         <br>
-        <div style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
+        <div id="div-confirm-inputNewNameDataset" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
           <button onclick="transitionSubQuestions(this, 'Question-getting-started-choose-ds-name', 'getting-started-tab', 'delete', 'individual-question getting-started')" data-next="Question-getting-started-final" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm</button>
         </div>
       </div>
     </div>
-
+<!--
     <div class="individual-question getting-started" id="Question-getting-started-BF-account">
       <div class="ui form" style="width:100%">
         <div class="grouped fields">
           <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">What is your Blackfynn account?</label>
           <div class="field" style="margin:5px 0;width:450px;">
             <!-- <div style="display:flex;justify-content:flex-start"> -->
-              <select id="bfallaccountlist" name="Blackfynn account" class='ui selection dropdown' style="width:450px !important;border-radius:7px;padding:8px">
+              <!-- <select id="bfallaccountlist" name="Blackfynn account" class='ui selection dropdown' style="width:450px !important;border-radius:7px;padding:8px">
                 <option> Select </option>
-              </select>
+              </select> -->
             <!-- </div> -->
-            <div>
+            <!-- <div>
               <p id="para-account-details-curate"></p>
               <div id="div-bf-account-load-progress-curate" class="progressdiv">
                 <div class="indeterminatebar"></div>
@@ -230,10 +230,10 @@
           <button onclick="showBFAddAccountBootbox()" style="float:right;border-radius: 8px;margin:0 10px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;width: 160px;border:1px solid var(--color-bg-plum)">Add account</button>
           <button onclick="transitionSubQuestions(this, 'Question-getting-started-BF-account', 'getting-started-tab', 'delete', 'individual-question getting-started')"  data-next="Question-getting-started-BF-dataset" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 160px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm account</button>
         </div>
-      </div>
-    </div>
+      </div> -->
+    <!-- </div>  -->
 
-    <div class="individual-question getting-started" id="Question-getting-started-BF-dataset">
+    <!-- <div class="individual-question getting-started" id="Question-getting-started-BF-dataset">
       <div class="ui form" style="width:100%">
         <div class="grouped fields">
           <label style="font-size:17px;color:var(--color-bg-plum);">What is your Blackfynn dataset?</label>
@@ -245,7 +245,7 @@
         </div>
         <button onclick="transitionSubQuestions(this, 'Question-getting-started-BF-dataset', 'getting-started-tab', 'delete', 'individual-question getting-started')" data-next="Question-getting-started-final" style="margin:0 auto;display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px; width: 160px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm dataset</button>
       </div>
-    </div>
+    </div> -->
 
     <div class="individual-question getting-started" id="Question-getting-started-final" style="margin-top:25px;justify-content:flex-start">
       <h3 class="question-title" style="text-align:center">Cool! Let's continue below. <img class="message-icon" src="assets/img/can-smiley.png"></h3>
@@ -353,7 +353,7 @@
 
     <div style="border-top:1px solid #f0f0f0;padding: 0 0;margin:3px 3px;margin-left:60px;display:flex;flex-direction:row;justify-content:space-between">
     <div style="width:100%;display:flex;flex-direction:row">
-    <div class="container-fluid" style="margin-top:40px;height:100%;border-radius:3px;">
+    <div class="container-fluid" style="margin-top:40px;height:auto;border-radius:3px;">
       <div>
         <!-- <div> -->
         <!-- <h5 style="cursor: pointer;float:left;font-size:15px;color:var(--tagify-dd-color-primary)">
@@ -431,7 +431,7 @@
         <span style="color: #696969;font-size:13px">Click below to add desired files.</span>
       </h3>
       <div style="margin-bottom:15px;">
-      <button class="metadata-button button-generate-dataset done" data-next="submissionUpload">
+      <button class="metadata-button button-generate-dataset" data-next="submissionUpload">
         <i class="fas fa-file-medical" style="font-size: 65px;color:var(--tagify-dd-color-primary)"></i>
         <p style="margin-top:30px;font-family:'Raleway', sans-serif">submission</p>
       </button>
@@ -474,10 +474,10 @@
         <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
         <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
           file here OR</p>
-          <button class="div-file-import-button">Choose file</button>
+          <button id="button-sub" class="div-file-import-button">Choose file</button>
         </div>
       </div>
-      <p style="margin-top:15px;font-weight:600"" id="para-submission-file-path"></p>
+      <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-submission-file-path"></p>
       <div style="margin-top:15px;display:flex;flex-direction:column">
         <button class="button-individual-metadata transition-btn" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;">Confirm</button>
         <button class="button-individual-metadata cancel transition-btn" style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)">Cancel</button>
@@ -497,7 +497,7 @@
           <button class="div-file-import-button">Choose file</button>
         </div>
       </div>
-      <p style="margin-top:15px;font-weight:600"" id="para-ds-description-file-path"></p>
+      <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-ds-description-file-path"></p>
       <div style="margin-top:15px;display:flex;flex-direction:column">
         <button class="button-individual-metadata transition-btn" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;">Confirm</button>
         <button class="button-individual-metadata cancel transition-btn" style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)">Cancel</button>
@@ -517,7 +517,7 @@
           <button class="div-file-import-button">Choose file</button>
         </div>
       </div>
-      <p style="margin-top:15px;font-weight:600" id="para-subjects-file-path"></p>
+      <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-subjects-file-path"></p>
       <div style="margin-top:15px;display:flex;flex-direction:column">
         <button class="button-individual-metadata transition-btn" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;">Confirm</button>
         <button class="button-individual-metadata cancel transition-btn" style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)">Cancel</button>
@@ -538,7 +538,7 @@
           <button class="div-file-import-button">Choose file</button>
         </div>
       </div>
-      <p style="margin-top:15px;font-weight:600"" id="para-samples-file-path"></p>
+      <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-samples-file-path"></p>
       <div style="margin-top:15px;display:flex;flex-direction:column">
         <button class="button-individual-metadata transition-btn" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;">Confirm</button>
         <button class="button-individual-metadata cancel transition-btn" style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)">Cancel</button>
@@ -559,7 +559,7 @@
           <button class="div-file-import-button">Choose file</button>
         </div>
       </div>
-      <p style="margin-top:15px;font-weight:600"" id="para-changes-file-path"></p>
+      <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-changes-file-path"></p>
       <div style="margin-top:15px;display:flex;flex-direction:column">
         <button class="button-individual-metadata transition-btn" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;">Confirm</button>
         <button class="button-individual-metadata cancel transition-btn" style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)">Cancel</button>
@@ -580,7 +580,7 @@
           <button class="div-file-import-button">Choose file</button>
         </div>
       </div>
-      <p style="margin-top:15px;font-weight:600" id="para-readme-file-path"></p>
+      <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-readme-file-path"></p>
       <div style="margin-top:15px;display:flex;flex-direction:column">
         <button class="button-individual-metadata transition-btn" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;">Confirm</button>
         <button class="button-individual-metadata cancel transition-btn" style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)">Cancel</button>
@@ -623,17 +623,32 @@
   <div class="parent-tabs" id="generate-dataset-tab" style="overflow-y:scroll;">
       <h3 class="question-title" style="color: var(--color-bg-plum);font-weight:600;font-size:15px;text-align:center;margin-bottom:70px">Step 6: Generate dataset<br><br>
         </h3>
-        <div class="individual-question generate-dataset show" id="Question-generate-dataset">
+        <div class="individual-question generate-dataset" id="Question-generate-dataset">
             <div class="ui form" style="width:100%">
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Where would you like to generate your dataset?
               <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
               <div style="display:flex;flex-direction:row;">
+
+                <div style="margin:15px 0;display:none" id="div-modify-current-local-dataset">
+                  <div class="option-card radio-button" data-next="Question-generate-dataset-modify-current-ds" onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
+                      <div class="card-head">
+                        <div class="folder-checkbox">
+                          <input class="folder-input-check" name="generate-1" id="generate-modify-local" type="radio">
+                          <label for="generate-locally"></label>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <i class="far fa-folder" style="color: var(--color-light-green)"></i>
+                        <h2>Modify current local dataset</h2>
+                      </div>
+                    </div>
+                  </div>
                 <div style="margin:15px 0;">
                   <div class="option-card radio-button" data-next="Question-generate-dataset-locally-destination" onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
                       <div class="card-head">
                         <div class="folder-checkbox">
-                          <input class="folder-input-check" name="generate" id="generate-locally" type="radio">
+                          <input class="folder-input-check" name="generate-1" id="generate-local-desktop" type="radio">
                           <label for="generate-locally"></label>
                         </div>
                       </div>
@@ -649,7 +664,7 @@
                 <div class="option-card radio-button" data-next="Question-generate-dataset-BF-account" onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
                     <div class="card-head">
                       <div class="folder-checkbox">
-                        <input class="folder-input-check" id="generate-upload-BF" name="generate" type="radio">
+                        <input class="folder-input-check" id="generate-upload-BF" name="generate-1" type="radio">
                         <label for="generate-upload-BF"></label>
                       </div>
                     </div>
@@ -658,91 +673,112 @@
                       <h2>Generate directly on Blackfynn</h2>
                     </div>
                 </div>
-
               </div>
-              </div>
-
-        </div>
-        </div>
-      </div>
-
-      <!-- Generate locally -->
-      <div class="individual-question generate-dataset" id="Question-generate-dataset-locally-destination">
-        <div class="ui form" style="width:450px">
-          <div class="grouped fields">
-            <label style="font-size:17px;color:var(--color-bg-plum);text-align:center;">At which location should we generate the dataset?</label>
-            <div class="field" style="margin:15px 0;">
-              <input class="form-control" style="width:450px !important" id="selected-new-dataset" type="text" readonly placeholder="Browse here">
             </div>
-          </div>
-            <br>
-            <div style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
-              <button class="transition-btn" onclick="transitionSubQuestions(this, 'Question-generate-dataset-locally-destination', 'generate-dataset-tab', 'delete', 'generate-dataset')" data-next="Question-generate-dataset-button" style="display:flex;flex-direction:row;justify-content:center;width: 100px;height:40px;">Confirm</button>
-            </div>
-          </div>
-        </div>
-
-
-
-        <!-- Generate BF -->
         <div class="individual-question generate-dataset" id="Question-generate-dataset-BF-account">
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">What is your Blackfynn account?</label>
               <div class="field" style="margin:5px 0;width:450px;">
                 <div style="display:flex;justify-content:flex-start">
-                  <select id="bfuploadaccountlist" name="Blackfynn account" class='ui selection dropdown' style="width:450px !important;border-radius:7px;padding:8px">
+                  <select id="bfallaccountlist" name="Blackfynn account" class='ui selection dropdown' style="width:450px !important;border-radius:7px;padding:8px">
                     <option> Select </option>
                   </select>
                   <button style="float:right;height:38px;cursor:pointer;border-radius: 8px;margin:0 10px; width: 40px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;border:1px solid var(--color-bg-plum)"><i class="fas fa-sign-out-alt"></i></button>
                 </div>
                 <div>
-                  <p id="para-account-details"></p>
-                  <div id=div-bf-account-load-progress-curate class="progressdiv">
+                  <p id="para-account-details-curate"></p>
+                  <div id="div-bf-account-load-progress-curate" class="progressdiv">
                     <div class="indeterminatebar"></div>
                   </div>
-                  <p id='para-upload-select-account-status' style="margin-top:20px;text-align:left"> </p>
-                  <p id="para-account-details"></p>
+                  <p id='para-select-account-status-curate' style="margin-top:20px;text-align:left"> </p>
+                  <p id="para-account-details-curate"></p>
                 </div>
               </div>
             </div>
             <div style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
-              <button onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'generate-dataset')"  data-next="Question-generate-dataset-BF-dataset" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm account</button>
+              <button onclick="showBFAddAccountBootbox()" style="float:right;border-radius: 8px;margin:0 10px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;width: 160px;border:1px solid var(--color-bg-plum)">Add account</button>
+              <button onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"  data-next="Question-generate-dataset-BF-dataset" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 160px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm account</button>
             </div>
           </div>
         </div>
-
         <div class="individual-question generate-dataset" id="Question-generate-dataset-BF-dataset">
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);">What is your Blackfynn dataset?</label>
               <div class="field" style="margin:15px 0;">
-                <select id="bfuploaddatasetlist" name="Blackfynn dataset" class="ui search dropdown" style="width:450px;border-radius:7px;padding:8px">
-                  <option value=""> Loading... </option>
+                <select id="curatebfdatasetlist" name="Blackfynn dataset" class="ui search dropdown" style="width:450px;border-radius:7px;padding:8px">
+                  <option value="" disabled> Loading... </option>
                 </select>
               </div>
             </div>
-            <button onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-dataset', 'generate-dataset-tab', 'delete', 'generate-dataset')" data-next="Question-generate-dataset-button" style="margin:0 auto;display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm dataset</button>
+            <button onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-dataset', 'generate-dataset-tab', 'delete', 'generate-dataset')" data-next="Question-generate-dataset-generate-div" style="margin:0 auto;display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm dataset</button>
           </div>
         </div>
+        </div>
+        </div>
+      </div>
 
-        <div class="individual-question generate-dataset" id="Question-generate-dataset-button">
-          <div class="ui form" style="width:100%">
-            <div class="grouped fields">
-              <label style="font-size:17px;color:var(--color-bg-plum);">Proceed to generate:</label>
-              <div class="field" style="margin:15px 0;">
-                <button style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 auto; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Continue</button>
-              </div>
+      <div class="individual-question generate-dataset" id="Question-generate-dataset-locally-destination">
+        <div class="ui form" style="width:450px">
+          <div class="grouped fields">
+            <label style="font-size:17px;color:var(--color-bg-plum);text-align:center;">At which location should we generate the dataset?</label>
+            <div class="field" style="margin:15px 0;">
+              <input class="form-control" style="width:450px !important" id="input-destination-generate-dataset-locally" type="text" readonly placeholder="Browse here">
             </div>
           </div>
-        </div>
+            <br>
+            <div id="div-confirm-destination-locally" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
+              <button class="transition-btn" onclick="transitionSubQuestions(this, 'Question-generate-dataset-locally-destination', 'generate-dataset-tab', 'delete', 'generate-dataset')" data-next="Question-generate-dataset-generate-div" style="display:flex;flex-direction:row;justify-content:center;width: 100px;height:40px;">Confirm</button>
+            </div>
+          </div>
+      </div>
+      <div class="individual-question generate-dataset" id="Question-generate-dataset-modify-current-ds">
+        <h3 class="question-title" id="modify-current-confirmation" style='text-align:left;line-height:2'></h3>
+        <br>
+        <button id="generate" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 auto; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Generate</button>
+      </div>
+      <div class="individual-question generate-dataset" id="Question-generate-dataset-generate-div">
+        <button id="button-generate" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 auto; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Generate</button>
+      </div>
+      <div class="individual-question generate-dataset" id="Question-generate-dataset-bf-confirmation">
+        <h3 class="question-title" id="generate-bf-confirmation" style='text-align:left;line-height:2'></h3>
+        <br>
+        <button id="generate" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 auto; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Generate</button>
+      </div>
+    </div>
+
+    <div class="generate-progress-tab" style='display:none;flex-direction:row;justify-content:center;width:100%;margin-top:50px' id="generate-dataset-progress-tab">
+      <p id="para-please-wait-new-curate"</p>
+      <div id="div-new-curate-progress-bar-error-status" class="datasetsaveoption">
+        <p id='para-new-curate-progress-bar-error-status'> <p>
+      </div>
+
+      <div id="div-new-curate-progress">
+      <div id="div-new-curate-meter-progress" class="datasetsaveoption">
+        <h5> Progress </h5>
+        <progress class=progresstrack id="progress-bar-new-curate" max="100" value="0"></progress>
+      </div>
+
+      <div id="div-new-curate-progress-bar-status" class="datasetsaveoption">
+        <p id='para-new-curate-progress-bar-status'> <p>
+      </div>
+
+      </div>
+    </div>
   </div>
 
+<div style="border-top:1px solid #f0f0f0;padding:10px;padding-top:15px;height:50px;display:flex;flex-direction:row;justify-content:space-between">
+  <div style="display:flex;flex-direction:row;width:110px">
+    <button type="button" onclick="nextPrev(-1)" id="prevBtn" class="transition-btn prev"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
   </div>
-
-<div style="border-top:1px solid #f0f0f0;padding:10px;padding-top:15px;height:50px;">
-  <button type="button" onclick="nextPrev(-1)" id="prevBtn" class="transition-btn prev"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
-  <button style="float:right" onclick="nextPrev(1)" id="nextBtn" type="button" class="transition-btn">Continue</button>
+  <!-- <div style="display:flex;flex-direction:row;">
+    <!-- <button type="button" onclick="exitOrganizeSection()" class="transition-btn" style="background:red; color: #fff;font-weight:600;padding:5px;width:130px;margin-right:10px"><i class="fas fa-times" style="margin-right:10px"></i>Exit section</button>
+    <button type="button" onclick="saveOrganizeProgress()" class="transition-btn" style="background:#fff; color:var(--color-light-green);border: 1px solid var(--color-light-green);padding:5px;width:135px"><i class="far fa-save" style="margin-right:10px"></i>Save progress</button> -->
+  <!-- </div>  -->
+  <div style="display:flex;flex-direction:row;width:100px">
+    <button style="float:right" onclick="nextPrev(1)" id="nextBtn" type="button" class="transition-btn">Continue</button>
+  </div>
 </div>
 
 </main>
@@ -776,8 +812,8 @@
  <script>window.$ = window.jQuery = require('jquery')</script>
 
  <script src="../src/scripts/tab-effects.js"></script>
-
  <script src='../src/scripts/organizeDS.js' type='text/javascript'></script>
+
   <script src='../src/scripts/renderer.js' type='text/javascript'></script>
   <script src='../src/scripts/metadata-files.js' type='text/javascript'></script>
 

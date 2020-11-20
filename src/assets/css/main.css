@@ -545,7 +545,7 @@ button[disabled]{
 }
 
 .metadata-button.button-generate-dataset.done i:before {
-  content: '\f560' !important;
+  content: '\f00c' !important;
   color: var(--color-light-green);
   font-family: "Font Awesome 5 Free";
 }
@@ -832,7 +832,7 @@ button[disabled]{
   position:absolute;
   width: 350px;
   height: auto;
-  margin-top: 20px;
+  margin-top: 50px;
   /* margin-right: 20px; */
   right: 0;
   border-radius: 10px 0 0 10px;

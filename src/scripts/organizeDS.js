@@ -51,7 +51,7 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
 
         /// get current location of folders or files
         var filtered = getGlobalPath(organizeCurrentLocation)
-        var myPath = getRecursivePath(filtered, inputGlobal)
+        var myPath = getRecursivePath(filtered.slice(1), inputGlobal)
         // update Json object with new folder created
         delete myPath[type][itemToDelete];
         // update UI with updated jsob obj
@@ -168,11 +168,12 @@ function renameFolder(event1, organizeCurrentLocation, itemElement, inputGlobal,
           event1.parentElement.parentElement.innerText = newName
           /// get location of current file or folder in JSON obj
           var filtered = getGlobalPath(organizeCurrentLocation)
-          var myPath = getRecursivePath(filtered, inputGlobal)
+          var myPath = getRecursivePath(filtered.slice(1), inputGlobal)
           /// update jsonObjGlobal with the new name
           storedValue = myPath[type][currentName]
           delete myPath[type][currentName];
-          myPath[type][newName] = storedValue
+          myPath[type][newName] = storedValue;
+          myPath[type][newName]["action"].push("renamed")
           /// list items again with updated JSON obj
           listItems(myPath, uiItem)
           getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal)
@@ -224,33 +225,7 @@ function loadFileFolder(myPath) {
   return appendString
 }
 
-// sort JSON objects by keys alphabetically (folder by folder, file by file)
-function sortObjByKeys(object) {
-  const orderedFolders = {};
-  const orderedFiles = {};
-  /// sort the files in objects
-  if (object.hasOwnProperty("files")) {
-    Object.keys(object["files"]).sort().forEach(function(key) {
-      orderedFiles[key] = object["files"][key]
-    });
-  }
-  if (object.hasOwnProperty("folders")) {
-    Object.keys(object["folders"]).sort().forEach(function(key) {
-      orderedFolders[key] = object["folders"][key]
-    });
-  }
-  const orderedObject = {
-    "folders": orderedFolders,
-    "files": orderedFiles,
-    "type": ""
-  }
-  return orderedObject
-}
 
-function sliceStringByValue(string, endingValue) {
-  var newString = string.slice(string.indexOf(endingValue) + 1)
-  return newString
-}
 
 
 function getRecursivePath(filteredList, inputObj) {
@@ -291,7 +266,8 @@ function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, u
   // check for duplicate or files with the same name
     for (var i=0; i<fileArray.length;i++) {
       var baseName = path.basename(fileArray[i])
-      if (organizeCurrentLocation.value === "/" && (!["dataset_description.xlsx", "dataset_description.csv", "dataset_description.json", "submission.xlsx", "submission.json", "submission.csv", "samples.xlsx", "samples.csv", "samples.json", "subjects.xlsx", "subjects.csv", "subjects.json", "CHANGES.txt", "README.txt"].includes(baseName))) {
+      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+      if (slashCount === 1 && (!["dataset_description.xlsx", "dataset_description.csv", "dataset_description.json", "submission.xlsx", "submission.json", "submission.csv", "samples.xlsx", "samples.csv", "samples.json", "subjects.xlsx", "subjects.csv", "subjects.json", "CHANGES.txt", "README.txt"].includes(baseName))) {
         bootbox.alert({
           message: "<p>Invalid file(s). Only SPARC metadata files are allowed in the high-level dataset folder.<br> <ul><li>dataset_description (.xslx/.csv/.json)</li><li>submission (.xslx/.csv/.json)</li><li>subjects (.xslx/.csv/.json)</li><li>samples (.xslx/.csv/.json)</li><li>CHANGES.txt</li><li>README.txt</li></ul></p>",
           centerVertical: true
@@ -311,7 +287,7 @@ function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, u
             centerVertical: true
           })
         } else {
-          currentLocation["files"][baseName] = {"path": fileArray[i], "type": "local", "description":"", "additional-metadata":""}
+          currentLocation["files"][baseName] = {"path": fileArray[i], "type": "local", "description":"", "additional-metadata":"", "action":["new"]}
           var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+baseName+'</div></div>'
 
           $(uiItem).html(appendString)
@@ -322,39 +298,6 @@ function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, u
   }
 }
 
-function listItems(jsonObj, uiItem) {
-    var appendString = ''
-    var sortedObj = sortObjByKeys(jsonObj)
-    for (var item in sortedObj["folders"]) {
-      var emptyFolder = "";
-      if (! highLevelFolders.includes(item)) {
-        if (
-          JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
-          JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
-        ) {
-          emptyFolder = " empty";
-        }
-      }
-      appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
-    }
-    for (var item in sortedObj["files"]) {
-      // not the auto-generated manifest
-      if (sortedObj["files"][item].length !== 1) {
-        var extension = sliceStringByValue(sortedObj["files"][item]["path"],  ".")
-        if (!["docx", "doc", "pdf", "txt", "jpg", "JPG", "xlsx", "xls", "csv", "png", "PNG"].includes(extension)) {
-          extension = "other"
-        }
-      } else {
-        extension = "other"
-      }
-      appendString = appendString + '<div class="single-item"><h1 class="myFile '+extension+'" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">'+item+'</div></div>'
-    }
-
-    $(uiItem).empty()
-    $(uiItem).html(appendString)
-}
-
-
 function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
   $(singleUIItem).dblclick(function(){
     if($(this).children("h1").hasClass("myFol")) {
@@ -364,7 +307,7 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
 
       var currentPath = currentLocation.value
       var jsonPathArray = currentPath.split("/")
-      var filtered = jsonPathArray.filter(function (el) {
+      var filtered = jsonPathArray.slice(1).filter(function (el) {
         return el.trim() != "";
       });
       var myPath = getRecursivePath(filtered, globalObj)
