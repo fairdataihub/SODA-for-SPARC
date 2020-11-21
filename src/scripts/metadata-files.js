@@ -1,3 +1,5 @@
+
+
 var metadataFile = '';
 
 $(".metadata-button").click(function() {

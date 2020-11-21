@@ -261,37 +261,6 @@ def create_folder_level_manifest(jsonpath, jsondescription):
         raise e
 
 
-def check_forbidden_characters(my_string):
-    """
-    Check for forbidden characters in file/folder name
-
-    Args:
-        my_string: string with characters (string)
-    Returns:
-        False: no forbidden character
-        True: presence of forbidden character(s)
-    """
-    regex = re.compile('[' + forbidden_characters + ']')
-    if(regex.search(my_string) == None and "\\" not in r"%r" % my_string):
-        return False
-    else:
-        return True
-
-def check_forbidden_characters_bf(my_string):
-    """
-    Check for forbidden characters in blackfynn file/folder name
-
-    Args:
-        my_string: string with characters (string)
-    Returns:
-        False: no forbidden character
-        True: presence of forbidden character(s)
-    """
-    regex = re.compile('[' + forbidden_characters_bf + ']')
-    if(regex.search(my_string) == None and "\\" not in r"%r" % my_string):
-        return False
-    else:
-        return True
 
 def return_new_path(topath):
     """
