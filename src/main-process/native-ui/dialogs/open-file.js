@@ -191,7 +191,7 @@ ipcMain.on('open-file-dialog-metadata', (event) => {
 
 ipcMain.on('open-file-dialog-metadata-curate', (event) => {
   dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
-    properties: ['openFile'],
+    properties: ['openFile']
   }, (files) => {
     if (files) {
       event.sender.send('selected-metadataCurate', files)

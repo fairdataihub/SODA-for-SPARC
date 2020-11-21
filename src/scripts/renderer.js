@@ -6011,15 +6011,26 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
   }
 })
 
+// remove all empty keys from JSON object before passing it to the backend
+function finalScanningSODAJsonObject() {
+
+  deleteEmptyKeysFromObject(sodaJSONObj);
+  deleteEmptyKeysFromObject(sodaJSONObj["bf-account-selected"]);
+  deleteEmptyKeysFromObject(sodaJSONObj["bf-dataset-selected"]);
+}
+
 const progressBarNewCurate = document.getElementById('progress-bar-new-curate');
 
 document.getElementById('button-generate').addEventListener('click', function() {
 
-  // updateJSON structure after Generate dataset tab
-  updateJSONStructureGenerate();
   $($($(this).parent()[0]).parents()[0]).removeClass('tab-active');
   document.getElementById('prevBtn').style.display = "none";
   document.getElementById('generate-dataset-progress-tab').style.display = "flex";
+
+  // updateJSON structure after Generate dataset tab
+  updateJSONStructureGenerate();
+  // scanning JSON object for any empty key-values before passing it to Python
+  finalScanningSODAJsonObject();
 
   //  from here you can modify
   document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait..."

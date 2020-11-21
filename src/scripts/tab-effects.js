@@ -512,6 +512,14 @@ function updateJSONStructureGenerate() {
   }
 }
 
+function deleteEmptyKeysFromObject(object) {
+  for (var key in object) {
+    if (object[key] === null || object[key] === undefined || object[key] === "" || JSON.stringify(object[key]) === "{}") {
+      delete object[key];
+    }
+  }
+}
+
 function updateJSONStructureDSstructure() {
   sodaJSONObj["dataset-structure"] = datasetStructureJSONObj
 }
