@@ -6038,24 +6038,26 @@ document.getElementById('button-generate').addEventListener('click', function() 
 
   progressBarNewCurate.value = 0;
 
+  console.log(sodaJSONObj)
   // Initiate curation by calling Python funtion
   // document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ..."
-  // client.invoke("api_generate_dataset", sodaJSONObj,
-  //   (error, res) => {
-  //   if (error) {
-  //     document.getElementById("para-please-wait-new-curate").innerHTML = ""
-  //     var emessage = userError(error)
-  //     document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
-  //     document.getElementById("para-new-curate-progress-bar-status").innerHTML = ""
-  //     document.getElementById("para-please-wait-new-curate").innerHTML = "";
-  //     document.getElementById('div-new-curate-progress').style.display = "none";
-  //     progressBarNewCurate.value = 0;
-  //     log.error(error)
-  //     console.error(error)
-  //   } else {
-  //     document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
-  //     log.info('Completed curate function')
-  //     console.log('Completed curate function')
-  //   }
-  // })
+  client.invoke("api_main_curate_function", sodaJSONObj,
+     (error, res) => {
+     if (error) {
+       document.getElementById("para-please-wait-new-curate").innerHTML = ""
+       var emessage = userError(error)
+       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
+       document.getElementById("para-new-curate-progress-bar-status").innerHTML = ""
+       document.getElementById("para-please-wait-new-curate").innerHTML = "";
+       document.getElementById('div-new-curate-progress').style.display = "none";
+       progressBarNewCurate.value = 0;
+       log.error(error)
+       console.error(error)
+     } else {
+       document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
+       log.info('Completed curate function')
+       console.log('Completed curate function')
+       console.log(res)
+     }
+  })
 })
