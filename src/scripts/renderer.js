@@ -5473,6 +5473,24 @@ function showBFAddAccountBootbox() {
 //   })
 // })
 
+
+////// function to trigger action for each context menu option
+function hideMenu(category, menu1, menu2, menu3){
+  if (category === "folder") {
+    menu1.style.display = "none";
+    menu1.style.top = "-200%";
+    menu1.style.left = '-200%';
+  } else if (category === "high-level-folder") {
+    menu2.style.display = "none";
+    menu2.style.top = "-220%";
+    menu2.style.left = '-220%';
+  } else {
+    menu3.style.display = "none";
+    menu3.style.top = "-210%";
+    menu3.style.left = "-210%";
+  }
+}
+
 function changeStepOrganize(step) {
     if (step.id==="button-organize-prev") {
       document.getElementById("div-step-1-organize").style.display = "block";
@@ -5967,15 +5985,10 @@ function addDetailsForFile(ev) {
   triggerManageDetailsPrompts(ev, fileName, myPath, 'textarea-file-description', 'textarea-file-metadata')
   /// list Items again with new updated JSON structure
   listItems(myPath, '#items')
-  getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+  getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj);
+  // close the display
+  showDetailsFile();
 }
-
-// document.getElementById('button-sub').addEventListener('click', (event) => {
-//     ipcRenderer.send('open-file-dialog-metadata-curate');
-// })
-// ipcRenderer.on('selected-metadataCurate', (event, path) => {
-//   console.log(path)
-// })
 
 //// Select to choose a local dataset
 document.getElementById("location-new-dataset").addEventListener("click", function() {

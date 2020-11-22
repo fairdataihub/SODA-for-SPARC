@@ -298,24 +298,6 @@ function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, u
   }
 }
 
-
-////// function to trigger action for each context menu option
-function hideMenu(category, menu1, menu2, menu3){
-  if (category === "folder") {
-    menu1.style.display = "none";
-    menu1.style.top = "-200%";
-    menu1.style.left = '-200%';
-  } else if (category === "high-level-folder") {
-    menu2.style.display = "none";
-    menu2.style.top = "-220%";
-    menu2.style.left = '-220%';
-  } else {
-    menu3.style.display = "none";
-    menu3.style.top = "-210%";
-    menu3.style.left = "-210%";
-  }
-}
-
 ///// function to load details to show in display once
 ///// users click Show details
 function loadDetailsContextMenu(fileName, filePath, textareaID1, textareaID2, paraLocalPath) {

@@ -797,3 +797,24 @@
 #generate-manifest-curate:checked .labelradiocurate-manifest.yes {
   color: var(--color-light-green) !important;
 }
+
+@keyframes changeWelcomeIcon {
+  from {
+    left: -15px;
+  }
+
+  to {
+    left: 0px;
+  }
+}
+
+.fas.fa-hand-point-left.welcome-icon-hand {
+  animation-duration: 0.7s;
+  animation-name: changeWelcomeIcon;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  position: relative;
+  color: var(--color-teal);
+  font-size: 21px;
+  margin-right:10px;
+}

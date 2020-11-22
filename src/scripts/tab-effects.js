@@ -371,11 +371,15 @@ function hidePrevDivs(currentDiv, category) {
       $("#"+currentDiv).nextAll().find('.folder-input-check').prop('checked', false);
       var childElements2 = $("#"+currentDiv).nextAll().find('.form-control');
       for (var child of childElements2) {
-        document.getElementById(child.id).value = "";
-        document.getElementById(child.id).placeholder = "Browse here";
+         if (child.id === "inputNewNameDataset")  {
+          document.getElementById(child.id).value = "";
+          document.getElementById(child.id).placeholder = "Type here";
+        } else {
+          document.getElementById(child.id).value = "";
+          document.getElementById(child.id).placeholder = "Browse here";
+        }
       };
       $("#"+currentDiv).nextAll().find('button').show();
-
       break
     }
   }
