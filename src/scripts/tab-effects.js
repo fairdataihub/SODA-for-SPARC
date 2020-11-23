@@ -549,3 +549,7 @@ function updateJSONStructureDSstructure() {
 // function saveOrganizeProgress() {
 //
 // }
+
+$(document).ready(function() {
+  $("#welcome-section").toggleClass('is-shown');
+});
