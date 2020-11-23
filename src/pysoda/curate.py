@@ -6,7 +6,7 @@ import logging
 from gevent import monkey; monkey.patch_all()
 import platform
 import os
-from os import listdir, stat, makedirs, mkdir, walk, remove, pardir
+from os import listdir, stat, makedirs, mkdir, walk, remove, pardir, rename
 from os.path import isdir, isfile, join, splitext, getmtime, basename, normpath, exists, expanduser, split, dirname, getsize, abspath
 import pandas as pd
 import time
@@ -933,3 +933,461 @@ def validate_dataset(validator_input):
 
     except Exception as e:
         raise e
+
+
+'''
+------------------------------------------
+NEW
+FUNCTIONS
+------------------------------------------
+
+'''
+
+def check_local_dataset_files_validity(soda_json_structure):
+    """
+    Function to check that the local data files and folders specified in the dataset are valid
+
+    Args:
+        soda_json_structure: soda dict with information about all specified files and folders
+    Output:
+        error: error message with list of non valid local data files, if any
+    """
+    
+    def recursive_local_file_check(my_folder, my_relative_path, error):
+        for folder_key, folder in my_folder["folders"].items():
+            relative_path = my_relative_path + "/" + folder_key
+            error = recursive_local_file_check(folder, relative_path, error)
+                    
+        for file_key in list(my_folder["files"].keys()):
+            file = my_folder["files"][file_key]
+            file_type = file["type"] 
+            if file_type == "local":
+                file_path = file["path"]
+                if not isfile(file_path):
+                    relative_path = my_relative_path + "/" +  file_key
+                    error_message = relative_path + " (path: " + file_path + ")"
+                    error.append(error_message)
+                else:
+                    file_size = getsize(file_path)
+                    if file_size == 0:
+                        del my_folder["files"][file_key] 
+                        
+        return error
+    
+    def recursive_empty_local_folder_remove(my_folder, my_folder_key, my_folders_content):
+        
+        folders_content = my_folder["folders"]
+        for folder_key in list(my_folder["folders"].keys()):
+            folder = my_folder["folders"][folder_key]
+            recursive_empty_local_folder_remove(folder, folder_key, folders_content)
+                
+        if not my_folder["folders"]:
+            if not my_folder["files"]:
+                del my_folders_content[my_folder_key]
+                       
+    error = []
+    if "dataset-structure" in soda_json_structure.keys():
+        dataset_structure = soda_json_structure["dataset-structure"]
+        if "folders" in dataset_structure:
+            for folder_key, folder in dataset_structure["folders"].items():
+                relative_path = folder_key
+                error = recursive_local_file_check(folder, relative_path, error)
+            
+            folders_content = dataset_structure["folders"]
+            for folder_key in list(dataset_structure["folders"].keys()):
+                folder = dataset_structure["folders"][folder_key]
+                recursive_empty_local_folder_remove(folder, folder_key, folders_content) 
+    
+    if "metadata-files" in soda_json_structure.keys():
+        metadata_files = soda_json_structure["metadata-files"]
+        for file_key in list(metadata_files.keys()):
+            file = metadata_files[file_key]
+            file_type = file["type"] 
+            if file_type == "local":
+                file_path = file["path"]
+                if not isfile(file_path):
+                    error_message = file_key + " (path: " + file_path + ")"
+                    error.append(error_message)
+                else:
+                    file_size = getsize(file_path)
+                    if file_size == 0:
+                        print(file_path)
+                        del metadata_files[file_key] 
+        
+    if len(error)>0:
+        error_message = ["Error: The following local files were not found. Specify them again or remove them."]
+        error = error_message + error
+        
+    return error
+
+
+#path to local SODA folder for saving manifest files
+manifestpath = join(userpath, 'SODA', 'manifest_files')
+
+
+def create_high_level_manifest_files(soda_json_structure):
+    """
+    Function to create manifest files for each high-level SPARC folder.
+
+    Args:
+        soda_json_structure: soda dict with information about the dataset to be generated/modified
+    Action:
+        manifest_files_structure: dict including the local path of the manifest files
+    """
+    try:
+        
+        def recursive_manifest_builder(my_folder, my_relative_path, dict_folder_manifest):
+            if "files" in my_folder.keys():
+                for file_key, file in my_folder["files"].items():
+                    dict_folder_manifest = file_manifest_entry(file_key, file, my_relative_path, dict_folder_manifest)
+                            
+            if "folders" in my_folder.keys():
+                for folder_key, folder in my_folder["folders"].items():
+                    relative_path = join(my_relative_path, folder_key)
+                    dict_folder_manifest = recursive_manifest_builder(folder, relative_path, dict_folder_manifest)
+            
+            return dict_folder_manifest
+        
+        def file_manifest_entry(file_key, file, relative_path, dict_folder_manifest):
+            #filename
+            filename = join(relative_path, file_key)
+            dict_folder_manifest["filename"].append(filename)
+            #timestamp
+            file_type = file["type"]
+            if file_type == "local":
+                file_path = file["path"] 
+                filepath = pathlib.Path(file_path)
+                mtime = filepath.stat().st_mtime
+                lastmodtime = datetime.fromtimestamp(mtime).astimezone(local_timezone)
+                dict_folder_manifest["timestamp"].append(lastmodtime.isoformat().replace('.', ',').replace('+00:00', 'Z'))
+            elif file_type == "bf":
+                dict_folder_manifest["timestamp"].append(file["timestamp"])
+            #description     
+            if "description" in file.keys(): 
+                dict_folder_manifest["description"].append(file["description"])
+            else: 
+                dict_folder_manifest["description"].append("")                                    
+            #file type
+            name_split = splitext(file_key)
+            if name_split[1] == "":
+                fileextension = "None"
+            else:      
+                fileextension = name_split[1]
+            dict_folder_manifest["file type"].append(fileextension)
+            #addtional metadata  
+            if "additional-metadata" in file.keys(): 
+                dict_folder_manifest["Additional Metadata"].append(file["additional-metadata"])     
+            else: 
+                dict_folder_manifest["Additional Metadata"].append("") 
+
+            return dict_folder_manifest
+    
+        #create local folder to save manifest files temporarly (delete any existing one first)
+        shutil.rmtree(manifestpath) if isdir(manifestpath) else 0
+        makedirs(manifestpath)
+
+        dataset_structure = soda_json_structure["dataset-structure"]
+        local_timezone = TZLOCAL()
+        manifest_files_structure = {}
+        for folder_key, folder in dataset_structure["folders"].items():
+            # Initialize dict where manifest info will be stored
+            dict_folder_manifest = {}
+            dict_folder_manifest["filename"] = []
+            dict_folder_manifest["timestamp"] = []
+            dict_folder_manifest["description"] = []
+            dict_folder_manifest["file type"] = []
+            dict_folder_manifest["Additional Metadata"] = []
+            
+            relative_path = ""
+            dict_folder_manifest = recursive_manifest_builder(folder, relative_path, dict_folder_manifest)
+            
+            #create high-level folder at the temporary location
+            folderpath = join(manifestpath, folder_key)
+            makedirs(folderpath)
+            
+            #save manifest file 
+            manifestfilepath = join(folderpath, 'manifest.xlsx')
+            df = pd.DataFrame.from_dict(dict_folder_manifest)
+            df.to_excel(manifestfilepath, index=None, header=True)
+
+            manifest_files_structure[folder_key] = manifestfilepath
+            
+        return manifest_files_structure
+
+    except Exception as e:
+        raise e
+
+def add_local_manifest_files(manifest_files_structure, datasetpath):
+    try:
+        for key in manifest_files_structure.keys():  
+            manifestpath = manifest_files_structure[key]
+            destination_folder = join(datasetpath, key)
+            if isdir(destination_folder):
+                dst = join(destination_folder, "manifest.xlsx")
+                mycopyfile_with_metadata(manifestpath, dst)
+                
+        shutil.rmtree(manifestpath) if isdir(manifestpath) else 0
+    
+    except Exception as e:
+        raise e   
+
+
+def get_generate_dataset_size(soda_json_structure, manifest_files_structure):
+    """
+    Function to get the size of the data to be generated (not existing at the local or Blackfynn destination)
+
+    Args:
+        soda_json_structure: soda dict with information about all specified files and folders
+        manifest_files_structure: soda dict with information about the manifest files (if requested)
+    Output:
+        generate_dataset_size: total size of data to be generated (in bytes)
+    """
+    
+    def recursive_dataset_size(my_folder):
+        total_size = 0
+
+        if "folders" in my_folder.keys():
+            for folder_key, folder in my_folder["folders"].items():
+                total_size += recursive_dataset_size(folder)
+        if "files" in my_folder.keys():
+            for file_key, file in my_folder["files"].items():
+                file_type = file["type"]
+                if file_type == "local":
+                    if "new" in file["action"]:
+                        file_path = file["path"]
+                        if isfile(file_path):
+                            total_size += getsize(file_path)
+        return total_size
+    
+    try:
+        dataset_structure = soda_json_structure["dataset-structure"]
+                
+        generate_dataset_size = 0
+        for folder_key, folder in dataset_structure["folders"].items():
+            generate_dataset_size += recursive_dataset_size(folder)
+
+        if manifest_files_structure:
+            for key in manifest_files_structure.keys():  
+                manifest_path = manifest_files_structure[key]
+                generate_dataset_size += getsize(manifest_path)
+            
+        if "metadata-files" in soda_json_structure.keys():
+            metadata_files = soda_json_structure["metadata-files"]
+            for file_key, file in metadata_files.items():
+                if file["type"] == "local":
+                    if "new" in file["action"]:
+                        metadata_path = file["path"]
+                        generate_dataset_size += getsize(metadata_path)
+                
+        return generate_dataset_size
+    
+    except Exception as e:
+        raise e    
+
+def generate_dataset_locally(soda_json_structure):
+
+    try:
+        
+        def recursive_dataset_scan(my_folder, my_folderpath, list_copy_files, list_move_files):
+            if "folders" in my_folder.keys():
+                for folder_key, folder in my_folder["folders"].items():
+                    folderpath = join(my_folderpath, folder_key)
+                    if not isdir(folderpath):
+                        mkdir(folderpath)
+                    list_copy_files, list_move_files = recursive_dataset_scan(folder, folderpath, list_copy_files, list_move_files)
+                        
+            if "files" in my_folder.keys():
+                for file_key, file in my_folder["files"].items():
+                    if not "deleted" in file["action"]:
+                        file_type = file["type"]
+                        if file_type == "local":
+                            file_path = file["path"]
+                            if isfile(file_path):
+                                destination_path = abspath(join(my_folderpath, file_key))
+                                if not isfile(destination_path):
+                                    if "existing" in file["action"]:
+                                        list_move_files.append([file_path, destination_path])
+                                    elif "new" in file["action"]:
+                                        list_copy_files.append([file_path, destination_path])
+            return list_copy_files, list_move_files
+ 
+        # 1. Create new folder for dataset or use existing merge with existing or create new dataset?
+        dataset_absolute_path = soda_json_structure["generate-dataset"]["path"]
+        if_existing = soda_json_structure["generate-dataset"]["if-existing"]
+        dataset_name = soda_json_structure["generate-dataset"]["dataset-name"]
+        datasetpath = join(dataset_absolute_path, dataset_name)
+        datasetpath  = return_new_path(datasetpath)
+        mkdir(datasetpath)
+        
+        # 2. Scan the dataset structure and:
+        # 2.1. Create all folders (with new name if renamed)
+        # 2.2. Compile a list of files to be copied and a list of files to be moved (with new name recorded if renamed)
+        list_copy_files = []
+        list_move_files = []
+        dataset_structure = soda_json_structure["dataset-structure"]
+        for folder_key, folder in dataset_structure["folders"].items():
+            folderpath = join(datasetpath, folder_key)
+            mkdir(folderpath)
+            list_copy_files, list_move_files = recursive_dataset_scan(folder, folderpath, list_copy_files, list_move_files)
+        
+        # 3. Add high-level metadata files in the list
+        if "metadata-files" in soda_json_structure.keys():
+            metadata_files = soda_json_structure["metadata-files"]
+            for file_key, file in metadata_files.items():
+                if file["type"] == "local":
+                    metadata_path = file["path"]
+                    if isfile(metadata_path):
+                        destination_path = join(datasetpath, file_key)
+                        if "existing" in file["action"]:
+                            list_move_files.append([metadata_path, destination_path])
+                        elif "new" in file["action"]:
+                            list_copy_files.append([metadata_path, destination_path])
+                        
+        # Move files to new location
+        for fileinfo in list_move_files:
+            srcfile = fileinfo[0]
+            distfile = fileinfo[1]
+            curateprogress = 'Moving ' + str(srcfile)
+            mymovefile_with_metadata(srcfile, distfile)
+            
+        # Copy files to new location
+        for fileinfo in list_copy_files:
+            srcfile = fileinfo[0]
+            distfile = fileinfo[1]
+            curateprogress = 'Copying ' + str(srcfile)
+            mycopyfile_with_metadata(srcfile, distfile)
+ 
+        # Delete original folder if merge requested and rename new folder
+        if if_existing == "merge":
+            original_dataset_path = join(dataset_absolute_path, dataset_name)
+            shutil.rmtree(original_dataset_path)
+            rename(datasetpath, original_dataset_path)
+
+        return datasetpath
+     
+    except Exception as e:
+        raise e
+        
+def mymovefile_with_metadata(src, dst):
+    shutil.move(src, dst)
+
+
+
+def main_curate_function(soda_json_structure):
+    main_keys = soda_json_structure.keys()
+    error = []
+
+    # 1] Check for potential errors
+
+    # 1.1. Check that the local destination is valid if generate dataset locally is requested
+    if "generate-dataset" in main_keys and soda_json_structure["generate-dataset"]["destination"] == "local":
+        generate_dataset = soda_json_structure["generate-dataset"]
+        local_dataset_path = generate_dataset["path"]
+        if generate_dataset["if-existing"] == "merge":
+            local_dataset_path = join(local_dataset_path, generate_dataset["dataset-name"])
+        if not isdir(local_dataset_path):
+            error_message = 'Error: The Path ' + local_dataset_path + ' is not found. Please select a valid destination folder for the new dataset'
+            curatestatus = 'Done'
+            error.append(error_message)
+            raise Exception(error)
+
+    # 1.2. Check that the bf destination is valid if generate on bf, or any other bf actions are requested
+    if "generate-dataset" in main_keys and soda_json_structure["generate-dataset"]["destination"] == "bf":
+        accountname = soda_json_structure["bf-account-selected"]["account-name"]  
+        bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]  
+
+        # check that the blackfynn account is valid
+        try:
+            bf = Blackfynn(accountname)
+        except Exception as e:
+            curatestatus = 'Done'
+            error.append('Error: Please select a valid Blackfynn account')
+            raise Exception(error)
+
+        # check that the blackfynn dataset is valid
+        try:
+            myds = bf.get_dataset(bfdataset)
+        except Exception as e:
+            curatestatus = 'Done'
+            error.append('Error: Please select a valid Blackfynn dataset')
+            raise Exception(error)           
+
+        # check that the user has permissions for modifying the dataset
+        try:
+            role = bf_get_current_user_permission(bf, myds)
+            if role not in ['owner', 'manager', 'editor']:
+                curatestatus = 'Done'
+                error.append("Error: You don't have permissions for uploading to this Blackfynn dataset")
+                raise Exception(error)
+        except Exception as e:
+            raise e
+
+    # 1.3. Check that specified dataset files and folders are valid (existing path) if generate dataset is requested
+    # Note: Empty folders and 0 kb files will be removed without warning (a warning will be provided on the front end before starting the curate process)
+    if "generate-dataset" in main_keys:
+        # Check at least one file or folder are added to the dataset
+        try:
+            dataset_structure = soda_json_structure["dataset-structure"]
+        except Exception as e:
+            curatestatus = 'Done'
+            error.append('Error: Your dataset is empty. Please add files/folders to your dataset')
+            raise Exception(error) 
+
+        # Check that local files/folders exist
+        try:
+            error = check_local_dataset_files_validity(soda_json_structure)
+            if error: 
+                curatestatus = 'Done'
+                raise Exception(error)
+            if not dataset_structure["folders"]:
+                error.append('Error: Your dataset is empty. Please add files to your dataset')
+                raise Exception(error) 
+        except Exception as e:
+            curatestatus = 'Done'
+            raise e
+        
+        # Check that bf files/folders exist
+        try:
+            if soda_json_structure["generate-dataset"]["destination"] == "bf":
+                error = bf_check_dataset_files_validity(soda_json_structure,bf)
+                if error: 
+                    curatestatus = 'Done'
+                    raise Exception(error)
+        except Exception as e:
+            curatestatus = 'Done'
+            raise e
+
+    # 3] Generate manifest files based on the json structure 
+    manifest_files_structure = ""
+    if "manifest-files" in main_keys:
+        try:
+            manifest_files_structure = create_high_level_manifest_files(soda_json_structure)
+            print(manifest_files_structure)
+
+            manifest_file_request = soda_json_structure["manifest-files"]
+            if manifest_file_request["destination"] == "local":
+                datasetpath = manifest_file_request["path"]
+                add_local_manifest_files(manifest_files_structure, datasetpath)
+            elif manifest_file_request["destination"] == "bf":
+                bf_add_manifest_files(manifest_files_structure, myds)
+
+        except Exception as e:
+            curatestatus = 'Done'
+            raise e
+
+            
+    # 4] Evaluate total size of data to be generated
+    if "generate-dataset" in main_keys:
+        generate_dataset_size = get_generate_dataset_size(soda_json_structure, manifest_files_structure)
+        print("SIZE", generate_dataset_size)
+
+    
+ 
+    # 5] Generate
+    if "generate-dataset" in main_keys:
+        if soda_json_structure["generate-dataset"]["destination"] == "local":
+            datasetpath = generate_dataset_locally(soda_json_structure)
+            add_local_manifest_files(manifest_files_structure, datasetpath)
+
+
+    return soda_json_structure

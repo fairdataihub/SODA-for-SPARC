@@ -12,7 +12,8 @@ from disseminate import bf_get_doi, bf_reserve_doi, bf_get_publishing_status, bf
                          bf_submit_review_dataset, bf_withdraw_review_dataset
 
 from curate import curate_dataset_progress, save_file_organization, import_file_organization, \
-    curate_dataset, preview_file_organization, delete_preview_file_organization, validate_dataset, create_folder_level_manifest
+    curate_dataset, preview_file_organization, delete_preview_file_organization, validate_dataset, create_folder_level_manifest, \
+    main_curate_function
 
 from prepare_metadata import save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone
 
@@ -277,6 +278,14 @@ class SodaApi(object):
     def api_bf_publish_dataset(self, selected_bfaccount, selected_bfdataset):
         try:
             return bf_publish_dataset(selected_bfaccount, selected_bfdataset)
+        except Exception as e:
+            raise e
+
+    # NEW FUNCTION
+    def api_main_curate_function(self, soda_json_structure):
+
+        try:
+            return main_curate_function(soda_json_structure)
         except Exception as e:
             raise e
 
