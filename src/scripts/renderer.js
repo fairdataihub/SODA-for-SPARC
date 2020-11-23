@@ -5979,15 +5979,35 @@ function manageDesc(ev) {
 }
 
 function addDetailsForFile(ev) {
-  var fileName = fileNameForEdit;
-  var filtered = getGlobalPath(organizeDSglobalPath);
-  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
-  triggerManageDetailsPrompts(ev, fileName, myPath, 'textarea-file-description', 'textarea-file-metadata')
-  /// list Items again with new updated JSON structure
-  listItems(myPath, '#items')
-  getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj);
-  // close the display
-  showDetailsFile();
+  /// first confirm with users
+  bootbox.confirm({
+     title: "Adding additional metadata for files",
+     message: "If you check any checkboxes above, metadata will be modified for all files in the folder. Would you like to continue?",
+     centerVertical: true,
+     button: {
+       ok: {
+         label: 'Yes',
+         className: 'btn-primary'
+       }
+     },
+     callback: function(r) {
+       if (r!==null) {
+         var fileName = fileNameForEdit;
+         var filtered = getGlobalPath(organizeDSglobalPath);
+         var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
+         triggerManageDetailsPrompts(ev, fileName, myPath, 'textarea-file-description', 'textarea-file-metadata')
+         /// list Items again with new updated JSON structure
+         listItems(myPath, '#items')
+         getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj);
+         // find checkboxes here and uncheck them
+         for (var ele of $($(ev).siblings().find('input:checkbox'))) {
+           document.getElementById(ele.id).checked = false
+         }
+         // close the display
+         showDetailsFile();
+       }
+     }
+   })
 }
 
 //// Select to choose a local dataset
