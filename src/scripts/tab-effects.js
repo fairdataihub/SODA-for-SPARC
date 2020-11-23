@@ -390,8 +390,8 @@ function updateJSONStructureGettingStarted() {
 
   if ($('input[name="getting-started-1"]:checked')[0].id === "curate-new-dataset") {
     var newDatasetName = $('#inputNewNameDataset').val();
-    sodaJSONObj["bf-account-selected"] = "";
-    sodaJSONObj["bf-dataset-selected"] = "";
+    sodaJSONObj["bf-account-selected"]["account-name"] = "";
+    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
     sodaJSONObj["generate-dataset"] = {'path':'', 'destination':'', 'dataset-name': newDatasetName, "if-existing": ""}
 
 
@@ -403,9 +403,8 @@ function updateJSONStructureGettingStarted() {
         // populateOrganizeDatasetUI(sodaJSONObj['dataset-structure'], sodaJSONObj['generate-dataset']['path']);
 
       } else if ($('input[name="getting-started-2"]:checked')[0].id === "existing-BF") {
-        sodaJSONObj["bf-account-selected"] = $($('#bfallaccountlist').find('option:selected')[0]).val();
-        sodaJSONObj["bf-dataset-selected"] = $($('#curatebfdatasetlist').find('option:selected')[0]).val();
-        sodaJSONObj["generate-dataset"]["dataset-name"] = $($('#curatebfdatasetlist').find('option:selected')[0]).val();
+        sodaJSONObj["bf-account-selected"]["account-name"] = $($('#bfallaccountlist').find('option:selected')[0]).val();
+        sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $($('#curatebfdatasetlist').find('option:selected')[0]).val();
         sodaJSONObj["generate-dataset"]["destination"] = "bf";
       }
   }
@@ -454,11 +453,11 @@ function updateJSONStructureManifest() {
 
 function checkJSONObjGenerate() {
   var optionShown = "";
-  if (sodaJSONObj["generate-dataset"]["path"] === "" && sodaJSONObj["bf-account-selected"] === ""  && sodaJSONObj["bf-dataset-selected"] === "") {
+  if (sodaJSONObj["generate-dataset"]["path"] === "" && sodaJSONObj["bf-account-selected"]["account-name"] === ""  && sodaJSONObj["bf-dataset-selected"]["dataset-name"] === "") {
     optionShown = "curate-new"
   } else if (sodaJSONObj["generate-dataset"]["path"] !== "") {
     optionShown = "modify-existing-local-dataset"
-  } else if (sodaJSONObj["bf-account-selected"] !== "") {
+  } else if (sodaJSONObj["bf-account-selected"]["account-name"] !== "") {
     optionShown = "modify-existing-bf-dataset"
   }
 
@@ -469,7 +468,7 @@ function checkJSONObjGenerate() {
   } else if (optionShown === "modify-existing-bf-dataset") {
     document.getElementById('Question-generate-dataset').classList.remove('show');
     document.getElementById('Question-generate-dataset-bf-confirmation').classList.add('show');
-    document.getElementById("generate-bf-confirmation").innerHTML = "SODA will modify this dataset: <b style='color:var(--color-bg-plum)'>" + sodaJSONObj["bf-dataset-selected"] + "</b><br>You specify this Blackfynn account: <b style='color:var(--color-bg-plum)'>" + sodaJSONObj["bf-account-selected"] + "</b>.<br> Please confirm by clicking the button below."
+    document.getElementById("generate-bf-confirmation").innerHTML = "SODA will modify this dataset: <b style='color:var(--color-bg-plum)'>" + sodaJSONObj["bf-dataset-selected"] + "</b><br>You specify this Blackfynn account: <b style='color:var(--color-bg-plum)'>" + sodaJSONObj["bf-account-selected"]["account-name"] + "</b>.<br> Please confirm by clicking the button below."
   } else {
     document.getElementById('Question-generate-dataset').classList.add('show');
   }
@@ -511,8 +510,8 @@ function updateJSONStructureGenerate() {
     sodaJSONObj["generate-dataset"]['if-existing'] = "new";
   } else if ($('input[name="generate-1"]:checked')[0].id === "generate-upload-BF") {
     sodaJSONObj["generate-dataset"]['destination'] = "bf";
-    sodaJSONObj["bf-account-selected"] = $($('#bfallaccountlist').find('option:selected')[0]).val();
-    sodaJSONObj["bf-dataset-selected"] = $($('#curatebfdatasetlist').find('option:selected')[0]).val();
+    sodaJSONObj["bf-account-selected"]["account-name"] = $($('#bfallaccountlist').find('option:selected')[0]).val();
+    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $($('#curatebfdatasetlist').find('option:selected')[0]).val();
   }
 }
 
