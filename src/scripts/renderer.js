@@ -144,6 +144,7 @@ const generateSubmissionBtn = document.getElementById("generate-submission")
 const dsAwardArray = document.getElementById("ds-description-award-list")
 const dsContributorArray = document.getElementById("ds-description-contributor-list")
 var contributorRoles = document.getElementById("input-con-role")
+const affiliationInput = document.getElementById("input-con-affiliation")
 const addCurrentContributorsBtn = document.getElementById("button-ds-add-contributor")
 const contactPerson = document.getElementById("ds-contact-person")
 const currentConTable = document.getElementById("table-current-contributors")
@@ -247,7 +248,7 @@ const bfCreateNewDatasetBtn = document.getElementById('button-create-bf-new-data
 const bfCreateNewDatasetStatus = document.querySelector('#para-add-new-dataset-status')
 const bfSubmitDatasetBtn = document.getElementById('button-submit-dataset')
 const selectLocalDsSubmit = document.getElementById("selected-local-dataset-submit")
-const importLocalDsSubmit = document.getElementById("button-import-local-ds-submit")
+// const importLocalDsSubmit = document.getElementById("button-import-local-ds-submit")
 const bfSubmitDatasetInfo = document.querySelector('#progresssubmit')
 const pathSubmitDataset = document.querySelector('#selected-local-dataset-submit')
 const progressUploadBf = document.getElementById("div-progress-submit")
@@ -523,8 +524,20 @@ ipcRenderer.on('selected-DDD-download-folder', (event, path, filename) => {
 //////////////// //////////////// //////////////// //////////////// ///////////
 
 ////////////////////////Import Milestone Info//////////////////////////////////
+const descriptionDateInput = document.getElementById("selected-milestone-date");
+const milestoneInput = document.getElementById('selected-milestone')
+var milestoneTagify = new Tagify(milestoneInput, {
+      duplicates: false,
+      delimiters: null,
+      dropdown : {
+        classname : "color-blue",
+        maxItems: Infinity,
+        enabled   : 0,
+        closeOnSelect : true
+      }
+})
 
-//// when users click on Import but haven't specified a path
+//// when users click on Import
 document.getElementById("button-import-milestone").addEventListener("click", function() {
   document.getElementById("para-milestone-document-info-long").style.display = "none"
   document.getElementById("para-milestone-document-info").innerHTML = "";
@@ -570,11 +583,11 @@ document.getElementById("button-import-milestone").addEventListener("click", fun
           }
           rowIndex++;
         }
+      removeOptions(descriptionDateInput);
+      milestoneTagify.removeAllTags()
+      milestoneTagify.settings.whitelist = []
       document.getElementById("table-current-milestones").style.display = "block";
       document.getElementById("presaved-award-list").value = "Select"
-      removeOptions(document.getElementById("selected-milestone"));
-      removeOptions(document.getElementById("selected-description-data"));
-      document.getElementById("selected-milestone-date").value = ""
       document.getElementById("input-milestone-select").placeholder = "Select a file"
       return milestoneArray
     }
@@ -677,10 +690,12 @@ function getRowIndex(table) {
 
 //// initiate a tagify Award list
 var awardArrayTagify = new Tagify(awardInputField, {
+  delimiters: null,
   enforceWhitelist: true,
   whitelist: [],
   duplicates: false,
   dropdown : {
+    classname : "color-blue",
     maxItems: Infinity,
     enabled   : 0,
     closeOnSelect : true
@@ -959,73 +974,66 @@ bfRefreshAirtableStatusBtn.addEventListener('click', () => {
 ///////////////////////Submission file //////////////// ////////////////
 
 function changeAwardInput() {
-  document.getElementById("selected-milestone").value = "";
   document.getElementById("selected-milestone-date").value = "";
-  document.getElementById("selected-description-data").value = "";
+  document.getElementById("input-milestone-date").value = "";
+  actionEnterNewDate('none')
   document.getElementById("para-save-submission-status").innerHTML = "";
+  milestoneTagify.removeAllTags()
+  milestoneTagify.settings.whitelist = [];
+  removeOptions(descriptionDateInput);
+  addOption(descriptionDateInput, "Select an option", "Select")
+  descriptionDateInput.options[0].disabled = true;
 
-  removeOptions(document.getElementById("selected-milestone"))
-  removeOptions(document.getElementById("selected-description-data"))
-  addOption(document.getElementById('selected-milestone'), "Select an option", "Select")
-  addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
-  addOption(document.getElementById('selected-milestone'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
-  addOption(document.getElementById('selected-description-data'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
+  // removeOptions(document.getElementById("selected-milestone"))
+  // addOption(document.getElementById('selected-milestone'), "Select an option", "Select")
+  // addOption(document.getElementById('selected-milestone'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
 
   award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
   var informationJson = parseJson(milestonePath);
-  var milestoneInput = document.getElementById("selected-milestone");
-  var descriptionInput = document.getElementById("selected-description-data");
-  var dateInput = document.getElementById("selected-milestone-date");
+
+  var completionDateArray = []
+  var milestoneValueArray = []
+  completionDateArray.push('Enter a date')
+
+  /// when DD is provided
   if (award in informationJson) {
     var milestoneObj = informationJson[award];
     // Load milestone values once users choose an award number
     var milestoneKey = Object.keys(milestoneObj)
+
+    /// add milestones to Tagify suggestion tag list and options to completion date dropdown
     for (var i=0;i<milestoneKey.length;i++) {
-      addOption(document.getElementById('selected-milestone'), milestoneKey[i], milestoneKey[i]);
-    }
-    // populate description field based on milestone selected
-    milestoneInput.addEventListener('input', function() {
-    document.getElementById("para-save-submission-status").innerHTML = ""
-    removeOptions(descriptionInput);
-    document.getElementById("selected-milestone-date").value = ""
-    if (milestoneInput.value==="Not specified in the Data Deliverables document") {
-      addOption(document.getElementById('selected-description-data'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
-      // descriptionInput.value === "N/A"
-      // descriptionInput.text === "Not specified in the Data Deliverables document"
-      dateInput.value = "Not specified in the Data Deliverables document"
-    } else {
-        addOption(document.getElementById('selected-description-data'), "Select an option", "Select")
-        addOption(document.getElementById('selected-description-data'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
-        for (var i=0;i<milestoneKey.length; i++) {
-          if (milestoneKey[i] === milestoneInput.value) {
-            //// Add description data to dropdowns
-            for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
-              addOption(descriptionInput, milestoneObj[milestoneKey[i]][j]["Description of data"], milestoneObj[milestoneKey[i]][j]["Description of data"])
-            }
-        }
+      milestoneValueArray.push(milestoneKey[i])
+      for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
+        completionDateArray.push(milestoneObj[milestoneKey[i]][j]["Expected date of completion"])
       }
     }
-  })
-  //// populate date field
-  descriptionInput.addEventListener('input', function() {
-    document.getElementById("para-save-submission-status").innerHTML = ""
-    document.getElementById("selected-milestone-date").value = "";
-    if (descriptionInput.value === "Not specified in the Data Deliverables document") {
-      dateInput.value = "Not specified in the Data Deliverables document"
-    } else {
-      for (var i=0;i<milestoneKey.length; i++) {
-        for (var j=0;j<milestoneObj[milestoneKey[i]].length;j++){
-          if (milestoneObj[milestoneKey[i]][j]["Description of data"] === descriptionInput.value) {
-            //// stringify date object
-            var dateStrings = milestoneObj[milestoneKey[i]][j]["Expected date of completion"].toString()
-            dateInput.value = dateStrings
-          }
-        }
-      }
-    }
-  })
+    milestoneValueArray.push("Not specified in the Data Deliverables document")
   }
+  milestoneTagify.settings.whitelist = milestoneValueArray
+  for (var i=0; i<completionDateArray.length;i++) {
+    addOption(descriptionDateInput, completionDateArray[i], completionDateArray[i])
+  }
+  descriptionDateInput.value = completionDateArray[1]
 }
+
+descriptionDateInput.addEventListener("change", function() {
+  document.getElementById("input-milestone-date").value = ''
+  if (descriptionDateInput.value === 'Enter a date') {
+    actionEnterNewDate('flex')
+  } else {
+    actionEnterNewDate('none')
+  }
+})
+
+const submissionDateInput = document.getElementById("input-milestone-date")
+
+function actionEnterNewDate(action) {
+  document.getElementById("div-submission-enter-different-date-1").style.display = action
+  document.getElementById("div-submission-enter-different-date-2").style.display = action
+  document.getElementById("div-submission-enter-different-date-3").style.display = action
+}
+
 
 /////// Populate Submission file fields from presaved information
 presavedAwardArray2.addEventListener('change', changeAwardInput)
@@ -1034,15 +1042,17 @@ presavedAwardArray2.addEventListener('change', changeAwardInput)
 generateSubmissionBtn.addEventListener('click', (event) => {
   document.getElementById("para-save-submission-status").innerHTML = ""
   awardVal = document.getElementById("presaved-award-list").value;
-  milestoneVal = document.getElementById("selected-milestone").value;
-  descriptionVal = document.getElementById("selected-description-data").value;
+  milestoneVal = milestoneTagify.value;
   dateVal = document.getElementById("selected-milestone-date").value;
-  if (descriptionVal==='Select'|| dateVal==='' || awardVal==='Select' || milestoneVal==='Select') {
+
+  var missingDateBool = dateVal === "Enter a date" && submissionDateInput.value === ''
+  if (awardVal==='Select' || milestoneVal.length === 0 || dateVal === '' || missingDateBool) {
     document.getElementById("para-save-submission-status").innerHTML = "<span style='color: red;'>Please fill in all fields to generate!</span>"
   } else {
     ipcRenderer.send('open-folder-dialog-save-submission', "submission.xlsx")
   }
 });
+
 ipcRenderer.on('selected-metadata-submission', (event, dirpath, filename) => {
   if (dirpath.length > 0) {
     var destinationPath = path.join(dirpath[0], filename)
@@ -1052,12 +1062,31 @@ ipcRenderer.on('selected-metadata-submission', (event, dirpath, filename) => {
     }
     else {
       var award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
-      var milestone = document.getElementById("selected-milestone").value;
-      var date = document.getElementById("selected-milestone-date").value;
+      var milestoneValue = []
+      for (var i=0;i<milestoneVal.length;i++) {
+        milestoneValue.push(milestoneVal[i].value)
+      }
+      var date;
+      if (document.getElementById("selected-milestone-date").value === 'Enter a date') {
+        date = document.getElementById("input-milestone-date").value;
+      } else {
+        date = document.getElementById("selected-milestone-date").value;
+      }
       var json_arr = [];
-      json_arr.push(award);
-      json_arr.push(milestone);
-      json_arr.push(date);
+      json_arr.push({
+        "award": award,
+        "date": date,
+        "milestone": milestoneValue[0]
+      });
+      if (milestoneValue.length > 0) {
+        for (var index = 1;index<milestoneValue.length;index++) {
+          json_arr.push({
+            "award": "",
+            "date": "",
+            "milestone": milestoneValue[index]
+          });
+        }
+      }
       json_str = JSON.stringify(json_arr)
       if (dirpath != null){
         client.invoke("api_save_submission_file", destinationPath, json_str, (error, res) => {
@@ -1114,6 +1143,16 @@ var currentContributortagify = new Tagify(contributorRoles, {
     duplicates: false
 });
 
+var currentAffliationtagify = new Tagify(affiliationInput, {
+    dropdown : {
+        classname : "color-blue",
+        enabled   : 0,         // show the dropdown immediately on focus
+        maxItems  : 25,
+        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+    },
+    duplicates: false
+});
+
 var completenessInput = document.getElementById('ds-completeness'),
 completenessTagify = new Tagify(completenessInput, {
     whitelist : ["hasChildren", "hasNext"],
@@ -1152,6 +1191,7 @@ function changeAwardInputDsDescription() {
   };
   removeOptions(dsContributorArray)
   addOption(dsContributorArray, "Select", "Select an option")
+  descriptionDateInput.options[0].disabled = true;
   addOption(dsContributorArray, "Other collaborators", "Other collaborators not listed")
   var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value
   var airKeyContent = parseJson(airtableConfigPath)
@@ -1195,7 +1235,7 @@ function createCurrentConTable(table) {
     name = conVal
   }
   var id = document.getElementById("input-con-ID").value
-  var affiliation = document.getElementById("input-con-affiliation").value
+  var affiliation = currentAffliationtagify.value
   var role = currentContributortagify.value
   //// check if any field is empty
   if (name.length===0 || id.length===0 || affiliation.length===0 || role.length===0) {
@@ -1205,6 +1245,10 @@ function createCurrentConTable(table) {
     var roleVal = []
     for (var i=0;i<role.length;i++) {
       roleVal.push(role[i].value)
+    }
+    var affliationVal = []
+    for (var i=0;i<affiliation.length;i++) {
+      affliationVal.push(affiliation[i].value)
     }
     var contactPersonStatus = "No"
     if (contactPerson.checked) {
@@ -1240,7 +1284,7 @@ function createCurrentConTable(table) {
       if (contactPersonStatus==="Yes") {
           if (!existingContactPersonStatus) {
             roleVal.push("ContactPerson");
-            var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td class='grab' id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+            var row = table.insertRow(rowIndex).outerHTML="<tr id='row-current-name"+rowIndex+"'style='color: #000000;'><td class='grab' id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affliationVal.join('; ') +"</td><td id='role-row"+rowIndex+"'>"+ roleVal.join(', ')+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
             document.getElementById("div-current-contributors").style.display = "block"
             return table
 
@@ -1249,7 +1293,7 @@ function createCurrentConTable(table) {
           }
 
       } else {
-            var row = table.insertRow(rowIndex).outerHTML="<tr  id='row-current-name"+rowIndex+"'style='color: #000000;'><td class='grab' id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affiliation +"</td><td id='role-row"+rowIndex+"'>"+ roleVal+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
+            var row = table.insertRow(rowIndex).outerHTML="<tr  id='row-current-name"+rowIndex+"'style='color: #000000;'><td class='grab' id='name-row"+rowIndex+"'>"+name+"</td><td id='orcid-id-row"+rowIndex+"'>"+ id +"</td><td id='affiliation-row"+rowIndex+"'>"+ affliationVal.join('; ') +"</td><td id='role-row"+rowIndex+"'>"+ roleVal.join(', ')+"</td><td id='contact-person-row"+rowIndex+"'>"+contactPersonStatus+"</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con("+rowIndex+")'></td></tr>";
 
             document.getElementById("div-current-contributors").style.display = "block"
             return table
@@ -1382,12 +1426,9 @@ dsAwardArray.addEventListener("change", changeAwardInputDsDescription)
 
 /// Auto populate once a contributor is selected
 dsContributorArray.addEventListener("change", function(e) {
-
-
   ///clear old entries once a contributor option is changed
   document.getElementById("para-save-contributor-status").innerHTML = '';
   document.getElementById("input-con-ID").value = '';
-  document.getElementById("input-con-affiliation").value = '';
 
   /// hide Other collaborators fields upon changing contributors
   document.getElementById("div-other-collaborators-1").style.display = "none"
@@ -1395,6 +1436,7 @@ dsContributorArray.addEventListener("change", function(e) {
   document.getElementById("div-other-collaborators-3").style.display = "none"
 
   currentContributortagify.removeAllTags()
+  currentAffliationtagify.removeAllTags()
   contactPerson.checked = false;
 
   var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
@@ -1406,12 +1448,12 @@ dsContributorArray.addEventListener("change", function(e) {
   }
   else {
     currentContributortagify.destroy()
-
+    currentAffliationtagify.destroy()
     document.getElementById("input-con-ID").disabled = true
-    document.getElementById("input-con-affiliation").disabled = true
+    affiliationInput.disabled = true
     document.getElementById("input-con-role").disabled = true
     document.getElementById("input-con-ID").value = "Loading..."
-    document.getElementById("input-con-affiliation").value = "Loading..."
+    affiliationInput.value = "Loading..."
     document.getElementById("input-con-role").value = "Loading..."
 
     var airKeyContent = parseJson(airtableConfigPath)
@@ -1432,10 +1474,9 @@ dsContributorArray.addEventListener("change", function(e) {
       }),
       fetchNextPage();
 
-
       leaveFieldsEmpty(conInfoObj["ID"],document.getElementById("input-con-ID"));
       leaveFieldsEmpty(conInfoObj["Role"],document.getElementById("input-con-role"));
-      leaveFieldsEmpty(conInfoObj["Affiliation"],document.getElementById("input-con-affiliation"));
+      leaveFieldsEmpty(conInfoObj["Affiliation"], affiliationInput);
 
       /// initiate tagify for contributor roles
       currentContributortagify = new Tagify(contributorRoles, {
@@ -1449,9 +1490,19 @@ dsContributorArray.addEventListener("change", function(e) {
           },
           duplicates: false
         });
+        /// initiate tagify for affiliations
+        currentAffliationtagify = new Tagify(affiliationInput, {
+            dropdown : {
+                classname : "color-blue",
+                enabled   : 0,         // show the dropdown immediately on focus
+                maxItems  : 25,
+                closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+            },
+            duplicates: false
+          });
 
       document.getElementById("input-con-ID").disabled = false
-      document.getElementById("input-con-affiliation").disabled = false
+      affiliationInput.disabled = false
       document.getElementById("input-con-role").disabled = false
     }),
     function done(err) {
@@ -1576,24 +1627,16 @@ function grabConInfoEntries() {
   var rowcountCon = currentConTable.rows.length;
   var currentConInfo = []
   for (i=1; i<rowcountCon; i++) {
-    var conRoleInfo = currentConTable.rows[i].cells[3].innerHTML.split(",");
+    var conRoleInfo = currentConTable.rows[i].cells[3].innerHTML;
+    var conAffliationInfo = currentConTable.rows[i].cells[2].innerHTML;
     var myCurrentCon = {"conName": currentConTable.rows[i].cells[0].innerHTML.trim(),
                         "conID": currentConTable.rows[i].cells[1].innerHTML.trim(),
-                        "conAffliation": currentConTable.rows[i].cells[2].innerHTML.trim(),
-                         "conRole": conRoleInfo[0],
-                        "conContact": currentConTable.rows[i].cells[4].innerHTML}
+                        "conAffliation": conAffliationInfo,
+                         "conRole": conRoleInfo,
+                        "conContact": currentConTable.rows[i].cells[4].innerHTML
+                        }
     currentConInfo.push(myCurrentCon);
-    if (conRoleInfo.length>1) {
-      for (var j=1;j<conRoleInfo.length;j++) {
-        myCurrentCon = {"conName": "",
-                        "conID": "",
-                        "conAffliation": "",
-                         "conRole": conRoleInfo[j],
-                        "conContact": ""}
-        currentConInfo.push(myCurrentCon);
-      }
-    }
-  };
+    };
   contributorObj["funding"] = fundingArray
   contributorObj["acknowledgment"] = acknowledgment
   contributorObj["contributors"] = currentConInfo
@@ -3014,6 +3057,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
   document.getElementById("para-progress-bar-error-status").innerHTML = ""
   progressBarUploadBf.value = 0
   bfSubmitDatasetBtn.disabled = true
+  pathSubmitDataset.disabled = true
   var err = false
   var completionStatus = 'Solving'
   document.getElementById("para-progress-bar-status").innerHTML = "Preparing files ..."
@@ -3031,6 +3075,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       log.error(error)
       console.error(error)
       bfSubmitDatasetBtn.disabled = false
+      pathSubmitDataset.disabled = false
     } else {
       // document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
       log.info('Completed submit function')
@@ -3085,6 +3130,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
         document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
         clearInterval(timerProgress)
         bfSubmitDatasetBtn.disabled = false
+        pathSubmitDataset.disabled = false
       }
     }
   }
@@ -3122,15 +3168,6 @@ ipcRenderer.on('selected-submit-dataset', (event, filepath) => {
       document.getElementById("para-info-local-submit").innerHTML = ""
       document.getElementById("selected-local-dataset-submit").placeholder = filepath[0];
     }
-  }
-})
-
-importLocalDsSubmit.addEventListener("click", function() {
-  var filepath = document.getElementById("selected-local-dataset-submit").placeholder;
-  if (filepath === "Select a folder") {
-    document.getElementById("para-info-local-submit").innerHTML = "<span style='color: red ;'>" + "Please select a folder!</span>"
-  } else {
-    document.getElementById("para-info-local-submit").innerHTML = "Imported!"
   }
 })
 

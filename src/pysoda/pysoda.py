@@ -24,8 +24,9 @@ import re
 import gevent
 from blackfynn import Blackfynn
 from blackfynn.log import get_logger
-from blackfynn.api.agent import agent_cmd
+from blackfynn.api.agent import agent_cmd, validate_agent_installation
 from blackfynn.api.agent import AgentError, check_port, socket_address
+from blackfynn import Settings
 from urllib.request import urlopen
 import json
 import collections
@@ -36,6 +37,9 @@ from openpyxl import load_workbook
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font
 from docx import Document
+
+from string import ascii_uppercase
+import itertools
 
 from datetime import datetime, timezone
 
@@ -479,6 +483,7 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
 
 
 def clear_queue():
+
     command = [agent_cmd(), "upload-status", "--cancel-all"]
 
     proc = subprocess.run(command, check=True)   # env=agent_env(?settings?)
@@ -591,8 +596,15 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error = "Error: You don't have permissions for uploading to this Blackfynn dataset"
         raise Exception(error)
 
+    ## check if agent is installed
+    try:
+        validate_agent_installation(Settings())
+    except AgentError:
+        raise AgentInstallationError('The Blackfynn agent is not installed on your computer. Visit the Blackfynn Agent website at "https://developer.blackfynn.io/agent" for installation instructions.')
+
     clear_queue()
     try:
+        ## check if agent is running in the background
         agent_running()
         def calluploadfolder():
 
