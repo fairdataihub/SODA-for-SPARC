@@ -1636,5 +1636,5 @@ def main_curate_function(soda_json_structure):
             if generate_option == "new":
                 if dataset_name:
                     myds = bf_create_new_dataset(dataset_name, bf)
-                bf_generate_new_dataset(soda_json_structure_new_bf, bf, myds)
+                bf_generate_new_dataset(soda_json_structure, bf, myds)
                 bf_add_manifest_files(manifest_files_structure, myds)
