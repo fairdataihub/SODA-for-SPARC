@@ -188,6 +188,7 @@ function highLevelFoldersDisableOptions() {
 
 function updateOverallJSONStructure(id) {
   if (id === allParentStepsJSON["high-level-folders"]) {
+    document.getElementById('input-global-path').value = "Mydatasetfolder/"
     var optionCards = document.getElementsByClassName("option-card high-level-folders");
     var newDatasetStructureJSONObj = {"folders": {}};
     var keys = [];
@@ -315,6 +316,7 @@ function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute('data-next'));
+
   hidePrevDivs(currentDiv, category);
 
   target.className = target.className + ' show';
@@ -335,7 +337,7 @@ function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
   document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
 
   if (ev.getAttribute('data-next') === "Question-getting-started-final") {
-    document.getElementById("nextBtn").disabled = false;
+    $("#nextBtn").click();
   }
 }
 
@@ -388,6 +390,7 @@ function hidePrevDivs(currentDiv, category) {
 
 function updateJSONStructureGettingStarted() {
 
+  document.getElementById('input-global-path').value = "Mydatasetfolder/"
 
   if ($('input[name="getting-started-1"]:checked')[0].id === "prepare-new") {
     sodaJSONObj["generate-dataset"] = {'path':'', 'destination':'', 'dataset-name': "", "if-existing": "", "generate-option": "new", "if-existing-files": ""}
@@ -413,11 +416,11 @@ function updateJSONStructureGettingStarted() {
   //       sodaJSONObj["generate-dataset"]["destination"] = "bf";
   //     }
   // }
-  if (sodaJSONObj["generate-dataset"]["dataset-name"] !== "") {
-    if (document.getElementById('input-global-path').value === "/") {
-      document.getElementById('input-global-path').value = sodaJSONObj["generate-dataset"]["dataset-name"] + "/"
-    }
-  }
+  // if (sodaJSONObj["generate-dataset"]["dataset-name"] !== "") {
+  // if (document.getElementById('input-global-path').value === "/") {
+    // document.getElementById('input-global-path').value = "Mydatasetfolder/"
+  // }
+  // }
 }
 
 function updateJSONStructureMetadataFiles() {

@@ -6130,12 +6130,18 @@ function finalScanningSODAJsonObject() {
   deleteEmptyKeysFromObject(sodaJSONObj);
 }
 
+document.getElementById("button-generate-comeback").addEventListener('click', function() {
+  document.getElementById('generate-dataset-progress-tab').style.display = "none";
+  $('#generate-dataset-tab').addClass('tab-active');
+})
+
 const progressBarNewCurate = document.getElementById('progress-bar-new-curate');
 
 document.getElementById('button-generate').addEventListener('click', function() {
 
   $($($(this).parent()[0]).parents()[0]).removeClass('tab-active');
   document.getElementById('prevBtn').style.display = "none";
+  document.getElementById('div-generate-comeback').style.display = "none"
   document.getElementById('generate-dataset-progress-tab').style.display = "flex";
 
   // updateJSON structure after Generate dataset tab
@@ -6148,7 +6154,7 @@ document.getElementById('button-generate').addEventListener('click', function() 
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = ""
 
   progressBarNewCurate.value = 0;
-  sodaJSONObj["generate-dataset"]["if-existing"]
+
   console.log(sodaJSONObj)
   // Initiate curation by calling Python funtion
   // document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ..."
@@ -6170,6 +6176,7 @@ document.getElementById('button-generate').addEventListener('click', function() 
        console.log('Completed curate function')
        console.log(res)
      }
+     document.getElementById('div-generate-comeback').style.display = "flex"
   })
 })
 
