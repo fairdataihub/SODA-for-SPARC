@@ -5813,7 +5813,12 @@ ipcRenderer.on('save-file-organization-dialog', (event) => {
 function showmenu(ev, category){
     //stop the real right click menu
     ev.preventDefault();
-    var mouseX = ev.pageX - 210;
+    var mouseX;
+    if (ev.pageX <= 200) {
+      mouseX = ev.pageX + 10;
+    } else {
+      mouseX = ev.pageX - 210;
+    }
     var mouseY = ev.pageY - 15;
     if (category === "folder") {
       menuFolder.style.display = "block";
