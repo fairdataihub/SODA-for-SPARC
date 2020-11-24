@@ -1272,6 +1272,48 @@ def mymovefile_with_metadata(src, dst):
     shutil.move(src, dst)
 
 
+def bf_create_new_dataset(datasetname, bf):
+    """
+
+    Args:
+        datasetname: name of the dataset to be created (string)
+        bf: Blackfynn account object
+    Action:
+        Creates dataset for the account specified
+    """
+    try:
+        error, c = '', 0
+        datasetname = datasetname.strip()
+
+        if check_forbidden_characters_bf(datasetname):
+            error = error + 'Error: A Blackfynn dataset name cannot contain any of the following characters: ' + forbidden_characters_bf + "<br>"
+            c += 1
+
+        if (not datasetname):
+            error = error + 'Error: Please enter valid dataset name' + "<br>"
+            c += 1
+
+        if (datasetname.isspace()):
+            error = error + 'Error: Please enter valid dataset name' + "<br>"
+            c += 1
+
+        if c>0:
+            raise Exception(error)
+
+        dataset_list = []
+        for ds in bf.datasets():
+            dataset_list.append(ds.name)
+        if datasetname in dataset_list:
+            raise Exception('Error: Dataset name already exists')
+        else:
+            ds = bf.create_dataset(datasetname)
+        
+        return ds
+    
+    except Exception as e:
+        raise e
+
+        
 def bf_generate_new_dataset(soda_json_structure, bf, ds):
 
     try:
