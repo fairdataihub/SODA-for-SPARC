@@ -474,7 +474,7 @@
         <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
         <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
           file here OR</p>
-          <button id="button-sub" class="div-file-import-button">Choose file</button>
+          <button id="button-sub" onclick="importMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')" class="div-file-import-button">Choose file</button>
         </div>
       </div>
       <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-submission-file-path"></p>
@@ -494,7 +494,7 @@
         <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
         <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
           file here OR</p>
-          <button class="div-file-import-button">Choose file</button>
+          <button onclick="importMetadataFiles(this, 'dataset_description', ['.csv', '.xlsx', '.xls', '.json'], 'para-ds-description-file-path')"  class="div-file-import-button">Choose file</button>
         </div>
       </div>
       <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-ds-description-file-path"></p>
@@ -514,7 +514,7 @@
         <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
         <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
           file here OR</p>
-          <button class="div-file-import-button">Choose file</button>
+          <button onclick="importMetadataFiles(this, 'subjects', ['.csv', '.xlsx', '.xls', '.json'], 'para-subjects-file-path')" class="div-file-import-button">Choose file</button>
         </div>
       </div>
       <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-subjects-file-path"></p>
@@ -535,7 +535,7 @@
         <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
         <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
           file here OR</p>
-          <button class="div-file-import-button">Choose file</button>
+          <button onclick="importMetadataFiles(this, 'samples', ['.csv', '.xlsx', '.xls', '.json'], 'para-samples-file-path')" class="div-file-import-button">Choose file</button>
         </div>
       </div>
       <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-samples-file-path"></p>
@@ -556,7 +556,7 @@
         <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
         <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
           file here OR</p>
-          <button class="div-file-import-button">Choose file</button>
+          <button onclick="importMetadataFiles(this, 'CHANGES', ['.txt'], 'para-changes-file-path')" class="div-file-import-button">Choose file</button>
         </div>
       </div>
       <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-changes-file-path"></p>
@@ -577,7 +577,7 @@
         <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
         <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
           file here OR</p>
-          <button class="div-file-import-button">Choose file</button>
+          <button onclick="importMetadataFiles(this, 'README', ['.txt'], 'para-readme-file-path')" class="div-file-import-button">Choose file</button>
         </div>
       </div>
       <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-readme-file-path"></p>
@@ -698,11 +698,53 @@
             </div>
             <div style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
               <button onclick="showBFAddAccountBootbox()" style="float:right;border-radius: 8px;margin:0 10px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;width: 160px;border:1px solid var(--color-bg-plum)">Add account</button>
-              <button onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"  data-next="Question-generate-dataset-BF-dataset" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 160px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm account</button>
+              <button onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"  data-next="Question-generate-dataset-options" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 160px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm account</button>
             </div>
           </div>
         </div>
-        <div class="individual-question generate-dataset" id="Question-generate-dataset-BF-dataset">
+
+        <div class="individual-question generate-dataset" id="Question-generate-dataset-options">
+            <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Which dataset would you like to generate on?
+              <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
+              <div style="display:flex;flex-direction:row;">
+                <div style="margin:15px 0;">
+                  <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div" onclick="transitionSubQuestions(this, 'Question-generate-dataset-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                      <div class="card-head">
+                        <div class="folder-checkbox">
+                          <input class="folder-input-check" name="generate-4" id="generate-BF-dataset-options-new" type="radio">
+                          <label for="generate-BF-dataset-options-new"></label>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <i class="fas fa-plus"></i>
+                        <h2>I want to generate on a new dataset</h2>
+                      </div>
+                    </div>
+                  </div>
+
+              <div style="margin:15px 0;">
+                <!-- <button> -->
+                <div class="option-card radio-button" data-next="Question-generate-dataset-BF-dataset" onclick="transitionSubQuestions(this, 'Question-generate-dataset-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                    <div class="card-head">
+                      <div class="folder-checkbox">
+                        <input class="folder-input-check" name="generate-4" id="generate-BF-dataset-options-existing" type="radio">
+                        <label for="generate-BF-dataset-options-existing"></label>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <i class="far fa-check-circle" style="color: var(--tagify-dd-color-primary)"></i>
+                      <h2>I want to generate on an existing dataset</h2>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="individual-question generate-dataset" id="Question-generate-dataset-BF-dataset">
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);">What is your Blackfynn dataset?</label>
@@ -712,12 +754,125 @@
                 </select>
               </div>
             </div>
-            <button onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-dataset', 'generate-dataset-tab', 'delete', 'generate-dataset')" data-next="Question-generate-dataset-generate-div" style="margin:0 auto;display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm dataset</button>
+            <button onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-dataset', 'generate-dataset-tab', 'delete', 'generate-dataset')" data-next="Question-generate-dataset-existing-folders-options" style="margin:0 auto;display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm dataset</button>
           </div>
         </div>
         </div>
         </div>
       </div>
+
+      <div class="individual-question generate-dataset" id="Question-generate-dataset-existing-folders-options">
+          <div class="ui form" style="width:100%">
+          <div class="grouped fields">
+            <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">How would you like to handle existing folders? <i style="margin-left:5px;" class="fas fa-info-circle"></i>
+            <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
+            <div style="display:flex;flex-direction:row;">
+              <div style="margin:15px 0;">
+                <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                    <div class="card-head">
+                      <div class="folder-checkbox">
+                        <input class="folder-input-check" name="generate-5" id="existing-folders-duplicate" type="radio">
+                        <label for="existing-folders-duplicate"></label>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <i class="far fa-copy" style="color:var(--tagify-dd-color-primary)"></i>
+                      <h2>Create a duplicate</h2>
+                    </div>
+                  </div>
+                </div>
+
+            <div style="margin:15px 0;">
+              <!-- <button> -->
+              <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input class="folder-input-check" name="generate-5" id="existing-folders-replace" type="radio">
+                      <label for="existing-folders-replace"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <i class="fas fa-eraser" style="color: red"></i>
+                    <h2>Replace</h2>
+                  </div>
+              </div>
+            </div>
+            <div style="margin:15px 0;">
+              <!-- <button> -->
+              <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input class="folder-input-check" name="generate-5" id="existing-folders-merge" type="radio">
+                      <label for="existing-folders-merge"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <i class="fas fa-object-group" style="color: var(--color-teal)"></i>
+                    <h2>Merge</h2>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="individual-question generate-dataset" id="Question-generate-dataset-existing-files-options">
+        <div class="ui form" style="width:100%">
+        <div class="grouped fields">
+          <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">How would you like to handle existing files? <i style="margin-left:5px;" class="fas fa-info-circle"></i>
+          <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
+          <div style="display:flex;flex-direction:row;">
+            <div style="margin:15px 0;">
+              <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input class="folder-input-check" name="generate-6" id="existing-files-duplicate" type="radio">
+                      <label for="existing-files-duplicate"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <i class="far fa-copy" style="color:var(--tagify-dd-color-primary)"></i>
+                    <h2>Create a duplicate</h2>
+                  </div>
+                </div>
+              </div>
+
+          <div style="margin:15px 0;">
+            <!-- <button> -->
+            <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input class="folder-input-check" name="generate-6" id="existing-files-duplicate" type="radio">
+                    <label for="existing-files-duplicate"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <i class="fas fa-eraser" style="color: red"></i>
+                  <h2>Replace</h2>
+                </div>
+            </div>
+          </div>
+          <div style="margin:15px 0;">
+            <!-- <button> -->
+            <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input class="folder-input-check" name="generate-6" id="existing-files-ignore" type="radio">
+                    <label for="existing-files-ignore"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <i class="fas fa-object-group" style="color: var(--color-teal)"></i>
+                  <h2>Keep last modified</h2>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
       <div class="individual-question generate-dataset" id="Question-generate-dataset-locally-destination">
         <div class="ui form" style="width:450px">
@@ -733,14 +888,20 @@
             </div>
           </div>
       </div>
+
+
       <div class="individual-question generate-dataset" id="Question-generate-dataset-modify-current-ds">
         <h3 class="question-title" id="modify-current-confirmation" style='text-align:left;line-height:2'></h3>
         <br>
         <button id="generate" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 auto; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Generate</button>
       </div>
+
+
       <div class="individual-question generate-dataset" id="Question-generate-dataset-generate-div">
         <button id="button-generate" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 auto; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Generate</button>
       </div>
+
+
       <div class="individual-question generate-dataset" id="Question-generate-dataset-bf-confirmation">
         <h3 class="question-title" id="generate-bf-confirmation" style='text-align:left;line-height:2'></h3>
         <br>

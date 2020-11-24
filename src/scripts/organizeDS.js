@@ -17,15 +17,7 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
 
   var itemToDelete = ev.parentElement.innerText
   var promptVar;
-  var highLevelFolderBool;
   var type; // renaming files or folders
-
-  /// check for high-level folders (if so, folders cannot be deleted from the current UI)
-  if (highLevelFolders.includes(itemToDelete)) {
-    highLevelFolderBool = true
-  } else {
-    highLevelFolderBool = false
-  }
 
   if (ev.classList.value.includes("myFile")) {
     promptVar = "file";
@@ -33,34 +25,26 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
   } else if (ev.classList.value.includes("myFol")) {
     promptVar = "folder";
     type = "folders"
-  }
+  };
 
-  if (highLevelFolderBool) {
-    bootbox.alert({
-      message: "High-level SPARC folders cannot be deleted!",
-      centerVertical: true
-    })
-  } else {
-    bootbox.confirm({
-      title: "Delete "+ promptVar,
-      message: "Are you sure you want to delete this " + promptVar + "?",
-      onEscape: true,
-      centerVertical: true,
-      callback: function(result) {
-      if(result !== null && result === true) {
-
-        /// get current location of folders or files
-        var filtered = getGlobalPath(organizeCurrentLocation)
-        var myPath = getRecursivePath(filtered.slice(1), inputGlobal)
-        // update Json object with new folder created
-        delete myPath[type][itemToDelete];
-        // update UI with updated jsob obj
-        listItems(myPath, uiItem)
-        getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal)
-        }
+  bootbox.confirm({
+    title: "Delete "+ promptVar,
+    message: "Are you sure you want to delete this " + promptVar + "?",
+    onEscape: true,
+    centerVertical: true,
+    callback: function(result) {
+    if(result !== null && result === true) {
+      /// get current location of folders or files
+      var filtered = getGlobalPath(organizeCurrentLocation)
+      var myPath = getRecursivePath(filtered.slice(1), inputGlobal)
+      // update Json object with new folder created
+      delete myPath[type][itemToDelete];
+      // update UI with updated jsonobj
+      listItems(myPath, uiItem)
+      getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal)
       }
-    })
-  }
+    }
+  })
 }
 
 ///// Option to rename a folder

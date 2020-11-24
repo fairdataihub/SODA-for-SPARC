@@ -64,9 +64,31 @@ function dropHandler(ev, paraElement, metadataFile) {
 }
 
 
-document.getElementById('button-sub').addEventListener('click', (event) => {
-    ipcRenderer.send('open-file-dialog-metadata-curate');
-})
-ipcRenderer.on('selected-metadataCurate', (event, path) => {
-  console.log(path)
+var metadataIndividualFile = "";
+var metadataAllowedExtensions = [];
+var metadataParaElement = "";
+
+function importMetadataFiles(ev, metadataFile, extentionList, paraEle) {
+  metadataIndividualFile = metadataFile;
+  metadataAllowedExtensions = extentionList;
+  metadataParaElement = paraEle;
+  ipcRenderer.send('open-file-dialog-metadata-curate');
+}
+
+ipcRenderer.on('selected-metadataCurate', (event, mypath) => {
+  var dotCount = path.basename(mypath[0]).trim().split(".").length - 1;
+  if (dotCount === 1)  {
+    var metadataWithoutExtension = path.basename(mypath[0]).slice(0, path.basename(mypath[0]).indexOf('.'));
+    var extension = path.basename(mypath[0]).slice(path.basename(mypath[0]).indexOf('.'));
+
+    if (metadataWithoutExtension === metadataIndividualFile) {
+      if (metadataAllowedExtensions.includes(extension)) {
+        document.getElementById(metadataParaElement).innerHTML = mypath[0]
+      } else {
+        document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>We only support SPARC metadata files in the format listed above!</span>"
+      }
+    } else {
+      document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>Please only import SPARC metadata files!</span>"
+    }
+  }
 })

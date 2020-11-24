@@ -5240,6 +5240,7 @@ var sodaJSONObj = {
         "path": "",
         "dataset-name": "",
         "if-existing": "",
+        "generate-option": ""
     }
 }
 
