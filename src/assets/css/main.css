@@ -465,7 +465,7 @@ button[disabled]{
 }
 
 .div-organize-generate-dataset.metadata i {
-  color: orange !important;
+  color: var(--tagify-dd-color-primary) !important;
   font-size: 50px !important
 }
 
@@ -543,6 +543,7 @@ button[disabled]{
 
 .metadata-button.button-generate-dataset.done p{
   color: var(--color-light-green);
+  font-weight: 600;
 }
 
 .metadata-button.button-generate-dataset.done i:before {
@@ -555,8 +556,6 @@ button[disabled]{
   margin-bottom:10px;
   margin-left: 5px;
 }
-
-
 
 /* file and folder */
 .myFile {
