@@ -388,28 +388,35 @@ function hidePrevDivs(currentDiv, category) {
 
 function updateJSONStructureGettingStarted() {
 
-  if ($('input[name="getting-started-1"]:checked')[0].id === "curate-new-dataset") {
-    var newDatasetName = $('#inputNewNameDataset').val();
-    sodaJSONObj["bf-account-selected"]["account-name"] = "";
-    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
-    sodaJSONObj["generate-dataset"] = {'path':'', 'destination':'', 'dataset-name': newDatasetName, "if-existing": "", "generate-option": "new", "if-existing-files": ""}
 
-
-  } else if ($('input[name="getting-started-1"]:checked')[0].id === "modify-existing") {
-      if ($('input[name="getting-started-2"]:checked')[0].id === "existing-location") {
-        var localPath = $('#location-new-dataset')[0].placeholder;
-        sodaJSONObj["generate-dataset"]["path"] = localPath;
-        sodaJSONObj["generate-dataset"]["dataset-name"] = path.basename(localPath);
-        // populateOrganizeDatasetUI(sodaJSONObj['dataset-structure'], sodaJSONObj['generate-dataset']['path']);
-
-      } else if ($('input[name="getting-started-2"]:checked')[0].id === "existing-BF") {
-        sodaJSONObj["bf-account-selected"]["account-name"] = $($('#bfallaccountlist').find('option:selected')[0]).val();
-        sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $($('#curatebfdatasetlist').find('option:selected')[0]).val();
-        sodaJSONObj["generate-dataset"]["destination"] = "bf";
-      }
+  if ($('input[name="getting-started-1"]:checked')[0].id === "prepare-new") {
+    sodaJSONObj["generate-dataset"] = {'path':'', 'destination':'', 'dataset-name': "", "if-existing": "", "generate-option": "new", "if-existing-files": ""}
   }
+  //   var newDatasetName = $('#inputNewNameDataset').val().trim();
+  //   sodaJSONObj["bf-account-selected"]["account-name"] = "";
+  //   sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
+  //   sodaJSONObj["generate-dataset"] = {'path':'', 'destination':'', 'dataset-name': newDatasetName, "if-existing": "", "generate-option": "new", "if-existing-files": ""}
+  // } else if ($('input[name="getting-started-1"]:checked')[0].id === "previous-progress") {
+  //
+  // }
+
+  // } else if ($('input[name="getting-started-1"]:checked')[0].id === "modify-existing") {
+  //     if ($('input[name="getting-started-2"]:checked')[0].id === "existing-location") {
+  //       var localPath = $('#location-new-dataset')[0].placeholder;
+  //       sodaJSONObj["generate-dataset"]["path"] = localPath;
+  //       sodaJSONObj["generate-dataset"]["dataset-name"] = path.basename(localPath);
+  //       // populateOrganizeDatasetUI(sodaJSONObj['dataset-structure'], sodaJSONObj['generate-dataset']['path']);
+  //
+  //     } else if ($('input[name="getting-started-2"]:checked')[0].id === "existing-BF") {
+  //       sodaJSONObj["bf-account-selected"]["account-name"] = $($('#bfallaccountlist').find('option:selected')[0]).val();
+  //       sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $($('#curatebfdatasetlist').find('option:selected')[0]).val();
+  //       sodaJSONObj["generate-dataset"]["destination"] = "bf";
+  //     }
+  // }
   if (sodaJSONObj["generate-dataset"]["dataset-name"] !== "") {
-    document.getElementById('input-global-path').value = sodaJSONObj["generate-dataset"]["dataset-name"] + "/"
+    if (document.getElementById('input-global-path').value === "/") {
+      document.getElementById('input-global-path').value = sodaJSONObj["generate-dataset"]["dataset-name"] + "/"
+    }
   }
 }
 
@@ -505,8 +512,12 @@ function populateOrganizeDatasetUI(currentLocation, datasetFolder) {
 function updateJSONStructureGenerate() {
   if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop") {
     var localDestination = $('#input-destination-generate-dataset-locally')[0].placeholder;
+    var newDatasetName = $('#inputNewNameDataset').val().trim();
+
     sodaJSONObj["generate-dataset"]['destination'] = "local";
     sodaJSONObj["generate-dataset"]['path'] = localDestination;
+    sodaJSONObj["generate-dataset"]['dataset-name'] = newDatasetName;
+
   } else if ($('input[name="generate-1"]:checked')[0].id === "generate-upload-BF") {
     sodaJSONObj["generate-dataset"]['destination'] = "bf";
     sodaJSONObj["bf-account-selected"]["account-name"] = $($('#bfallaccountlist').find('option:selected')[0]).val();
@@ -518,19 +529,25 @@ function updateJSONStructureGenerate() {
         sodaJSONObj["generate-dataset"]["if-existing"] = "replace";
       } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-merge") {
         sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
+      } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-skip") {
+        sodaJSONObj["generate-dataset"]["if-existing"] = "skip";
       }
       if ($('input[name="generate-6"]:checked')[0].id === "existing-files-duplicate") {
         sodaJSONObj["generate-dataset"]["if-existing-files"] = "create-duplicate";
       } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-replace") {
         sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
-      } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-ignore") {
-        sodaJSONObj["generate-dataset"]["if-existing-files"] = "ignore";
+      } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-skip") {
+        sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
       }
       sodaJSONObj["generate-dataset"]["dataset-name"] = "";
       sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $($('#curatebfdatasetlist').find('option:selected')[0]).val();
+    } else if ($('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-new") {
+      var newDatasetName = $('#inputNewNameDataset').val().trim();
+      sodaJSONObj["generate-dataset"]['dataset-name'] = newDatasetName;
+      sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";
+      sodaJSONObj["generate-dataset"]["if-existing-files"] = "create-duplicate";
     }
   }
-  console.log(sodaJSONObj)
 }
 
 function deleteEmptyKeysFromObject(object) {

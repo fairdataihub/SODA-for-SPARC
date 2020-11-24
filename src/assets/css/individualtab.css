@@ -1,5 +1,5 @@
 .option-card {
-  max-height: 150px;
+  max-height: 160px;
   min-height: 140px;
   max-width: 160px;
   flex-direction: column;
@@ -38,8 +38,8 @@
 }
 
 .option-card.radio-button {
-  width: 140px  !important;
-  height: 140px !important;
+  width: 180px  !important;
+  height: 180px !important;
   grid-template-rows: 10% auto !important
 }
 
@@ -50,12 +50,12 @@
 }
 
 .option-card.radio-button .card-body i {
-  font-size: 36px;
+  font-size: 39px;
   color: var(--color-bg-orange)
 }
 
 .option-card.radio-button .card-body h2 {
-  font-size: 13px
+  font-size: 14px
 }
 
 .option-card.radio-button .card-head {
@@ -79,7 +79,7 @@
 
 .card-head {
   /* text-align: center; */
-  padding-top: 5px;
+  padding-top: 0;
   font-size: 11px;
   display: flex;
   flex-direction: row;
@@ -89,7 +89,8 @@
 .card-head h2 {
   color: #000;
   font-size: 14px;
-  padding-left: 20px
+  padding-left: 20px;
+  padding-top: 5px;
 }
 
 .card-head i {
@@ -104,14 +105,15 @@
 }
 
 .option-card.radio-button .folder-input-check + label:before {
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
 }
 
 .option-card.radio-button .folder-input-check:checked + label:before {
   background-color: #20b2aa !important;
   border-color: #20b2aa !important;
   color: #fff!important;
+  font-size: 16px;
 }
 
 .folder-input-check {

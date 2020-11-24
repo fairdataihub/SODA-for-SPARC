@@ -2752,6 +2752,16 @@ const curateDatasetDropdown = document.getElementById('curatebfdatasetlist');
 
 loadAllBFAccounts()
 
+curateDatasetDropdown.addEventListener('change', function() {
+  var curateSelectedbfdataset = curateDatasetDropdown.options[curateDatasetDropdown.selectedIndex].text;
+
+  if (curateSelectedbfdataset == 'Select dataset') {
+    document.getElementById('button-confirm-bf-dataset').style.display = "none";
+  } else{
+    document.getElementById('button-confirm-bf-dataset').style.display = "flex";
+  }
+})
+
 curateBFaccountList.addEventListener('change', function() {
   curateBFAccountLoadStatus.innerHTML = "Loading account details...";
   curateBFAccountLoad.style.display = 'block';
@@ -2759,19 +2769,20 @@ curateBFaccountList.addEventListener('change', function() {
   removeOptions(curateDatasetDropdown);
   addOption(curateDatasetDropdown, "Loading", "Loading");
 
-  var selectedbfaccount = curateBFaccountList.options[curateBFaccountList.selectedIndex].text
-  if (selectedbfaccount == 'Select') {
+  var curateSelectedbfaccount = curateBFaccountList.options[curateBFaccountList.selectedIndex].text
+
+  if (curateSelectedbfaccount == 'Select') {
     curateBFAccountLoadStatus.innerHTML = "";
-    curateBFAccountLoad.style.display = 'none'
+    curateBFAccountLoad.style.display = 'none';
   } else{
-    var myitemselect = selectedbfaccount
+    var myitemselect = curateSelectedbfaccount
     var option = document.createElement("option")
     option.textContent = myitemselect
     option.value = myitemselect
-    curateBFaccountList.value = selectedbfaccount
+    curateBFaccountList.value = curateSelectedbfaccount
     curateShowAccountDetails(curateBFaccountList)
     curateBFAccountLoadStatus.innerHTML = ""
-    updateDatasetCurate(curateDatasetDropdown, curateBFaccountList)
+    updateDatasetCurate(curateDatasetDropdown, curateBFaccountList);
   }
 })
 
@@ -2833,6 +2844,10 @@ function updateAllBfAccountList(dropdown){
       curateBFAccountLoadStatus.innerHTML = ""
       curateBFAccountLoad.style.display = 'none'
     }
+
+    var options = dropdown.getElementsByTagName("option");
+    options[0].disabled = true;
+
     if (res[0] === "Select" && res.length === 1) {
       curateBFAccountLoadStatus.innerHTML = "No existing accounts to load. Please add a new account!"
     }
@@ -6049,23 +6064,42 @@ function addDetailsForFile(ev) {
 }
 
 //// Select to choose a local dataset
-document.getElementById("location-new-dataset").addEventListener("click", function() {
-  document.getElementById("location-new-dataset").placeholder = "Browse here"
-  ipcRenderer.send('open-file-dialog-newdataset-curate');
-})
+// document.getElementById("location-new-dataset").addEventListener("click", function() {
+//   document.getElementById("location-new-dataset").placeholder = "Browse here"
+//   ipcRenderer.send('open-file-dialog-newdataset-curate');
+// })
+//
+// ipcRenderer.on('selected-new-datasetCurate', (event, filepath) => {
+//   if (filepath.length > 0) {
+//     if (filepath != null){
+//       document.getElementById("location-new-dataset").placeholder = filepath[0];
+//       document.getElementById("div-confirm-location-new-dataset").style.display = "flex";
+//     }
+//   }
+// })
 
-ipcRenderer.on('selected-new-datasetCurate', (event, filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null){
-      document.getElementById("location-new-dataset").placeholder = filepath[0];
-      document.getElementById("div-confirm-location-new-dataset").style.display = "flex";
+// document.getElementById('inputNewNameDataset').addEventListener('keydown', function() {
+//   // document.getElementById('para-new-name-dataset-message').innerHTML = ""
+// })
+
+$("#inputNewNameDataset").keyup(function() {
+  var newName = $("#inputNewNameDataset").val().trim();
+  if (newName === "") {
+    document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
+  } else {
+    if (check_forbidden_characters_bf(newName)) {
+      document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
+      document.getElementById('button-generate').disabled = true;
+      $('#button-generate').css({"background":"#cccccc", "color":"#696969"})
+      document.getElementById('para-new-name-dataset-message').innerHTML = "Error: A Blackfynn dataset name cannot contain any of the following characters: \/:*?'<>."
+    } else {
+      document.getElementById('div-confirm-inputNewNameDataset').style.display = "flex";
+      document.getElementById('para-new-name-dataset-message').innerHTML = "";
+      document.getElementById('button-generate').disabled = false;
+      $('#button-generate').css({"background":"var(--color-light-green)", "color":"#fff"})
     }
   }
-})
-
-document.getElementById('inputNewNameDataset').addEventListener('keydown', function() {
-  document.getElementById('div-confirm-inputNewNameDataset').style.display = "flex"
-})
+});
 
 //// Select to choose a local dataset
 document.getElementById("input-destination-generate-dataset-locally").addEventListener("click", function() {
@@ -6091,9 +6125,9 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
 // remove all empty keys from JSON object before passing it to the backend
 function finalScanningSODAJsonObject() {
 
-  deleteEmptyKeysFromObject(sodaJSONObj);
-  deleteEmptyKeysFromObject(sodaJSONObj["bf-account-selected"]);
   deleteEmptyKeysFromObject(sodaJSONObj["bf-dataset-selected"]);
+  deleteEmptyKeysFromObject(sodaJSONObj["bf-account-selected"]);
+  deleteEmptyKeysFromObject(sodaJSONObj);
 }
 
 const progressBarNewCurate = document.getElementById('progress-bar-new-curate');
@@ -6138,3 +6172,21 @@ document.getElementById('button-generate').addEventListener('click', function() 
      }
   })
 })
+
+var forbidden_characters_bf = '\/:*?"<>';
+
+function check_forbidden_characters_bf(my_string) {
+  // Args:
+  // my_string: string with characters (string)
+  // Returns:
+  // False: no forbidden character
+  // True: presence of forbidden character(s)
+  var check = false;
+  for (var i = 0; i < forbidden_characters_bf.length;i++) {
+      if(my_string.indexOf(forbidden_characters_bf[i]) > -1){
+          return true
+          break
+      }
+  }
+  return check
+}
