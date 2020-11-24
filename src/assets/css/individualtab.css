@@ -648,6 +648,7 @@
   transition: all 0.3s ease-out !important;
   margin: 0 auto;
   margin-bottom: 30px;
+  /* border-top:1px solid var(--color-bg-plum) */
 }
 
 .individual-question.show {
@@ -742,6 +743,7 @@
 
 .individual-question.prev {
   display:flex;
+  /* border-top: 1px solid #f5f5f5 */
 }
 
 .button-active-now.active {

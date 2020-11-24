@@ -6069,7 +6069,7 @@ document.getElementById('inputNewNameDataset').addEventListener('keydown', funct
 
 //// Select to choose a local dataset
 document.getElementById("input-destination-generate-dataset-locally").addEventListener("click", function() {
-  document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here"
+  document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
   ipcRenderer.send('open-file-dialog-local-destination-curate');
 })
 
@@ -6077,8 +6077,14 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
   if (filepath.length > 0) {
     if (filepath != null){
       document.getElementById("input-destination-generate-dataset-locally").placeholder = filepath[0];
-      document.getElementById("div-confirm-destination-locally").style.display = "flex";
+      document.getElementById('div-confirm-destination-locally').style.display = "flex";
+      $("#div-confirm-destination-locally button").show()
     }
+  } else {
+    $("#Question-generate-dataset-generate-div").removeClass('show');
+    $("#Question-generate-dataset-generate-div").removeClass('test2');
+    document.getElementById("div-confirm-destination-locally").style.display = "none";
+    $("#div-confirm-destination-locally button").hide()
   }
 })
 

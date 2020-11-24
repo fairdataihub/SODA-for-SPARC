@@ -392,7 +392,7 @@ function updateJSONStructureGettingStarted() {
     var newDatasetName = $('#inputNewNameDataset').val();
     sodaJSONObj["bf-account-selected"]["account-name"] = "";
     sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
-    sodaJSONObj["generate-dataset"] = {'path':'', 'destination':'', 'dataset-name': newDatasetName, "if-existing": ""}
+    sodaJSONObj["generate-dataset"] = {'path':'', 'destination':'', 'dataset-name': newDatasetName, "if-existing": "", "generate-option": "new", "if-existing-files": ""}
 
 
   } else if ($('input[name="getting-started-1"]:checked')[0].id === "modify-existing") {
@@ -507,12 +507,30 @@ function updateJSONStructureGenerate() {
     var localDestination = $('#input-destination-generate-dataset-locally')[0].placeholder;
     sodaJSONObj["generate-dataset"]['destination'] = "local";
     sodaJSONObj["generate-dataset"]['path'] = localDestination;
-    sodaJSONObj["generate-dataset"]['if-existing'] = "new";
   } else if ($('input[name="generate-1"]:checked')[0].id === "generate-upload-BF") {
     sodaJSONObj["generate-dataset"]['destination'] = "bf";
     sodaJSONObj["bf-account-selected"]["account-name"] = $($('#bfallaccountlist').find('option:selected')[0]).val();
-    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $($('#curatebfdatasetlist').find('option:selected')[0]).val();
+
+    if ($('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing") {
+      if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-duplicate") {
+        sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";
+      } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-replace") {
+        sodaJSONObj["generate-dataset"]["if-existing"] = "replace";
+      } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-merge") {
+        sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
+      }
+      if ($('input[name="generate-6"]:checked')[0].id === "existing-files-duplicate") {
+        sodaJSONObj["generate-dataset"]["if-existing-files"] = "create-duplicate";
+      } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-replace") {
+        sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
+      } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-ignore") {
+        sodaJSONObj["generate-dataset"]["if-existing-files"] = "ignore";
+      }
+      sodaJSONObj["generate-dataset"]["dataset-name"] = "";
+      sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $($('#curatebfdatasetlist').find('option:selected')[0]).val();
+    }
   }
+  console.log(sodaJSONObj)
 }
 
 function deleteEmptyKeysFromObject(object) {
@@ -548,7 +566,3 @@ function updateJSONStructureDSstructure() {
 // function saveOrganizeProgress() {
 //
 // }
-
-$(document).ready(function() {
-  $("#welcome-section").toggleClass('is-shown');
-});
