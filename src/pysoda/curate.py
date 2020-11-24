@@ -1131,7 +1131,30 @@ def add_local_manifest_files(manifest_files_structure, datasetpath):
     except Exception as e:
         raise e   
 
+def bf_add_manifest_files(manifest_files_structure, ds):
+    # IN PROGRESS
+    try:
+        for key in manifest_files_structure.keys():  
+            manifestpath = manifest_files_structure[key]
+            for item in ds:
+                if item.name == key and item.type == "Collection":
+                    destination_folder_id = item.id
+                    #delete existing manifest files
+                    for subitem in item:
+                        if subitem.name == "manifest":
+                            subitem.delete()   
+                    #upload new manifest files
+                    bf_upload_file(item, manifestpath)
+                    break
+        shutil.rmtree(manifestpath) if isdir(manifestpath) else 0
+    
+    except Exception as e:
+        raise e     
+        
+def bf_upload_file(item, path):
+    item.upload(path)
 
+    
 def get_generate_dataset_size(soda_json_structure, manifest_files_structure):
     """
     Function to get the size of the data to be generated (not existing at the local or Blackfynn destination)
@@ -1526,8 +1549,8 @@ def main_curate_function(soda_json_structure):
     if "generate-dataset" in main_keys and soda_json_structure["generate-dataset"]["destination"] == "local":
         generate_dataset = soda_json_structure["generate-dataset"]
         local_dataset_path = generate_dataset["path"]
-        if generate_dataset["if-existing"] == "merge":
-            local_dataset_path = join(local_dataset_path, generate_dataset["dataset-name"])
+        # if generate_dataset["if-existing"] == "merge":
+        #     local_dataset_path = join(local_dataset_path, generate_dataset["dataset-name"])
         if not isdir(local_dataset_path):
             error_message = 'Error: The Path ' + local_dataset_path + ' is not found. Please select a valid destination folder for the new dataset'
             curatestatus = 'Done'
@@ -1587,6 +1610,12 @@ def main_curate_function(soda_json_structure):
             if error: 
                 curatestatus = 'Done'
                 raise Exception(error)
+
+            if not soda_json_structure["dataset-structure"]["folders"]:
+                curatestatus = 'Done'
+                error.append('Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset')
+                raise Exception(error) 
+
         except Exception as e:
             curatestatus = 'Done'
             raise e
