@@ -169,21 +169,9 @@ function highLevelFoldersDisableOptions() {
   var highLevelFolderOptions = datasetStructureJSONObj["folders"];
   var allowUnChooseOption = {};
   for (var folder in highLevelFolderOptions) {
-    if (
-      JSON.stringify(datasetStructureJSONObj["folders"][folder]["files"]) === "{}" &&
-     JSON.stringify(datasetStructureJSONObj["folders"][folder]["folders"]) === "{}"
-   ) {
-     allowUnChooseOption[folder] = true
-   } else {
-     allowUnChooseOption[folder] = false
-   }
+    var optionCard = $("#"+folder+"-check").parents()[2];
+    $(optionCard).addClass('disabled');
   }
-  Object.keys(allowUnChooseOption).forEach((element) => {
-    if (!allowUnChooseOption[element]) {
-      var optionCard = $("#"+element+"-check").parents()[2];
-      $(optionCard).addClass('disabled');
-    }
-  })
 }
 
 function updateOverallJSONStructure(id) {
