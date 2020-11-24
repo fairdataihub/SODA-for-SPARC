@@ -6114,7 +6114,7 @@ document.getElementById('button-generate').addEventListener('click', function() 
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = ""
 
   progressBarNewCurate.value = 0;
-
+  sodaJSONObj["generate-dataset"]["if-existing"]
   console.log(sodaJSONObj)
   // Initiate curation by calling Python funtion
   // document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ..."

@@ -37,7 +37,7 @@ from datetime import datetime, timezone
 from validator_soda import pathToJsonStruct, validate_high_level_folder_structure, validate_high_level_metadata_files, \
 validate_sub_level_organization, validate_submission_file, validate_dataset_description_file
 
-from pysoda import clear_queue, agent_running
+from pysoda import clear_queue, agent_running, check_forbidden_characters
 
 ### Global variables
 curateprogress = ' '
@@ -1402,7 +1402,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
         recursive_create_folder_for_bf(dataset_structure, tracking_json_structure, existing_folder_option)
 
         # 2. Scan the dataset structure and compile a list of files to be uploaded along with desired renaming
-        existing_file_option = soda_json_structure["generate-dataset"]["if-existing-file"]
+        existing_file_option = soda_json_structure["generate-dataset"]["if-existing-files"]
         list_upload_files = []
         list_upload_files = recursive_dataset_scan_for_bf(dataset_structure, tracking_json_structure, existing_file_option, list_upload_files)
         
@@ -1495,7 +1495,6 @@ def main_curate_function(soda_json_structure):
     # 1.2. Check that the bf destination is valid if generate on bf, or any other bf actions are requested
     if "generate-dataset" in main_keys and soda_json_structure["generate-dataset"]["destination"] == "bf":
         accountname = soda_json_structure["bf-account-selected"]["account-name"]  
-        bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]  
 
         # check that the blackfynn account is valid
         try:
@@ -1504,24 +1503,28 @@ def main_curate_function(soda_json_structure):
             curatestatus = 'Done'
             error.append('Error: Please select a valid Blackfynn account')
             raise Exception(error)
-
-        # check that the blackfynn dataset is valid
-        try:
-            myds = bf.get_dataset(bfdataset)
-        except Exception as e:
-            curatestatus = 'Done'
-            error.append('Error: Please select a valid Blackfynn dataset')
-            raise Exception(error)           
-
-        # check that the user has permissions for modifying the dataset
-        try:
-            role = bf_get_current_user_permission(bf, myds)
-            if role not in ['owner', 'manager', 'editor']:
+        
+        # if uploading on an existing bf dataset
+        dataset_name = soda_json_structure["generate-dataset"]["dataset-name"]
+        if not dataset_name:
+            # check that the blackfynn dataset is valid
+            try:
+                bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+                myds = bf.get_dataset(bfdataset)
+            except Exception as e:
                 curatestatus = 'Done'
-                error.append("Error: You don't have permissions for uploading to this Blackfynn dataset")
-                raise Exception(error)
-        except Exception as e:
-            raise e
+                error.append('Error: Please select a valid Blackfynn dataset')
+                raise Exception(error)           
+
+            # check that the user has permissions for uploading and modifying the dataset
+            try:
+                role = bf_get_current_user_permission(bf, myds)
+                if role not in ['owner', 'manager', 'editor']:
+                    curatestatus = 'Done'
+                    error.append("Error: You don't have permissions for uploading to this Blackfynn dataset")
+                    raise Exception(error)
+            except Exception as e:
+                raise e
 
     # 1.3. Check that specified dataset files and folders are valid (existing path) if generate dataset is requested
     # Note: Empty folders and 0 kb files will be removed without warning (a warning will be provided on the front end before starting the curate process)
@@ -1589,6 +1592,7 @@ def main_curate_function(soda_json_structure):
             
         if soda_json_structure["generate-dataset"]["destination"] == "bf":
             if generate_option == "new":
-                print("GENERATE-BF")
+                if dataset_name:
+                    myds = bf_create_new_dataset(dataset_name, bf)
                 bf_generate_new_dataset(soda_json_structure_new_bf, bf, myds)
-                bf_add_manifest_files(manifest_files_structure, myds) 
+                bf_add_manifest_files(manifest_files_structure, myds)
