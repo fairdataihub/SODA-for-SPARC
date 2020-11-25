@@ -537,6 +537,18 @@ button[disabled]{
   line-height: 1.5
 }
 
+.button-generate-dataset svg {
+  margin: 0 auto
+}
+
+.button-generate-dataset .bi.bi-file-earmark-plus {
+  display: block;
+}
+
+.button-generate-dataset .bi.bi-check2 {
+  display: none;
+}
+
 .metadata-button.button-generate-dataset.done {
   border: 1px solid var(--color-light-green);
 }
@@ -546,10 +558,14 @@ button[disabled]{
   font-weight: 600;
 }
 
-.metadata-button.button-generate-dataset.done i:before {
-  content: '\f00c' !important;
+.metadata-button.button-generate-dataset.done .bi.bi-file-earmark-plus {
+  display: none;
+}
+
+.metadata-button.button-generate-dataset.done .bi.bi-check2 {
   color: var(--color-light-green);
-  font-family: "Font Awesome 5 Free";
+  display: block !important;
+  margin: 0 auto
 }
 
 .form-group.row {
