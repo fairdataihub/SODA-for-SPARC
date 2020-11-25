@@ -128,9 +128,11 @@ $(".option-card.high-level-folders").click(function() {
 $(".option-card.radio-button").click(function() {
   $(this).toggleClass('checked');
   if ($(this).hasClass('checked')) {
-    $(this).children()[0].children[0].children[0].checked = true
+    $(this).children()[0].children[0].children[0].checked = true;
+    $(this).removeClass('non-selected')
   } else {
-    $(this).children()[0].children[0].children[0].checked = false
+    $(this).children()[0].children[0].children[0].checked = false;
+    $(this).addClass('non-selected')
   }
 })
 
@@ -139,6 +141,7 @@ $(".folder-input-check").click(function() {
   $(parentCard).toggleClass('checked')
   if ($(this).checked) {
     $(this).checked = false;
+    $(parentCard).removeClass('non-selected')
   } else {
       $(this).checked = true;
   }
@@ -304,10 +307,11 @@ function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
   // ($(ev).find('.folder-input-check')[0]).id
 
   document.getElementById("nextBtn").disabled = true;
+  $(ev).removeClass('non-selected');
+  $(ev).children().find('.folder-input-check').prop('checked', true);
   // uncheck the other radio buttons
   $($(ev).parents()[0]).siblings().find('.option-card.radio-button').removeClass('checked');
-  // $("#"+currentDiv).children().find('.folder-input-check')).prop('checked', false);
-   $(ev).children().find('.folder-input-check').prop('checked', true);
+  $($(ev).parents()[0]).siblings().find('.option-card.radio-button').addClass('non-selected');
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute('data-next'));
@@ -365,6 +369,7 @@ function hidePrevDivs(currentDiv, category) {
 
       /// remove all checkmarks and previous data input
       $("#"+currentDiv).nextAll().find('.option-card.radio-button').removeClass('checked');
+      $("#"+currentDiv).nextAll().find('.option-card.radio-button').removeClass('non-selected');
       $("#"+currentDiv).nextAll().find('.folder-input-check').prop('checked', false);
       var childElements2 = $("#"+currentDiv).nextAll().find('.form-control');
       for (var child of childElements2) {

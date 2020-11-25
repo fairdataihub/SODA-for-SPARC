@@ -77,6 +77,27 @@
   opacity: 1;
 }
 
+.option-card.radio-button.non-selected {
+  background: #f6f6f6
+}
+
+.option-card.radio-button.non-selected svg{
+  fill: #585858
+}
+
+.option-card.radio-button.non-selected .card-body i{
+  color: #585858 !important
+}
+/*
+.option-card.radio-button.non-selected:hover {
+  background: #fff;
+  border: 1px solid #20b2aa;
+}
+
+.option-card.radio-button.non-selected:hover svg{
+  fill:
+} */
+
 .card-head {
   /* text-align: center; */
   padding-top: 0;
