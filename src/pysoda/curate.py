@@ -37,7 +37,7 @@ from datetime import datetime, timezone
 from validator_soda import pathToJsonStruct, validate_high_level_folder_structure, validate_high_level_metadata_files, \
 validate_sub_level_organization, validate_submission_file, validate_dataset_description_file
 
-from pysoda import clear_queue, agent_running, check_forbidden_characters
+from pysoda import clear_queue, agent_running, check_forbidden_characters, check_forbidden_characters_bf
 
 ### Global variables
 curateprogress = ' '
@@ -952,15 +952,15 @@ def check_local_dataset_files_validity(soda_json_structure):
     Output:
         error: error message with list of non valid local data files, if any
     """
-    
+
     def recursive_local_file_check(my_folder, my_relative_path, error):
         for folder_key, folder in my_folder["folders"].items():
             relative_path = my_relative_path + "/" + folder_key
             error = recursive_local_file_check(folder, relative_path, error)
-                    
+
         for file_key in list(my_folder["files"].keys()):
             file = my_folder["files"][file_key]
-            file_type = file["type"] 
+            file_type = file["type"]
             if file_type == "local":
                 file_path = file["path"]
                 if not isfile(file_path):

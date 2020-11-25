@@ -6132,11 +6132,13 @@ function finalScanningSODAJsonObject() {
 
   deleteEmptyKeysFromObject(sodaJSONObj["bf-dataset-selected"]);
   deleteEmptyKeysFromObject(sodaJSONObj["bf-account-selected"]);
+  deleteEmptyKeysFromObject(sodaJSONObj["generate-dataset"]);
   deleteEmptyKeysFromObject(sodaJSONObj);
 }
 
 document.getElementById("button-generate-comeback").addEventListener('click', function() {
   document.getElementById('generate-dataset-progress-tab').style.display = "none";
+  document.getElementById('prevBtn').style.display = "inline";
   $('#generate-dataset-tab').addClass('tab-active');
 })
 

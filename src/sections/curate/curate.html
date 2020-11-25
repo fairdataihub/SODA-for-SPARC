@@ -8,7 +8,7 @@
   </head>
 
 <main class="dash-content main show" id="curate_main" style="grid-template-columns: 1% 84% 15%">
-<h3 style="color: #222c3c;margin-bottom:0;"><i class="fas fa-sitemap" style="margin-right:9px"></i>Prepare Dataset</h3>
+<h3 style="color: #222c3c;margin-bottom:0;"><i class="far fa-folder" style="margin-right:12px"></i>Prepare Dataset</h3>
 <!-- These are the main tab for each step -->
   <div class="form-tabs tab-active" id="curate-tab">
     <h3 class='question-title'><br>
@@ -17,13 +17,17 @@
     <div class="div-organize-generate-dataset" style="flex-direction:row">
       <button class="button-generate-dataset" data-section="organize">
         <h5 style="font-family:'Raleway', sans-serif;color:#585858;font-size:17px">Organize dataset</h5>
-        <i class="fab fa-airbnb" style="font-size: 58px;color:var(--tagify-dd-color-primary)"></i>
+        <i class="fas fa-sitemap" style="font-size: 58px;color:var(--tagify-dd-color-primary)"></i>
         <p>This is the detailed description of this section</p>
       </button>
-      <button class="button-generate-dataset" data-section="validate">
+      <button class="button-generate-dataset" data-section="validate" style="background:#f9f9f9;pointer-events: none;">
         <h5 style="font-family:'Raleway', sans-serif;color:#585858;font-size:17px">Validate dataset</h5>
-        <i class="fas fa-bullseye" style="opacity: 0.9;font-size: 58px;color:var(--color-bg-yellow)"></i>
-        <p>This is the detailed description of this section</p>
+        <svg width="60px" height="60px" viewBox="0 0 16 16" class="bi bi-clipboard-check" fill="var(--color-bg-yellow)" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+          <path fill-rule="evenodd" d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3zm4.354 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        <!-- <i class="fas fa-bullseye" style="opacity: 0.9;font-size: 58px;color:var(--color-bg-yellow)"></i> -->
+        <p>Coming soon...</p>
       </button>
     </div>
   </div>
@@ -92,7 +96,7 @@
     </div>
 
   <!-- 1. Getting started tab -->
-  <div class="parent-tabs condensed" id="getting-started-tab" style="overflow-y:scroll;flex-direction:column;justify-content:flex-start;height:100%;">
+  <div class="parent-tabs condensed" id="getting-started-tab" style="overflow-y:scroll;overflow-x:hidden;flex-direction:column;justify-content:flex-start;height:100%;">
     <h3 id="getting-started-summary-message" class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:60px;font-weight:600">Step 1: Getting started <br>
       <!-- <span style="color: #898989;font-size:13px;font-weight:500">Please answer the below questions: </span> -->
     </h3>
@@ -101,6 +105,13 @@
         <div class="ui form" style="width:100%">
         <div class="grouped fields">
           <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Let's get started. What would you like to do?
+
+            <!-- tooltip -->
+            <div class="ui icon button" data-tooltip="Hello. This is the data for tooltip. Let's get started. What would you like to do? Let's get started. What would you like to do?" data-position="top left">
+              <i class="fas fa-info-circle"></i>
+            </div>
+            <!-- end of tooltip -->
+
           <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
           <div style="display:flex;flex-direction:row;">
             <div style="margin:15px 0;">
@@ -112,7 +123,11 @@
                     </div>
                   </div>
                   <div class="card-body">
-                    <i class="fas fa-plus" style="color: green"></i>
+                    <svg width="35px" height="35px" viewBox="0 0 16 16" class="bi bi-folder-plus" fill="green" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"/>
+                      <path fill-rule="evenodd" d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z"/>
+                    </svg>
+                    <!-- <i class="fas fa-plus" style="color: green"></i> -->
                     <h2>Prepare a new dataset</h2>
                   </div>
                 </div>
@@ -127,7 +142,12 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <i class="far fa-save" style="color: var(--color-bg-plum)"></i>
+                  <svg width="35px" height="35px" viewBox="0 0 16 16" class="bi bi-file-earmark-arrow-up" fill="var(--color-bg-plum)" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+                    <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
+                    <path fill-rule="evenodd" d="M8 12a.5.5 0 0 0 .5-.5V7.707l1.146 1.147a.5.5 0 0 0 .708-.708l-2-2a.5.5 0 0 0-.708 0l-2 2a.5.5 0 1 0 .708.708L7.5 7.707V11.5a.5.5 0 0 0 .5.5z"/>
+                  </svg>
+
                   <h2>Continue with a previously initiated dataset in SODA</h2>
                 </div>
             </div>
@@ -231,56 +251,15 @@
           </div>
         </div>
       </div>
-
 <!--
-    <div class="individual-question getting-started" id="Question-getting-started-BF-account">
-      <div class="ui form" style="width:100%">
-        <div class="grouped fields">
-          <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">What is your Blackfynn account?</label>
-          <div class="field" style="margin:5px 0;width:450px;">
-             <div style="display:flex;justify-content:flex-start">
-             <select id="bfallaccountlist" name="Blackfynn account" class='ui selection dropdown' style="width:450px !important;border-radius:7px;padding:8px">
-                <option> Select </option>
-              </select>
-            <!-- </div> -->
-            <!-- <div>
-              <p id="para-account-details-curate"></p>
-              <div id="div-bf-account-load-progress-curate" class="progressdiv">
-                <div class="indeterminatebar"></div>
-              </div>
-              <p id='para-select-account-status-curate' style="margin-top:20px;text-align:left"> </p>
-              <p id="para-account-details-curate"></p>
-            </div>
-          </div>
-        </div>
-        <div style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
-          <button onclick="showBFAddAccountBootbox()" style="float:right;border-radius: 8px;margin:0 10px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;width: 160px;border:1px solid var(--color-bg-plum)">Add account</button>
-          <button onclick="transitionSubQuestions(this, 'Question-getting-started-BF-account', 'getting-started-tab', 'delete', 'individual-question getting-started')"  data-next="Question-getting-started-BF-dataset" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 160px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm account</button>
-        </div>
-      </div> -->
-    <!-- </div>  -->
 
-    <!-- <div class="individual-question getting-started" id="Question-getting-started-BF-dataset">
-      <div class="ui form" style="width:100%">
-        <div class="grouped fields">
-          <label style="font-size:17px;color:var(--color-bg-plum);">What is your Blackfynn dataset?</label>
-          <div class="field" style="margin:15px 0;">
-            <select id="curatebfdatasetlist" name="Blackfynn dataset" class="ui search dropdown" style="width:450px;border-radius:7px;padding:8px">
-              <option value="" disabled> Loading... </option>
-            </select>
-          </div>
-        </div>
-        <button onclick="transitionSubQuestions(this, 'Question-getting-started-BF-dataset', 'getting-started-tab', 'delete', 'individual-question getting-started')" data-next="Question-getting-started-final" style="margin:0 auto;display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px; width: 160px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm dataset</button>
-      </div>
-    </div> -->
-
+    <!--  confirm before proceed, empty for now -->
     <div class="individual-question getting-started" id="Question-getting-started-final" style="margin-top:25px;justify-content:flex-start">
       <!-- <h3 class="question-title" style="text-align:center">Click "Continue" below. <img class="message-icon" src="assets/img/can-smiley.png"></h3> -->
     </div>
-  </div>
-
 
   <!-- 2. Specify high Level folders -->
+</div>
   <div class="parent-tabs" id="high-level-folders-tab" style="flex-direction:column;justify-content:flex-start;height:100%;margin-right:50px">
     <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:50px;font-weight:600;">Step 2: Specify high-level folders</h3>
     <div class="container-body condensed" style="min-height:450px">
@@ -390,10 +369,13 @@
       <input style="float:left;margin-left: 15px;height: 40px;border: none; font-family: 'Raleway', sans-serif;font-size: 14px;font-weight:600;text-decoration:underline;cursor:default;color:#898989;width: 300px" id="input-global-path" value="Mydatasetfolder/" readonly></input>
 
           <div class="div-organize-dataset-menu">
-            <button id="new-folder" style="float:right;margin-right:10px;background:var(--tagify-dd-color-primary);color:#fff;font-weight:600;border:none"><i class="fas fa-folder-plus"></i> New folder</button>
+            <button id="new-folder" style="float:right;margin-right:10px;background:var(--tagify-dd-color-primary);color:#fff;border:none"><i class="fas fa-folder-plus"></i> New folder</button>
             <div class="btn-group" role="group">
-              <button id="btnGroupDrop1" type="button" style="width: 120px;color:var(--tagify-dd-color-primary);background:#fff;border: 1px solid var(--tagify-dd-color-primary);font-weight:600" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-arrow-up fa-fw" style="margin-right:5px"></i>Import
+              <button id="btnGroupDrop1" type="button" style="color:var(--tagify-dd-color-primary);background:#fff;border: 1px solid var(--tagify-dd-color-primary);font-weight:600" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <svg style="margin-right:10px" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-upload" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                  <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                </svg>Import
               </button>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop1">
                 <a class="dropdown-item" id="add-files" href="#"><i class="fas fa-upload" style="margin-right:5px"></i>Import files</a>
@@ -459,32 +441,57 @@
       </h3>
       <div style="margin-bottom:15px;">
       <button class="metadata-button button-generate-dataset" data-next="submissionUpload">
-        <i class="fas fa-file-medical" style="font-size: 65px;color:var(--tagify-dd-color-primary)"></i>
+        <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
+          <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        <!-- <i class="fas fa-file-medical" style="font-size: 65px;color:var(--tagify-dd-color-primary)"></i> -->
         <p style="margin-top:30px;font-family:'Raleway', sans-serif">submission</p>
       </button>
 
       <button class="metadata-button button-generate-dataset" data-next="datasetDescriptionUpload">
-        <i class="fas fa-file-medical" style="opacity: 0.9;font-size: 65px;color: var(--color-bg-plum)"></i>
+        <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
+          <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+        </svg>
         <p style="margin-top:30px;font-family:'Raleway', sans-serif">dataset_description</p>
       </button>
 
       <button class="metadata-button button-generate-dataset" data-next="subjectsUpload">
-        <i class="fas fa-file-medical" style="font-size: 65px;color:var(--tagify-dd-color-primary)"></i>
+        <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
+          <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+        </svg>
         <p style="margin-top:30px;font-family:'Raleway', sans-serif">subjects</p>
       </button>
     </div>
       <div>
       <button class="metadata-button button-generate-dataset" data-next="samplesUpload">
-        <i class="fas fa-file-medical" style="font-size: 65px;color:var(--tagify-dd-color-primary)"></i>
+        <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
+          <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+        </svg>
         <p style="margin-top:30px;font-family:'Raleway', sans-serif">samples</p>
       </button>
       <button class="metadata-button button-generate-dataset" data-next="readmeUpload">
-        <i class="fas fa-file-medical" style="font-size: 65px;color:var(--tagify-dd-color-primary)"></i>
+        <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
+          <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+        </svg>
         <p style="margin-top:30px;font-family:'Raleway', sans-serif">README</p>
       </button>
 
       <button class="metadata-button button-generate-dataset" data-next="changesUpload">
-        <i class="fas fa-file-medical" style="font-size: 65px;color:var(--tagify-dd-color-primary)"></i>
+        <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
+          <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+        </svg>
         <p style="margin-top:30px;font-family:'Raleway', sans-serif">CHANGES</p>
       </button>
 
@@ -498,7 +505,13 @@
       <h5 style="text-align:center"></h5>
       <div class="div-file-import" droppable="true" ondrop="dropHandler(event, 'para-submission-file-path', 'submission');" ondragover="return false">
         <p style="font-weight:bold">Import existing file</p>
-        <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
+        <div>
+          <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+          </svg>
+          <!-- <i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i> -->
+        </div>
         <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
           file here OR</p>
           <button id="button-sub" onclick="importMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')" class="div-file-import-button">Choose file</button>
@@ -518,7 +531,12 @@
       <h5 style="text-align:center"></h5>
       <div class="div-file-import" droppable="true" ondrop="dropHandler(event, 'para-ds-description-file-path', 'dataset_description');" ondragover="return false">
         <p style="font-weight:bold">Import existing file</p>
-        <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
+        <div>
+          <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+          </svg>
+        </div>
         <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
           file here OR</p>
           <button onclick="importMetadataFiles(this, 'dataset_description', ['.csv', '.xlsx', '.xls', '.json'], 'para-ds-description-file-path')"  class="div-file-import-button">Choose file</button>
@@ -538,7 +556,12 @@
       <h5 style="text-align:center"></h5>
       <div class="div-file-import" droppable="true" ondrop="dropHandler(event, 'para-subjects-file-path', 'subjects');" ondragover="return false">
         <p style="font-weight:bold">Import existing file</p>
-        <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
+        <div>
+          <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+          </svg>
+        </div>
         <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
           file here OR</p>
           <button onclick="importMetadataFiles(this, 'subjects', ['.csv', '.xlsx', '.xls', '.json'], 'para-subjects-file-path')" class="div-file-import-button">Choose file</button>
@@ -559,7 +582,12 @@
       <h5 style="text-align:center"></h5>
       <div class="div-file-import" droppable="true" ondrop="dropHandler(event,'para-samples-file-path', 'samples');" ondragover="return false">
         <p style="font-weight:bold">Import existing file</p>
-        <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
+        <div>
+          <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+          </svg>
+        </div>
         <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
           file here OR</p>
           <button onclick="importMetadataFiles(this, 'samples', ['.csv', '.xlsx', '.xls', '.json'], 'para-samples-file-path')" class="div-file-import-button">Choose file</button>
@@ -580,7 +608,12 @@
       <h5 style="text-align:center"></h5>
       <div class="div-file-import" droppable="true" ondrop="dropHandler(event, 'para-changes-file-path', 'CHANGES');" ondragover="return false">
         <p style="font-weight:bold">Import existing file</p>
-        <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
+        <div>
+          <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+          </svg>
+        </div>
         <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
           file here OR</p>
           <button onclick="importMetadataFiles(this, 'CHANGES', ['.txt'], 'para-changes-file-path')" class="div-file-import-button">Choose file</button>
@@ -601,7 +634,12 @@
       <h5 style="text-align:center"></h5>
       <div class="div-file-import" droppable="true" ondrop="dropHandler(event, 'para-readme-file-path', 'README');" ondragover="return false">
         <p style="font-weight:bold">Import existing file</p>
-        <div><i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i></div>
+        <div>
+          <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+          </svg>
+        </div>
         <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
           file here OR</p>
           <button onclick="importMetadataFiles(this, 'README', ['.txt'], 'para-readme-file-path')" class="div-file-import-button">Choose file</button>
@@ -657,7 +695,7 @@
               <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
               <div style="display:flex;flex-direction:row;">
 
-                <div style="margin:15px 0;display:none" id="div-modify-current-local-dataset">
+                <!-- <div style="margin:15px 0;display:none" id="div-modify-current-local-dataset">
                   <div class="option-card radio-button" data-next="Question-generate-dataset-modify-current-ds" onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
                       <div class="card-head">
                         <div class="folder-checkbox">
@@ -670,7 +708,7 @@
                         <h2>Modify current local dataset</h2>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                 <div style="margin:15px 0;">
                   <div class="option-card radio-button" data-next="Question-generate-dataset-locally-destination" onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
                       <div class="card-head">
@@ -696,8 +734,11 @@
                       </div>
                     </div>
                     <div class="card-body">
-                      <i class="fas fa-cloud-upload-alt" style="color: var(--tagify-dd-color-primary)"></i>
-                      <h2>Generate directly on Blackfynn</h2>
+                      <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-cloud-arrow-up" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>
+                        <path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"/>
+                      </svg>
+                      <h2 style="margin-top:10px">Generate directly on Blackfynn</h2>
                     </div>
                 </div>
               </div>
@@ -742,7 +783,10 @@
                         </div>
                       </div>
                       <div class="card-body">
-                        <i class="fas fa-plus"></i>
+                        <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-folder-plus" fill="var(--color-bg-orange)" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd" d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"/>
+                          <path fill-rule="evenodd" d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z"/>
+                        </svg>
                         <h2>I want to generate on a new dataset</h2>
                       </div>
                     </div>
@@ -758,7 +802,10 @@
                       </div>
                     </div>
                     <div class="card-body">
-                      <i class="far fa-check-circle" style="color: var(--tagify-dd-color-primary)"></i>
+                      <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-folder-check" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"/>
+                        <path fill-rule="evenodd" d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                      </svg>
                       <h2>I want to generate on an existing dataset</h2>
                     </div>
                 </div>
@@ -804,7 +851,8 @@
       <div class="individual-question generate-dataset" id="Question-generate-dataset-existing-folders-options">
           <div class="ui form" style="width:100%">
           <div class="grouped fields">
-            <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">How would you like to handle existing folders? <i style="margin-left:5px;" class="fas fa-info-circle"></i>
+            <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">How would you like to handle existing folders?
+
             <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
             <div style="display:flex;flex-direction:row;">
               <div style="margin:15px 0;">
@@ -816,6 +864,7 @@
                       </div>
                     </div>
                     <div class="card-body">
+
                       <i class="far fa-copy" style="color:var(--tagify-dd-color-primary)"></i>
                       <h2>Create a duplicate</h2>
                     </div>
@@ -847,7 +896,9 @@
                     </div>
                   </div>
                   <div class="card-body">
-                    <i class="fas fa-object-group" style="color: var(--color-teal)lfont-size:43px"></i>
+                    <svg width="45px" height="45px" viewBox="0 0 16 16" class="bi bi-intersect" fill="#EC6713" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm5 10v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2v5a2 2 0 0 1-2 2H5zm6-8H6a2 2 0 0 0-2 2v5H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2z"/>
+                    </svg>
                     <h2>Merge</h2>
                   </div>
               </div>
@@ -862,7 +913,10 @@
                     </div>
                   </div>
                   <div class="card-body">
-                    <i class="fas fa-forward" style="color: var(--color-teal);font-size:43px"></i>
+                    <svg width="45px" height="45px" viewBox="0 0 16 16" class="bi bi-skip-forward" fill="var(--color-teal)" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.752l-6.267 3.636c-.52.302-1.233-.043-1.233-.696v-2.94l-6.267 3.636C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696L7.5 7.248v-2.94c0-.653.713-.998 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5zM1 4.633v6.734L6.804 8 1 4.633zm7.5 0v6.734L14.304 8 8.5 4.633z"/>
+                    </svg>
+                    <!-- <i class="fas fa-forward" style="color: ;font-size:43px"></i> -->
                     <h2>Skip</h2>
                   </div>
               </div>
@@ -918,7 +972,9 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <i class="fas fa-forward" style="color: var(--color-teal);font-size:43px"></i>
+                  <svg width="45px" height="45px" viewBox="0 0 16 16" class="bi bi-skip-forward" fill="var(--color-teal)" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.752l-6.267 3.636c-.52.302-1.233-.043-1.233-.696v-2.94l-6.267 3.636C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696L7.5 7.248v-2.94c0-.653.713-.998 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5zM1 4.633v6.734L6.804 8 1 4.633zm7.5 0v6.734L14.304 8 8.5 4.633z"/>
+                  </svg>
                   <h2>Skip</h2>
                 </div>
             </div>
@@ -969,19 +1025,15 @@
       <div id="div-new-curate-progress-bar-error-status" class="datasetsaveoption">
         <p id='para-new-curate-progress-bar-error-status'> <p>
       </div>
-
       <div id="div-new-curate-progress">
       <div id="div-new-curate-meter-progress" class="datasetsaveoption">
         <h5> Progress </h5>
         <progress class=progresstrack id="progress-bar-new-curate" max="100" value="0"></progress>
       </div>
-
       <div id="div-new-curate-progress-bar-status" class="datasetsaveoption">
         <p id='para-new-curate-progress-bar-status'> <p>
       </div>
-
       </div>
-
       <div id="div-generate-comeback" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
         <button id="button-generate-comeback" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none"><i class="fas fa-undo-alt" style="margin-right:5px"></i>Return</button>
       </div>
@@ -1046,7 +1098,8 @@
  <script>
    $('.button-display-details').click(function() {
      $(this).parent().toggleClass('show')
-   })
+   });
+
    </script>
 
 </template>

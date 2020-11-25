@@ -49,6 +49,7 @@
     "airtable": "^0.8.1",
     "axios": "^0.19.2",
     "bootbox": "^5.4.0",
+    "bootstrap-icons": "^1.1.0",
     "cropperjs": "^1.5.7",
     "electron-context-menu": "^0.13.0",
     "electron-log": "^4.2.2",

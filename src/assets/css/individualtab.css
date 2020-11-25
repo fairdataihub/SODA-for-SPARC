@@ -723,9 +723,10 @@
 .div-organize-dataset-menu button {
   width: 120px;
   height:35px;
-  padding: 10px;
+  padding: 7px;
   padding-left: 15px;
   font-size:13px;
+  font-weight: 600;
   margin-bottom: 10px;
   background: #fff;
   border-radius: 6px;
@@ -821,4 +822,20 @@
   color: var(--color-teal);
   font-size: 21px;
   margin-right:10px;
+}
+
+.ui.icon.button {
+  background: transparent;
+  color: var(--color-light-green);
+  padding: 2px !important;
+  height: 20px;
+}
+
+.ui.icon.button:hover {
+  background: transparent
+}
+
+.ui.icon.button i {
+  font-size: 16px;
+  margin-left:5px
 }

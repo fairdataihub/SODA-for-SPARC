@@ -21,6 +21,7 @@ function showParentTab(tabNow, nextOrPrev) {
   fixStepDone(tabNow-1)
 
   $(x[tabNow]).addClass('tab-active');
+
   var inActiveTabArray = [0,1,2,3,4,5].filter( function( element ) {
   return ![tabNow].includes(element);
   });
@@ -85,7 +86,7 @@ function nextPrev(n) {
 
   // if we have reached the end of the form... :
   if (currentTab >= x.length-1) {
-    checkJSONObjGenerate()
+    // checkJSONObjGenerate()
   }
 
   // Otherwise, display the correct tab:
@@ -504,13 +505,13 @@ function updateJSONStructureGenerate() {
   if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop") {
     var localDestination = $('#input-destination-generate-dataset-locally')[0].placeholder;
     var newDatasetName = $('#inputNewNameDataset').val().trim();
-
-    sodaJSONObj["generate-dataset"]['destination'] = "local";
-    sodaJSONObj["generate-dataset"]['path'] = localDestination;
-    sodaJSONObj["generate-dataset"]['dataset-name'] = newDatasetName;
+    sodaJSONObj["generate-dataset"] = {'destination': "local", 'path': localDestination, 'dataset-name': newDatasetName, "if-existing": "new", "if-existing-files": ""}
+    sodaJSONObj["bf-account-selected"]["account-name"] = "";
+    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
 
   } else if ($('input[name="generate-1"]:checked')[0].id === "generate-upload-BF") {
     sodaJSONObj["generate-dataset"]['destination'] = "bf";
+    sodaJSONObj["generate-dataset"]['path'] = "";
     sodaJSONObj["bf-account-selected"]["account-name"] = $($('#bfallaccountlist').find('option:selected')[0]).val();
 
     if ($('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing") {
