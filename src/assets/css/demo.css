@@ -1,7 +1,7 @@
 /* Demo */
 
 button {
-  cursor: pointer;
+  cursor: pointer !important;
 }
 
 .demo:first-of-type {

@@ -90,7 +90,7 @@ function nextPrev(n) {
   }
 
   // Otherwise, display the correct tab:
-  if (currentTab === 1) {
+  if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
     highLevelFoldersDisableOptions()
   }
   showParentTab(currentTab, n);
@@ -168,10 +168,16 @@ function showSubTab(section, tab, input){
 
 function highLevelFoldersDisableOptions() {
   var highLevelFolderOptions = datasetStructureJSONObj["folders"];
-  var allowUnChooseOption = {};
-  for (var folder in highLevelFolderOptions) {
-    var optionCard = $("#"+folder+"-check").parents()[2];
-    $(optionCard).addClass('disabled');
+  for (var folder of highLevelFolders) {
+    if (Object.keys(highLevelFolderOptions).includes(folder)) {
+      var optionCard = $("#"+folder+"-check").parents()[2];
+      $(optionCard).addClass('disabled');
+    } else {
+      var optionCard = $("#"+folder+"-check").parents()[2];
+      $(optionCard).removeClass('disabled');
+      $(optionCard).removeClass('checked');
+      $(optionCard).children()[0].children[1].children[0].checked = false
+    }
   }
 }
 
