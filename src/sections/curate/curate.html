@@ -16,9 +16,11 @@
     </h3>
     <div class="div-organize-generate-dataset" style="flex-direction:row">
       <button class="button-generate-dataset" data-section="organize">
+        <a href="#" data-section="organize">
         <h5 style="font-family:'Raleway', sans-serif;color:#585858;font-size:17px">Organize dataset</h5>
-        <i class="fas fa-sitemap" style="font-size: 58px;color:var(--tagify-dd-color-primary)"></i>
+          <i class="fas fa-sitemap" style="font-size: 58px;color:var(--tagify-dd-color-primary)"></i>
         <p>This is the detailed description of this section</p>
+      </a>
       </button>
       <button class="button-generate-dataset" data-section="validate" style="background:#f9f9f9;pointer-events: none;">
         <h5 style="font-family:'Raleway', sans-serif;color:#585858;font-size:17px">Validate dataset</h5>
@@ -26,7 +28,6 @@
           <path fill-rule="evenodd" d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
           <path fill-rule="evenodd" d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3zm4.354 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
         </svg>
-        <!-- <i class="fas fa-bullseye" style="opacity: 0.9;font-size: 58px;color:var(--color-bg-yellow)"></i> -->
         <p>Coming soon...</p>
       </button>
     </div>
@@ -37,7 +38,7 @@
 <section id="organize-section" class="section js-section u-category-windows" style="padding-left:15px">
 
 <main class="dash-content" id="organize_main" style="flex-direction:column;justify-content:space-between">
-  <h3 style="color: #222c3c;margin-bottom:0;"><i class="fab fa-airbnb" style="margin-right:10px"></i>Organize dataset</h3>
+  <h3 style="color: #222c3c;margin-bottom:0;"><i class="fas fa-sitemap" style="margin-right:10px"></i>Organize dataset</h3>
 
 <!-- These are the main tab for each step -->
 
@@ -107,9 +108,9 @@
           <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Let's get started. What would you like to do?
 
             <!-- tooltip -->
-            <div class="ui icon button" data-tooltip="Hello. This is the data for tooltip. Let's get started. What would you like to do? Let's get started. What would you like to do?" data-position="top left">
+            <!-- <div class="ui icon button" data-tooltip="Hello. This is the data for tooltip. Let's get started. What would you like to do? Let's get started. What would you like to do?" data-position="top left">
               <i class="fas fa-info-circle"></i>
-            </div>
+            </div> -->
             <!-- end of tooltip -->
 
           <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
@@ -134,7 +135,7 @@
               </div>
 
           <div style="margin:15px 0;">
-            <div class="option-card getting-started radio-button" data-next="Question-getting-started-choose-ds-name" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
+            <div style="pointer-events:none" class="option-card getting-started radio-button" data-next="Question-getting-started-choose-ds-name" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
                 <div class="card-head">
                   <div class="folder-checkbox">
                     <input class="folder-input-check" id="previous-progress" name="getting-started-1" type="radio">
@@ -148,7 +149,8 @@
                     <path fill-rule="evenodd" d="M8 12a.5.5 0 0 0 .5-.5V7.707l1.146 1.147a.5.5 0 0 0 .708-.708l-2-2a.5.5 0 0 0-.708 0l-2 2a.5.5 0 1 0 .708.708L7.5 7.707V11.5a.5.5 0 0 0 .5.5z"/>
                   </svg>
 
-                  <h2>Continue with a previously initiated dataset in SODA</h2>
+                  <h2>Continue with a previously initiated dataset in SODA </h2>
+                  <!-- <span style="font-weight:500;margin-top:5px">Coming soon...</span></h2> -->
                 </div>
             </div>
           </div>
@@ -446,6 +448,9 @@
           <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
           <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
         </svg>
+        <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2" fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+        </svg>
         <!-- <i class="fas fa-file-medical" style="font-size: 65px;color:var(--tagify-dd-color-primary)"></i> -->
         <p style="margin-top:30px;font-family:'Raleway', sans-serif">submission</p>
       </button>
@@ -456,6 +461,9 @@
           <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
           <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
         </svg>
+        <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2" fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+        </svg>
         <p style="margin-top:30px;font-family:'Raleway', sans-serif">dataset_description</p>
       </button>
 
@@ -464,6 +472,9 @@
           <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
           <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
           <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2" fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
         </svg>
         <p style="margin-top:30px;font-family:'Raleway', sans-serif">subjects</p>
       </button>
@@ -475,6 +486,9 @@
           <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
           <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
         </svg>
+        <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2" fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+        </svg>
         <p style="margin-top:30px;font-family:'Raleway', sans-serif">samples</p>
       </button>
       <button class="metadata-button button-generate-dataset" data-next="readmeUpload">
@@ -482,6 +496,9 @@
           <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
           <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
           <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2" fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
         </svg>
         <p style="margin-top:30px;font-family:'Raleway', sans-serif">README</p>
       </button>
@@ -491,6 +508,9 @@
           <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
           <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
           <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2" fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
         </svg>
         <p style="margin-top:30px;font-family:'Raleway', sans-serif">CHANGES</p>
       </button>
@@ -509,6 +529,9 @@
           <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
             <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+          </svg>
+          <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2" fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
           </svg>
           <!-- <i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i> -->
         </div>
@@ -761,7 +784,7 @@
                 </div>
               </div>
             </div>
-            <div style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
+            <div id="div-bf-account-btns" style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
               <button onclick="showBFAddAccountBootbox()" style="float:right;border-radius: 8px;margin:0 10px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;width: 160px;border:1px solid var(--color-bg-plum)">Add account</button>
               <button onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"  data-next="Question-generate-dataset-options" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 160px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm account</button>
             </div>
@@ -872,6 +895,7 @@
                 </div>
 
             <div style="margin:15px 0;">
+
               <!-- <button> -->
               <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
                   <div class="card-head">
@@ -929,7 +953,7 @@
     <div class="individual-question generate-dataset" id="Question-generate-dataset-existing-files-options">
         <div class="ui form" style="width:100%">
         <div class="grouped fields">
-          <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">How would you like to handle existing files? <i style="margin-left:5px;" class="fas fa-info-circle"></i>
+          <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">How would you like to handle existing files?
           <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
           <div style="display:flex;flex-direction:row;">
             <div style="margin:15px 0;">

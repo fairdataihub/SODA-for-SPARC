@@ -2746,7 +2746,7 @@ ipcRenderer.on('selected-savedvalidatorlocal', (event, filepath) => {
 /// Add all BF accounts to the dropdown list, and then choose by default one option ('global' account)
 const curateBFaccountList = document.getElementById('bfallaccountlist');
 const curateBFAccountLoad = document.getElementById("div-bf-account-load-progress-curate");
-const curateBFAccountLoadStatus = document.getElementById('para-select-account-status-curate');
+const curateBFAccountLoadStatus = document.getElementById('para-account-details-curate');
 const curateBFAccountDetails = document.getElementById('para-account-details-curate');
 const curateDatasetDropdown = document.getElementById('curatebfdatasetlist');
 
@@ -2754,20 +2754,35 @@ loadAllBFAccounts()
 
 curateDatasetDropdown.addEventListener('change', function() {
   var curateSelectedbfdataset = curateDatasetDropdown.options[curateDatasetDropdown.selectedIndex].text;
-
-  if (curateSelectedbfdataset == 'Select dataset') {
+  if (curateSelectedbfdataset === 'Select dataset') {
     document.getElementById('button-confirm-bf-dataset').style.display = "none";
+    $('#button-confirm-bf-dataset').hide()
   } else{
-    document.getElementById('button-confirm-bf-dataset').style.display = "flex";
+    if ($("#Question-generate-dataset-BF-dataset").hasClass('prev')) {
+      $('#button-confirm-bf-dataset').hide()
+    } else {
+      document.getElementById('button-confirm-bf-dataset').style.display = "flex";
+      $('#button-confirm-bf-dataset').show()
+    }
   }
 })
 
 curateBFaccountList.addEventListener('change', function() {
   curateBFAccountLoadStatus.innerHTML = "Loading account details...";
+  curateDatasetDropdown.disabled = true;
   curateBFAccountLoad.style.display = 'block';
   // remove all datasets from current list
   removeOptions(curateDatasetDropdown);
   addOption(curateDatasetDropdown, "Loading", "Loading");
+
+  $('#Question-generate-dataset-BF-account').removeClass('test2');
+  $('#Question-generate-dataset-BF-account').removeClass('prev');
+
+  $($('#Question-generate-dataset-BF-account').nextAll().find('.option-card.radio-button')).removeClass('checked');
+  $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('show');
+  $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('test2');
+  $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('prev');
+  $($('#Question-generate-dataset-BF-account').nextAll()).css('pointer-events', 'auto');
 
   var curateSelectedbfaccount = curateBFaccountList.options[curateBFaccountList.selectedIndex].text
 
@@ -2784,6 +2799,7 @@ curateBFaccountList.addEventListener('change', function() {
     curateBFAccountLoadStatus.innerHTML = ""
     updateDatasetCurate(curateDatasetDropdown, curateBFaccountList);
   }
+  curateDatasetDropdown.disabled = false;
 })
 
 function loadAllBFAccounts() {
@@ -2804,6 +2820,7 @@ function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
       } else {
         // clear and populate dataset list
           populateDatasetDropdownCurate(datasetDropdown, result)
+          // $('#curatebfdatasetlist').prop('selectedIndex', 1);
         }
     })
 }
@@ -2884,8 +2901,8 @@ function curateShowAccountDetails(dropdown){
     } else {
         curateBFAccountDetails.innerHTML = res;
         curateBFAccountLoad.style.display = 'none'
-
-        }
+        $('#div-bf-account-btns button').show();
+      }
   })
 }
 
@@ -6091,6 +6108,8 @@ $("#inputNewNameDataset").keyup(function() {
   var newName = $("#inputNewNameDataset").val().trim();
   if (newName === "") {
     document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
+    document.getElementById('button-generate').disabled = true;
+    $('#button-generate').css({"background":"#cccccc", "color":"#696969"})
   } else {
     if (check_forbidden_characters_bf(newName)) {
       document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
@@ -6099,6 +6118,7 @@ $("#inputNewNameDataset").keyup(function() {
       document.getElementById('para-new-name-dataset-message').innerHTML = "Error: A Blackfynn dataset name cannot contain any of the following characters: \/:*?'<>."
     } else {
       document.getElementById('div-confirm-inputNewNameDataset').style.display = "flex";
+      $('#div-confirm-inputNewNameDataset').show()
       document.getElementById('para-new-name-dataset-message').innerHTML = "";
       document.getElementById('button-generate').disabled = false;
       $('#button-generate').css({"background":"var(--color-light-green)", "color":"#fff"})

@@ -126,7 +126,8 @@ $(".option-card.high-level-folders").click(function() {
 
 // Other radio buttons check mark effect
 $(".option-card.radio-button").click(function() {
-  $(this).toggleClass('checked');
+  $(this).removeClass('non-selected');
+  $(this).addClass('checked');
   if ($(this).hasClass('checked')) {
     $(this).children()[0].children[0].children[0].checked = true;
     $(this).removeClass('non-selected')
@@ -134,6 +135,7 @@ $(".option-card.radio-button").click(function() {
     $(this).children()[0].children[0].children[0].checked = false;
     $(this).addClass('non-selected')
   }
+  $(this).css('pointer-events', 'none');
 })
 
 $(".folder-input-check").click(function() {
@@ -303,14 +305,13 @@ var divList = [];
 
 function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
 
-  // $("#"+currentDiv).children().find('.folder-input-check')
-  // ($(ev).find('.folder-input-check')[0]).id
-
   document.getElementById("nextBtn").disabled = true;
   $(ev).removeClass('non-selected');
   $(ev).children().find('.folder-input-check').prop('checked', true);
+
   // uncheck the other radio buttons
   $($(ev).parents()[0]).siblings().find('.option-card.radio-button').removeClass('checked');
+  $($(ev).parents()[0]).siblings().find('.option-card.radio-button').css('pointer-events', 'auto');
   $($(ev).parents()[0]).siblings().find('.option-card.radio-button').addClass('non-selected');
 
   // first, handle target or the next div to show
@@ -336,7 +337,12 @@ function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
   document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
 
   if (ev.getAttribute('data-next') === "Question-getting-started-final") {
-    $("#nextBtn").click();
+    if ($(ev).children().find('.folder-input-check').prop('checked')) {
+      document.getElementById('nextBtn').disabled = false;
+      $("#nextBtn").click();
+    } else {
+      document.getElementById('nextBtn').disabled = true
+    }
   }
 }
 
@@ -369,9 +375,13 @@ function hidePrevDivs(currentDiv, category) {
 
       /// remove all checkmarks and previous data input
       $("#"+currentDiv).nextAll().find('.option-card.radio-button').removeClass('checked');
+      $("#"+currentDiv).nextAll().find('.option-card.radio-button').css('pointer-events', 'auto');
       $("#"+currentDiv).nextAll().find('.option-card.radio-button').removeClass('non-selected');
       $("#"+currentDiv).nextAll().find('.folder-input-check').prop('checked', false);
+      $("#"+currentDiv).nextAll().find('#curatebfdatasetlist').prop("selectedIndex", 0);
+
       var childElements2 = $("#"+currentDiv).nextAll().find('.form-control');
+
       for (var child of childElements2) {
          if (child.id === "inputNewNameDataset")  {
           document.getElementById(child.id).value = "";
@@ -381,7 +391,7 @@ function hidePrevDivs(currentDiv, category) {
           document.getElementById(child.id).placeholder = "Browse here";
         }
       };
-      $("#"+currentDiv).nextAll().find('button').show();
+      // $("#"+currentDiv).nextAll().find('button').show();
       break
     }
   }
@@ -516,7 +526,7 @@ function updateJSONStructureGenerate() {
   if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop") {
     var localDestination = $('#input-destination-generate-dataset-locally')[0].placeholder;
     var newDatasetName = $('#inputNewNameDataset').val().trim();
-    sodaJSONObj["generate-dataset"] = {'destination': "local", 'path': localDestination, 'dataset-name': newDatasetName, "if-existing": "new", "if-existing-files": ""}
+    sodaJSONObj["generate-dataset"] = {'destination': "local", 'path': localDestination, 'dataset-name': newDatasetName, "generate-option": "new", "if-existing": "new", "if-existing-files": ""}
     sodaJSONObj["bf-account-selected"]["account-name"] = "";
     sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
 
