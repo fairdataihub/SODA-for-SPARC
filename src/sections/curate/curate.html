@@ -1105,18 +1105,18 @@
  </div>
 </main>
 </section>
-<script src='../src/scripts/renderer.js' type='text/javascript'></script>
+<!-- <script src='../src/scripts/renderer.js' type='text/javascript'></script> -->
 
  <script>window.$ = window.jQuery = require('jquery')</script>
 
   <script type='text/javascript'>
+    require('./scripts/renderer.js')
     require('./renderer-process/native-ui/dialogs/open-file')
     require('./renderer-process/native-ui/dialogs/save.js')
+    require('./scripts/organizeDS.js')
+    require('./scripts/metadata-files.js')
+    require('./scripts/tab-effects.js')
   </script>
-
-  <script src="../src/scripts/tab-effects.js"></script>
-  <script src='../src/scripts/organizeDS.js' type='text/javascript'></script>
-  <script src='../src/scripts/metadata-files.js' type='text/javascript'></script>
 
 
  <script>
