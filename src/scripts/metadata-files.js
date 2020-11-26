@@ -44,6 +44,7 @@ $(".button-individual-metadata.cancel").click(function() {
 function dropHandler(ev, paraElement, metadataFile) {
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
+  document.getElementById(paraElement).innerHTML = ""
 
   if (ev.dataTransfer.items) {
     /// if users drag multiple files, only show first file
@@ -69,6 +70,7 @@ var metadataAllowedExtensions = [];
 var metadataParaElement = "";
 
 function importMetadataFiles(ev, metadataFile, extentionList, paraEle) {
+  document.getElementById(paraEle).innerHTML = "";
   metadataIndividualFile = metadataFile;
   metadataAllowedExtensions = extentionList;
   metadataParaElement = paraEle;
@@ -76,6 +78,9 @@ function importMetadataFiles(ev, metadataFile, extentionList, paraEle) {
 }
 
 ipcRenderer.on('selected-metadataCurate', (event, mypath) => {
+
+  if (mypath.length > 0) {
+
   var dotCount = path.basename(mypath[0]).trim().split(".").length - 1;
   if (dotCount === 1)  {
     var metadataWithoutExtension = path.basename(mypath[0]).slice(0, path.basename(mypath[0]).indexOf('.'));
@@ -89,6 +94,7 @@ ipcRenderer.on('selected-metadataCurate', (event, mypath) => {
       }
     } else {
       document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>Please only import SPARC metadata files!</span>"
+      }
     }
   }
 })

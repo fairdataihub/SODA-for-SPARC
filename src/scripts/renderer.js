@@ -5258,23 +5258,23 @@ var datasetStructureJSONObj = {
 listItems(datasetStructureJSONObj, '#items')
 getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
 
-var sodaJSONObj = {
-  "bf-account-selected": {
-        "account-name": "",
-    },
-    "bf-dataset-selected": {
-        "dataset-name": "",
-    },
-    "dataset-structure": {"folders": {}, "files": {}},
-    "metadata-files": {},
-    "generate-dataset": {
-        "destination": "",
-        "path": "",
-        "dataset-name": "",
-        "if-existing": "",
-        "generate-option": ""
-    }
-}
+var sodaJSONObj = {}
+//
+// "bf-account-selected": {
+//       "account-name": "",
+//   },
+//   "bf-dataset-selected": {
+//       "dataset-name": "",
+//   },
+//   "dataset-structure": {"folders": {}, "files": {}},
+//   "metadata-files": {},
+//   "generate-dataset": {
+//       "destination": "",
+//       "path": "",
+//       "dataset-name": "",
+//       "if-existing": "",
+//       "generate-option": ""
+//   }
 
 
 /// back button
@@ -6105,29 +6105,29 @@ function addDetailsForFile(ev) {
 // })
 
 $("#inputNewNameDataset").keyup(function() {
+  $('#Question-generate-dataset-generate-div').removeClass("show");
+  $('#Question-generate-dataset-generate-div').removeClass("test2");
+  $('#Question-generate-dataset-generate-div').removeClass("prev");
   var newName = $("#inputNewNameDataset").val().trim();
   if (newName === "") {
     document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
-    document.getElementById('button-generate').disabled = true;
-    $('#button-generate').css({"background":"#cccccc", "color":"#696969"})
   } else {
     if (check_forbidden_characters_bf(newName)) {
       document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
-      document.getElementById('button-generate').disabled = true;
-      $('#button-generate').css({"background":"#cccccc", "color":"#696969"})
       document.getElementById('para-new-name-dataset-message').innerHTML = "Error: A Blackfynn dataset name cannot contain any of the following characters: \/:*?'<>."
     } else {
       document.getElementById('div-confirm-inputNewNameDataset').style.display = "flex";
-      $('#div-confirm-inputNewNameDataset').show()
+      $('#div-confirm-inputNewNameDataset button').show()
       document.getElementById('para-new-name-dataset-message').innerHTML = "";
-      document.getElementById('button-generate').disabled = false;
-      $('#button-generate').css({"background":"var(--color-light-green)", "color":"#fff"})
     }
   }
 });
 
 //// Select to choose a local dataset
 document.getElementById("input-destination-generate-dataset-locally").addEventListener("click", function() {
+  $("#Question-generate-dataset-locally-destination").nextAll().removeClass('show');
+  $("#Question-generate-dataset-locally-destination").nextAll().removeClass('test2');
+  $("#Question-generate-dataset-locally-destination").nextAll().removeClass('prev');
   document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
   ipcRenderer.send('open-file-dialog-local-destination-curate');
 })
@@ -6140,10 +6140,11 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
       $("#div-confirm-destination-locally button").show()
     }
   } else {
-    $("#Question-generate-dataset-generate-div").removeClass('show');
-    $("#Question-generate-dataset-generate-div").removeClass('test2');
-    document.getElementById("div-confirm-destination-locally").style.display = "none";
-    $("#div-confirm-destination-locally button").hide()
+      $("#Question-generate-dataset-locally-destination").nextAll().removeClass('show');
+      $("#Question-generate-dataset-locally-destination").nextAll().removeClass('test2');
+      $("#Question-generate-dataset-locally-destination").nextAll().removeClass('prev');
+      document.getElementById("div-confirm-destination-locally").style.display = "none";
+      $("#div-confirm-destination-locally button").hide()
   }
 })
 
