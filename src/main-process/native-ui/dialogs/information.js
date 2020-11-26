@@ -225,3 +225,15 @@ ipcMain.on('warning-withdraw-dataset', (event) => {
   event.sender.send('warning-withdraw-dataset-selection', index)
   })
 })
+
+ipcMain.on('warning-empty-files-folders-generate', (event, warning_message) => {
+  const options = {
+    type: 'warning',
+    title: 'Empty files/folders found',
+    message: warning_message,
+    buttons: ['Yes', 'No']
+  }
+  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+    event.sender.send('warning-empty-files-folders-generate-selection', index)
+  })
+})
