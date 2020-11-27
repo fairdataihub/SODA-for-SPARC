@@ -1207,10 +1207,13 @@ function changeAwardInputDsDescription() {
     }).eachPage(function page(records, fetchNextPage) {
         var awardValArray = [];
         records.forEach(function(record) {
-          var item = record.get('Name');
-          awardValArray.push(item);
+          var firstName = record.get('First_name');
+          var lastName = record.get('Last_name');
+          var fullName = lastName.concat(", ", firstName)
+          awardValArray.push(fullName);
         }),
       fetchNextPage();
+      console.log(awardValArray)
       for (var i = 0; i < awardValArray.length; i++) {
           var opt = awardValArray[i];
           addOption(dsContributorArray, opt, opt)
@@ -1226,6 +1229,15 @@ function changeAwardInputDsDescription() {
 }
 
 //////////////////////// Current Contributor(s) /////////////////////
+
+function delete_current_con(no){
+	document.getElementById("row-current-name"+no+"").outerHTML="";
+}
+
+function delete_link(no){
+	document.getElementById("row-current-link"+no+"").outerHTML="";
+}
+
 function createCurrentConTable(table) {
   var conVal = dsContributorArray.options[dsContributorArray.selectedIndex].value
   var name;
@@ -1463,17 +1475,22 @@ dsContributorArray.addEventListener("change", function(e) {
       apiKey: airKeyInput
     });
     var base = Airtable.base('appiYd1Tz9Sv857GZ');
+    var name = contributorVal.split(', ');
+    var lastName = name[0];
+    var firstName = name[1];
     base('sparc_members').select({
-      filterByFormula: `({Name} = "${contributorVal}")`
+      filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`
     }).eachPage(function page(records, fetchNextPage) {
       var conInfoObj = {};
+      console.log(records)
       records.forEach(function(record) {
         conInfoObj["ID"] = record.get('ORCID');
-        conInfoObj["Role"] = record.get('Dataset_contributor_roles');
+        conInfoObj["Role"] = record.get('NIH_Project_Role');
         conInfoObj["Affiliation"] = record.get('Institution');
       }),
       fetchNextPage();
 
+      // if no records found, leave fields empty
       leaveFieldsEmpty(conInfoObj["ID"],document.getElementById("input-con-ID"));
       leaveFieldsEmpty(conInfoObj["Role"],document.getElementById("input-con-role"));
       leaveFieldsEmpty(conInfoObj["Affiliation"], affiliationInput);
