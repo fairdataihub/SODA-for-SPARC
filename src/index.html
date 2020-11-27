@@ -5,8 +5,6 @@
 
     <title>SODA - Keep Calm and Curate </title>
 
-    <!-- <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css'> -->
-
     <link rel="stylesheet" href="assets/css/variables.css">
     <link rel="stylesheet" href="assets/css/nativize.css">
     <link rel="stylesheet" href="assets/css/global.css">
@@ -86,7 +84,9 @@
     require('./assets/demo-btns')
     require('./assets/normalize-shortcuts') // For normalizing shortcuts accross OS
   </script>
+
   <script>window.$ = window.jQuery = require('jquery')</script>
+  
   <script>
     $(document).ready(function () {
       $('#sidebarCollapse').on('click', function () {
@@ -106,16 +106,16 @@
 
   </script>
 
-  <script>
-    require('./scripts/popper.min.js') // Imports html files into app
-    require('./node_modules/bootstrap/dist/js/bootstrap.min.js') // Opens url into external chrome tab instead of in the app
-    require('./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js') // Side navigation menu control
-  </script>
+  <script src="scripts/popper.min.js"></script>
+  <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
+
+<!--
   <script type='text/javascript' src="../src/scripts/popper.min.js"></script>
 
   <script src="../src/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-  <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../src/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script> -->
 
 </body>
 </html>

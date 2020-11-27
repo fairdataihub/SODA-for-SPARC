@@ -6163,8 +6163,6 @@ document.getElementById("button-generate-comeback").addEventListener('click', fu
   $('#generate-dataset-tab').addClass('tab-active');
 })
 
-/// MAIN CURATE NEW ///
-
 const progressBarNewCurate = document.getElementById('progress-bar-new-curate');
 
 document.getElementById('button-generate').addEventListener('click', function() {
@@ -6186,52 +6184,8 @@ document.getElementById('button-generate').addEventListener('click', function() 
   progressBarNewCurate.value = 0;
 
   console.log(sodaJSONObj)
-
-  client.invoke("api_check_empty_files_folders", sodaJSONObj,
-     (error, res) => {
-     if (error) {
-       console.error(error)
-     } else {
-        document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
-        log.info('Continue with curate')
-        console.log(res)
-        var message = ""
-        error_files = res[0]
-        error_folders = res[1]
-        if (error_files.length>0){
-          var error_message_files = backfend_to_frontend_error_message(error_files)
-          message += "\n" + error_message_files
-        }
-
-        if (error_folders.length>0){
-          var error_message_folders = backfend_to_frontend_error_message(error_folders)
-          message += "\n" + error_message_folders
-        }
-
-        if (message){
-          message += "\n" + "Would you like to continue?"
-          ipcRenderer.send('warning-empty-files-folders-generate', message)
-        } else {
-          initiate_generate()
-        }
-      }
-    })
-})
-
-ipcRenderer.on('warning-empty-files-folders-generate-selection', (event, index) => {
-  if (index === 0) {
-    console.log("Continue")
-    initiate_generate()
-  } else {
-    console.log("Stop")
-    document.getElementById('div-generate-comeback').style.display = "flex"
-  }
-})
-
-function initiate_generate() {
-  console.log(sodaJSONObj)
   // Initiate curation by calling Python funtion
-  document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ..."
+  // document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ..."
   client.invoke("api_main_curate_function", sodaJSONObj,
      (error, res) => {
      if (error) {
@@ -6252,17 +6206,7 @@ function initiate_generate() {
      }
      document.getElementById('div-generate-comeback').style.display = "flex"
   })
-}
-
-function backfend_to_frontend_error_message(error_array) {
-  var error_message = "" 
-  for (var i = 0; i < error_array.length;i++){
-    item = error_array[i]
-    error_message += item + "\n"
-  }
-  return error_message
-}
-
+})
 
 var forbidden_characters_bf = '\/:*?"<>';
 
@@ -6281,3 +6225,37 @@ function check_forbidden_characters_bf(my_string) {
   }
   return check
 }
+
+var metadataIndividualFile = "";
+var metadataAllowedExtensions = [];
+var metadataParaElement = "";
+
+function importMetadataFiles(ev, metadataFile, extentionList, paraEle) {
+  document.getElementById(paraEle).innerHTML = "";
+  metadataIndividualFile = metadataFile;
+  metadataAllowedExtensions = extentionList;
+  metadataParaElement = paraEle;
+  ipcRenderer.send('open-file-dialog-metadata-curate');
+}
+
+ipcRenderer.on('selected-metadataCurate', (event, mypath) => {
+
+  if (mypath.length > 0) {
+
+  var dotCount = path.basename(mypath[0]).trim().split(".").length - 1;
+  if (dotCount === 1)  {
+    var metadataWithoutExtension = path.basename(mypath[0]).slice(0, path.basename(mypath[0]).indexOf('.'));
+    var extension = path.basename(mypath[0]).slice(path.basename(mypath[0]).indexOf('.'));
+
+    if (metadataWithoutExtension === metadataIndividualFile) {
+      if (metadataAllowedExtensions.includes(extension)) {
+        document.getElementById(metadataParaElement).innerHTML = mypath[0]
+      } else {
+        document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>We only support SPARC metadata files in the format listed above!</span>"
+      }
+    } else {
+      document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>Please only import SPARC metadata files!</span>"
+      }
+    }
+  }
+})
