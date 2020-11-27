@@ -6231,7 +6231,6 @@ ipcRenderer.on('warning-empty-files-folders-generate-selection', (event, index) 
 function initiate_generate() {
   console.log(sodaJSONObj)
   // Initiate curation by calling Python funtion
-  var main_curate_status = "Curating"
   document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ..."
   client.invoke("api_main_curate_function", sodaJSONObj,
      (error, res) => {
@@ -6253,64 +6252,6 @@ function initiate_generate() {
      }
      document.getElementById('div-generate-comeback').style.display = "flex"
   })
-
-
-  // Progress tracking function
-  var countDone = 0
-  var timerProgress = setInterval(main_progressfunction, 1000)
-  function main_progressfunction(){
-    client.invoke("api_main_curate_function_progress", (error, res) => {
-      if (error) {
-        //var emessage = userError(error)
-        //document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
-        log.error(error)
-        console.error(error)
-        //document.getElementById("para-curate-progress-bar-status").innerHTML = ''
-      } else {
-        main_curate_status = res[0]
-        var main_curate_progress_message = res[1]
-        var main_total_generate_dataset_size = res[2]
-        var main_generated_dataset_size = res[3]
-        var elapsed_time_formatted = res[4]
-        if (main_curate_status === 'Curating') {
-          //progressCurateUpload.style.display = "block";
-          if (main_curate_progress_message.includes('Success: COMPLETED!')){
-            //progressBarCurate.value = 100
-            //document.getElementById("para-please-wait-curate").innerHTML = "";
-            //document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + smileyCan
-            console.log(main_curate_progress_message)
-          } else {
-            var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100
-            //progressBarCurate.value = value
-            if (main_total_generate_dataset_size < displaySize){
-              var totalSizePrint = main_total_generate_dataset_size.toFixed(2) + ' B'
-            } else if (main_total_generate_dataset_size < displaySize*displaySize){
-              var totalSizePrint = (main_total_generate_dataset_size/displaySize).toFixed(2) + ' KB'
-            } else if (main_total_generate_dataset_size < displaySize*displaySize*displaySize){
-              var totalSizePrint = (main_total_generate_dataset_size/displaySize/displaySize).toFixed(2) + ' MB'
-            } else {
-              var totalSizePrint = (main_total_generate_dataset_size/displaySize/displaySize/displaySize).toFixed(2) + ' GB'
-            }
-            // document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + 'Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')'
-            console.log(main_curate_progress_message)
-            console.log(elapsed_time_formatted)
-            console.log('Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')')
-          }
-        }
-      }
-    })
-
-    if (main_curate_status === 'Done'){
-      countDone++
-      if (countDone > 1){
-        log.info('Done curate track')
-        console.log('Done curate track')
-        //document.getElementById("para-please-wait-curate").innerHTML = "";
-        clearInterval(timerProgress)
-      }
-    }
-  }
-
 }
 
 function backfend_to_frontend_error_message(error_array) {
