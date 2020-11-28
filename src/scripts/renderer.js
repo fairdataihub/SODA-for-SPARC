@@ -6254,7 +6254,7 @@ function initiate_generate() {
   })
 
 
-  // Progress tracking function
+  // Progress tracking function for main curate
   var countDone = 0
   var timerProgress = setInterval(main_progressfunction, 1000)
   function main_progressfunction(){
