@@ -1,4 +1,4 @@
-t# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 ### Import required python modules
 import logging
