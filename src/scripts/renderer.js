@@ -1207,10 +1207,13 @@ function changeAwardInputDsDescription() {
     }).eachPage(function page(records, fetchNextPage) {
         var awardValArray = [];
         records.forEach(function(record) {
-          var item = record.get('Name');
-          awardValArray.push(item);
+          var firstName = record.get('First_name');
+          var lastName = record.get('Last_name');
+          var fullName = lastName.concat(", ", firstName)
+          awardValArray.push(fullName);
         }),
       fetchNextPage();
+      console.log(awardValArray)
       for (var i = 0; i < awardValArray.length; i++) {
           var opt = awardValArray[i];
           addOption(dsContributorArray, opt, opt)
@@ -1226,6 +1229,15 @@ function changeAwardInputDsDescription() {
 }
 
 //////////////////////// Current Contributor(s) /////////////////////
+
+function delete_current_con(no){
+	document.getElementById("row-current-name"+no+"").outerHTML="";
+}
+
+function delete_link(no){
+	document.getElementById("row-current-link"+no+"").outerHTML="";
+}
+
 function createCurrentConTable(table) {
   var conVal = dsContributorArray.options[dsContributorArray.selectedIndex].value
   var name;
@@ -1463,17 +1475,22 @@ dsContributorArray.addEventListener("change", function(e) {
       apiKey: airKeyInput
     });
     var base = Airtable.base('appiYd1Tz9Sv857GZ');
+    var name = contributorVal.split(', ');
+    var lastName = name[0];
+    var firstName = name[1];
     base('sparc_members').select({
-      filterByFormula: `({Name} = "${contributorVal}")`
+      filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`
     }).eachPage(function page(records, fetchNextPage) {
       var conInfoObj = {};
+      console.log(records)
       records.forEach(function(record) {
         conInfoObj["ID"] = record.get('ORCID');
-        conInfoObj["Role"] = record.get('Dataset_contributor_roles');
+        conInfoObj["Role"] = record.get('NIH_Project_Role');
         conInfoObj["Affiliation"] = record.get('Institution');
       }),
       fetchNextPage();
 
+      // if no records found, leave fields empty
       leaveFieldsEmpty(conInfoObj["ID"],document.getElementById("input-con-ID"));
       leaveFieldsEmpty(conInfoObj["Role"],document.getElementById("input-con-role"));
       leaveFieldsEmpty(conInfoObj["Affiliation"], affiliationInput);
@@ -5258,23 +5275,23 @@ var datasetStructureJSONObj = {
 listItems(datasetStructureJSONObj, '#items')
 getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
 
-var sodaJSONObj = {
-  "bf-account-selected": {
-        "account-name": "",
-    },
-    "bf-dataset-selected": {
-        "dataset-name": "",
-    },
-    "dataset-structure": {"folders": {}, "files": {}},
-    "metadata-files": {},
-    "generate-dataset": {
-        "destination": "",
-        "path": "",
-        "dataset-name": "",
-        "if-existing": "",
-        "generate-option": ""
-    }
-}
+var sodaJSONObj = {}
+//
+// "bf-account-selected": {
+//       "account-name": "",
+//   },
+//   "bf-dataset-selected": {
+//       "dataset-name": "",
+//   },
+//   "dataset-structure": {"folders": {}, "files": {}},
+//   "metadata-files": {},
+//   "generate-dataset": {
+//       "destination": "",
+//       "path": "",
+//       "dataset-name": "",
+//       "if-existing": "",
+//       "generate-option": ""
+//   }
 
 
 /// back button
@@ -6105,29 +6122,29 @@ function addDetailsForFile(ev) {
 // })
 
 $("#inputNewNameDataset").keyup(function() {
+  $('#Question-generate-dataset-generate-div').removeClass("show");
+  $('#Question-generate-dataset-generate-div').removeClass("test2");
+  $('#Question-generate-dataset-generate-div').removeClass("prev");
   var newName = $("#inputNewNameDataset").val().trim();
   if (newName === "") {
     document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
-    document.getElementById('button-generate').disabled = true;
-    $('#button-generate').css({"background":"#cccccc", "color":"#696969"})
   } else {
     if (check_forbidden_characters_bf(newName)) {
       document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
-      document.getElementById('button-generate').disabled = true;
-      $('#button-generate').css({"background":"#cccccc", "color":"#696969"})
       document.getElementById('para-new-name-dataset-message').innerHTML = "Error: A Blackfynn dataset name cannot contain any of the following characters: \/:*?'<>."
     } else {
       document.getElementById('div-confirm-inputNewNameDataset').style.display = "flex";
-      $('#div-confirm-inputNewNameDataset').show()
+      $('#div-confirm-inputNewNameDataset button').show()
       document.getElementById('para-new-name-dataset-message').innerHTML = "";
-      document.getElementById('button-generate').disabled = false;
-      $('#button-generate').css({"background":"var(--color-light-green)", "color":"#fff"})
     }
   }
 });
 
 //// Select to choose a local dataset
 document.getElementById("input-destination-generate-dataset-locally").addEventListener("click", function() {
+  $("#Question-generate-dataset-locally-destination").nextAll().removeClass('show');
+  $("#Question-generate-dataset-locally-destination").nextAll().removeClass('test2');
+  $("#Question-generate-dataset-locally-destination").nextAll().removeClass('prev');
   document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
   ipcRenderer.send('open-file-dialog-local-destination-curate');
 })
@@ -6140,10 +6157,11 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
       $("#div-confirm-destination-locally button").show()
     }
   } else {
-    $("#Question-generate-dataset-generate-div").removeClass('show');
-    $("#Question-generate-dataset-generate-div").removeClass('test2');
-    document.getElementById("div-confirm-destination-locally").style.display = "none";
-    $("#div-confirm-destination-locally button").hide()
+      $("#Question-generate-dataset-locally-destination").nextAll().removeClass('show');
+      $("#Question-generate-dataset-locally-destination").nextAll().removeClass('test2');
+      $("#Question-generate-dataset-locally-destination").nextAll().removeClass('prev');
+      document.getElementById("div-confirm-destination-locally").style.display = "none";
+      $("#div-confirm-destination-locally button").hide()
   }
 })
 
@@ -6161,8 +6179,6 @@ document.getElementById("button-generate-comeback").addEventListener('click', fu
   document.getElementById('prevBtn').style.display = "inline";
   $('#generate-dataset-tab').addClass('tab-active');
 })
-
-/// MAIN CURATE NEW ///
 
 const progressBarNewCurate = document.getElementById('progress-bar-new-curate');
 
@@ -6185,53 +6201,8 @@ document.getElementById('button-generate').addEventListener('click', function() 
   progressBarNewCurate.value = 0;
 
   console.log(sodaJSONObj)
-
-  client.invoke("api_check_empty_files_folders", sodaJSONObj,
-     (error, res) => {
-     if (error) {
-       console.error(error)
-     } else {
-        document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
-        log.info('Continue with curate')
-        console.log(res)
-        var message = ""
-        error_files = res[0]
-        error_folders = res[1]
-        if (error_files.length>0){
-          var error_message_files = backfend_to_frontend_error_message(error_files)
-          message += "\n" + error_message_files
-        }
-
-        if (error_folders.length>0){
-          var error_message_folders = backfend_to_frontend_error_message(error_folders)
-          message += "\n" + error_message_folders
-        }
-
-        if (message){
-          message += "\n" + "Would you like to continue?"
-          ipcRenderer.send('warning-empty-files-folders-generate', message)
-        } else {
-          initiate_generate()
-        }
-      }
-    })
-})
-
-ipcRenderer.on('warning-empty-files-folders-generate-selection', (event, index) => {
-  if (index === 0) {
-    console.log("Continue")
-    initiate_generate()
-  } else {
-    console.log("Stop")
-    document.getElementById('div-generate-comeback').style.display = "flex"
-  }
-})
-
-function initiate_generate() {
-  console.log(sodaJSONObj)
   // Initiate curation by calling Python funtion
-  var main_curate_status = "Curating"
-  document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ..."
+  // document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ..."
   client.invoke("api_main_curate_function", sodaJSONObj,
      (error, res) => {
      if (error) {
@@ -6252,75 +6223,7 @@ function initiate_generate() {
      }
      document.getElementById('div-generate-comeback').style.display = "flex"
   })
-
-
-  // Progress tracking function
-  var countDone = 0
-  var timerProgress = setInterval(main_progressfunction, 1000)
-  function main_progressfunction(){
-    client.invoke("api_main_curate_function_progress", (error, res) => {
-      if (error) {
-        //var emessage = userError(error)
-        //document.getElementById("para-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
-        log.error(error)
-        console.error(error)
-        //document.getElementById("para-curate-progress-bar-status").innerHTML = ''
-      } else {
-        main_curate_status = res[0]
-        var main_curate_progress_message = res[1]
-        var main_total_generate_dataset_size = res[2]
-        var main_generated_dataset_size = res[3]
-        var elapsed_time_formatted = res[4]
-        if (main_curate_status === 'Curating') {
-          //progressCurateUpload.style.display = "block";
-          if (main_curate_progress_message.includes('Success: COMPLETED!')){
-            //progressBarCurate.value = 100
-            //document.getElementById("para-please-wait-curate").innerHTML = "";
-            //document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + smileyCan
-            console.log(main_curate_progress_message)
-          } else {
-            var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100
-            //progressBarCurate.value = value
-            if (main_total_generate_dataset_size < displaySize){
-              var totalSizePrint = main_total_generate_dataset_size.toFixed(2) + ' B'
-            } else if (main_total_generate_dataset_size < displaySize*displaySize){
-              var totalSizePrint = (main_total_generate_dataset_size/displaySize).toFixed(2) + ' KB'
-            } else if (main_total_generate_dataset_size < displaySize*displaySize*displaySize){
-              var totalSizePrint = (main_total_generate_dataset_size/displaySize/displaySize).toFixed(2) + ' MB'
-            } else {
-              var totalSizePrint = (main_total_generate_dataset_size/displaySize/displaySize/displaySize).toFixed(2) + ' GB'
-            }
-            // document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + 'Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')'
-            console.log(main_curate_progress_message)
-            console.log(elapsed_time_formatted)
-            console.log('Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')')
-          }
-        }
-      }
-    })
-
-    if (main_curate_status === 'Done'){
-      countDone++
-      if (countDone > 1){
-        log.info('Done curate track')
-        console.log('Done curate track')
-        //document.getElementById("para-please-wait-curate").innerHTML = "";
-        clearInterval(timerProgress)
-      }
-    }
-  }
-
-}
-
-function backfend_to_frontend_error_message(error_array) {
-  var error_message = "" 
-  for (var i = 0; i < error_array.length;i++){
-    item = error_array[i]
-    error_message += item + "\n"
-  }
-  return error_message
-}
-
+})
 
 var forbidden_characters_bf = '\/:*?"<>';
 
@@ -6339,3 +6242,37 @@ function check_forbidden_characters_bf(my_string) {
   }
   return check
 }
+
+var metadataIndividualFile = "";
+var metadataAllowedExtensions = [];
+var metadataParaElement = "";
+
+function importMetadataFiles(ev, metadataFile, extentionList, paraEle) {
+  document.getElementById(paraEle).innerHTML = "";
+  metadataIndividualFile = metadataFile;
+  metadataAllowedExtensions = extentionList;
+  metadataParaElement = paraEle;
+  ipcRenderer.send('open-file-dialog-metadata-curate');
+}
+
+ipcRenderer.on('selected-metadataCurate', (event, mypath) => {
+
+  if (mypath.length > 0) {
+
+  var dotCount = path.basename(mypath[0]).trim().split(".").length - 1;
+  if (dotCount === 1)  {
+    var metadataWithoutExtension = path.basename(mypath[0]).slice(0, path.basename(mypath[0]).indexOf('.'));
+    var extension = path.basename(mypath[0]).slice(path.basename(mypath[0]).indexOf('.'));
+
+    if (metadataWithoutExtension === metadataIndividualFile) {
+      if (metadataAllowedExtensions.includes(extension)) {
+        document.getElementById(metadataParaElement).innerHTML = mypath[0]
+      } else {
+        document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>We only support SPARC metadata files in the format listed above!</span>"
+      }
+    } else {
+      document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>Please only import SPARC metadata files!</span>"
+      }
+    }
+  }
+})

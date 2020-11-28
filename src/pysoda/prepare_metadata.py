@@ -110,9 +110,12 @@ def save_submission_file(filepath, json_str):
     ws1 = wb['Sheet1']
     # date_obj = datetime.strptime(val_arr[2], "%Y-%m")
     # date_new = date_obj.strftime("%m-%Y")
-    ws1["C2"] = val_arr[0]
-    ws1["C3"] = val_arr[1]
-    ws1["C4"] = val_arr[2]
+    for column, arr in zip(excel_columns(start_index=2), val_arr):
+        ws1[column+"2"] = arr['award']
+        ws1[column+"3"] = arr['milestone']
+        ws1[column+"4"] = arr['date']
+
+    rename_headers(ws1, len(val_arr), 2)
 
     wb.save(destination)
 
@@ -120,35 +123,21 @@ from string import ascii_uppercase
 import itertools
 
 
-def excel_columns():
+def excel_columns(start_index=0):
     """
     NOTE: does not support more than 699 contributors/links
     """
-    # start with column D not A
-    single_letter = list(ascii_uppercase[3:])
+    single_letter = list(ascii_uppercase[start_index:])
     two_letter = [a + b for a,b in itertools.product(ascii_uppercase, ascii_uppercase)]
     return single_letter + two_letter
 
-def rename_headers(workbook, keyword_array, contributor_role_array, funding_array, total_link_array):
+def rename_headers(workbook, max_len, start_index):
     """
     Rename header columns if values exceed 3. Change Additional Values to Value 4, 5,...
     """
-    # keywords
-    keyword_len = len(keyword_array)
 
-    # contributors
-    no_contributors = len(contributor_role_array)
-
-    # funding = SPARC award + other funding sources
-    funding_len = len(funding_array)
-
-    # total links added
-    link_len = len(total_link_array)
-
-    max_len = max(keyword_len, funding_len, link_len, no_contributors)
-
-    columns_list = excel_columns()
-    if max_len > 3:
+    columns_list = excel_columns(start_index=start_index)
+    if max_len > start_index:
 
         workbook[columns_list[0] + "1"] = "Value"
 
@@ -182,21 +171,21 @@ def populate_dataset_info(workbook, val_array):
     workbook["D16"] = val_array[4]
 
     ## keywords
-    for i, column in zip(range(len(val_array[2])), excel_columns()):
+    for i, column in zip(range(len(val_array[2])), excel_columns(start_index=3)):
         workbook[column + "4"] = val_array[2][i]
 
     return val_array[2]
 
 def populate_contributor_info(workbook, val_array):
     ## award info
-    for i, column in zip(range(len(val_array["funding"])), excel_columns()):
+    for i, column in zip(range(len(val_array["funding"])), excel_columns(start_index=3)):
         workbook[column + "11"] = val_array["funding"][i]
 
     ### Acknowledgments
     workbook["D10"] = val_array["acknowledgment"]
 
     ### Contributors
-    for contributor, column in zip(val_array['contributors'], excel_columns()):
+    for contributor, column in zip(val_array['contributors'], excel_columns(start_index=3)):
         workbook[column + "5"] = contributor["conName"]
         workbook[column + "6"] = contributor["conID"]
         workbook[column + "7"] = contributor["conAffliation"]
@@ -208,7 +197,7 @@ def populate_contributor_info(workbook, val_array):
 def populate_links_info(workbook, val_array):
     ## originating DOI, Protocol DOI
     total_link_array = val_array["Originating Article DOI"] + val_array["Protocol URL or DOI*"] + val_array["Additional Link"]
-    for i, column in zip(range(len(total_link_array)), excel_columns()):
+    for i, column in zip(range(len(total_link_array)), excel_columns(start_index=3)):
         if total_link_array[i]["link type"] == "Originating Article DOI":
             workbook[column + "12"] = total_link_array[i]["link"]
             workbook[column + "13"] = ""
@@ -267,11 +256,25 @@ def save_ds_description_file(bfaccountname, filepath, dataset_str, misc_str, opt
     wb = load_workbook(destination)
     ws1 = wb['Sheet1']
 
-    ret_val_1 = populate_dataset_info(ws1, val_arr_ds)
-    ret_val_2 = populate_contributor_info(ws1, val_arr_con)
-    ret_val_3 = populate_links_info(ws1, val_arr_misc)
+    keyword_array = populate_dataset_info(ws1, val_arr_ds)
+    (funding_array, contributor_role_array) = populate_contributor_info(ws1, val_arr_con)
+    total_link_array = populate_links_info(ws1, val_arr_misc)
     populate_completeness_info(ws1, val_arr_optional, bfaccountname)
 
-    rename_headers(ws1, ret_val_1, ret_val_2[1], ret_val_2[0], ret_val_3)
+    # keywords
+    keyword_len = len(keyword_array)
+
+    # contributors
+    no_contributors = len(contributor_role_array)
+
+    # funding = SPARC award + other funding sources
+    funding_len = len(funding_array)
+
+    # total links added
+    link_len = len(total_link_array)
+
+    max_len = max(keyword_len, funding_len, link_len, no_contributors)
+
+    rename_headers(ws1, max_len, 3)
 
     wb.save(destination)
