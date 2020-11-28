@@ -37,7 +37,7 @@ from datetime import datetime, timezone
 from validator_soda import pathToJsonStruct, validate_high_level_folder_structure, validate_high_level_metadata_files, \
 validate_sub_level_organization, validate_submission_file, validate_dataset_description_file
 
-from pysoda import clear_queue, agent_running, check_forbidden_characters, check_forbidden_characters_bf, bf_dataset_size
+from pysoda import clear_queue, agent_running, check_forbidden_characters, check_forbidden_characters_bf
 
 ### Global variables
 curateprogress = ' '
@@ -123,6 +123,21 @@ def folder_size(path):
             fp = join(path, f)
             total_size += getsize(fp)
     return total_size
+
+
+def bf_dataset_size():
+    """
+    Function to get storage size of a dataset on Blackfynn
+    """
+    global bf
+    global myds
+
+    try:
+        selected_dataset_id = myds.id
+        bf_response = bf._api._get('/datasets/' + str(selected_dataset_id))
+        return bf_response['storage'] if 'storage' in bf_response.keys() else 0
+    except Exception as e:
+        raise e
 
 def path_size(path):
     """
@@ -283,8 +298,6 @@ def mycopyfileobj(fsrc, fdst, length=16*1024*16):
     global curateprogress
     global total_dataset_size
     global curated_dataset_size
-    global main_generated_dataset_size 
-
     while True:
         buf = fsrc.read(length)
         if not buf:
@@ -292,7 +305,6 @@ def mycopyfileobj(fsrc, fdst, length=16*1024*16):
         gevent.sleep(0)
         fdst.write(buf)
         curated_dataset_size += len(buf)
-        main_generated_dataset_size += len(buf)
 
 def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     """
@@ -1124,7 +1136,6 @@ def create_high_level_manifest_files(soda_json_structure):
         def recursive_manifest_builder(my_folder, my_relative_path, dict_folder_manifest):
             if "files" in my_folder.keys():
                 for file_key, file in my_folder["files"].items():
-                    gevent.sleep(0)
                     dict_folder_manifest = file_manifest_entry(file_key, file, my_relative_path, dict_folder_manifest)
                             
             if "folders" in my_folder.keys():
@@ -1293,11 +1304,7 @@ def get_generate_dataset_size(soda_json_structure, manifest_files_structure):
     except Exception as e:
         raise e    
 
-def generate_dataset_locally(soda_json_structure, manifest_files_structure):
-
-    global main_curate_progress_message
-    global main_total_generate_dataset_size
-
+def generate_dataset_locally(soda_json_structure):
     try:
         
         def recursive_dataset_scan(my_folder, my_folderpath, list_copy_files, list_move_files):
@@ -1327,7 +1334,6 @@ def generate_dataset_locally(soda_json_structure, manifest_files_structure):
             return list_copy_files, list_move_files
  
         # 1. Create new folder for dataset or use existing merge with existing or create new dataset?
-        main_curate_progress_message = "Generating folder structure and list of dataset to be moved/copied"
         dataset_absolute_path = soda_json_structure["generate-dataset"]["path"]
         if_existing = soda_json_structure["generate-dataset"]["if-existing"]
         dataset_name = soda_json_structure["generate-dataset"]["dataset-name"]
@@ -1374,7 +1380,7 @@ def generate_dataset_locally(soda_json_structure, manifest_files_structure):
         for fileinfo in list_move_files:
             srcfile = fileinfo[0]
             distfile = fileinfo[1]
-            main_curate_progress_message = "Moving file " + str(srcfile) + " to " + str(distfile)
+            curateprogress = 'Moving ' + str(srcfile)
             mymovefile_with_metadata(srcfile, distfile)
             
         # 6. Copy files to new location
@@ -1382,13 +1388,12 @@ def generate_dataset_locally(soda_json_structure, manifest_files_structure):
         for fileinfo in list_copy_files:
             srcfile = fileinfo[0]
             distfile = fileinfo[1]
-            main_curate_progress_message = "Copying file " + str(srcfile) + " to " + str(distfile)
+            curateprogress = 'Copying ' + str(srcfile)
             mycopyfile_with_metadata(srcfile, distfile)
  
         # 7. Delete mainfest folder and original folder if merge requested and rename new folder
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
         if if_existing == "merge":
-            main_curate_progress_message = "Finalizing dataset"
             original_dataset_path = join(dataset_absolute_path, dataset_name)
             shutil.rmtree(original_dataset_path)
             rename(datasetpath, original_dataset_path)
@@ -1682,103 +1687,67 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
     except Exception as e:
         raise e
 
-
-main_curate_status = ""
-main_curate_progress_message = ""
-main_total_generate_dataset_size = 1
-main_generated_dataset_size = 0
-start_generate = 0
-generate_start_time = 0
-main_generate_destination = ""
-main_initial_bfdataset_size = 0
-bf = ""
-myds = ""
-
 def main_curate_function(soda_json_structure):
-
-    global main_curate_status 
-    global main_curate_progress_message
-    global main_total_generate_dataset_size
-    global main_generated_dataset_size
-    global start_generate
-    global generate_start_time
-    global main_generate_destination
-    global main_initial_bfdataset_size
-
-    global bf
-    global myds
-
-    main_curate_status = ""
-    main_curate_progress_message = ""
-    main_total_generate_dataset_size = 1
-    main_generated_dataset_size = 0
-
-    main_curate_status = "Curating"
-    main_curate_progress_message = "Starting dataset curation"
-
     main_keys = soda_json_structure.keys()
     error = []
 
     # 1] Check for potential errors
 
     # 1.1. Check that the local destination is valid if generate dataset locally is requested
-    if "generate-dataset" in main_keys: 
-        if soda_json_structure["generate-dataset"]["destination"] == "local":
-            main_curate_progress_message = "Checking that the local destination selected for generating your dataset is valid"
-            generate_dataset = soda_json_structure["generate-dataset"]
-            local_dataset_path = generate_dataset["path"]
-            # if generate_dataset["if-existing"] == "merge":
-            #     local_dataset_path = join(local_dataset_path, generate_dataset["dataset-name"])
-            if not isdir(local_dataset_path):
-                error_message = 'Error: The Path ' + local_dataset_path + ' is not found. Please select a valid destination folder for the new dataset'
-                main_curate_status = 'Done'
-                error.append(error_message)
-                raise Exception(error)
+    if "generate-dataset" in main_keys and soda_json_structure["generate-dataset"]["destination"] == "local":
+        generate_dataset = soda_json_structure["generate-dataset"]
+        local_dataset_path = generate_dataset["path"]
+        # if generate_dataset["if-existing"] == "merge":
+        #     local_dataset_path = join(local_dataset_path, generate_dataset["dataset-name"])
+        if not isdir(local_dataset_path):
+            error_message = 'Error: The Path ' + local_dataset_path + ' is not found. Please select a valid destination folder for the new dataset'
+            curatestatus = 'Done'
+            error.append(error_message)
+            raise Exception(error)
 
     # 1.2. Check that the bf destination is valid if generate on bf, or any other bf actions are requested
-    if "bf-account-selected" in soda_json_structure:  
+    if "generate-dataset" in main_keys and soda_json_structure["generate-dataset"]["destination"] == "bf":
+        accountname = soda_json_structure["bf-account-selected"]["account-name"]  
+
         # check that the blackfynn account is valid
         try:
-            main_curate_progress_message = "Checking that the selected Blackfynn account is valid"
-            accountname = soda_json_structure["bf-account-selected"]["account-name"]
             bf = Blackfynn(accountname)
         except Exception as e:
-            main_curate_status = 'Done'
+            curatestatus = 'Done'
             error.append('Error: Please select a valid Blackfynn account')
             raise Exception(error)
         
-    # if uploading on an existing bf dataset
-    if "bf-dataset-selected" in soda_json_structure:
-        # check that the blackfynn dataset is valid
-        try:
-            main_curate_progress_message = "Checking that the selected Blackfynn dataset is valid"
-            bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
-            myds = bf.get_dataset(bfdataset)
-        except Exception as e:
-            main_curate_status = 'Done'
-            error.append('Error: Please select a valid Blackfynn dataset')
-            raise Exception(error)           
+        # if uploading on an existing bf dataset
+        dataset_name = soda_json_structure["generate-dataset"]["dataset-name"]
+        if not dataset_name:
+            # check that the blackfynn dataset is valid
+            try:
+                bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+                myds = bf.get_dataset(bfdataset)
+            except Exception as e:
+                curatestatus = 'Done'
+                error.append('Error: Please select a valid Blackfynn dataset')
+                raise Exception(error)           
 
-        # check that the user has permissions for uploading and modifying the dataset
-        try:
-            main_curate_progress_message = "Checking that you have required permissions for modifying the selected dataset"
-            role = bf_get_current_user_permission(bf, myds)
-            if role not in ['owner', 'manager', 'editor']:
-                main_curate_status = 'Done'
-                error.append("Error: You don't have permissions for uploading to this Blackfynn dataset")
-                raise Exception(error)
-        except Exception as e:
-            raise e
+            # check that the user has permissions for uploading and modifying the dataset
+            try:
+                role = bf_get_current_user_permission(bf, myds)
+                if role not in ['owner', 'manager', 'editor']:
+                    curatestatus = 'Done'
+                    error.append("Error: You don't have permissions for uploading to this Blackfynn dataset")
+                    raise Exception(error)
+            except Exception as e:
+                raise e
 
     # 1.3. Check that specified dataset files and folders are valid (existing path) if generate dataset is requested
     # Note: Empty folders and 0 kb files will be removed without warning (a warning will be provided on the front end before starting the curate process)
     if "generate-dataset" in main_keys:
+        generate_option = soda_json_structure["generate-dataset"]["generate-option"]
         # Check at least one file or folder are added to the dataset
         try:
-            main_curate_progress_message = "Checking that the dataset is no empty"
             dataset_structure = soda_json_structure["dataset-structure"]
         except Exception as e:
-            main_curate_status = 'Done'
+            curatestatus = 'Done'
             error.append('Error: Your dataset is empty. Please add files/folders to your dataset')
             raise Exception(error) 
 
@@ -1787,37 +1756,34 @@ def main_curate_function(soda_json_structure):
             error = check_local_dataset_files_validity(soda_json_structure)
             print(error)
             if error: 
-                main_curate_status = 'Done'
+                curatestatus = 'Done'
                 raise Exception(error)
 
             if not soda_json_structure["dataset-structure"]["folders"]:
-                main_curate_status = 'Done'
+                curatestatus = 'Done'
                 error.append('Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset')
                 raise Exception(error) 
 
         except Exception as e:
-            main_curate_status = 'Done'
+            curatestatus = 'Done'
             raise e
         
         # Check that bf files/folders exist
-        generate_option = soda_json_structure["generate-dataset"]["generate-option"]
         if generate_option == "existing-bf":
             try:
-                main_curate_progress_message = "Checking that the Blackfynn files and folders are valid"
                 if soda_json_structure["generate-dataset"]["destination"] == "bf":
                     error = bf_check_dataset_files_validity(soda_json_structure,bf)
                     if error: 
-                        main_curate_status = 'Done'
+                        curatestatus = 'Done'
                         raise Exception(error)
             except Exception as e:
-                main_curate_status = 'Done'
+                curatestatus = 'Done'
                 raise e
 
     # 3] Generate manifest files based on the json structure 
     manifest_files_structure = ""
     if "manifest-files" in main_keys:
         try:
-            main_curate_progress_message = "Preparing manifest files"
             manifest_files_structure = create_high_level_manifest_files(soda_json_structure)
             print(manifest_files_structure)
 
@@ -1829,94 +1795,23 @@ def main_curate_function(soda_json_structure):
                 bf_add_manifest_files(manifest_files_structure, myds)
 
         except Exception as e:
-            main_curate_status = 'Done'
+            curatestatus = 'Done'
             raise e
             
-    # # 4] Evaluate total size of data to be generated
-    # if "generate-dataset" in main_keys:
-    #     try:
-    #         main_curate_progress_message = "Estimating the size total size of the files to be included in your dataset"
-    #         main_total_generate_dataset_size = get_generate_dataset_size(soda_json_structure, manifest_files_structure)
-    #     except Exception as e:
-    #         main_curate_status = 'Done'
-    #         raise e
+    # 4] Evaluate total size of data to be generated
+    if "generate-dataset" in main_keys:
+        generate_dataset_size = get_generate_dataset_size(soda_json_structure, manifest_files_structure)
+        print("SIZE", generate_dataset_size)
         
     # 5] Generate
     if "generate-dataset" in main_keys:
-        main_curate_progress_message = "Generating dataset"
-        generate_start_time = time.time()
-        try: 
-            if soda_json_structure["generate-dataset"]["destination"] == "local":
-                main_generate_destination = soda_json_structure["generate-dataset"]["destination"]
-                start_generate = 1
-                datasetpath = generate_dataset_locally(soda_json_structure, manifest_files_structure)
-                # if "manifest-files" in main_keys:
-                #     main_curate_progress_message = "Generating manifest files"
-                #     add_local_manifest_files(manifest_files_structure, datasetpath)
-                
-            if soda_json_structure["generate-dataset"]["destination"] == "bf":
-                if generate_option == "new":
-                    if "dataset-name" in soda_json_structure["generate-dataset"]:
-                        dataset_name = soda_json_structure["generate-dataset"]["dataset-name"]
-                        myds = bf_create_new_dataset(dataset_name, bf)
-                    main_generate_destination = soda_json_structure["generate-dataset"]["destination"]
-                    bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, myds)
-                    # if "manifest-files" in main_keys:
-                    #     main_curate_progress_message = "Generating manifest files"
-                    #     bf_add_manifest_files(manifest_files_structure, myds)
-
-        except Exception as e:
-            main_curate_status = 'Done'
-            raise e
-
-    main_curate_status = 'Done'
-    main_curate_progress_message = 'Success: COMPLETED!'
-
-def main_curate_function_progress():
-    """
-    Function frequently called by front end to help keep track of the dataset generation progress
-    """
-    # global main_curateprogress
-    # global main_curatestatus
-    # global main_curateprintstatus
-    # global main_total_dataset_size
-    # global main_curated_dataset_size
-    # global start_time
-    # global main_upload_directly_to_bf
-    # global main_start_submit
-    # global main_initial_bfdataset_size
-
-    # if start_submit == 1:
-    #     if upload_directly_to_bf == 1:
-    #         curated_dataset_size = bf_dataset_size() - initial_bfdataset_size
-    #     elapsed_time = time.time() - start_time
-    #     elapsed_time_formatted = time_format(elapsed_time)
-    #     elapsed_time_formatted_display = '<br>' + 'Elapsed time: ' + elapsed_time_formatted + '<br>'
-    # else:
-    #     if upload_directly_to_bf == 1:
-    #         curated_dataset_size = 0
-    #     elapsed_time_formatted = 0
-    #     elapsed_time_formatted_display = '<br>' + 'Initiating...' + '<br>'
-
-    # return (curateprogress+elapsed_time_formatted_display, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time_formatted)
-
-    global main_curate_status # empty if curate on going, "Done" when main curate function stopped (error or completed)
-    global main_curate_progress_message
-    global main_total_generate_dataset_size
-    global main_generated_dataset_size
-    global start_generate
-    global generate_start_time
-    global main_generate_destination
-    global main_initial_bfdataset_size 
-
-    if start_generate == 1:
-        elapsed_time = time.time() - generate_start_time
-        elapsed_time_formatted = time_format(elapsed_time)
-        if main_generate_destination == "bf":
-            main_generated_dataset_size = bf_dataset_size() - main_initial_bfdataset_size 
-
-    else: 
-        elapsed_time_formatted = 0
-
-    return (main_curate_status, main_curate_progress_message, main_total_generate_dataset_size, main_generated_dataset_size, elapsed_time_formatted)
-
+        if soda_json_structure["generate-dataset"]["destination"] == "local":
+            datasetpath = generate_dataset_locally(soda_json_structure)
+            add_local_manifest_files(manifest_files_structure, datasetpath)
+            
+        if soda_json_structure["generate-dataset"]["destination"] == "bf":
+            if generate_option == "new":
+                if dataset_name:
+                    myds = bf_create_new_dataset(dataset_name, bf)
+                bf_generate_new_dataset(soda_json_structure, bf, myds)
+                bf_add_manifest_files(manifest_files_structure, myds)
