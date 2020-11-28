@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+t# -*- coding: utf-8 -*-
 
 ### Import required python modules
 import logging
@@ -84,6 +84,44 @@ logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler(os.path.join(os.path.expanduser("~"), f"{__name__}.log"))
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
+
+
+def folder_size(path):
+    """
+    Provides the size of the folder indicated by path
+
+    Args:
+        path: path of the folder (string)
+    Returns:
+        total_size: total size of the folder in bytes (integer)
+    """
+    total_size = 0
+    start_path = '.'  # To get size of current directory
+    for path, dirs, files in walk(path):
+        for f in files:
+            fp = join(path, f)
+            total_size += getsize(fp)
+    return total_size
+
+def bf_dataset_size():
+    """
+    Function to get storage size of a dataset on Blackfynn
+    """
+    global bf
+    global myds
+
+    try:
+        selected_dataset_id = myds.id
+        bf_response = bf._api._get('/datasets/' + str(selected_dataset_id))
+        return bf_response['storage'] if 'storage' in bf_response.keys() else 0
+    except Exception as e:
+        raise e
+
+def time_format(elapsed_time):
+    mins, secs = divmod(elapsed_time, 60)
+    hours, mins = divmod(mins, 60)
+    return "%dh:%02dmin:%02ds" % (hours, mins, secs)
+
 
 ### Manage datasets (Blackfynn interface)
 def bf_add_account(keyname, key, secret):
