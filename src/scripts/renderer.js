@@ -1784,7 +1784,7 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
         var datasetInfoValueArray = grabDSInfoEntries()
 
         //// process obtained values to pass to an array ///
-        ///////////////////////////////////////////////////
+        /////////////////////////////////////////////////// 
         var keywordVal = []
         for (var i=0;i<datasetInfoValueArray["keywords"].length;i++) {
           keywordVal.push(datasetInfoValueArray["keywords"][i].value)
