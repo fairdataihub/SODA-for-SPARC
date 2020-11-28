@@ -1486,7 +1486,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                     tracking_folder = my_tracking_folder["folders"][folder_key]
                     recursive_create_folder_for_bf(folder, tracking_folder, existing_folder_option)                      
 
-        def recursive_dataset_scan_for_bf(my_folder, my_tracking_folder, existing_file_option, list_upload_files):
+        def recursive_dataset_scan_for_bf(my_folder, my_tracking_folder, existing_file_option, list_upload_files, my_relative_path):
 
             global main_total_generate_dataset_size
 
@@ -1497,13 +1497,14 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                 my_bf_existing_folders_name = [splitext(x.name)[0] for x in my_bf_existing_folders]
             
                 for folder_key, folder in my_folder["folders"].items():
+                    relative_path = my_relative_path + "/" + folder_key
                     
                     if existing_folder_option == "skip":
                         if folder_key in my_bf_existing_folders_name:
                             continue
                     
                     tracking_folder = my_tracking_folder["folders"][folder_key]
-                    list_upload_files = recursive_dataset_scan_for_bf(folder, tracking_folder, existing_file_option, list_upload_files)
+                    list_upload_files = recursive_dataset_scan_for_bf(folder, tracking_folder, existing_file_option, list_upload_files, relative_path)
                         
             if "files" in my_folder.keys():
                 my_bf_existing_files = [x for x in my_bf_folder.items if x.type != "Collection"]
@@ -1555,7 +1556,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
 
                             # save in list accordingly
                             if count_exist_projected == 1:
-                                additional_upload_lists.append([[file_path], my_bf_folder, [projected_name], [desired_name], my_tracking_folder])
+                                additional_upload_lists.append([[file_path], my_bf_folder, [projected_name], [desired_name], my_tracking_folder, my_relative_path])
                                 
                             else:
                                 list_local_files.append(file_path)
@@ -1566,12 +1567,10 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                             main_total_generate_dataset_size += getsize(file_path)
                 
                 if list_local_files:
-                    list_upload_files.append([list_local_files, my_bf_folder, list_projected_name, list_desired_name, my_tracking_folder])
-                    print(list_local_files)
+                    list_upload_files.append([list_local_files, my_bf_folder, list_projected_name, list_desired_name, my_tracking_folder, my_relative_path])
 
                 for item in additional_upload_lists:
                     list_upload_files.append(item)  
-                    print("item", item)
                 
             return list_upload_files
         
@@ -1588,7 +1587,8 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
         main_curate_progress_message = "Preparing a list of files to upload"
         existing_file_option = soda_json_structure["generate-dataset"]["if-existing-files"]
         list_upload_files = []
-        list_upload_files = recursive_dataset_scan_for_bf(dataset_structure, tracking_json_structure, existing_file_option, list_upload_files)
+        relative_path = ds.name
+        list_upload_files = recursive_dataset_scan_for_bf(dataset_structure, tracking_json_structure, existing_file_option, list_upload_files, relative_path)
 
         # 3. Add high-level metadata files to a list
         list_upload_metadata_files = []
@@ -1644,9 +1644,10 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
             list_projected_names = item[2]
             list_desired_names = item[3]
             tracking_folder = item[4]
+            relative_path = item[5]
             
             #upload
-            main_curate_progress_message = "Uploading " + str(list_upload) + " -- " + str(list_projected_names) + " -- " + str(list_desired_names)
+            main_curate_progress_message = "Uploading files in " + str(relative_path)
             bf_folder.upload(*list_upload)
             #rename to desired
             for item in bf_folder.items:
@@ -1668,13 +1669,15 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                         item.name = desired_name
                     tracking_folder["files"][desired_name] = {"value": item}
          
-        if list_upload_metadata_files:                 
+        if list_upload_metadata_files:        
+            main_curate_progress_message = "Uploading metadata files in high-level dataset folder " + str(ds.name)      
             ds.upload(*list_upload_metadata_files)
 
         if list_upload_manifest_files:  
             for item in list_upload_manifest_files:
                 manifest_file = item[0]  
-                bf_folder = item[1]        
+                bf_folder = item[1]     
+                main_curate_progress_message = "Uploading manifest file in " + str(bf_folder.name) + " folder"   
                 bf_folder.upload(*manifest_file)
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
@@ -1831,17 +1834,8 @@ def main_curate_function(soda_json_structure):
         except Exception as e:
             main_curate_status = 'Done'
             raise e
-            
-    # # 4] Evaluate total size of data to be generated
-    # if "generate-dataset" in main_keys:
-    #     try:
-    #         main_curate_progress_message = "Estimating the size total size of the files to be included in your dataset"
-    #         main_total_generate_dataset_size = get_generate_dataset_size(soda_json_structure, manifest_files_structure)
-    #     except Exception as e:
-    #         main_curate_status = 'Done'
-    #         raise e
         
-    # 5] Generate
+    # 4] Generate
     if "generate-dataset" in main_keys:
         main_curate_progress_message = "Generating dataset"
         generate_start_time = time.time()

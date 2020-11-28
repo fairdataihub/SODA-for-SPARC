@@ -1213,7 +1213,6 @@ function changeAwardInputDsDescription() {
           awardValArray.push(fullName);
         }),
       fetchNextPage();
-      console.log(awardValArray)
       for (var i = 0; i < awardValArray.length; i++) {
           var opt = awardValArray[i];
           addOption(dsContributorArray, opt, opt)
@@ -6310,8 +6309,8 @@ function initiate_generate() {
             }
             // document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + 'Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')'
             console.log(main_curate_progress_message)
-            console.log(elapsed_time_formatted)
             console.log('Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')')
+            console.log("Elaspsed time: " + elapsed_time_formatted)
           }
         }
       }
