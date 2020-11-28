@@ -402,9 +402,9 @@ function updateJSONStructureGettingStarted() {
 
   document.getElementById('input-global-path').value = "Mydatasetfolder/"
 
-  // if ($('input[name="getting-started-1"]:checked')[0].id === "prepare-new") {
-  //   sodaJSONObj["generate-dataset"] = {'path':'', 'destination':'', 'dataset-name': "", "if-existing": "", "generate-option": "new", "if-existing-files": ""}
-  // }
+  if ($('input[name="getting-started-1"]:checked')[0].id === "prepare-new") {
+    sodaJSONObj["generate-dataset"] = {'path':'', 'destination':'', 'dataset-name': "", "if-existing": "", "generate-option": "new", "if-existing-files": ""}
+  }
   //   var newDatasetName = $('#inputNewNameDataset').val().trim();
   //   sodaJSONObj["bf-account-selected"]["account-name"] = "";
   //   sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
@@ -433,16 +433,6 @@ function updateJSONStructureGettingStarted() {
   // }
 }
 
-function populateMetadataObject(optionList, metadataFilePath, object) {
-  if (!(optionList.includes(metadataFilePath))) {
-    var mypath = path.basename(metadataFilePath);
-    if (!("metadata-files" in object)) {
-      object["metadata-files"] = {};
-    }
-    object["metadata-files"][mypath] = {"type": "local", "action": "new", "path": metadataFilePath, "destination": "generate-dataset"}
-  }
-}
-
 function updateJSONStructureMetadataFiles() {
   var submissionFilePath = document.getElementById('para-submission-file-path').innerHTML;
   var dsDescriptionFilePath = document.getElementById('para-ds-description-file-path').innerHTML;
@@ -452,24 +442,32 @@ function updateJSONStructureMetadataFiles() {
   var changesFilePath = document.getElementById('para-changes-file-path').innerHTML;
   var invalidOptionsList = ["Please drag a file!", "Please only import SPARC metadata files!", ""];
 
-  populateMetadataObject(invalidOptionsList, submissionFilePath, sodaJSONObj);
-  populateMetadataObject(invalidOptionsList, dsDescriptionFilePath, sodaJSONObj);
-  populateMetadataObject(invalidOptionsList, subjectsFilePath, sodaJSONObj);
-  populateMetadataObject(invalidOptionsList, samplesFilePath, sodaJSONObj);
-  populateMetadataObject(invalidOptionsList, readmeFilePath, sodaJSONObj);
-  populateMetadataObject(invalidOptionsList, changesFilePath, sodaJSONObj);
+  if (!(invalidOptionsList.includes(submissionFilePath))) {
+    sodaJSONObj["metadata-files"][path.basename(submissionFilePath)] = {"type": "local", "action": "new", "path": submissionFilePath, "destination": "generate-dataset"}
+  }
+  if (!(invalidOptionsList.includes(dsDescriptionFilePath))) {
+    sodaJSONObj["metadata-files"][path.basename(dsDescriptionFilePath)] = {"type": "local", "action": "new", "path": dsDescriptionFilePath, "destination": "generate-dataset"}
+  }
+  if (!(invalidOptionsList.includes(subjectsFilePath))) {
+    sodaJSONObj["metadata-files"][path.basename(subjectsFilePath)] = {"type": "local", "action": "new", "path": subjectsFilePath, "destination": "generate-dataset"}
+  }
+  if (!(invalidOptionsList.includes(samplesFilePath))) {
+    sodaJSONObj["metadata-files"][path.basename(samplesFilePath)] = {"type": "local", "action": "new", "path": samplesFilePath, "destination": "generate-dataset"}
+  }
+  if (!(invalidOptionsList.includes(readmeFilePath))) {
+    sodaJSONObj["metadata-files"][path.basename(readmeFilePath)] = {"type": "local", "action": "new", "path": readmeFilePath, "destination": "generate-dataset"}
+  }
+  if (!(invalidOptionsList.includes(changesFilePath))) {
+    sodaJSONObj["metadata-files"][path.basename(changesFilePath)] = {"type": "local", "action": "new", "path": changesFilePath, "destination": "generate-dataset"}
+  }
 }
 
 function updateJSONStructureManifest() {
   const manifestFileCheck = document.getElementById("generate-manifest-curate");
   if (manifestFileCheck.checked) {
-    if ("manifest-files" in sodaJSONObj) {
-      sodaJSONObj["manifest-files"]["destination"] =  "generate-dataset"
-    } else {
-      sodaJSONObj["manifest-files"] = {"destination": "generate-dataset"}
-    }
+    sodaJSONObj["manifest-files"] = {"destination": "generate-dataset"}
   } else {
-    sodaJSONObj["manifest-files"] = {}
+
   }
 }
 
@@ -529,13 +527,13 @@ function updateJSONStructureGenerate() {
     var localDestination = $('#input-destination-generate-dataset-locally')[0].placeholder;
     var newDatasetName = $('#inputNewNameDataset').val().trim();
     sodaJSONObj["generate-dataset"] = {'destination': "local", 'path': localDestination, 'dataset-name': newDatasetName, "generate-option": "new", "if-existing": "new", "if-existing-files": ""}
+    sodaJSONObj["bf-account-selected"]["account-name"] = "";
+    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
+
   } else if ($('input[name="generate-1"]:checked')[0].id === "generate-upload-BF") {
-    sodaJSONObj["generate-dataset"] = {'destination': "bf", 'dataset-name': "", "generate-option": "new", "if-existing": "", "if-existing-files": ""}
-    if ("bf-account-selected" in sodaJSONObj) {
-      sodaJSONObj["bf-account-selected"]["account-name"] = $($('#bfallaccountlist').find('option:selected')[0]).val();
-    } else {
-      sodaJSONObj["bf-account-selected"] = {"account-name": $($('#bfallaccountlist').find('option:selected')[0]).val()}
-    }
+    sodaJSONObj["generate-dataset"]['destination'] = "bf";
+    sodaJSONObj["generate-dataset"]['path'] = "";
+    sodaJSONObj["bf-account-selected"]["account-name"] = $($('#bfallaccountlist').find('option:selected')[0]).val();
 
     if ($('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing") {
       if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-duplicate") {
@@ -555,12 +553,7 @@ function updateJSONStructureGenerate() {
         sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
       }
       sodaJSONObj["generate-dataset"]["dataset-name"] = "";
-
-      if ("bf-dataset-selected" in sodaJSONObj) {
-        sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $($('#curatebfdatasetlist').find('option:selected')[0]).val();
-      } else {
-        sodaJSONObj["bf-dataset-selected"] = {"dataset-name": $($('#curatebfdatasetlist').find('option:selected')[0]).val()}
-      }
+      sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $($('#curatebfdatasetlist').find('option:selected')[0]).val();
     } else if ($('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-new") {
       var newDatasetName = $('#inputNewNameDataset').val().trim();
       sodaJSONObj["generate-dataset"]['dataset-name'] = newDatasetName;
