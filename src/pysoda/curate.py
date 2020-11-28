@@ -1691,7 +1691,7 @@ def main_curate_function(soda_json_structure):
     main_keys = soda_json_structure.keys()
     error = []
 
-    # 1] Check for potential errors in destination
+    # 1] Check for potential errors
 
     # 1.1. Check that the local destination is valid if generate dataset locally is requested
     if "generate-dataset" in main_keys and soda_json_structure["generate-dataset"]["destination"] == "local":
