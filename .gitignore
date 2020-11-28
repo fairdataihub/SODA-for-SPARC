@@ -3,9 +3,13 @@
 
 # Ignore node_modules folder
 node_modules
+build/api
+pysodadist
+dist
 
 *.pyc
 src/package-lock.json
 src/.DS_Store
 api.spec
 .DS_Store
+electron-builder.yml
