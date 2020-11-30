@@ -188,7 +188,7 @@ function highLevelFoldersDisableOptions() {
 
 function updateOverallJSONStructure(id) {
   if (id === allParentStepsJSON["high-level-folders"]) {
-    document.getElementById('input-global-path').value = "Mydatasetfolder/"
+    document.getElementById('input-global-path').value = "My_dataset_folder/"
     var optionCards = document.getElementsByClassName("option-card high-level-folders");
     var newDatasetStructureJSONObj = {"folders": {}};
     var keys = [];
@@ -400,7 +400,7 @@ function hidePrevDivs(currentDiv, category) {
 
 function updateJSONStructureGettingStarted() {
 
-  document.getElementById('input-global-path').value = "Mydatasetfolder/"
+  document.getElementById('input-global-path').value = "My_dataset_folder/"
 
   // if ($('input[name="getting-started-1"]:checked')[0].id === "prepare-new") {
   //   sodaJSONObj["generate-dataset"] = {'path':'', 'destination':'', 'dataset-name': "", "if-existing": "", "generate-option": "new", "if-existing-files": ""}

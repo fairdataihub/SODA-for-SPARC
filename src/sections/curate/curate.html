@@ -38,12 +38,12 @@
 <section id="organize-section" class="section js-section u-category-windows" style="padding-left:15px">
 
 <main class="dash-content" id="organize_main" style="flex-direction:column;justify-content:space-between">
-  <h3 style="color: #222c3c;margin-bottom:0;"><i class="fas fa-sitemap" style="margin-right:10px"></i>Organize dataset</h3>
+  <h3 style="color: #222c3c;margin-bottom:10px;margin-left:25px"><i class="fas fa-sitemap" style="margin-right:10px"></i>Organize dataset</h3>
 
 <!-- These are the main tab for each step -->
 
 <div style="display:flex;flex-direction:column;justify-content:space-between;height:100%">
-  <div style="display:flex;flex-direction:row;justify-content:space-evenly;width:100%;height:100%">
+  <div style="display:flex;flex-direction:row;justify-content:space-evenly;width:100%;height:100%;border-top:1px solid #f5f5f5;padding-left:20px;padding-top:15px">
 
     <div class="me">
       <div class="not-me">
@@ -98,14 +98,14 @@
 
   <!-- 1. Getting started tab -->
   <div class="parent-tabs condensed" id="getting-started-tab" style="overflow-y:scroll;overflow-x:hidden;flex-direction:column;justify-content:flex-start;height:100%;">
-    <h3 id="getting-started-summary-message" class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:60px;font-weight:600">Step 1: Getting started <br>
+    <h3 id="getting-started-summary-message" class="question-title" style="color:var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:60px;font-weight:600">Step 1: Getting started <br>
       <!-- <span style="color: #898989;font-size:13px;font-weight:500">Please answer the below questions: </span> -->
     </h3>
 
     <div class="individual-question getting-started show" id="Question-getting-started-1">
         <div class="ui form" style="width:100%">
         <div class="grouped fields">
-          <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Let's get started. What would you like to do?
+          <label style="font-size:17px;text-align:center;color:var(--color-bg-plum)">Let's get started. What would you like to do?
 
             <!-- tooltip -->
             <!-- <div class="ui icon button" data-tooltip="Hello. This is the data for tooltip. Let's get started. What would you like to do? Let's get started. What would you like to do?" data-position="top left">
@@ -266,7 +266,7 @@
     <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:50px;font-weight:600;">Step 2: Specify high-level folders</h3>
     <div class="container-body condensed" style="min-height:450px">
       <h3 class="question-title" style="text-align:center">
-       Which <span style="margin-top:0;color: var(--color-bg-plum);font-size:22px;">SPARC high-level folders</span><br>
+       Which SPARC high-level folders<br>
         would you like to add to your dataset?<br>
         <span style="color: #696969;font-size:13px">Please select at least one: </span>
       </h3>
@@ -368,7 +368,7 @@
           <a style="text-decoration:underline" id="globa-path-folder-1">My dataset </a><i class="fas fa-chevron-right" style="margin-left:5px;margin-right:5px;font-size:12px;"></i>
         </h5> -->
         <button id="button-back" class="button-back" style="float:left;"><i class="fas fa-arrow-left fa-fw"></i></button>
-      <input style="float:left;margin-left: 15px;height: 40px;border: none; font-family: 'Raleway', sans-serif;font-size: 14px;font-weight:600;text-decoration:underline;cursor:default;color:#898989;width: 300px" id="input-global-path" value="Mydatasetfolder/" readonly></input>
+      <input style="float:left;margin-left: 15px;height: 40px;border: none; font-family: 'Raleway', sans-serif;font-size: 14px;font-weight:600;text-decoration:underline;cursor:default;color:#898989;width: 300px" id="input-global-path" value="My_dataset_folder/" readonly></input>
 
           <div class="div-organize-dataset-menu">
             <button id="new-folder" style="float:right;margin-right:10px;background:var(--tagify-dd-color-primary);color:#fff;border:none"><i class="fas fa-folder-plus"></i> New folder</button>
@@ -437,7 +437,7 @@
     <div class="div-organize-generate-dataset metadata">
       <h3 class="question-title">
       Specify
-        <span style="color: var(--color-bg-plum);"> metadata files</span><br>
+        metadata files<br>
         to be included in your dataset<br>
         <span style="color: #696969;font-size:13px">Click below to add desired files.</span>
       </h3>
@@ -681,7 +681,7 @@
     <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;font-weight:600;">Step 5: Specify manifest files<br><br>
     </h3>
     <div id="manifestUpload" style="margin-top:50px">
-      <h5 style="text-align:center;color:var(--color);font-size:17px"> Would you like SODA to <span style="color: var(--color-bg-plum)">auto-generate your manifest files</span>? </h5>
+      <h5 style="text-align:center;color:var(--color);font-size:17px"> Would you like SODA to auto-generate your manifest files? </h5>
       <div style="height:150px;text-align:center;margin:100px">
       <!-- <h5 style="text-align:center;color:#585858">manifest (.xlsx, .csv)</h5> -->
       <!-- <div class="col-sm-5">
@@ -785,7 +785,7 @@
               </div>
             </div>
             <div id="div-bf-account-btns" style="display: flex;flex-direction:row;justify-content:center;margin:0 auto">
-              <button onclick="showBFAddAccountBootbox()" style="float:right;border-radius: 8px;margin:0 10px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;width: 160px;border:1px solid var(--color-bg-plum)">Add account</button>
+              <!-- <button onclick="showBFAddAccountBootbox()" style="float:right;border-radius: 8px;margin:0 10px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;width: 160px;border:1px solid var(--color-bg-plum)">Add account</button> -->
               <button onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"  data-next="Question-generate-dataset-options" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 160px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm account</button>
             </div>
           </div>
@@ -1111,7 +1111,7 @@
 <script src='./scripts/renderer.js' type='text/javascript'></script>
 <script src='./scripts/organizeDS.js' type='text/javascript'></script>
 <script src='./scripts/metadata-files.js' type='text/javascript'></script>
-<script src='./scripts/tab-effects.js' type='text/javascript'></script
+<script src='./scripts/tab-effects.js' type='text/javascript'></script>
 
 
 

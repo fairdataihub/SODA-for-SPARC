@@ -19,7 +19,7 @@
    margin: 0 auto;
    display: block;
    background: var(--color-light-green);
-   transition: all 0.8s cubic-bezier(0.810, -0.330, 0.345, 1.375);
+   transition: all 0.1s cubic-bezier(0.810, -0.330, 0.345, 1.375);
 }
 /* animate toggle button */
 #sidebarCollapse span:first-of-type {
@@ -45,13 +45,17 @@
     opacity: 0.9;
     color: #f0f0f0;
     font-family: "Source Sans Pro", sans-serif;
-    transition: all 0.1s cubic-bezier(0.945, 0.020, 0.270, 0.665);
-    transform-origin: center left; /* Set the transformed position of sidebar to center left side. */
+    transition: all 600ms ease;
+    transform-origin: 0 50%; /* Set the transformed position of sidebar to center left side. */
 }
 
 #main-nav.active {
     width: 0;
     transform: rotateY(150deg); /* Rotate sidebar vertically by 100 degrees. */
+}
+
+.navbar-btn {
+  transition: margin-left 600ms ease;
 }
 
 .navbar-btn.active {
