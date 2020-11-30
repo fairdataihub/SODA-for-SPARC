@@ -678,7 +678,7 @@
 
   <!-- 5. manifest file -->
   <div class="parent-tabs" id="manifest-file-tab" style="grid-template-rows: 10% 90%;">
-    <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;font-weight:600;">Step 5: Specify manifest files<br><br>
+    <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;font-weight:600;">Step 5: Request manifest files<br><br>
     </h3>
     <div id="manifestUpload" style="margin-top:50px">
       <h5 style="text-align:center;color:var(--color);font-size:17px"> Would you like SODA to <span style="color: var(--color-bg-plum)">auto-generate your manifest files</span>? </h5>
@@ -1044,26 +1044,25 @@
       </div>
     </div>
 
-    <div class="generate-progress-tab" style='display:none;flex-direction:row;justify-content:center;width:100%;margin-top:50px' id="generate-dataset-progress-tab">
+    <div class="generate-progress-tab" style='display:none;flex-direction:row;justify-content:center;width:100%; height: 100%, margin-top:50px' id="generate-dataset-progress-tab">
 
-      <h3 id="getting-started-summary-message" class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:60px;font-weight:600">Step 1: Getting started <br>
+      <h3 id="generating-dataset-summary-message" class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:60px;font-weight:600; width: 100%"> Generating dataset progress <br>
       <!-- <span style="color: #898989;font-size:13px;font-weight:500">Please answer the below questions: </span> -->
       </h3>
 
-      <div style="padding-top:50px; text-align:center; justify-content:center; flex-direction:row">
+      <div style="clear: both; margin-top:50px; text-align:center; justify-content:center; flex-direction:row; width: 100%">
         <p id="para-please-wait-new-curate"> </p>
       </div>
         
-      <div style="padding-top:80px; text-align:center; justify-content:center; flex-direction:row" id="div-new-curate-progress-bar-error-status">
+      <div style="clear: both; margin-top:80px; text-align:center; justify-content:center; flex-direction:row; width: 100%" id="div-new-curate-progress-bar-error-status">
         <p id='para-new-curate-progress-bar-error-status'> <p>
       </div>
 
-      <div id="div-new-curate-progress">
+      <div id="div-new-curate-progress" style = "clear: both; width: 100%">
         <div id="div-new-curate-meter-progress">
-          <h5> Progress </h5>
           <progress class=progresstrack id="progress-bar-new-curate" max="100" value="0"></progress>
         </div>
-        <div id="div-new-curate-progress-bar-status">
+        <div id="div-new-curate-progress-bar-status" style = "clear: both; width: 100%">
           <p id='para-new-curate-progress-bar-status'> <p>
         </div>
       </div>

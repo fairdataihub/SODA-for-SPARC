@@ -1301,6 +1301,7 @@ def generate_dataset_locally(soda_json_structure, manifest_files_structure):
 
     global main_curate_progress_message
     global main_total_generate_dataset_size
+    global start_generate
 
     try:
         
@@ -1383,6 +1384,7 @@ def generate_dataset_locally(soda_json_structure, manifest_files_structure):
             
         # 6. Copy files to new location
         main_curate_progress_message = "Copying files to new location"
+        start_generate = 1
         for fileinfo in list_copy_files:
             srcfile = fileinfo[0]
             distfile = fileinfo[1]
@@ -1641,6 +1643,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
 
         # 5. Upload files, rename, and add to tracking list
         main_initial_bfdataset_size = bf_dataset_size()
+        gevent.sleep(0)
         start_generate = 1
         for item in list_upload_files:
             list_upload = item[0]
@@ -1691,6 +1694,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
 
 
 main_curate_status = ""
+main_curate_print_status = ""
 main_curate_progress_message = ""
 main_total_generate_dataset_size = 1
 main_generated_dataset_size = 0
@@ -1716,15 +1720,21 @@ def main_curate_function(soda_json_structure):
     global myds
 
     main_curate_status = ""
-    main_curate_progress_message = ""
+    main_curate_progress_message = "Starting..."
     main_total_generate_dataset_size = 1
     main_generated_dataset_size = 0
 
     main_curate_status = "Curating"
     main_curate_progress_message = "Starting dataset curation"
+    main_generate_destination = ""
+    main_initial_bfdataset_size = 0
+    bf = ""
+    myds = ""
 
     main_keys = soda_json_structure.keys()
-    error = []
+    error = ""
+
+    generate_start_time = time.time()
 
     # 1] Check for potential errors
 
@@ -1739,7 +1749,7 @@ def main_curate_function(soda_json_structure):
             if not isdir(local_dataset_path):
                 error_message = 'Error: The Path ' + local_dataset_path + ' is not found. Please select a valid destination folder for the new dataset'
                 main_curate_status = 'Done'
-                error.append(error_message)
+                error = error_message
                 raise Exception(error)
 
     # 1.2. Check that the bf destination is valid if generate on bf, or any other bf actions are requested
@@ -1751,7 +1761,7 @@ def main_curate_function(soda_json_structure):
             bf = Blackfynn(accountname)
         except Exception as e:
             main_curate_status = 'Done'
-            error.append('Error: Please select a valid Blackfynn account')
+            error = 'Error: Please select a valid Blackfynn account'
             raise Exception(error)
         
     # if uploading on an existing bf dataset
@@ -1763,7 +1773,7 @@ def main_curate_function(soda_json_structure):
             myds = bf.get_dataset(bfdataset)
         except Exception as e:
             main_curate_status = 'Done'
-            error.append('Error: Please select a valid Blackfynn dataset')
+            error = 'Error: Please select a valid Blackfynn dataset'
             raise Exception(error)           
 
         # check that the user has permissions for uploading and modifying the dataset
@@ -1772,7 +1782,7 @@ def main_curate_function(soda_json_structure):
             role = bf_get_current_user_permission(bf, myds)
             if role not in ['owner', 'manager', 'editor']:
                 main_curate_status = 'Done'
-                error.append("Error: You don't have permissions for uploading to this Blackfynn dataset")
+                error = "Error: You don't have permissions for uploading to this Blackfynn dataset"
                 raise Exception(error)
         except Exception as e:
             raise e
@@ -1782,11 +1792,11 @@ def main_curate_function(soda_json_structure):
     if "generate-dataset" in main_keys:
         # Check at least one file or folder are added to the dataset
         try:
-            main_curate_progress_message = "Checking that the dataset is no empty"
+            main_curate_progress_message = "Checking that the dataset is not empty"
             dataset_structure = soda_json_structure["dataset-structure"]
         except Exception as e:
             main_curate_status = 'Done'
-            error.append('Error: Your dataset is empty. Please add files/folders to your dataset')
+            error = 'Error: Your dataset is empty. Please add files/folders to your dataset'
             raise Exception(error) 
 
         # Check that local files/folders exist
@@ -1799,7 +1809,7 @@ def main_curate_function(soda_json_structure):
 
             if not soda_json_structure["dataset-structure"]["folders"]:
                 main_curate_status = 'Done'
-                error.append('Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset')
+                error = 'Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset'
                 raise Exception(error) 
 
         except Exception as e:
@@ -1842,11 +1852,9 @@ def main_curate_function(soda_json_structure):
     # 4] Generate
     if "generate-dataset" in main_keys:
         main_curate_progress_message = "Generating dataset"
-        generate_start_time = time.time()
         try: 
             if soda_json_structure["generate-dataset"]["destination"] == "local":
                 main_generate_destination = soda_json_structure["generate-dataset"]["destination"]
-                start_generate = 1
                 datasetpath = generate_dataset_locally(soda_json_structure, manifest_files_structure)
                 # if "manifest-files" in main_keys:
                 #     main_curate_progress_message = "Generating manifest files"
@@ -1870,6 +1878,8 @@ def main_curate_function(soda_json_structure):
     main_curate_status = 'Done'
     main_curate_progress_message = 'Success: COMPLETED!'
 
+    return main_curate_progress_message
+
 def main_curate_function_progress():
     """
     Function frequently called by front end to help keep track of the dataset generation progress
@@ -1891,7 +1901,7 @@ def main_curate_function_progress():
             main_generated_dataset_size = bf_dataset_size() - main_initial_bfdataset_size 
 
     else: 
-        elapsed_time_formatted = 0
+        elapsed_time_formatted = ""
 
-    return (main_curate_status, main_curate_progress_message, main_total_generate_dataset_size, main_generated_dataset_size, elapsed_time_formatted)
+    return (main_curate_status, start_generate, main_curate_progress_message, main_total_generate_dataset_size, main_generated_dataset_size, elapsed_time_formatted)
 

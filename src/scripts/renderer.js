@@ -4605,6 +4605,9 @@ function loadDefaultAccount() {
           bfAccountList.appendChild(option)
           var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
           datasetPermissionList.disabled = true
+          bfSelectAccountStatus.innerHTML = "No existing accounts to load. Please add a new account!"
+          bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
+          bfAccountLoadProgress.style.display = 'none'
       }
     }
   })
@@ -6198,6 +6201,8 @@ document.getElementById('button-generate').addEventListener('click', function() 
   //  from here you can modify
   document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait..."
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = ""
+  document.getElementById("para-new-curate-progress-bar-status").innerHTML = ""
+  document.getElementById('div-new-curate-progress').style.display = "none";
 
   progressBarNewCurate.value = 0;
 
@@ -6213,17 +6218,16 @@ document.getElementById('button-generate').addEventListener('click', function() 
      } else {
         document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
         log.info('Continue with curate')
-        console.log(res)
         var message = ""
         error_files = res[0]
         error_folders = res[1]
         if (error_files.length>0){
-          var error_message_files = backfend_to_frontend_error_message(error_files)
+          var error_message_files = backfend_to_frontend_warning_message(error_files)
           message += "\n" + error_message_files
         }
 
         if (error_folders.length>0){
-          var error_message_folders = backfend_to_frontend_error_message(error_folders)
+          var error_message_folders = backfend_to_frontend_warning_message(error_folders)
           message += "\n" + error_message_folders
         }
 
@@ -6243,6 +6247,7 @@ ipcRenderer.on('warning-empty-files-folders-generate-selection', (event, index) 
     initiate_generate()
   } else {
     console.log("Stop")
+    document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
     document.getElementById('div-generate-comeback').style.display = "flex"
   }
 })
@@ -6253,27 +6258,25 @@ const generateProgressBar = document.getElementById("progress-bar-new-curate")
 function initiate_generate() {
   console.log(sodaJSONObj)
   // Initiate curation by calling Python funtion
-  var main_curate_status = "Curating"
+  var main_curate_status = "Solving"
   document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ..."
+  document.getElementById("para-please-wait-new-curate").innerHTML = ""
+  document.getElementById('div-new-curate-progress').style.display = "block";
   client.invoke("api_main_curate_function", sodaJSONObj,
      (error, res) => {
-     if (error) {
-       document.getElementById("para-please-wait-new-curate").innerHTML = ""
-       var emessage = userError(error)
-       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> Error: " + emessage + sadCan + "</span>"
-       document.getElementById("para-new-curate-progress-bar-status").innerHTML = ""
-       document.getElementById("para-please-wait-new-curate").innerHTML = "";
-       document.getElementById('div-new-curate-progress').style.display = "none";
-       generateProgressBar.value = 0;
-       log.error(error)
-       console.error(error)
-     } else {
-       document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait 2...";
-       log.info('Completed curate function')
-       console.log('Completed curate function')
-       console.log(res)
-     }
-     document.getElementById('div-generate-comeback').style.display = "flex"
+      if (error) {
+        var emessage = userError(error)
+        document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'>" + emessage + "</span>"
+        document.getElementById("para-new-curate-progress-bar-status").innerHTML = ""
+        document.getElementById('div-new-curate-progress').style.display = "none";
+        generateProgressBar.value = 0;
+        log.error(error)
+        console.error(error)
+      } else {
+        log.info('Completed curate function')
+        console.log('Completed curate function')
+      }
+      document.getElementById('div-generate-comeback').style.display = "flex"
   })
 
 
@@ -6284,22 +6287,21 @@ function initiate_generate() {
     client.invoke("api_main_curate_function_progress", (error, res) => {
       if (error) {
         var emessage = userError(error)
-        document.getElementById("para-new-curate-progress-bar-status").innerHTML = "<span style='color: red;'> Error: " + emessage + "</span>"
+        document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'>" + emessage + "</span>"
         log.error(error)
         console.error(error)
-        document.getElementById("para-new-curate-progress-bar-status").innerHTML = ''
       } else {
         main_curate_status = res[0]
-        var main_curate_progress_message = res[1]
-        var main_total_generate_dataset_size = res[2]
-        var main_generated_dataset_size = res[3]
-        var elapsed_time_formatted = res[4]
-        if (main_curate_status === 'Curating') {
+        var start_generate = res[1]
+        var main_curate_progress_message = res[2]
+        var main_total_generate_dataset_size = res[3]
+        var main_generated_dataset_size = res[4]
+        var elapsed_time_formatted = res[5]
+        if (start_generate === 1) {
           divGenerateProgressBar.style.display = "block";
           if (main_curate_progress_message.includes('Success: COMPLETED!')){
             generateProgressBar.value = 100
-            document.getElementById("para-please-wait-new-curate").innerHTML = "";
-            document.getElementById("para-new-curate-progress-bar-status").innerHTML = res[0] + smileyCan
+            document.getElementById("para-new-curate-progress-bar-status").innerHTML = main_curate_status + smileyCan
             console.log(main_curate_progress_message)
           } else {
             var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100
@@ -6314,24 +6316,26 @@ function initiate_generate() {
               var totalSizePrint = (main_total_generate_dataset_size/displaySize/displaySize/displaySize).toFixed(2) + ' GB'
             }
             var progressMessage = ""
-            progressMessage += main_curate_progress_message + "\n"
-            progressMessage += 'Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')'
-            progressMessage += "Elaspsed time: " + elapsed_time_formatted
+            progressMessage += main_curate_progress_message + "<br>"
+            progressMessage += 'Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')' + "<br>"
+            progressMessage += "Elaspsed time: " + elapsed_time_formatted + "<br>"
             document.getElementById("para-new-curate-progress-bar-status").innerHTML = progressMessage
             console.log(main_curate_progress_message)
             console.log('Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')')
             console.log("Elaspsed time: " + elapsed_time_formatted)
           }
+        } else {
+          document.getElementById("para-new-curate-progress-bar-status").innerHTML = main_curate_progress_message + "<br>" + "Elaspsed time: " + elapsed_time_formatted + "<br>"
+          console.log(main_curate_progress_message)
         }
       }
     })
 
     if (main_curate_status === 'Done'){
       countDone++
-      if (countDone > 2){
+      if (countDone > 1){
         log.info('Done curate track')
         console.log('Done curate track')
-        document.getElementById("para-please-wait-new-curate").innerHTML = "";
         clearInterval(timerProgress)
       }
     }
@@ -6339,13 +6343,13 @@ function initiate_generate() {
 
 }
 
-function backfend_to_frontend_error_message(error_array) {
-  var error_message = "" 
+function backfend_to_frontend_warning_message(error_array) {
+  var warning_message = "" 
   for (var i = 0; i < error_array.length;i++){
     item = error_array[i]
-    error_message += item + "\n"
+    warning_message += item + "\n"
   }
-  return error_message
+  return warning_message
 }
 
 var forbidden_characters_bf = '\/:*?"<>';
