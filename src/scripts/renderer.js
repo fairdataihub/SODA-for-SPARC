@@ -2802,9 +2802,10 @@ curateBFaccountList.addEventListener('change', function() {
 
   var curateSelectedbfaccount = curateBFaccountList.options[curateBFaccountList.selectedIndex].text
 
-  if (curateSelectedbfaccount == 'Select') {
+  if (curateSelectedbfaccount === 'Select') {
     curateBFAccountLoadStatus.innerHTML = "";
     curateBFAccountLoad.style.display = 'none';
+    document.getElementById('div-bf-account-btns').style.display = "none"
   } else{
     var myitemselect = curateSelectedbfaccount
     var option = document.createElement("option")
@@ -2814,6 +2815,7 @@ curateBFaccountList.addEventListener('change', function() {
     curateShowAccountDetails(curateBFaccountList)
     curateBFAccountLoadStatus.innerHTML = ""
     updateDatasetCurate(curateDatasetDropdown, curateBFaccountList);
+    document.getElementById('div-bf-account-btns').style.display = "flex";
   }
   curateDatasetDropdown.disabled = false;
 })
@@ -2882,7 +2884,8 @@ function updateAllBfAccountList(dropdown){
     options[0].disabled = true;
 
     if (res[0] === "Select" && res.length === 1) {
-      curateBFAccountLoadStatus.innerHTML = "No existing accounts to load. Please add a new account!"
+      curateBFAccountLoadStatus.innerHTML = "No existing accounts to load. Please add a new account!";
+      document.getElementById('div-bf-account-btns').style.display = "none"
     }
     // refreshAllBfDatasetLists()
     refreshBfUsersList()
@@ -2899,6 +2902,7 @@ function updateAllBfAccountList(dropdown){
           curateShowAccountDetails(curateBFaccountList)
           curateBFAccountLoad.style.display = 'block'
           updateDatasetCurate(curateDatasetDropdown, curateBFaccountList)
+          document.getElementById('div-bf-account-btns').style.display = "flex"
         }
       }
     })
@@ -4636,11 +4640,13 @@ function updateBfAccountList(){
         bfAccountLoadProgressCurate.style.display = 'none'
       }
       datasetPermissionList.disabled = false
+      loadAllBFAccounts()
     }
     if (res[0] === "Select" && res.length === 1) {
       bfSelectAccountStatus.innerHTML = "No existing accounts to switch. Please add a new account!"
       bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
-      datasetPermissionList.disabled = true
+      datasetPermissionList.disabled = true;
+      loadAllBFAccounts()
     }
     // refreshAllBfDatasetLists()
     refreshBfUsersList()
