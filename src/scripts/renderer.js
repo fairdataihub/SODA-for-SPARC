@@ -1213,7 +1213,6 @@ function changeAwardInputDsDescription() {
           awardValArray.push(fullName);
         }),
       fetchNextPage();
-      console.log(awardValArray)
       for (var i = 0; i < awardValArray.length; i++) {
           var opt = awardValArray[i];
           addOption(dsContributorArray, opt, opt)
@@ -1801,7 +1800,7 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
         var datasetInfoValueArray = grabDSInfoEntries()
 
         //// process obtained values to pass to an array ///
-        ///////////////////////////////////////////////////
+        /////////////////////////////////////////////////// 
         var keywordVal = []
         for (var i=0;i<datasetInfoValueArray["keywords"].length;i++) {
           keywordVal.push(datasetInfoValueArray["keywords"][i].value)
@@ -3116,7 +3115,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
     if (error) {
       document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
       var emessage = userError(error)
-      document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
+      document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> Error: " + emessage + sadCan + "</span>"
       document.getElementById("para-progress-bar-status").innerHTML = ""
       progressUploadBf.style.display = "none"
       progressBarUploadBf.value = 0
@@ -4606,6 +4605,9 @@ function loadDefaultAccount() {
           bfAccountList.appendChild(option)
           var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
           datasetPermissionList.disabled = true
+          bfSelectAccountStatus.innerHTML = "No existing accounts to load. Please add a new account!"
+          bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
+          bfAccountLoadProgress.style.display = 'none'
       }
     }
   })
@@ -5378,7 +5380,7 @@ organizeDSaddNewFolder.addEventListener("click", function(event) {
     })
   } else {
       bootbox.alert({
-        message: "New folders cannot be added at this level!",
+        message: "New folders cannot be added at this level. Please go back to add another high-level SPARC folder.",
         centerVertical: true
       })
     }
@@ -6180,6 +6182,8 @@ document.getElementById("button-generate-comeback").addEventListener('click', fu
   $('#generate-dataset-tab').addClass('tab-active');
 })
 
+/// MAIN CURATE NEW ///
+
 const progressBarNewCurate = document.getElementById('progress-bar-new-curate');
 
 document.getElementById('button-generate').addEventListener('click', function() {
@@ -6197,33 +6201,156 @@ document.getElementById('button-generate').addEventListener('click', function() 
   //  from here you can modify
   document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait..."
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = ""
+  document.getElementById("para-new-curate-progress-bar-status").innerHTML = ""
+  document.getElementById('div-new-curate-progress').style.display = "none";
 
   progressBarNewCurate.value = 0;
 
   console.log(sodaJSONObj)
-  // Initiate curation by calling Python funtion
-  // document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ..."
-  client.invoke("api_main_curate_function", sodaJSONObj,
+
+  client.invoke("api_check_empty_files_folders", sodaJSONObj,
      (error, res) => {
      if (error) {
-       document.getElementById("para-please-wait-new-curate").innerHTML = ""
-       var emessage = userError(error)
-       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> " + emessage + sadCan + "</span>"
-       document.getElementById("para-new-curate-progress-bar-status").innerHTML = ""
-       document.getElementById("para-please-wait-new-curate").innerHTML = "";
-       document.getElementById('div-new-curate-progress').style.display = "none";
-       progressBarNewCurate.value = 0;
-       log.error(error)
-       console.error(error)
+      var emessage = userError(error)
+      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> Error: " + emessage + "</span>"
+      document.getElementById("para-please-wait-new-curate").innerHTML = "";
+      console.error(error)
      } else {
-       document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
-       log.info('Completed curate function')
-       console.log('Completed curate function')
-       console.log(res)
-     }
-     document.getElementById('div-generate-comeback').style.display = "flex"
-  })
+        document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
+        log.info('Continue with curate')
+        var message = ""
+        error_files = res[0]
+        error_folders = res[1]
+        if (error_files.length>0){
+          var error_message_files = backfend_to_frontend_warning_message(error_files)
+          message += "\n" + error_message_files
+        }
+
+        if (error_folders.length>0){
+          var error_message_folders = backfend_to_frontend_warning_message(error_folders)
+          message += "\n" + error_message_folders
+        }
+
+        if (message){
+          message += "\n" + "Would you like to continue?"
+          ipcRenderer.send('warning-empty-files-folders-generate', message)
+        } else {
+          initiate_generate()
+        }
+      }
+    })
 })
+
+ipcRenderer.on('warning-empty-files-folders-generate-selection', (event, index) => {
+  if (index === 0) {
+    console.log("Continue")
+    initiate_generate()
+  } else {
+    console.log("Stop")
+    document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
+    document.getElementById('div-generate-comeback').style.display = "flex"
+  }
+})
+
+const divGenerateProgressBar = document.getElementById("div-new-curate-meter-progress")
+const generateProgressBar = document.getElementById("progress-bar-new-curate")
+
+function initiate_generate() {
+  console.log(sodaJSONObj)
+  // Initiate curation by calling Python funtion
+  var main_curate_status = "Solving"
+  document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ..."
+  document.getElementById("para-please-wait-new-curate").innerHTML = ""
+  document.getElementById('div-new-curate-progress').style.display = "block";
+  client.invoke("api_main_curate_function", sodaJSONObj,
+     (error, res) => {
+      if (error) {
+        var emessage = userError(error)
+        document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'>" + emessage + "</span>"
+        document.getElementById("para-new-curate-progress-bar-status").innerHTML = ""
+        document.getElementById('div-new-curate-progress').style.display = "none";
+        generateProgressBar.value = 0;
+        log.error(error)
+        console.error(error)
+      } else {
+        log.info('Completed curate function')
+        console.log('Completed curate function')
+      }
+      document.getElementById('div-generate-comeback').style.display = "flex"
+  })
+
+
+  // Progress tracking function for main curate
+  var countDone = 0
+  var timerProgress = setInterval(main_progressfunction, 1000)
+  function main_progressfunction(){
+    client.invoke("api_main_curate_function_progress", (error, res) => {
+      if (error) {
+        var emessage = userError(error)
+        document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'>" + emessage + "</span>"
+        log.error(error)
+        console.error(error)
+      } else {
+        main_curate_status = res[0]
+        var start_generate = res[1]
+        var main_curate_progress_message = res[2]
+        var main_total_generate_dataset_size = res[3]
+        var main_generated_dataset_size = res[4]
+        var elapsed_time_formatted = res[5]
+        if (start_generate === 1) {
+          divGenerateProgressBar.style.display = "block";
+          if (main_curate_progress_message.includes('Success: COMPLETED!')){
+            generateProgressBar.value = 100
+            document.getElementById("para-new-curate-progress-bar-status").innerHTML = main_curate_status + smileyCan
+            console.log(main_curate_progress_message)
+          } else {
+            var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100
+            generateProgressBar.value = value
+            if (main_total_generate_dataset_size < displaySize){
+              var totalSizePrint = main_total_generate_dataset_size.toFixed(2) + ' B'
+            } else if (main_total_generate_dataset_size < displaySize*displaySize){
+              var totalSizePrint = (main_total_generate_dataset_size/displaySize).toFixed(2) + ' KB'
+            } else if (main_total_generate_dataset_size < displaySize*displaySize*displaySize){
+              var totalSizePrint = (main_total_generate_dataset_size/displaySize/displaySize).toFixed(2) + ' MB'
+            } else {
+              var totalSizePrint = (main_total_generate_dataset_size/displaySize/displaySize/displaySize).toFixed(2) + ' GB'
+            }
+            var progressMessage = ""
+            progressMessage += main_curate_progress_message + "<br>"
+            progressMessage += 'Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')' + "<br>"
+            progressMessage += "Elaspsed time: " + elapsed_time_formatted + "<br>"
+            document.getElementById("para-new-curate-progress-bar-status").innerHTML = progressMessage
+            console.log(main_curate_progress_message)
+            console.log('Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')')
+            console.log("Elaspsed time: " + elapsed_time_formatted)
+          }
+        } else {
+          document.getElementById("para-new-curate-progress-bar-status").innerHTML = main_curate_progress_message + "<br>" + "Elaspsed time: " + elapsed_time_formatted + "<br>"
+          console.log(main_curate_progress_message)
+        }
+      }
+    })
+
+    if (main_curate_status === 'Done'){
+      countDone++
+      if (countDone > 1){
+        log.info('Done curate track')
+        console.log('Done curate track')
+        clearInterval(timerProgress)
+      }
+    }
+  }
+
+}
+
+function backfend_to_frontend_warning_message(error_array) {
+  var warning_message = "" 
+  for (var i = 0; i < error_array.length;i++){
+    item = error_array[i]
+    warning_message += item + "\n"
+  }
+  return warning_message
+}
 
 var forbidden_characters_bf = '\/:*?"<>';
 
@@ -6268,10 +6395,10 @@ ipcRenderer.on('selected-metadataCurate', (event, mypath) => {
       if (metadataAllowedExtensions.includes(extension)) {
         document.getElementById(metadataParaElement).innerHTML = mypath[0]
       } else {
-        document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>We only support SPARC metadata files in the format listed above!</span>"
+        document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>Your SPARC metadata file must be in one of the formats listed above!</span>"
       }
     } else {
-      document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>Please only import SPARC metadata files!</span>"
+      document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>"
       }
     }
   }
