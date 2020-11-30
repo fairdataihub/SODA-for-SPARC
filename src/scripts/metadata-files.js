@@ -20,12 +20,9 @@ $(".button-individual-metadata").click(function() {
   //// once users click "Confirm" or "Cancel", check if file is specified
   //// if yes: addClass 'done'
   //// if no: removeClass 'done'
-
+  var errorMetadataFileMessages = ["", "Please only drag and drop a file!", "Your SPARC metadata file must be in one of the formats listed above!", "Your SPARC metadata file must be named and formatted exactly as listed above!"]
   var metadataFileStatus = $($(this).parents()[1]).find('.para-metadata-file-status');
-  if ($(metadataFileStatus).text() !== ""
-      && $(metadataFileStatus).text() !== "Please drag a file!"
-      && $(metadataFileStatus).text() !== "Please only import SPARC metadata files!"
-    ) {
+  if (!(errorMetadataFileMessages.includes($(metadataFileStatus).text()))) {
     $(metadataFile).addClass('done')
   } else {
     $(metadataFile).removeClass('done');
@@ -55,10 +52,10 @@ function dropHandler(ev, paraElement, metadataFile) {
       if (metadataWithoutExtension === metadataFile) {
         document.getElementById(paraElement).innerHTML = file.path
       } else {
-        document.getElementById(paraElement).innerHTML = "<span style='color:red'>Please only import SPARC metadata files!</span>"
+        document.getElementById(paraElement).innerHTML = "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>"
       }
     } else {
-      document.getElementById(paraElement).innerHTML = "<span style='color:red'>Please drag a file!</span>"
+      document.getElementById(paraElement).innerHTML = "<span style='color:red'>Please only drag and drop a file!</span>"
     }
   }
 }

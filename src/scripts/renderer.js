@@ -1800,7 +1800,7 @@ ipcRenderer.on('selected-metadata-ds-description', (event, dirpath, filename) =>
         var datasetInfoValueArray = grabDSInfoEntries()
 
         //// process obtained values to pass to an array ///
-        /////////////////////////////////////////////////// 
+        ///////////////////////////////////////////////////
         var keywordVal = []
         for (var i=0;i<datasetInfoValueArray["keywords"].length;i++) {
           keywordVal.push(datasetInfoValueArray["keywords"][i].value)
@@ -6178,6 +6178,7 @@ function finalScanningSODAJsonObject() {
 
 document.getElementById("button-generate-comeback").addEventListener('click', function() {
   document.getElementById('generate-dataset-progress-tab').style.display = "none";
+  document.getElementById('div-vertical-progress-bar').style.display = "flex";
   document.getElementById('prevBtn').style.display = "inline";
   $('#generate-dataset-tab').addClass('tab-active');
 })
@@ -6190,6 +6191,7 @@ document.getElementById('button-generate').addEventListener('click', function() 
 
   $($($(this).parent()[0]).parents()[0]).removeClass('tab-active');
   document.getElementById('prevBtn').style.display = "none";
+  document.getElementById('div-vertical-progress-bar').style.display = "none";
   document.getElementById('div-generate-comeback').style.display = "none"
   document.getElementById('generate-dataset-progress-tab').style.display = "flex";
 

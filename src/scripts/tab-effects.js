@@ -99,7 +99,7 @@ function nextPrev(n) {
 
 function fixStepIndicator(n) {
   // This function removes the "is-current" class of all steps...
-  var i, x = document.getElementsByClassName("not-me");
+  var i, x = document.getElementsByClassName("vertical-progress-bar-step");
   for (i = 0; i < x.length; i++) {
     x[i].className = x[i].className.replace(" is-current", "");
   }
@@ -108,7 +108,7 @@ function fixStepIndicator(n) {
 }
 
 function fixStepDone(n) {
-  var x = document.getElementsByClassName("not-me");
+  var x = document.getElementsByClassName("vertical-progress-bar-step");
   $(x[n]).addClass('done');
 }
 
