@@ -954,78 +954,82 @@ def check_empty_files_folders(soda_json_structure):
     Output:
         error: error message with list of non valid local data files, if any
     """
-    
-    def recursive_empty_files_check(my_folder, my_relative_path, error_files):
-        for folder_key, folder in my_folder["folders"].items():
-            relative_path = my_relative_path + "/" + folder_key
-            error_files = recursive_empty_files_check(folder, relative_path, error_files)
-                    
-        for file_key in list(my_folder["files"].keys()):
-            file = my_folder["files"][file_key]
-            file_type = file["type"] 
-            if file_type == "local":
-                file_path = file["path"]
-                if isfile(file_path):
-                    file_size = getsize(file_path)
-                    if file_size == 0:
-                        del my_folder["files"][file_key] 
-                        relative_path = my_relative_path + "/" +  file_key
-                        error_message = relative_path + " (path: " + file_path + ")"
-                        error_files.append(error_message)
-                        
-        return error_files
-    
-    def recursive_empty_local_folders_check(my_folder, my_folder_key, my_folders_content, my_relative_path, error_folders):
-        folders_content = my_folder["folders"]
-        for folder_key in list(my_folder["folders"].keys()):
-            folder = my_folder["folders"][folder_key]
-            relative_path = my_relative_path + "/" + folder_key
-            error_folders = recursive_empty_local_folders_check(folder, folder_key, folders_content, relative_path, error_folders)
-                
-        if not my_folder["folders"]:
-            if not my_folder["files"]:
-                error_message = my_relative_path
-                error_folders.append(error_message)
-                del my_folders_content[my_folder_key]
-        return error_folders
-              
-    error_files = []
-    error_folders = []
-    if "dataset-structure" in soda_json_structure.keys():
-        dataset_structure = soda_json_structure["dataset-structure"]
-        if "folders" in dataset_structure:
-            for folder_key, folder in dataset_structure["folders"].items():
-                relative_path = folder_key
+    try: 
+        
+        def recursive_empty_files_check(my_folder, my_relative_path, error_files):
+            for folder_key, folder in my_folder["folders"].items():
+                relative_path = my_relative_path + "/" + folder_key
                 error_files = recursive_empty_files_check(folder, relative_path, error_files)
+                        
+            for file_key in list(my_folder["files"].keys()):
+                file = my_folder["files"][file_key]
+                file_type = file["type"] 
+                if file_type == "local":
+                    file_path = file["path"]
+                    if isfile(file_path):
+                        file_size = getsize(file_path)
+                        if file_size == 0:
+                            del my_folder["files"][file_key] 
+                            relative_path = my_relative_path + "/" +  file_key
+                            error_message = relative_path + " (path: " + file_path + ")"
+                            error_files.append(error_message)
+                            
+            return error_files
+        
+        def recursive_empty_local_folders_check(my_folder, my_folder_key, my_folders_content, my_relative_path, error_folders):
+            folders_content = my_folder["folders"]
+            for folder_key in list(my_folder["folders"].keys()):
+                folder = my_folder["folders"][folder_key]
+                relative_path = my_relative_path + "/" + folder_key
+                error_folders = recursive_empty_local_folders_check(folder, folder_key, folders_content, relative_path, error_folders)
+                    
+            if not my_folder["folders"]:
+                if not my_folder["files"]:
+                    error_message = my_relative_path
+                    error_folders.append(error_message)
+                    del my_folders_content[my_folder_key]
+            return error_folders
+                  
+        error_files = []
+        error_folders = []
+        if "dataset-structure" in soda_json_structure.keys():
+            dataset_structure = soda_json_structure["dataset-structure"]
+            if "folders" in dataset_structure:
+                for folder_key, folder in dataset_structure["folders"].items():
+                    relative_path = folder_key
+                    error_files = recursive_empty_files_check(folder, relative_path, error_files)
+                
+                folders_content = dataset_structure["folders"]
+                for folder_key in list(dataset_structure["folders"].keys()):
+                    folder = dataset_structure["folders"][folder_key]
+                    relative_path = folder_key
+                    error_folders = recursive_empty_local_folders_check(folder, folder_key, folders_content, relative_path, error_folders) 
+        
+        if "metadata-files" in soda_json_structure.keys():
+            metadata_files = soda_json_structure["metadata-files"]
+            for file_key in list(metadata_files.keys()):
+                file = metadata_files[file_key]
+                file_type = file["type"] 
+                if file_type == "local":
+                    file_path = file["path"]
+                    if isfile(file_path):
+                        file_size = getsize(file_path)
+                        if file_size == 0:
+                            error_message = file_key + " (path: " + file_path + ")"
+                            error_files.append(error_message)
             
-            folders_content = dataset_structure["folders"]
-            for folder_key in list(dataset_structure["folders"].keys()):
-                folder = dataset_structure["folders"][folder_key]
-                relative_path = folder_key
-                error_folders = recursive_empty_local_folders_check(folder, folder_key, folders_content, relative_path, error_folders) 
-    
-    if "metadata-files" in soda_json_structure.keys():
-        metadata_files = soda_json_structure["metadata-files"]
-        for file_key in list(metadata_files.keys()):
-            file = metadata_files[file_key]
-            file_type = file["type"] 
-            if file_type == "local":
-                file_path = file["path"]
-                if isfile(file_path):
-                    file_size = getsize(file_path)
-                    if file_size == 0:
-                        error_message = file_key + " (path: " + file_path + ")"
-                        error_files.append(error_message)
-        
-    if len(error_files)>0:
-        error_message = ["The following local file(s) is/are empty (0 kb) and will be ignored."]
-        error_files = error_message + [] + error_files
+        if len(error_files)>0:
+            error_message = ["The following local file(s) is/are empty (0 kb) and will be ignored."]
+            error_files = error_message + [] + error_files
 
-    if len(error_folders)>0:
-        error_message = ["The following folder(s) is/are empty or only contain(s) empty file(s), and will be ignored."]
-        error_folders = error_message + [] + error_folders
-        
-    return [error_files, error_folders]
+        if len(error_folders)>0:
+            error_message = ["The following folder(s) is/are empty or only contain(s) empty file(s), and will be ignored."]
+            error_folders = error_message + [] + error_folders
+            
+        return [error_files, error_folders]
+
+    except Exception as e:
+        raise e
 
 
 def check_local_dataset_files_validity(soda_json_structure):
