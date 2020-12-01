@@ -6327,11 +6327,11 @@ function initiate_generate() {
             var progressMessage = ""
             progressMessage += main_curate_progress_message + "<br>"
             progressMessage += 'Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')' + "<br>"
-            progressMessage += "Elaspsed time: " + elapsed_time_formatted + "<br>"
+            progressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>"
             document.getElementById("para-new-curate-progress-bar-status").innerHTML = progressMessage
             console.log(main_curate_progress_message)
             console.log('Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')')
-            console.log("Elaspsed time: " + elapsed_time_formatted)
+            console.log("Elapsed time: " + elapsed_time_formatted)
           }
         } else {
           document.getElementById("para-new-curate-progress-bar-status").innerHTML = main_curate_progress_message + "<br>" + "Elaspsed time: " + elapsed_time_formatted + "<br>"

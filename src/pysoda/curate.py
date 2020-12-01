@@ -1719,6 +1719,9 @@ def main_curate_function(soda_json_structure):
     global bf
     global myds
 
+
+    generate_start_time = time.time()
+    
     main_curate_status = ""
     main_curate_progress_message = "Starting..."
     main_total_generate_dataset_size = 1
@@ -1734,7 +1737,7 @@ def main_curate_function(soda_json_structure):
     main_keys = soda_json_structure.keys()
     error = ""
 
-    generate_start_time = time.time()
+    
 
     # 1] Check for potential errors
 
@@ -1894,9 +1897,10 @@ def main_curate_function_progress():
     global main_generate_destination
     global main_initial_bfdataset_size 
 
+    elapsed_time = time.time() - generate_start_time
+    elapsed_time_formatted = time_format(elapsed_time)
     if start_generate == 1:
-        elapsed_time = time.time() - generate_start_time
-        elapsed_time_formatted = time_format(elapsed_time)
+        
         if main_generate_destination == "bf":
             main_generated_dataset_size = bf_dataset_size() - main_initial_bfdataset_size 
 
