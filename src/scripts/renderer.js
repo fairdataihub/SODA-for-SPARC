@@ -4648,6 +4648,8 @@ function updateBfAccountList(){
       datasetPermissionList.disabled = true;
       loadAllBFAccounts()
     }
+    bfSelectAccountStatus.innerHTML = ""
+    bfAccountLoadProgress.style.display = 'none'
     // refreshAllBfDatasetLists()
     refreshBfUsersList()
     refreshBfTeamsList(bfListTeams)
