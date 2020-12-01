@@ -40,8 +40,11 @@ function showParentTab(tabNow, nextOrPrev) {
 
   if (tabNow == 0) {
     document.getElementById("prevBtn").style.display = "none";
-    document.getElementById("nextBtn").disabled = true;
-
+    if (document.getElementById("nextBtn").disabled) {
+      document.getElementById("nextBtn").disabled = true;
+    } else {
+      document.getElementById("nextBtn").disabled = false;
+    }
   } else if (tabNow == 1){
     document.getElementById("nextBtn").disabled = true;
     checkHighLevelFoldersInput();
@@ -49,7 +52,6 @@ function showParentTab(tabNow, nextOrPrev) {
 } else {
     document.getElementById("nextBtn").disabled = false;
 }
-
   if (tabNow == (x.length - 1)) {
     document.getElementById("nextBtn").style.display = "none";
   }
@@ -599,8 +601,8 @@ function exitCurate() {
   $(".option-card, .folder-input-check").prop('checked', false);
   $('.metadata-button.button-generate-dataset').removeClass('done');
   $('.para-metadata-file-status').text("");
-  $('input:checkbox').prop('checked',false);
-  $('input:radio').prop('checked',false);
+  $('#organize-section input:checkbox').prop('checked',false);
+  $('#organize-section input:radio').prop('checked',false);
   $('.generate-dataset').removeClass('prev');
   $('.generate-dataset').removeClass('show');
   $('.generate-dataset').removeClass('test2');
