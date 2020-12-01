@@ -2771,14 +2771,10 @@ loadAllBFAccounts()
 curateDatasetDropdown.addEventListener('change', function() {
   var curateSelectedbfdataset = curateDatasetDropdown.options[curateDatasetDropdown.selectedIndex].text;
   if (curateSelectedbfdataset === 'Select dataset') {
-    document.getElementById('button-confirm-bf-dataset').style.display = "none";
-    $('#button-confirm-bf-dataset').hide()
+    hideNextDivs("Question-generate-dataset-BF-dataset");
   } else{
-    if ($("#Question-generate-dataset-BF-dataset").hasClass('prev')) {
-      $('#button-confirm-bf-dataset').hide()
-    } else {
-      document.getElementById('button-confirm-bf-dataset').style.display = "flex";
-      $('#button-confirm-bf-dataset').show()
+    if (!($("#Question-generate-dataset-BF-dataset").hasClass('prev'))) {
+      document.getElementById('button-confirm-bf-dataset').click();
     }
   }
 })
@@ -2838,7 +2834,7 @@ function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
       } else {
         // clear and populate dataset list
           populateDatasetDropdownCurate(datasetDropdown, result)
-          // $('#curatebfdatasetlist').prop('selectedIndex', 1);
+          // $('#curatebfdatasetlist').prop('selectedIndex', 0);
         }
     })
 }
@@ -3094,6 +3090,7 @@ bfRenameDatasetBtn.addEventListener('click', () => {
       } else {
         renameDatasetInList(currentDatasetName, renamedDatasetName)
         refreshDatasetListChooseOption("#bfdatasetlist_renamedataset", renamedDatasetName)
+        refreshDatasetListChooseOption("#curatebfdatasetlist", "Select dataset")
         syncDatasetDropdownOption(bfDatasetListRenameDataset)
         renameDatasetName.value = renamedDatasetName
         bfRenameDatasetStatus.innerHTML = 'Success: renamed dataset' + " '" + currentDatasetName + "'" + ' to' + " '" + renamedDatasetName + "'"
@@ -4504,9 +4501,10 @@ function selectOptionDropdown(dropdown, selectedDataset) {
 
 //// De-populate dataset dropdowns to clear options
 function clearDatasetDropdowns() {
-  for (let list of [bfDatasetList, bfDatasetListMetadata, bfDatasetListMetadata, bfUploadDatasetList, bfDatasetListDatasetStatus, bfDatasetListRenameDataset, bfDatasetListPostCurationPublish, bfDatasetListPostCurationCuration, bfDatasetListPostCurationConsortium, datasetDescriptionFileDataset, bfDatasetListPermission]) {
+  for (let list of [bfDatasetList, bfDatasetListMetadata, bfDatasetListMetadata, bfUploadDatasetList, bfDatasetListDatasetStatus, bfDatasetListRenameDataset, bfDatasetListPostCurationPublish, bfDatasetListPostCurationCuration, bfDatasetListPostCurationConsortium, datasetDescriptionFileDataset, bfDatasetListPermission, curateDatasetDropdown]) {
     removeOptions(list)
-    addOption(list, "Select dataset", "Select dataset")
+    addOption(list, "Select dataset", "Select dataset");
+    list.options[0].disabled = true;
   }
 }
 
@@ -4528,6 +4526,7 @@ function populateDatasetDropdowns(mylist) {
     var option8 = option.cloneNode(true)
     var option9 = option.cloneNode(true)
     var option10 = option.cloneNode(true)
+    var option11 = option.cloneNode(true)
 
     bfDatasetListMetadata.appendChild(option2)
     bfDatasetListPermission.appendChild(option3)
@@ -4538,12 +4537,17 @@ function populateDatasetDropdowns(mylist) {
     bfDatasetListPostCurationCuration.appendChild(option8)
     bfDatasetListPostCurationConsortium.appendChild(option9)
     bfDatasetListPostCurationPublish.appendChild(option10)
+    curateDatasetDropdown.appendChild(option11)
+
     renameDatasetlistChange()
     metadataDatasetlistChange()
     permissionDatasetlistChange()
     postCurationListChange()
     datasetStatusListChange()
   }
+  // auto-select first option (Select dataset) for Step 6 Generate dataset, and hide subsequent divs
+  $('#curatebfdatasetlist').prop('selectedIndex', 0);
+  hideNextDivs("Question-generate-dataset-BF-dataset");
 }
 
 datasetPermissionList.addEventListener("change", function(e) {

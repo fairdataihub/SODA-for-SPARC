@@ -47,10 +47,10 @@ function showParentTab(tabNow, nextOrPrev) {
 
   if (tabNow == 0) {
     document.getElementById("prevBtn").style.display = "none";
-    if (document.getElementById("nextBtn").disabled) {
-      document.getElementById("nextBtn").disabled = true;
-    } else {
+    if ($('input[name="getting-started-1"]:checked').length === 1) {
       document.getElementById("nextBtn").disabled = false;
+    } else if ($('input[name="getting-started-1"]:checked').length === 0){
+      document.getElementById("nextBtn").disabled = true;
     }
   } else if (tabNow == 1){
     document.getElementById("nextBtn").disabled = true;
@@ -66,6 +66,7 @@ function showParentTab(tabNow, nextOrPrev) {
   if (nextOrPrev === -1) {
     document.getElementById("nextBtn").disabled = false;
   }
+
 }
 
 function checkHighLevelFoldersInput() {
@@ -629,6 +630,7 @@ function exitCurate() {
 // once users click on option card: Organize dataset
 document.getElementById('button-section-organize-dataset').addEventListener('click', function() {
   $('.vertical-progress-bar').css('display', 'flex');
+  document.getElementById('generate-dataset-progress-tab').style.display = "none";
   if (!($('#getting-started-tab').hasClass('tab-active'))) {
     $('#getting-started-tab').addClass('tab-active');
   }
@@ -657,3 +659,13 @@ document.getElementById('button-section-organize-dataset').addEventListener('cli
 // function saveOrganizeProgress() {
 //
 // }
+
+function hideNextDivs(currentDiv) {
+  // make currentDiv current class
+  $('#'+currentDiv).removeClass('prev')
+  $('#'+currentDiv).removeClass('test2')
+  // hide subsequent divs
+  $($('#'+currentDiv).nextAll()).removeClass('prev');
+  $($('#'+currentDiv).nextAll()).removeClass('show');
+  $($('#'+currentDiv).nextAll()).removeClass('test2');
+}
