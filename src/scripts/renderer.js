@@ -1458,7 +1458,7 @@ dsContributorArray.addEventListener("change", function(e) {
     document.getElementById("div-other-collaborators-3").style.display = "flex"
   }
   else {
-    currentContributortagify.destroy()
+    // currentContributortagify.destroy()
     currentAffliationtagify.destroy()
     document.getElementById("input-con-ID").disabled = true
     affiliationInput.disabled = true
@@ -1484,28 +1484,28 @@ dsContributorArray.addEventListener("change", function(e) {
       console.log(records)
       records.forEach(function(record) {
         conInfoObj["ID"] = record.get('ORCID');
-        conInfoObj["Role"] = record.get('NIH_Project_Role');
+        // conInfoObj["Role"] = record.get('NIH_Project_Role');
         conInfoObj["Affiliation"] = record.get('Institution');
       }),
       fetchNextPage();
 
       // if no records found, leave fields empty
       leaveFieldsEmpty(conInfoObj["ID"],document.getElementById("input-con-ID"));
-      leaveFieldsEmpty(conInfoObj["Role"],document.getElementById("input-con-role"));
+      // leaveFieldsEmpty(conInfoObj["Role"],document.getElementById("input-con-role"));
       leaveFieldsEmpty(conInfoObj["Affiliation"], affiliationInput);
 
-      /// initiate tagify for contributor roles
-      currentContributortagify = new Tagify(contributorRoles, {
-          whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
-          dropdown : {
-              classname : "color-blue",
-              enabled   : 0,         // show the dropdown immediately on focus
-              maxItems  : 25,
-              // position  : "text",    // place the dropdown near the typed text
-              closeOnSelect : true, // keep the dropdown open after selecting a suggestion
-          },
-          duplicates: false
-        });
+      // /// initiate tagify for contributor roles
+      // currentContributortagify = new Tagify(contributorRoles, {
+      //     whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+      //     dropdown : {
+      //         classname : "color-blue",
+      //         enabled   : 0,         // show the dropdown immediately on focus
+      //         maxItems  : 25,
+      //         // position  : "text",    // place the dropdown near the typed text
+      //         closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+      //     },
+      //     duplicates: false
+      //   });
         /// initiate tagify for affiliations
         currentAffliationtagify = new Tagify(affiliationInput, {
             dropdown : {
