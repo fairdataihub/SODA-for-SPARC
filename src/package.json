@@ -20,7 +20,7 @@
       "**/*"
     ],
     "win": {
-      "icon": "assets/app-icon/win/icon.ico"
+      "icon": "assets/app-icon/win/soda_icon.ico"
     },
     "mac": {
       "category": "your.app.category.type"
