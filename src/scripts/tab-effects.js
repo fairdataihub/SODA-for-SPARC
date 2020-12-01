@@ -18,7 +18,11 @@ function showParentTab(tabNow, nextOrPrev) {
   // This function will display the specified tab of the form ...
   var x = document.getElementsByClassName("parent-tabs");
   fixStepIndicator(tabNow)
-  fixStepDone(tabNow-1)
+  if (tabNow === 0) {
+    fixStepDone(tabNow)
+  } else {
+    fixStepDone(tabNow-1)
+  }
 
   $(x[tabNow]).addClass('tab-active');
 
@@ -173,15 +177,17 @@ function showSubTab(section, tab, input){
 
 function highLevelFoldersDisableOptions() {
   var highLevelFolderOptions = datasetStructureJSONObj["folders"];
-  for (var folder of highLevelFolders) {
-    if (Object.keys(highLevelFolderOptions).includes(folder)) {
-      var optionCard = $("#"+folder+"-check").parents()[2];
-      $(optionCard).addClass('disabled');
-    } else {
-      var optionCard = $("#"+folder+"-check").parents()[2];
-      $(optionCard).removeClass('disabled');
-      $(optionCard).removeClass('checked');
-      $(optionCard).children()[0].children[1].children[0].checked = false
+  if (highLevelFolderOptions) {
+    for (var folder of highLevelFolders) {
+      if (Object.keys(highLevelFolderOptions).includes(folder)) {
+        var optionCard = $("#"+folder+"-check").parents()[2];
+        $(optionCard).addClass('disabled');
+      } else {
+        var optionCard = $("#"+folder+"-check").parents()[2];
+        $(optionCard).removeClass('disabled');
+        $(optionCard).removeClass('checked');
+        $(optionCard).children()[0].children[1].children[0].checked = false
+      }
     }
   }
 }
@@ -581,6 +587,39 @@ function deleteEmptyKeysFromObject(object) {
 function updateJSONStructureDSstructure() {
   sodaJSONObj["dataset-structure"] = datasetStructureJSONObj
 }
+
+function exitCurate() {
+  document.getElementById('generate-dataset-progress-tab').style.display = "none";
+  // set SODA json object back
+  sodaJSONObj = {};
+  $(".option-card").removeClass('checked');
+  $('.option-card.radio-button').css('pointer-events', "auto");
+  $(".option-card.radio-button").removeClass('non-selected');
+  $(".option-card.high-level-folders").removeClass('disabled');
+  $(".option-card, .folder-input-check").prop('checked', false);
+  $('.metadata-button.button-generate-dataset').removeClass('done');
+  $('.para-metadata-file-status').text("");
+  $('input:checkbox').prop('checked',false);
+  $('input:radio').prop('checked',false);
+  $('.generate-dataset').removeClass('prev');
+  $('.generate-dataset').removeClass('show');
+  $('.generate-dataset').removeClass('test2');
+  datasetStructureJSONObj = {"folders": {}}
+
+  $("#generate-manifest-curate").prop('checked', false);
+  $('.vertical-progress-bar-step').removeClass('is-current')
+  $('.vertical-progress-bar-step').removeClass('done')
+}
+//
+document.getElementById('button-section-organize-dataset').addEventListener('click', function() {
+  $('.vertical-progress-bar').css('display', 'flex');
+  // document.getElementById('div-vertical-progress-bar').style.display = "flex";
+  if (!($('#getting-started-tab').hasClass('tab-active'))) {
+    $('#getting-started-tab').addClass('tab-active');
+  }
+  currentTab = 0
+  showParentTab(0,1)
+})
 
 // function exitOrganizeSection() {
 //   bootbox.confirm({

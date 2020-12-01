@@ -6270,6 +6270,7 @@ function initiate_generate() {
   document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ..."
   document.getElementById("para-please-wait-new-curate").innerHTML = ""
   document.getElementById('div-new-curate-progress').style.display = "block";
+  document.getElementById('div-generate-comeback').style.display = "none"
   client.invoke("api_main_curate_function", sodaJSONObj,
      (error, res) => {
       if (error) {
@@ -6352,7 +6353,7 @@ function initiate_generate() {
 }
 
 function backfend_to_frontend_warning_message(error_array) {
-  var warning_message = "" 
+  var warning_message = ""
   for (var i = 0; i < error_array.length;i++){
     item = error_array[i]
     warning_message += item + "\n"
