@@ -1470,6 +1470,8 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                     if existing_folder_option == "skip":
                         if folder_key in my_bf_existing_folders_name:
                             continue
+                        else:
+                            bf_folder = my_bf_folder.create_collection(folder_key)
                             
                     elif existing_folder_option == "create-duplicate":
                         bf_folder = my_bf_folder.create_collection(folder_key)
@@ -1477,8 +1479,8 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                     elif existing_folder_option == "replace":
                         if folder_key in my_bf_existing_folders_name:
                             index_folder = my_bf_existing_folders_name.index(folder_key)
-                            bf_folder = my_bf_existing_folders[index_folder]
-                            bf_folder.delete() 
+                            bf_folder_delete = my_bf_existing_folders[index_folder]
+                            bf_folder_delete.delete() 
                         bf_folder = my_bf_folder.create_collection(folder_key)
                         
                     elif existing_folder_option == "merge":
@@ -1643,7 +1645,6 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
 
         # 5. Upload files, rename, and add to tracking list
         main_initial_bfdataset_size = bf_dataset_size()
-        gevent.sleep(0)
         start_generate = 1
         for item in list_upload_files:
             list_upload = item[0]
@@ -1719,9 +1720,9 @@ def main_curate_function(soda_json_structure):
     global bf
     global myds
 
-
+    start_generate = 0
     generate_start_time = time.time()
-    
+
     main_curate_status = ""
     main_curate_progress_message = "Starting..."
     main_total_generate_dataset_size = 1
@@ -1899,13 +1900,10 @@ def main_curate_function_progress():
 
     elapsed_time = time.time() - generate_start_time
     elapsed_time_formatted = time_format(elapsed_time)
+
     if start_generate == 1:
-        
         if main_generate_destination == "bf":
             main_generated_dataset_size = bf_dataset_size() - main_initial_bfdataset_size 
-
-    else: 
-        elapsed_time_formatted = ""
 
     return (main_curate_status, start_generate, main_curate_progress_message, main_total_generate_dataset_size, main_generated_dataset_size, elapsed_time_formatted)
 

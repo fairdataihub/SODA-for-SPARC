@@ -6371,10 +6371,15 @@ function initiate_generate() {
             console.log(main_curate_progress_message)
             console.log('Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')')
             console.log("Elapsed time: " + elapsed_time_formatted)
+            console.log(main_generated_dataset_size)
+            console.log(main_total_generate_dataset_size)
           }
         } else {
-          document.getElementById("para-new-curate-progress-bar-status").innerHTML = main_curate_progress_message + "<br>" + "Elaspsed time: " + elapsed_time_formatted + "<br>"
+          document.getElementById("para-new-curate-progress-bar-status").innerHTML = main_curate_progress_message + "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>"
           console.log(main_curate_progress_message)
+          console.log(elapsed_time_formatted)
+          console.log(main_generated_dataset_size)
+          console.log(main_total_generate_dataset_size)
         }
       }
     })
