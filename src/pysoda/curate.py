@@ -81,9 +81,6 @@ handler = logging.FileHandler(os.path.join(os.path.expanduser("~"), f"{__name__}
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
-
-bf_accepted_file_format = []
-
 ### Internal functions
 def TZLOCAL():
     return datetime.now(timezone.utc).astimezone().tzinfo
@@ -1517,7 +1514,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                         
             if "files" in my_folder.keys():
                 my_bf_existing_files = [x for x in my_bf_folder.items if x.type != "Collection"]
-                my_bf_existing_files_name = [splitext(x.name)[0] for x in my_bf_existing_files]
+                my_bf_existing_files_name = [x.name for x in my_bf_existing_files]
             
                 list_local_files = []
                 list_projected_name = []
@@ -1533,6 +1530,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                             initial_name = splitext(basename(file_path))[0]
                             desired_name = splitext(file_key)[0]
                             
+                            # manage existing file request
                             if existing_file_option == "replace":
                                 if desired_name in my_bf_existing_files_name:
                                     index_file = my_bf_existing_files_name.index(desired_name)
@@ -1542,8 +1540,6 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                             if existing_file_option == "skip":
                                 if desired_name in my_bf_existing_files_name:
                                     continue
-                                    
-                            # find projected filename on Blackfynn
 
                             # check if initial filename exists on Blackfynn dataset
                             count_done = 0
@@ -1556,7 +1552,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                                 else:
                                     count_done = 1
 
-                            # check if projected filename will exist a previous file scheduled for uploading
+                            # check if projected filename will exist in a previous file scheduled for uploading
                             count_exist_projected = 0
                             if projected_name in list_upload_schedule_projected_names:
                                 count_exist += 1
@@ -1658,6 +1654,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
             #upload
             main_curate_progress_message = "Uploading files in " + str(relative_path)
             bf_folder.upload(*list_upload)
+
             #rename to desired
             for item in bf_folder.items:
                 projected_name = item.name
