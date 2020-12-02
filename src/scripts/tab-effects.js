@@ -336,9 +336,10 @@ function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
   hidePrevDivs(currentDiv, category);
 
   target.className = target.className + ' show';
-
+  $("#"+ev.getAttribute('data-next')+" button").show();
   // append to parentDiv
   document.getElementById(parentDiv).appendChild(target);
+
   setTimeout(()=> target.classList.add("test2"), 100);
 
   document.getElementById(currentDiv).classList.add("prev");

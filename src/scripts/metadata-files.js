@@ -48,13 +48,9 @@ $(".button-individual-metadata.go-back").click(function() {
   var metadataFileStatus = $($(this).parents()[1]).find('.para-metadata-file-status');
   if (!(errorMetadataFileMessages.includes($(metadataFileStatus).text()))) {
     $(metadataFile).addClass('done');
-    $($(this).parents()[0]).find('.div-metadata-confirm').prop("display", "flex");
-    $($(this).parents()[0]).find('.div-metadata-go-back').prop("display", "none");
   } else {
     $(metadataFile).removeClass('done');
     $(metadataFileStatus).text("");
-    $($(this).parents()[1]).find('.div-metadata-confirm').css("display", "none");
-    $($(this).parents()[0]).css("display", "flex");
   }
 })
 

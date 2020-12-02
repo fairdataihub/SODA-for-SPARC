@@ -5507,32 +5507,54 @@ function showDetailsFile() {
   // $(".div-display-details.folders").hide()
 }
 
+var bfAddAccountBootboxMessage = "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='password' /></div></div></form>"
+
+function addBFAccountInsideBootbox(myBootboxDialog) {
+  var keyname = $("#bootbox-key-name").val();
+  var apiKey = $("#bootbox-api-key").val();
+  var apiSecret = $("#bootbox-api-secret").val();
+  client.invoke("api_bf_add_account", keyname, apiKey, apiSecret, (error, res) => {
+    if(error) {
+      myBootboxDialog.find(".modal-footer").prepend("<span style='color:red;padding-right:10px;display:inline-block;'>"+error+"</span>");
+      log.error(error)
+      console.error(error);
+    } else {
+      updateBfAccountList();
+      loadAllBFAccounts()
+      $("#bootbox-key-name").val("");
+      $("#bootbox-api-key").val("");
+      $("#bootbox-api-secret").val("");
+      myBootboxDialog.modal('hide')
+      bootbox.alert({
+        message: "Successfully added!",
+        centerVertical: true
+      });
+    }
+  });
+}
+
 function showBFAddAccountBootbox() {
-  bootbox.confirm({
-    title: "Adding Blackfynn account<br><span style='font-size:12px'>Please enter your Blackfynn API key and name below:</span>",
-    message: "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='password' /></div></div></form>",
+  var bootb = bootbox.dialog({
+    title: "Please specify a key name and enter your Blackfynn API key and secret below:",
+    message: bfAddAccountBootboxMessage,
     buttons: {
         cancel: {
-            label: '<i class="fa fa-times"></i> Cancel'
+            label: 'Cancel'
         },
         confirm: {
-            label: '<i class="fa fa-check"></i> Add'
-        }
-    },
-    centerVertical: true,
-    callback: function (result) {
-        console.log('This was logged in the callback: ' + result);
-    }
-});
+            label: 'Add',
+            className: 'btn btn-primary bootbox-add-bf-class',
+            callback: function() {
+              addBFAccountInsideBootbox(bootb);
+              return false
+            }
+          }
+        },
+    size: "medium",
+    centerVertical: true
+  })
 }
-//   var bootboxHtml = $('#js-exampleDiv').html().replace('js-exampleForm', 'js-bootboxForm');
-//   bootboxHtml.title = "Adding new Blackfynn account";
-//   bootbox.confirm(bootboxHtml, function(result) {
-//     console.log($('#bootbox-api-key', '.js-bootboxForm').val());
-//     console.log($('#bootbox-api-secret', '.js-bootboxForm').val());
-//     console.log($('#bootbox-key-name', '.js-bootboxForm').val());
-//   });
-// }
+
 
 // function showDetailsFolder() {
 //   $('.div-display-details.folders').toggleClass('show');
@@ -6375,7 +6397,7 @@ function initiate_generate() {
             var progressMessage = ""
             progressMessage += main_curate_progress_message + "<br>"
             progressMessage += 'Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')' + "<br>"
-            progressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>"
+            progressMessage += "Elaspsed time: " + elapsed_time_formatted + "<br>"
             document.getElementById("para-new-curate-progress-bar-status").innerHTML = progressMessage
             console.log(main_curate_progress_message)
             console.log('Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')')
