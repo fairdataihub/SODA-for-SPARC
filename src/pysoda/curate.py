@@ -81,7 +81,6 @@ handler = logging.FileHandler(os.path.join(os.path.expanduser("~"), f"{__name__}
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
-
 ### Internal functions
 def TZLOCAL():
     return datetime.now(timezone.utc).astimezone().tzinfo
@@ -1222,7 +1221,6 @@ def add_local_manifest_files(manifest_files_structure, datasetpath):
         raise e   
 
 def bf_add_manifest_files(manifest_files_structure, ds):
-    # IN PROGRESS
     try:
         for key in manifest_files_structure.keys():  
             manifestpath = manifest_files_structure[key]
@@ -1470,6 +1468,8 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                     if existing_folder_option == "skip":
                         if folder_key in my_bf_existing_folders_name:
                             continue
+                        else:
+                            bf_folder = my_bf_folder.create_collection(folder_key)
                             
                     elif existing_folder_option == "create-duplicate":
                         bf_folder = my_bf_folder.create_collection(folder_key)
@@ -1477,8 +1477,8 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                     elif existing_folder_option == "replace":
                         if folder_key in my_bf_existing_folders_name:
                             index_folder = my_bf_existing_folders_name.index(folder_key)
-                            bf_folder = my_bf_existing_folders[index_folder]
-                            bf_folder.delete() 
+                            bf_folder_delete = my_bf_existing_folders[index_folder]
+                            bf_folder_delete.delete() 
                         bf_folder = my_bf_folder.create_collection(folder_key)
                         
                     elif existing_folder_option == "merge":
@@ -1514,7 +1514,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                         
             if "files" in my_folder.keys():
                 my_bf_existing_files = [x for x in my_bf_folder.items if x.type != "Collection"]
-                my_bf_existing_files_name = [splitext(x.name)[0] for x in my_bf_existing_files]
+                my_bf_existing_files_name = [x.name for x in my_bf_existing_files]
             
                 list_local_files = []
                 list_projected_name = []
@@ -1530,6 +1530,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                             initial_name = splitext(basename(file_path))[0]
                             desired_name = splitext(file_key)[0]
                             
+                            # manage existing file request
                             if existing_file_option == "replace":
                                 if desired_name in my_bf_existing_files_name:
                                     index_file = my_bf_existing_files_name.index(desired_name)
@@ -1539,8 +1540,6 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                             if existing_file_option == "skip":
                                 if desired_name in my_bf_existing_files_name:
                                     continue
-                                    
-                            # find projected filename on Blackfynn
 
                             # check if initial filename exists on Blackfynn dataset
                             count_done = 0
@@ -1553,7 +1552,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                                 else:
                                     count_done = 1
 
-                            # check if projected filename will exist a previous file scheduled for uploading
+                            # check if projected filename will exist in a previous file scheduled for uploading
                             count_exist_projected = 0
                             if projected_name in list_upload_schedule_projected_names:
                                 count_exist += 1
@@ -1643,7 +1642,6 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
 
         # 5. Upload files, rename, and add to tracking list
         main_initial_bfdataset_size = bf_dataset_size()
-        gevent.sleep(0)
         start_generate = 1
         for item in list_upload_files:
             list_upload = item[0]
@@ -1656,6 +1654,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
             #upload
             main_curate_progress_message = "Uploading files in " + str(relative_path)
             bf_folder.upload(*list_upload)
+
             #rename to desired
             for item in bf_folder.items:
                 projected_name = item.name
@@ -1664,6 +1663,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                     desired_name = list_desired_names[index]
                     if desired_name != projected_name:
                         item.name = desired_name
+                        item.update()
                     if "files" not in tracking_folder:
                         tracking_folder["files"] = {}
                     tracking_folder["files"][desired_name] = {"value": item}
@@ -1674,6 +1674,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                     item = tracking_folder["files"][desired_name]["value"]
                     if item.name != desired_name:
                         item.name = desired_name
+                        item.update()
                     tracking_folder["files"][desired_name] = {"value": item}
          
         if list_upload_metadata_files:        
@@ -1719,9 +1720,9 @@ def main_curate_function(soda_json_structure):
     global bf
     global myds
 
-
+    start_generate = 0
     generate_start_time = time.time()
-    
+
     main_curate_status = ""
     main_curate_progress_message = "Starting..."
     main_total_generate_dataset_size = 1
@@ -1899,13 +1900,10 @@ def main_curate_function_progress():
 
     elapsed_time = time.time() - generate_start_time
     elapsed_time_formatted = time_format(elapsed_time)
+
     if start_generate == 1:
-        
         if main_generate_destination == "bf":
             main_generated_dataset_size = bf_dataset_size() - main_initial_bfdataset_size 
-
-    else: 
-        elapsed_time_formatted = ""
 
     return (main_curate_status, start_generate, main_curate_progress_message, main_total_generate_dataset_size, main_generated_dataset_size, elapsed_time_formatted)
 

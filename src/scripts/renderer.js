@@ -74,13 +74,50 @@ require('dns').resolve('www.google.com', function(err) {
      console.log("Connected to the internet");
      log.info("Connected to the internet")
      //Check new app version
-     checkNewAppVersion()
+     checkNewAppVersion() // changed this function definition
      //Load Default/global blackfynn account if available
      loadDefaultAccount()
   }
 });
 
+const notification = document.getElementById("notification");
+const message = document.getElementById("message");
+const restartButton = document.getElementById("restart-button");
+
+const checkNewAppVersion = () => {
+  ipcRenderer.send("app_version");
+};
+
+ipcRenderer.on("app_version", (event, arg) => {
+  const version = document.getElementById("version");
+  ipcRenderer.removeAllListeners("app_version");
+  version.innerText = "Ver. " + arg.version;
+});
+
+ipcRenderer.on("update_available", () => {
+  ipcRenderer.removeAllListeners("update_available");
+  message.innerText = "A new update is available. Downloading now...";
+  notification.classList.remove("hidden");
+});
+
+ipcRenderer.on("update_downloaded", () => {
+  ipcRenderer.removeAllListeners("update_downloaded");
+  message.innerText =
+    "Update Downloaded. It will be installed on restart. Restart now?";
+  restartButton.classList.remove("hidden");
+  notification.classList.remove("hidden");
+});
+
+const closeNotification = () => {
+  notification.classList.add("hidden");
+};
+
+const restartApp = () => {
+  ipcRenderer.send("restart_app");
+};
+
 // Check lasted app version and warn if newer available //
+/*
 function checkNewAppVersion() {
   const axios = require('axios');
   const url = 'https://github.com/bvhpatel/SODA';
@@ -102,7 +139,7 @@ function checkNewAppVersion() {
       console.error(error)
     })
 }
-
+*/
 //////////////////////////////////
 // Get html elements from UI
 //////////////////////////////////
@@ -6343,10 +6380,15 @@ function initiate_generate() {
             console.log(main_curate_progress_message)
             console.log('Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')')
             console.log("Elapsed time: " + elapsed_time_formatted)
+            console.log(main_generated_dataset_size)
+            console.log(main_total_generate_dataset_size)
           }
         } else {
-          document.getElementById("para-new-curate-progress-bar-status").innerHTML = main_curate_progress_message + "<br>" + "Elaspsed time: " + elapsed_time_formatted + "<br>"
+          document.getElementById("para-new-curate-progress-bar-status").innerHTML = main_curate_progress_message + "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>"
           console.log(main_curate_progress_message)
+          console.log(elapsed_time_formatted)
+          console.log(main_generated_dataset_size)
+          console.log(main_total_generate_dataset_size)
         }
       }
     })
