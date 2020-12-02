@@ -82,6 +82,8 @@ handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
 
+bf_accepted_file_format = []
+
 ### Internal functions
 def TZLOCAL():
     return datetime.now(timezone.utc).astimezone().tzinfo
@@ -1222,7 +1224,6 @@ def add_local_manifest_files(manifest_files_structure, datasetpath):
         raise e   
 
 def bf_add_manifest_files(manifest_files_structure, ds):
-    # IN PROGRESS
     try:
         for key in manifest_files_structure.keys():  
             manifestpath = manifest_files_structure[key]
@@ -1665,6 +1666,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                     desired_name = list_desired_names[index]
                     if desired_name != projected_name:
                         item.name = desired_name
+                        item.update()
                     if "files" not in tracking_folder:
                         tracking_folder["files"] = {}
                     tracking_folder["files"][desired_name] = {"value": item}
@@ -1675,6 +1677,7 @@ def bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, d
                     item = tracking_folder["files"][desired_name]["value"]
                     if item.name != desired_name:
                         item.name = desired_name
+                        item.update()
                     tracking_folder["files"][desired_name] = {"value": item}
          
         if list_upload_metadata_files:        
