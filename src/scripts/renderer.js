@@ -2801,7 +2801,8 @@ curateBFaccountList.addEventListener('change', function() {
   if (curateSelectedbfaccount === 'Select') {
     curateBFAccountLoadStatus.innerHTML = "";
     curateBFAccountLoad.style.display = 'none';
-    document.getElementById('div-bf-account-btns').style.display = "none"
+    document.getElementById('div-bf-account-btns').style.display = "none";
+    $("#btn-bf-account").hide()
   } else{
     var myitemselect = curateSelectedbfaccount
     var option = document.createElement("option")
@@ -2812,6 +2813,7 @@ curateBFaccountList.addEventListener('change', function() {
     curateBFAccountLoadStatus.innerHTML = ""
     updateDatasetCurate(curateDatasetDropdown, curateBFaccountList);
     document.getElementById('div-bf-account-btns').style.display = "flex";
+    $("#btn-bf-account").show()
   }
   curateDatasetDropdown.disabled = false;
 })
@@ -2881,7 +2883,8 @@ function updateAllBfAccountList(dropdown){
 
     if (res[0] === "Select" && res.length === 1) {
       curateBFAccountLoadStatus.innerHTML = "No existing accounts to load. Please add a new account!";
-      document.getElementById('div-bf-account-btns').style.display = "none"
+      document.getElementById('div-bf-account-btns').style.display = "none";
+      $("#btn-bf-account").hide()
     }
     // refreshAllBfDatasetLists()
     refreshBfUsersList()
@@ -2898,7 +2901,8 @@ function updateAllBfAccountList(dropdown){
           curateShowAccountDetails(curateBFaccountList)
           curateBFAccountLoad.style.display = 'block'
           updateDatasetCurate(curateDatasetDropdown, curateBFaccountList)
-          document.getElementById('div-bf-account-btns').style.display = "flex"
+          document.getElementById('div-bf-account-btns').style.display = "flex";
+          $("#btn-bf-account").show()
         }
       }
     })
@@ -3088,7 +3092,8 @@ bfRenameDatasetBtn.addEventListener('click', () => {
         bfRenameDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
         bfRenameDatasetBtn.disabled = false
       } else {
-        renameDatasetInList(currentDatasetName, renamedDatasetName)
+        renameDatasetInList(currentDatasetName, renamedDatasetName);
+        var numDatasets = refreshDatasetList()
         refreshDatasetListChooseOption("#bfdatasetlist_renamedataset", renamedDatasetName)
         refreshDatasetListChooseOption("#curatebfdatasetlist", "Select dataset")
         syncDatasetDropdownOption(bfDatasetListRenameDataset)
