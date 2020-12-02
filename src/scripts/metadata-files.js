@@ -31,13 +31,9 @@ $(".button-individual-metadata.confirm").click(function() {
   var metadataFileStatus = $($(this).parents()[1]).find('.para-metadata-file-status');
   if (!(errorMetadataFileMessages.includes($(metadataFileStatus).text()))) {
     $(metadataFile).addClass('done');
-    $($(this).parents()[1]).find('.div-metadata-confirm').prop("display", "flex");
-    $($(this).parents()[1]).find('.div-metadata-go-back').prop("display", "none");
   } else {
     $(metadataFile).removeClass('done');
     $(metadataFileStatus).text("");
-    $($(this).parents()[0]).css("display", "none");
-    $($(this).parents()[1]).find('.div-metadata-go-back').prop("display", "flex");
   }
 })
 
