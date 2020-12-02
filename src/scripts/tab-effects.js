@@ -389,7 +389,7 @@ function hidePrevDivs(currentDiv, category) {
       $("#"+currentDiv).nextAll().removeClass("prev");
       $("#"+currentDiv).nextAll().removeClass("test2");
 
-      /// remove all checkmarks and previous data input
+      // /// remove all checkmarks and previous data input
       $("#"+currentDiv).nextAll().find('.option-card.radio-button').removeClass('checked');
       $("#"+currentDiv).nextAll().find('.option-card.radio-button').css('pointer-events', 'auto');
       $("#"+currentDiv).nextAll().find('.option-card.radio-button').removeClass('non-selected');
@@ -467,7 +467,7 @@ function updateJSONStructureMetadataFiles() {
   var samplesFilePath = document.getElementById('para-samples-file-path').innerHTML;
   var readmeFilePath = document.getElementById('para-readme-file-path').innerHTML;
   var changesFilePath = document.getElementById('para-changes-file-path').innerHTML;
-  var invalidOptionsList = ["Please drag a file!", "Please only import SPARC metadata files!", ""];
+  var invalidOptionsList = ["Please drag a file!", "Please only import SPARC metadata files!", "", "Your SPARC metadata file must be in one of the formats listed above!", "Your SPARC metadata file must be named and formatted exactly as listed above!"];
 
   populateMetadataObject(invalidOptionsList, submissionFilePath, sodaJSONObj);
   populateMetadataObject(invalidOptionsList, dsDescriptionFilePath, sodaJSONObj);

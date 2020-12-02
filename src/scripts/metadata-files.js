@@ -1,6 +1,13 @@
 
 var metadataFile = '';
 
+$(".button-individual-metadata.remove").click(function() {
+  var metadataFileStatus = $($(this).parents()[1]).find('.para-metadata-file-status');
+  $(metadataFileStatus).text("");
+  $($(this).parents()[1]).find('.div-metadata-confirm').css("display", "none");
+  $($(this).parents()[1]).find('.div-metadata-go-back').css("display", "flex");
+})
+
 $(".metadata-button").click(function() {
   metadataFile = $(this);
   $(".div-organize-generate-dataset.metadata").addClass('hide');
@@ -10,7 +17,7 @@ $(".metadata-button").click(function() {
   document.getElementById("prevBtn").style.display = "none";
 })
 
-$(".button-individual-metadata").click(function() {
+$(".button-individual-metadata.confirm").click(function() {
   $($(this).parents()[1]).removeClass('show');
   $(".div-organize-generate-dataset.metadata").removeClass('hide');
   document.getElementById("nextBtn").style.display = "inline";
@@ -23,18 +30,36 @@ $(".button-individual-metadata").click(function() {
   var errorMetadataFileMessages = ["", "Please only drag and drop a file!", "Your SPARC metadata file must be in one of the formats listed above!", "Your SPARC metadata file must be named and formatted exactly as listed above!"]
   var metadataFileStatus = $($(this).parents()[1]).find('.para-metadata-file-status');
   if (!(errorMetadataFileMessages.includes($(metadataFileStatus).text()))) {
-    $(metadataFile).addClass('done')
+    $(metadataFile).addClass('done');
+    $($(this).parents()[1]).find('.div-metadata-confirm').prop("display", "flex");
+    $($(this).parents()[1]).find('.div-metadata-go-back').prop("display", "none");
   } else {
     $(metadataFile).removeClass('done');
     $(metadataFileStatus).text("");
+    $($(this).parents()[0]).css("display", "none");
+    $($(this).parents()[1]).find('.div-metadata-go-back').prop("display", "flex");
   }
 })
 
-$(".button-individual-metadata.cancel").click(function() {
+$(".button-individual-metadata.go-back").click(function() {
+  var metadataFileStatus = $($(this).parents()[1]).find('.para-metadata-file-status');
+  $(metadataFileStatus).text("");
   $($(this).parents()[1]).removeClass('show');
   $(".div-organize-generate-dataset.metadata").removeClass('hide');
   document.getElementById("nextBtn").style.display = "inline";
   document.getElementById("prevBtn").style.display = "inline";
+  var errorMetadataFileMessages = ["", "Please only drag and drop a file!", "Your SPARC metadata file must be in one of the formats listed above!", "Your SPARC metadata file must be named and formatted exactly as listed above!"]
+  var metadataFileStatus = $($(this).parents()[1]).find('.para-metadata-file-status');
+  if (!(errorMetadataFileMessages.includes($(metadataFileStatus).text()))) {
+    $(metadataFile).addClass('done');
+    $($(this).parents()[0]).find('.div-metadata-confirm').prop("display", "flex");
+    $($(this).parents()[0]).find('.div-metadata-go-back').prop("display", "none");
+  } else {
+    $(metadataFile).removeClass('done');
+    $(metadataFileStatus).text("");
+    $($(this).parents()[1]).find('.div-metadata-confirm').css("display", "none");
+    $($(this).parents()[0]).css("display", "flex");
+  }
 })
 
 function dropHandler(ev, paraElement, metadataFile) {
@@ -50,7 +75,9 @@ function dropHandler(ev, paraElement, metadataFile) {
       var file = ev.dataTransfer.items[0].getAsFile();
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf('.'))
       if (metadataWithoutExtension === metadataFile) {
-        document.getElementById(paraElement).innerHTML = file.path
+        document.getElementById(paraElement).innerHTML = file.path;
+        $($("#"+paraElement).parents()[0]).find('.div-metadata-confirm').css("display", "flex");
+        $($("#"+paraElement).parents()[0]).find('.div-metadata-go-back').css("display", "none");
       } else {
         document.getElementById(paraElement).innerHTML = "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>"
       }
