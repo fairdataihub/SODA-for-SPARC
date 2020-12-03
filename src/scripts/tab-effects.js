@@ -335,10 +335,18 @@ function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
 
   hidePrevDivs(currentDiv, category);
 
-  target.className = target.className + ' show';
-  $("#"+ev.getAttribute('data-next')+" button").show();
-  // append to parentDiv
-  document.getElementById(parentDiv).appendChild(target);
+  if (!(target.classList.contains('show'))) {
+    target.classList.add('show');
+  }
+
+  if (!(ev.getAttribute('data-next') === "Question-generate-dataset-existing-files-options"
+      && target.classList.contains('prev'))) {
+      // append to parentDiv
+      document.getElementById(parentDiv).appendChild(target);
+  }
+  if (ev.getAttribute('data-next') === "Question-generate-dataset-BF-account") {
+    $("#"+ev.getAttribute('data-next')+" button").show();
+  }
 
   setTimeout(()=> target.classList.add("test2"), 100);
 
@@ -386,28 +394,30 @@ function hidePrevDivs(currentDiv, category) {
   // hide all other div siblings
   for (var i = 0; i < individualQuestions.length; i++) {
     if (currentDiv === individualQuestions[i].id) {
-      $("#"+currentDiv).nextAll().removeClass("show");
-      $("#"+currentDiv).nextAll().removeClass("prev");
-      $("#"+currentDiv).nextAll().removeClass("test2");
+      if (!(currentDiv === 'Question-generate-dataset-existing-folders-options')) {
+        $("#"+currentDiv).nextAll().removeClass("show");
+        $("#"+currentDiv).nextAll().removeClass("prev");
+        $("#"+currentDiv).nextAll().removeClass("test2");
 
-      // /// remove all checkmarks and previous data input
-      $("#"+currentDiv).nextAll().find('.option-card.radio-button').removeClass('checked');
-      $("#"+currentDiv).nextAll().find('.option-card.radio-button').css('pointer-events', 'auto');
-      $("#"+currentDiv).nextAll().find('.option-card.radio-button').removeClass('non-selected');
-      $("#"+currentDiv).nextAll().find('.folder-input-check').prop('checked', false);
-      $("#"+currentDiv).nextAll().find('#curatebfdatasetlist').prop("selectedIndex", 0);
+        // /// remove all checkmarks and previous data input
+        $("#"+currentDiv).nextAll().find('.option-card.radio-button').removeClass('checked');
+        $("#"+currentDiv).nextAll().find('.option-card.radio-button').css('pointer-events', 'auto');
+        $("#"+currentDiv).nextAll().find('.option-card.radio-button').removeClass('non-selected');
+        $("#"+currentDiv).nextAll().find('.folder-input-check').prop('checked', false);
+        $("#"+currentDiv).nextAll().find('#curatebfdatasetlist').prop("selectedIndex", 0);
 
-      var childElements2 = $("#"+currentDiv).nextAll().find('.form-control');
+        var childElements2 = $("#"+currentDiv).nextAll().find('.form-control');
 
-      for (var child of childElements2) {
-         if (child.id === "inputNewNameDataset")  {
-          document.getElementById(child.id).value = "";
-          document.getElementById(child.id).placeholder = "Type here";
-        } else {
-          document.getElementById(child.id).value = "";
-          document.getElementById(child.id).placeholder = "Browse here";
-        }
-      };
+        for (var child of childElements2) {
+          if (child.id === "inputNewNameDataset")  {
+            document.getElementById(child.id).value = "";
+            document.getElementById(child.id).placeholder = "Type here";
+          } else {
+            document.getElementById(child.id).value = "";
+            document.getElementById(child.id).placeholder = "Browse here";
+          }
+        };
+      }
       break
     }
   }

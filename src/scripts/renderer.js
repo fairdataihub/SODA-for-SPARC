@@ -5520,7 +5520,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
       console.error(error);
     } else {
       updateBfAccountList();
-      loadAllBFAccounts()
+      loadAllBFAccounts();
       $("#bootbox-key-name").val("");
       $("#bootbox-api-key").val("");
       $("#bootbox-api-secret").val("");
