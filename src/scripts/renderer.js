@@ -6248,15 +6248,6 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
   }
 })
 
-// remove all empty keys from JSON object before passing it to the backend
-function finalScanningSODAJsonObject() {
-
-  deleteEmptyKeysFromObject(sodaJSONObj["bf-dataset-selected"]);
-  deleteEmptyKeysFromObject(sodaJSONObj["bf-account-selected"]);
-  deleteEmptyKeysFromObject(sodaJSONObj["generate-dataset"]);
-  deleteEmptyKeysFromObject(sodaJSONObj);
-}
-
 document.getElementById("button-generate-comeback").addEventListener('click', function() {
   document.getElementById('generate-dataset-progress-tab').style.display = "none";
   document.getElementById('div-vertical-progress-bar').style.display = "flex";
@@ -6278,8 +6269,6 @@ document.getElementById('button-generate').addEventListener('click', function() 
 
   // updateJSON structure after Generate dataset tab
   updateJSONStructureGenerate();
-  // scanning JSON object for any empty key-values before passing it to Python
-  finalScanningSODAJsonObject();
 
   //  from here you can modify
   document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait..."

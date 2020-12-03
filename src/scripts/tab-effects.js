@@ -68,6 +68,17 @@ function deleteEmptyKeysFromObject(object) {
   }
 }
 
+// function deleteEmptyKeysFromObjectRecursive(object) {
+//   for (var key in object) {
+//     if (object[key] === null || object[key] === undefined || object[key] === "" || JSON.stringify(object[key]) === "{}") {
+//       delete object[key];
+//     } else {
+//       // object = object[key]
+//       deleteEmptyKeysFromObject(object[key])
+//     }
+//   }
+// }
+
 function checkHighLevelFoldersInput() {
   var optionCards = document.getElementsByClassName("option-card high-level-folders");
   var checked = false;
