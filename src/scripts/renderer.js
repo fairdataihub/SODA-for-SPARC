@@ -2820,6 +2820,9 @@ curateBFaccountList.addEventListener('change', function() {
   curateBFAccountLoadStatus.innerHTML = "Loading account details...";
   curateDatasetDropdown.disabled = true;
   curateBFAccountLoad.style.display = 'block';
+  document.getElementById('div-bf-account-btns').style.display = "none";
+  $("#div-bf-account-btns button").hide()
+
   // remove all datasets from current list
   removeOptions(curateDatasetDropdown);
   addOption(curateDatasetDropdown, "Loading", "Loading");
@@ -2838,8 +2841,8 @@ curateBFaccountList.addEventListener('change', function() {
   if (curateSelectedbfaccount === 'Select') {
     curateBFAccountLoadStatus.innerHTML = "";
     curateBFAccountLoad.style.display = 'none';
-    document.getElementById('div-bf-account-btns').style.display = "none";
-    $("#btn-bf-account").hide()
+    // document.getElementById('div-bf-account-btns').style.display = "none";
+    // $("#div-bf-account-btns button").hide()
   } else{
     var myitemselect = curateSelectedbfaccount
     var option = document.createElement("option")
@@ -2850,7 +2853,7 @@ curateBFaccountList.addEventListener('change', function() {
     curateBFAccountLoadStatus.innerHTML = ""
     updateDatasetCurate(curateDatasetDropdown, curateBFaccountList);
     document.getElementById('div-bf-account-btns').style.display = "flex";
-    $("#btn-bf-account").show()
+    $("#div-bf-account-btns button").show()
   }
   curateDatasetDropdown.disabled = false;
 })
@@ -2859,7 +2862,8 @@ function loadAllBFAccounts() {
   bfSelectAccountStatus.innerHTML = "Loading existing accounts..."
   bfAccountLoadProgress.style.display = 'block'
   bfAccountLoadProgressCurate.style.display = 'block';
-  document.getElementById('bf-bf-account-btns').style.display = "none";
+  document.getElementById('div-bf-account-btns').style.display = "none";
+  $("#div-bf-account-btns button").hide()
   document.getElementById("para-filter-datasets-status").innerHTML = ""
   updateAllBfAccountList(curateBFaccountList)
 }
@@ -2922,7 +2926,7 @@ function updateAllBfAccountList(dropdown){
     if (res[0] === "Select" && res.length === 1) {
       curateBFAccountLoadStatus.innerHTML = "No existing accounts to load. Please add a new account!";
       document.getElementById('div-bf-account-btns').style.display = "none";
-      $("#btn-bf-account").hide()
+      $("#div-bf-account-btns buttons").hide()
     }
     // refreshAllBfDatasetLists()
     refreshBfUsersList()
@@ -2940,7 +2944,7 @@ function updateAllBfAccountList(dropdown){
           curateBFAccountLoad.style.display = 'block'
           updateDatasetCurate(curateDatasetDropdown, curateBFaccountList)
           document.getElementById('div-bf-account-btns').style.display = "flex";
-          $("#btn-bf-account").show()
+          $("#div-bf-account-btns buttons").show()
         }
       }
     })
