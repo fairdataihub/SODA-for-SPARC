@@ -7,6 +7,8 @@
   "scripts": {
     "start": "electron .",
     "build-win": "electron-builder build --win --publish never",
+    "build-mac": "electron-builder build --mac --publish never",
+    "build-linux": "electron-builder build --linux --publish never",
     "deploy-win": "electron-builder build --win --publish always"
   },
   "repository": {
@@ -20,17 +22,22 @@
       "**/*"
     ],
     "win": {
-      "icon": "assets/app-icon/png/icon.ico"
+      "icon": "assets/app-icon/win/soda_icon256.ico"
     },
     "mac": {
-      "category": "your.app.category.type"
+      "icon": "assets/app-icon/mac/soda_icons.icns",
+      "darkModeSupport": false
+    },
+    "linux": {
+      "target": "deb",
+      "icon": "assets/app-icon/png/soda_icon.png"
     },
     "nsis": {
       "createDesktopShortcut": "always",
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon": "assets/app-icon/png/icon.ico"
+      "installerIcon": "assets/app-icon/win/soda_icon256.ico"
     },
     "publish": {
       "provider": "github",
