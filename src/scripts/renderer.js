@@ -2858,7 +2858,8 @@ curateBFaccountList.addEventListener('change', function() {
 function loadAllBFAccounts() {
   bfSelectAccountStatus.innerHTML = "Loading existing accounts..."
   bfAccountLoadProgress.style.display = 'block'
-  bfAccountLoadProgressCurate.style.display = 'block'
+  bfAccountLoadProgressCurate.style.display = 'block';
+  document.getElementById('bf-bf-account-btns').style.display = "none";
   document.getElementById("para-filter-datasets-status").innerHTML = ""
   updateAllBfAccountList(curateBFaccountList)
 }
@@ -5520,7 +5521,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
       console.error(error);
     } else {
       updateBfAccountList();
-      loadAllBFAccounts();
+      // loadAllBFAccounts();
       $("#bootbox-key-name").val("");
       $("#bootbox-api-key").val("");
       $("#bootbox-api-secret").val("");
