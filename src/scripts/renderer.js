@@ -6294,12 +6294,12 @@ document.getElementById('button-generate').addEventListener('click', function() 
         error_folders = res[1]
         
         if (error_files.length>0){
-          var error_message_files = backfend_to_frontend_warning_message(error_files)
+          var error_message_files = backend_to_frontend_warning_message(error_files)
           message += "\n" + error_message_files
         }
 
         if (error_folders.length>0){
-          var error_message_folders = backfend_to_frontend_warning_message(error_folders)
+          var error_message_folders = backend_to_frontend_warning_message(error_folders)
           message += "\n" + error_message_folders
         }
 
@@ -6345,9 +6345,31 @@ function initiate_generate() {
         generateProgressBar.value = 0;
         log.error(error)
         console.error(error)
+        client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, result) => {
+            if (error) {
+              log.error(error)
+              console.log(error)
+              var emessage = error
+            } else {
+              datasetList = []
+              datasetList = result
+              refreshDatasetList()
+            }
+        })
       } else {
         log.info('Completed curate function')
         console.log('Completed curate function')
+        client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, result) => {
+            if (error) {
+              log.error(error)
+              console.log(error)
+              var emessage = error
+            } else {
+              datasetList = []
+              datasetList = result
+              refreshDatasetList()
+            }
+        })
       }
       document.getElementById('div-generate-comeback').style.display = "flex"
   })
@@ -6421,7 +6443,7 @@ function initiate_generate() {
 
 }
 
-function backfend_to_frontend_warning_message(error_array) {
+function backend_to_frontend_warning_message(error_array) {
   var warning_message = ""
   for (var i = 0; i < error_array.length;i++){
     item = error_array[i]
