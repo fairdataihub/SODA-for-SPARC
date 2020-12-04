@@ -7,8 +7,10 @@ const log  = require("electron-log");
 require('v8-compile-cache')
 const {ipcMain} = require('electron')
 const { autoUpdater } = require("electron-updater");
+const { trackEvent } = require('./scripts/analytics');
 
 log.transports.console.level = false
+global.trackEvent = trackEvent;
 /*************************************************************
  * Python Process
  *************************************************************/
@@ -90,7 +92,8 @@ function initialize () {
       //title: app.getName(),
       icon: __dirname + '/assets/menu-icon/soda_icon.png',
       webPreferences: {
-        nodeIntegration: true
+        nodeIntegration: true,
+        enableRemoteModule: true
       }
     }
 
@@ -101,7 +104,7 @@ function initialize () {
     mainWindow = new BrowserWindow(windowOptions)
     mainWindow.loadURL(path.join('file://', __dirname, '/index.html'))
 
-    //mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     mainWindow.webContents.once('dom-ready', () => {
       autoUpdater.checkForUpdatesAndNotify();
@@ -144,6 +147,7 @@ function initialize () {
 
   app.on('ready', () => {
     createWindow()
+    trackEvent('App Creation', 'App opened');
   })
 
   app.on('window-all-closed', () => {
@@ -207,6 +211,17 @@ ipcMain.on('resize-window', (event, dir) => {
   }
   mainWindow.setSize(x, y)
 })
+
+ipcMain.on("track-event", (event, category, action, label, value) => {
+  if (label == undefined || value == undefined)
+  {
+    trackEvent(category, action);
+  }
+  else
+  {
+    trackEvent(category, action, label, value);
+  }
+});
 
 ipcMain.on("app_version", (event) => {
   event.sender.send("app_version", { version: app.getVersion() });

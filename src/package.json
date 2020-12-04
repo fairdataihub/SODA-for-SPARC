@@ -98,9 +98,12 @@
     "html2canvas": "^1.0.0-rc.5",
     "image-data-uri": "^2.0.1",
     "jquery": "^3.5.1",
+    "node-localstorage": "^2.1.6",
     "pdfkit": "^0.11.0",
     "remove-markdown": "^0.3.0",
     "spur-template": "^1.1.0",
+    "universal-analytics": "^0.4.23",
+    "uuid": "^8.3.1",
     "v8-compile-cache": "^2.1.1",
     "zerorpc-rotkehlchen": "^0.1.0"
   },
