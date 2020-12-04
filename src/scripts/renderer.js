@@ -6159,42 +6159,60 @@ function manageDesc(ev) {
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
   //// load existing metadata/description
   loadDetailsContextMenu(fileName, myPath, 'textarea-file-description', 'textarea-file-metadata', 'para-local-path-file')
+  $("#button-confirm-display-details-file").html('Confirm');
   showDetailsFile()
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
   fileNameForEdit = fileName
 }
 
+function updateFileDetails(ev) {
+  var fileName = fileNameForEdit;
+  var filtered = getGlobalPath(organizeDSglobalPath);
+  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
+  triggerManageDetailsPrompts(ev, fileName, myPath, 'textarea-file-description', 'textarea-file-metadata')
+  /// list Items again with new updated JSON structure
+  listItems(myPath, '#items')
+  getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj);
+  // find checkboxes here and uncheck them
+  for (var ele of $($(ev).siblings().find('input:checkbox'))) {
+    document.getElementById(ele.id).checked = false
+  }
+  // close the display
+  showDetailsFile();
+}
+
 function addDetailsForFile(ev) {
-  /// first confirm with users
-  bootbox.confirm({
-     title: "Adding additional metadata for files",
-     message: "If you check any checkboxes above, metadata will be modified for all files in the folder. Would you like to continue?",
-     centerVertical: true,
-     button: {
-       ok: {
-         label: 'Yes',
-         className: 'btn-primary'
-       }
-     },
-     callback: function(r) {
-       if (r!==null) {
-         var fileName = fileNameForEdit;
-         var filtered = getGlobalPath(organizeDSglobalPath);
-         var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
-         triggerManageDetailsPrompts(ev, fileName, myPath, 'textarea-file-description', 'textarea-file-metadata')
-         /// list Items again with new updated JSON structure
-         listItems(myPath, '#items')
-         getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj);
-         // find checkboxes here and uncheck them
-         for (var ele of $($(ev).siblings().find('input:checkbox'))) {
-           document.getElementById(ele.id).checked = false
-         }
-         // close the display
-         showDetailsFile();
-       }
-     }
-   })
+  var checked = false;
+  for (var ele of $($(ev).siblings()).find('input:checkbox')) {
+    if ($(ele).prop('checked')) {
+      checked = true
+      break
+    }
+  }
+  /// if at least 1 checkbox is checked, then confirm with users
+  if (checked) {
+    bootbox.confirm({
+      title: "Adding additional metadata for files",
+      message: "If you check any checkboxes above, metadata will be modified for all files in the folder. Would you like to continue?",
+      centerVertical: true,
+      button: {
+        ok: {
+          label: 'Yes',
+          className: 'btn-primary'
+        }
+      },
+      callback: function(r) {
+        if (r!==null && r === true) {
+          updateFileDetails(ev);
+          $("#button-confirm-display-details-file").html('Added')
+        }
+      }
+    })
+  } else {
+      updateFileDetails(ev)
+      $("#button-confirm-display-details-file").html('Added')
+  }
 }
 
 
