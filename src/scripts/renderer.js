@@ -2805,21 +2805,7 @@ const curateDatasetDropdown = document.getElementById('curatebfdatasetlist');
 
 loadAllBFAccounts()
 
-curateDatasetDropdown.addEventListener('change', function() {
-  var curateSelectedbfdataset = curateDatasetDropdown.options[curateDatasetDropdown.selectedIndex].text;
-  if (curateSelectedbfdataset === 'Select dataset') {
-    hideNextDivs("Question-generate-dataset-BF-dataset");
-  } else{
-    if (!($("#Question-generate-dataset-BF-dataset").hasClass('prev'))) {
-      document.getElementById('button-confirm-bf-dataset').click();
-    }
-  }
-})
-
-curateBFaccountList.addEventListener('change', function() {
-  curateBFAccountLoadStatus.innerHTML = "Loading account details...";
-  curateDatasetDropdown.disabled = true;
-  curateBFAccountLoad.style.display = 'block';
+function hideDivsOnBFAccountChange() {
   document.getElementById('div-bf-account-btns').style.display = "none";
   $("#div-bf-account-btns button").hide()
 
@@ -2835,14 +2821,31 @@ curateBFaccountList.addEventListener('change', function() {
   $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('test2');
   $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('prev');
   $($('#Question-generate-dataset-BF-account').nextAll()).css('pointer-events', 'auto');
+}
+
+curateDatasetDropdown.addEventListener('change', function() {
+  var curateSelectedbfdataset = curateDatasetDropdown.options[curateDatasetDropdown.selectedIndex].text;
+  if (curateSelectedbfdataset === 'Select dataset') {
+    hideNextDivs("Question-generate-dataset-BF-dataset");
+  } else{
+    if (!($("#Question-generate-dataset-BF-dataset").hasClass('prev'))) {
+      document.getElementById('button-confirm-bf-dataset').click();
+    }
+  }
+})
+
+curateBFaccountList.addEventListener('change', function() {
+  curateBFAccountLoadStatus.innerHTML = "Loading account details...";
+  curateDatasetDropdown.disabled = true;
+  curateBFAccountLoad.style.display = 'block';
+
+  hideDivsOnBFAccountChange();
 
   var curateSelectedbfaccount = curateBFaccountList.options[curateBFaccountList.selectedIndex].text
 
   if (curateSelectedbfaccount === 'Select') {
     curateBFAccountLoadStatus.innerHTML = "";
     curateBFAccountLoad.style.display = 'none';
-    // document.getElementById('div-bf-account-btns').style.display = "none";
-    // $("#div-bf-account-btns button").hide()
   } else{
     var myitemselect = curateSelectedbfaccount
     var option = document.createElement("option")
@@ -2865,7 +2868,7 @@ function loadAllBFAccounts() {
   document.getElementById('div-bf-account-btns').style.display = "none";
   $("#div-bf-account-btns button").hide()
   document.getElementById("para-filter-datasets-status").innerHTML = ""
-  updateAllBfAccountList(curateBFaccountList)
+  updateAllBfAccountList(curateBFaccountList);
 }
 
 function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
@@ -2927,29 +2930,34 @@ function updateAllBfAccountList(dropdown){
       curateBFAccountLoadStatus.innerHTML = "No existing accounts to load. Please add a new account!";
       document.getElementById('div-bf-account-btns').style.display = "none";
       $("#div-bf-account-btns buttons").hide()
+    } else {
+      curateChooseBFAccountByDefault()
     }
     // refreshAllBfDatasetLists()
     refreshBfUsersList()
     refreshBfTeamsList(bfListTeams)
+    }
+  })
+}
 
-    client.invoke("api_bf_default_account_load", (error, result) => {
-      if(error) {
-        log.error(error)
-        console.error(error)
-      } else {
-        if (result.length > 0) {
-          var myitemselect = result[0];
-          $('#bfallaccountlist option[value='+myitemselect+']').attr('selected','selected');
-          curateShowAccountDetails(curateBFaccountList)
-          curateBFAccountLoad.style.display = 'block'
-          updateDatasetCurate(curateDatasetDropdown, curateBFaccountList)
-          document.getElementById('div-bf-account-btns').style.display = "flex";
-          $("#div-bf-account-btns buttons").show()
-        }
+function curateChooseBFAccountByDefault(){
+  client.invoke("api_bf_default_account_load", (error, result) => {
+    if(error) {
+      log.error(error)
+      console.error(error)
+    } else {
+      if (result.length > 0) {
+        var myitemselect = result[0];
+        $('#bfallaccountlist option[value='+myitemselect+']').attr('selected','selected');
+        curateShowAccountDetails(curateBFaccountList)
+        curateBFAccountLoad.style.display = 'block'
+        hideDivsOnBFAccountChange()
+        updateDatasetCurate(curateDatasetDropdown, curateBFaccountList)
+        document.getElementById('div-bf-account-btns').style.display = "flex";
+        $("#div-bf-account-btns buttons").show()
       }
-    })
-  }
-})
+    }
+  })
 }
 
 function curateShowAccountDetails(dropdown){
@@ -3035,6 +3043,10 @@ bfAccountList.addEventListener('change', () => {
     option.value = myitemselect
     bfUploadAccountList.value = selectedbfaccount
     showAccountDetails(bfAccountLoadProgress)
+    // sync BF account select under Prepare dataset -> Step 6
+    // curateBFAccountLoadStatus.innerHTML = ""
+    $('#bfallaccountlist option[value='+myitemselect+']').attr('selected','selected');
+    curateShowAccountDetails(curateBFaccountList)
   }
   refreshBfUsersList()
   refreshBfTeamsList(bfListTeams)
