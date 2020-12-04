@@ -106,7 +106,7 @@ ipcRenderer.on("update_available", () => {
 ipcRenderer.on("update_downloaded", () => {
   ipcRenderer.removeAllListeners("update_downloaded");
   message.innerText =
-    "Update Downloaded. It will be installed on restart. Restart now?";
+    "Update downloaded. It will be installed on the restart of the app. Restart now?";
   restartButton.classList.remove("hidden");
   notification.classList.remove("hidden");
 });
