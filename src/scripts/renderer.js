@@ -5806,9 +5806,7 @@ function addFoldersfunction(folderArray, currentLocation) {
   }
 }
 
-
-
-//// Add files or folders with drag&drop
+//// Step 3. Organize dataset: Add files or folders with drag&drop
 function allowDrop(ev) {
   ev.preventDefault();
 }
@@ -5838,33 +5836,15 @@ function drop(ev) {
         break
       }
     }
-
     /// check for File duplicate
     if (statsObj.isFile()) {
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
-        if (duplicate) {
-          bootbox.alert({
-            message: "Duplicate file name: " + itemName,
-            centerVertical: true
-          })
-          break
-        } else {
-            if (!["dataset_description.xlsx", "submission.xlsx", "samples.xlsx", "subjects.xlsx", "README.txt"].includes(itemName)) {
-              bootbox.alert({
-                message: "Invalid file(s). Only SPARC metadata files are allowed in the high-level dataset folder.<br> <ul><li>dataset_description (.xslx/.csv/.json)</li><li>submission (.xslx/.csv/.json)</li><li>subjects (.xslx/.csv/.json)</li><li>samples (.xslx/.csv/.json)</li><li>CHANGES.txt</li><li>README.txt</li></ul>",
-                centerVertical: true
-              })
-            } else {
-              myPath["files"][itemName] = {"path": itemPath, "description": "","additional-metadata": "", "type": "local", "action":["new"]}
-              var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
-              $(appendString).appendTo(ev.target);
-              listItems(myPath, '#items')
-              getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-              hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-              hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-            }
-        }
+        bootbox.alert({
+          message: "<p>SPARC metadata files can be imported in the next step!</p>",
+          centerVertical: true
+        })
+        break
       } else {
         if (duplicate) {
           bootbox.alert({

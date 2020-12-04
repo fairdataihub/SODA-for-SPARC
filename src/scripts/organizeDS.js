@@ -251,9 +251,9 @@ function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, u
     for (var i=0; i<fileArray.length;i++) {
       var baseName = path.basename(fileArray[i])
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-      if (slashCount === 1 && (!["dataset_description.xlsx", "dataset_description.csv", "dataset_description.json", "submission.xlsx", "submission.json", "submission.csv", "samples.xlsx", "samples.csv", "samples.json", "subjects.xlsx", "subjects.csv", "subjects.json", "CHANGES.txt", "README.txt"].includes(baseName))) {
+      if (slashCount === 1) {
         bootbox.alert({
-          message: "<p>Invalid file(s). Only SPARC metadata files are allowed in the high-level dataset folder.<br> <ul><li>dataset_description (.xslx/.csv/.json)</li><li>submission (.xslx/.csv/.json)</li><li>subjects (.xslx/.csv/.json)</li><li>samples (.xslx/.csv/.json)</li><li>CHANGES.txt</li><li>README.txt</li></ul></p>",
+          message: "<p>SPARC metadata files can be imported in the next step!</p>",
           centerVertical: true
         })
         break
