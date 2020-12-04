@@ -6397,7 +6397,6 @@ function initiate_generate() {
           if (main_curate_progress_message.includes('Success: COMPLETED!')){
             generateProgressBar.value = 100
             document.getElementById("para-new-curate-progress-bar-status").innerHTML = main_curate_status + smileyCan
-            console.log(main_curate_progress_message)
           } else {
             var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100
             generateProgressBar.value = value
@@ -6415,18 +6414,9 @@ function initiate_generate() {
             progressMessage += 'Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')' + "<br>"
             progressMessage += "Elaspsed time: " + elapsed_time_formatted + "<br>"
             document.getElementById("para-new-curate-progress-bar-status").innerHTML = progressMessage
-            console.log(main_curate_progress_message)
-            console.log('Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')')
-            console.log("Elapsed time: " + elapsed_time_formatted)
-            console.log(main_generated_dataset_size)
-            console.log(main_total_generate_dataset_size)
           }
         } else {
           document.getElementById("para-new-curate-progress-bar-status").innerHTML = main_curate_progress_message + "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>"
-          console.log(main_curate_progress_message)
-          console.log(elapsed_time_formatted)
-          console.log(main_generated_dataset_size)
-          console.log(main_total_generate_dataset_size)
         }
       }
     })
@@ -6504,4 +6494,17 @@ ipcRenderer.on('selected-metadataCurate', (event, mypath) => {
       }
     }
   }
+})
+
+
+document.getElementById('button-preview-dataset').addEventListener('click', function() {
+   client.invoke("api_preview_dataset", sodaJSONObj, (error, res) => {
+      if (error) {
+        var emessage = userError(error)
+        log.error(error)
+        console.error(error)
+      } else {
+        console.log(res)
+      }
+  })
 })
