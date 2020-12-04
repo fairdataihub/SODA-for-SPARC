@@ -4555,7 +4555,7 @@ function clearDatasetDropdowns() {
   }
 }
 
-/// populate the dropdowns
+/// populate the dropdowns with refreshed dataset list
 function populateDatasetDropdowns(mylist) {
   clearDatasetDropdowns()
   for (myitem in mylist){
@@ -5512,7 +5512,7 @@ function showDetailsFile() {
   // $(".div-display-details.folders").hide()
 }
 
-var bfAddAccountBootboxMessage = "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='password' /></div></div></form>"
+var bfAddAccountBootboxMessage = "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='text' /></div></div></form>"
 
 function addBFAccountInsideBootbox(myBootboxDialog) {
   var keyname = $("#bootbox-key-name").val();
@@ -6185,6 +6185,7 @@ function addDetailsForFile(ev) {
    })
 }
 
+
 //// Select to choose a local dataset
 // document.getElementById("location-new-dataset").addEventListener("click", function() {
 //   document.getElementById("location-new-dataset").placeholder = "Browse here"
@@ -6209,15 +6210,13 @@ $("#inputNewNameDataset").keyup(function() {
   $('#Question-generate-dataset-generate-div').removeClass("test2");
   $('#Question-generate-dataset-generate-div').removeClass("prev");
   var newName = $("#inputNewNameDataset").val().trim();
-  if (newName === "") {
-    document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
-  } else {
+  if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
-      document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
+      // document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
       document.getElementById('para-new-name-dataset-message').innerHTML = "Error: A Blackfynn dataset name cannot contain any of the following characters: \/:*?'<>."
     } else {
-      document.getElementById('div-confirm-inputNewNameDataset').style.display = "flex";
-      $('#div-confirm-inputNewNameDataset button').show()
+      // document.getElementById('div-confirm-inputNewNameDataset').style.display = "flex";
+      $('#div-confirm-inputNewNameDataset button').click();
       document.getElementById('para-new-name-dataset-message').innerHTML = "";
     }
   }
@@ -6236,15 +6235,15 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
   if (filepath.length > 0) {
     if (filepath != null){
       document.getElementById("input-destination-generate-dataset-locally").placeholder = filepath[0];
-      document.getElementById('div-confirm-destination-locally').style.display = "flex";
-      $("#div-confirm-destination-locally button").show()
+      // document.getElementById('div-confirm-destination-locally').style.display = "flex";
+      $("#div-confirm-destination-locally button").click()
     }
   } else {
       $("#Question-generate-dataset-locally-destination").nextAll().removeClass('show');
       $("#Question-generate-dataset-locally-destination").nextAll().removeClass('test2');
       $("#Question-generate-dataset-locally-destination").nextAll().removeClass('prev');
-      document.getElementById("div-confirm-destination-locally").style.display = "none";
-      $("#div-confirm-destination-locally button").hide()
+      // document.getElementById("div-confirm-destination-locally").style.display = "none";
+      // $("#div-confirm-destination-locally button").hide()
   }
 })
 
