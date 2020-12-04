@@ -91,7 +91,7 @@ const checkNewAppVersion = () => {
 ipcRenderer.on("app_version", (event, arg) => {
   const version = document.getElementById("version");
   ipcRenderer.removeAllListeners("app_version");
-  version.innerText = "Ver. " + arg.version;
+  version.innerText = "v. " + arg.version;
 });
 
 ipcRenderer.on("update_available", () => {
@@ -6292,6 +6292,7 @@ document.getElementById('button-generate').addEventListener('click', function() 
         var message = ""
         error_files = res[0]
         error_folders = res[1]
+        
         if (error_files.length>0){
           var error_message_files = backfend_to_frontend_warning_message(error_files)
           message += "\n" + error_message_files
