@@ -214,8 +214,7 @@ ipcMain.on('resize-window', (event, dir) => {
 
 // Google analytics tracking function
 // To use, category and action is required. Label and value can be left out
-// if not needed. Sample requests from renderer.js is shown below.
-
+// if not needed. Sample requests from renderer.js is shown below: 
 //ipcRenderer.send('track-event', "App Backend", "Python Connection Established");
 //ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
 
