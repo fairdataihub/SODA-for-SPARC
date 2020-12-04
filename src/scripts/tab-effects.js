@@ -298,8 +298,11 @@ function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
   if (ev.getAttribute('data-next') === "Question-generate-dataset-BF-account") {
     $("#"+ev.getAttribute('data-next')+" button").show();
   }
-  // create moving effects when new questions appear
-  setTimeout(()=> target.classList.add("test2"), 100);
+  if (!(ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")) {
+    // create moving effects when new questions appear
+    setTimeout(()=> target.classList.add("test2"), 100);
+  }
+  
   document.getElementById(currentDiv).classList.add("prev");
 
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
