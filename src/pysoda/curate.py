@@ -1028,7 +1028,7 @@ def check_empty_files_folders(soda_json_structure):
             error_message = ["The following folder(s) is/are empty or only contain(s) empty file(s), and will be ignored."]
             error_folders = error_message + [] + error_folders
             
-        return [error_files, error_folders]
+        return [error_files, error_folders, soda_json_structure]
 
     except Exception as e:
         raise e
@@ -1943,3 +1943,77 @@ def main_curate_function_progress():
 
     return (main_curate_status, start_generate, main_curate_progress_message, main_total_generate_dataset_size, main_generated_dataset_size, elapsed_time_formatted)
 
+
+def preview_dataset(soda_json_structure):
+    """
+    Associated with 'Preview' button in the SODA interface
+    Creates a folder for preview and adds mock files based on the files specified in the UI by the user (same name as origin but 0 kb in size)
+    Opens the dialog box to showcase the files / folders added
+
+    Args:
+        soda_json_structure: soda dict with information about all specified files and folders
+    Action:
+        Opens the dialog box at preview_path
+    Returns:
+        preview_path: path of the folder where the preview files are located
+    """
+
+    preview_path = join(userpath, "SODA", "Preview_dataset")
+    
+    # remove empty files and folders from dataset
+    try:
+        check_empty_files_folders(soda_json_structure)
+    except Exception as e:
+        raise e
+
+    # create Preview_dataset folder
+    try:
+        if isdir(preview_path):
+            shutil.rmtree(preview_path, ignore_errors=True)
+        makedirs(preview_path)
+    except Exception as e:
+        raise e
+
+    try:
+
+        if "dataset-structure" in soda_json_structure.keys():
+            # create folder structure
+            def recursive_create_mock_folder_structure(my_folder, my_folderpath):
+                if "folders" in my_folder.keys():
+                    for folder_key, folder in my_folder["folders"].items():
+                        folderpath = join(my_folderpath, folder_key)
+                        if not isdir(folderpath):
+                            mkdir(folderpath)
+                        recursive_create_mock_folder_structure(folder, folderpath)
+            
+                if "files" in my_folder.keys():
+                    for file_key, file in my_folder["files"].items():
+                        if not "deleted" in file["action"]:
+                            open(join(my_folderpath, file_key), 'a').close()
+                            
+            dataset_structure = soda_json_structure["dataset-structure"]
+            folderpath = preview_path
+            recursive_create_mock_folder_structure(dataset_structure, folderpath)
+            
+            if "manifest-files" in soda_json_structure.keys():
+                if "folders" in dataset_structure.keys():
+                    for folder_key, folder in dataset_structure["folders"].items():
+                        manifest_path = join(preview_path, folder_key, "manifest.xlsx")
+                        if not isfile(manifest_path):
+                            open(manifest_path, 'a').close()
+
+        if "metadata-files" in soda_json_structure.keys():
+            for metadata_key in soda_json_structure["metadata-files"].keys():
+                open(join(preview_path, metadata_key), 'a').close()
+
+        if len(listdir(preview_path)) > 0:
+            folder_in_preview = listdir(preview_path)[0]
+            open_file(join(preview_path, folder_in_preview))
+        else:
+            open_file(preview_path)
+
+        
+        return preview_path
+        
+    except Exception as e:
+        raise e

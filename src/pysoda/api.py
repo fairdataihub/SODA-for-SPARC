@@ -13,7 +13,7 @@ from disseminate import bf_get_doi, bf_reserve_doi, bf_get_publishing_status, bf
 
 from curate import curate_dataset_progress, save_file_organization, import_file_organization, \
     curate_dataset, preview_file_organization, delete_preview_file_organization, validate_dataset, create_folder_level_manifest, \
-    check_empty_files_folders, main_curate_function, main_curate_function_progress
+    check_empty_files_folders, main_curate_function, main_curate_function_progress, preview_dataset
 
 from prepare_metadata import save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone
 
@@ -299,6 +299,12 @@ class SodaApi(object):
     def api_main_curate_function_progress(self):
         try:
             return main_curate_function_progress()
+        except Exception as e:
+            raise e
+
+    def api_preview_dataset(self, soda_json_structure):
+        try:
+            return preview_dataset(soda_json_structure)
         except Exception as e:
             raise e
 
