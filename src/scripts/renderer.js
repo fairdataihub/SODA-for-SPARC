@@ -9,7 +9,6 @@ const path = require('path')
 const {ipcRenderer} = require('electron')
 const Editor = require('@toast-ui/editor')
 const remote = require('electron').remote;
-const app = remote.app;
 const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
 const Airtable = require('airtable');
@@ -23,6 +22,8 @@ const removeMd = require('remove-markdown');
 const electron = require('electron')
 const bootbox = require('bootbox')
 
+const app = remote.app;
+
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
@@ -32,9 +33,11 @@ client.invoke("echo", "server ready", (error, res) => {
   if(error || res !== 'server ready') {
     log.error(error)
     console.error(error)
+    ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
   } else {
     console.log("Connected to Python back-end successfully")
     log.info("Connected to Python back-end successfully")
+    ipcRenderer.send('track-event', "App Backend", "Python Connection Established");
   }
 })
 
