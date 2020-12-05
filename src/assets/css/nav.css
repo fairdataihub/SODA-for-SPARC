@@ -41,8 +41,7 @@
 #main-nav {
     min-width: 240px;
     max-width: 240px;
-    background: #000;
-    opacity: 0.9;
+    background: var(--color-sidebar);
     color: #f0f0f0;
     font-family: "Source Sans Pro", sans-serif;
     transition: all 600ms ease;
