@@ -9,7 +9,9 @@
     "build-win": "electron-builder build --win --publish never",
     "build-mac": "electron-builder build --mac --publish never",
     "build-linux": "electron-builder build --linux --publish never",
-    "deploy-win": "electron-builder build --win --publish always"
+    "deploy-win": "electron-builder build --win --publish always",
+    "deploy-mac": "electron-builder build --mac --publish always",
+    "deploy-linux": "electron-builder build --linux --publish always"
   },
   "repository": {
     "type": "git",
@@ -25,11 +27,11 @@
       "icon": "assets/app-icon/win/soda_icon256.ico"
     },
     "mac": {
-      "icon": "assets/app-icon/mac/soda_icons.icns",
+      "icon": "assets/app-icon/mac/soda_icon.icns",
       "darkModeSupport": false
     },
     "linux": {
-      "target": "deb",
+      "target": "AppImage*",
       "icon": "assets/app-icon/png/soda_icon.png"
     },
     "nsis": {
@@ -47,38 +49,6 @@
   "keywords": [],
   "author": "SODA Team",
   "license": "MIT",
-  "config": {
-    "forge": {
-      "make_targets": {
-        "win32": [
-          "squirrel"
-        ],
-        "darwin": [
-          "zip"
-        ],
-        "linux": [
-          "deb",
-          "rpm"
-        ]
-      },
-      "electronPackagerConfig": {
-        "packageManager": "npm"
-      },
-      "electronWinstallerConfig": {
-        "name": "SODA"
-      },
-      "electronInstallerDebian": {},
-      "electronInstallerRedhat": {},
-      "github_repository": {
-        "owner": "",
-        "name": ""
-      },
-      "windowsStoreConfig": {
-        "packageName": "",
-        "name": "SODA"
-      }
-    }
-  },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.14.0",
     "@toast-ui/editor": "^2.2.0",
