@@ -2817,10 +2817,14 @@ function hideDivsOnBFAccountChange() {
   $('#Question-generate-dataset-BF-account').removeClass('prev');
 
   $($('#Question-generate-dataset-BF-account').nextAll().find('.option-card.radio-button')).removeClass('checked');
-  $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('show');
-  $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('test2');
-  $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('prev');
-  $($('#Question-generate-dataset-BF-account').nextAll()).css('pointer-events', 'auto');
+  for (var question of $('#Question-generate-dataset-BF-account').nextAll()) {
+    if (!(["Question-generate-dataset-choose-ds-name", "Question-generate-dataset-locally-destination"].includes(question.id))) {
+      $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('show');
+      $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('test2');
+      $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('prev');
+      $($('#Question-generate-dataset-BF-account').nextAll()).css('pointer-events', 'auto');
+    }
+  }
 }
 
 curateDatasetDropdown.addEventListener('change', function() {
@@ -2835,14 +2839,12 @@ curateDatasetDropdown.addEventListener('change', function() {
 })
 
 curateBFaccountList.addEventListener('change', function() {
+  hideDivsOnBFAccountChange();
   curateBFAccountLoadStatus.innerHTML = "Loading account details...";
   curateDatasetDropdown.disabled = true;
   curateBFAccountLoad.style.display = 'block';
 
-  hideDivsOnBFAccountChange();
-
-  var curateSelectedbfaccount = curateBFaccountList.options[curateBFaccountList.selectedIndex].text
-
+  var curateSelectedbfaccount = curateBFaccountList.options[curateBFaccountList.selectedIndex].text;
   if (curateSelectedbfaccount === 'Select') {
     curateBFAccountLoadStatus.innerHTML = "";
     curateBFAccountLoad.style.display = 'none';
@@ -2856,15 +2858,21 @@ curateBFaccountList.addEventListener('change', function() {
     curateBFAccountLoadStatus.innerHTML = ""
     updateDatasetCurate(curateDatasetDropdown, curateBFaccountList);
     document.getElementById('div-bf-account-btns').style.display = "flex";
-    $("#div-bf-account-btns button").show()
+    $("#div-bf-account-btns button").show();
   }
+  // sync BF account select under Manage dataset
+  // if (bfAccountList.options[bfAccountList.selectedIndex].value !== curateSelectedbfaccount) {
+  //   loadDefaultAccount()
+  //   showAccountDetails(bfAccountList)
+    // document.getElementById('button-check-bf-account-details').click();
+    // setTimeout(function() {
+    //   bfAccountList.value = curateSelectedbfaccount;
+    // }, 5000)
+  // }
   curateDatasetDropdown.disabled = false;
 })
 
 function loadAllBFAccounts() {
-  bfSelectAccountStatus.innerHTML = "Loading existing accounts..."
-  bfAccountLoadProgress.style.display = 'block'
-  bfAccountLoadProgressCurate.style.display = 'block';
   document.getElementById('div-bf-account-btns').style.display = "none";
   $("#div-bf-account-btns button").hide()
   document.getElementById("para-filter-datasets-status").innerHTML = ""
@@ -2952,7 +2960,8 @@ function curateChooseBFAccountByDefault(){
         curateShowAccountDetails(curateBFaccountList)
         curateBFAccountLoad.style.display = 'block'
         hideDivsOnBFAccountChange()
-        updateDatasetCurate(curateDatasetDropdown, curateBFaccountList)
+        updateDatasetCurate(curateDatasetDropdown, curateBFaccountList);
+        loadDefaultAccount();
         document.getElementById('div-bf-account-btns').style.display = "flex";
         $("#div-bf-account-btns buttons").show()
       }
@@ -3037,15 +3046,17 @@ bfAccountList.addEventListener('change', () => {
     bfAccountLoadProgress.style.display = 'none'
     datasetPermissionList.disabled = true
   } else{
+    console.log("manage: bf account changed to: " + selectedbfaccount)
     var myitemselect = selectedbfaccount
     var option = document.createElement("option")
     option.textContent = myitemselect
     option.value = myitemselect
     bfUploadAccountList.value = selectedbfaccount
-    showAccountDetails(bfAccountLoadProgress)
-    // sync BF account select under Prepare dataset -> Step 6
-    // curateBFAccountLoadStatus.innerHTML = ""
-    $('#bfallaccountlist option[value='+myitemselect+']').attr('selected','selected');
+    showAccountDetails(bfAccountLoadProgress);
+  }
+  // sync BF account select under Prepare dataset -> Step 6
+  if (curateBFaccountList.options[curateBFaccountList.selectedIndex].value !== selectedbfaccount) {
+    curateBFaccountList.value = selectedbfaccount;
     curateShowAccountDetails(curateBFaccountList)
   }
   refreshBfUsersList()
@@ -3068,6 +3079,10 @@ bfUploadAccountList.addEventListener('change', () => {
     option.value = myitemselect
     bfAccountList.value = selectedbfaccount
     showAccountDetails(bfAccountLoadProgressCurate)
+    // sync BF account select under Prepare dataset -> Step 6
+    if (curateBFaccountList.options[curateBFaccountList.selectedIndex].value !== selectedbfaccount) {
+      loadAllBFAccounts()
+    }
   }
   // refreshAllBfDatasetLists()
   refreshBfUsersList()
@@ -4703,13 +4718,13 @@ function updateBfAccountList(){
         bfAccountLoadProgressCurate.style.display = 'none'
       }
       datasetPermissionList.disabled = false
-      loadAllBFAccounts()
+      // loadAllBFAccounts()
     }
     if (res[0] === "Select" && res.length === 1) {
       bfSelectAccountStatus.innerHTML = "No existing accounts to switch. Please add a new account!"
       bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
       datasetPermissionList.disabled = true;
-      loadAllBFAccounts()
+      // loadAllBFAccounts()
     }
     bfSelectAccountStatus.innerHTML = ""
     bfAccountLoadProgress.style.display = 'none'
@@ -5826,9 +5841,7 @@ function drop(ev) {
     var itemPath = ev.dataTransfer.files[i].path
     var itemName = ev.dataTransfer.files[i].name
     var duplicate = false
-
     var statsObj = fs.statSync(itemPath)
-
     // check for duplicate or files with the same name
     for (var j=0; j<ev.target.children.length;j++) {
       if (itemName === ev.target.children[j].innerText) {
