@@ -1247,7 +1247,7 @@ def bf_upload_file(item, path):
     item.upload(path)
 
     
-def get_generate_dataset_size(soda_json_structure, manifest_files_structure):
+def get_generate_dataset_size(soda_json_structure):
     """
     Function to get the size of the data to be generated (not existing at the local or Blackfynn destination)
 
@@ -1334,7 +1334,7 @@ def generate_dataset_locally(soda_json_structure, manifest_files_structure):
             return list_copy_files, list_move_files
  
         # 1. Create new folder for dataset or use existing merge with existing or create new dataset?
-        main_curate_progress_message = "Generating folder structure and list of dataset to be moved/copied"
+        main_curate_progress_message = "Generating folder structure and list of files to be included in the dataset"
         dataset_absolute_path = soda_json_structure["generate-dataset"]["path"]
         if_existing = soda_json_structure["generate-dataset"]["if-existing"]
         dataset_name = soda_json_structure["generate-dataset"]["dataset-name"]
@@ -1369,6 +1369,8 @@ def generate_dataset_locally(soda_json_structure, manifest_files_structure):
 
         # 4. Add manifest files in the list
         if "manifest-files" in soda_json_structure.keys():
+            main_curate_progress_message = "Preparing manifest files"
+            manifest_files_structure = create_high_level_manifest_files(soda_json_structure)
             for key in manifest_files_structure.keys():  
                 manifestpath = manifest_files_structure[key]
                 if isfile(manifestpath):
@@ -1877,14 +1879,6 @@ def main_curate_function(soda_json_structure):
         try:
             main_curate_progress_message = "Preparing manifest files"
             manifest_files_structure = create_high_level_manifest_files(soda_json_structure)
-
-            manifest_file_request = soda_json_structure["manifest-files"]
-            if manifest_file_request["destination"] == "local":
-                datasetpath = manifest_file_request["path"]
-                add_local_manifest_files(manifest_files_structure, datasetpath)
-            elif manifest_file_request["destination"] == "bf":
-                bf_add_manifest_files(manifest_files_structure, myds)
-
         except Exception as e:
             main_curate_status = 'Done'
             raise e
@@ -1895,7 +1889,7 @@ def main_curate_function(soda_json_structure):
         try: 
             if soda_json_structure["generate-dataset"]["destination"] == "local":
                 main_generate_destination = soda_json_structure["generate-dataset"]["destination"]
-                datasetpath = generate_dataset_locally(soda_json_structure, manifest_files_structure)
+                generate_dataset_locally(soda_json_structure)
                 # if "manifest-files" in main_keys:
                 #     main_curate_progress_message = "Generating manifest files"
                 #     add_local_manifest_files(manifest_files_structure, datasetpath)
@@ -1906,7 +1900,7 @@ def main_curate_function(soda_json_structure):
                         dataset_name = soda_json_structure["generate-dataset"]["dataset-name"]
                         myds = bf_create_new_dataset(dataset_name, bf)
                     main_generate_destination = soda_json_structure["generate-dataset"]["destination"]
-                    bf_generate_new_dataset(soda_json_structure, manifest_files_structure, bf, myds)
+                    bf_generate_new_dataset(soda_json_structure, bf, myds)
                     # if "manifest-files" in main_keys:
                     #     main_curate_progress_message = "Generating manifest files"
                     #     bf_add_manifest_files(manifest_files_structure, myds)
