@@ -245,41 +245,88 @@ function checkSubArrayBool(parentArray, childArray) {
 //   }, 2000);
 //   })
 
+function showItemsAsListBootbox(arrayOfItems) {
+  var htmlElement = "";
+  for (var element of arrayOfItems) {
+    htmlElement = htmlElement + "<li>" + element + "</li>"
+  }
+  return htmlElement
+}
+
 function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, uiItem, singleUIItem, globalPathValue) {
 
   // check for duplicate or files with the same name
-    for (var i=0; i<fileArray.length;i++) {
-      var baseName = path.basename(fileArray[i])
-      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-      if (slashCount === 1) {
-        bootbox.alert({
-          message: "<p>SPARC metadata files can be imported in the next step!</p>",
-          centerVertical: true
-        })
-        break
-      } else {
-        var duplicate = false;
-        for (var objKey in currentLocation["files"]) {
-          if (baseName === objKey) {
-            duplicate = true
-            break
-          }
-        }
-        if (duplicate) {
-          bootbox.alert({
-            message: 'Duplicate file name: ' + baseName,
-            centerVertical: true
-          })
-        } else {
-          currentLocation["files"][baseName] = {"path": fileArray[i], "type": "local", "description":"", "additional-metadata":"", "action":["new"]}
-          var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+baseName+'</div></div>'
+  var nonAllowedDuplicateFiles = [];
+  var regularFiles = {};
+  var uiFilesWithoutExtension = {};
 
-          $(uiItem).html(appendString)
-          listItems(currentLocation, uiItem)
-          getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue)
-        }
-      }
+  for (var file in currentLocation["files"]) {
+    uiFilesWithoutExtension[path.parse(file).name] = 1
   }
+
+  for (var i=0; i<fileArray.length;i++) {
+    var fileName = fileArray[i];
+    // check if dataset structure level is at high level folder
+    var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+    if (slashCount === 1) {
+      bootbox.alert({
+        message: "<p>SPARC metadata files can be imported in the next step!</p>",
+        centerVertical: true
+      })
+      break
+    } else {
+        if (JSON.stringify(currentLocation["files"]) === "{}") {
+          regularFiles[path.parse(fileName).name] = {"path": fileName, "basename":path.parse(fileName).base}
+        } else {
+            for (var objectKey in currentLocation["files"]) {
+              if (objectKey !== undefined) {
+                var nonAllowedDuplicate = false;
+                if (fileName === currentLocation["files"][objectKey]["path"]) {
+                  nonAllowedDuplicateFiles.push(fileName);
+                  nonAllowedDuplicate = true;
+                  break
+                }
+              }
+            }
+            if (!nonAllowedDuplicate) {
+              var j = 1;
+              var fileBaseName = path.basename(fileName);
+              var originalFileNameWithoutExt = path.parse(fileBaseName).name;
+              var fileNameWithoutExt = originalFileNameWithoutExt;
+              while (fileNameWithoutExt in uiFilesWithoutExtension || fileNameWithoutExt in regularFiles) {
+                fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
+                j++;
+              }
+              regularFiles[fileNameWithoutExt] = {"path": fileName, "basename": fileNameWithoutExt + path.parse(fileName).ext};
+            }
+          }
+      }
+    }
+
+
+    // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
+    // and regular files (append to UI)
+    if (Object.keys(regularFiles).length > 0) {
+      for (var element in regularFiles) {
+        currentLocation["files"][regularFiles[element]["basename"]] = {"path": regularFiles[element]["path"], "type": "local", "description":"", "additional-metadata":"", "action":["new"]}
+        // append "renamed" to "action" key if file is auto-renamed by UI
+        var originalName = path.parse(currentLocation["files"][regularFiles[element]["basename"]]["path"]).name;
+        if (element !== originalName) {
+          currentLocation["files"][regularFiles[element]["basename"]]["action"].push('renamed');
+        }
+        var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+regularFiles[element]["basename"]+'</div></div>'
+        $(uiItem).html(appendString)
+        listItems(currentLocation, uiItem)
+        getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue)
+      }
+    }
+    if (nonAllowedDuplicateFiles.length > 0) {
+      var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles)
+      bootbox.alert({
+        message: 'The following files are already imported into the current location of your dataset: <p><ul>'+listElements+'</ul></p>',
+        centerVertical: true
+      })
+    }
 }
 
 ///// function to load details to show in display once

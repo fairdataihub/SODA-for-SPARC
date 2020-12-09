@@ -567,6 +567,7 @@ function updateJSONStructureDSstructure() {
       {
         delete sodaJSONObj["dataset-structure"]
       }
+  console.log(sodaJSONObj["dataset-structure"])
 }
 
 // Step 4: Metadata files
