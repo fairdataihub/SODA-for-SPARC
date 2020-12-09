@@ -47,7 +47,42 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
   })
 }
 
-///// Option to rename a folder
+// helper function to rename files/folders
+function checkValidRenameInput(event, input, type, oldName, newName, itemElement, myBootboxDialog) {
+  var duplicate = false;
+  // if renaming a file
+  if (type==="files") {
+    newName = input.trim() + path.parse(oldName).ext
+    // check for duplicate or files with the same name
+    for (var i=0;i<itemElement.length;i++) {
+      if (path.parse(newName).name === path.parse(itemElement[i].innerText).name) {
+        duplicate = true
+        break
+      }
+    }
+    if (duplicate) {
+      myBootboxDialog.find(".modal-footer").prepend("<span style='color:red;padding-right:10px;display:inline-block;'>The file name: "+newName+" already exists, please rename to a different name!</span>");
+      newName = "";
+    }
+  //// if renaming a folder
+  } else {
+      newName = input.trim()
+      // check for duplicate folder as shown in the UI
+      for (var i=0;i<itemElement.length;i++) {
+        if (input.trim() === itemElement[i].innerText) {
+          duplicate = true
+          break
+        }
+      }
+      if (duplicate) {
+        myBootboxDialog.find(".modal-footer").prepend("<span style='color:red;padding-right:10px;display:inline-block;'>The folder name: "+input.trim()+" already exists, please rename to a different name!</span>");
+        newName = "";
+      }
+  }
+  return newName
+}
+
+///// Option to rename a folder and files
 function renameFolder(event1, organizeCurrentLocation, itemElement, inputGlobal, uiItem, singleUIItem) {
 
   var promptVar;
@@ -56,7 +91,6 @@ function renameFolder(event1, organizeCurrentLocation, itemElement, inputGlobal,
   var currentName = event1.parentElement.innerText
   var nameWithoutExtension;
   var highLevelFolderBool;
-  var duplicate = false;
 
   if (highLevelFolders.includes(currentName)) {
     highLevelFolderBool = true
@@ -71,9 +105,8 @@ function renameFolder(event1, organizeCurrentLocation, itemElement, inputGlobal,
     promptVar = "folder";
     type = "folders";
   }
-
   if (type==="files") {
-    nameWithoutExtension = currentName.slice(0,currentName.indexOf("."))
+    nameWithoutExtension = path.parse(currentName).name
   } else {
     nameWithoutExtension = currentName
   }
@@ -85,84 +118,48 @@ function renameFolder(event1, organizeCurrentLocation, itemElement, inputGlobal,
     })
   } else {
     // show prompt to enter a new name
-    bootbox.prompt({
+    var myBootboxDialog = bootbox.dialog({
       title: 'Rename '+ promptVar,
-      message: 'Please enter a new name:',
+      message: 'Please enter a new name: <p><input type="text" id="input-new-name-renamed" class="form-control" value='+nameWithoutExtension+'></input></p>',
       buttons: {
         cancel: {
               label: '<i class="fa fa-times"></i> Cancel'
           },
           confirm: {
               label: '<i class="fa fa-check"></i> Save',
-              className: 'btn-success'
+              className: 'btn-success',
+              callback: function() {
+                var returnedName = checkValidRenameInput(event1, $("#input-new-name-renamed").val().trim(), type, currentName, newName, itemElement, myBootboxDialog);
+                if (returnedName !== "") {
+                  myBootboxDialog.modal('hide')
+                  bootbox.alert({
+                    message: "Successfully renamed!",
+                    centerVertical: true
+                  });
+
+                  /// assign new name to folder or file in the UI
+                  event1.parentElement.parentElement.innerText = returnedName
+                  /// get location of current file or folder in JSON obj
+                  var filtered = getGlobalPath(organizeCurrentLocation)
+                  var myPath = getRecursivePath(filtered.slice(1), inputGlobal)
+                  /// update jsonObjGlobal with the new name
+                  storedValue = myPath[type][currentName]
+                  delete myPath[type][currentName];
+                  myPath[type][returnedName] = storedValue;
+                  if ("action" in myPath[type][returnedName]) {
+                    myPath[type][returnedName]["action"].push("renamed")
+                  } else {
+                    myPath[type][returnedName]["action"] = ["new", "renamed"]
+                  }
+                  /// list items again with updated JSON obj
+                  listItems(myPath, uiItem)
+                  getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal)
+                }
+                return false
+              }
           }
       },
-      value: nameWithoutExtension,
-      centerVertical: true,
-      callback: function (r) {
-        if(r!==null){
-          // if renaming a file
-          if (type==="files") {
-            newName = r.trim() + currentName.slice(currentName.indexOf("."))
-
-            // check for duplicate or files with the same name
-            for (var i=0;i<itemElement.length;i++) {
-              if (newName === itemElement[i].innerText) {
-                duplicate = true
-                break
-              }
-            }
-            if (duplicate) {
-              bootbox.alert({
-                message:"Duplicate file name: " + newName,
-                centerVertical: true
-              })
-            } else {
-              if (organizeCurrentLocation.value === "/" && !(["dataset_description", "submission", "README", "CHANGES", "samples", "subjects"].includes(newName))) {
-                bootbox.alert({
-                  message:"Invalid name for a metadata file! Required names for metadata files are: <b>'dataset_description', 'submission', 'samples', 'subjects', 'README', 'CHANGES'</b>. Please try renaming your file again.",
-                  centerVertical: true
-                })
-                return
-              }
-            }
-
-          //// if renaming a folder
-          } else {
-              // check for duplicate folder as shown in the UI
-
-              for (var i=0;i<itemElement.length;i++) {
-                if (r.trim() === itemElement[i].innerText) {
-                  duplicate = true
-                  break
-                }
-              }
-              if (duplicate) {
-                bootbox.alert({
-                  message:"Duplicate folder name: " + r.trim(),
-                  centerVertical: true
-                })
-                return
-              } else {
-                newName = r.trim()
-              }
-          }
-
-          /// assign new name to folder or file in the UI
-          event1.parentElement.parentElement.innerText = newName
-          /// get location of current file or folder in JSON obj
-          var filtered = getGlobalPath(organizeCurrentLocation)
-          var myPath = getRecursivePath(filtered.slice(1), inputGlobal)
-          /// update jsonObjGlobal with the new name
-          storedValue = myPath[type][currentName]
-          delete myPath[type][currentName];
-          myPath[type][newName] = storedValue;
-          myPath[type][newName]["action"].push("renamed")
-          /// list items again with updated JSON obj
-          listItems(myPath, uiItem)
-          getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal)
-        }
-    }
+      centerVertical: true
   })
   }
 }
@@ -302,7 +299,6 @@ function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, u
           }
       }
     }
-
 
     // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
     // and regular files (append to UI)
