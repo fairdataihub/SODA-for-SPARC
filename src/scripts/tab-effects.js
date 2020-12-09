@@ -559,24 +559,14 @@ function populateOrganizeDatasetUI(currentLocation, datasetFolder) {
 
 // Step 3: Dataset structure
 
-// helper function: check if dataset structure is empty
-function isEmptyDatasetStructure(dsStructure) {
-  for (var folder of highLevelFolders) {
-    if (folder in dsStructure["folders"]) {
-      if (JSON.stringify(dsStructure["folders"][folder]["files"]) !== "{}" || JSON.stringify(dsStructure["folders"][folder]["folders"]) !== '{}') {
-        return false
-      }
-    }
-  }
-  return true
-}
-
 function updateJSONStructureDSstructure() {
-  console.log(datasetStructureJSONObj)
   sodaJSONObj["dataset-structure"] = datasetStructureJSONObj;
-  if (isEmptyDatasetStructure(sodaJSONObj["dataset-structure"])) {
-    delete sodaJSONObj["dataset-structure"]
-  }
+  // check if dataset-structure key is empty (no high-level folders are included)
+  if (JSON.stringify(sodaJSONObj["dataset-structure"]) === "{}" ||
+      JSON.stringify(sodaJSONObj["dataset-structure"]["folders"]) === "{}")
+      {
+        delete sodaJSONObj["dataset-structure"]
+      }
 }
 
 // Step 4: Metadata files
