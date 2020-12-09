@@ -1136,14 +1136,14 @@ def create_high_level_manifest_files(soda_json_structure):
                             
             if "folders" in my_folder.keys():
                 for folder_key, folder in my_folder["folders"].items():
-                    relative_path = join(my_relative_path, folder_key)
+                    relative_path = my_relative_path + '/' + folder_key
                     dict_folder_manifest = recursive_manifest_builder(folder, relative_path, dict_folder_manifest)
             
             return dict_folder_manifest
         
         def file_manifest_entry(file_key, file, relative_path, dict_folder_manifest):
             #filename
-            filename = join(relative_path, file_key)
+            filename = my_relative_path + '/' + file_key
             dict_folder_manifest["filename"].append(filename)
             #timestamp
             file_type = file["type"]
@@ -1393,7 +1393,7 @@ def generate_dataset_locally(soda_json_structure, manifest_files_structure):
             main_curate_progress_message = "Copying file " + str(srcfile) + " to " + str(distfile)
             mycopyfile_with_metadata(srcfile, distfile)
  
-        # 7. Delete mainfest folder and original folder if merge requested and rename new folder
+        # 7. Delete manifest folder and original folder if merge requested and rename new folder
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
         if if_existing == "merge":
             main_curate_progress_message = "Finalizing dataset"
