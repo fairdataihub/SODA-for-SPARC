@@ -146,7 +146,8 @@ function renameFolder(event1, organizeCurrentLocation, itemElement, inputGlobal,
                   storedValue = myPath[type][currentName]
                   delete myPath[type][currentName];
                   myPath[type][returnedName] = storedValue;
-                  if ("action" in myPath[type][returnedName]) {
+                  if ("action" in myPath[type][returnedName]
+                    && !(myPath[type][returnedName]["action"].includes("renamed"))) {
                     myPath[type][returnedName]["action"].push("renamed")
                   } else {
                     myPath[type][returnedName]["action"] = ["new", "renamed"]
@@ -206,9 +207,6 @@ function loadFileFolder(myPath) {
   return appendString
 }
 
-
-
-
 function getRecursivePath(filteredList, inputObj) {
   var myPath = inputObj;
   for (var item of filteredList) {
@@ -230,17 +228,6 @@ function checkSubArrayBool(parentArray, childArray) {
   }
   return bool
 }
-//
-// function loadingDialog(text1, text2, func) {
-//   var bootboxDialog = bootbox.dialog({
-//     message: '<p><i class="fa fa-spin fa-spinner"></i> '+text1+'</p>',
-//   })
-//   bootboxDialog.init(function(){
-//     setTimeout(function(){
-//       func;
-//       bootboxDialog.find('.bootbox-body').html("<i style='margin-right: 5px !important' class='fas fa-check'></i>"+text2+"");
-//   }, 2000);
-//   })
 
 function showItemsAsListBootbox(arrayOfItems) {
   var htmlElement = "";

@@ -123,8 +123,8 @@
     });
     $(document).ready(function () {
       $('a').on('click', function () {
-          $(this).toggleClass('is-selected');
-          $('a').removeClass('is-selected');
+          $($(this).parents()[1]).find('a').removeClass('is-selected');
+          $(this).addClass('is-selected');
       });
     });
     // $("#welcome-section").toggleClass('is-shown')

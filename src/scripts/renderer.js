@@ -5473,7 +5473,7 @@ organizeDSaddNewFolder.addEventListener("click", function(event) {
 })
 
 // ///////////////////////////////////////////////////////////////////////////
-
+// recursively populate json object
 function populateJSONObjFolder(jsonObject, folderPath) {
     var myitems = fs.readdirSync(folderPath)
     myitems.forEach(element => {
@@ -5782,6 +5782,15 @@ ipcRenderer.on('selected-folders-organize-datasets', (event, path) => {
 
 function addFoldersfunction(folderArray, currentLocation) {
 
+  var uiFolders = {};
+  var importedFolders = {};
+
+  if (JSON.stringify(currentLocation["folders"]) !== "{}") {
+    for (var folder in currentLocation["folders"]) {
+      uiFolders[folder] = 1
+    }
+  }
+
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount === 1) {
     bootbox.alert({
@@ -5789,36 +5798,35 @@ function addFoldersfunction(folderArray, currentLocation) {
       centerVertical: true
     })
   } else {
-
-    // check for duplicates/folders with the same name
-    for (var i=0; i<folderArray.length;i++) {
-      var baseName = path.basename(folderArray[i])
-      var duplicate = false;
-      for (var objKey in currentLocation["folders"]) {
-        if (baseName === objKey) {
-          duplicate = true
-          break
+      // check for duplicates/folders with the same name
+      for (var i=0; i<folderArray.length;i++) {
+          var j = 1;
+          var originalFolderName = path.basename(folderArray[i]);
+          var renamedFolderName = originalFolderName;
+          while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
+            renamedFolderName = `${originalFolderName} (${j})`;
+            j++;
+          }
+          importedFolders[renamedFolderName] = {"path": folderArray[i], "original-basename": originalFolderName};
+        }
+        if (Object.keys(importedFolders).length > 0) {
+          for (var element in importedFolders) {
+            currentLocation["folders"][element] = {"type": "local", "path": importedFolders[element]["path"], "folders": {}, "files": {}, "action": ["new"]}
+            populateJSONObjFolder(currentLocation["folders"][renamedFolderName], importedFolders[element]["path"]);
+            // check if a folder has to be renamed due to duplicate reason
+            var original
+            if (element !== importedFolders[element]["original-basename"]) {
+              currentLocation["folders"][element]["action"].push('renamed');
+            }
+            var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+element+'</div></div>'
+            $('#items').html(appendString)
+            listItems(currentLocation, '#items')
+            getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+            hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+            hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+          }
         }
       }
-      if (duplicate) {
-        bootbox.alert({
-          message: 'Duplicate folder name: ' + baseName,
-          centerVertical: true
-        })
-      } else {
-        currentLocation["folders"][baseName] = {"type": "local", "folders": {}, "files": {}, "action": ["new"]}
-        populateJSONObjFolder(currentLocation["folders"][baseName], folderArray[i])
-        var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+baseName+'</div></div>'
-
-        $('#items').html(appendString)
-
-        listItems(currentLocation, '#items')
-        getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-      }
-    }
-  }
 }
 
 //// Step 3. Organize dataset: Add files or folders with drag&drop
@@ -5897,7 +5905,7 @@ function drop(ev) {
           });
 
           var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
-          var folderJsonObject = {"folders": {}, "files": {}, "type":"local", "action":["new"]};
+          var folderJsonObject = {"folders": {}, "path": itemPath, "files": {}, "type":"local", "action":["new"]};
           populateJSONObjFolder(folderJsonObject, itemPath)
           myPath["folders"][itemName] = folderJsonObject
           var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
@@ -6315,7 +6323,7 @@ document.getElementById('button-generate').addEventListener('click', function() 
         var message = ""
         error_files = res[0]
         error_folders = res[1]
-        
+
         if (error_files.length>0){
           var error_message_files = backend_to_frontend_warning_message(error_files)
           message += "\n" + error_message_files
