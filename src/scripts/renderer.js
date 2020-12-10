@@ -9,7 +9,6 @@ const path = require('path')
 const {ipcRenderer} = require('electron')
 const Editor = require('@toast-ui/editor')
 const remote = require('electron').remote;
-const app = remote.app;
 const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
 const Airtable = require('airtable');
@@ -23,6 +22,8 @@ const removeMd = require('remove-markdown');
 const electron = require('electron')
 const bootbox = require('bootbox')
 
+const app = remote.app;
+
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
@@ -32,9 +33,11 @@ client.invoke("echo", "server ready", (error, res) => {
   if(error || res !== 'server ready') {
     log.error(error)
     console.error(error)
+    ipcRenderer.send('track-event', "Error", "Establishing Python Connection", error);
   } else {
     console.log("Connected to Python back-end successfully")
     log.info("Connected to Python back-end successfully")
+    ipcRenderer.send('track-event', "Success", "Establishing Python Connection");
   }
 })
 
@@ -63,6 +66,7 @@ console.log("User OS:", os.type(), os.platform(), "version:", os.release())
 const appVersion = window.require('electron').remote.app.getVersion()
 log.info("Current SODA version:", appVersion)
 console.log("Current SODA version:", appVersion)
+ipcRenderer.send('track-event', "User OS: ", os.platform() + os.release(), "App Version: " + appVersion);
 
 //check user's internet connection and connect to default Blackfynn account //
 require('dns').resolve('www.google.com', function(err) {
@@ -103,7 +107,7 @@ ipcRenderer.on("update_available", () => {
 ipcRenderer.on("update_downloaded", () => {
   ipcRenderer.removeAllListeners("update_downloaded");
   message.innerText =
-    "Update Downloaded. It will be installed on restart. Restart now?";
+    "Update downloaded. It will be installed on the restart of the app. Restart now?";
   restartButton.classList.remove("hidden");
   notification.classList.remove("hidden");
 });
@@ -2053,6 +2057,9 @@ ipcRenderer.on('warning-clear-table-selection', (event, index) => {
   }
 })
 
+
+
+
 //Select files to be added to metadata files table //
 const selectMetadataBtn = document.getElementById('button-select-metadata')
 selectMetadataBtn.addEventListener('click', (event) => {
@@ -3011,6 +3018,7 @@ bfAddAccountBtn.addEventListener('click', () => {
       console.error(error)
       var emessage = userError(error)
       bfAddAccountStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
+      ipcRenderer.send('track-event', "Error", "Manage Dataset - Connect to your Blackfynn account", error);
     } else {
         bfAddAccountStatus.innerHTML = res + smileyCan +". Please select your account!"
         bfAccountLoadProgress.style.display = 'block'
@@ -3018,6 +3026,7 @@ bfAddAccountBtn.addEventListener('click', () => {
         keyName.value = ''
         key.value = ''
         secret.value = ''
+        ipcRenderer.send('track-event', "Success", "Manage Dataset - Connect to your Blackfynn account");
     }
     bfAddAccountBtn.disabled = false
   })
@@ -3113,6 +3122,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
       bfCreateNewDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
       bfCreateNewDatasetBtn.disabled = false
       enableform(bfNewDatasetForm)
+      ipcRenderer.send('track-event', "Error", "Manage Dataset - Create Empty Dataset", bfNewDatasetName.value);
     } else {
       bfCreateNewDatasetStatus.innerHTML = 'Success: created dataset' + " '" + bfNewDatasetName.value + "'" + smileyCan
       currentDatasetPermission.innerHTML = ''
@@ -3121,6 +3131,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
       datasetPermissionList.selectedIndex = "0"
       document.getElementById("para-filter-datasets-status").innerHTML = ""
       var numDatasets = refreshDatasetList()
+      ipcRenderer.send('track-event', "Success", "Manage Dataset - Create Empty Dataset", bfNewDatasetName.value);
       bfNewDatasetName.value = ""
       enableform(bfNewDatasetForm)
     }
@@ -3145,6 +3156,7 @@ bfRenameDatasetBtn.addEventListener('click', () => {
         var emessage = userError(error)
         bfRenameDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
         bfRenameDatasetBtn.disabled = false
+        ipcRenderer.send('track-event', "Error", "Manage Dataset - Rename Existing Dataset", currentDatasetName + " to " + renamedDatasetName);
       } else {
         renameDatasetInList(currentDatasetName, renamedDatasetName);
         var numDatasets = refreshDatasetList()
@@ -3154,13 +3166,17 @@ bfRenameDatasetBtn.addEventListener('click', () => {
         renameDatasetName.value = renamedDatasetName
         bfRenameDatasetStatus.innerHTML = 'Success: renamed dataset' + " '" + currentDatasetName + "'" + ' to' + " '" + renamedDatasetName + "'"
         bfRenameDatasetBtn.disabled = false
+        ipcRenderer.send('track-event', "Success", "Manage Dataset - Rename Existing Dataset", currentDatasetName + " to " + renamedDatasetName);
       }
     })
   }
 })
 
+
+
 // Submit dataset to bf //
 bfSubmitDatasetBtn.addEventListener('click', () => {
+  var totalFileSize;
   document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
   document.getElementById("para-progress-bar-error-status").innerHTML = ""
   progressBarUploadBf.value = 0
@@ -3182,6 +3198,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       err = true
       log.error(error)
       console.error(error)
+      ipcRenderer.send('track-event', "Error", "Manage Dataset - Upload Local Dataset", selectedbfdataset);
       bfSubmitDatasetBtn.disabled = false
       pathSubmitDataset.disabled = false
     } else {
@@ -3189,6 +3206,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       log.info('Completed submit function')
       console.log('Completed submit function')
       console.log(res)
+      ipcRenderer.send('track-event', "Success", "Manage Dataset - Upload Local Dataset", selectedbfdataset, totalFileSize);
     }
   })
 
@@ -3204,7 +3222,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       } else {
         completionStatus = res[1]
         var submitprintstatus = res[2]
-        var totalFileSize = res[3]
+        totalFileSize = res[3]
         var uploadedFileSize = res[4]
         if (submitprintstatus === "Uploading"){
           progressUploadBf.style.display = "block"
@@ -3531,6 +3549,8 @@ bfListDatasetStatus.addEventListener('change', () => {
   })
 })
 
+
+
 // Add subtitle //
 bfAddSubtitleBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'
@@ -3540,7 +3560,7 @@ bfAddSubtitleBtn.addEventListener('click', () => {
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   var inputSubtitle = bfDatasetSubtitle.value
   client.invoke("api_bf_add_subtitle", selectedBfAccount, selectedBfDataset, inputSubtitle,
-    (error, res) => {
+  (error, res) => {
     if(error) {
       log.error(error)
       console.error(error)
@@ -3548,10 +3568,12 @@ bfAddSubtitleBtn.addEventListener('click', () => {
       datasetSubtitleStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentMetadataProgress.style.display = 'none'
       enableform(bfMetadataForm)
+      ipcRenderer.send('track-event', "Error", "Manage Dataset - Add/Edit Subtitle", selectedBfDataset);
     } else {
       datasetSubtitleStatus.innerHTML = res
       bfCurrentMetadataProgress.style.display = 'none'
       enableform(bfMetadataForm)
+      ipcRenderer.send('track-event', "Success", "Manage Dataset - Add/Edit Subtitle", selectedBfDataset);
     }
   })
 })
@@ -3565,7 +3587,7 @@ bfAddDescriptionBtn.addEventListener('click', () => {
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   var markdownDescription = tuiInstance.getMarkdown()
   client.invoke("api_bf_add_description", selectedBfAccount, selectedBfDataset, markdownDescription,
-    (error, res) => {
+  (error, res) => {
     if(error) {
       log.error(error)
       console.error(error)
@@ -3573,11 +3595,13 @@ bfAddDescriptionBtn.addEventListener('click', () => {
       datasetDescriptionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentMetadataProgress.style.display = 'none'
       enableform(bfMetadataForm)
+      ipcRenderer.send('track-event', "Error", "Manage Dataset - Add/Edit Description", selectedBfDataset);
     } else {
       datasetDescriptionStatus.innerHTML = res
       bfCurrentMetadataProgress.style.display = 'none'
       showDatasetDescription()
       enableform(bfMetadataForm)
+      ipcRenderer.send('track-event', "Success", "Manage Dataset - Add/Edit Description", selectedBfDataset);
     }
   })
 })
@@ -3652,12 +3676,14 @@ function uploadBannerImage(){
           var emessage = userError(error)
           datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           bfCurrentMetadataProgress.style.display = 'none'
+          ipcRenderer.send('track-event', "Error", "Manage Dataset - Upload Banner Image", selectedBfDataset);
           enableform(bfMetadataForm)
         } else {
           datasetBannerImageStatus.innerHTML = res
           showCurrentBannerImage()
           bfCurrentMetadataProgress.style.display = 'none'
           enableform(bfMetadataForm)
+          ipcRenderer.send('track-event', "Success", "Manage Dataset - Upload Banner Image", selectedBfDataset);
         }
       })
     } else {
@@ -3699,17 +3725,19 @@ bfAddLicenseBtn.addEventListener('click', () => {
   /*var selectedLicense = bfListLicense.options[bfListLicense.selectedIndex].text*/
   var selectedLicense = 'Creative Commons Attribution'
   client.invoke("api_bf_add_license", selectedBfAccount, selectedBfDataset, selectedLicense,
-    (error, res) => {
+  (error, res) => {
     if(error) {
       log.error(error)
       console.error(error)
       var emessage = userError(error)
       datasetLicenseStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentMetadataProgress.style.display = 'none'
+      ipcRenderer.send('track-event', "Error", "Manage Dataset - Assign License", selectedBfDataset);
       enableform(bfMetadataForm)
     } else {
       datasetLicenseStatus.innerHTML = res
       showCurrentLicense()
+      ipcRenderer.send('track-event', "Success", "Manage Dataset - Assign License", selectedBfDataset);
       enableform(bfMetadataForm)
     }
   })
@@ -3822,7 +3850,8 @@ ipcRenderer.on('warning-share-with-curation-team-selection', (event, index) => {
   }
 })
 
-function shareWithCurationTeam(){
+
+function shareWithCurationTeam() {
   datasetPermissionStatusCurationTeam.innerHTML = 'Please wait...'
   bfPostCurationProgressCuration.style.display = 'block'
   // disableform(bfPermissionForm)
@@ -3833,36 +3862,38 @@ function shareWithCurationTeam(){
   var selectedRole = 'manager'
   client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
     (error, res) => {
-    if(error) {
-      log.error(error)
-      console.error(error)
-      var emessage = userError(error)
-      datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      bfPostCurationProgressCuration.style.display = 'none'
-      enableform(bfPermissionForm)
-      bfAddPermissionCurationTeamBtn.disabled = false
-    } else {
-      showCurrentPermission()
-      var selectedStatusOption = '03. Ready for Curation (Investigator)'
-      client.invoke("api_bf_change_dataset_status", selectedBfAccount, selectedBfDataset, selectedStatusOption,
-        (error, res) => {
-        if(error) {
-          log.error(error)
-          console.error(error)
-          var emessage = userError(error)
-          datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-          bfPostCurationProgressCuration.style.display = 'none'
-          bfAddPermissionCurationTeamBtn.disabled = false
-        } else {
-          datasetPermissionStatusCurationTeam.innerHTML = 'Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"'
-          enableform(bfPermissionForm)
-          showCurrentDatasetStatus()
-          bfPostCurationProgressCuration.style.display = 'none'
-          bfAddPermissionCurationTeamBtn.disabled = false
-        }
-      })
-    }
-  })
+      if (error) {
+        log.error(error)
+        console.error(error)
+        var emessage = userError(error)
+        datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+        bfPostCurationProgressCuration.style.display = 'none'
+        enableform(bfPermissionForm)
+        bfAddPermissionCurationTeamBtn.disabled = false
+      } else {
+        showCurrentPermission()
+        var selectedStatusOption = '03. Ready for Curation (Investigator)'
+        client.invoke("api_bf_change_dataset_status", selectedBfAccount, selectedBfDataset, selectedStatusOption,
+          (error, res) => {
+            if (error) {
+              log.error(error)
+              console.error(error)
+              var emessage = userError(error)
+              datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+              ipcRenderer.send('track-event', "Error", "Disseminate Dataset - Share with Curation Team", selectedBfDataset);
+              bfPostCurationProgressCuration.style.display = 'none'
+              bfAddPermissionCurationTeamBtn.disabled = false
+            } else {
+              datasetPermissionStatusCurationTeam.innerHTML = 'Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"'
+              ipcRenderer.send('track-event', "Success", "Disseminate Dataset - Share with Curation Team", selectedBfDataset);
+              enableform(bfPermissionForm)
+              showCurrentDatasetStatus()
+              bfPostCurationProgressCuration.style.display = 'none'
+              bfAddPermissionCurationTeamBtn.disabled = false
+            }
+          })
+      }
+    })
 }
 
 // Share with Consortium
@@ -3877,7 +3908,7 @@ ipcRenderer.on('warning-share-with-consortium-selection', (event, index) => {
   }
 })
 
-function shareWithConsortium(){
+function shareWithConsortium() {
   shareConsortiumStatus.innerHTML = 'Please wait...'
   bfPostCurationProgressConsortium.style.display = 'block'
   // disableform(bfPostCurationForm)
@@ -3888,37 +3919,37 @@ function shareWithConsortium(){
   var selectedRole = 'viewer'
   client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
     (error, res) => {
-    if(error) {
-      log.error(error)
-      console.error(error)
-      var emessage = userError(error)
-      shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      bfPostCurationProgressConsortium.style.display = 'none'
-      // enableform(bfPostCurationForm)
-      bfShareConsortiumBtn.disabled = false
-    } else {
-      showCurrentPermission()
-      var selectedStatusOption = '11. Complete, Under Embargo (Investigator)'
-      client.invoke("api_bf_change_dataset_status", selectedBfAccount, selectedBfDataset, selectedStatusOption,
-        (error, res) => {
-        if(error) {
-          log.error(error)
-          console.error(error)
-          var emessage = userError(error)
-          shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-          bfPostCurationProgressConsortium.style.display = 'none'
-          // enableform(bfPostCurationForm)
-          bfShareConsortiumBtn.disabled = false
-        } else {
-          shareConsortiumStatus.innerHTML = 'Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"'
-          showCurrentDatasetStatus()
-          bfPostCurationProgressConsortium.style.display = 'none'
-          // enableform(bfPostCurationForm)
-          bfShareConsortiumBtn.disabled = false
-        }
-      })
-    }
-  })
+      if (error) {
+        log.error(error)
+        console.error(error)
+        var emessage = userError(error)
+        shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+        bfPostCurationProgressConsortium.style.display = 'none'
+        // enableform(bfPostCurationForm)
+        bfShareConsortiumBtn.disabled = false
+      } else {
+        showCurrentPermission()
+        var selectedStatusOption = '11. Complete, Under Embargo (Investigator)'
+        client.invoke("api_bf_change_dataset_status", selectedBfAccount, selectedBfDataset, selectedStatusOption,
+          (error, res) => {
+            if (error) {
+              log.error(error)
+              console.error(error)
+              var emessage = userError(error)
+              shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+              bfPostCurationProgressConsortium.style.display = 'none'
+              // enableform(bfPostCurationForm)
+              bfShareConsortiumBtn.disabled = false
+            } else {
+              shareConsortiumStatus.innerHTML = 'Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"'
+              showCurrentDatasetStatus()
+              bfPostCurationProgressConsortium.style.display = 'none'
+              // enableform(bfPostCurationForm)
+              bfShareConsortiumBtn.disabled = false
+            }
+          })
+      }
+    })
 }
 
 
