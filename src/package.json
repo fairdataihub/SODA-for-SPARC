@@ -5,7 +5,7 @@
   "description": "Keep Calm and Curate",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "NODE_ENV=development electron .",
     "build-win": "electron-builder build --win --publish never",
     "build-mac": "electron-builder build --mac --publish never",
     "build-linux": "electron-builder build --linux --publish never",

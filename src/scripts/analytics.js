@@ -15,6 +15,20 @@ console.log(userId);
 nodeStorage.setItem('userid', userId);
 
 const usr = ua('UA-171625608-1', userId);
+console.log("Stable tracking ID");
+
+let beta_app_version = app.getVersion()
+if (beta_app_version.includes("beta"))
+{
+  const usr = ua('UA-171625608-3', userId);
+  console.log("beta tracking ID");
+}
+
+if(process.env.NODE_ENV === 'development')
+{
+  const usr = ua('UA-171625608-2', userId);
+  console.log("dev tracking ID");
+}
 
 function trackEvent(category, action, label, value) {
   usr

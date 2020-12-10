@@ -147,7 +147,7 @@ function initialize () {
 
   app.on('ready', () => {
     createWindow()
-    trackEvent('App Creation', 'App opened');
+    trackEvent('Success', 'App Launched - App Opened');
   })
 
   app.on('window-all-closed', () => {
@@ -219,9 +219,13 @@ ipcMain.on('resize-window', (event, dir) => {
 //ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
 
 ipcMain.on("track-event", (event, category, action, label, value) => {
-  if (label == undefined || value == undefined)
+  if (label == undefined && value == undefined)
   {
     trackEvent(category, action);
+  }
+  else if (label != undefined && value == undefined)
+  {
+    trackEvent(category, action, label);
   }
   else
   {
@@ -234,14 +238,17 @@ ipcMain.on("app_version", (event) => {
 });
 
 autoUpdater.on("update-available", () => {
+  trackEvent("App Update", "Update Requested", "User OS", os.platform() + "-" + "-" + os.release() + "-v" + app.getVersion());
   mainWindow.webContents.send("update_available");
 });
 
 autoUpdater.on("update-downloaded", () => {
+  trackEvent("App Update", "Update Downloaded", "User OS", os.platform() + "-" + "-" + os.release() + "-v" + app.getVersion());
   mainWindow.webContents.send("update_downloaded");
 });
 
 ipcMain.on("restart_app", () => {
   user_restart_confirmed = true;
+  trackEvent("App Update", "App Restarted", "User OS", os.platform() + "-" + "-" + os.release() + "-v" + app.getVersion());
   autoUpdater.quitAndInstall();
 });
