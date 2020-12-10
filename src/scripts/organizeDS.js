@@ -61,6 +61,7 @@ function checkValidRenameInput(event, input, type, oldName, newName, itemElement
       }
     }
     if (duplicate) {
+      $(myBootboxDialog).find(".modal-footer span").text("")
       myBootboxDialog.find(".modal-footer").prepend("<span style='color:red;padding-right:10px;display:inline-block;'>The file name: "+newName+" already exists, please rename to a different name!</span>");
       newName = "";
     }
@@ -75,6 +76,7 @@ function checkValidRenameInput(event, input, type, oldName, newName, itemElement
         }
       }
       if (duplicate) {
+        $(myBootboxDialog).find(".modal-footer span").text("")
         myBootboxDialog.find(".modal-footer").prepend("<span style='color:red;padding-right:10px;display:inline-block;'>The folder name: "+input.trim()+" already exists, please rename to a different name!</span>");
         newName = "";
       }
@@ -120,7 +122,7 @@ function renameFolder(event1, organizeCurrentLocation, itemElement, inputGlobal,
     // show prompt to enter a new name
     var myBootboxDialog = bootbox.dialog({
       title: 'Rename '+ promptVar,
-      message: 'Please enter a new name: <p><input type="text" id="input-new-name-renamed" class="form-control" value='+nameWithoutExtension+'></input></p>',
+      message: 'Please enter a new name: <p><input type="text" id="input-new-name-renamed" class="form-control" value="'+nameWithoutExtension+'"></input></p>',
       buttons: {
         cancel: {
               label: '<i class="fa fa-times"></i> Cancel'

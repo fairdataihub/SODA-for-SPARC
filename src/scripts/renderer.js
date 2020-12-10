@@ -5814,7 +5814,6 @@ function addFoldersfunction(folderArray, currentLocation) {
             currentLocation["folders"][element] = {"type": "local", "path": importedFolders[element]["path"], "folders": {}, "files": {}, "action": ["new"]}
             populateJSONObjFolder(currentLocation["folders"][renamedFolderName], importedFolders[element]["path"]);
             // check if a folder has to be renamed due to duplicate reason
-            var original
             if (element !== importedFolders[element]["original-basename"]) {
               currentLocation["folders"][element]["action"].push('renamed');
             }
@@ -5841,8 +5840,20 @@ function drop(ev) {
   var filtered = jsonPathArray.slice(1).filter(function (el) {
     return el != "";
   });
-  var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
+  var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+  var importedFiles = {};
+  var importedFolders = {};
+  var nonAllowedDuplicateFiles = [];
   ev.preventDefault();
+  var uiFiles = {};
+  var uiFolders = {};
+
+  for (var file in myPath["files"]) {
+    uiFiles[path.parse(file).name] = 1
+  }
+  for (var folder in myPath["folders"]) {
+    uiFolders[path.parse(folder).name] = 1
+  }
 
   for (var i=0; i<ev.dataTransfer.files.length;i++) {
     /// Get all the file information
@@ -5867,22 +5878,32 @@ function drop(ev) {
         })
         break
       } else {
-        if (duplicate) {
-          bootbox.alert({
-            message: "Duplicate file name: " + itemName,
-            centerVertical: true
-          })
-          break
-        } else {
-          myPath["files"][itemName] = {"path": itemPath, "description":"","additional-metadata":"", "type": "local", "action":["new"]}
-          var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
-          $(appendString).appendTo(ev.target);
-          listItems(myPath, '#items')
-          getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-          hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-        }
-      }
+          if (JSON.stringify(myPath["files"]) === "{}") {
+            importedFiles[path.parse(itemPath).name] = {"path": itemPath, "basename":path.parse(itemPath).base}
+          } else {
+              for (var objectKey in myPath["files"]) {
+                if (objectKey !== undefined) {
+                  var nonAllowedDuplicate = false;
+                  if (itemPath === myPath["files"][objectKey]["path"]) {
+                    nonAllowedDuplicateFiles.push(itemPath);
+                    nonAllowedDuplicate = true;
+                    break
+                  }
+                }
+              }
+              if (!nonAllowedDuplicate) {
+                var j = 1;
+                var fileBaseName = itemName;
+                var originalFileNameWithoutExt = path.parse(itemName).name;
+                var fileNameWithoutExt = originalFileNameWithoutExt;
+                while (fileNameWithoutExt in uiFiles || fileNameWithoutExt in regularFiles) {
+                  fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
+                  j++;
+                }
+                importedFiles[fileNameWithoutExt] = {"path": itemPath, "basename": fileNameWithoutExt + path.parse(itemName).ext};
+              }
+            }
+          }
     } else if (statsObj.isDirectory()) {
       /// drop a folder
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
@@ -5892,32 +5913,58 @@ function drop(ev) {
           centerVertical: true
         })
       } else {
-        if (duplicate) {
-          bootbox.alert({
-            message: 'Duplicate folder name: ' + itemName,
-            centerVertical: true
-          })
-        } else {
-          var currentPath = organizeDSglobalPath.value
-          var jsonPathArray = currentPath.split("/")
-          var filtered = jsonPathArray.slice(1).filter(function (el) {
-            return el != "";
-          });
-
-          var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
-          var folderJsonObject = {"folders": {}, "path": itemPath, "files": {}, "type":"local", "action":["new"]};
-          populateJSONObjFolder(folderJsonObject, itemPath)
-          myPath["folders"][itemName] = folderJsonObject
-          var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
-          $(appendString).appendTo(ev.target);
-          listItems(myPath, '#items')
-          getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-          hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+          var j = 1;
+          var originalFolderName = itemName;
+          var renamedFolderName = originalFolderName;
+          while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
+            renamedFolderName = `${originalFolderName} (${j})`;
+            j++;
+          }
+          importedFolders[renamedFolderName] = {"path": itemPath, "original-basename": originalFolderName};
         }
       }
     }
+  if (nonAllowedDuplicateFiles.length > 0) {
+    var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles)
+    bootbox.alert({
+      message: 'The following files are already imported into the current location of your dataset: <p><ul>'+listElements+'</ul></p>',
+      centerVertical: true
+    })
   }
+  // // now append to UI files and folders
+  if (Object.keys(importedFiles).length > 0) {
+    for (var element in importedFiles) {
+      myPath["files"][importedFiles[element]["basename"]] = {"path": importedFiles[element]["path"], "type": "local", "description":"", "additional-metadata":"", "action":["new"]}
+      // append "renamed" to "action" key if file is auto-renamed by UI
+      var originalName = path.parse(myPath["files"][importedFiles[element]["basename"]]["path"]).name;
+      if (element !== originalName) {
+        myPath["files"][importedFiles[element]["basename"]]["action"].push('renamed');
+      }
+      var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+importedFiles[element]["basename"]+'</div></div>'
+      $(appendString).appendTo(ev.target);
+      listItems(myPath, '#items')
+      getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+      }
+    }
+    if (Object.keys(importedFolders).length > 0) {
+      for (var element in importedFolders) {
+        myPath["folders"][element] = {"type": "local", "path": importedFolders[element]["path"], "folders": {}, "files": {}, "action": ["new"]}
+        // append "renamed" to "action" key if file is auto-renamed by UI
+        var originalName = path.parse(myPath["folders"][element]["path"]).name;
+        if (element !== originalName) {
+          myPath["folders"][element]["action"].push('renamed');
+        }
+        populateJSONObjFolder(myPath["folders"][element], importedFolders[element]["path"]);
+        var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+element+'</div></div>'
+        $(appendString).appendTo(ev.target);
+        listItems(myPath, '#items')
+        getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+        }
+      }
 }
 
 // SAVE FILE ORG
