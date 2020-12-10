@@ -2,6 +2,7 @@ const {app, BrowserWindow, dialog} = require('electron')
 app.showExitPrompt = true
 const path = require('path')
 const glob = require('glob')
+const os = require("os")
 const contextMenu = require('electron-context-menu');
 const log  = require("electron-log");
 require('v8-compile-cache')
@@ -104,7 +105,7 @@ function initialize () {
     mainWindow = new BrowserWindow(windowOptions)
     mainWindow.loadURL(path.join('file://', __dirname, '/index.html'))
 
-    mainWindow.webContents.openDevTools();
+    //mainWindow.webContents.openDevTools();
 
     mainWindow.webContents.once('dom-ready', () => {
       autoUpdater.checkForUpdatesAndNotify();
@@ -147,7 +148,8 @@ function initialize () {
 
   app.on('ready', () => {
     createWindow()
-    trackEvent('Success', 'App Launched - App Opened');
+    trackEvent('Success', 'App Launched - OS',  os.platform() + "-" + os.release());
+    trackEvent('Success', 'App Launched - SODA',  app.getVersion());
   })
 
   app.on('window-all-closed', () => {
@@ -238,17 +240,17 @@ ipcMain.on("app_version", (event) => {
 });
 
 autoUpdater.on("update-available", () => {
-  trackEvent("App Update", "Update Requested", "User OS", os.platform() + "-" + "-" + os.release() + "-v" + app.getVersion());
+  trackEvent("App Update", "Update Requested", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
   mainWindow.webContents.send("update_available");
 });
 
 autoUpdater.on("update-downloaded", () => {
-  trackEvent("App Update", "Update Downloaded", "User OS", os.platform() + "-" + "-" + os.release() + "-v" + app.getVersion());
+  trackEvent("App Update", "Update Downloaded", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
   mainWindow.webContents.send("update_downloaded");
 });
 
 ipcMain.on("restart_app", () => {
   user_restart_confirmed = true;
-  trackEvent("App Update", "App Restarted", "User OS", os.platform() + "-" + "-" + os.release() + "-v" + app.getVersion());
+  trackEvent("App Update", "App Restarted", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
   autoUpdater.quitAndInstall();
 });

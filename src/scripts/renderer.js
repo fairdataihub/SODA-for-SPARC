@@ -33,11 +33,11 @@ client.invoke("echo", "server ready", (error, res) => {
   if(error || res !== 'server ready') {
     log.error(error)
     console.error(error)
-    ipcRenderer.send('track-event', "Error", "App Launched - Server", error);
+    ipcRenderer.send('track-event', "Error", "Establishing Python Connection", error);
   } else {
     console.log("Connected to Python back-end successfully")
     log.info("Connected to Python back-end successfully")
-    ipcRenderer.send('track-event', "Success", "App Launched - Python Connection Established");
+    ipcRenderer.send('track-event', "Success", "Establishing Python Connection");
   }
 })
 
