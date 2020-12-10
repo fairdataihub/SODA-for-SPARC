@@ -37,6 +37,7 @@
 * [Issues and Feedback](#Issues-and-Feedback)
 * [Using the Source Code](#Using-the-Source-Code)
 * [License](#license)
+* [Privacy Policy](#Privacy-Policy)
 * [Acknowledgements](#acknowledgements)
 
 ## About
