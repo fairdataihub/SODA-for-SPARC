@@ -105,7 +105,7 @@ function initialize () {
     mainWindow = new BrowserWindow(windowOptions)
     mainWindow.loadURL(path.join('file://', __dirname, '/index.html'))
 
-    mainWindow.webContents.openDevTools();
+    //mainWindow.webContents.openDevTools();
 
     mainWindow.webContents.once('dom-ready', () => {
       autoUpdater.checkForUpdatesAndNotify();

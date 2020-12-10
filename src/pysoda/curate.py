@@ -1143,7 +1143,7 @@ def create_high_level_manifest_files(soda_json_structure):
         
         def file_manifest_entry(file_key, file, relative_path, dict_folder_manifest):
             #filename
-            filename = my_relative_path + '/' + file_key
+            filename = relative_path + '/' + file_key
             dict_folder_manifest["filename"].append(filename)
             #timestamp
             file_type = file["type"]
