@@ -66,7 +66,6 @@ console.log("User OS:", os.type(), os.platform(), "version:", os.release())
 const appVersion = window.require('electron').remote.app.getVersion()
 log.info("Current SODA version:", appVersion)
 console.log("Current SODA version:", appVersion)
-ipcRenderer.send('track-event', "User OS: ", os.platform() + os.release(), "App Version: " + appVersion);
 
 //check user's internet connection and connect to default Blackfynn account //
 require('dns').resolve('www.google.com', function(err) {
