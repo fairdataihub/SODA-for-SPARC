@@ -104,7 +104,7 @@ function nextPrev(n) {
   updateOverallJSONStructure(x[currentTab].id)
 
   if (n === 1 && x[currentTab].id === 'organize-dataset-tab'
-      && JSON.stringify(sodaJSONObj["dataset-structure"]["folders"]) === '{}'
+      && sodaJSONObj["dataset-structure"] === {"folders":{}}
     ) {
     bootbox.confirm({
       message: "The current dataset folder is empty. Are you sure you want to continue?",
@@ -558,11 +558,16 @@ function populateOrganizeDatasetUI(currentLocation, datasetFolder) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Step 3: Dataset structure
+
 function updateJSONStructureDSstructure() {
   sodaJSONObj["dataset-structure"] = datasetStructureJSONObj;
-  if (sodaJSONObj["dataset-structure"] === {'folders':{}}) {
-    delete sodaJSONObj["dataset-structure"]
-  }
+  // check if dataset-structure key is empty (no high-level folders are included)
+  if (JSON.stringify(sodaJSONObj["dataset-structure"]) === "{}" ||
+      JSON.stringify(sodaJSONObj["dataset-structure"]["folders"]) === "{}")
+      {
+        delete sodaJSONObj["dataset-structure"]
+      }
+  console.log(sodaJSONObj["dataset-structure"])
 }
 
 // Step 4: Metadata files

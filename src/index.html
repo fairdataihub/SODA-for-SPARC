@@ -83,7 +83,7 @@
       <div class="help-section">
         <ul class="list-unstyled components" style="height:50px;margin-bottom:0;margin-left:35px;display:flex;flex-direction:row;justify-content:center">
           <li><a href="https://github.com/bvhpatel/SODA"><i class="fab fa-github"></i></a></li>
-          <li><a href="#" data-section="help"><i class="fas fa-question-circle fa-fw"></i></a></li>
+          <li><a href="#"><i data-section="help" class="fas fa-question-circle fa-fw"></i></a></li>
       </ul>
       </div>
     </div>
@@ -123,12 +123,10 @@
     });
     $(document).ready(function () {
       $('a').on('click', function () {
-          $(this).toggleClass('is-selected');
-          $('a').removeClass('is-selected');
+          $($(this).parents()[1]).find('a').removeClass('is-selected');
+          $(this).addClass('is-selected');
       });
     });
-
-    // $("#welcome-section").toggleClass('is-shown')
 
   </script>
 

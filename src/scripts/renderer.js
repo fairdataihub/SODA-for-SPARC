@@ -2824,10 +2824,14 @@ function hideDivsOnBFAccountChange() {
   $('#Question-generate-dataset-BF-account').removeClass('prev');
 
   $($('#Question-generate-dataset-BF-account').nextAll().find('.option-card.radio-button')).removeClass('checked');
-  $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('show');
-  $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('test2');
-  $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('prev');
-  $($('#Question-generate-dataset-BF-account').nextAll()).css('pointer-events', 'auto');
+  for (var question of $('#Question-generate-dataset-BF-account').nextAll()) {
+    if (!(["Question-generate-dataset-choose-ds-name", "Question-generate-dataset-locally-destination"].includes(question.id))) {
+      $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('show');
+      $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('test2');
+      $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('prev');
+      $($('#Question-generate-dataset-BF-account').nextAll()).css('pointer-events', 'auto');
+    }
+  }
 }
 
 curateDatasetDropdown.addEventListener('change', function() {
@@ -2842,14 +2846,12 @@ curateDatasetDropdown.addEventListener('change', function() {
 })
 
 curateBFaccountList.addEventListener('change', function() {
+  hideDivsOnBFAccountChange();
   curateBFAccountLoadStatus.innerHTML = "Loading account details...";
   curateDatasetDropdown.disabled = true;
   curateBFAccountLoad.style.display = 'block';
 
-  hideDivsOnBFAccountChange();
-
-  var curateSelectedbfaccount = curateBFaccountList.options[curateBFaccountList.selectedIndex].text
-
+  var curateSelectedbfaccount = curateBFaccountList.options[curateBFaccountList.selectedIndex].text;
   if (curateSelectedbfaccount === 'Select') {
     curateBFAccountLoadStatus.innerHTML = "";
     curateBFAccountLoad.style.display = 'none';
@@ -2863,15 +2865,21 @@ curateBFaccountList.addEventListener('change', function() {
     curateBFAccountLoadStatus.innerHTML = ""
     updateDatasetCurate(curateDatasetDropdown, curateBFaccountList);
     document.getElementById('div-bf-account-btns').style.display = "flex";
-    $("#div-bf-account-btns button").show()
+    $("#div-bf-account-btns button").show();
   }
+  // sync BF account select under Manage dataset
+  // if (bfAccountList.options[bfAccountList.selectedIndex].value !== curateSelectedbfaccount) {
+  //   loadDefaultAccount()
+  //   showAccountDetails(bfAccountList)
+    // document.getElementById('button-check-bf-account-details').click();
+    // setTimeout(function() {
+    //   bfAccountList.value = curateSelectedbfaccount;
+    // }, 5000)
+  // }
   curateDatasetDropdown.disabled = false;
 })
 
 function loadAllBFAccounts() {
-  bfSelectAccountStatus.innerHTML = "Loading existing accounts..."
-  bfAccountLoadProgress.style.display = 'block'
-  bfAccountLoadProgressCurate.style.display = 'block';
   document.getElementById('div-bf-account-btns').style.display = "none";
   $("#div-bf-account-btns button").hide()
   document.getElementById("para-filter-datasets-status").innerHTML = ""
@@ -2959,7 +2967,8 @@ function curateChooseBFAccountByDefault(){
         curateShowAccountDetails(curateBFaccountList)
         curateBFAccountLoad.style.display = 'block'
         hideDivsOnBFAccountChange()
-        updateDatasetCurate(curateDatasetDropdown, curateBFaccountList)
+        updateDatasetCurate(curateDatasetDropdown, curateBFaccountList);
+        loadDefaultAccount();
         document.getElementById('div-bf-account-btns').style.display = "flex";
         $("#div-bf-account-btns buttons").show()
       }
@@ -3046,15 +3055,17 @@ bfAccountList.addEventListener('change', () => {
     bfAccountLoadProgress.style.display = 'none'
     datasetPermissionList.disabled = true
   } else{
+    console.log("manage: bf account changed to: " + selectedbfaccount)
     var myitemselect = selectedbfaccount
     var option = document.createElement("option")
     option.textContent = myitemselect
     option.value = myitemselect
     bfUploadAccountList.value = selectedbfaccount
-    showAccountDetails(bfAccountLoadProgress)
-    // sync BF account select under Prepare dataset -> Step 6
-    // curateBFAccountLoadStatus.innerHTML = ""
-    $('#bfallaccountlist option[value='+myitemselect+']').attr('selected','selected');
+    showAccountDetails(bfAccountLoadProgress);
+  }
+  // sync BF account select under Prepare dataset -> Step 6
+  if (curateBFaccountList.options[curateBFaccountList.selectedIndex].value !== selectedbfaccount) {
+    curateBFaccountList.value = selectedbfaccount;
     curateShowAccountDetails(curateBFaccountList)
   }
   refreshBfUsersList()
@@ -3077,6 +3088,10 @@ bfUploadAccountList.addEventListener('change', () => {
     option.value = myitemselect
     bfAccountList.value = selectedbfaccount
     showAccountDetails(bfAccountLoadProgressCurate)
+    // sync BF account select under Prepare dataset -> Step 6
+    if (curateBFaccountList.options[curateBFaccountList.selectedIndex].value !== selectedbfaccount) {
+      loadAllBFAccounts()
+    }
   }
   // refreshAllBfDatasetLists()
   refreshBfUsersList()
@@ -4734,13 +4749,13 @@ function updateBfAccountList(){
         bfAccountLoadProgressCurate.style.display = 'none'
       }
       datasetPermissionList.disabled = false
-      loadAllBFAccounts()
+      // loadAllBFAccounts()
     }
     if (res[0] === "Select" && res.length === 1) {
       bfSelectAccountStatus.innerHTML = "No existing accounts to switch. Please add a new account!"
       bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
       datasetPermissionList.disabled = true;
-      loadAllBFAccounts()
+      // loadAllBFAccounts()
     }
     bfSelectAccountStatus.innerHTML = ""
     bfAccountLoadProgress.style.display = 'none'
@@ -5489,7 +5504,7 @@ organizeDSaddNewFolder.addEventListener("click", function(event) {
 })
 
 // ///////////////////////////////////////////////////////////////////////////
-
+// recursively populate json object
 function populateJSONObjFolder(jsonObject, folderPath) {
     var myitems = fs.readdirSync(folderPath)
     myitems.forEach(element => {
@@ -5798,6 +5813,15 @@ ipcRenderer.on('selected-folders-organize-datasets', (event, path) => {
 
 function addFoldersfunction(folderArray, currentLocation) {
 
+  var uiFolders = {};
+  var importedFolders = {};
+
+  if (JSON.stringify(currentLocation["folders"]) !== "{}") {
+    for (var folder in currentLocation["folders"]) {
+      uiFolders[folder] = 1
+    }
+  }
+
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount === 1) {
     bootbox.alert({
@@ -5805,36 +5829,34 @@ function addFoldersfunction(folderArray, currentLocation) {
       centerVertical: true
     })
   } else {
-
-    // check for duplicates/folders with the same name
-    for (var i=0; i<folderArray.length;i++) {
-      var baseName = path.basename(folderArray[i])
-      var duplicate = false;
-      for (var objKey in currentLocation["folders"]) {
-        if (baseName === objKey) {
-          duplicate = true
-          break
+      // check for duplicates/folders with the same name
+      for (var i=0; i<folderArray.length;i++) {
+          var j = 1;
+          var originalFolderName = path.basename(folderArray[i]);
+          var renamedFolderName = originalFolderName;
+          while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
+            renamedFolderName = `${originalFolderName} (${j})`;
+            j++;
+          }
+          importedFolders[renamedFolderName] = {"path": folderArray[i], "original-basename": originalFolderName};
+        }
+        if (Object.keys(importedFolders).length > 0) {
+          for (var element in importedFolders) {
+            currentLocation["folders"][element] = {"type": "local", "path": importedFolders[element]["path"], "folders": {}, "files": {}, "action": ["new"]}
+            populateJSONObjFolder(currentLocation["folders"][renamedFolderName], importedFolders[element]["path"]);
+            // check if a folder has to be renamed due to duplicate reason
+            if (element !== importedFolders[element]["original-basename"]) {
+              currentLocation["folders"][element]["action"].push('renamed');
+            }
+            var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+element+'</div></div>'
+            $('#items').html(appendString)
+            listItems(currentLocation, '#items')
+            getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+            hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+            hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+          }
         }
       }
-      if (duplicate) {
-        bootbox.alert({
-          message: 'Duplicate folder name: ' + baseName,
-          centerVertical: true
-        })
-      } else {
-        currentLocation["folders"][baseName] = {"type": "local", "folders": {}, "files": {}, "action": ["new"]}
-        populateJSONObjFolder(currentLocation["folders"][baseName], folderArray[i])
-        var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+baseName+'</div></div>'
-
-        $('#items').html(appendString)
-
-        listItems(currentLocation, '#items')
-        getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-      }
-    }
-  }
 }
 
 //// Step 3. Organize dataset: Add files or folders with drag&drop
@@ -5849,17 +5871,27 @@ function drop(ev) {
   var filtered = jsonPathArray.slice(1).filter(function (el) {
     return el != "";
   });
-  var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
+  var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+  var importedFiles = {};
+  var importedFolders = {};
+  var nonAllowedDuplicateFiles = [];
   ev.preventDefault();
+  var uiFiles = {};
+  var uiFolders = {};
+
+  for (var file in myPath["files"]) {
+    uiFiles[path.parse(file).name] = 1
+  }
+  for (var folder in myPath["folders"]) {
+    uiFolders[path.parse(folder).name] = 1
+  }
 
   for (var i=0; i<ev.dataTransfer.files.length;i++) {
     /// Get all the file information
     var itemPath = ev.dataTransfer.files[i].path
     var itemName = ev.dataTransfer.files[i].name
     var duplicate = false
-
     var statsObj = fs.statSync(itemPath)
-
     // check for duplicate or files with the same name
     for (var j=0; j<ev.target.children.length;j++) {
       if (itemName === ev.target.children[j].innerText) {
@@ -5877,22 +5909,32 @@ function drop(ev) {
         })
         break
       } else {
-        if (duplicate) {
-          bootbox.alert({
-            message: "Duplicate file name: " + itemName,
-            centerVertical: true
-          })
-          break
-        } else {
-          myPath["files"][itemName] = {"path": itemPath, "description":"","additional-metadata":"", "type": "local", "action":["new"]}
-          var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
-          $(appendString).appendTo(ev.target);
-          listItems(myPath, '#items')
-          getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-          hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-        }
-      }
+          if (JSON.stringify(myPath["files"]) === "{}") {
+            importedFiles[path.parse(itemPath).name] = {"path": itemPath, "basename":path.parse(itemPath).base}
+          } else {
+              for (var objectKey in myPath["files"]) {
+                if (objectKey !== undefined) {
+                  var nonAllowedDuplicate = false;
+                  if (itemPath === myPath["files"][objectKey]["path"]) {
+                    nonAllowedDuplicateFiles.push(itemPath);
+                    nonAllowedDuplicate = true;
+                    break
+                  }
+                }
+              }
+              if (!nonAllowedDuplicate) {
+                var j = 1;
+                var fileBaseName = itemName;
+                var originalFileNameWithoutExt = path.parse(itemName).name;
+                var fileNameWithoutExt = originalFileNameWithoutExt;
+                while (fileNameWithoutExt in uiFiles || fileNameWithoutExt in regularFiles) {
+                  fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
+                  j++;
+                }
+                importedFiles[fileNameWithoutExt] = {"path": itemPath, "basename": fileNameWithoutExt + path.parse(itemName).ext};
+              }
+            }
+          }
     } else if (statsObj.isDirectory()) {
       /// drop a folder
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
@@ -5902,32 +5944,58 @@ function drop(ev) {
           centerVertical: true
         })
       } else {
-        if (duplicate) {
-          bootbox.alert({
-            message: 'Duplicate folder name: ' + itemName,
-            centerVertical: true
-          })
-        } else {
-          var currentPath = organizeDSglobalPath.value
-          var jsonPathArray = currentPath.split("/")
-          var filtered = jsonPathArray.slice(1).filter(function (el) {
-            return el != "";
-          });
-
-          var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
-          var folderJsonObject = {"folders": {}, "files": {}, "type":"local", "action":["new"]};
-          populateJSONObjFolder(folderJsonObject, itemPath)
-          myPath["folders"][itemName] = folderJsonObject
-          var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
-          $(appendString).appendTo(ev.target);
-          listItems(myPath, '#items')
-          getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-          hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+          var j = 1;
+          var originalFolderName = itemName;
+          var renamedFolderName = originalFolderName;
+          while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
+            renamedFolderName = `${originalFolderName} (${j})`;
+            j++;
+          }
+          importedFolders[renamedFolderName] = {"path": itemPath, "original-basename": originalFolderName};
         }
       }
     }
+  if (nonAllowedDuplicateFiles.length > 0) {
+    var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles)
+    bootbox.alert({
+      message: 'The following files are already imported into the current location of your dataset: <p><ul>'+listElements+'</ul></p>',
+      centerVertical: true
+    })
   }
+  // // now append to UI files and folders
+  if (Object.keys(importedFiles).length > 0) {
+    for (var element in importedFiles) {
+      myPath["files"][importedFiles[element]["basename"]] = {"path": importedFiles[element]["path"], "type": "local", "description":"", "additional-metadata":"", "action":["new"]}
+      // append "renamed" to "action" key if file is auto-renamed by UI
+      var originalName = path.parse(myPath["files"][importedFiles[element]["basename"]]["path"]).name;
+      if (element !== originalName) {
+        myPath["files"][importedFiles[element]["basename"]]["action"].push('renamed');
+      }
+      var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+importedFiles[element]["basename"]+'</div></div>'
+      $(appendString).appendTo(ev.target);
+      listItems(myPath, '#items')
+      getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+      }
+    }
+    if (Object.keys(importedFolders).length > 0) {
+      for (var element in importedFolders) {
+        myPath["folders"][element] = {"type": "local", "path": importedFolders[element]["path"], "folders": {}, "files": {}, "action": ["new"]}
+        // append "renamed" to "action" key if file is auto-renamed by UI
+        var originalName = path.parse(myPath["folders"][element]["path"]).name;
+        if (element !== originalName) {
+          myPath["folders"][element]["action"].push('renamed');
+        }
+        populateJSONObjFolder(myPath["folders"][element], importedFolders[element]["path"]);
+        var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+element+'</div></div>'
+        $(appendString).appendTo(ev.target);
+        listItems(myPath, '#items')
+        getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+        }
+      }
 }
 
 // SAVE FILE ORG
@@ -6333,7 +6401,7 @@ document.getElementById('button-generate').addEventListener('click', function() 
         var message = ""
         error_files = res[0]
         error_folders = res[1]
-        
+
         if (error_files.length>0){
           var error_message_files = backend_to_frontend_warning_message(error_files)
           message += "\n" + error_message_files
