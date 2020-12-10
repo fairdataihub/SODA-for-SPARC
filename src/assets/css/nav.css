@@ -41,8 +41,7 @@
 #main-nav {
     min-width: 240px;
     max-width: 240px;
-    background: #000;
-    opacity: 0.9;
+    background: var(--color-sidebar);
     color: #f0f0f0;
     font-family: "Source Sans Pro", sans-serif;
     transition: all 600ms ease;
@@ -133,15 +132,15 @@ a[data-toggle="collapse"] {
 #main-nav ul li a:hover {
     color: #fff;
     text-decoration: none;
-    background: var(--color-sidebar);
-    opacity: 0.7
+    background: var(--color-sidebar-hyperlink-hover);
+    opacity: 0.8
 }
 
 #main-nav ul li a.is-selected {
   color: #fff;
   background: var(--color-light-green);
   border-color: transparent;
-  opacity: 0.9;
+  /* opacity: 0.9; */
   font-weight: bold
 }
 

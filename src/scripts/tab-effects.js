@@ -99,18 +99,97 @@ function checkHighLevelFoldersInput() {
 // function associated with the Back/Continue buttons
 function nextPrev(n) {
   var x = document.getElementsByClassName("parent-tabs");
+
   // update JSON structure
   updateOverallJSONStructure(x[currentTab].id)
-  // Hide the current tab:
-  $(x[currentTab]).removeClass('tab-active');
-  // Increase or decrease the current tab by 1:
-  currentTab = currentTab + n;
-  // For step 1,2,3, check for High level folders input to disable Continue button
-  if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
-    highLevelFoldersDisableOptions()
+
+  if (n === 1 && x[currentTab].id === 'organize-dataset-tab'
+      && sodaJSONObj["dataset-structure"] === {"folders":{}}
+    ) {
+    bootbox.confirm({
+      message: "The current dataset folder is empty. Are you sure you want to continue?",
+      buttons: {
+          confirm: {
+              label: 'Continue',
+              className: 'btn-success'
+          },
+          cancel: {
+              label: 'No',
+              className: 'btn-danger'
+          }
+      },
+      centerVertical: true,
+      callback: function (result) {
+        if (result !== null && result === true) {
+          // Hide the current tab:
+          $(x[currentTab]).removeClass('tab-active');
+          // Increase or decrease the current tab by 1:
+          currentTab = currentTab + n;
+          // For step 1,2,3, check for High level folders input to disable Continue button
+          if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
+            highLevelFoldersDisableOptions()
+          }
+          // Display the correct tab:
+          showParentTab(currentTab, n);
+          }
+        }
+    })
+    // check if required metadata files are included
+  } else if (n === 1 && x[currentTab].id === 'metadata-files-tab') {
+    var containRequiredFilesCount = 0;
+    var requiredFiles = ["submission", "dataset-description", "subjects"];
+    for (var key in sodaJSONObj["metadata-files"]) {
+      for (let file of requiredFiles) {
+        if (key.includes(file)) {
+          containRequiredFilesCount += 1
+        }
+      }
+    }
+    if (containRequiredFilesCount < 3) {
+      bootbox.confirm({
+        message: "You did not include all of the following required metadata files: <br><ol><li> submission</li><li> dataset_description</li> <li> subjects</li> </ol>Are you sure you want to continue?",
+        buttons: {
+          confirm: {
+            label: 'Continue',
+            className: 'btn-success'
+          },
+          cancel: {
+            label: 'No',
+            className: 'btn-danger'
+          }
+        },
+        centerVertical: true,
+        callback: function (result) {
+          if (result !== null && result === true) {
+            // Hide the current tab:
+            $(x[currentTab]).removeClass('tab-active');
+            // Increase or decrease the current tab by 1:
+            currentTab = currentTab + n;
+            // Display the correct tab:
+            showParentTab(currentTab, n);
+          }
+        }
+      })
+    } else {
+      // Hide the current tab:
+      $(x[currentTab]).removeClass('tab-active');
+      // Increase or decrease the current tab by 1:
+      currentTab = currentTab + n;
+      // Display the correct tab:
+      showParentTab(currentTab, n);
+    }
+  } else {
+    // Hide the current tab:
+    $(x[currentTab]).removeClass('tab-active');
+    // Increase or decrease the current tab by 1:
+    currentTab = currentTab + n;
+    // For step 1,2,3, check for High level folders input to disable Continue button
+    if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
+      highLevelFoldersDisableOptions()
+    }
+    // Display the correct tab:
+    showParentTab(currentTab, n);
   }
-  // Display the correct tab:
-  showParentTab(currentTab, n);
 }
 
 function fixStepIndicator(n) {
@@ -302,7 +381,7 @@ function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
     // create moving effects when new questions appear
     setTimeout(()=> target.classList.add("test2"), 100);
   }
-  
+
   document.getElementById(currentDiv).classList.add("prev");
 
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
@@ -479,11 +558,16 @@ function populateOrganizeDatasetUI(currentLocation, datasetFolder) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Step 3: Dataset structure
+
 function updateJSONStructureDSstructure() {
   sodaJSONObj["dataset-structure"] = datasetStructureJSONObj;
-  if (sodaJSONObj["dataset-structure"] === {'folders':{}}) {
-    delete sodaJSONObj["dataset-structure"]
-  }
+  // check if dataset-structure key is empty (no high-level folders are included)
+  if (JSON.stringify(sodaJSONObj["dataset-structure"]) === "{}" ||
+      JSON.stringify(sodaJSONObj["dataset-structure"]["folders"]) === "{}")
+      {
+        delete sodaJSONObj["dataset-structure"]
+      }
+  console.log(sodaJSONObj["dataset-structure"])
 }
 
 // Step 4: Metadata files
@@ -691,4 +775,54 @@ function hideNextDivs(currentDiv) {
   $($('#'+currentDiv).nextAll()).removeClass('prev');
   $($('#'+currentDiv).nextAll()).removeClass('show');
   $($('#'+currentDiv).nextAll()).removeClass('test2');
+}
+
+// save progress up until step 5 for now
+function updateJSONObjectProgress() {
+  updateJSONStructureGettingStarted()
+  updateJSONStructureMetadataFiles()
+  updateJSONStructureManifest()
+  updateJSONStructureDSstructure()
+}
+
+var progressFilePath = path.join(homeDirectory,"SODA", "Progress");
+
+function saveSODAJSONProgress(progressFileName) {
+  try {
+    fs.mkdirSync(progressFilePath, { recursive: true } );
+  } catch (error) {
+    log.error(error)
+    console.log(error)
+  }
+  var filePath = path.join(progressFilePath, progressFileName + ".json");
+  // record all information listed in SODA JSON Object before saving
+  updateJSONObjectProgress()
+  fs.writeFileSync(filePath, JSON.stringify(sodaJSONObj))
+    bootbox.alert({
+      message: "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved progress.",
+      centerVertical: true
+    })
+}
+
+// function to save Progress
+function saveOrganizeProgressPrompt() {
+  // check if "save-progress" key is in JSON object
+  // if yes, keep saving to that file
+  if ("save-progress" in sodaJSONObj) {
+    // save to file
+    saveSODAJSONProgress(sodaJSONObj["save-progress"]);
+  // if no, ask users what to name it, and create file
+  } else {
+    bootbox.prompt({
+      title: "Saving progress as...",
+      message: "Enter a name for your progress below:",
+      centerVertical: true,
+      callback: function(result) {
+        if (result !== null && result !== "") {
+          sodaJSONObj["save-progress"] = result.trim();
+          saveSODAJSONProgress(result.trim())
+        }
+      }
+    })
+  }
 }

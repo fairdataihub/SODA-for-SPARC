@@ -2,13 +2,16 @@ const {app, BrowserWindow, dialog} = require('electron')
 app.showExitPrompt = true
 const path = require('path')
 const glob = require('glob')
+const os = require("os")
 const contextMenu = require('electron-context-menu');
 const log  = require("electron-log");
 require('v8-compile-cache')
 const {ipcMain} = require('electron')
 const { autoUpdater } = require("electron-updater");
+const { trackEvent } = require('./scripts/analytics');
 
 log.transports.console.level = false
+global.trackEvent = trackEvent;
 /*************************************************************
  * Python Process
  *************************************************************/
@@ -90,7 +93,8 @@ function initialize () {
       //title: app.getName(),
       icon: __dirname + '/assets/menu-icon/soda_icon.png',
       webPreferences: {
-        nodeIntegration: true
+        nodeIntegration: true,
+        enableRemoteModule: true
       }
     }
 
@@ -144,6 +148,8 @@ function initialize () {
 
   app.on('ready', () => {
     createWindow()
+    trackEvent('Success', 'App Launched - OS',  os.platform() + "-" + os.release());
+    trackEvent('Success', 'App Launched - SODA',  app.getVersion());
   })
 
   app.on('window-all-closed', () => {
@@ -208,19 +214,43 @@ ipcMain.on('resize-window', (event, dir) => {
   mainWindow.setSize(x, y)
 })
 
+// Google analytics tracking function
+// To use, category and action is required. Label and value can be left out
+// if not needed. Sample requests from renderer.js is shown below: 
+//ipcRenderer.send('track-event', "App Backend", "Python Connection Established");
+//ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
+
+ipcMain.on("track-event", (event, category, action, label, value) => {
+  if (label == undefined && value == undefined)
+  {
+    trackEvent(category, action);
+  }
+  else if (label != undefined && value == undefined)
+  {
+    trackEvent(category, action, label);
+  }
+  else
+  {
+    trackEvent(category, action, label, value);
+  }
+});
+
 ipcMain.on("app_version", (event) => {
   event.sender.send("app_version", { version: app.getVersion() });
 });
 
 autoUpdater.on("update-available", () => {
+  trackEvent("App Update", "Update Requested", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
   mainWindow.webContents.send("update_available");
 });
 
 autoUpdater.on("update-downloaded", () => {
+  trackEvent("App Update", "Update Downloaded", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
   mainWindow.webContents.send("update_downloaded");
 });
 
 ipcMain.on("restart_app", () => {
   user_restart_confirmed = true;
+  trackEvent("App Update", "App Restarted", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
   autoUpdater.quitAndInstall();
 });

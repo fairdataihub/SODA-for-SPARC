@@ -9,7 +9,6 @@ const path = require('path')
 const {ipcRenderer} = require('electron')
 const Editor = require('@toast-ui/editor')
 const remote = require('electron').remote;
-const app = remote.app;
 const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
 const Airtable = require('airtable');
@@ -23,6 +22,8 @@ const removeMd = require('remove-markdown');
 const electron = require('electron')
 const bootbox = require('bootbox')
 
+const app = remote.app;
+
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
@@ -32,9 +33,11 @@ client.invoke("echo", "server ready", (error, res) => {
   if(error || res !== 'server ready') {
     log.error(error)
     console.error(error)
+    ipcRenderer.send('track-event', "Error", "Establishing Python Connection", error);
   } else {
     console.log("Connected to Python back-end successfully")
     log.info("Connected to Python back-end successfully")
+    ipcRenderer.send('track-event', "Success", "Establishing Python Connection");
   }
 })
 
@@ -103,7 +106,7 @@ ipcRenderer.on("update_available", () => {
 ipcRenderer.on("update_downloaded", () => {
   ipcRenderer.removeAllListeners("update_downloaded");
   message.innerText =
-    "Update Downloaded. It will be installed on restart. Restart now?";
+    "Update downloaded. It will be installed on the restart of the app. Restart now?";
   restartButton.classList.remove("hidden");
   notification.classList.remove("hidden");
 });
@@ -2053,6 +2056,9 @@ ipcRenderer.on('warning-clear-table-selection', (event, index) => {
   }
 })
 
+
+
+
 //Select files to be added to metadata files table //
 const selectMetadataBtn = document.getElementById('button-select-metadata')
 selectMetadataBtn.addEventListener('click', (event) => {
@@ -2805,6 +2811,28 @@ const curateDatasetDropdown = document.getElementById('curatebfdatasetlist');
 
 loadAllBFAccounts()
 
+function hideDivsOnBFAccountChange() {
+  document.getElementById('div-bf-account-btns').style.display = "none";
+  $("#div-bf-account-btns button").hide()
+
+  // remove all datasets from current list
+  removeOptions(curateDatasetDropdown);
+  addOption(curateDatasetDropdown, "Loading", "Loading");
+
+  $('#Question-generate-dataset-BF-account').removeClass('test2');
+  $('#Question-generate-dataset-BF-account').removeClass('prev');
+
+  $($('#Question-generate-dataset-BF-account').nextAll().find('.option-card.radio-button')).removeClass('checked');
+  for (var question of $('#Question-generate-dataset-BF-account').nextAll()) {
+    if (!(["Question-generate-dataset-choose-ds-name", "Question-generate-dataset-locally-destination"].includes(question.id))) {
+      $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('show');
+      $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('test2');
+      $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('prev');
+      $($('#Question-generate-dataset-BF-account').nextAll()).css('pointer-events', 'auto');
+    }
+  }
+}
+
 curateDatasetDropdown.addEventListener('change', function() {
   var curateSelectedbfdataset = curateDatasetDropdown.options[curateDatasetDropdown.selectedIndex].text;
   if (curateSelectedbfdataset === 'Select dataset') {
@@ -2817,32 +2845,15 @@ curateDatasetDropdown.addEventListener('change', function() {
 })
 
 curateBFaccountList.addEventListener('change', function() {
+  hideDivsOnBFAccountChange();
   curateBFAccountLoadStatus.innerHTML = "Loading account details...";
   curateDatasetDropdown.disabled = true;
   curateBFAccountLoad.style.display = 'block';
-  document.getElementById('div-bf-account-btns').style.display = "none";
-  $("#div-bf-account-btns button").hide()
 
-  // remove all datasets from current list
-  removeOptions(curateDatasetDropdown);
-  addOption(curateDatasetDropdown, "Loading", "Loading");
-
-  $('#Question-generate-dataset-BF-account').removeClass('test2');
-  $('#Question-generate-dataset-BF-account').removeClass('prev');
-
-  $($('#Question-generate-dataset-BF-account').nextAll().find('.option-card.radio-button')).removeClass('checked');
-  $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('show');
-  $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('test2');
-  $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('prev');
-  $($('#Question-generate-dataset-BF-account').nextAll()).css('pointer-events', 'auto');
-
-  var curateSelectedbfaccount = curateBFaccountList.options[curateBFaccountList.selectedIndex].text
-
+  var curateSelectedbfaccount = curateBFaccountList.options[curateBFaccountList.selectedIndex].text;
   if (curateSelectedbfaccount === 'Select') {
     curateBFAccountLoadStatus.innerHTML = "";
     curateBFAccountLoad.style.display = 'none';
-    // document.getElementById('div-bf-account-btns').style.display = "none";
-    // $("#div-bf-account-btns button").hide()
   } else{
     var myitemselect = curateSelectedbfaccount
     var option = document.createElement("option")
@@ -2853,19 +2864,25 @@ curateBFaccountList.addEventListener('change', function() {
     curateBFAccountLoadStatus.innerHTML = ""
     updateDatasetCurate(curateDatasetDropdown, curateBFaccountList);
     document.getElementById('div-bf-account-btns').style.display = "flex";
-    $("#div-bf-account-btns button").show()
+    $("#div-bf-account-btns button").show();
   }
+  // sync BF account select under Manage dataset
+  // if (bfAccountList.options[bfAccountList.selectedIndex].value !== curateSelectedbfaccount) {
+  //   loadDefaultAccount()
+  //   showAccountDetails(bfAccountList)
+    // document.getElementById('button-check-bf-account-details').click();
+    // setTimeout(function() {
+    //   bfAccountList.value = curateSelectedbfaccount;
+    // }, 5000)
+  // }
   curateDatasetDropdown.disabled = false;
 })
 
 function loadAllBFAccounts() {
-  bfSelectAccountStatus.innerHTML = "Loading existing accounts..."
-  bfAccountLoadProgress.style.display = 'block'
-  bfAccountLoadProgressCurate.style.display = 'block';
   document.getElementById('div-bf-account-btns').style.display = "none";
   $("#div-bf-account-btns button").hide()
   document.getElementById("para-filter-datasets-status").innerHTML = ""
-  updateAllBfAccountList(curateBFaccountList)
+  updateAllBfAccountList(curateBFaccountList);
 }
 
 function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
@@ -2927,29 +2944,35 @@ function updateAllBfAccountList(dropdown){
       curateBFAccountLoadStatus.innerHTML = "No existing accounts to load. Please add a new account!";
       document.getElementById('div-bf-account-btns').style.display = "none";
       $("#div-bf-account-btns buttons").hide()
+    } else {
+      curateChooseBFAccountByDefault()
     }
     // refreshAllBfDatasetLists()
     refreshBfUsersList()
     refreshBfTeamsList(bfListTeams)
+    }
+  })
+}
 
-    client.invoke("api_bf_default_account_load", (error, result) => {
-      if(error) {
-        log.error(error)
-        console.error(error)
-      } else {
-        if (result.length > 0) {
-          var myitemselect = result[0];
-          $('#bfallaccountlist option[value='+myitemselect+']').attr('selected','selected');
-          curateShowAccountDetails(curateBFaccountList)
-          curateBFAccountLoad.style.display = 'block'
-          updateDatasetCurate(curateDatasetDropdown, curateBFaccountList)
-          document.getElementById('div-bf-account-btns').style.display = "flex";
-          $("#div-bf-account-btns buttons").show()
-        }
+function curateChooseBFAccountByDefault(){
+  client.invoke("api_bf_default_account_load", (error, result) => {
+    if(error) {
+      log.error(error)
+      console.error(error)
+    } else {
+      if (result.length > 0) {
+        var myitemselect = result[0];
+        $('#bfallaccountlist option[value='+myitemselect+']').attr('selected','selected');
+        curateShowAccountDetails(curateBFaccountList)
+        curateBFAccountLoad.style.display = 'block'
+        hideDivsOnBFAccountChange()
+        updateDatasetCurate(curateDatasetDropdown, curateBFaccountList);
+        loadDefaultAccount();
+        document.getElementById('div-bf-account-btns').style.display = "flex";
+        $("#div-bf-account-btns buttons").show()
       }
-    })
-  }
-})
+    }
+  })
 }
 
 function curateShowAccountDetails(dropdown){
@@ -3003,6 +3026,7 @@ bfAddAccountBtn.addEventListener('click', () => {
       console.error(error)
       var emessage = userError(error)
       bfAddAccountStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
+      ipcRenderer.send('track-event', "Error", "Manage Dataset - Connect to your Blackfynn account", error);
     } else {
         bfAddAccountStatus.innerHTML = res + smileyCan +". Please select your account!"
         bfAccountLoadProgress.style.display = 'block'
@@ -3010,6 +3034,7 @@ bfAddAccountBtn.addEventListener('click', () => {
         keyName.value = ''
         key.value = ''
         secret.value = ''
+        ipcRenderer.send('track-event', "Success", "Manage Dataset - Connect to your Blackfynn account");
     }
     bfAddAccountBtn.disabled = false
   })
@@ -3029,12 +3054,18 @@ bfAccountList.addEventListener('change', () => {
     bfAccountLoadProgress.style.display = 'none'
     datasetPermissionList.disabled = true
   } else{
+    console.log("manage: bf account changed to: " + selectedbfaccount)
     var myitemselect = selectedbfaccount
     var option = document.createElement("option")
     option.textContent = myitemselect
     option.value = myitemselect
     bfUploadAccountList.value = selectedbfaccount
-    showAccountDetails(bfAccountLoadProgress)
+    showAccountDetails(bfAccountLoadProgress);
+  }
+  // sync BF account select under Prepare dataset -> Step 6
+  if (curateBFaccountList.options[curateBFaccountList.selectedIndex].value !== selectedbfaccount) {
+    curateBFaccountList.value = selectedbfaccount;
+    curateShowAccountDetails(curateBFaccountList)
   }
   refreshBfUsersList()
   refreshBfTeamsList(bfListTeams)
@@ -3056,6 +3087,10 @@ bfUploadAccountList.addEventListener('change', () => {
     option.value = myitemselect
     bfAccountList.value = selectedbfaccount
     showAccountDetails(bfAccountLoadProgressCurate)
+    // sync BF account select under Prepare dataset -> Step 6
+    if (curateBFaccountList.options[curateBFaccountList.selectedIndex].value !== selectedbfaccount) {
+      loadAllBFAccounts()
+    }
   }
   // refreshAllBfDatasetLists()
   refreshBfUsersList()
@@ -3101,6 +3136,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
       bfCreateNewDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
       bfCreateNewDatasetBtn.disabled = false
       enableform(bfNewDatasetForm)
+      ipcRenderer.send('track-event', "Error", "Manage Dataset - Create Empty Dataset", bfNewDatasetName.value);
     } else {
       bfCreateNewDatasetStatus.innerHTML = 'Success: created dataset' + " '" + bfNewDatasetName.value + "'" + smileyCan
       currentDatasetPermission.innerHTML = ''
@@ -3109,6 +3145,7 @@ bfCreateNewDatasetBtn.addEventListener('click', () => {
       datasetPermissionList.selectedIndex = "0"
       document.getElementById("para-filter-datasets-status").innerHTML = ""
       var numDatasets = refreshDatasetList()
+      ipcRenderer.send('track-event', "Success", "Manage Dataset - Create Empty Dataset", bfNewDatasetName.value);
       bfNewDatasetName.value = ""
       enableform(bfNewDatasetForm)
     }
@@ -3133,6 +3170,7 @@ bfRenameDatasetBtn.addEventListener('click', () => {
         var emessage = userError(error)
         bfRenameDatasetStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>" + sadCan
         bfRenameDatasetBtn.disabled = false
+        ipcRenderer.send('track-event', "Error", "Manage Dataset - Rename Existing Dataset", currentDatasetName + " to " + renamedDatasetName);
       } else {
         renameDatasetInList(currentDatasetName, renamedDatasetName);
         var numDatasets = refreshDatasetList()
@@ -3142,13 +3180,17 @@ bfRenameDatasetBtn.addEventListener('click', () => {
         renameDatasetName.value = renamedDatasetName
         bfRenameDatasetStatus.innerHTML = 'Success: renamed dataset' + " '" + currentDatasetName + "'" + ' to' + " '" + renamedDatasetName + "'"
         bfRenameDatasetBtn.disabled = false
+        ipcRenderer.send('track-event', "Success", "Manage Dataset - Rename Existing Dataset", currentDatasetName + " to " + renamedDatasetName);
       }
     })
   }
 })
 
+
+
 // Submit dataset to bf //
 bfSubmitDatasetBtn.addEventListener('click', () => {
+  var totalFileSize;
   document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
   document.getElementById("para-progress-bar-error-status").innerHTML = ""
   progressBarUploadBf.value = 0
@@ -3170,6 +3212,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       err = true
       log.error(error)
       console.error(error)
+      ipcRenderer.send('track-event', "Error", "Manage Dataset - Upload Local Dataset", selectedbfdataset);
       bfSubmitDatasetBtn.disabled = false
       pathSubmitDataset.disabled = false
     } else {
@@ -3177,6 +3220,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       log.info('Completed submit function')
       console.log('Completed submit function')
       console.log(res)
+      ipcRenderer.send('track-event', "Success", "Manage Dataset - Upload Local Dataset", selectedbfdataset, totalFileSize);
     }
   })
 
@@ -3192,7 +3236,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
       } else {
         completionStatus = res[1]
         var submitprintstatus = res[2]
-        var totalFileSize = res[3]
+        totalFileSize = res[3]
         var uploadedFileSize = res[4]
         if (submitprintstatus === "Uploading"){
           progressUploadBf.style.display = "block"
@@ -3519,6 +3563,8 @@ bfListDatasetStatus.addEventListener('change', () => {
   })
 })
 
+
+
 // Add subtitle //
 bfAddSubtitleBtn.addEventListener('click', () => {
   bfCurrentMetadataProgress.style.display = 'block'
@@ -3528,7 +3574,7 @@ bfAddSubtitleBtn.addEventListener('click', () => {
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   var inputSubtitle = bfDatasetSubtitle.value
   client.invoke("api_bf_add_subtitle", selectedBfAccount, selectedBfDataset, inputSubtitle,
-    (error, res) => {
+  (error, res) => {
     if(error) {
       log.error(error)
       console.error(error)
@@ -3536,10 +3582,12 @@ bfAddSubtitleBtn.addEventListener('click', () => {
       datasetSubtitleStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentMetadataProgress.style.display = 'none'
       enableform(bfMetadataForm)
+      ipcRenderer.send('track-event', "Error", "Manage Dataset - Add/Edit Subtitle", selectedBfDataset);
     } else {
       datasetSubtitleStatus.innerHTML = res
       bfCurrentMetadataProgress.style.display = 'none'
       enableform(bfMetadataForm)
+      ipcRenderer.send('track-event', "Success", "Manage Dataset - Add/Edit Subtitle", selectedBfDataset);
     }
   })
 })
@@ -3553,7 +3601,7 @@ bfAddDescriptionBtn.addEventListener('click', () => {
   var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text
   var markdownDescription = tuiInstance.getMarkdown()
   client.invoke("api_bf_add_description", selectedBfAccount, selectedBfDataset, markdownDescription,
-    (error, res) => {
+  (error, res) => {
     if(error) {
       log.error(error)
       console.error(error)
@@ -3561,11 +3609,13 @@ bfAddDescriptionBtn.addEventListener('click', () => {
       datasetDescriptionStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentMetadataProgress.style.display = 'none'
       enableform(bfMetadataForm)
+      ipcRenderer.send('track-event', "Error", "Manage Dataset - Add/Edit Description", selectedBfDataset);
     } else {
       datasetDescriptionStatus.innerHTML = res
       bfCurrentMetadataProgress.style.display = 'none'
       showDatasetDescription()
       enableform(bfMetadataForm)
+      ipcRenderer.send('track-event', "Success", "Manage Dataset - Add/Edit Description", selectedBfDataset);
     }
   })
 })
@@ -3640,12 +3690,14 @@ function uploadBannerImage(){
           var emessage = userError(error)
           datasetBannerImageStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
           bfCurrentMetadataProgress.style.display = 'none'
+          ipcRenderer.send('track-event', "Error", "Manage Dataset - Upload Banner Image", selectedBfDataset);
           enableform(bfMetadataForm)
         } else {
           datasetBannerImageStatus.innerHTML = res
           showCurrentBannerImage()
           bfCurrentMetadataProgress.style.display = 'none'
           enableform(bfMetadataForm)
+          ipcRenderer.send('track-event', "Success", "Manage Dataset - Upload Banner Image", selectedBfDataset);
         }
       })
     } else {
@@ -3687,17 +3739,19 @@ bfAddLicenseBtn.addEventListener('click', () => {
   /*var selectedLicense = bfListLicense.options[bfListLicense.selectedIndex].text*/
   var selectedLicense = 'Creative Commons Attribution'
   client.invoke("api_bf_add_license", selectedBfAccount, selectedBfDataset, selectedLicense,
-    (error, res) => {
+  (error, res) => {
     if(error) {
       log.error(error)
       console.error(error)
       var emessage = userError(error)
       datasetLicenseStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
       bfCurrentMetadataProgress.style.display = 'none'
+      ipcRenderer.send('track-event', "Error", "Manage Dataset - Assign License", selectedBfDataset);
       enableform(bfMetadataForm)
     } else {
       datasetLicenseStatus.innerHTML = res
       showCurrentLicense()
+      ipcRenderer.send('track-event', "Success", "Manage Dataset - Assign License", selectedBfDataset);
       enableform(bfMetadataForm)
     }
   })
@@ -3810,7 +3864,8 @@ ipcRenderer.on('warning-share-with-curation-team-selection', (event, index) => {
   }
 })
 
-function shareWithCurationTeam(){
+
+function shareWithCurationTeam() {
   datasetPermissionStatusCurationTeam.innerHTML = 'Please wait...'
   bfPostCurationProgressCuration.style.display = 'block'
   // disableform(bfPermissionForm)
@@ -3821,36 +3876,38 @@ function shareWithCurationTeam(){
   var selectedRole = 'manager'
   client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
     (error, res) => {
-    if(error) {
-      log.error(error)
-      console.error(error)
-      var emessage = userError(error)
-      datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      bfPostCurationProgressCuration.style.display = 'none'
-      enableform(bfPermissionForm)
-      bfAddPermissionCurationTeamBtn.disabled = false
-    } else {
-      showCurrentPermission()
-      var selectedStatusOption = '03. Ready for Curation (Investigator)'
-      client.invoke("api_bf_change_dataset_status", selectedBfAccount, selectedBfDataset, selectedStatusOption,
-        (error, res) => {
-        if(error) {
-          log.error(error)
-          console.error(error)
-          var emessage = userError(error)
-          datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-          bfPostCurationProgressCuration.style.display = 'none'
-          bfAddPermissionCurationTeamBtn.disabled = false
-        } else {
-          datasetPermissionStatusCurationTeam.innerHTML = 'Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"'
-          enableform(bfPermissionForm)
-          showCurrentDatasetStatus()
-          bfPostCurationProgressCuration.style.display = 'none'
-          bfAddPermissionCurationTeamBtn.disabled = false
-        }
-      })
-    }
-  })
+      if (error) {
+        log.error(error)
+        console.error(error)
+        var emessage = userError(error)
+        datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+        bfPostCurationProgressCuration.style.display = 'none'
+        enableform(bfPermissionForm)
+        bfAddPermissionCurationTeamBtn.disabled = false
+      } else {
+        showCurrentPermission()
+        var selectedStatusOption = '03. Ready for Curation (Investigator)'
+        client.invoke("api_bf_change_dataset_status", selectedBfAccount, selectedBfDataset, selectedStatusOption,
+          (error, res) => {
+            if (error) {
+              log.error(error)
+              console.error(error)
+              var emessage = userError(error)
+              datasetPermissionStatusCurationTeam.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+              ipcRenderer.send('track-event', "Error", "Disseminate Dataset - Share with Curation Team", selectedBfDataset);
+              bfPostCurationProgressCuration.style.display = 'none'
+              bfAddPermissionCurationTeamBtn.disabled = false
+            } else {
+              datasetPermissionStatusCurationTeam.innerHTML = 'Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"'
+              ipcRenderer.send('track-event', "Success", "Disseminate Dataset - Share with Curation Team", selectedBfDataset);
+              enableform(bfPermissionForm)
+              showCurrentDatasetStatus()
+              bfPostCurationProgressCuration.style.display = 'none'
+              bfAddPermissionCurationTeamBtn.disabled = false
+            }
+          })
+      }
+    })
 }
 
 // Share with Consortium
@@ -3865,7 +3922,7 @@ ipcRenderer.on('warning-share-with-consortium-selection', (event, index) => {
   }
 })
 
-function shareWithConsortium(){
+function shareWithConsortium() {
   shareConsortiumStatus.innerHTML = 'Please wait...'
   bfPostCurationProgressConsortium.style.display = 'block'
   // disableform(bfPostCurationForm)
@@ -3876,37 +3933,37 @@ function shareWithConsortium(){
   var selectedRole = 'viewer'
   client.invoke("api_bf_add_permission_team", selectedBfAccount, selectedBfDataset, selectedTeam, selectedRole,
     (error, res) => {
-    if(error) {
-      log.error(error)
-      console.error(error)
-      var emessage = userError(error)
-      shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-      bfPostCurationProgressConsortium.style.display = 'none'
-      // enableform(bfPostCurationForm)
-      bfShareConsortiumBtn.disabled = false
-    } else {
-      showCurrentPermission()
-      var selectedStatusOption = '11. Complete, Under Embargo (Investigator)'
-      client.invoke("api_bf_change_dataset_status", selectedBfAccount, selectedBfDataset, selectedStatusOption,
-        (error, res) => {
-        if(error) {
-          log.error(error)
-          console.error(error)
-          var emessage = userError(error)
-          shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-          bfPostCurationProgressConsortium.style.display = 'none'
-          // enableform(bfPostCurationForm)
-          bfShareConsortiumBtn.disabled = false
-        } else {
-          shareConsortiumStatus.innerHTML = 'Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"'
-          showCurrentDatasetStatus()
-          bfPostCurationProgressConsortium.style.display = 'none'
-          // enableform(bfPostCurationForm)
-          bfShareConsortiumBtn.disabled = false
-        }
-      })
-    }
-  })
+      if (error) {
+        log.error(error)
+        console.error(error)
+        var emessage = userError(error)
+        shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+        bfPostCurationProgressConsortium.style.display = 'none'
+        // enableform(bfPostCurationForm)
+        bfShareConsortiumBtn.disabled = false
+      } else {
+        showCurrentPermission()
+        var selectedStatusOption = '11. Complete, Under Embargo (Investigator)'
+        client.invoke("api_bf_change_dataset_status", selectedBfAccount, selectedBfDataset, selectedStatusOption,
+          (error, res) => {
+            if (error) {
+              log.error(error)
+              console.error(error)
+              var emessage = userError(error)
+              shareConsortiumStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+              bfPostCurationProgressConsortium.style.display = 'none'
+              // enableform(bfPostCurationForm)
+              bfShareConsortiumBtn.disabled = false
+            } else {
+              shareConsortiumStatus.innerHTML = 'Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"'
+              showCurrentDatasetStatus()
+              bfPostCurationProgressConsortium.style.display = 'none'
+              // enableform(bfPostCurationForm)
+              bfShareConsortiumBtn.disabled = false
+            }
+          })
+      }
+    })
 }
 
 
@@ -4691,13 +4748,13 @@ function updateBfAccountList(){
         bfAccountLoadProgressCurate.style.display = 'none'
       }
       datasetPermissionList.disabled = false
-      loadAllBFAccounts()
+      // loadAllBFAccounts()
     }
     if (res[0] === "Select" && res.length === 1) {
       bfSelectAccountStatus.innerHTML = "No existing accounts to switch. Please add a new account!"
       bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
       datasetPermissionList.disabled = true;
-      loadAllBFAccounts()
+      // loadAllBFAccounts()
     }
     bfSelectAccountStatus.innerHTML = ""
     bfAccountLoadProgress.style.display = 'none'
@@ -5446,7 +5503,7 @@ organizeDSaddNewFolder.addEventListener("click", function(event) {
 })
 
 // ///////////////////////////////////////////////////////////////////////////
-
+// recursively populate json object
 function populateJSONObjFolder(jsonObject, folderPath) {
     var myitems = fs.readdirSync(folderPath)
     myitems.forEach(element => {
@@ -5755,6 +5812,15 @@ ipcRenderer.on('selected-folders-organize-datasets', (event, path) => {
 
 function addFoldersfunction(folderArray, currentLocation) {
 
+  var uiFolders = {};
+  var importedFolders = {};
+
+  if (JSON.stringify(currentLocation["folders"]) !== "{}") {
+    for (var folder in currentLocation["folders"]) {
+      uiFolders[folder] = 1
+    }
+  }
+
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount === 1) {
     bootbox.alert({
@@ -5762,41 +5828,37 @@ function addFoldersfunction(folderArray, currentLocation) {
       centerVertical: true
     })
   } else {
-
-    // check for duplicates/folders with the same name
-    for (var i=0; i<folderArray.length;i++) {
-      var baseName = path.basename(folderArray[i])
-      var duplicate = false;
-      for (var objKey in currentLocation["folders"]) {
-        if (baseName === objKey) {
-          duplicate = true
-          break
+      // check for duplicates/folders with the same name
+      for (var i=0; i<folderArray.length;i++) {
+          var j = 1;
+          var originalFolderName = path.basename(folderArray[i]);
+          var renamedFolderName = originalFolderName;
+          while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
+            renamedFolderName = `${originalFolderName} (${j})`;
+            j++;
+          }
+          importedFolders[renamedFolderName] = {"path": folderArray[i], "original-basename": originalFolderName};
+        }
+        if (Object.keys(importedFolders).length > 0) {
+          for (var element in importedFolders) {
+            currentLocation["folders"][element] = {"type": "local", "path": importedFolders[element]["path"], "folders": {}, "files": {}, "action": ["new"]}
+            populateJSONObjFolder(currentLocation["folders"][renamedFolderName], importedFolders[element]["path"]);
+            // check if a folder has to be renamed due to duplicate reason
+            if (element !== importedFolders[element]["original-basename"]) {
+              currentLocation["folders"][element]["action"].push('renamed');
+            }
+            var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+element+'</div></div>'
+            $('#items').html(appendString)
+            listItems(currentLocation, '#items')
+            getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+            hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+            hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+          }
         }
       }
-      if (duplicate) {
-        bootbox.alert({
-          message: 'Duplicate folder name: ' + baseName,
-          centerVertical: true
-        })
-      } else {
-        currentLocation["folders"][baseName] = {"type": "local", "folders": {}, "files": {}, "action": ["new"]}
-        populateJSONObjFolder(currentLocation["folders"][baseName], folderArray[i])
-        var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+baseName+'</div></div>'
-
-        $('#items').html(appendString)
-
-        listItems(currentLocation, '#items')
-        getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-      }
-    }
-  }
 }
 
-
-
-//// Add files or folders with drag&drop
+//// Step 3. Organize dataset: Add files or folders with drag&drop
 function allowDrop(ev) {
   ev.preventDefault();
 }
@@ -5808,17 +5870,27 @@ function drop(ev) {
   var filtered = jsonPathArray.slice(1).filter(function (el) {
     return el != "";
   });
-  var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
+  var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+  var importedFiles = {};
+  var importedFolders = {};
+  var nonAllowedDuplicateFiles = [];
   ev.preventDefault();
+  var uiFiles = {};
+  var uiFolders = {};
+
+  for (var file in myPath["files"]) {
+    uiFiles[path.parse(file).name] = 1
+  }
+  for (var folder in myPath["folders"]) {
+    uiFolders[path.parse(folder).name] = 1
+  }
 
   for (var i=0; i<ev.dataTransfer.files.length;i++) {
     /// Get all the file information
     var itemPath = ev.dataTransfer.files[i].path
     var itemName = ev.dataTransfer.files[i].name
     var duplicate = false
-
     var statsObj = fs.statSync(itemPath)
-
     // check for duplicate or files with the same name
     for (var j=0; j<ev.target.children.length;j++) {
       if (itemName === ev.target.children[j].innerText) {
@@ -5826,50 +5898,42 @@ function drop(ev) {
         break
       }
     }
-
     /// check for File duplicate
     if (statsObj.isFile()) {
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
-        if (duplicate) {
-          bootbox.alert({
-            message: "Duplicate file name: " + itemName,
-            centerVertical: true
-          })
-          break
-        } else {
-            if (!["dataset_description.xlsx", "submission.xlsx", "samples.xlsx", "subjects.xlsx", "README.txt"].includes(itemName)) {
-              bootbox.alert({
-                message: "Invalid file(s). Only SPARC metadata files are allowed in the high-level dataset folder.<br> <ul><li>dataset_description (.xslx/.csv/.json)</li><li>submission (.xslx/.csv/.json)</li><li>subjects (.xslx/.csv/.json)</li><li>samples (.xslx/.csv/.json)</li><li>CHANGES.txt</li><li>README.txt</li></ul>",
-                centerVertical: true
-              })
-            } else {
-              myPath["files"][itemName] = {"path": itemPath, "description": "","additional-metadata": "", "type": "local", "action":["new"]}
-              var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
-              $(appendString).appendTo(ev.target);
-              listItems(myPath, '#items')
-              getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-              hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-              hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-            }
-        }
+        bootbox.alert({
+          message: "<p>SPARC metadata files can be imported in the next step!</p>",
+          centerVertical: true
+        })
+        break
       } else {
-        if (duplicate) {
-          bootbox.alert({
-            message: "Duplicate file name: " + itemName,
-            centerVertical: true
-          })
-          break
-        } else {
-          myPath["files"][itemName] = {"path": itemPath, "description":"","additional-metadata":"", "type": "local", "action":["new"]}
-          var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
-          $(appendString).appendTo(ev.target);
-          listItems(myPath, '#items')
-          getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-          hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-        }
-      }
+          if (JSON.stringify(myPath["files"]) === "{}") {
+            importedFiles[path.parse(itemPath).name] = {"path": itemPath, "basename":path.parse(itemPath).base}
+          } else {
+              for (var objectKey in myPath["files"]) {
+                if (objectKey !== undefined) {
+                  var nonAllowedDuplicate = false;
+                  if (itemPath === myPath["files"][objectKey]["path"]) {
+                    nonAllowedDuplicateFiles.push(itemPath);
+                    nonAllowedDuplicate = true;
+                    break
+                  }
+                }
+              }
+              if (!nonAllowedDuplicate) {
+                var j = 1;
+                var fileBaseName = itemName;
+                var originalFileNameWithoutExt = path.parse(itemName).name;
+                var fileNameWithoutExt = originalFileNameWithoutExt;
+                while (fileNameWithoutExt in uiFiles || fileNameWithoutExt in regularFiles) {
+                  fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
+                  j++;
+                }
+                importedFiles[fileNameWithoutExt] = {"path": itemPath, "basename": fileNameWithoutExt + path.parse(itemName).ext};
+              }
+            }
+          }
     } else if (statsObj.isDirectory()) {
       /// drop a folder
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
@@ -5879,32 +5943,58 @@ function drop(ev) {
           centerVertical: true
         })
       } else {
-        if (duplicate) {
-          bootbox.alert({
-            message: 'Duplicate folder name: ' + itemName,
-            centerVertical: true
-          })
-        } else {
-          var currentPath = organizeDSglobalPath.value
-          var jsonPathArray = currentPath.split("/")
-          var filtered = jsonPathArray.slice(1).filter(function (el) {
-            return el != "";
-          });
-
-          var myPath = getRecursivePath(filtered, datasetStructureJSONObj)
-          var folderJsonObject = {"folders": {}, "files": {}, "type":"local", "action":["new"]};
-          populateJSONObjFolder(folderJsonObject, itemPath)
-          myPath["folders"][itemName] = folderJsonObject
-          var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+itemName+'</div></div>'
-          $(appendString).appendTo(ev.target);
-          listItems(myPath, '#items')
-          getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-          hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+          var j = 1;
+          var originalFolderName = itemName;
+          var renamedFolderName = originalFolderName;
+          while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
+            renamedFolderName = `${originalFolderName} (${j})`;
+            j++;
+          }
+          importedFolders[renamedFolderName] = {"path": itemPath, "original-basename": originalFolderName};
         }
       }
     }
+  if (nonAllowedDuplicateFiles.length > 0) {
+    var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles)
+    bootbox.alert({
+      message: 'The following files are already imported into the current location of your dataset: <p><ul>'+listElements+'</ul></p>',
+      centerVertical: true
+    })
   }
+  // // now append to UI files and folders
+  if (Object.keys(importedFiles).length > 0) {
+    for (var element in importedFiles) {
+      myPath["files"][importedFiles[element]["basename"]] = {"path": importedFiles[element]["path"], "type": "local", "description":"", "additional-metadata":"", "action":["new"]}
+      // append "renamed" to "action" key if file is auto-renamed by UI
+      var originalName = path.parse(myPath["files"][importedFiles[element]["basename"]]["path"]).name;
+      if (element !== originalName) {
+        myPath["files"][importedFiles[element]["basename"]]["action"].push('renamed');
+      }
+      var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+importedFiles[element]["basename"]+'</div></div>'
+      $(appendString).appendTo(ev.target);
+      listItems(myPath, '#items')
+      getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+      }
+    }
+    if (Object.keys(importedFolders).length > 0) {
+      for (var element in importedFolders) {
+        myPath["folders"][element] = {"type": "local", "path": importedFolders[element]["path"], "folders": {}, "files": {}, "action": ["new"]}
+        // append "renamed" to "action" key if file is auto-renamed by UI
+        var originalName = path.parse(myPath["folders"][element]["path"]).name;
+        if (element !== originalName) {
+          myPath["folders"][element]["action"].push('renamed');
+        }
+        populateJSONObjFolder(myPath["folders"][element], importedFolders[element]["path"]);
+        var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+element+'</div></div>'
+        $(appendString).appendTo(ev.target);
+        listItems(myPath, '#items')
+        getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
+        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
+        }
+      }
 }
 
 // SAVE FILE ORG
@@ -6147,42 +6237,60 @@ function manageDesc(ev) {
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
   //// load existing metadata/description
   loadDetailsContextMenu(fileName, myPath, 'textarea-file-description', 'textarea-file-metadata', 'para-local-path-file')
+  $("#button-confirm-display-details-file").html('Confirm');
   showDetailsFile()
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
   fileNameForEdit = fileName
 }
 
+function updateFileDetails(ev) {
+  var fileName = fileNameForEdit;
+  var filtered = getGlobalPath(organizeDSglobalPath);
+  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
+  triggerManageDetailsPrompts(ev, fileName, myPath, 'textarea-file-description', 'textarea-file-metadata')
+  /// list Items again with new updated JSON structure
+  listItems(myPath, '#items')
+  getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj);
+  // find checkboxes here and uncheck them
+  for (var ele of $($(ev).siblings().find('input:checkbox'))) {
+    document.getElementById(ele.id).checked = false
+  }
+  // close the display
+  showDetailsFile();
+}
+
 function addDetailsForFile(ev) {
-  /// first confirm with users
-  bootbox.confirm({
-     title: "Adding additional metadata for files",
-     message: "If you check any checkboxes above, metadata will be modified for all files in the folder. Would you like to continue?",
-     centerVertical: true,
-     button: {
-       ok: {
-         label: 'Yes',
-         className: 'btn-primary'
-       }
-     },
-     callback: function(r) {
-       if (r!==null) {
-         var fileName = fileNameForEdit;
-         var filtered = getGlobalPath(organizeDSglobalPath);
-         var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
-         triggerManageDetailsPrompts(ev, fileName, myPath, 'textarea-file-description', 'textarea-file-metadata')
-         /// list Items again with new updated JSON structure
-         listItems(myPath, '#items')
-         getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj);
-         // find checkboxes here and uncheck them
-         for (var ele of $($(ev).siblings().find('input:checkbox'))) {
-           document.getElementById(ele.id).checked = false
-         }
-         // close the display
-         showDetailsFile();
-       }
-     }
-   })
+  var checked = false;
+  for (var ele of $($(ev).siblings()).find('input:checkbox')) {
+    if ($(ele).prop('checked')) {
+      checked = true
+      break
+    }
+  }
+  /// if at least 1 checkbox is checked, then confirm with users
+  if (checked) {
+    bootbox.confirm({
+      title: "Adding additional metadata for files",
+      message: "If you check any checkboxes above, metadata will be modified for all files in the folder. Would you like to continue?",
+      centerVertical: true,
+      button: {
+        ok: {
+          label: 'Yes',
+          className: 'btn-primary'
+        }
+      },
+      callback: function(r) {
+        if (r!==null && r === true) {
+          updateFileDetails(ev);
+          $("#button-confirm-display-details-file").html('Added')
+        }
+      }
+    })
+  } else {
+      updateFileDetails(ev)
+      $("#button-confirm-display-details-file").html('Added')
+  }
 }
 
 
@@ -6292,7 +6400,7 @@ document.getElementById('button-generate').addEventListener('click', function() 
         var message = ""
         error_files = res[0]
         error_folders = res[1]
-        
+
         if (error_files.length>0){
           var error_message_files = backend_to_frontend_warning_message(error_files)
           message += "\n" + error_message_files

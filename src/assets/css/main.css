@@ -859,7 +859,7 @@ button[disabled]{
   line-height: 1.5;
   float:right;
   transform: translateX(350px);
-  transition: transform 1s ease-in-out;
+  transition: transform 1.4s ease-in-out;
   display: grid;
   grid-template-rows: auto;
   text-align: center;
