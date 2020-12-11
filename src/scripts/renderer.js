@@ -2,26 +2,26 @@
 // Import required modules
 //////////////////////////////////
 
-const zerorpc = require("zerorpc-rotkehlchen")
-const fs = require("fs")
-const os = require("os")
-const path = require('path')
-const {ipcRenderer} = require('electron')
-const Editor = require('@toast-ui/editor')
+const zerorpc = require("zerorpc-rotkehlchen");
+const fs = require("fs");
+const os = require("os");
+const path = require('path');
+const {ipcRenderer} = require('electron');
+const Editor = require('@toast-ui/editor');
 const remote = require('electron').remote;
 const imageDataURI = require("image-data-uri");
 const log  = require("electron-log");
 const Airtable = require('airtable');
 require('v8-compile-cache');
 const Tagify = require('@yaireo/tagify');
-const https = require('https')
+const https = require('https');
 const $ = require( "jquery" );
 const PDFDocument = require('pdfkit');
 const html2canvas = require("html2canvas");
 const removeMd = require('remove-markdown');
-const electron = require('electron')
-const bootbox = require('bootbox')
-
+const electron = require('electron');
+const bootbox = require('bootbox');
+const select2 = require('select2');
 const app = remote.app;
 
 //////////////////////////////////
@@ -383,6 +383,16 @@ const redColor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivative", "docs", "primary", "protocol", "source"]
 const smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">'
 const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
+
+
+//////////////////////////////////
+// Add the select2 dropdown features to all the 
+// dropdowns with the class 'select2-dropdown'
+//////////////////////////////////
+select2();
+$(document).ready(function() {
+  $('.select2-dropdown').select2();
+});
 
 //////////////////////////////////
 // Operations on JavaScript end only
@@ -1755,12 +1765,12 @@ function grabCompletenessInfo() {
 }
 
 //// upon choosing a dataset, populate current description
-datasetDescriptionFileDataset.addEventListener("change", function() {
+$(datasetDescriptionFileDataset).on('select2:select', function (e) {
   document.getElementById("ds-description").innerHTML = "Loading..."
   document.getElementById("ds-description").disabled = true;
   syncDatasetDropdownOption(datasetDescriptionFileDataset)
   showDatasetDescription()
-})
+});
 
 /// detect empty required fields and raise a warning
 function detectEmptyRequiredFields(funding) {
@@ -2833,7 +2843,8 @@ function hideDivsOnBFAccountChange() {
   }
 }
 
-curateDatasetDropdown.addEventListener('change', function() {
+$(curateDatasetDropdown).on('select2:select', function (e) {
+  console.log("test");
   var curateSelectedbfdataset = curateDatasetDropdown.options[curateDatasetDropdown.selectedIndex].text;
   if (curateSelectedbfdataset === 'Select dataset') {
     hideNextDivs("Question-generate-dataset-BF-dataset");
@@ -2842,7 +2853,7 @@ curateDatasetDropdown.addEventListener('change', function() {
       document.getElementById('button-confirm-bf-dataset').click();
     }
   }
-})
+});
 
 curateBFaccountList.addEventListener('change', function() {
   hideDivsOnBFAccountChange();
@@ -3313,7 +3324,7 @@ ipcRenderer.on('selected-submit-dataset', (event, filepath) => {
 
 
 // Upload local dataset
-bfDatasetList.addEventListener('change', () => {
+$(bfDatasetList).on('select2:select', function (e) {
   var listSelectedIndex = bfDatasetList.selectedIndex
   bfDatasetListMetadata.selectedIndex = listSelectedIndex
   metadataDatasetlistChange()
@@ -3330,14 +3341,14 @@ bfDatasetList.addEventListener('change', () => {
   postCurationListChange()
   datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
   showDatasetDescription()
-})
+});
 
 // Rename dataset
-bfDatasetListRenameDataset.addEventListener('change', () => {
+$(bfDatasetListRenameDataset).on('select2:select', function (e) {
   renameDatasetlistChange()
   syncDatasetDropdownOption(bfDatasetListRenameDataset)
   bfRenameDatasetStatus.innerHTML = ""
-})
+});
 
 function renameDatasetlistChange(){
   if (bfDatasetListRenameDataset.value === 'Select dataset'){
@@ -3348,7 +3359,7 @@ function renameDatasetlistChange(){
 }
 
 // Add metadata to Blackfynn dataset
-bfDatasetListMetadata.addEventListener('change', () => {
+$(bfDatasetListMetadata).on('select2:select', function (e) {
   var listSelectedIndex = bfDatasetListMetadata.selectedIndex
   bfDatasetListPermission.selectedIndex = listSelectedIndex
   permissionDatasetlistChange()
@@ -3365,7 +3376,7 @@ bfDatasetListMetadata.addEventListener('change', () => {
   postCurationListChange()
   datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
   showDatasetDescription()
-})
+});
 
 function metadataDatasetlistChange(){
   bfCurrentMetadataProgress.style.display = 'block'
@@ -3381,20 +3392,20 @@ function metadataDatasetlistChange(){
 }
 
 // Manage dataset permission
-bfDatasetListPermission.addEventListener('change', () => {
+$(bfDatasetListPermission).on('select2:select', function (e) {
   document.getElementById("para-dataset-permission-status").innerHTML = ""
   document.getElementById("para-dataset-permission-current").innerHTML = ""
   document.getElementById("para-dataset-permission-status-pi").innerHTML = ""
   document.getElementById("para-dataset-permission-status-team").innerHTML = ""
-
+  
   bfListUsers.selectedIndex = 0
   bfListRoles.selectedIndex = 0
   bfListTeams.selectedIndex = 0
   bfListRolesTeam.selectedIndex = 0
   bfListUsersPI.selectedIndex = 0
-
+  
   syncDatasetDropdownOption(bfDatasetListPermission)
-})
+});
 
 function permissionDatasetlistChange(){
   bfCurrentPermissionProgress.style.display = 'block'
@@ -3453,7 +3464,7 @@ function syncDatasetDropdownOption(dropdown) {
 }
 
 // Change dataset status
-bfDatasetListDatasetStatus.addEventListener('change', () => {
+$(bfDatasetListDatasetStatus).on('select2:select', function (e) {
   var listSelectedIndex = bfDatasetListDatasetStatus.selectedIndex
   bfDatasetListMetadata.selectedIndex = listSelectedIndex
   metadataDatasetlistChange()
@@ -3470,7 +3481,8 @@ bfDatasetListDatasetStatus.addEventListener('change', () => {
   postCurationListChange()
   datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
   showDatasetDescription()
-})
+});
+
 
 function datasetStatusListChange(){
   bfCurrentDatasetStatusProgress.style.display = 'block'
@@ -3478,7 +3490,7 @@ function datasetStatusListChange(){
 }
 
 // Post-curation
-bfDatasetListPostCurationCuration.addEventListener('change', () => {
+$(bfDatasetListPostCurationCuration).on('select2:select', function (e) {
   var listSelectedIndex = bfDatasetListPostCurationCuration.selectedIndex
   bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
   bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
@@ -3493,7 +3505,7 @@ bfDatasetListPostCurationCuration.addEventListener('change', () => {
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
   postCurationListChange()
-})
+});
 
 bfDatasetListPostCurationPublish.addEventListener('change', () => {
   var listSelectedIndex = bfDatasetListPostCurationPublish.selectedIndex
