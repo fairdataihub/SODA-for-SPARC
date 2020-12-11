@@ -11,27 +11,33 @@
     "build-linux": "electron-builder build --linux --publish never",
     "deploy-win": "electron-builder build --win --publish always",
     "deploy-mac": "electron-builder build --mac --publish always",
-    "deploy-linux": "electron-builder build --linux --publish always"
+    "deploy-linux": "electron-builder build --linux --publish always",
+    "postinstall": "electron-builder install-app-deps"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/bvhpatel/SODA.git"
   },
   "build": {
-    "appId": "com.electron.soda",
+    "appId": "com.calmi2.soda",
     "asar": false,
     "files": [
-      "**/*"
+      "**/*",
+      "!pysoda/",
+      "!build/",
+      "!api.spec"
     ],
     "win": {
+      "target": "nsis",
       "icon": "assets/app-icon/win/soda_icon256.ico"
     },
     "mac": {
+      "target": "dmg",
       "icon": "assets/app-icon/mac/soda_icon.icns",
       "darkModeSupport": false
     },
     "linux": {
-      "target": "AppImage*",
+      "target": "AppImage",
       "icon": "assets/app-icon/png/soda_icon.png"
     },
     "nsis": {

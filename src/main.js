@@ -116,21 +116,32 @@ function initialize () {
     })*/
 
     mainWindow.on('close', (e) => {
-      if (app.showExitPrompt) {
-        e.preventDefault() // Prevents the window from closing
-        if (user_restart_confirmed) {
+      if (!user_restart_confirmed) {
+        if (app.showExitPrompt) {
+          e.preventDefault() // Prevents the window from closing
+          if (user_restart_confirmed) {
+            quit_app();
+          }
+          dialog.showMessageBox(BrowserWindow.getFocusedWindow(), {
+            type: 'question',
+            buttons: ['Yes', 'No'],
+            title: 'Confirm',
+            message: 'Any running proccess will be stopped. Are you sure you want to quit?'
+          }, function (response) {
+            if (response === 0) { // Runs the following if 'Yes' is clicked
+              quit_app();
+            }
+          })
+        }
+      }
+      else {
+        if (process.platform == "darwin") {
+          exitPyProc();
+          app.exit();
+        }
+        else {
           quit_app();
         }
-        dialog.showMessageBox(BrowserWindow.getFocusedWindow(), {
-          type: 'question',
-          buttons: ['Yes', 'No'],
-          title: 'Confirm',
-          message: 'Any running proccess will be stopped. Are you sure you want to quit?'
-        }, function (response) {
-          if (response === 0) { // Runs the following if 'Yes' is clicked
-          quit_app();
-          }
-        })
       }
     })
 
