@@ -5,7 +5,9 @@
     <header class="section-header">
        <div class="section-wrapper">
          <h1>
-           <i class="fas fa-digital-tachograph" style="margin-right:20px"></i>
+           <svg style="margin-right: 10px; margin-bottom:-3px;" width="22px" height="22px" viewBox="0 0 16 16" class="bi bi-server" fill=var(--color-teal) xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M1.333 2.667C1.333 1.194 4.318 0 8 0s6.667 1.194 6.667 2.667V4C14.665 5.474 11.68 6.667 8 6.667 4.318 6.667 1.333 5.473 1.333 4V2.667zm0 3.667v3C1.333 10.805 4.318 12 8 12c3.68 0 6.665-1.193 6.667-2.665V6.334c-.43.32-.931.58-1.458.79C11.81 7.684 9.967 8 8 8c-1.967 0-3.81-.317-5.21-.876a6.508 6.508 0 0 1-1.457-.79zm13.334 5.334c-.43.319-.931.578-1.458.789-1.4.56-3.242.876-5.209.876-1.967 0-3.81-.316-5.21-.876a6.51 6.51 0 0 1-1.457-.79v1.666C1.333 14.806 4.318 16 8 16s6.667-1.194 6.667-2.667v-1.665z"/>
+          </svg>
            Manage Datasets
          </h1>
          <h3>
@@ -42,7 +44,9 @@
               <h5> Generate <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients"> API key and secret</a> from your Blackfynn account and enter below
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                   <span class="tooltiptext">Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients" style="color:white;"> Blackfynn Help page</a>
-                  for generating API key and secret and setting up your Blackfynn account in SODA during your first use. The account will then be remembered by SODA for all subsequent uses and be accessible under the "Select existing account" tab. Note that the account key and secret will be stored on your computer only, so neither the SODA Team nor anyone else besides you will have access to your Blackfynn account.
+                  for generating API key and secret and setting up your Blackfynn account in SODA during your first use. 
+                  <br><br>
+                  The account will then be remembered by SODA for all subsequent uses and be accessible under the "Select existing account" tab.
                   </span>
                 </div>
               </h5> <br>
@@ -97,7 +101,7 @@
                   <span class="tooltiptext">
                     You will see multiple dropdown lists throughout the SODA interface listing you Blackfynn datasets. You can filter those lists based on your permissions on the dataset.
                     <br><br>
-                    The default filter is "All" that shows you all the datasets for which you have permissions. It may take some time (1-2 minutes) to load the datasets initially since we have to check permissions one by one (there is no faster way currently). You can then change the filter to more specific permissions.
+                    The default filter is "All" that shows you all the datasets for which you have permissions.
                     <br><br>
                     See our <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> on Blackfynn permissions for more information.
                   </span>
@@ -175,7 +179,19 @@
              </div>
              </h5>
              <div class="demo-controls" style="margin-top: 15px">
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
                <select class="my-dropdown" style="width:100%" id="bfdatasetlist_renamedataset">
+=======
+               <select class="my-dropdown select2-dropdown" style="width:80%" id="bfdatasetlist_renamedataset">
+>>>>>>> dropdowns updated
+=======
+               <select class="my-dropdown select2-dropdown" style="width:80%" id="bfdatasetlist_renamedataset">
+>>>>>>> dropdowns updated
+=======
+               <select class="my-dropdown select2-dropdown" style="width:80%" id="bfdatasetlist_renamedataset">
+>>>>>>> aa3904d0c1af79a2c75ced7c0569dc12b2939b50
                  <option> Select dataset </option>
                </select>
                <!-- <p></p> -->
@@ -221,7 +237,19 @@
              </div>
            </h5>
            <div class="demo-controls" style="margin-top: 15px">
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
              <select class="my-dropdown" style="width:100%" id="bfdatasetlist_metadata">
+=======
+             <select class="my-dropdown select2-dropdown" style="width:80%" id="bfdatasetlist_metadata">
+>>>>>>> dropdowns updated
+=======
+             <select class="my-dropdown select2-dropdown" style="width:80%" id="bfdatasetlist_metadata">
+>>>>>>> dropdowns updated
+=======
+             <select class="my-dropdown select2-dropdown" style="width:80%" id="bfdatasetlist_metadata">
+>>>>>>> aa3904d0c1af79a2c75ced7c0569dc12b2939b50
                <option> Select dataset </option>
              </select>
 
@@ -412,7 +440,7 @@
              </div>
            </h5>
            <div class="demo-controls" style="margin-top: 15px">
-             <select class="my-dropdown" style="width:100%;" id="bfdatasetlist_permission">
+             <select class="my-dropdown select2-dropdown" style="width:100%;" id="bfdatasetlist_permission">
                <option> Select dataset </option>
              </select>
              <!-- <p></p> -->
@@ -443,9 +471,6 @@
                Giving permissions to other members and/or team is only necessary if you need them to contribute to the dataset.
                <br>
                <br>
-               Sharing with the SPARC Curation Team will assign them "manager" role, which is necessary for them to access your dataset when it is ready to be reviewed, and set the dataset status to "03. Ready for Curation" thus adding the dataset to the Curation Team's queue for review. It is then highly recommended to not make any changes to your dataset.
-               <br>
-               <br>
                See our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide.
                </span>
              </div>
@@ -471,7 +496,7 @@
                <h5>
                </h5>
                <div class="demo-controls">
-                 <select class="my-dropdown" id="bf_list_users_pi">
+                 <select class="select2-dropdown my-dropdown" style="width:60%;padding: 8px 12px;height: 38px;" id="bf_list_users_pi">
                    <option> Select PI </option>
                  </select>
                </div>
@@ -487,7 +512,7 @@
                <h5>
                </h5>
                <div class="demo-controls">
-                 <select class="my-dropdown" id="bf_list_users">
+                 <select class="my-dropdown select2-dropdown" style="width:60%;padding: 8px 12px;height: 38px;" id="bf_list_users">
                    <option> Select user </option>
                  </select>
                </div>
@@ -515,7 +540,7 @@
              <h5>
              </h5>
              <div class="demo-controls">
-               <select class="my-dropdown" id="bf_list_teams">
+               <select class="my-dropdown select2-dropdown" style="width:60%;padding: 8px 12px;height: 90px;" id="bf_list_teams">
                  <option> Select team </option>
                </select>
              </div>
@@ -579,7 +604,7 @@
              </div>
            </h5>
            <div class="demo-controls" style="margin-top: 15px;width:100%">
-             <select class="my-dropdown" style="width:80%;" id="bfdatasetlist">
+             <select class="my-dropdown select2-dropdown" style="width:80%;" id="bfdatasetlist">
                <option> Select dataset </option>
              </select>
            </div>
@@ -638,7 +663,7 @@
            <br/>
 
            <div class="demo-controls" style="margin-top: 15px">
-             <select class="my-dropdown" style="width:80%" id="bfdatasetlist_dataset_status">
+             <select class="my-dropdown select2-dropdown" style="width:80%" id="bfdatasetlist_dataset_status">
                <option> Select dataset </option>
              </select>
              <p></p>
@@ -652,13 +677,6 @@
            <h5> View/change status
              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                <span class="tooltiptext">
-               Investigators should only have to change dataset status to one of the following four options:
-                 <ul >
-                   <li>"02. Work in Progress (Investigator)": Select to indicate that you are working on your dataset </li>
-                   <li> "03. Ready for Curation (Investigator)": Select to inform the SPARC Dataset Curation Team that your dataset is ready to be reviewed (done automatically in SODA when you click on "Share with Curation Team" under "Manage dataset permissions"). You dataset will be added to the curation queue. Please note that the SPARC Dataset Curation Team will not look into your dataset until you change the status to this option. </li>
-                   <li> "11. Complete, Under Embargo (Investigator)": Select to share your dataset with the SPARC Consortium. This will give viewer permissions to the SPARC Embargoed Data Sharing Group and will therefore allow any SPARC investigator who has signed the SPARC Non-disclosure form to see your data. </li>
-                   <li> "12. Published (Investigator)": Select this option once you have published your dataset. One year after the initial upload of your dataset, you must publish your dataset to Blackfynn Discover, which populates the SPARC Portal. To do this, open the dataset of interest on the Blackfynn webpage, click on the Settings tab on the left, and select Publish Dataset. </li>
-                 </ul>
                To find out more about dataset status, please visit <a href="https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd" style="color:white;"> docs.sparc.science </a>.
                </span>
              </div>
