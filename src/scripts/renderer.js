@@ -3205,7 +3205,7 @@ bfSubmitDatasetBtn.addEventListener('click', () => {
     if (error) {
       document.getElementById("para-please-wait-manage-dataset").innerHTML = ""
       var emessage = userError(error)
-      document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'> Error: " + emessage + sadCan + "</span>"
+      document.getElementById("para-progress-bar-error-status").innerHTML = "<span style='color: red;'>" + emessage + sadCan + "</span>"
       document.getElementById("para-progress-bar-status").innerHTML = ""
       progressUploadBf.style.display = "none"
       progressBarUploadBf.value = 0
