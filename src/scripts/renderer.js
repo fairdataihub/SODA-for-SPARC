@@ -2932,6 +2932,7 @@ function updateAllBfAccountList(dropdown){
       curateBFAccountLoadStatus.innerHTML = ""
       curateBFAccountLoad.style.display = 'none'
     }
+    curateChooseBFAccountByDefault()
 
     var options = dropdown.getElementsByTagName("option");
     options[0].disabled = true;
@@ -2940,17 +2941,16 @@ function updateAllBfAccountList(dropdown){
       curateBFAccountLoadStatus.innerHTML = "No existing accounts to load. Please add a new account!";
       document.getElementById('div-bf-account-btns').style.display = "none";
       $("#div-bf-account-btns buttons").hide()
-    } else {
-      curateChooseBFAccountByDefault()
     }
     // refreshAllBfDatasetLists()
-    refreshBfUsersList()
-    refreshBfTeamsList(bfListTeams)
+    // refreshBfUsersList()
+    // refreshBfTeamsList(bfListTeams)
     }
   })
 }
 
 function curateChooseBFAccountByDefault(){
+  curateBFAccountLoad.style.display = 'block'
   client.invoke("api_bf_default_account_load", (error, result) => {
     if(error) {
       log.error(error)
@@ -2960,7 +2960,6 @@ function curateChooseBFAccountByDefault(){
         var myitemselect = result[0];
         $('#bfallaccountlist option[value="'+myitemselect+'"]').attr('selected','selected');
         curateShowAccountDetails(curateBFaccountList)
-        curateBFAccountLoad.style.display = 'block'
         hideDivsOnBFAccountChange()
         updateDatasetCurate(curateDatasetDropdown, curateBFaccountList);
         // loadDefaultAccount();
@@ -2972,9 +2971,9 @@ function curateChooseBFAccountByDefault(){
           option.disabled = true;
           datasetPermissionList.disabled = true;
           curateBFAccountLoadStatus.innerHTML = "No existing accounts to load. Please add a new account!"
-          curateBFAccountLoad.style.display = 'none'
       }
     }
+    curateBFAccountLoad.style.display = 'none'
   })
 }
 
@@ -3032,7 +3031,8 @@ bfAddAccountBtn.addEventListener('click', () => {
     } else {
         bfAddAccountStatus.innerHTML = res + smileyCan +". Please select your account!"
         bfAccountLoadProgress.style.display = 'block'
-        updateBfAccountList()
+        updateBfAccountList();
+        updateAllBfAccountList(curateBFaccountList);
         keyName.value = ''
         key.value = ''
         secret.value = ''
@@ -5559,8 +5559,10 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
       log.error(error)
       console.error(error);
     } else {
+      curateBFAccountLoadStatus.innerHTML = "Loading account..."
+      curateBFAccountLoad.style.display = 'block'
       updateBfAccountList();
-      // loadAllBFAccounts();
+      updateAllBfAccountList(curateBFaccountList);
       $("#bootbox-key-name").val("");
       $("#bootbox-api-key").val("");
       $("#bootbox-api-secret").val("");
