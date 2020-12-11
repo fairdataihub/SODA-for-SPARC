@@ -333,6 +333,7 @@ button.download-metadata:hover {
   border:none;
   border-color:var(--color-teal);
   background-clip:border-box;
+  cursor: pointer;
 }
 
 .button-milestone-upload {
