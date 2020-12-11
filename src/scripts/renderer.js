@@ -2450,7 +2450,7 @@ curateDatasetBtn.addEventListener('click', () => {
           if (res[0].includes('Success: COMPLETED!')){
             progressBarCurate.value = 100
             document.getElementById("para-please-wait-curate").innerHTML = "";
-            document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + smileyCan
+            document.getElementById("para-curate-progress-bar-status").innerHTML = res[0] + smileyCan;
           } else {
             var value = (curatedDatasetSize / totalDatasetSize) * 100
             progressBarCurate.value = value
@@ -6369,6 +6369,20 @@ document.getElementById("button-generate-comeback").addEventListener('click', fu
   $('#generate-dataset-tab').addClass('tab-active');
 })
 
+// function to hide the sidebar and disable the sidebar expand button
+function forceActionSidebar(action) {
+  if (action === "hide") {
+    if (!$('#main-nav').hasClass('active')) {
+      $('#sidebarCollapse').click();
+    }
+    $('#sidebarCollapse').prop("disabled", true)
+  } else {
+      $('#sidebarCollapse').toggleClass('active');
+      $('#main-nav').toggleClass('active');
+      $('#sidebarCollapse').prop("disabled", false)
+  }
+}
+
 /// MAIN CURATE NEW ///
 
 const progressBarNewCurate = document.getElementById('progress-bar-new-curate');
@@ -6380,6 +6394,7 @@ document.getElementById('button-generate').addEventListener('click', function() 
   document.getElementById('div-vertical-progress-bar').style.display = "none";
   document.getElementById('div-generate-comeback').style.display = "none"
   document.getElementById('generate-dataset-progress-tab').style.display = "flex";
+  forceActionSidebar('hide')
 
   // updateJSON structure after Generate dataset tab
   updateJSONStructureGenerate();
@@ -6434,6 +6449,8 @@ ipcRenderer.on('warning-empty-files-folders-generate-selection', (event, index) 
     initiate_generate()
   } else {
     console.log("Stop")
+    // then show the sidebar again
+    forceActionSidebar('show')
     document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
     document.getElementById('div-generate-comeback').style.display = "flex"
   }
@@ -6459,7 +6476,8 @@ function initiate_generate() {
         document.getElementById('div-new-curate-progress').style.display = "none";
         generateProgressBar.value = 0;
         log.error(error)
-        console.error(error)
+        console.error(error);
+        forceActionSidebar('show');
         client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, result) => {
             if (error) {
               log.error(error)
@@ -6473,7 +6491,7 @@ function initiate_generate() {
         })
       } else {
         log.info('Completed curate function')
-        console.log('Completed curate function')
+        console.log('Completed curate function');
         client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, result) => {
             if (error) {
               log.error(error)
@@ -6541,7 +6559,8 @@ function initiate_generate() {
       if (countDone > 1){
         log.info('Done curate track')
         console.log('Done curate track')
-        clearInterval(timerProgress)
+        clearInterval(timerProgress);
+        forceActionSidebar('show')
       }
     }
   }
