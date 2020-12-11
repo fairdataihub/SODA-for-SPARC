@@ -93,7 +93,7 @@ If you want to contribute, modify SODA to better suit your needs, or compile it 
 SODA is distributed under the MIT License. See [LICENSE](https://github.com/bvhpatel/SODA/blob/master/LICENSE) for more information.
 
 ## Privacy Policy
-SODA uses Google Analytics to track user interactions with the application. No identifying personal information will be saved. We only use these features to spot errors, classify user events within the app and provide usage statistics for the SPARC program. This information will not be shared with any outside third parties or other companies and will only be used to make your experience with SODA better. To learn more about what is tracked and how we use Google Analytics within SODA, please read our [Privacy Policy](https://github.com/bvhpatel/SODA/wiki/Privacy-Policy).
+SODA uses Google Analytics to track user interactions with the application. Tracking is anonymous and no identifying personal information is collected. We only use these features to spot errors for improving user experience, classify user events within the app, and provide usage statistics for the SPARC program. To learn more about what is tracked and how we use Google Analytics within SODA, please read our [Privacy Policy](https://github.com/bvhpatel/SODA/wiki/Privacy-Policy).
 
 ## Acknowledgements
 * [NIH SPARC Initiative](https://commonfund.nih.gov/sparc)
@@ -123,5 +123,6 @@ SODA uses Google Analytics to track user interactions with the application. No i
 ## Developers
 * Bhavesh Patel (California Medical Innovations Institute)
 * Tram Ngo (California Medical Innovations Institute)
+* Sanjay Soundarajan (California Medical Innovations Institute)
 * Parya Aghasafari (UC Davis)
 * Karl Helmer (Harvard Medical School/Massachusetts General Hospital)
