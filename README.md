@@ -93,7 +93,7 @@ If you want to contribute, modify SODA to better suit your needs, or compile it 
 SODA is distributed under the MIT License. See [LICENSE](https://github.com/bvhpatel/SODA/blob/master/LICENSE) for more information.
 
 ## Privacy Policy
-SODA uses Google Analytics to track user interactions with the application. Tracking is anonymous and no identifying personal information is collected. Tracking is implemented as part of our agreement with the SPARC program to report usage statistics for SODA. Tracking is also used to spot errors and subsequently improve user experience. To learn more about what is tracked and how we use Google Analytics within SODA, please read our [Privacy Policy](https://github.com/bvhpatel/SODA/wiki/Privacy-Policy).
+SODA uses Google Analytics to track user interactions with the application. Tracking is anonymous and no identifying personal information is collected. Tracking is implemented as part of our agreement with the SPARC program to report usage statistics for SODA. Tracking is also used to indentify errors and subsequently improve user experience. To learn more about what is tracked and how we use Google Analytics within SODA, please read our [Privacy Policy](https://github.com/bvhpatel/SODA/wiki/Privacy-Policy).
 
 ## Acknowledgements
 * [NIH SPARC Initiative](https://commonfund.nih.gov/sparc)
