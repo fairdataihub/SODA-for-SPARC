@@ -1244,8 +1244,8 @@ input::-webkit-calendar-picker-indicator {
 .slider:before {
   position: absolute;
   content: "";
-  height: 27px;
-  width: 27px;
+  height: 23px;
+  width: 23px;
   left: 4px;
   bottom: 2px;
   background-color: white;
