@@ -1148,14 +1148,10 @@ def create_high_level_manifest_files(soda_json_structure):
         
         def file_manifest_entry(file_key, file, relative_path, dict_folder_manifest):
             #filename
-<<<<<<< HEAD
             if relative_path:
                 filename = relative_path + '/' + file_key
             else:
                 filename = file_key
-=======
-            filename = relative_path + '/' + file_key
->>>>>>> updated curate linux error
             dict_folder_manifest["filename"].append(filename)
             #timestamp
             file_type = file["type"]
