@@ -439,6 +439,65 @@ var milestonePath = path.join(metadataPath, milestoneFileName);
 var defaultAwardPath = path.join(metadataPath, defaultAwardFileName);
 var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 
+// initiate Tagify input fields for Dataset description file
+var keywordInput = document.getElementById('ds-keywords'),
+keywordTagify = new Tagify(keywordInput, {
+    duplicates: false,
+    maxTags  : 5
+})
+
+var otherFundingInput = document.getElementById('ds-other-funding'),
+otherFundingTagify = new Tagify(otherFundingInput, {
+    duplicates: false,
+})
+
+var parentDSTagify = new Tagify(parentDSDropdown, {
+  enforceWhitelist: true,
+  whitelist: [],
+  duplicates: false,
+  dropdown : {
+    maxItems: Infinity,
+    enabled   : 0,
+    closeOnSelect : true
+  }
+})
+
+
+/// initiate tagify for contributor roles
+var currentContributortagify = new Tagify(contributorRoles, {
+    whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+    dropdown : {
+        classname : "color-blue",
+        enabled   : 0,         // show the dropdown immediately on focus
+        maxItems  : 25,
+        // position  : "text",    // place the dropdown near the typed text
+        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+    },
+    duplicates: false
+});
+
+var currentAffliationtagify = new Tagify(affiliationInput, {
+    dropdown : {
+        classname : "color-blue",
+        enabled   : 0,         // show the dropdown immediately on focus
+        maxItems  : 25,
+        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+    },
+    duplicates: false
+});
+
+var completenessInput = document.getElementById('ds-completeness'),
+completenessTagify = new Tagify(completenessInput, {
+    whitelist : ["hasChildren", "hasNext"],
+    enforceWhitelist: true,
+    duplicates: false,
+    maxTags   : 2,
+    dropdown : {
+      enabled   : 0,
+      closeOnSelect : true
+    }
+})
+
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1144,64 +1203,6 @@ ipcRenderer.on('selected-metadata-submission', (event, dirpath, filename) => {
 //////////////// Dataset description file ///////////////////////
 //////////////// //////////////// //////////////// ////////////////
 
-var keywordInput = document.getElementById('ds-keywords'),
-keywordTagify = new Tagify(keywordInput, {
-    duplicates: false,
-    maxTags  : 5
-})
-
-var otherFundingInput = document.getElementById('ds-other-funding'),
-otherFundingTagify = new Tagify(otherFundingInput, {
-    duplicates: false,
-})
-
-var parentDSTagify = new Tagify(parentDSDropdown, {
-  enforceWhitelist: true,
-  whitelist: [],
-  duplicates: false,
-  dropdown : {
-    maxItems: Infinity,
-    enabled   : 0,
-    closeOnSelect : true
-  }
-})
-
-
-/// initiate tagify for contributor roles
-var currentContributortagify = new Tagify(contributorRoles, {
-    whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
-    dropdown : {
-        classname : "color-blue",
-        enabled   : 0,         // show the dropdown immediately on focus
-        maxItems  : 25,
-        // position  : "text",    // place the dropdown near the typed text
-        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
-    },
-    duplicates: false
-});
-
-var currentAffliationtagify = new Tagify(affiliationInput, {
-    dropdown : {
-        classname : "color-blue",
-        enabled   : 0,         // show the dropdown immediately on focus
-        maxItems  : 25,
-        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
-    },
-    duplicates: false
-});
-
-var completenessInput = document.getElementById('ds-completeness'),
-completenessTagify = new Tagify(completenessInput, {
-    whitelist : ["hasChildren", "hasNext"],
-    enforceWhitelist: true,
-    duplicates: false,
-    maxTags   : 2,
-    dropdown : {
-      enabled   : 0,
-      closeOnSelect : true
-    }
-})
-
 //// get datasets and append that to option list for parent datasets
 function getParentDatasets() {
   var parentDatasets = []
@@ -1227,6 +1228,10 @@ function changeAwardInputDsDescription() {
     currentConTable.deleteRow(1)
   };
   removeOptions(dsContributorArray)
+
+  currentAffliationtagify.removeAllTags()
+  currentContributortagify.removeAllTags()
+
   addOption(dsContributorArray, "Select", "Select an option")
   descriptionDateInput.options[0].disabled = true;
   addOption(dsContributorArray, "Other collaborators", "Other collaborators not listed")
@@ -1485,6 +1490,7 @@ dsContributorArray.addEventListener("change", function(e) {
 
   currentContributortagify.removeAllTags()
   currentAffliationtagify.removeAllTags()
+
   contactPerson.checked = false;
 
   var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
@@ -1518,7 +1524,6 @@ dsContributorArray.addEventListener("change", function(e) {
       filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`
     }).eachPage(function page(records, fetchNextPage) {
       var conInfoObj = {};
-      console.log(records)
       records.forEach(function(record) {
         conInfoObj["ID"] = record.get('ORCID');
         conInfoObj["Role"] = record.get('Dataset_contributor_roles_for_SODA');
@@ -1551,7 +1556,8 @@ dsContributorArray.addEventListener("change", function(e) {
                 maxItems  : 25,
                 closeOnSelect : true, // keep the dropdown open after selecting a suggestion
             },
-            duplicates: false
+            duplicates: false,
+            delimiters: ";"
           });
 
       document.getElementById("input-con-ID").disabled = false
