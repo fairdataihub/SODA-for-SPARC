@@ -5798,6 +5798,7 @@ organizeDSaddFiles.addEventListener("click", function() {
  ipcRenderer.on('selected-files-organize-datasets', (event, path) => {
    var filtered = getGlobalPath(organizeDSglobalPath)
    var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
+   path = path.filter(file_path => fs.statSync(file_path).isFile())
    addFilesfunction(path, myPath, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
  })
 
