@@ -1362,7 +1362,7 @@ function createCurrentConTable(table) {
             return table
 
           } else {
-            document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contact person is already added below. Per SPARC requirements, only one contact person is allowed for a dataset.</span>"
+            document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>One contact person is already added below. Only one contact person is allowed for a dataset.</span>"
           }
 
       } else {
