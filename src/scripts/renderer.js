@@ -79,7 +79,7 @@ require('dns').resolve('www.google.com', function(err) {
      //Check new app version
      checkNewAppVersion() // changed this function definition
      //Load Default/global blackfynn account if available
-     loadDefaultAccount()
+     updateBfAccountList()
   }
 });
 
@@ -448,6 +448,65 @@ var awardPath = path.join(metadataPath, awardFileName);
 var milestonePath = path.join(metadataPath, milestoneFileName);
 var defaultAwardPath = path.join(metadataPath, defaultAwardFileName);
 var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
+
+// initiate Tagify input fields for Dataset description file
+var keywordInput = document.getElementById('ds-keywords'),
+keywordTagify = new Tagify(keywordInput, {
+    duplicates: false,
+    maxTags  : 5
+})
+
+var otherFundingInput = document.getElementById('ds-other-funding'),
+otherFundingTagify = new Tagify(otherFundingInput, {
+    duplicates: false,
+})
+
+var parentDSTagify = new Tagify(parentDSDropdown, {
+  enforceWhitelist: true,
+  whitelist: [],
+  duplicates: false,
+  dropdown : {
+    maxItems: Infinity,
+    enabled   : 0,
+    closeOnSelect : true
+  }
+})
+
+
+/// initiate tagify for contributor roles
+var currentContributortagify = new Tagify(contributorRoles, {
+    whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+    dropdown : {
+        classname : "color-blue",
+        enabled   : 0,         // show the dropdown immediately on focus
+        maxItems  : 25,
+        // position  : "text",    // place the dropdown near the typed text
+        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+    },
+    duplicates: false
+});
+
+var currentAffliationtagify = new Tagify(affiliationInput, {
+    dropdown : {
+        classname : "color-blue",
+        enabled   : 0,         // show the dropdown immediately on focus
+        maxItems  : 25,
+        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
+    },
+    duplicates: false
+});
+
+var completenessInput = document.getElementById('ds-completeness'),
+completenessTagify = new Tagify(completenessInput, {
+    whitelist : ["hasChildren", "hasNext"],
+    enforceWhitelist: true,
+    duplicates: false,
+    maxTags   : 2,
+    dropdown : {
+      enabled   : 0,
+      closeOnSelect : true
+    }
+})
 
 ///////////////////// Airtable Authentication /////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1154,64 +1213,6 @@ ipcRenderer.on('selected-metadata-submission', (event, dirpath, filename) => {
 //////////////// Dataset description file ///////////////////////
 //////////////// //////////////// //////////////// ////////////////
 
-var keywordInput = document.getElementById('ds-keywords'),
-keywordTagify = new Tagify(keywordInput, {
-    duplicates: false,
-    maxTags  : 5
-})
-
-var otherFundingInput = document.getElementById('ds-other-funding'),
-otherFundingTagify = new Tagify(otherFundingInput, {
-    duplicates: false,
-})
-
-var parentDSTagify = new Tagify(parentDSDropdown, {
-  enforceWhitelist: true,
-  whitelist: [],
-  duplicates: false,
-  dropdown : {
-    maxItems: Infinity,
-    enabled   : 0,
-    closeOnSelect : true
-  }
-})
-
-
-/// initiate tagify for contributor roles
-var currentContributortagify = new Tagify(contributorRoles, {
-    whitelist : ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
-    dropdown : {
-        classname : "color-blue",
-        enabled   : 0,         // show the dropdown immediately on focus
-        maxItems  : 25,
-        // position  : "text",    // place the dropdown near the typed text
-        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
-    },
-    duplicates: false
-});
-
-var currentAffliationtagify = new Tagify(affiliationInput, {
-    dropdown : {
-        classname : "color-blue",
-        enabled   : 0,         // show the dropdown immediately on focus
-        maxItems  : 25,
-        closeOnSelect : true, // keep the dropdown open after selecting a suggestion
-    },
-    duplicates: false
-});
-
-var completenessInput = document.getElementById('ds-completeness'),
-completenessTagify = new Tagify(completenessInput, {
-    whitelist : ["hasChildren", "hasNext"],
-    enforceWhitelist: true,
-    duplicates: false,
-    maxTags   : 2,
-    dropdown : {
-      enabled   : 0,
-      closeOnSelect : true
-    }
-})
-
 //// get datasets and append that to option list for parent datasets
 function getParentDatasets() {
   var parentDatasets = []
@@ -1237,6 +1238,10 @@ function changeAwardInputDsDescription() {
     currentConTable.deleteRow(1)
   };
   removeOptions(dsContributorArray)
+
+  currentAffliationtagify.removeAllTags()
+  currentContributortagify.removeAllTags()
+
   addOption(dsContributorArray, "Select", "Select an option")
   descriptionDateInput.options[0].disabled = true;
   addOption(dsContributorArray, "Other collaborators", "Other collaborators not listed")
@@ -1495,6 +1500,7 @@ dsContributorArray.addEventListener("change", function(e) {
 
   currentContributortagify.removeAllTags()
   currentAffliationtagify.removeAllTags()
+
   contactPerson.checked = false;
 
   var contributorVal = dsContributorArray.options[dsContributorArray.selectedIndex].value;
@@ -1528,7 +1534,6 @@ dsContributorArray.addEventListener("change", function(e) {
       filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`
     }).eachPage(function page(records, fetchNextPage) {
       var conInfoObj = {};
-      console.log(records)
       records.forEach(function(record) {
         conInfoObj["ID"] = record.get('ORCID');
         conInfoObj["Role"] = record.get('Dataset_contributor_roles_for_SODA');
@@ -1561,7 +1566,8 @@ dsContributorArray.addEventListener("change", function(e) {
                 maxItems  : 25,
                 closeOnSelect : true, // keep the dropdown open after selecting a suggestion
             },
-            duplicates: false
+            duplicates: false,
+            delimiters: ";"
           });
 
       document.getElementById("input-con-ID").disabled = false
@@ -2874,14 +2880,10 @@ curateBFaccountList.addEventListener('change', function() {
     $("#div-bf-account-btns button").show();
   }
   // sync BF account select under Manage dataset
-  // if (bfAccountList.options[bfAccountList.selectedIndex].value !== curateSelectedbfaccount) {
-  //   loadDefaultAccount()
-  //   showAccountDetails(bfAccountList)
-    // document.getElementById('button-check-bf-account-details').click();
-    // setTimeout(function() {
-    //   bfAccountList.value = curateSelectedbfaccount;
-    // }, 5000)
-  // }
+  if (bfAccountList.options[bfAccountList.selectedIndex].value !== curateSelectedbfaccount) {
+    $('#bfaccountlist option[value="'+curateSelectedbfaccount+'"]').attr('selected','selected');
+    showAccountDetails(bfAccountLoadProgress);
+  }
   curateDatasetDropdown.disabled = false;
 })
 
@@ -2969,14 +2971,21 @@ function curateChooseBFAccountByDefault(){
     } else {
       if (result.length > 0) {
         var myitemselect = result[0];
-        $('#bfallaccountlist option[value='+myitemselect+']').attr('selected','selected');
+        $('#bfallaccountlist option[value="'+myitemselect+'"]').attr('selected','selected');
         curateShowAccountDetails(curateBFaccountList)
         curateBFAccountLoad.style.display = 'block'
         hideDivsOnBFAccountChange()
         updateDatasetCurate(curateDatasetDropdown, curateBFaccountList);
-        loadDefaultAccount();
+        // loadDefaultAccount();
         document.getElementById('div-bf-account-btns').style.display = "flex";
         $("#div-bf-account-btns buttons").show()
+      } else {
+          var myitemselect = "Select";
+          var option = bfAccountList.options[0];
+          option.disabled = true;
+          datasetPermissionList.disabled = true;
+          curateBFAccountLoadStatus.innerHTML = "No existing accounts to load. Please add a new account!"
+          curateBFAccountLoad.style.display = 'none'
       }
     }
   })
@@ -3000,19 +3009,19 @@ function curateShowAccountDetails(dropdown){
 
 ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
-
-// Add existing bf account(s) to dropdown list
-bfAccountCheckBtn.addEventListener('click', (event) => {
-  datasetList = []
-  bfAccountList.selectedIndex = 0
-  bfSelectAccountStatus.innerHTML = "Loading existing accounts..."
-  bfAccountLoadProgress.style.display = 'block'
-  bfAccountLoadProgressCurate.style.display = 'block'
-  datasetPermissionList.selectedIndex = 0
-  document.getElementById("para-filter-datasets-status").innerHTML = ""
-  updateBfAccountList()
-  clearDatasetDropdowns()
-})
+//
+// // Add existing bf account(s) to dropdown list
+// bfAccountCheckBtn.addEventListener('click', (event) => {
+//   datasetList = []
+//   bfAccountList.selectedIndex = 0
+//   bfSelectAccountStatus.innerHTML = "Loading existing accounts..."
+//   bfAccountLoadProgress.style.display = 'block'
+//   bfAccountLoadProgressCurate.style.display = 'block'
+//   datasetPermissionList.selectedIndex = 0
+//   document.getElementById("para-filter-datasets-status").innerHTML = ""
+//   updateBfAccountList()
+//   clearDatasetDropdowns()
+// })
 
 bfUploadAccountCheckBtn.addEventListener('click', (event) => {
   bfSelectAccountStatus.innerHTML = "Please wait..."
@@ -3078,31 +3087,31 @@ bfAccountList.addEventListener('change', () => {
   refreshBfTeamsList(bfListTeams)
 })
 
-bfUploadAccountList.addEventListener('change', () => {
-  bfUploadSelectAccountStatus.innerHTML = "Please wait..."
-  bfAccountLoadProgressCurate.style.display = 'block'
-  currentDatasetPermission.innerHTML = ''
-  var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
-  if (selectedbfaccount == 'Select') {
-    bfSelectAccountStatus.innerHTML = "";
-    bfUploadSelectAccountStatus.innerHTML = "";
-    bfAccountLoadProgressCurate.style.display = 'none'
-  } else{
-    var myitemselect = selectedbfaccount
-    var option = document.createElement("option")
-    option.textContent = myitemselect
-    option.value = myitemselect
-    bfAccountList.value = selectedbfaccount
-    showAccountDetails(bfAccountLoadProgressCurate)
-    // sync BF account select under Prepare dataset -> Step 6
-    if (curateBFaccountList.options[curateBFaccountList.selectedIndex].value !== selectedbfaccount) {
-      loadAllBFAccounts()
-    }
-  }
-  // refreshAllBfDatasetLists()
-  refreshBfUsersList()
-  refreshBfTeamsList(bfListTeams)
-})
+// bfUploadAccountList.addEventListener('change', () => {
+//   bfUploadSelectAccountStatus.innerHTML = "Please wait..."
+//   bfAccountLoadProgressCurate.style.display = 'block'
+//   currentDatasetPermission.innerHTML = ''
+//   var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
+//   if (selectedbfaccount == 'Select') {
+//     bfSelectAccountStatus.innerHTML = "";
+//     bfUploadSelectAccountStatus.innerHTML = "";
+//     bfAccountLoadProgressCurate.style.display = 'none'
+//   } else{
+//     var myitemselect = selectedbfaccount
+//     var option = document.createElement("option")
+//     option.textContent = myitemselect
+//     option.value = myitemselect
+//     bfAccountList.value = selectedbfaccount
+//     showAccountDetails(bfAccountLoadProgressCurate)
+//     // sync BF account select under Prepare dataset -> Step 6
+//     if (curateBFaccountList.options[curateBFaccountList.selectedIndex].value !== selectedbfaccount) {
+//       loadAllBFAccounts()
+//     }
+//   }
+//   // refreshAllBfDatasetLists()
+//   refreshBfUsersList()
+//   refreshBfTeamsList(bfListTeams)
+// })
 
 // Refresh lists of bf datasets (in case user create it online) //
 bfRefreshDatasetBtn.addEventListener('click', () => {
@@ -4701,31 +4710,23 @@ function loadDefaultAccount() {
       console.error(error)
     } else {
         if (res.length > 0) {
-          var myitemselect = res[0]
-          var option = document.createElement("option")
-          option.textContent = myitemselect
-          option.value = myitemselect
-          var option2 = option.cloneNode(true)
-          removeOptions(bfAccountList)
-          bfAccountList.appendChild(option)
-          removeOptions(bfUploadAccountList)
-          bfUploadAccountList.appendChild(option2)
+          var myitemselect = res[0];
+          $('#bfaccountlist option[value="'+myitemselect+'"]').attr('selected','selected');
           showAccountDetails(bfAccountLoadProgress)
-          bfAccountLoadProgress.style.display = 'block'
-          bfSelectAccountStatus.innerHTML = "Loading Blackfynn account details..."
-          // refreshAllBfDatasetLists()
+          bfAccountLoadProgress.style.display = 'block';
           refreshBfUsersList()
           refreshBfTeamsList(bfListTeams)
+          bfSelectAccountStatus.innerHTML = "Loading Blackfynn account details..."
       } else {
           var myitemselect = "Select"
           var option = bfAccountList.options[0]
           option.textContent = myitemselect
           option.value = myitemselect
           bfAccountList.appendChild(option)
-          var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
+          // var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
           datasetPermissionList.disabled = true
           bfSelectAccountStatus.innerHTML = "No existing accounts to load. Please add a new account!"
-          bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
+          // bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
           bfAccountLoadProgress.style.display = 'none'
       }
     }
@@ -4733,14 +4734,19 @@ function loadDefaultAccount() {
 }
 
 function updateBfAccountList(){
+  bfSelectAccountStatus.innerHTML = "Loading existing accounts...";
+  bfAccountLoadProgress.style.display = 'block'
   datasetPermissionList.disabled = true
   client.invoke("api_bf_account_list", (error, res) => {
   if(error) {
     log.error(error)
-    console.error(error)
+    console.error(error);
+    var emessage = userError(error)
+    bfSelectAccountStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
+    bfAccountLoadProgress.style.display = 'none';
   } else {
     removeOptions(bfAccountList)
-    removeOptions(bfUploadAccountList)
+    // removeOptions(bfUploadAccountList)
       for (myitem in res){
         var myitemselect = res[myitem]
         var option = document.createElement("option")
@@ -4755,7 +4761,9 @@ function updateBfAccountList(){
         bfAccountLoadProgressCurate.style.display = 'none'
       }
       datasetPermissionList.disabled = false
+      bfAccountList.options[0].disabled = true;
       // loadAllBFAccounts()
+      loadDefaultAccount();
     }
     if (res[0] === "Select" && res.length === 1) {
       bfSelectAccountStatus.innerHTML = "No existing accounts to switch. Please add a new account!"
