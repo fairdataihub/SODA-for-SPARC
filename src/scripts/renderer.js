@@ -21,7 +21,6 @@ const html2canvas = require("html2canvas");
 const removeMd = require('remove-markdown');
 const electron = require('electron');
 const bootbox = require('bootbox');
-const select2 = require('select2');
 const app = remote.app;
 
 //////////////////////////////////
@@ -390,16 +389,6 @@ const redColor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivative", "docs", "primary", "protocol", "source"]
 const smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">'
 const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
-
-
-//////////////////////////////////
-// Add the select2 dropdown features to all the 
-// dropdowns with the class 'select2-dropdown'
-//////////////////////////////////
-select2();
-$(document).ready(function() {
-  $('.select2-dropdown').select2();
-});
 
 //////////////////////////////////
 // Operations on JavaScript end only
@@ -1778,7 +1767,7 @@ function grabCompletenessInfo() {
 }
 
 //// upon choosing a dataset, populate current description
-$(datasetDescriptionFileDataset).on('select2:select', function (e) {
+datasetDescriptionFileDataset.addEventListener("change", function() {
   document.getElementById("ds-description").innerHTML = "Loading..."
   document.getElementById("ds-description").disabled = true;
   syncDatasetDropdownOption(datasetDescriptionFileDataset)
@@ -2856,7 +2845,7 @@ function hideDivsOnBFAccountChange() {
   }
 }
 
-$(curateDatasetDropdown).on('select2:select', function (e) {
+curateDatasetDropdown.addEventListener('change', function() {
   console.log("test");
   var curateSelectedbfdataset = curateDatasetDropdown.options[curateDatasetDropdown.selectedIndex].text;
   if (curateSelectedbfdataset === 'Select dataset') {
@@ -3340,7 +3329,7 @@ ipcRenderer.on('selected-submit-dataset', (event, filepath) => {
 
 
 // Upload local dataset
-$(bfDatasetList).on('select2:select', function (e) {
+bfDatasetList.addEventListener('change', () => {
   var listSelectedIndex = bfDatasetList.selectedIndex
   bfDatasetListMetadata.selectedIndex = listSelectedIndex
   metadataDatasetlistChange()
@@ -3360,7 +3349,7 @@ $(bfDatasetList).on('select2:select', function (e) {
 });
 
 // Rename dataset
-$(bfDatasetListRenameDataset).on('select2:select', function (e) {
+bfDatasetListRenameDataset.addEventListener('change', () => {
   renameDatasetlistChange()
   syncDatasetDropdownOption(bfDatasetListRenameDataset)
   bfRenameDatasetStatus.innerHTML = ""
@@ -3375,41 +3364,22 @@ function renameDatasetlistChange(){
 }
 
 // Add metadata to Blackfynn dataset
-$(bfDatasetListMetadata).on('select2:select', function (e) {
+bfDatasetListMetadata.addEventListener('change', () => {
   var listSelectedIndex = bfDatasetListMetadata.selectedIndex
-  //bfDatasetListPermission.selectedIndex = listSelectedIndex
-  var value =  $(this).val();
-  $(bfDatasetListPermission).val(value);
-  $(bfDatasetListPermission).select2().trigger('change');
+  bfDatasetListPermission.selectedIndex = listSelectedIndex
   permissionDatasetlistChange()
-  //bfUploadDatasetList.selectedIndex = listSelectedIndex
-  $(bfUploadDatasetList).val(value);
-  $(bfUploadDatasetList).select2().trigger('change');
-  //bfDatasetList.selectedIndex = listSelectedIndex
-  $(bfDatasetList).val(value);
-  $(bfDatasetList).select2().trigger('change');
+  bfUploadDatasetList.selectedIndex = listSelectedIndex
+  bfDatasetList.selectedIndex = listSelectedIndex
   metadataDatasetlistChange()
-  //bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
-  $(bfDatasetListDatasetStatus).val(value);
-  $(bfDatasetListDatasetStatus).select2().trigger('change');
+  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
   datasetStatusListChange()
-  //bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
-  $(bfDatasetListRenameDataset).val(value);
-  $(bfDatasetListRenameDataset).select2().trigger('change');
+  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
-  //bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
-  $(bfDatasetListPostCurationCuration).val(value);
-  $(bfDatasetListPostCurationCuration).select2().trigger('change');
-  //bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
-  $(bfDatasetListPostCurationConsortium).val(value);
-  $(bfDatasetListPostCurationConsortium).select2().trigger('change');
-  //bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
-  $(bfDatasetListPostCurationPublish).val(value);
-  $(bfDatasetListPostCurationPublish).select2().trigger('change');
+  bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
+  bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
   postCurationListChange()
-  //datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
-  $(datasetDescriptionFileDataset).val(value);
-  $(datasetDescriptionFileDataset).select2().trigger('change');
+  datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
   showDatasetDescription()
 });
 
@@ -3427,7 +3397,7 @@ function metadataDatasetlistChange(){
 }
 
 // Manage dataset permission
-$(bfDatasetListPermission).on('select2:select', function (e) {
+bfDatasetListPermission.addEventListener('change', () => {
   document.getElementById("para-dataset-permission-status").innerHTML = ""
   document.getElementById("para-dataset-permission-current").innerHTML = ""
   document.getElementById("para-dataset-permission-status-pi").innerHTML = ""
@@ -3451,36 +3421,17 @@ function syncDatasetDropdownOption(dropdown) {
   var value;
   if (dropdown===bfDatasetListPermission) {
     var listSelectedIndex = bfDatasetListPermission.selectedIndex
-    value =  $(bfDatasetListMetadata).val();
-    //bfDatasetListMetadata.selectedIndex = listSelectedIndex
-    $(bfDatasetListMetadata).val(value);
-    $(bfDatasetListMetadata).select2().trigger('change');
-    //bfUploadDatasetList.selectedIndex = listSelectedIndex
-    $(bfUploadDatasetList).val(value);
-    $(bfUploadDatasetList).select2().trigger('change');
-    //bfDatasetList.selectedIndex = listSelectedIndex
-    $(bfDatasetList).val(value);
-    $(bfDatasetList).select2().trigger('change');
-//bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
-$(bfDatasetListDatasetStatus).val(value);
-$(bfDatasetListDatasetStatus).select2().trigger('change');
-//bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
-$(bfDatasetListRenameDataset).val(value);
-$(bfDatasetListRenameDataset).select2().trigger('change');
-    //bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
-$(bfDatasetListPostCurationCuration).val(value);
-$(bfDatasetListPostCurationCuration).select2().trigger('change');
-    //bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
-$(bfDatasetListPostCurationConsortium).val(value);
-$(bfDatasetListPostCurationConsortium).select2().trigger('change');
-//bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
-$(bfDatasetListPostCurationPublish).val(value);
-$(bfDatasetListPostCurationPublish).select2().trigger('change');
-postCurationListChange()
-//datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
-$(datasetDescriptionFileDataset).val(value);
-$(datasetDescriptionFileDataset).select2().trigger('change');
-showDatasetDescription()
+    bfDatasetListMetadata.selectedIndex = listSelectedIndex
+    bfUploadDatasetList.selectedIndex = listSelectedIndex
+    bfDatasetList.selectedIndex = listSelectedIndex
+    bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
+    bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
+    bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
+    bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
+    bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
+    postCurationListChange()
+    datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
+    showDatasetDescription()
     metadataDatasetlistChange()
     permissionDatasetlistChange()
     datasetStatusListChange()
@@ -3521,7 +3472,7 @@ showDatasetDescription()
 }
 
 // Change dataset status
-$(bfDatasetListDatasetStatus).on('select2:select', function (e) {
+bfDatasetListDatasetStatus.addEventListener('change', () => {
   var listSelectedIndex = bfDatasetListDatasetStatus.selectedIndex
   bfDatasetListMetadata.selectedIndex = listSelectedIndex
   metadataDatasetlistChange()
@@ -3547,7 +3498,7 @@ function datasetStatusListChange(){
 }
 
 // Post-curation
-$(bfDatasetListPostCurationCuration).on('select2:select', function (e) {
+bfDatasetListPostCurationCuration.addEventListener('change', () => {
   var listSelectedIndex = bfDatasetListPostCurationCuration.selectedIndex
   bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
   bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
@@ -3564,24 +3515,7 @@ $(bfDatasetListPostCurationCuration).on('select2:select', function (e) {
   postCurationListChange()
 });
 
-$(bfDatasetListPostCurationCuration).on('select2:select', function (e) {
-  var listSelectedIndex = bfDatasetListPostCurationPublish.selectedIndex
-  bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
-  bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
-  bfDatasetListMetadata.selectedIndex = listSelectedIndex
-  metadataDatasetlistChange()
-  bfUploadDatasetList.selectedIndex = listSelectedIndex
-  bfDatasetList.selectedIndex = listSelectedIndex
-  bfDatasetListPermission.selectedIndex = listSelectedIndex
-  permissionDatasetlistChange()
-  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
-  datasetStatusListChange()
-  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
-  renameDatasetlistChange()
-  postCurationListChange()
-});
-
-$(bfDatasetListPostCurationConsortium).on('select2:select', function (e) {
+bfDatasetListPostCurationConsortium.addEventListener('change', () => {
   var listSelectedIndex = bfDatasetListPostCurationConsortium.selectedIndex
   bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
   bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
