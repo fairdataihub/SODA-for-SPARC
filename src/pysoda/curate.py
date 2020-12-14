@@ -57,8 +57,16 @@ uploaded_file_size = 0
 start_time_bf_upload = 0
 start_submit = 0
 metadatapath = join(userpath, 'SODA', 'SODA_metadata')
-bf_recognized_file_extensions = ['.cram','.jp2','.jpx','.lsm','.ndpi','.nifti','.oib','.oif','.roi','.rtf','.swc','.abf','.acq','.adicht','.adidat','.aedt','.afni','.ai','.avi','.bam','.bash','.bcl','.bcl.gz','.bin','.brik','.brukertiff.gz','.continuous','.cpp','.csv','.curv','.cxls','.czi','.data','.dcm','.df','.dicom']
-
+bf_recognized_file_extensions = ['.cram','.jp2','.jpx','.lsm','.ndpi','.nifti','.oib','.oif','.roi','.rtf','.swc','.abf','.acq','.adicht','.adidat',\
+                                 '.aedt','.afni','.ai','.avi','.bam','.bash','.bcl','.bcl.gz','.bin','.brik','.brukertiff.gz','.continuous','.cpp','.csv',\
+                                 '.curv','.cxls','.czi','.data','.dcm','.df','.dicom','.doc','.docx','.e','.edf','.eps','.events','.fasta','.fastq','.fcs',\
+                                 '.feather','.fig','.gif','.h4','.h5','.hdf4','.hdf5','.hdr','.he2','.he5','.head','.hoc','.htm','.html','.ibw','.img','.ims',\
+                                 '.ipynb','.jpeg','.jpg','.js','.json','.lay','.lh','.lif','.m','.mat','.md','.mef','.mefd.gz','.mex','.mgf','.mgh','.mgh.gz',\
+                                 '.mgz','.mnc','.moberg.gz','.mod','.mov','.mp4','.mph','.mpj','.mtw','.ncs','.nd2','.nev','.nex','.nex5','.nf3','.nii','.nii.gz',\
+                                 '.ns1','.ns2','.ns3','.ns4','.ns5','.ns6','.nwb','.ogg','.ogv','.ome.btf','.ome.tif','.ome.tif2','.ome.tif8','.ome.tiff','.ome.xml',\
+                                 '.openephys','.pdf','.pgf','.png','.ppt','.pptx','.ps','.pul','.py','.r','.raw','.rdata','.rh','.rhd','.sh','.sldasm','.slddrw',\
+                                 '.smr','.spikes','.svg','.svs','.tab','.tar','.tar.gz','.tcsh','.tdm','.tdms','.text','.tif','.tiff','.tsv','.txt','.vcf','.webm',\
+                                 '.xlsx','.xml','.yaml','.yml','.zip','.zsh']
 bf = ""
 myds = ""
 initial_bfdataset_size = 0
@@ -1576,16 +1584,31 @@ def create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds):
                             if desired_name not in my_bf_existing_files_name:
                                 final_name = file_key
                             else:
-                                count_existing = 0
-                                count_exit = 0
+                                
+                                # expected final name
+                                count_done = 0
                                 final_name = desired_name
-                                while count_exit == 0:
-                                    if final_name in my_bf_existing_files_name:
-                                        count_existing += 1
-                                        final_name = desired_name + ' (' + str(count_existing) + ')'
-                                    else:
-                                        count_exit += 1
+                                output = get_base_file_name(desired_name)
+                                if output:
+                                    base_name = output[0]
+                                    count_exist = output[1]
+                                    while count_done == 0:
+                                        if final_name in my_bf_existing_files_name:
+                                            count_exist += 1
+                                            final_name = base_name + "(" + str(count_exist) + ")"
+                                        else:
+                                            count_done = 1
+                                else:
+                                    count_exist = 0
+                                    while count_done == 0:
+                                        if final_name in my_bf_existing_files_name:
+                                            count_exist += 1
+                                            final_name = desired_name + " (" + str(count_exist) + ")"
+                                        else:
+                                            count_done = 1
+                                            
                                 final_name = final_name + file_extension
+                                my_bf_existing_files_name.append(splitext(final_name)[0])
                             
                             #filename
                             filename = generate_relative_path(my_relative_path, final_name)
@@ -1730,6 +1753,34 @@ def bf_get_existing_files_details(bf_folder):
     
     
 
+def check_if_int(s):
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False
+    
+def get_base_file_name(file_name):
+    output = []
+    if file_name[-1] == ')':
+        string_length = len(file_name)
+        count_start = string_length
+        character = file_name[count_start-1]
+        while character != '(' and count_start>=0:
+            count_start -= 1
+            character = file_name[count_start-1]
+        if character == '(':
+            base_name = file_name[0:count_start-1]
+            num = file_name[count_start:string_length-1] 
+            if check_if_int(num):
+                output = [base_name, int(num)]
+            return output
+        else:
+            return output
+    
+    else:
+        return output   
+
 def bf_generate_new_dataset(soda_json_structure, bf, ds):
 
     global main_curate_progress_message
@@ -1764,6 +1815,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                             index_folder = my_bf_existing_folders_name.index(folder_key)
                             bf_folder_delete = my_bf_existing_folders[index_folder]
                             bf_folder_delete.delete() 
+                            my_bf_folder.update()
                         bf_folder = my_bf_folder.create_collection(folder_key)
                         
                     elif existing_folder_option == "merge":
@@ -1772,7 +1824,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                             bf_folder = my_bf_existing_folders[index_folder]
                         else:
                             bf_folder = my_bf_folder.create_collection(folder_key)
-                            
+                    bf_folder.update()        
                     my_tracking_folder["folders"][folder_key] = {"value": bf_folder}
                     tracking_folder = my_tracking_folder["folders"][folder_key]
                     recursive_create_folder_for_bf(folder, tracking_folder, existing_folder_option)                      
@@ -1815,8 +1867,9 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 my_bf_existing_files, my_bf_existing_files_name, my_bf_existing_files_name_with_extension = bf_get_existing_files_details(my_bf_folder)
             
                 list_local_files = []
-                list_projected_name = []
-                list_desired_name = []
+                list_projected_names = []
+                list_desired_names = []
+                list_final_names = []
                 additional_upload_lists = []
                 additional_list_count = 0
                 list_upload_schedule_projected_names = []
@@ -1828,9 +1881,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                             
                             initial_name = splitext(basename(file_path))[0]
                             initial_extension = splitext(basename(file_path))[1]
-                            initial_name_with_extention = splitext(basename(file_path))
+                            initial_name_with_extention = basename(file_path)
                             desired_name = splitext(file_key)[0]
-                            file_extension = splitext(file_key)[1]
                             
                             if existing_file_option == "skip":
                                 if file_key in my_bf_existing_files_name_with_extension:
@@ -1846,8 +1898,10 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                                         count_exist += 1
                                         projected_name = initial_name + " (" + str(count_exist) + ")"
                                     else:
-                                        count_done = 1
+                                        count_done = 1                                        
                             else:
+                                count_done = 0
+                                count_exist = 0
                                 projected_name = initial_name_with_extention
                                 while count_done == 0:
                                     if projected_name in my_bf_existing_files_name_with_extension:
@@ -1855,20 +1909,50 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                                         projected_name = initial_name + " (" + str(count_exist) + ")" + initial_extension
                                     else:
                                         count_done = 1
-
+  
+                            # expected final name
+                            count_done = 0
+                            final_name = desired_name
+                            output = get_base_file_name(desired_name)
+                            if output:
+                                base_name = output[0]
+                                count_exist = output[1]
+                                while count_done == 0:
+                                    if final_name in my_bf_existing_files_name:
+                                        count_exist += 1
+                                        final_name = base_name + "(" + str(count_exist) + ")"
+                                    else:
+                                        count_done = 1
+                            else:
+                                count_exist = 0
+                                while count_done == 0:
+                                    if final_name in my_bf_existing_files_name:
+                                        count_exist += 1
+                                        final_name = desired_name + " (" + str(count_exist) + ")"
+                                    else:
+                                        count_done = 1
+                                         
                             # save in list accordingly
-                            if initial_name in list_initial_names:
-                                additional_upload_lists.append([[file_path], my_bf_folder, [projected_name], [desired_name], my_tracking_folder, my_relative_path])
+                            if initial_name in list_initial_names or initial_name in list_final_names or projected_name in list_final_names or final_name in list_projected_names:
+                                additional_upload_lists.append([[file_path], my_bf_folder, [projected_name], [desired_name], [final_name], my_tracking_folder, my_relative_path])
                             else:
                                 list_local_files.append(file_path)
-                                list_desired_name.append(desired_name)
-                                list_projected_name.append(projected_name)
+                                list_projected_names.append(projected_name)
+                                list_desired_names.append(desired_name)
+                                list_final_names.append(final_name)
                                 list_initial_names.append(initial_name)
-
+                            
+                            my_bf_existing_files_name.append(final_name)
+                            if initial_extension in bf_recognized_file_extensions:
+                                my_bf_existing_files_name_with_extension.append(final_name)
+                            else:
+                                my_bf_existing_files_name_with_extension.append(final_name + initial_extension)
+                                    
+                            # add to projected dataset size to be generated        
                             main_total_generate_dataset_size += getsize(file_path)
 
                 if list_local_files:
-                    list_upload_files.append([list_local_files, my_bf_folder, list_projected_name, list_desired_name, my_tracking_folder, my_relative_path])
+                    list_upload_files.append([list_local_files, my_bf_folder, list_projected_names, list_desired_names, list_final_names, my_tracking_folder, my_relative_path])
 
                 for item in additional_upload_lists:
                     list_upload_files.append(item)  
@@ -1930,16 +2014,16 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             list_upload_manifest_files = []
             for key in manifest_files_structure.keys():  
                 manifestpath = manifest_files_structure[key]
-                for item in ds:
-                    if item.name == key and item.type == "Collection":
-                        destination_folder_id = item.id
-                        #delete existing manifest files
-                        for subitem in item:
-                            if subitem.name == "manifest":
-                                subitem.delete()   
-                        #upload new manifest files
-                        list_upload_manifest_files.append([[manifestpath], item])
-                        main_total_generate_dataset_size += getsize(manifestpath)
+                for item_key in tracking_json_structure['folders'].keys():
+                    item = tracking_json_structure['folders'][item_key]['value']
+                    destination_folder_id = item.id
+                    #delete existing manifest files
+                    for subitem in item:
+                        if subitem.name == "manifest":
+                            subitem.delete()   
+                    #upload new manifest files
+                    list_upload_manifest_files.append([[manifestpath], item])
+                    main_total_generate_dataset_size += getsize(manifestpath)
 
         # 5. Upload files, rename, and add to tracking list
         main_initial_bfdataset_size = bf_dataset_size()
@@ -1949,53 +2033,29 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             bf_folder = item[1]
             list_projected_names = item[2]
             list_desired_names = item[3]
-            tracking_folder = item[4]
-            relative_path = item[5]
+            list_final_names = item[4]
+            tracking_folder = item[5]
+            relative_path = item[6]
             
             #upload
             main_curate_progress_message = "Uploading files in " + str(relative_path)
             bf_folder.upload(*list_upload)
             bf_folder.update()
 
-             #rename to desired
-            list_final_names = []
+            #rename to final name
             for index, projected_name in enumerate(list_projected_names):
+                final_name = list_final_names[index]
                 desired_name = list_desired_names[index]
-                if desired_name != projected_name:
+                if final_name != projected_name:
                     bf_item_list = bf_folder.items
                     my_bf_existing_files, my_bf_existing_files_name, my_bf_existing_files_name_with_extension = bf_get_existing_files_details(bf_folder) 
                     for item in my_bf_existing_files:
                         if item.name == projected_name:
-                            count_done = 0
-                            count_exist = 0
-                            final_name = desired_name
-                            while count_done == 0:
-                                if final_name == item.name:
-                                    count_done = 1 
-                                elif final_name in my_bf_existing_files_name:
-                                    count_exist += 1
-                                    final_name = desired_name + " (" + str(count_exist) + ")"
-                                else:
-                                    count_done = 1
                             item.name = final_name
                             item.update()
                             if "files" not in tracking_folder:
                                 tracking_folder["files"] = {}
                             tracking_folder["files"][desired_name] = {"value": item}
-                            list_final_names.append(final_name)
-                else:
-                    list_final_names.append(desired_name)
-                    
-            # second rename iteration in case name is swapped between two uploaded files
-            for index, desired_name in enumerate(list_desired_names):
-                final_name = list_final_names[index]
-                if desired_name != final_name:
-                    my_bf_existing_files, my_bf_existing_files_name, my_bf_existing_files_name_with_extension = bf_get_existing_files_details(bf_folder) 
-                    if desired_name not in my_bf_existing_files_name:
-                        item = tracking_folder["files"][desired_name]["value"]
-                        item.name = desired_name
-                        item.update()
-                        tracking_folder["files"][desired_name] = {"value": item}
          
         if list_upload_metadata_files:        
             main_curate_progress_message = "Uploading metadata files in high-level dataset folder " + str(ds.name)      
