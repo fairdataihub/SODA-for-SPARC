@@ -8,7 +8,7 @@
 <br />
 <p align="center">
   <a href="#">
-    <img src="/src/assets/app-icon/png/soda_icon.png" alt="Logo" width="100" height="100">
+    <img src="/src/assets/img/logo-can1024-black-circle.png" alt="Logo" width="100" height="100">
   </a>
 
   <h3 align="center">Keep Calm and Curate!</h3>
