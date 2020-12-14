@@ -5848,7 +5848,7 @@ function addFoldersfunction(folderArray, currentLocation) {
         if (Object.keys(importedFolders).length > 0) {
           for (var element in importedFolders) {
             currentLocation["folders"][element] = {"type": "local", "path": importedFolders[element]["path"], "folders": {}, "files": {}, "action": ["new"]}
-            populateJSONObjFolder(currentLocation["folders"][renamedFolderName], importedFolders[element]["path"]);
+            populateJSONObjFolder(currentLocation["folders"][element], importedFolders[element]["path"]);
             // check if a folder has to be renamed due to duplicate reason
             if (element !== importedFolders[element]["original-basename"]) {
               currentLocation["folders"][element]["action"].push('renamed');
