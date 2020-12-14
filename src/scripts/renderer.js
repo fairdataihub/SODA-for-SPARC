@@ -1590,16 +1590,17 @@ function showDatasetDescription(){
     bfCurrentMetadataProgress.style.display = 'none'
     document.getElementById("ds-description").innerHTML = ""
   } else {
-    client.invoke("api_bf_get_description", selectedBfAccount, selectedBfDataset,
+    client.invoke("api_bf_get_subtitle", selectedBfAccount, selectedBfDataset,
     (error, res) => {
       if(error) {
         log.error(error)
         console.error(error)
       } else {
-        plainText = removeMd(res)
-        document.getElementById("ds-description").innerHTML = plainText
+        // plainText = removeMd(res)
+        document.getElementById("ds-description").innerHTML = res;
       }
     })
+    document.getElementById("ds-description").disabled = false;
   }
 }
 
@@ -1768,8 +1769,8 @@ function grabCompletenessInfo() {
 
 //// upon choosing a dataset, populate current description
 datasetDescriptionFileDataset.addEventListener("change", function() {
-  document.getElementById("ds-description").innerHTML = "Loading..."
   document.getElementById("ds-description").disabled = true;
+  document.getElementById("ds-description").innerHTML = "Loading..."
   syncDatasetDropdownOption(datasetDescriptionFileDataset)
   showDatasetDescription()
 });
@@ -3402,13 +3403,13 @@ bfDatasetListPermission.addEventListener('change', () => {
   document.getElementById("para-dataset-permission-current").innerHTML = ""
   document.getElementById("para-dataset-permission-status-pi").innerHTML = ""
   document.getElementById("para-dataset-permission-status-team").innerHTML = ""
-  
+
   bfListUsers.selectedIndex = 0
   bfListRoles.selectedIndex = 0
   bfListTeams.selectedIndex = 0
   bfListRolesTeam.selectedIndex = 0
   bfListUsersPI.selectedIndex = 0
-  
+
   syncDatasetDropdownOption(bfDatasetListPermission)
 });
 
