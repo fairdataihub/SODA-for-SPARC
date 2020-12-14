@@ -21,7 +21,6 @@ const html2canvas = require("html2canvas");
 const removeMd = require('remove-markdown');
 const electron = require('electron');
 const bootbox = require('bootbox');
-const select2 = require('select2');
 const app = remote.app;
 
 //////////////////////////////////
@@ -390,16 +389,6 @@ const redColor = '#ff1a1a'
 const sparcFolderNames = ["code", "derivative", "docs", "primary", "protocol", "source"]
 const smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">'
 const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">'
-
-
-//////////////////////////////////
-// Add the select2 dropdown features to all the 
-// dropdowns with the class 'select2-dropdown'
-//////////////////////////////////
-select2();
-$(document).ready(function() {
-  $('.select2-dropdown').select2();
-});
 
 //////////////////////////////////
 // Operations on JavaScript end only
@@ -1362,7 +1351,7 @@ function createCurrentConTable(table) {
             return table
 
           } else {
-            document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>Contact person is already added below. Per SPARC requirements, only one contact person is allowed for a dataset.</span>"
+            document.getElementById("para-save-contributor-status").innerHTML = "<span style='color: red;'>One contact person is already added below. Only one contact person is allowed for a dataset.</span>"
           }
 
       } else {
@@ -1601,16 +1590,17 @@ function showDatasetDescription(){
     bfCurrentMetadataProgress.style.display = 'none'
     document.getElementById("ds-description").innerHTML = ""
   } else {
-    client.invoke("api_bf_get_description", selectedBfAccount, selectedBfDataset,
+    client.invoke("api_bf_get_subtitle", selectedBfAccount, selectedBfDataset,
     (error, res) => {
       if(error) {
         log.error(error)
         console.error(error)
       } else {
-        plainText = removeMd(res)
-        document.getElementById("ds-description").innerHTML = plainText
+        // plainText = removeMd(res)
+        document.getElementById("ds-description").innerHTML = res;
       }
     })
+    document.getElementById("ds-description").disabled = false;
   }
 }
 
@@ -1778,9 +1768,9 @@ function grabCompletenessInfo() {
 }
 
 //// upon choosing a dataset, populate current description
-$(datasetDescriptionFileDataset).on('select2:select', function (e) {
-  document.getElementById("ds-description").innerHTML = "Loading..."
+datasetDescriptionFileDataset.addEventListener("change", function() {
   document.getElementById("ds-description").disabled = true;
+  document.getElementById("ds-description").innerHTML = "Loading..."
   syncDatasetDropdownOption(datasetDescriptionFileDataset)
   showDatasetDescription()
 });
@@ -2851,12 +2841,12 @@ function hideDivsOnBFAccountChange() {
       $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('show');
       $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('test2');
       $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('prev');
-      $($('#Question-generate-dataset-BF-account').nextAll()).css('pointer-events', 'auto');
+      // $($('#Question-generate-dataset-BF-account').nextAll()).css('pointer-events', 'auto');
     }
   }
 }
 
-$(curateDatasetDropdown).on('select2:select', function (e) {
+curateDatasetDropdown.addEventListener('change', function() {
   console.log("test");
   var curateSelectedbfdataset = curateDatasetDropdown.options[curateDatasetDropdown.selectedIndex].text;
   if (curateSelectedbfdataset === 'Select dataset') {
@@ -3340,7 +3330,7 @@ ipcRenderer.on('selected-submit-dataset', (event, filepath) => {
 
 
 // Upload local dataset
-$(bfDatasetList).on('select2:select', function (e) {
+bfDatasetList.addEventListener('change', () => {
   var listSelectedIndex = bfDatasetList.selectedIndex
   bfDatasetListMetadata.selectedIndex = listSelectedIndex
   metadataDatasetlistChange()
@@ -3360,7 +3350,7 @@ $(bfDatasetList).on('select2:select', function (e) {
 });
 
 // Rename dataset
-$(bfDatasetListRenameDataset).on('select2:select', function (e) {
+bfDatasetListRenameDataset.addEventListener('change', () => {
   renameDatasetlistChange()
   syncDatasetDropdownOption(bfDatasetListRenameDataset)
   bfRenameDatasetStatus.innerHTML = ""
@@ -3375,7 +3365,7 @@ function renameDatasetlistChange(){
 }
 
 // Add metadata to Blackfynn dataset
-$(bfDatasetListMetadata).on('select2:select', function (e) {
+bfDatasetListMetadata.addEventListener('change', () => {
   var listSelectedIndex = bfDatasetListMetadata.selectedIndex
   bfDatasetListPermission.selectedIndex = listSelectedIndex
   permissionDatasetlistChange()
@@ -3408,18 +3398,18 @@ function metadataDatasetlistChange(){
 }
 
 // Manage dataset permission
-$(bfDatasetListPermission).on('select2:select', function (e) {
+bfDatasetListPermission.addEventListener('change', () => {
   document.getElementById("para-dataset-permission-status").innerHTML = ""
   document.getElementById("para-dataset-permission-current").innerHTML = ""
   document.getElementById("para-dataset-permission-status-pi").innerHTML = ""
   document.getElementById("para-dataset-permission-status-team").innerHTML = ""
-  
+
   bfListUsers.selectedIndex = 0
   bfListRoles.selectedIndex = 0
   bfListTeams.selectedIndex = 0
   bfListRolesTeam.selectedIndex = 0
   bfListUsersPI.selectedIndex = 0
-  
+
   syncDatasetDropdownOption(bfDatasetListPermission)
 });
 
@@ -3429,6 +3419,7 @@ function permissionDatasetlistChange(){
 }
 
 function syncDatasetDropdownOption(dropdown) {
+  var value;
   if (dropdown===bfDatasetListPermission) {
     var listSelectedIndex = bfDatasetListPermission.selectedIndex
     bfDatasetListMetadata.selectedIndex = listSelectedIndex
@@ -3439,7 +3430,9 @@ function syncDatasetDropdownOption(dropdown) {
     bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
     bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
     bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
+    postCurationListChange()
     datasetDescriptionFileDataset.selectedIndex = listSelectedIndex
+    showDatasetDescription()
     metadataDatasetlistChange()
     permissionDatasetlistChange()
     datasetStatusListChange()
@@ -3480,7 +3473,7 @@ function syncDatasetDropdownOption(dropdown) {
 }
 
 // Change dataset status
-$(bfDatasetListDatasetStatus).on('select2:select', function (e) {
+bfDatasetListDatasetStatus.addEventListener('change', () => {
   var listSelectedIndex = bfDatasetListDatasetStatus.selectedIndex
   bfDatasetListMetadata.selectedIndex = listSelectedIndex
   metadataDatasetlistChange()
@@ -3506,7 +3499,7 @@ function datasetStatusListChange(){
 }
 
 // Post-curation
-$(bfDatasetListPostCurationCuration).on('select2:select', function (e) {
+bfDatasetListPostCurationCuration.addEventListener('change', () => {
   var listSelectedIndex = bfDatasetListPostCurationCuration.selectedIndex
   bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
   bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
@@ -3523,23 +3516,6 @@ $(bfDatasetListPostCurationCuration).on('select2:select', function (e) {
   postCurationListChange()
 });
 
-bfDatasetListPostCurationPublish.addEventListener('change', () => {
-  var listSelectedIndex = bfDatasetListPostCurationPublish.selectedIndex
-  bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex
-  bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex
-  bfDatasetListMetadata.selectedIndex = listSelectedIndex
-  metadataDatasetlistChange()
-  bfUploadDatasetList.selectedIndex = listSelectedIndex
-  bfDatasetList.selectedIndex = listSelectedIndex
-  bfDatasetListPermission.selectedIndex = listSelectedIndex
-  permissionDatasetlistChange()
-  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex
-  datasetStatusListChange()
-  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
-  renameDatasetlistChange()
-  postCurationListChange()
-})
-
 bfDatasetListPostCurationConsortium.addEventListener('change', () => {
   var listSelectedIndex = bfDatasetListPostCurationConsortium.selectedIndex
   bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex
@@ -3555,7 +3531,7 @@ bfDatasetListPostCurationConsortium.addEventListener('change', () => {
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex
   renameDatasetlistChange()
   postCurationListChange()
-})
+});
 
 function postCurationListChange(){
   reserveDOIStatus.innerHTML = ""
@@ -5938,7 +5914,7 @@ function drop(ev) {
         })
         break
       } else {
-          if (JSON.stringify(myPath["files"]) === "{}") {
+          if (JSON.stringify(myPath["files"]) === "{}"  && JSON.stringify(importedFiles) === "{}") {
             importedFiles[path.parse(itemPath).name] = {"path": itemPath, "basename":path.parse(itemPath).base}
           } else {
               for (var objectKey in myPath["files"]) {
@@ -5956,7 +5932,7 @@ function drop(ev) {
                 var fileBaseName = itemName;
                 var originalFileNameWithoutExt = path.parse(itemName).name;
                 var fileNameWithoutExt = originalFileNameWithoutExt;
-                while (fileNameWithoutExt in uiFiles || fileNameWithoutExt in regularFiles) {
+                while (fileNameWithoutExt in uiFiles || fileNameWithoutExt in importedFiles) {
                   fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
                   j++;
                 }
@@ -6448,17 +6424,43 @@ document.getElementById('button-generate').addEventListener('click', function() 
 
         if (error_files.length>0){
           var error_message_files = backend_to_frontend_warning_message(error_files)
-          message += "\n" + error_message_files
+          message += error_message_files
         }
 
         if (error_folders.length>0){
           var error_message_folders = backend_to_frontend_warning_message(error_folders)
-          message += "\n" + error_message_folders
+          message += error_message_folders
         }
 
-        if (message){
-          message += "\n" + "Would you like to continue?"
-          ipcRenderer.send('warning-empty-files-folders-generate', message)
+        if (message) {
+          message += "Would you like to continue?"
+          var bootboxDialog = bootbox.confirm({
+            message: message,
+            buttons: {
+              confirm: {
+                  label: 'Yes',
+                  className: 'btn-success'
+              },
+              cancel: {
+                  label: 'No',
+                  className: 'btn-danger'
+              }
+            },
+            centerVertical: true,
+            callback: function (result) {
+              if (result) {
+                console.log("Continue")
+                initiate_generate()
+              } else {
+                console.log("Stop")
+                // then show the sidebar again
+                forceActionSidebar('show')
+                document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
+                document.getElementById('div-generate-comeback').style.display = "flex"
+              }
+            }
+          })
+          // ipcRenderer.send('warning-empty-files-folders-generate', message)
         } else {
           initiate_generate()
         }
@@ -6466,18 +6468,18 @@ document.getElementById('button-generate').addEventListener('click', function() 
     })
 })
 
-ipcRenderer.on('warning-empty-files-folders-generate-selection', (event, index) => {
-  if (index === 0) {
-    console.log("Continue")
-    initiate_generate()
-  } else {
-    console.log("Stop")
-    // then show the sidebar again
-    forceActionSidebar('show')
-    document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
-    document.getElementById('div-generate-comeback').style.display = "flex"
-  }
-})
+// ipcRenderer.on('warning-empty-files-folders-generate-selection', (event, index) => {
+//   if (index === 0) {
+//     console.log("Continue")
+//     initiate_generate()
+//   } else {
+//     console.log("Stop")
+//     // then show the sidebar again
+//     forceActionSidebar('show')
+//     document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
+//     document.getElementById('div-generate-comeback').style.display = "flex"
+//   }
+// })
 
 const divGenerateProgressBar = document.getElementById("div-new-curate-meter-progress")
 const generateProgressBar = document.getElementById("progress-bar-new-curate")
@@ -6500,7 +6502,7 @@ function initiate_generate() {
         generateProgressBar.value = 0;
         log.error(error)
         console.error(error);
-        forceActionSidebar('show');
+        // forceActionSidebar('show');
         client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, result) => {
             if (error) {
               log.error(error)
@@ -6582,8 +6584,9 @@ function initiate_generate() {
       if (countDone > 1){
         log.info('Done curate track')
         console.log('Done curate track')
-        clearInterval(timerProgress);
+        // then show the sidebar again
         forceActionSidebar('show')
+        clearInterval(timerProgress);
       }
     }
   }
@@ -6591,12 +6594,17 @@ function initiate_generate() {
 }
 
 function backend_to_frontend_warning_message(error_array) {
-  var warning_message = ""
-  for (var i = 0; i < error_array.length;i++){
-    item = error_array[i]
-    warning_message += item + "\n"
+  if (error_array.length > 1) {
+    var warning_message = error_array[0] + "<ul>"
+  } else {
+    var warning_message = "<ul>"
   }
-  return warning_message
+  for (var i = 1; i < error_array.length;i++){
+    item = error_array[i]
+    warning_message += "<li>" + item + "</li>"
+  }
+  var final_message = warning_message + "</ul>"
+  return final_message
 }
 
 var forbidden_characters_bf = '\/:*?"<>';

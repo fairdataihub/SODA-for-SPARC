@@ -13,7 +13,7 @@
     <path fill-rule="evenodd" d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3zm-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139z"/>
   </svg>
   Prepare Dataset
-</h3>
+</h1>
 <!-- These are the main tab for each step -->
   <div class="form-tabs tab-active" id="curate-tab">
     <h3 class='question-title'><br>
@@ -141,7 +141,7 @@
             </div>
 
             <div style="margin:15px 0;">
-              <div class="option-card getting-started radio-button non-selected" data-next="Question-getting-started-choose-ds-name" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
+              <div class="option-card getting-started radio-button coming-soon" data-next="Question-getting-started-choose-ds-name" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
                   <div class="card-head">
                     <div class="folder-checkbox">
                       <input class="folder-input-check" id="previous-progress" name="getting-started-1" type="radio">
@@ -157,7 +157,7 @@
             </div>
 
             <div style="margin:15px 0;">
-              <div class="option-card radio-button non-selected" data-next="Question-getting-started-final" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
+              <div class="option-card radio-button coming-soon" data-next="Question-getting-started-final" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
                   <div class="card-head">
                     <div class="folder-checkbox">
                       <input class="folder-input-check" id="existing-local" name="getting-started-1" type="radio">
@@ -175,7 +175,7 @@
               </div>
 
               <div style="margin:15px 0;">
-                <div class="option-card radio-button non-selected" data-next="Question-getting-started-final" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
+                <div class="option-card radio-button coming-soon" data-next="Question-getting-started-final" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
                     <div class="card-head">
                       <div class="folder-checkbox">
                         <input class="folder-input-check" id="existing-bf" name="getting-started-1" type="radio">
@@ -551,7 +551,9 @@
           <button id="button-sub" onclick="importMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')" class="div-file-import-button">Choose file</button>
         </div>
       </div>
-      <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-submission-file-path"></p>
+      <div style="width:80%;margin: 10px auto">
+        <p class="para-metadata-file-status"id="para-submission-file-path">C:\Users\Public\SODA-packaging\SODA\src\file_templates\submission.xlsxC:\Users\Public\SODA-packaging\SODA\src\file_templates\submission.xlsxC:\Users\Public\SODA-packaging\SODA\src\file_templates\submission.xlsx</p>
+      </div>
       <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
         <button class="button-individual-metadata confirm transition-btn" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
         <button class="button-individual-metadata remove transition-btn" style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i class="fas fa-times" style="margin-right:10px"></i>Remove</button>
@@ -579,7 +581,9 @@
           <button onclick="importMetadataFiles(this, 'dataset_description', ['.csv', '.xlsx', '.xls', '.json'], 'para-ds-description-file-path')"  class="div-file-import-button">Choose file</button>
         </div>
       </div>
-      <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-ds-description-file-path"></p>
+      <div style="width:80%;margin: 10px auto">
+        <p class="para-metadata-file-status" id="para-ds-description-file-path"></p>
+      </div>
       <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
         <button class="button-individual-metadata confirm transition-btn" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
         <button class="button-individual-metadata remove transition-btn" style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i class="fas fa-times" style="margin-right:10px"></i>Remove</button>
@@ -606,7 +610,9 @@
           <button onclick="importMetadataFiles(this, 'subjects', ['.csv', '.xlsx', '.xls', '.json'], 'para-subjects-file-path')" class="div-file-import-button">Choose file</button>
         </div>
       </div>
-      <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-subjects-file-path"></p>
+      <div style="width:80%;margin: 10px auto">
+        <p class="para-metadata-file-status" id="para-subjects-file-path"></p>
+      </div>
       <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
         <button class="button-individual-metadata confirm transition-btn" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
         <button class="button-individual-metadata remove transition-btn" style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i class="fas fa-times" style="margin-right:10px"></i>Remove</button>
@@ -633,7 +639,9 @@
           <button onclick="importMetadataFiles(this, 'samples', ['.csv', '.xlsx', '.xls', '.json'], 'para-samples-file-path')" class="div-file-import-button">Choose file</button>
         </div>
       </div>
-      <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-samples-file-path"></p>
+      <div style="width:80%;margin: 10px auto">
+        <p class="para-metadata-file-status" id="para-samples-file-path"></p>
+      </div>
       <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
         <button class="button-individual-metadata confirm transition-btn" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
         <button class="button-individual-metadata remove transition-btn" style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i class="fas fa-times" style="margin-right:10px"></i>Remove</button>
@@ -660,7 +668,9 @@
           <button onclick="importMetadataFiles(this, 'CHANGES', ['.txt'], 'para-changes-file-path')" class="div-file-import-button">Choose file</button>
         </div>
       </div>
-      <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-changes-file-path"></p>
+      <div style="width:80%;margin: 10px auto">
+        <p class="para-metadata-file-status" id="para-changes-file-path"></p>
+      </div>
       <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
         <button class="button-individual-metadata confirm transition-btn" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
         <button class="button-individual-metadata remove transition-btn" style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i class="fas fa-times" style="margin-right:10px"></i>Remove</button>
@@ -687,7 +697,9 @@
           <button onclick="importMetadataFiles(this, 'README', ['.txt'], 'para-readme-file-path')" class="div-file-import-button">Choose file</button>
         </div>
       </div>
-      <p class="para-metadata-file-status" style="margin-top:15px;font-weight:600" id="para-readme-file-path"></p>
+      <div style="width:80%;margin: 10px auto">
+        <p class="para-metadata-file-status" id="para-readme-file-path"></p>
+      </div>
       <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
         <button class="button-individual-metadata confirm transition-btn" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
         <button class="button-individual-metadata remove transition-btn" style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i class="fas fa-times" style="margin-right:10px"></i>Remove</button>

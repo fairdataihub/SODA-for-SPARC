@@ -40,7 +40,8 @@
 .option-card.radio-button {
   width: 180px  !important;
   height: 180px !important;
-  grid-template-rows: 10% auto !important
+  grid-template-rows: 10% auto !important;
+  pointer-events: auto;
 }
 
 .option-card.radio-button .card-body {
@@ -79,7 +80,7 @@
 
 .option-card.radio-button.non-selected {
   background: #f6f6f6;
-  pointer-events: none;
+  /* pointer-events: none; */
   color: #585858
 }
 
@@ -88,6 +89,20 @@
 }
 
 .option-card.radio-button.non-selected .card-body i{
+  color: #585858 !important
+}
+
+.option-card.radio-button.coming-soon {
+  background: #f6f6f6;
+  pointer-events: none;
+  color: #585858
+}
+
+.option-card.radio-button.coming-soon svg{
+  fill: #585858
+}
+
+.option-card.radio-button.coming-soon .card-body i{
   color: #585858 !important
 }
 /*
@@ -176,6 +191,12 @@
   background-color: #20b2aa;
   border-color: #20b2aa;
   color: #fff;
+}
+
+.para-metadata-file-status {
+  margin-top:15px;
+  font-weight:600;
+  text-align: center;
 }
 
 .card-body {
