@@ -82,38 +82,13 @@ function initialize () {
   makeSingleInstance()
 
   loadDemos()
-
   function createWindow () {
-    const windowOptions = {
-      minWidth: 1080,
-      minHeight: 680,
-      width: 1080,
-      height: 720,
-      center: true,
-      //title: app.getName(),
-      icon: __dirname + '/assets/menu-icon/soda_icon.png',
-      webPreferences: {
-        nodeIntegration: true,
-        enableRemoteModule: true
-      }
-    }
 
-    //if (process.platform === 'linux') {
-    //  windowOptions.icon = path.join(__dirname, '/assets/app-icon/png/soda_icon.png')
-    //}
-
-    mainWindow = new BrowserWindow(windowOptions)
-    mainWindow.loadURL(path.join('file://', __dirname, '/index.html'))
-
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 
     mainWindow.webContents.once('dom-ready', () => {
       autoUpdater.checkForUpdatesAndNotify();
     });
-
-/*    mainWindow.on('closed', () => {
-      mainWindow = null
-    })*/
 
     mainWindow.on('close', (e) => {
       if (!user_restart_confirmed) {
@@ -157,10 +132,38 @@ function initialize () {
     }
   }
 
+
   app.on('ready', () => {
-    createWindow()
-    trackEvent('Success', 'App Launched - OS',  os.platform() + "-" + os.release());
-    trackEvent('Success', 'App Launched - SODA',  app.getVersion());
+    const windowOptions = {
+      minWidth: 1080,
+      minHeight: 680,
+      width: 1080,
+      height: 720,
+      center: true,
+      show: false,
+      icon: __dirname + '/assets/menu-icon/soda_icon.png',
+      webPreferences: {
+        nodeIntegration: true,
+        enableRemoteModule: true
+      }
+    }
+
+    mainWindow = new BrowserWindow(windowOptions)
+    mainWindow.loadURL(path.join('file://', __dirname, '/index.html'))
+
+    const splash = new BrowserWindow({ width: 220, height: 190, frame: false, alwaysOnTop: true, transparent: true });
+    splash.loadURL(path.join('file://', __dirname, '/splash-screen.html'));
+    //
+    // // if main window is ready to show, then destroy the splash window and show up the main window
+    mainWindow.once('ready-to-show', () => {
+    setTimeout(function(){
+        splash.close();
+        mainWindow.show();
+        createWindow();
+        trackEvent('Success', 'App Launched - OS',  os.platform() + "-" + os.release());
+        trackEvent('Success', 'App Launched - SODA',  app.getVersion());
+      }, 5000);
+    });
   })
 
   app.on('window-all-closed', () => {
@@ -168,12 +171,6 @@ function initialize () {
       app.quit()
     // }
   })
-
-  // app.on('activate', () => {
-  //   if (mainWindow === null) {
-  //     createWindow()
-  //   }
-  // })
 }
 
 // Make this app a single instance app.
@@ -227,7 +224,7 @@ ipcMain.on('resize-window', (event, dir) => {
 
 // Google analytics tracking function
 // To use, category and action is required. Label and value can be left out
-// if not needed. Sample requests from renderer.js is shown below: 
+// if not needed. Sample requests from renderer.js is shown below:
 //ipcRenderer.send('track-event', "App Backend", "Python Connection Established");
 //ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
 
