@@ -1244,10 +1244,10 @@ input::-webkit-calendar-picker-indicator {
 .slider:before {
   position: absolute;
   content: "";
-  height: 23px;
-  width: 23px;
-  left: 4px;
-  bottom: 2px;
+  height: 28px;
+  width: 28px;
+  left: 5px;
+  bottom: 3px;
   background-color: white;
   -webkit-transition: .4s;
   transition: .4s;
@@ -1262,9 +1262,7 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(22px);
-  -ms-transform: translateX(22px);
-  transform: translateX(22px);
+  transform: translateX(27px);
 }
 
 /* Rounded sliders */
