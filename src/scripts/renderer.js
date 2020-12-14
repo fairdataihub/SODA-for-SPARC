@@ -2841,7 +2841,7 @@ function hideDivsOnBFAccountChange() {
       $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('show');
       $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('test2');
       $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('prev');
-      $($('#Question-generate-dataset-BF-account').nextAll()).css('pointer-events', 'auto');
+      // $($('#Question-generate-dataset-BF-account').nextAll()).css('pointer-events', 'auto');
     }
   }
 }

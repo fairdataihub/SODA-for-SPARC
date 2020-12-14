@@ -229,7 +229,6 @@ $(".option-card.radio-button").click(function() {
     $(this).children()[0].children[0].children[0].checked = false;
     $(this).addClass('non-selected')
   }
-  $(this).css('pointer-events', 'none');
 })
 
 $(".folder-input-check").click(function() {
@@ -357,7 +356,7 @@ function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
 
   // uncheck the other radio buttons
   $($(ev).parents()[0]).siblings().find('.option-card.radio-button').removeClass('checked');
-  $($(ev).parents()[0]).siblings().find('.option-card.radio-button').css('pointer-events', 'auto');
+  // $($(ev).parents()[0]).siblings().find('.option-card.radio-button').css('pointer-events', 'auto');
   $($(ev).parents()[0]).siblings().find('.option-card.radio-button').addClass('non-selected');
 
   // first, handle target or the next div to show
@@ -432,7 +431,7 @@ function hidePrevDivs(currentDiv, category) {
 
         // /// remove all checkmarks and previous data input
         $("#"+currentDiv).nextAll().find('.option-card.radio-button').removeClass('checked');
-        $("#"+currentDiv).nextAll().find('.option-card.radio-button').css('pointer-events', 'auto');
+        // $("#"+currentDiv).nextAll().find('.option-card.radio-button').css('pointer-events', 'auto');
         $("#"+currentDiv).nextAll().find('.option-card.radio-button').removeClass('non-selected');
         $("#"+currentDiv).nextAll().find('.folder-input-check').prop('checked', false);
         $("#"+currentDiv).nextAll().find('#curatebfdatasetlist').prop("selectedIndex", 0);
@@ -712,7 +711,6 @@ function exitCurate() {
   sodaJSONObj = {};
   // uncheck all radio buttons and checkboxes
   $(".option-card").removeClass('checked');
-  $('.option-card.radio-button').css('pointer-events', "auto");
   $(".option-card.radio-button").removeClass('non-selected');
   $(".option-card.high-level-folders").removeClass('disabled');
   $(".option-card, .folder-input-check").prop('checked', false);
