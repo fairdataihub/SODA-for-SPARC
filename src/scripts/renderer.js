@@ -5914,7 +5914,7 @@ function drop(ev) {
         })
         break
       } else {
-          if (JSON.stringify(myPath["files"]) === "{}") {
+          if (JSON.stringify(myPath["files"]) === "{}"  && JSON.stringify(importedFiles) === "{}") {
             importedFiles[path.parse(itemPath).name] = {"path": itemPath, "basename":path.parse(itemPath).base}
           } else {
               for (var objectKey in myPath["files"]) {
@@ -5932,7 +5932,7 @@ function drop(ev) {
                 var fileBaseName = itemName;
                 var originalFileNameWithoutExt = path.parse(itemName).name;
                 var fileNameWithoutExt = originalFileNameWithoutExt;
-                while (fileNameWithoutExt in uiFiles || fileNameWithoutExt in regularFiles) {
+                while (fileNameWithoutExt in uiFiles || fileNameWithoutExt in importedFiles) {
                   fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
                   j++;
                 }

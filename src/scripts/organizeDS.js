@@ -261,7 +261,7 @@ function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, u
       })
       break
     } else {
-        if (JSON.stringify(currentLocation["files"]) === "{}") {
+        if (JSON.stringify(currentLocation["files"]) === "{}" && JSON.stringify(regularFiles) === "{}") {
           regularFiles[path.parse(fileName).name] = {"path": fileName, "basename":path.parse(fileName).base}
         } else {
             for (var objectKey in currentLocation["files"]) {
