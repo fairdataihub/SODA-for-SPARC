@@ -112,6 +112,7 @@ function initialize () {
       else {
         if (process.platform == "darwin") {
           exitPyProc();
+          app.relaunch();
           app.exit();
         }
         else {
