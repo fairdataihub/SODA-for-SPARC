@@ -6424,17 +6424,43 @@ document.getElementById('button-generate').addEventListener('click', function() 
 
         if (error_files.length>0){
           var error_message_files = backend_to_frontend_warning_message(error_files)
-          message += "\n" + error_message_files
+          message += error_message_files
         }
 
         if (error_folders.length>0){
           var error_message_folders = backend_to_frontend_warning_message(error_folders)
-          message += "\n" + error_message_folders
+          message += error_message_folders
         }
 
-        if (message){
-          message += "\n" + "Would you like to continue?"
-          ipcRenderer.send('warning-empty-files-folders-generate', message)
+        if (message) {
+          message += "Would you like to continue?"
+          var bootboxDialog = bootbox.confirm({
+            message: message,
+            buttons: {
+              confirm: {
+                  label: 'Yes',
+                  className: 'btn-success'
+              },
+              cancel: {
+                  label: 'No',
+                  className: 'btn-danger'
+              }
+            },
+            centerVertical: true,
+            callback: function (result) {
+              if (result) {
+                console.log("Continue")
+                initiate_generate()
+              } else {
+                console.log("Stop")
+                // then show the sidebar again
+                forceActionSidebar('show')
+                document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
+                document.getElementById('div-generate-comeback').style.display = "flex"
+              }
+            }
+          })
+          // ipcRenderer.send('warning-empty-files-folders-generate', message)
         } else {
           initiate_generate()
         }
@@ -6442,18 +6468,18 @@ document.getElementById('button-generate').addEventListener('click', function() 
     })
 })
 
-ipcRenderer.on('warning-empty-files-folders-generate-selection', (event, index) => {
-  if (index === 0) {
-    console.log("Continue")
-    initiate_generate()
-  } else {
-    console.log("Stop")
-    // then show the sidebar again
-    forceActionSidebar('show')
-    document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
-    document.getElementById('div-generate-comeback').style.display = "flex"
-  }
-})
+// ipcRenderer.on('warning-empty-files-folders-generate-selection', (event, index) => {
+//   if (index === 0) {
+//     console.log("Continue")
+//     initiate_generate()
+//   } else {
+//     console.log("Stop")
+//     // then show the sidebar again
+//     forceActionSidebar('show')
+//     document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
+//     document.getElementById('div-generate-comeback').style.display = "flex"
+//   }
+// })
 
 const divGenerateProgressBar = document.getElementById("div-new-curate-meter-progress")
 const generateProgressBar = document.getElementById("progress-bar-new-curate")
@@ -6476,7 +6502,7 @@ function initiate_generate() {
         generateProgressBar.value = 0;
         log.error(error)
         console.error(error);
-        forceActionSidebar('show');
+        // forceActionSidebar('show');
         client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, result) => {
             if (error) {
               log.error(error)
@@ -6558,8 +6584,9 @@ function initiate_generate() {
       if (countDone > 1){
         log.info('Done curate track')
         console.log('Done curate track')
-        clearInterval(timerProgress);
+        // then show the sidebar again
         forceActionSidebar('show')
+        clearInterval(timerProgress);
       }
     }
   }
@@ -6567,12 +6594,17 @@ function initiate_generate() {
 }
 
 function backend_to_frontend_warning_message(error_array) {
-  var warning_message = ""
-  for (var i = 0; i < error_array.length;i++){
-    item = error_array[i]
-    warning_message += item + "\n"
+  if (error_array.length > 1) {
+    var warning_message = error_array[0] + "<ul>"
+  } else {
+    var warning_message = "<ul>"
   }
-  return warning_message
+  for (var i = 1; i < error_array.length;i++){
+    item = error_array[i]
+    warning_message += "<li>" + item + "</li>"
+  }
+  var final_message = warning_message + "</ul>"
+  return final_message
 }
 
 var forbidden_characters_bf = '\/:*?"<>';
