@@ -312,9 +312,6 @@ function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, u
         centerVertical: true
       })
     }
-
-    console.log(regularFiles)
-    console.log(uiFilesWithoutExtension)
 }
 
 ///// function to load details to show in display once

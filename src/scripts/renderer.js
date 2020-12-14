@@ -6649,8 +6649,8 @@ ipcRenderer.on('selected-metadataCurate', (event, mypath) => {
     if (metadataWithoutExtension === metadataIndividualFile) {
       if (metadataAllowedExtensions.includes(extension)) {
         document.getElementById(metadataParaElement).innerHTML = mypath[0];
-        $($("#"+metadataParaElement).parents()[0]).find('.div-metadata-confirm').css("display", "flex");
-        $($("#"+metadataParaElement).parents()[0]).find('.div-metadata-go-back').css("display", "none");
+        $($("#"+metadataParaElement).parents()[1]).find('.div-metadata-confirm').css("display", "flex");
+        $($("#"+metadataParaElement).parents()[1]).find('.div-metadata-go-back').css("display", "none");
       } else {
         document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>Your SPARC metadata file must be in one of the formats listed above!</span>"
       }
