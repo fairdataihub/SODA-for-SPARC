@@ -51,14 +51,14 @@ PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
 
 # makedirs(join(userpath, 'SODA', 'python-log'), exist_ok=True)
-# logpath = join(userpath, 'SODA', 'python-log', f"{__name__}.log")
-#
-# logging.basicConfig(level=logging.DEBUG, filename=logpath)
-# logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
-# handler = logging.FileHandler(logpath)
-# handler.setLevel(logging.DEBUG)
-# logger.addHandler(handler)
+logpath = join(userpath, 'SODA', 'python-log', f"{__name__}.log")
+
+logging.basicConfig(level=logging.DEBUG, filename=logpath)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(logpath)
+handler.setLevel(logging.DEBUG)
+logger.addHandler(handler)
 
 class InvalidDeliverablesDocument(Exception):
     pass

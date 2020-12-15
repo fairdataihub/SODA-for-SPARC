@@ -138,6 +138,9 @@ function nextPrev(n) {
   } else if (n === 1 && x[currentTab].id === 'metadata-files-tab') {
     var requiredFiles = ["submission", "dataset_description", "subjects"];
     var withoutExtMetadataArray = [];
+    if (!("metadata-files" in sodaJSONObj)) {
+      sodaJSONObj["metadata-files"] = {}
+    }
     Object.keys(sodaJSONObj["metadata-files"]).forEach(element => withoutExtMetadataArray.push(path.parse(element).name))
     var subArrayBoolean = requiredFiles.every(val => withoutExtMetadataArray.includes(val));
     if (!subArrayBoolean) {

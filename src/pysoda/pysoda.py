@@ -71,6 +71,7 @@ initial_bfdataset_size_submit = 0
 forbidden_characters = '<>:"/\|?*'
 forbidden_characters_bf = '\/:*?"<>'
 
+
 DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 
 # once pysoda has been packaged with pyinstaller
@@ -78,10 +79,13 @@ DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
 
-logging.basicConfig(level=logging.DEBUG, filename=os.path.join(os.path.expanduser("~"), f"{__name__}.log"))
+makedirs(join(userpath, 'SODA', 'python-log'), exist_ok=True)
+logpath = join(userpath, 'SODA', 'python-log', f"{__name__}.log")
+
+logging.basicConfig(level=logging.DEBUG, filename=logpath)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler(os.path.join(os.path.expanduser("~"), f"{__name__}.log"))
+handler = logging.FileHandler(logpath)
 handler.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
@@ -518,7 +522,6 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         jsonfile = {'name': datasetname}
         bf._api.datasets._put('/' + str(selected_dataset_id),
             json=jsonfile)
-
 
 def clear_queue():
 
