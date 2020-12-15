@@ -1,7 +1,7 @@
 {
   "name": "SODA",
   "productName": "SODA",
-  "version": "3.0.1-beta",
+  "version": "3.0.1",
   "description": "Keep Calm and Curate",
   "main": "main.js",
   "scripts": {
@@ -29,7 +29,7 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "assets/app-icon/win/soda_icon256.ico"
+      "icon": "assets/app-icon/win/icon.ico"
     },
     "mac": {
       "target": "dmg",
@@ -45,7 +45,7 @@
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon": "assets/app-icon/win/soda_icon256.ico"
+      "installerIcon": "assets/app-icon/win/icon.ico"
     },
     "publish": {
       "provider": "github",
