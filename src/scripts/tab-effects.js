@@ -136,16 +136,11 @@ function nextPrev(n) {
     })
     // check if required metadata files are included
   } else if (n === 1 && x[currentTab].id === 'metadata-files-tab') {
-    var containRequiredFilesCount = 0;
-    var requiredFiles = ["submission", "dataset-description", "subjects"];
-    for (var key in sodaJSONObj["metadata-files"]) {
-      for (let file of requiredFiles) {
-        if (key.includes(file)) {
-          containRequiredFilesCount += 1
-        }
-      }
-    }
-    if (containRequiredFilesCount < 3) {
+    var requiredFiles = ["submission", "dataset_description", "subjects"];
+    var withoutExtMetadataArray = [];
+    Object.keys(sodaJSONObj["metadata-files"]).forEach(element => withoutExtMetadataArray.push(path.parse(element).name))
+    var subArrayBoolean = requiredFiles.every(val => withoutExtMetadataArray.includes(val));
+    if (!subArrayBoolean) {
       bootbox.confirm({
         message: "You did not include all of the following required metadata files: <br><ol><li> submission</li><li> dataset_description</li> <li> subjects</li> </ol>Are you sure you want to continue?",
         buttons: {
@@ -782,8 +777,6 @@ function updateJSONObjectProgress() {
   updateJSONStructureManifest()
   updateJSONStructureDSstructure()
 }
-
-var progressFilePath = path.join(homeDirectory,"SODA", "Progress");
 
 function saveSODAJSONProgress(progressFileName) {
   try {

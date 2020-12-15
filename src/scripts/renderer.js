@@ -447,6 +447,7 @@ var awardPath = path.join(metadataPath, awardFileName);
 var milestonePath = path.join(metadataPath, milestoneFileName);
 var defaultAwardPath = path.join(metadataPath, defaultAwardFileName);
 var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
+var progressFilePath = path.join(homeDirectory,"SODA", "Progress");
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById('ds-keywords'),
