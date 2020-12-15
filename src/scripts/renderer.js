@@ -2883,7 +2883,7 @@ curateBFaccountList.addEventListener('change', function() {
   }
   // sync BF account select under Manage dataset
   if (bfAccountList.options[bfAccountList.selectedIndex].value !== curateSelectedbfaccount) {
-    $('#bfaccountlist option[value="'+curateSelectedbfaccount+'"]').attr('selected','selected');
+    $('#bfaccountlist option[value="'+curateSelectedbfaccount+'"]').prop('selected',true);
     showAccountDetails(bfAccountLoadProgress);
   }
   curateDatasetDropdown.disabled = false;
@@ -2973,7 +2973,7 @@ function curateChooseBFAccountByDefault(){
     } else {
       if (result.length > 0) {
         var myitemselect = result[0];
-        $('#bfallaccountlist option[value="'+myitemselect+'"]').attr('selected','selected');
+        $('#bfallaccountlist option[value="'+myitemselect+'"]').prop('selected',true);
         curateShowAccountDetails(curateBFaccountList)
         hideDivsOnBFAccountChange()
         updateDatasetCurate(curateDatasetDropdown, curateBFaccountList);
@@ -4603,7 +4603,7 @@ function selectOptionDropdown(dropdown, selectedDataset) {
   var dropdownString = dropdown + " option"
   $(dropdownString).each(function() {
     if($(this).text() == selectedDataset) {
-      $(this).attr('selected', 'selected');
+      $(this).prop('selected', true);
     }
   });
 }
@@ -4700,7 +4700,7 @@ function loadDefaultAccount() {
     } else {
         if (res.length > 0) {
           var myitemselect = res[0];
-          $('#bfaccountlist option[value="'+myitemselect+'"]').attr('selected','selected');
+          $('#bfaccountlist option[value="'+myitemselect+'"]').prop('selected',true);
           showAccountDetails(bfAccountLoadProgress)
           bfAccountLoadProgress.style.display = 'block';
           refreshBfUsersList()
