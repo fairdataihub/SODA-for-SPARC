@@ -1995,6 +1995,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                                 index_file = my_bf_existing_files_name.index(initial_name)
                                 my_file = my_bf_existing_files[index_file]
                                 my_file.delete() 
+                                ds.update() 
                         if existing_file_option == "skip":
                             if initial_name in my_bf_existing_files_name:
                                 continue
@@ -2018,16 +2019,16 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             list_upload_manifest_files = []
             for key in manifest_files_structure.keys():  
                 manifestpath = manifest_files_structure[key]
-                for item_key in tracking_json_structure['folders'].keys():
-                    item = tracking_json_structure['folders'][item_key]['value']
-                    destination_folder_id = item.id
-                    #delete existing manifest files
-                    for subitem in item:
-                        if subitem.name == "manifest":
-                            subitem.delete()   
-                    #upload new manifest files
-                    list_upload_manifest_files.append([[manifestpath], item])
-                    main_total_generate_dataset_size += getsize(manifestpath)
+                item = tracking_json_structure['folders'][key]['value']
+                destination_folder_id = item.id
+                #delete existing manifest files
+                for subitem in item:
+                    if subitem.name == "manifest":
+                        subitem.delete()   
+                        item.update()
+                #upload new manifest files
+                list_upload_manifest_files.append([[manifestpath], item])
+                main_total_generate_dataset_size += getsize(manifestpath)
 
         # 5. Upload files, rename, and add to tracking list
         main_initial_bfdataset_size = bf_dataset_size()
