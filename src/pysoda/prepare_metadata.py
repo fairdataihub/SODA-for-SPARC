@@ -32,6 +32,9 @@ import collections
 from threading import Thread
 import pathlib
 
+from string import ascii_uppercase
+import itertools
+
 from openpyxl import load_workbook
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font
@@ -47,13 +50,15 @@ DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
 
-logging.basicConfig(level=logging.DEBUG, filename=os.path.join(os.path.expanduser("~"), f"{__name__}.log"))
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler(os.path.join(os.path.expanduser("~"), f"{__name__}.log"))
-handler.setLevel(logging.DEBUG)
-logger.addHandler(handler)
-
+# makedirs(join(userpath, 'SODA', 'python-log'), exist_ok=True)
+# logpath = join(userpath, 'SODA', 'python-log', f"{__name__}.log")
+#
+# logging.basicConfig(level=logging.DEBUG, filename=logpath)
+# logger = logging.getLogger(__name__)
+# logger.setLevel(logging.DEBUG)
+# handler = logging.FileHandler(logpath)
+# handler.setLevel(logging.DEBUG)
+# logger.addHandler(handler)
 
 class InvalidDeliverablesDocument(Exception):
     pass
@@ -119,10 +124,6 @@ def save_submission_file(filepath, json_str):
 
     wb.save(destination)
 
-from string import ascii_uppercase
-import itertools
-
-
 def excel_columns(start_index=0):
     """
     NOTE: does not support more than 699 contributors/links
@@ -137,7 +138,7 @@ def rename_headers(workbook, max_len, start_index):
     """
 
     columns_list = excel_columns(start_index=start_index)
-    if max_len > start_index:
+    if max_len >= start_index:
 
         workbook[columns_list[0] + "1"] = "Value"
 
@@ -153,7 +154,6 @@ def rename_headers(workbook, max_len, start_index):
             font = Font(bold=True)
             cell.fill = blueFill
             cell.font = font
-
 
     else:
 
