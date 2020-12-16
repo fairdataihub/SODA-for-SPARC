@@ -1973,6 +1973,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
         recursive_create_folder_for_bf(dataset_structure, tracking_json_structure, existing_folder_option)
 
         # 2. Scan the dataset structure and compile a list of files to be uploaded along with desired renaming
+        ds.update()
         main_curate_progress_message = "Preparing a list of files to upload"
         existing_file_option = soda_json_structure["generate-dataset"]["if-existing-files"]
         list_upload_files = []
@@ -1980,6 +1981,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
         list_upload_files = recursive_dataset_scan_for_bf(dataset_structure, tracking_json_structure, existing_file_option, list_upload_files, relative_path)
 
         # 3. Add high-level metadata files to a list
+        ds.update()
         list_upload_metadata_files = []
         if "metadata-files" in soda_json_structure.keys():
 
@@ -1995,14 +1997,14 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                                 index_file = my_bf_existing_files_name.index(initial_name)
                                 my_file = my_bf_existing_files[index_file]
                                 my_file.delete()
-                                # ds.update()
+                                
                         if existing_file_option == "skip":
                             if initial_name in my_bf_existing_files_name:
                                 continue
 
                         list_upload_metadata_files.append(metadata_path)
                         main_total_generate_dataset_size += getsize(metadata_path)
-
+            
         # 4. Prepare and add manifest files to a list
         list_upload_manifest_files = []
         if "manifest-files" in soda_json_structure.keys():
@@ -2045,7 +2047,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             #upload
             main_curate_progress_message = "Uploading files in " + str(relative_path)
             bf_folder.upload(*list_upload)
-            bf_folder.update()
+            #bf_folder.update()
 
             #rename to final name
             for index, projected_name in enumerate(list_projected_names):
@@ -2065,7 +2067,6 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
         if list_upload_metadata_files:
             main_curate_progress_message = "Uploading metadata files in high-level dataset folder " + str(ds.name)
             ds.upload(*list_upload_metadata_files)
-            # ds.update()
 
         if list_upload_manifest_files:
             for item in list_upload_manifest_files:
@@ -2073,7 +2074,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 bf_folder = item[1]
                 main_curate_progress_message = "Uploading manifest file in " + str(bf_folder.name) + " folder"
                 bf_folder.upload(*manifest_file)
-                bf_folder.update()
+                #bf_folder.update()
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
     except Exception as e:
