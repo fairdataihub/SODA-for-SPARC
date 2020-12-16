@@ -8,10 +8,12 @@ const log  = require("electron-log");
 require('v8-compile-cache')
 const {ipcMain} = require('electron')
 const { autoUpdater } = require("electron-updater");
+const { JSONStorage } = require('node-localstorage');
 const { trackEvent } = require('./scripts/analytics');
 
 log.transports.console.level = false
 global.trackEvent = trackEvent;
+const nodeStorage = new JSONStorage(app.getPath('userData'));
 /*************************************************************
  * Python Process
  *************************************************************/
@@ -77,6 +79,7 @@ app.on('will-quit', exitPyProc)
 
 let mainWindow = null
 let user_restart_confirmed = false;
+let updatechecked = false;
 
 function initialize () {
   makeSingleInstance()
@@ -87,7 +90,12 @@ function initialize () {
     // mainWindow.webContents.openDevTools();
 
     mainWindow.webContents.once('dom-ready', () => {
-      autoUpdater.checkForUpdatesAndNotify();
+      if (updatechecked == false)
+      {
+        log.info('checking for updates');
+        console.log("checking for updates");
+        autoUpdater.checkForUpdatesAndNotify();
+      }
     });
 
     mainWindow.on('close', (e) => {
@@ -116,7 +124,10 @@ function initialize () {
           app.exit();
         }
         else {
-          quit_app();
+          var first_launch = nodeStorage.getItem('firstlaunch');
+          nodeStorage.setItem('firstlaunch', true);
+          exitPyProc();
+          app.exit();
         }
       }
     })
@@ -161,10 +172,28 @@ function initialize () {
         splash.close();
         mainWindow.show();
         createWindow();
-        trackEvent('Success', 'App Launched - OS',  os.platform() + "-" + os.release());
-        trackEvent('Success', 'App Launched - SODA',  app.getVersion());
+        var first_launch = nodeStorage.getItem('firstlaunch');
+        if (first_launch == true || first_launch == undefined)
+        {
+          mainWindow.reload();
+          mainWindow.focus();
+          console.log("mainWindow reloaded for first launch");
+          nodeStorage.setItem('firstlaunch', false);
+        }
+        log.info('checking');
+        console.log("checking");
+        autoUpdater.checkForUpdatesAndNotify();
+        updatechecked = true;
+        //trackEvent('Success', 'App Launched - OS',  os.platform() + "-" + os.release());
+        //trackEvent('Success', 'App Launched - SODA',  app.getVersion());
       }, 5000);
     });
+  })
+
+  app.on('ready', () => {
+    //createWindow()
+    trackEvent('Success', 'App Launched - OS',  os.platform() + "-" + os.release());
+    trackEvent('Success', 'App Launched - SODA',  app.getVersion());
   })
 
   app.on('window-all-closed', () => {
@@ -250,16 +279,19 @@ ipcMain.on("app_version", (event) => {
 
 autoUpdater.on("update-available", () => {
   trackEvent("App Update", "Update Requested", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
+  log.info('update_available');
   mainWindow.webContents.send("update_available");
 });
 
 autoUpdater.on("update-downloaded", () => {
   trackEvent("App Update", "Update Downloaded", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
+  log.info('update_downloaded');
   mainWindow.webContents.send("update_downloaded");
 });
 
 ipcMain.on("restart_app", () => {
   user_restart_confirmed = true;
   trackEvent("App Update", "App Restarted", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
+  log.info('quitAndInstall');
   autoUpdater.quitAndInstall();
 });
