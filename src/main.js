@@ -10,6 +10,7 @@ const {ipcMain} = require('electron')
 const { autoUpdater } = require("electron-updater");
 const { JSONStorage } = require('node-localstorage');
 const { trackEvent } = require('./scripts/analytics');
+const { fstat } = require('fs');
 
 log.transports.console.level = false
 global.trackEvent = trackEvent;
@@ -37,7 +38,16 @@ const getScriptPath = () => {
   if (process.platform === 'win32') {
     return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + '.exe')
   }
-  return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE)
+
+  if (process.env.NODE_ENV === 'development')
+  {
+    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE)
+  }
+  else
+  {
+    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
+    return path.join(__dirname, "../app.asar.unpacked/"+ PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
+  }
 }
 
 const selectPort = () => {
@@ -49,12 +59,24 @@ const createPyProc = () => {
   let script = getScriptPath()
   let port = '' + selectPort()
 
+  log.info(script);
+  if (require('fs').existsSync(script))
+  {
+    log.info("file exists");
+  }
+  else
+  {
+    log.info("file does not exist");
+  }
   if (guessPackaged()) {
+    log.info("execFile");
     pyProc = require('child_process').execFile(script, [port], { stdio: 'ignore' })
   } else {
+    log.info("spawn");
     pyProc = require('child_process').spawn('python', [script, port], { stdio: 'ignore' })
   }
 
+  log.info(pyProc);
   if (pyProc != null) {
     console.log('child process success on port ' + port)
     log.info('child process success on port ' + port)

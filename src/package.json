@@ -1,7 +1,7 @@
 {
   "name": "SODA",
   "productName": "SODA",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Keep Calm and Curate",
   "main": "main.js",
   "scripts": {
@@ -34,7 +34,11 @@
     "mac": {
       "target": "dmg",
       "icon": "assets/app-icon/mac/soda_icon.icns",
-      "darkModeSupport": false
+      "darkModeSupport": false,
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "entitlements.mac.inherit.plist",
+      "entitlementsInherit": "entitlements.mac.inherit.plist"
     },
     "linux": {
       "target": "AppImage",
