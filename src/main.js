@@ -39,15 +39,7 @@ const getScriptPath = () => {
     return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + '.exe')
   }
 
-  if (process.env.NODE_ENV === 'development')
-  {
-    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE)
-  }
-  else
-  {
     return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
-    return path.join(__dirname, "../app.asar.unpacked/"+ PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
-  }
 }
 
 const selectPort = () => {
@@ -114,8 +106,6 @@ function initialize () {
     mainWindow.webContents.once('dom-ready', () => {
       if (updatechecked == false)
       {
-        log.info('checking for updates');
-        console.log("checking for updates");
         autoUpdater.checkForUpdatesAndNotify();
       }
     });
@@ -124,9 +114,6 @@ function initialize () {
       if (!user_restart_confirmed) {
         if (app.showExitPrompt) {
           e.preventDefault() // Prevents the window from closing
-          if (user_restart_confirmed) {
-            quit_app();
-          }
           dialog.showMessageBox(BrowserWindow.getFocusedWindow(), {
             type: 'question',
             buttons: ['Yes', 'No'],
@@ -140,17 +127,10 @@ function initialize () {
         }
       }
       else {
-        if (process.platform == "darwin") {
-          exitPyProc();
-          app.relaunch();
-          app.exit();
-        }
-        else {
-          var first_launch = nodeStorage.getItem('firstlaunch');
-          nodeStorage.setItem('firstlaunch', true);
-          exitPyProc();
-          app.exit();
-        }
+        var first_launch = nodeStorage.getItem('firstlaunch');
+        nodeStorage.setItem('firstlaunch', true);
+        exitPyProc();
+        app.exit();
       }
     })
 
@@ -199,15 +179,10 @@ function initialize () {
         {
           mainWindow.reload();
           mainWindow.focus();
-          console.log("mainWindow reloaded for first launch");
           nodeStorage.setItem('firstlaunch', false);
         }
-        log.info('checking');
-        console.log("checking");
         autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
-        //trackEvent('Success', 'App Launched - OS',  os.platform() + "-" + os.release());
-        //trackEvent('Success', 'App Launched - SODA',  app.getVersion());
       }, 5000);
     });
   })
@@ -279,7 +254,6 @@ ipcMain.on('resize-window', (event, dir) => {
 // if not needed. Sample requests from renderer.js is shown below:
 //ipcRenderer.send('track-event', "App Backend", "Python Connection Established");
 //ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
-
 ipcMain.on("track-event", (event, category, action, label, value) => {
   if (label == undefined && value == undefined)
   {

@@ -1,7 +1,7 @@
 {
   "name": "SODA",
   "productName": "SODA",
-  "version": "3.0.2",
+  "version": "3.0.1",
   "description": "Keep Calm and Curate",
   "main": "main.js",
   "scripts": {
@@ -32,7 +32,7 @@
       "icon": "assets/app-icon/win/icon.ico"
     },
     "mac": {
-      "target": "dmg",
+      "target": ["dmg", "zip"],
       "icon": "assets/app-icon/mac/soda_icon.icns",
       "darkModeSupport": false,
       "hardenedRuntime": true,
