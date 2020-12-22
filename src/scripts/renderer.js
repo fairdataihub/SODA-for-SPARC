@@ -6663,14 +6663,29 @@ ipcRenderer.on('selected-metadataCurate', (event, mypath) => {
 })
 
 
-document.getElementById('button-preview-dataset').addEventListener('click', function() {
-   client.invoke("api_preview_dataset", sodaJSONObj, (error, res) => {
-      if (error) {
-        var emessage = userError(error)
-        log.error(error)
-        console.error(error)
-      } else {
-        console.log(res)
-      }
-  })
+document.getElementById('button-preview-dataset').addEventListener('click', function () {
+    client.invoke("api_preview_dataset", sodaJSONObj, (error, res) => {
+        if (error) {
+            var emessage = userError(error)
+            log.error(error)
+            console.error(error)
+        } else {
+            console.log(res)
+        }
+    })
 })
+
+var bf_request_and_populate_dataset = (sodaJSONObj) => {
+    return new Promise((resolve, reject) => {
+        client.invoke("api_bf_get_dataset_files_folders", sodaJSONObj, (error, res) => {
+            if (error) {
+                reject(res);
+                log.error(error)
+                console.error(error)
+            } else {
+                console.log(res)
+                resolve(res[0]);
+            }
+        })
+    });
+}
