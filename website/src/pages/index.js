@@ -6,7 +6,7 @@ import AboutSection from '../components/AboutSection'
 import DownloadSection from '../components/DownloadSection'
 import FeatureSection from '../components/FeatureSection'
 import TeamSection from '../components/TeamSection'
-import { teamObj, featureObj, aboutObj } from '../components/data'
+import { teamObj, featureObj, aboutObj, downloadObj } from '../components/data'
 import Footer from '../components/Footer'
 
 const Home = () => {
@@ -22,8 +22,8 @@ const Home = () => {
             <Navbar toggle={toggle} />
             <HeroSection />
             <AboutSection {...aboutObj} />
-            <DownloadSection />
             <FeatureSection {...featureObj} />
+            <DownloadSection {...downloadObj}/>
             <TeamSection {...teamObj} />
             <Footer />
         </div>

@@ -30,7 +30,7 @@ export const NavbarContainer = styled.div`
 `;
 
 export const NavLogo = styled(LinkS)`
-    color: #fff;
+    color: #20b2aa;
     justify-self: flex-start;
     cursor: pointer;
     font-size: 1.5rem;
@@ -80,6 +80,12 @@ export const NavLinks = styled(LinkS)`
     padding: 0 1rem;
     height: 100%;
     cursor: pointer;
+
+    // &:hover {
+    //     // background: #202020;
+    //     border-bottom: 4px solid #20b2aa;
+    //     cursor: pointer;
+    // }
 `;
 
 export const NavLinksD = styled(LinkR)`

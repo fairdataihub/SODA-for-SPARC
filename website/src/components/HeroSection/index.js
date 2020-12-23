@@ -14,8 +14,9 @@ import {
 } from './HeroElements'
 import { Button } from '../ButtonElement'
 import Image from '../../images/background-1.jpg';
-import Image2 from '../../images/banner.svg';
+import Image2 from '../../images/banner-area-image.svg';
 import { AiOutlineCloudDownload } from 'react-icons/ai'
+import { BiChevronRight } from 'react-icons/bi'
 
 const HeroSection = () => {
     const [hover, setHover] = useState(false);
@@ -26,17 +27,17 @@ const HeroSection = () => {
 
     return (
         <HeroContainer id='home'>
-            <HeroBg>
+            {/* <HeroBg>
                 <ImageBg src={Image} />
-            </HeroBg>
+            </HeroBg> */}
             <HeroContent
             initial = {{opacity: 0}}
             animate = {{opacity: 1}}
             transition = {{duration: 1}}
             >
                 <HeroText>
-                    <HeroH1>SODA </HeroH1>
-                    <HeroH2>Scientific Data Curation and Sharing Made Easy</HeroH2>
+                    <HeroH1>Scientific Data Curation and Sharing Made Easy </HeroH1>
+                    {/* <HeroH2></HeroH2> */}
                     <HeroP>
                     </HeroP>
                     <HeroBtnWrapper>
@@ -44,10 +45,18 @@ const HeroSection = () => {
                         to='downloads'
                         onMouseEnter={onHover}
                         onMouseLeave={onHover}
-                        big='true'
-                        fontBig='true'
                         smooth='true'>
-                            Download
+                            Learn More
+                            <Icon>
+                                <BiChevronRight />
+                            </Icon>
+                        </Button>
+                        <Button 
+                        to='downloads'
+                        onMouseEnter={onHover}
+                        onMouseLeave={onHover}
+                        smooth='true'>
+                            SODA for SPARC
                             <Icon>
                                 <AiOutlineCloudDownload />
                             </Icon>

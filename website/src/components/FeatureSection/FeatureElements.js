@@ -1,16 +1,17 @@
 import styled from 'styled-components'
 
 export const FeatureContainer = styled.div`
-    height: 1060px;
+    // height: 1060px;
     display: flex;
     flex-direction: column;
     align-items: center;
     background: white;
     justify-content: center;
+    padding: 100px 0;
 
-    @media screen and (max-width: 1000px) {
-        height: 2000px;
-    }
+    // @media screen and (max-width: 1000px) {
+    //     height: 2000px;
+    // }
 `;
 
 export const Heading =  styled.h1`
@@ -26,9 +27,11 @@ export const Heading =  styled.h1`
 export const Intro = styled.p`
     opacity: ${({ animate }) => (animate ? '1' : '0')};
     transition: opacity 1s ease-in-out;
-    max-width: 1200px;
+    max-width: 1000px;
     padding-bottom: 70px;
     text-align: center;
+    padding-left: 50px;
+    padding-right: 50px;
 `
 
 export const FeatureRow = styled.div`
