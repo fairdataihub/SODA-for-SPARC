@@ -32,7 +32,10 @@
       "icon": "assets/app-icon/win/icon.ico"
     },
     "mac": {
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "icon": "assets/app-icon/mac/soda_icon.icns",
       "darkModeSupport": false,
       "hardenedRuntime": true,

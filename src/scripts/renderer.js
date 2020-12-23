@@ -6387,87 +6387,108 @@ function forceActionSidebar(action) {
 
 const progressBarNewCurate = document.getElementById('progress-bar-new-curate');
 
-document.getElementById('button-generate').addEventListener('click', function() {
+document
+  .getElementById("button-generate")
+  .addEventListener("click", function () {
+    $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
+    document.getElementById("prevBtn").style.display = "none";
+    document.getElementById("div-vertical-progress-bar").style.display = "none";
+    document.getElementById("div-generate-comeback").style.display = "none";
+    document.getElementById("generate-dataset-progress-tab").style.display =
+      "flex";
+    forceActionSidebar("hide");
 
-  $($($(this).parent()[0]).parents()[0]).removeClass('tab-active');
-  document.getElementById('prevBtn').style.display = "none";
-  document.getElementById('div-vertical-progress-bar').style.display = "none";
-  document.getElementById('div-generate-comeback').style.display = "none"
-  document.getElementById('generate-dataset-progress-tab').style.display = "flex";
-  forceActionSidebar('hide')
+    // updateJSON structure after Generate dataset tab
+    updateJSONStructureGenerate();
 
-  // updateJSON structure after Generate dataset tab
-  updateJSONStructureGenerate();
+    //  from here you can modify
+    document.getElementById("para-please-wait-new-curate").innerHTML =
+      "Please wait...";
+    document.getElementById(
+      "para-new-curate-progress-bar-error-status"
+    ).innerHTML = "";
+    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+      "";
+    document.getElementById("div-new-curate-progress").style.display = "none";
 
-  //  from here you can modify
-  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait..."
-  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = ""
-  document.getElementById("para-new-curate-progress-bar-status").innerHTML = ""
-  document.getElementById('div-new-curate-progress').style.display = "none";
+    progressBarNewCurate.value = 0;
 
-  progressBarNewCurate.value = 0;
+    console.log(sodaJSONObj);
 
-  console.log(sodaJSONObj)
-
-  client.invoke("api_check_empty_files_folders", sodaJSONObj,
-     (error, res) => {
-     if (error) {
-      var emessage = userError(error)
-      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'> Error: " + emessage + "</span>"
-      document.getElementById("para-please-wait-new-curate").innerHTML = "";
-      console.error(error)
-     } else {
-        document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
-        log.info('Continue with curate')
-        var message = ""
-        error_files = res[0]
-        error_folders = res[1]
-
-        if (error_files.length>0){
-          var error_message_files = backend_to_frontend_warning_message(error_files)
-          message += error_message_files
-        }
-
-        if (error_folders.length>0){
-          var error_message_folders = backend_to_frontend_warning_message(error_folders)
-          message += error_message_folders
-        }
-
-        if (message) {
-          message += "Would you like to continue?"
-          var bootboxDialog = bootbox.confirm({
-            message: message,
-            buttons: {
-              confirm: {
-                  label: 'Yes',
-                  className: 'btn-success'
-              },
-              cancel: {
-                  label: 'No',
-                  className: 'btn-danger'
-              }
-            },
-            centerVertical: true,
-            callback: function (result) {
-              if (result) {
-                console.log("Continue")
-                initiate_generate()
-              } else {
-                console.log("Stop")
-                // then show the sidebar again
-                forceActionSidebar('show')
-                document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
-                document.getElementById('div-generate-comeback').style.display = "flex"
-              }
-            }
-          })
-          // ipcRenderer.send('warning-empty-files-folders-generate', message)
+    client.invoke(
+      "api_check_empty_files_folders",
+      sodaJSONObj,
+      (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          document.getElementById(
+            "para-new-curate-progress-bar-error-status"
+          ).innerHTML =
+            "<span style='color: red;'> Error: " + emessage + "</span>";
+          document.getElementById("para-please-wait-new-curate").innerHTML = "";
+          console.error(error);
         } else {
-          initiate_generate()
+          document.getElementById("para-please-wait-new-curate").innerHTML =
+            "Please wait...";
+          log.info("Continue with curate");
+          var message = "";
+          error_files = res[0];
+          error_folders = res[1];
+
+          if (error_files.length > 0) {
+            var error_message_files = backend_to_frontend_warning_message(
+              error_files
+            );
+            message += error_message_files;
+          }
+
+          if (error_folders.length > 0) {
+            var error_message_folders = backend_to_frontend_warning_message(
+              error_folders
+            );
+            message += error_message_folders;
+          }
+
+          if (message) {
+            message += "Would you like to continue?";
+            var bootboxDialog = bootbox.confirm({
+              message: message,
+              buttons: {
+                confirm: {
+                  label: "Yes",
+                  className: "btn-success",
+                },
+                cancel: {
+                  label: "No",
+                  className: "btn-danger",
+                },
+              },
+              centerVertical: true,
+              callback: function (result) {
+                if (result) {
+                  console.log("Continue");
+                  initiate_generate();
+                } else {
+                  console.log("Stop");
+                  // then show the sidebar again
+                  forceActionSidebar("show");
+                  document.getElementById(
+                    "para-please-wait-new-curate"
+                  ).innerHTML = "Return to make changes";
+                  document.getElementById(
+                    "div-generate-comeback"
+                  ).style.display = "flex";
+                }
+              },
+            });
+            // ipcRenderer.send('warning-empty-files-folders-generate', message)
+          } else {
+            initiate_generate();
+          }
         }
       }
-    })
-})
+    );
+  });
 
 // ipcRenderer.on('warning-empty-files-folders-generate-selection', (event, index) => {
 //   if (index === 0) {
@@ -6676,16 +6697,20 @@ document.getElementById('button-preview-dataset').addEventListener('click', func
 })
 
 var bf_request_and_populate_dataset = (sodaJSONObj) => {
-    return new Promise((resolve, reject) => {
-        client.invoke("api_bf_get_dataset_files_folders", sodaJSONObj, (error, res) => {
-            if (error) {
-                reject(res);
-                log.error(error)
-                console.error(error)
-            } else {
-                console.log(res)
-                resolve(res[0]);
-            }
-        })
-    });
-}
+  return new Promise((resolve, reject) => {
+    client.invoke(
+      "api_bf_get_dataset_files_folders",
+      sodaJSONObj,
+      (error, res) => {
+        if (error) {
+          reject(res);
+          log.error(error);
+          console.error(error);
+        } else {
+          console.log(res);
+          resolve(res[0]);
+        }
+      }
+    );
+  });
+};
