@@ -67,6 +67,8 @@ export const Contact1 = styled.div`
     font-size: 20px;
     font-weight: 400;
     text-align: center;
+    padding-left: 50px;
+    padding-right: 50px;
 
     @media screen and (max-width: 818px) {
         font-size: 16px;

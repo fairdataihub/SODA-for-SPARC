@@ -54,6 +54,7 @@ const AboutSection = ({id, imgStart, heading, para1, para2, para3, para4, img}) 
                 </AboutRow>
                 </AboutWrapper>
             </AboutContainer>
+            <hr style={{width: 75+ '%', marginLeft: 12.5 + '%'}} /> 
         </div>
     )
 }

@@ -15,13 +15,15 @@ export const AboutWrapper = styled.div`
     transition: opacity 1s ease-in-out;
     z-index: 1;
     width: 100%;
-    height: 860px;
+    // height: 860px;
     max-width: 1100px;
     padding: 0px 24px;
     display: grid;
     margin-right: auto;
     margin-left: auto;
     justify-content: center;
+    padding-top: 100px;
+    padding-bottom: 40px;
 `;
 
 export const AboutRow = styled.div`
