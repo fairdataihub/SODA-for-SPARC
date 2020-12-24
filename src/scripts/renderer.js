@@ -6329,6 +6329,8 @@ $("#inputNewNameDataset").keyup(function() {
   $('#Question-generate-dataset-generate-div').removeClass("show");
   $('#Question-generate-dataset-generate-div').removeClass("test2");
   $('#Question-generate-dataset-generate-div').removeClass("prev");
+  $("#Question-generate-dataset-generate-div").hide();
+  $("#Question-generate-dataset-generate-div").children().hide();
   var newName = $("#inputNewNameDataset").val().trim();
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
@@ -6336,6 +6338,8 @@ $("#inputNewNameDataset").keyup(function() {
       document.getElementById('para-new-name-dataset-message').innerHTML = "Error: A Blackfynn dataset name cannot contain any of the following characters: \/:*?'<>."
     } else {
       // document.getElementById('div-confirm-inputNewNameDataset').style.display = "flex";
+      $("#Question-generate-dataset-generate-div").show();
+      $("#Question-generate-dataset-generate-div").children().show();
       $('#div-confirm-inputNewNameDataset button').click();
       document.getElementById('para-new-name-dataset-message').innerHTML = "";
     }

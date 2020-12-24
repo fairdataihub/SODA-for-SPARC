@@ -208,8 +208,9 @@ function nextPrev(n) {
     $("#Question-generate-dataset").show();
     $("#Question-generate-dataset").children().show();
     $("#Question-generate-dataset-generate-div").hide();
-    $("#button-preview-dataset").hide();
-    $("#button-generate").hide();
+    $("#Question-generate-dataset-generate-div").children().hide();
+    //$("#button-preview-dataset").hide();
+    //$("#button-generate").hide();
     //("#button-preview-dataset").show();
     //$("#button-generate").show();
     //$("#Question-generate-dataset-generate-div").removeClass('show');
@@ -414,17 +415,23 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
   if (!(ev.getAttribute('data-next') === "Question-generate-dataset-existing-files-options"
   && target.classList.contains('prev'))) {
     // append to parentDiv
-    $("#Question-generate-dataset-generate-div").hide();
-    $("#button-preview-dataset").hide();
-    $("#button-generate").hide();
     document.getElementById(parentDiv).appendChild(target);
   }
   // if buttons: Add account and Confirm account were hidden, show them again here
   if (ev.getAttribute('data-next') === "Question-generate-dataset-BF-account") {
     $("#" + ev.getAttribute('data-next') + " button").show();
   }
+
+  if (ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")
+  {
+    $("#Question-generate-dataset-generate-div").show();
+    $("#Question-generate-dataset-generate-div").children().show();
+  }
+
   if (!(ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")) {
     // create moving effects when new questions appear
+    $("#Question-generate-dataset-generate-div").hide();
+    $("#Question-generate-dataset-generate-div").children().hide();
     setTimeout(() => target.classList.add("test2"), 100);
   }
 
