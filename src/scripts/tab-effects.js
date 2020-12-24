@@ -228,7 +228,7 @@ function nextPrev(n) {
     }
     // Display the correct tab:
     showParentTab(currentTab, n);
-    console.log(sodaJSONObj);
+    console.log(JSON.stringify(sodaJSONObj));
   }
 }
 

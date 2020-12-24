@@ -521,7 +521,7 @@ def create_dataset(recursivePath, jsonStructure, listallfiles):
 
                 mycopyfile_with_metadata(srcfile, distfile)
 
-def bf_get_dataset_files_folders(soda_json_structure):
+def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = true):
     """
     Function for importing blackfynn data files info into the "dataset-structure" key of the soda json structure, 
     including metadata from any existing manifest files in the high-level folders 
@@ -556,7 +556,7 @@ def bf_get_dataset_files_folders(soda_json_structure):
                     dataset_folder["files"] = {}
                 col_count += 1
                 folder_name = item.name
-                if my_level == 0 and folder_name not in high_level_sparc_folders:  # only import SPARC folders
+                if my_level == 0 and folder_name not in high_level_sparc_folders and requested_sparc_only:  # only import SPARC folders
                     continue
                 if col_count == 1:
                     #dataset_folder["folders"] = {}
@@ -578,9 +578,8 @@ def bf_get_dataset_files_folders(soda_json_structure):
                 package_id = item.id
                 file_details = bf._api._get(
                     '/packages/' + str(package_id) + '/view')
-                print(item)
-                print(file_details)
                 file_name = file_details[0]["content"]["name"]
+                file_name = verify_file_name(item.name, file_name)
 
                 if my_level == 0 and file_name in high_level_metadata_sparc:
                     metadata_files[file_name] = {

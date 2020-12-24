@@ -39,6 +39,8 @@ validate_sub_level_organization, validate_submission_file, validate_dataset_desc
 
 from pysoda import clear_queue, agent_running, check_forbidden_characters, check_forbidden_characters_bf, bf_dataset_size
 
+from organize_datasets import bf_get_dataset_files_folders
+
 ### Global variables
 curateprogress = ' '
 curatestatus = ' '
@@ -1788,6 +1790,50 @@ def get_base_file_name(file_name):
     else:
         return output
 
+def bf_update_existing_dataset(soda_json_structure, bf, ds):
+    global main_curate_progress_message
+    global main_total_generate_dataset_size
+    global start_generate
+    global main_initial_bfdataset_size
+
+    def recursive_file_delete(folder):
+        for item in list(folder["files"]):
+            if "deleted" in folder["files"][item]['action']:
+                file = bf.get(folder["files"][item]['path'])
+                file.delete()
+                del folder["files"][item]
+        for item in list(folder["folders"]):
+            recursive_file_delete(folder["folders"][item])
+        return
+
+    def recursive_folder_create_on_bf(my_folder, my_tracking_folder, ds):
+        # list of existing bf folders at this level
+        my_bf_folder = ds
+        my_bf_existing_folders, my_bf_existing_folders_name = bf_get_existing_folders_details(my_bf_folder)
+
+        # create/replace/skip folder
+        if "folders" in my_folder.keys():
+            my_tracking_folder["folders"] = {}
+            for folder_key, folder in my_folder["folders"].items():
+
+    # 1. Remove all existing files on blackfynn, that the user deleted.
+    # create a tracking dict which would track the generation of the dataset on Blackfynn
+    main_curate_progress_message = "Deleting files on blackfynn"
+    dataset_structure = soda_json_structure["dataset-structure"]
+    recursive_file_delete(dataset_structure, bf, ds)
+    main_curate_progress_message = "Requested files on blackfynn deleted"
+
+    #movefiles or something
+
+    current_bf_dataset_files_folders = bf_get_dataset_files_folders(soda_json_structure)[0]
+
+    recursive_folder_create_on_bf(dataset_structure, current_bf_dataset_files_folders, ds)
+
+
+
+    return
+
+
 def bf_generate_new_dataset(soda_json_structure, bf, ds):
 
     global main_curate_progress_message
@@ -2228,7 +2274,7 @@ def main_curate_function(soda_json_structure):
                 main_curate_status = 'Done'
                 raise e
 
-    # 2] Generate
+    # 3] Generate
     if "generate-dataset" in main_keys:
         main_curate_progress_message = "Generating dataset"
         try:
@@ -2251,6 +2297,7 @@ def main_curate_function(soda_json_structure):
                     #     bf_add_manifest_files(manifest_files_structure, myds)
                 if generate_option == "existing":
                     myds = bf.get_dataset(bfdataset)
+                    #rename/remove existing files
                     bf_update_existing_dataset(soda_json_structure, bf, myds)
 
         except Exception as e:
