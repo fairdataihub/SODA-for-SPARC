@@ -6190,6 +6190,11 @@ function listItems(jsonObj, uiItem) {
       // not the auto-generated manifest
       if (sortedObj["files"][item].length !== 1) {
         var extension = sliceStringByValue(sortedObj["files"][item]["path"],  ".")
+        if (sortedObj["files"][item]["type"] == "bf")
+        {
+          extension = item.split('.').pop();
+        }
+        console.log(extension);
         if (!["docx", "doc", "pdf", "txt", "jpg", "JPG", "xlsx", "xls", "csv", "png", "PNG"].includes(extension)) {
           extension = "other"
         }
@@ -6507,112 +6512,164 @@ const divGenerateProgressBar = document.getElementById("div-new-curate-meter-pro
 const generateProgressBar = document.getElementById("progress-bar-new-curate")
 
 function initiate_generate() {
-  console.log(sodaJSONObj)
+  console.log(sodaJSONObj);
   // Initiate curation by calling Python funtion
-  var main_curate_status = "Solving"
-  document.getElementById("para-new-curate-progress-bar-status").innerHTML = "Preparing files ..."
-  document.getElementById("para-please-wait-new-curate").innerHTML = ""
-  document.getElementById('div-new-curate-progress').style.display = "block";
-  document.getElementById('div-generate-comeback').style.display = "none"
-  client.invoke("api_main_curate_function", sodaJSONObj,
-     (error, res) => {
-      if (error) {
-        var emessage = userError(error)
-        document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'>" + emessage + "</span>"
-        document.getElementById("para-new-curate-progress-bar-status").innerHTML = ""
-        document.getElementById('div-new-curate-progress').style.display = "none";
-        generateProgressBar.value = 0;
-        log.error(error)
-        console.error(error);
-        // forceActionSidebar('show');
-        client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, result) => {
-            if (error) {
-              log.error(error)
-              console.log(error)
-              var emessage = error
-            } else {
-              datasetList = []
-              datasetList = result
-              refreshDatasetList()
-            }
-        })
-      } else {
-        log.info('Completed curate function')
-        console.log('Completed curate function');
-        client.invoke("api_bf_dataset_account", bfAccountList.options[bfAccountList.selectedIndex].text, (error, result) => {
-            if (error) {
-              log.error(error)
-              console.log(error)
-              var emessage = error
-            } else {
-              datasetList = []
-              datasetList = result
-              refreshDatasetList()
-            }
-        })
-      }
-      document.getElementById('div-generate-comeback').style.display = "flex"
-  })
-
+  var main_curate_status = "Solving";
+  document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+    "Preparing files ...";
+  document.getElementById("para-please-wait-new-curate").innerHTML = "";
+  document.getElementById("div-new-curate-progress").style.display = "block";
+  document.getElementById("div-generate-comeback").style.display = "none";
+  client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
+    if (error) {
+      var emessage = userError(error);
+      document.getElementById(
+        "para-new-curate-progress-bar-error-status"
+      ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
+      document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+        "";
+      document.getElementById("div-new-curate-progress").style.display = "none";
+      generateProgressBar.value = 0;
+      log.error(error);
+      console.error(error);
+      // forceActionSidebar('show');
+      client.invoke(
+        "api_bf_dataset_account",
+        bfAccountList.options[bfAccountList.selectedIndex].text,
+        (error, result) => {
+          if (error) {
+            log.error(error);
+            console.log(error);
+            var emessage = error;
+          } else {
+            datasetList = [];
+            datasetList = result;
+            refreshDatasetList();
+          }
+        }
+      );
+    } else {
+      log.info("Completed curate function");
+      console.log("Completed curate function");
+      client.invoke(
+        "api_bf_dataset_account",
+        bfAccountList.options[bfAccountList.selectedIndex].text,
+        (error, result) => {
+          if (error) {
+            log.error(error);
+            console.log(error);
+            var emessage = error;
+          } else {
+            datasetList = [];
+            datasetList = result;
+            refreshDatasetList();
+          }
+        }
+      );
+    }
+    document.getElementById("div-generate-comeback").style.display = "flex";
+  });
 
   // Progress tracking function for main curate
-  var countDone = 0
-  var timerProgress = setInterval(main_progressfunction, 1000)
-  function main_progressfunction(){
+  var countDone = 0;
+  var timerProgress = setInterval(main_progressfunction, 1000);
+  function main_progressfunction() {
     client.invoke("api_main_curate_function_progress", (error, res) => {
       if (error) {
-        var emessage = userError(error)
-        document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "<span style='color: red;'>" + emessage + "</span>"
-        log.error(error)
-        console.error(error)
+        var emessage = userError(error);
+        document.getElementById(
+          "para-new-curate-progress-bar-error-status"
+        ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
+        log.error(error);
+        console.error(error);
       } else {
-        main_curate_status = res[0]
-        var start_generate = res[1]
-        var main_curate_progress_message = res[2]
-        var main_total_generate_dataset_size = res[3]
-        var main_generated_dataset_size = res[4]
-        var elapsed_time_formatted = res[5]
+        main_curate_status = res[0];
+        var start_generate = res[1];
+        var main_curate_progress_message = res[2];
+        var main_total_generate_dataset_size = res[3];
+        var main_generated_dataset_size = res[4];
+        var elapsed_time_formatted = res[5];
         if (start_generate === 1) {
           divGenerateProgressBar.style.display = "block";
-          if (main_curate_progress_message.includes('Success: COMPLETED!')){
-            generateProgressBar.value = 100
-            document.getElementById("para-new-curate-progress-bar-status").innerHTML = main_curate_status + smileyCan
+          if (main_curate_progress_message.includes("Success: COMPLETED!")) {
+            generateProgressBar.value = 100;
+            document.getElementById(
+              "para-new-curate-progress-bar-status"
+            ).innerHTML = main_curate_status + smileyCan;
           } else {
-            var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100
-            generateProgressBar.value = value
-            if (main_total_generate_dataset_size < displaySize){
-              var totalSizePrint = main_total_generate_dataset_size.toFixed(2) + ' B'
-            } else if (main_total_generate_dataset_size < displaySize*displaySize){
-              var totalSizePrint = (main_total_generate_dataset_size/displaySize).toFixed(2) + ' KB'
-            } else if (main_total_generate_dataset_size < displaySize*displaySize*displaySize){
-              var totalSizePrint = (main_total_generate_dataset_size/displaySize/displaySize).toFixed(2) + ' MB'
+            var value =
+              (main_generated_dataset_size / main_total_generate_dataset_size) *
+              100;
+            generateProgressBar.value = value;
+            if (main_total_generate_dataset_size < displaySize) {
+              var totalSizePrint =
+                main_total_generate_dataset_size.toFixed(2) + " B";
+            } else if (
+              main_total_generate_dataset_size <
+              displaySize * displaySize
+            ) {
+              var totalSizePrint =
+                (main_total_generate_dataset_size / displaySize).toFixed(2) +
+                " KB";
+            } else if (
+              main_total_generate_dataset_size <
+              displaySize * displaySize * displaySize
+            ) {
+              var totalSizePrint =
+                (
+                  main_total_generate_dataset_size /
+                  displaySize /
+                  displaySize
+                ).toFixed(2) + " MB";
             } else {
-              var totalSizePrint = (main_total_generate_dataset_size/displaySize/displaySize/displaySize).toFixed(2) + ' GB'
+              var totalSizePrint =
+                (
+                  main_total_generate_dataset_size /
+                  displaySize /
+                  displaySize /
+                  displaySize
+                ).toFixed(2) + " GB";
             }
-            var progressMessage = ""
-            progressMessage += main_curate_progress_message + "<br>"
-            progressMessage += 'Progress: ' + value.toFixed(2) + '%' + ' (total size: ' + totalSizePrint + ')' + "<br>"
-            progressMessage += "Elaspsed time: " + elapsed_time_formatted + "<br>"
-            document.getElementById("para-new-curate-progress-bar-status").innerHTML = progressMessage
+            var progressMessage = "";
+            progressMessage += main_curate_progress_message + "<br>";
+            progressMessage +=
+              "Progress: " +
+              value.toFixed(2) +
+              "%" +
+              " (total size: " +
+              totalSizePrint +
+              ")" +
+              "<br>";
+            progressMessage +=
+              "Elaspsed time: " + elapsed_time_formatted + "<br>";
+            document.getElementById(
+              "para-new-curate-progress-bar-status"
+            ).innerHTML = progressMessage;
           }
         } else {
-          document.getElementById("para-new-curate-progress-bar-status").innerHTML = main_curate_progress_message + "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>"
+          document.getElementById(
+            "para-new-curate-progress-bar-status"
+          ).innerHTML =
+            main_curate_progress_message +
+            "<br>" +
+            "Elapsed time: " +
+            elapsed_time_formatted +
+            "<br>";
         }
       }
-    })
+    });
 
-    if (main_curate_status === 'Done'){
-      countDone++
-      if (countDone > 1){
-        log.info('Done curate track')
-        console.log('Done curate track')
+    if (main_curate_status === "Done") {
+      countDone++;
+      if (countDone > 1) {
+        log.info("Done curate track");
+        console.log("Done curate track");
         // then show the sidebar again
-        forceActionSidebar('show')
+        forceActionSidebar("show");
         clearInterval(timerProgress);
       }
     }
   }
-
 }
 
 function backend_to_frontend_warning_message(error_array) {

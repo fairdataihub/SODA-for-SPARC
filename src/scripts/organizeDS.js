@@ -13,38 +13,52 @@ function showTooltips(ev) {
 }
 
 ///////// Option to delete folders or files
-function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGlobal) {
-
-  var itemToDelete = ev.parentElement.innerText
+function delFolder(
+  ev,
+  organizeCurrentLocation,
+  uiItem,
+  singleUIItem,
+  inputGlobal
+) {
+  var itemToDelete = ev.parentElement.innerText;
   var promptVar;
   var type; // renaming files or folders
 
   if (ev.classList.value.includes("myFile")) {
     promptVar = "file";
-    type = "files"
+    type = "files";
   } else if (ev.classList.value.includes("myFol")) {
     promptVar = "folder";
-    type = "folders"
-  };
+    type = "folders";
+  }
 
   bootbox.confirm({
-    title: "Delete "+ promptVar,
+    title: "Delete " + promptVar,
     message: "Are you sure you want to delete this " + promptVar + "?",
     onEscape: true,
     centerVertical: true,
-    callback: function(result) {
-    if(result !== null && result === true) {
-      /// get current location of folders or files
-      var filtered = getGlobalPath(organizeCurrentLocation)
-      var myPath = getRecursivePath(filtered.slice(1), inputGlobal)
-      // update Json object with new folder created
-      delete myPath[type][itemToDelete];
-      // update UI with updated jsonobj
-      listItems(myPath, uiItem)
-      getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal)
+    callback: function (result) {
+      if (result !== null && result === true) {
+        /// get current location of folders or files
+        var filtered = getGlobalPath(organizeCurrentLocation);
+        var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+        // update Json object with new folder created
+        if (myPath[type][itemToDelete]["type"] === "bf") {
+          myPath[type][itemToDelete]["action"] = [];
+          myPath[type][itemToDelete]["action"].push("existing");
+          myPath[type][itemToDelete]["action"].push("deleted");
+          let itemToDelete_new_key = itemToDelete + "-DELETED";
+          myPath[type][itemToDelete_new_key] = myPath[type][itemToDelete];
+          delete myPath[type][itemToDelete];
+        } else {
+          delete myPath[type][itemToDelete];
+        }
+        // update UI with updated jsonobj
+        listItems(myPath, uiItem);
+        getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
       }
-    }
-  })
+    },
+  });
 }
 
 // helper function to rename files/folders
@@ -85,19 +99,25 @@ function checkValidRenameInput(event, input, type, oldName, newName, itemElement
 }
 
 ///// Option to rename a folder and files
-function renameFolder(event1, organizeCurrentLocation, itemElement, inputGlobal, uiItem, singleUIItem) {
-
+function renameFolder(
+  event1,
+  organizeCurrentLocation,
+  itemElement,
+  inputGlobal,
+  uiItem,
+  singleUIItem
+) {
   var promptVar;
   var type; // renaming files or folders
   var newName;
-  var currentName = event1.parentElement.innerText
+  var currentName = event1.parentElement.innerText;
   var nameWithoutExtension;
   var highLevelFolderBool;
 
   if (highLevelFolders.includes(currentName)) {
-    highLevelFolderBool = true
+    highLevelFolderBool = true;
   } else {
-    highLevelFolderBool = false
+    highLevelFolderBool = false;
   }
 
   if (event1.classList[0] === "myFile") {
@@ -107,63 +127,81 @@ function renameFolder(event1, organizeCurrentLocation, itemElement, inputGlobal,
     promptVar = "folder";
     type = "folders";
   }
-  if (type==="files") {
-    nameWithoutExtension = path.parse(currentName).name
+  if (type === "files") {
+    nameWithoutExtension = path.parse(currentName).name;
   } else {
-    nameWithoutExtension = currentName
+    nameWithoutExtension = currentName;
   }
 
   if (highLevelFolderBool) {
     bootbox.alert({
       message: "High-level SPARC folders cannot be renamed!",
-      centerVertical: true
-    })
+      centerVertical: true,
+    });
   } else {
     // show prompt to enter a new name
     var myBootboxDialog = bootbox.dialog({
-      title: 'Rename '+ promptVar,
-      message: 'Please enter a new name: <p><input type="text" id="input-new-name-renamed" class="form-control" value="'+nameWithoutExtension+'"></input></p>',
+      title: "Rename " + promptVar,
+      message:
+        'Please enter a new name: <p><input type="text" id="input-new-name-renamed" class="form-control" value="' +
+        nameWithoutExtension +
+        '"></input></p>',
       buttons: {
         cancel: {
-              label: '<i class="fa fa-times"></i> Cancel'
-          },
-          confirm: {
-              label: '<i class="fa fa-check"></i> Save',
-              className: 'btn-success',
-              callback: function() {
-                var returnedName = checkValidRenameInput(event1, $("#input-new-name-renamed").val().trim(), type, currentName, newName, itemElement, myBootboxDialog);
-                if (returnedName !== "") {
-                  myBootboxDialog.modal('hide')
-                  bootbox.alert({
-                    message: "Successfully renamed!",
-                    centerVertical: true
-                  });
+          label: '<i class="fa fa-times"></i> Cancel',
+        },
+        confirm: {
+          label: '<i class="fa fa-check"></i> Save',
+          className: "btn-success",
+          callback: function () {
+            var returnedName = checkValidRenameInput(
+              event1,
+              $("#input-new-name-renamed").val().trim(),
+              type,
+              currentName,
+              newName,
+              itemElement,
+              myBootboxDialog
+            );
+            if (returnedName !== "") {
+              myBootboxDialog.modal("hide");
+              bootbox.alert({
+                message: "Successfully renamed!",
+                centerVertical: true,
+              });
 
-                  /// assign new name to folder or file in the UI
-                  event1.parentElement.parentElement.innerText = returnedName
-                  /// get location of current file or folder in JSON obj
-                  var filtered = getGlobalPath(organizeCurrentLocation)
-                  var myPath = getRecursivePath(filtered.slice(1), inputGlobal)
-                  /// update jsonObjGlobal with the new name
-                  storedValue = myPath[type][currentName]
-                  delete myPath[type][currentName];
-                  myPath[type][returnedName] = storedValue;
-                  if ("action" in myPath[type][returnedName]
-                    && !(myPath[type][returnedName]["action"].includes("renamed"))) {
-                    myPath[type][returnedName]["action"].push("renamed")
-                  } else {
-                    myPath[type][returnedName]["action"] = ["new", "renamed"]
-                  }
-                  /// list items again with updated JSON obj
-                  listItems(myPath, uiItem)
-                  getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal)
-                }
-                return false
+              /// assign new name to folder or file in the UI
+              event1.parentElement.parentElement.innerText = returnedName;
+              /// get location of current file or folder in JSON obj
+              var filtered = getGlobalPath(organizeCurrentLocation);
+              var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+              /// update jsonObjGlobal with the new name
+              storedValue = myPath[type][currentName];
+              delete myPath[type][currentName];
+              myPath[type][returnedName] = storedValue;
+              if (
+                "action" in myPath[type][returnedName] &&
+                !myPath[type][returnedName]["action"].includes("renamed")
+              ) {
+                myPath[type][returnedName]["action"].push("renamed");
+              } else {
+                myPath[type][returnedName]["action"] = ["new", "renamed"];
               }
-          }
+              /// list items again with updated JSON obj
+              listItems(myPath, uiItem);
+              getInFolder(
+                singleUIItem,
+                uiItem,
+                organizeCurrentLocation,
+                inputGlobal
+              );
+            }
+            return false;
+          },
+        },
       },
-      centerVertical: true
-  })
+      centerVertical: true,
+    });
   }
 }
 

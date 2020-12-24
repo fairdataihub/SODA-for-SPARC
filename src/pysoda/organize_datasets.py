@@ -601,7 +601,7 @@ def bf_get_dataset_files_folders(soda_json_structure):
                     else:
                         timestamp = file_details[0]["content"]["updatedAt"]
                         dataset_folder["files"][file_name] = {
-                            "type": "bf", "path": item.id, "timestamp": timestamp}
+                            "type": "bf","action": ["existing"], "path": item.id, "timestamp": timestamp}
 
 
     def recursive_manifest_info_import(my_folder, my_relative_path, manifest_df):

@@ -1067,6 +1067,8 @@ def check_local_dataset_files_validity(soda_json_structure):
             file_type = file["type"]
             if file_type == "local":
                 file_path = file["path"]
+                if file["type"] == "bf":
+                    continue
                 if not isfile(file_path):
                     relative_path = my_relative_path + "/" +  file_key
                     error_message = relative_path + " (path: " + file_path + ")"
@@ -1087,7 +1089,8 @@ def check_local_dataset_files_validity(soda_json_structure):
 
         if not my_folder["folders"]:
             if not my_folder["files"]:
-                del my_folders_content[my_folder_key]
+                if my_folder["type"] != "bf":
+                    del my_folders_content[my_folder_key]
 
     error = []
     if "dataset-structure" in soda_json_structure.keys():
@@ -2246,6 +2249,9 @@ def main_curate_function(soda_json_structure):
                     # if "manifest-files" in main_keys:
                     #     main_curate_progress_message = "Generating manifest files"
                     #     bf_add_manifest_files(manifest_files_structure, myds)
+                if generate_option == "existing":
+                    myds = bf.get_dataset(bfdataset)
+                    bf_update_existing_dataset(soda_json_structure, bf, myds)
 
         except Exception as e:
             main_curate_status = 'Done'
