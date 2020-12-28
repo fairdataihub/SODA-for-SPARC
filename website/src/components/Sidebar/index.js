@@ -20,8 +20,8 @@ const Sidebar = ({ isOpen, toggle }) => {
             <SidebarWrapper>
                 <SidebarMenu>
                     <SidebarLink to='about' onClick={toggle} smooth='true'>About Us</SidebarLink>
-                    <SidebarLink to='downloads' onClick={toggle} smooth='true'>Download SODA</SidebarLink>
                     <SidebarLink to='features' onClick={toggle} smooth='true'>Features</SidebarLink>
+                    <SidebarLink to='downloads' onClick={toggle} smooth='true'>SODA for SPARC</SidebarLink>
                     <SidebarLink to='team' onClick={toggle} smooth='true'>Our Team</SidebarLink>
                     <SidebarLinkD to='about' onClick={toggle}>Documentation</SidebarLinkD>
                 </SidebarMenu>

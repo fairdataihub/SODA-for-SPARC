@@ -1,16 +1,17 @@
 import styled from 'styled-components'
 
 export const DownloadContainer = styled.div`
-    height: 660px;
+    // height: 660px;
     display: flex;
     flex-direction: column;
     align-items: center;
     background: #20b2aa;
     justify-content: center;
+    padding: 100px 0;
 
-    @media screen and (max-width: 1000px) {
-        height: 1300px;
-    }
+    // @media screen and (max-width: 1000px) {
+    //     height: 1300px;
+    // }
 
     // @media screen and (max-width: 700px) {
     //     height: 1300px;
@@ -20,11 +21,25 @@ export const DownloadContainer = styled.div`
 export const Heading =  styled.h1`
     opacity: ${({ animate }) => (animate ? '1' : '0')};
     transition: opacity 1s ease-in-out;
-    margin-bottom: 100px;
+    margin-bottom: 50px;
     font-size: 40px;
     line-height: 1.1;
     font-weight: 600;
     color: #fff;
+`;
+
+export const PContainer = styled.div`
+    opacity: ${({ animate }) => (animate ? '1' : '0')};
+    transition: opacity 1s ease-in-out;
+    padding-left: 50px;
+    padding-right: 50px;
+    color: #fff;
+    max-width: 1000px;
+    padding-bottom: 80px;
+`;
+
+export const P = styled.p`
+    padding-bottom: 20px;
 `;
 
 export const DownloadWrapper = styled.div`

@@ -9,6 +9,7 @@ export const HeroContainer = styled.div`
     height: 100vh;
     position: relative;
     z-index: 1;
+    background-image: linear-gradient(to top, #ddd 0%, #ddd 1%, #fff 100%);
 `;
 
 export const HeroBg = styled.div`
@@ -22,12 +23,12 @@ export const HeroBg = styled.div`
     overflow: hidden;
 `;
 
-export const ImageBg = styled.img`
-    width: 100%;
-    height: 100%;
-    -o-object-fit: cover;
-    object-fit: cover;
-`;
+// export const ImageBg = styled.img`
+//     width: 100%;
+//     height: 100%;
+//     -o-object-fit: cover;
+//     object-fit: cover;
+// `;
 
 export const HeroContent = styled(motion.div)`
     z-index: 3;
@@ -51,7 +52,7 @@ export const HeroContent = styled(motion.div)`
 export const HeroText = styled.div`
     display: flex;
     flex-direction: column;
-    max-width: 40%;
+    max-width: 50%;
 
     @media screen and (max-width: 818px) {
         max-width: 100%;
@@ -63,8 +64,9 @@ export const HeroText = styled.div`
 `;
 
 export const HeroH1 = styled.h1`
-    color: #20b2aa;
+    color: #000;
     font-size: 54px;
+    line-height: 1.1;
 
     @media screen and (max-width: 818px) {
         font-size: 40px;
@@ -75,20 +77,20 @@ export const HeroH1 = styled.h1`
     }
 `;
 
-export const HeroH2 = styled.h2`
-    font-size: 24x;
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 8px; 
+// export const HeroH2 = styled.h2`
+//     font-size: 24x;
+//     font-weight: 400;
+//     // text-transform: uppercase;
+//     // letter-spacing: 8px; 
 
-    @media screen and (max-width: 818px) {
-        font-size: 24px;
-    }
+//     @media screen and (max-width: 818px) {
+//         font-size: 24px;
+//     }
 
-    @media screen and (max-width: 480px) {
-        font-size: 18px;
-    }
-`;
+//     @media screen and (max-width: 480px) {
+//         font-size: 18px;
+//     }
+// `;
 
 export const HeroP = styled.p`
     margin-top: 24px;
@@ -110,9 +112,9 @@ export const HeroP = styled.p`
 export const HeroBtnWrapper = styled.div`
     margin-top: 32px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    margin-right: auto;
+    // margin-right: auto;
 `;
 
 export const Icon = styled.div`
@@ -123,7 +125,7 @@ export const Icon = styled.div`
 `;
 
 export const ImageRt = styled.img`
-    width: 60%;
+    width: 50%;
     height: auto;
 
     @media screen and (max-width: 818px) {

@@ -17,17 +17,17 @@ export const featureObj = {
     heading: 'Awesome Features',
     intro: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s. Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
     featTitleOne: 'Feature',
-    featDescOne:'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s.',
+    featDescOne:'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
     featTitleTwo: 'Feature',
-    featDescTwo:'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s.',
+    featDescTwo:'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
     featTitleThree: 'Feature',
-    featDescThree:'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s.',
+    featDescThree:'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
     featTitleFour: 'Feature',
-    featDescFour:'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s.',
+    featDescFour:'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
     featTitleFive: 'Feature',
-    featDescFive:'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s.',
+    featDescFive:'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
     featTitleSix: 'Feature',
-    featDescSix:'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s.',
+    featDescSix:'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
     img: require('../images/new.svg').default
 };
 
@@ -41,3 +41,9 @@ export const aboutObj = {
     para4: 'We are looking forward to build more versions of SODA to support curation and sharing for other research programs and data types beyond SPARC.',
     img: require('../images/banner.svg').default
 };
+
+export const downloadObj = {
+    id: 'downloads',
+    para1: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
+    para2: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'
+}

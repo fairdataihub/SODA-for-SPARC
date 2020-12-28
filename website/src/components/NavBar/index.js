@@ -13,13 +13,14 @@ import {
     Button
 } from './NavBarElements'
 import { FaBars, FaGithub, FaFolderOpen } from 'react-icons/fa'
+import NavImage from '../../images/logo-can-55px.png';
 
 const Navbar = ({ toggle }) => {
     return (
         <div>
             <Nav>
                 <NavbarContainer>
-                    <NavLogo to='home' smooth='true'>SODA</NavLogo>
+                    <NavLogo to='home' smooth='true'><img style={{height: 4 + 'vh'}} src={NavImage} />SODA</NavLogo>
                     <MobileIcon onClick={toggle}>
                         <FaBars />
                     </MobileIcon>
@@ -31,10 +32,10 @@ const Navbar = ({ toggle }) => {
                             <NavLinksD to='about'>Documentation</NavLinksD>
                         </NavItem> */}
                         <NavItem>
-                            <NavLinks to='downloads' smooth='true'>Download SODA</NavLinks>
+                            <NavLinks to='features' smooth='true'>Features</NavLinks>
                         </NavItem>
                         <NavItem>
-                            <NavLinks to='features' smooth='true'>Features</NavLinks>
+                            <NavLinks to='downloads' smooth='true'>SODA for SPARC</NavLinks>
                         </NavItem>
                         <NavItem>
                             <NavLinks to='team' smooth='true'>Our Team</NavLinks>
@@ -42,12 +43,12 @@ const Navbar = ({ toggle }) => {
                     </NavMenu>
                     <Buttons>
                     <NavLinksD>
-                    <Button>
+                    {/* <Button>
                         <Icon>
                             <FaFolderOpen />
                         </Icon>
                         Documentation
-                    </Button>
+                    </Button> */}
                     </NavLinksD>
                     <Button href="https://github.com/bvhpatel/SODA" target="_blank">
                         <Icon>

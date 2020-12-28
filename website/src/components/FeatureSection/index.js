@@ -110,7 +110,6 @@ const FeatureSection = ({
                     </Column>
                 </FeatureRow>
             </FeatureContainer>
-            <hr style={{width: 75+ '%', marginLeft: 12.5 + '%'}} /> 
         </div>
     )
 }
