@@ -1791,6 +1791,8 @@ def get_base_file_name(file_name):
         return output
 
 def bf_update_existing_dataset(soda_json_structure, bf, ds):
+    '''
+    
     global main_curate_progress_message
     global main_total_generate_dataset_size
     global start_generate
@@ -1830,7 +1832,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     recursive_folder_create_on_bf(dataset_structure, current_bf_dataset_files_folders, ds)
 
 
-
+    '''
     return
 
 
@@ -2298,7 +2300,7 @@ def main_curate_function(soda_json_structure):
                 if generate_option == "existing":
                     myds = bf.get_dataset(bfdataset)
                     #rename/remove existing files
-                    bf_update_existing_dataset(soda_json_structure, bf, myds)
+                    #bf_update_existing_dataset(soda_json_structure, bf, myds)
 
         except Exception as e:
             main_curate_status = 'Done'

@@ -308,9 +308,9 @@ class SodaApi(object):
         except Exception as e:
             raise e
     
-    def api_bf_get_dataset_files_folders(self, soda_json_structure):
+    def api_bf_get_dataset_files_folders(self, soda_json_structure, requested_sparc_only = True):
         try:
-            return bf_get_dataset_files_folders(soda_json_structure)
+            return bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only)
         except Exception as e:
             raise e
 

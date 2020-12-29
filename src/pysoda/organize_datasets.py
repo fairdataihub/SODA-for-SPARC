@@ -38,7 +38,7 @@ from docx import Document
 from datetime import datetime, timezone
 
 from pysoda import bf_get_current_user_permission
-from curate import bf_recognized_file_extensions
+
 
 ### Global variables
 curateprogress = ' '
@@ -521,7 +521,7 @@ def create_dataset(recursivePath, jsonStructure, listallfiles):
 
                 mycopyfile_with_metadata(srcfile, distfile)
 
-def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = true):
+def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = True):
     """
     Function for importing blackfynn data files info into the "dataset-structure" key of the soda json structure, 
     including metadata from any existing manifest files in the high-level folders 
@@ -538,6 +538,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = tru
     high_level_metadata_sparc = ['submission.xlsx', 'submission.csv', 'submission.json', 'dataset_description.xlsx', 'dataset_description.csv', 'dataset_description.json', 'subjects.xlsx', 'subjects.csv', 'subjects.json', 'samples.xlsx', 'samples.csv', 'samples.json', 'README.txt', 'CHANGES.txt']
 
     def verify_file_name(item_name, file_name):
+        from curate import bf_recognized_file_extensions
         filename, file_extension = os.path.splitext(file_name)
         if file_extension in bf_recognized_file_extensions:
             return item_name + file_extension
