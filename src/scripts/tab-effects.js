@@ -12,6 +12,14 @@ var currentTab = 0; // Current tab is set to be the first tab (0)
 showParentTab(0, 1)
 
 function showParentTab(tabNow, nextOrPrev) {
+
+  // check to show Save progress btn (only after step 2)
+  if (tabNow >= 2) {
+    document.getElementById("save-progress-btn").style.display = "block";
+  } else {
+    document.getElementById("save-progress-btn").style.display = "none";
+  }
+
   // This function will display the specified tab of the form ...
   var x = document.getElementsByClassName("parent-tabs");
   fixStepIndicator(tabNow)
@@ -593,7 +601,6 @@ function updateJSONStructureMetadataFiles() {
 // Step 5: Manifest file
 // update JSON object with manifest file information
 function updateJSONStructureManifest() {
-  const manifestFileCheck = document.getElementById("generate-manifest-curate");
   if (manifestFileCheck.checked) {
     if ("manifest-files" in sodaJSONObj) {
       sodaJSONObj["manifest-files"]["destination"] =  "generate-dataset"
