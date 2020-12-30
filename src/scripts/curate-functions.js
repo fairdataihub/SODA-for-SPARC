@@ -129,13 +129,14 @@ function loadProgressFile(ev) {
 }
 
 function populateMetadataProgress(metadataFileName, localPath) {
-  var correspondingMetadataParaElement = {"submission": 'para-submission-file-path', "dataset_description": 'para-ds-description-file-path', "subjects": 'para-subjects-file-path', "samples": 'para-samples-file-path', "CHANGES": 'para-changes-file-path', "README": 'para-readme-file-path'}
+  var metadataButtonsArray = $(".metadata-button.button-generate-dataset");
+  var correspondingMetadataParaElement = {"submission": ['para-submission-file-path', metadataButtonsArray[0]], "dataset_description": ['para-ds-description-file-path', metadataButtonsArray[1]], "subjects": ['para-subjects-file-path', metadataButtonsArray[2]], "samples": ['para-samples-file-path', metadataButtonsArray[3]], "README": ['para-readme-file-path', metadataButtonsArray[4]], "CHANGES": ['para-changes-file-path', metadataButtonsArray[5]]}
   if (metadataFileName in correspondingMetadataParaElement) {
-    $("#"+correspondingMetadataParaElement[metadataFileName]).text(localPath);
-    $($("#"+correspondingMetadataParaElement[metadataFileName]).parents()[1]).find('.div-metadata-confirm').css("display", "flex");
-    $($("#"+correspondingMetadataParaElement[metadataFileName]).parents()[1]).find('.div-metadata-go-back').css("display", "none");
-    var buttonElement = $($("#"+correspondingMetadataParaElement[metadataFileName]).parents()[1]).find('.div-metadata-confirm .button-individual-metadata.confirm.transition-btn')
-    $(buttonElement[0]).trigger("click")
+    $("#"+correspondingMetadataParaElement[metadataFileName][0]).text(localPath);
+    $($("#"+correspondingMetadataParaElement[metadataFileName][0]).parents()[1]).find('.div-metadata-confirm').css("display", "flex");
+    $($("#"+correspondingMetadataParaElement[metadataFileName][0]).parents()[1]).find('.div-metadata-go-back').css("display", "none");
+    var buttonElement = $($("#"+correspondingMetadataParaElement[metadataFileName][0]).parents()[1]).find('.div-metadata-confirm .button-individual-metadata.confirm.transition-btn')
+    $(correspondingMetadataParaElement[metadataFileName][1]).addClass('done');
   }
 }
 
