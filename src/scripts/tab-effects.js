@@ -782,6 +782,7 @@ function updateJSONObjectProgress() {
   updateJSONStructureMetadataFiles()
   updateJSONStructureManifest()
   updateJSONStructureDSstructure()
+  updateJSONStructureGenerate()
 }
 
 function saveSODAJSONProgress(progressFileName) {
@@ -794,6 +795,7 @@ function saveSODAJSONProgress(progressFileName) {
   var filePath = path.join(progressFilePath, progressFileName + ".json");
   // record all information listed in SODA JSON Object before saving
   updateJSONObjectProgress()
+  console.log(sodaJSONObj)
   fs.writeFileSync(filePath, JSON.stringify(sodaJSONObj))
     bootbox.alert({
       message: "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved progress.",

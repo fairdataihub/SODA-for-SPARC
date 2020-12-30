@@ -86,6 +86,7 @@ function dropHandler(ev, paraElement, metadataFile) {
 ////////////////// IMPORT EXISTING PROGRESS FILES ////////////////////////////////
 const progressFileDropdown = document.getElementById('progress-files-dropdown');
 
+/////////////////////////////// Helpers function for Import progress function /////////////////////////////
 // function to load SODA with progress file
 function progressFileParse(ev) {
   var fileName = $(ev).val();
@@ -104,30 +105,32 @@ function progressFileParse(ev) {
   }
 }
 
-function loadProgressFile(ev) {
-  document.getElementById('div-progress-file-loader').style.display = "block";
-  setTimeout(function() {
-    var jsonContent = progressFileParse(ev);
-    sodaJSONObj = jsonContent;
-    datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-    // first, load manifest file (if applicable)
-    if ("manifest-files" in sodaJSONObj) {
-      manifestFileCheck.checked = true;
-    }
-    if ("metadata-files" in sodaJSONObj) {
-      var metadataFileArray = Object.keys(sodaJSONObj["metadata-files"]);
-      metadataFileArray.forEach(function(element) {
-        var fullPath = sodaJSONObj["metadata-files"][element]["path"];
-        populateMetadataProgress(path.parse(element).name, fullPath);
-      })
-    }
-    if ("dataset-structure" in sodaJSONObj) {
-      highLevelFoldersDisableOptions()
-    }
-    document.getElementById('div-progress-file-loader').style.display = "none"
-    document.getElementById('nextBtn').disabled = false;
-    document.getElementById('para-progress-file-status').innerHTML = "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>"
-  }, 1200)
+function importManifest(object) {
+  if ("manifest-files" in object) {
+    manifestFileCheck.checked = true;
+  }
+}
+
+function importMetadataFiles(object) {
+  if ("metadata-files" in object) {
+    var metadataFileArray = Object.keys(object["metadata-files"]);
+    metadataFileArray.forEach(function(element) {
+      var fullPath = object["metadata-files"][element]["path"];
+      populateMetadataProgress(path.parse(element).name, fullPath);
+    })
+  }
+}
+
+function importDatasetStructure(object) {
+  if ("dataset-structure" in object) {
+    highLevelFoldersDisableOptions()
+  }
+}
+
+function importGenerateDatasetStep(object) {
+  if ("generate-dataset" in sodaJSONObj) {
+    // check
+  }
 }
 
 // check metadata files
@@ -141,6 +144,28 @@ function populateMetadataProgress(metadataFileName, localPath) {
     var buttonElement = $($("#"+correspondingMetadataParaElement[metadataFileName][0]).parents()[1]).find('.div-metadata-confirm .button-individual-metadata.confirm.transition-btn')
     $(correspondingMetadataParaElement[metadataFileName][1]).addClass('done');
   }
+}
+
+//////////////////////// Main Import progress function
+function loadProgressFile(ev) {
+  document.getElementById('div-progress-file-loader').style.display = "block";
+  // create loading effect
+  setTimeout(function() {
+    var jsonContent = progressFileParse(ev);
+    sodaJSONObj = jsonContent;
+    datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+    // first, load manifest file (if applicable)
+    importManifest(sodaJSONObj)
+    // load metadata files
+    importMetadataFiles(sodaJSONObj)
+    // load dataset structure
+    importDatasetStructure(sodaJSONObj)
+    // load step 6
+    importGenerateDatasetStep(sodaJSONObj)
+    document.getElementById('div-progress-file-loader').style.display = "none"
+    document.getElementById('nextBtn').disabled = false;
+    document.getElementById('para-progress-file-status').innerHTML = "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>"
+  }, 1200)
 }
 
 // function to load Progress dropdown
