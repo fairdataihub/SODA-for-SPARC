@@ -83,6 +83,7 @@ function dropHandler(ev, paraElement, metadataFile) {
   }
 }
 
+////////////////// IMPORT EXISTING PROGRESS FILES ////////////////////////////////
 const progressFileDropdown = document.getElementById('progress-files-dropdown');
 
 // function to load SODA with progress file
@@ -108,26 +109,28 @@ function loadProgressFile(ev) {
   setTimeout(function() {
     var jsonContent = progressFileParse(ev);
     sodaJSONObj = jsonContent;
+    datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
     // first, load manifest file (if applicable)
-    if ("manifest-files" in jsonContent) {
+    if ("manifest-files" in sodaJSONObj) {
       manifestFileCheck.checked = true;
     }
-    if ("metadata-files" in jsonContent) {
-      var metadataFileArray = Object.keys(jsonContent["metadata-files"]);
+    if ("metadata-files" in sodaJSONObj) {
+      var metadataFileArray = Object.keys(sodaJSONObj["metadata-files"]);
       metadataFileArray.forEach(function(element) {
-        var fullPath = jsonContent["metadata-files"][element]["path"];
+        var fullPath = sodaJSONObj["metadata-files"][element]["path"];
         populateMetadataProgress(path.parse(element).name, fullPath);
       })
     }
-    if ("dataset-structure" in jsonContent) {
-      var foldersArray = Object.keys(jsonContent["dataset-structure"]["folders"]);
+    if ("dataset-structure" in sodaJSONObj) {
+      highLevelFoldersDisableOptions()
     }
     document.getElementById('div-progress-file-loader').style.display = "none"
     document.getElementById('nextBtn').disabled = false;
     document.getElementById('para-progress-file-status').innerHTML = "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>"
-  }, 2000)
+  }, 1200)
 }
 
+// check metadata files
 function populateMetadataProgress(metadataFileName, localPath) {
   var metadataButtonsArray = $(".metadata-button.button-generate-dataset");
   var correspondingMetadataParaElement = {"submission": ['para-submission-file-path', metadataButtonsArray[0]], "dataset_description": ['para-ds-description-file-path', metadataButtonsArray[1]], "subjects": ['para-subjects-file-path', metadataButtonsArray[2]], "samples": ['para-samples-file-path', metadataButtonsArray[3]], "README": ['para-readme-file-path', metadataButtonsArray[4]], "CHANGES": ['para-changes-file-path', metadataButtonsArray[5]]}

@@ -76,16 +76,6 @@ function deleteEmptyKeysFromObject(object) {
   }
 }
 
-// function deleteEmptyKeysFromObjectRecursive(object) {
-//   for (var key in object) {
-//     if (object[key] === null || object[key] === undefined || object[key] === "" || JSON.stringify(object[key]) === "{}") {
-//       delete object[key];
-//     } else {
-//       // object = object[key]
-//       deleteEmptyKeysFromObject(object[key])
-//     }
-//   }
-// }
 
 function checkHighLevelFoldersInput() {
   var optionCards = document.getElementsByClassName("option-card high-level-folders");
@@ -276,6 +266,12 @@ function highLevelFoldersDisableOptions() {
       if (Object.keys(highLevelFolderOptions).includes(folder)) {
         var optionCard = $("#"+folder+"-check").parents()[2];
         $(optionCard).addClass('disabled');
+        if (!$(optionCard).hasClass('checked')) {
+          $(optionCard).addClass('checked');
+        }
+        if (!$("#"+folder+"-check").prop('checked')) {
+          $("#"+folder+"-check").prop('checked', true);
+        }
       } else {
         var optionCard = $("#"+folder+"-check").parents()[2];
         $(optionCard).removeClass('disabled');
