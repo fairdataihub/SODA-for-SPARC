@@ -6768,7 +6768,7 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
           log.error(error);
           console.error(error);
         } else {
-          console.log(res);
+          //console.log(res);
           resolve(res[0]);
         }
       }
