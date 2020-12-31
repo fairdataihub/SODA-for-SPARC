@@ -4,6 +4,10 @@ button {
   cursor: pointer !important;
 }
 
+body.waiting * {
+  cursor: progress;
+}
+
 .demo:first-of-type {
   margin-top: 2rem;
 }

@@ -301,6 +301,23 @@ button[disabled]{
   margin-right: 10px
 }
 
+.myFol.deleted:before{
+  opacity: 0.5;
+}
+
+.myFol.deleted:after {
+  content: "\00D7";
+  position: absolute;
+  bottom: 28px;
+  right: 24px;
+  line-height: 1;
+  color: rgb(252, 0, 0);
+  z-index: 10;
+  font-size: 45px;
+  font-family: helvetica, arial, sans-serif;
+  font-weight: bold;
+}
+
 .dropdown-item:hover {
   background-color: #F0F0F0 !important;
 }
@@ -679,6 +696,23 @@ button[disabled]{
   width:55px;
   height:55px;
   margin-left: 10px;
+}
+
+.myFile.deleted:before{
+  opacity: 0.5;
+}
+
+.myFile.deleted:after {
+  content: "\00D7";
+  position: absolute;
+  bottom: 23px;
+  right: 21px;
+  line-height: 1;
+  color: rgb(252, 0, 0);
+  z-index: 10;
+  font-size: 45px;
+  font-family: helvetica, arial, sans-serif;
+  font-weight: bold;
 }
 
 .menu-toggle {

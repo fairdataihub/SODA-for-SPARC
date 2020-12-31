@@ -44,12 +44,14 @@ function delFolder(
         var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
         // update Json object with new folder created
         if (myPath[type][itemToDelete]["type"] === "bf") {
-          myPath[type][itemToDelete]["action"] = [];
-          myPath[type][itemToDelete]["action"].push("existing");
-          myPath[type][itemToDelete]["action"].push("deleted");
-          let itemToDelete_new_key = itemToDelete + "-DELETED";
-          myPath[type][itemToDelete_new_key] = myPath[type][itemToDelete];
-          delete myPath[type][itemToDelete];
+          if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
+            myPath[type][itemToDelete]["action"] = [];
+            myPath[type][itemToDelete]["action"].push("existing");
+            myPath[type][itemToDelete]["action"].push("deleted");
+            let itemToDelete_new_key = itemToDelete + "-DELETED";
+            myPath[type][itemToDelete_new_key] = myPath[type][itemToDelete];
+            delete myPath[type][itemToDelete];
+          }
         } else {
           delete myPath[type][itemToDelete];
         }

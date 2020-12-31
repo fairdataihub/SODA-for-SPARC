@@ -2826,22 +2826,37 @@ const curateDatasetDropdown = document.getElementById('curatebfdatasetlist');
 loadAllBFAccounts()
 
 function hideDivsOnBFAccountChange() {
-  document.getElementById('div-bf-account-btns').style.display = "none";
-  $("#div-bf-account-btns button").hide()
+  document.getElementById("div-bf-account-btns").style.display = "none";
+  $("#div-bf-account-btns button").hide();
 
   // remove all datasets from current list
   removeOptions(curateDatasetDropdown);
   addOption(curateDatasetDropdown, "Loading", "Loading");
 
-  $('#Question-generate-dataset-BF-account').removeClass('test2');
-  $('#Question-generate-dataset-BF-account').removeClass('prev');
+  $("#Question-generate-dataset-BF-account").removeClass("test2");
+  $("#Question-generate-dataset-BF-account").removeClass("prev");
 
-  $($('#Question-generate-dataset-BF-account').nextAll().find('.option-card.radio-button')).removeClass('checked');
-  for (var question of $('#Question-generate-dataset-BF-account').nextAll()) {
-    if (!(["Question-generate-dataset-choose-ds-name", "Question-generate-dataset-locally-destination"].includes(question.id))) {
-      $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('show');
-      $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('test2');
-      $($('#Question-generate-dataset-BF-account').nextAll()).removeClass('prev');
+  $(
+    $("#Question-generate-dataset-BF-account")
+      .nextAll()
+      .find(".option-card.radio-button")
+  ).removeClass("checked");
+  for (var question of $("#Question-generate-dataset-BF-account").nextAll()) {
+    if (
+      ![
+        "Question-generate-dataset-choose-ds-name",
+        "Question-generate-dataset-locally-destination",
+      ].includes(question.id)
+    ) {
+      $($("#Question-generate-dataset-BF-account").nextAll()).removeClass(
+        "show"
+      );
+      $($("#Question-generate-dataset-BF-account").nextAll()).removeClass(
+        "test2"
+      );
+      $($("#Question-generate-dataset-BF-account").nextAll()).removeClass(
+        "prev"
+      );
       // $($('#Question-generate-dataset-BF-account').nextAll()).css('pointer-events', 'auto');
     }
   }
@@ -2897,18 +2912,23 @@ function loadAllBFAccounts() {
 }
 
 function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
-  client.invoke("api_bf_dataset_account", bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text, (error, result) => {
+  client.invoke(
+    "api_bf_dataset_account",
+    bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text,
+    (error, result) => {
       if (error) {
-        log.error(error)
-        console.log(error)
-        var emessage = error
-        curateBFAccountLoadStatus.innerHTML = "<span style='color: red'>" + emessage + "</span>"
+        log.error(error);
+        console.log(error);
+        var emessage = error;
+        curateBFAccountLoadStatus.innerHTML =
+          "<span style='color: red'>" + emessage + "</span>";
       } else {
         // clear and populate dataset list
-          populateDatasetDropdownCurate(datasetDropdown, result)
-          // $('#curatebfdatasetlist').prop('selectedIndex', 0);
-        }
-    })
+        populateDatasetDropdownCurate(datasetDropdown, result);
+        // $('#curatebfdatasetlist').prop('selectedIndex', 0);
+      }
+    }
+  );
 }
 
 //// De-populate dataset dropdowns to clear options for CURATE
@@ -2929,39 +2949,40 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
   }
 }
 
-function updateAllBfAccountList(dropdown){
+function updateAllBfAccountList(dropdown) {
   // datasetPermissionList.disabled = true
   client.invoke("api_bf_account_list", (error, res) => {
-  if(error) {
-    log.error(error)
-    console.error(error)
-  } else {
-    removeOptions(dropdown)
-    for (myitem in res){
-      var myitemselect = res[myitem]
-      var option = document.createElement("option")
-      option.textContent = myitemselect
-      option.value = myitemselect
-      dropdown.appendChild(option)
-      curateBFAccountLoad.style.display = 'none'
-      curateBFAccountLoadStatus.innerHTML = ""
-      curateBFAccountLoad.style.display = 'none'
-    }
-    curateChooseBFAccountByDefault()
+    if (error) {
+      log.error(error);
+      console.error(error);
+    } else {
+      removeOptions(dropdown);
+      for (myitem in res) {
+        var myitemselect = res[myitem];
+        var option = document.createElement("option");
+        option.textContent = myitemselect;
+        option.value = myitemselect;
+        dropdown.appendChild(option);
+        curateBFAccountLoad.style.display = "none";
+        curateBFAccountLoadStatus.innerHTML = "";
+        curateBFAccountLoad.style.display = "none";
+      }
+      curateChooseBFAccountByDefault();
 
-    var options = dropdown.getElementsByTagName("option");
-    options[0].disabled = true;
+      var options = dropdown.getElementsByTagName("option");
+      options[0].disabled = true;
 
-    if (res[0] === "Select" && res.length === 1) {
-      curateBFAccountLoadStatus.innerHTML = "No existing accounts to load. Please add a new account!";
-      document.getElementById('div-bf-account-btns').style.display = "none";
-      $("#div-bf-account-btns buttons").hide()
+      if (res[0] === "Select" && res.length === 1) {
+        curateBFAccountLoadStatus.innerHTML =
+          "No existing accounts to load. Please add a new account!";
+        document.getElementById("div-bf-account-btns").style.display = "none";
+        $("#div-bf-account-btns buttons").hide();
+      }
+      // refreshAllBfDatasetLists()
+      // refreshBfUsersList()
+      // refreshBfTeamsList(bfListTeams)
     }
-    // refreshAllBfDatasetLists()
-    // refreshBfUsersList()
-    // refreshBfTeamsList(bfListTeams)
-    }
-  })
+  });
 }
 
 function curateChooseBFAccountByDefault(){
@@ -2974,6 +2995,7 @@ function curateChooseBFAccountByDefault(){
       if (result.length > 0) {
         var myitemselect = result[0];
         $('#bfallaccountlist option[value="'+myitemselect+'"]').prop('selected',true);
+        $('#bfexistingallaccountlist option[value="'+myitemselect+'"]').prop('selected',true);
         curateShowAccountDetails(curateBFaccountList)
         hideDivsOnBFAccountChange()
         updateDatasetCurate(curateDatasetDropdown, curateBFaccountList);
@@ -3001,10 +3023,10 @@ function curateShowAccountDetails(dropdown){
       curateBFAccountDetails.innerHTML = "<span style='color: red;'> " + error + "</span>"
       curateBFAccountLoad.style.display = 'none'
     } else {
-        curateBFAccountDetails.innerHTML = res;
-        curateBFAccountLoad.style.display = 'none'
-        $('#div-bf-account-btns button').show();
-      }
+      curateBFAccountDetails.innerHTML = res;
+      curateBFAccountLoad.style.display = 'none'
+      $('#div-bf-account-btns button').show();
+    }
   })
 }
 
@@ -3049,6 +3071,7 @@ bfAddAccountBtn.addEventListener('click', () => {
         bfAccountLoadProgress.style.display = 'block'
         updateBfAccountList();
         updateAllBfAccountList(curateBFaccountList);
+        updateAllBfAccountList(curateBFexistingaccountList);
         keyName.value = ''
         key.value = ''
         secret.value = ''
@@ -3084,6 +3107,11 @@ bfAccountList.addEventListener('change', () => {
   if (curateBFaccountList.options[curateBFaccountList.selectedIndex].value !== selectedbfaccount) {
     curateBFaccountList.value = selectedbfaccount;
     curateShowAccountDetails(curateBFaccountList)
+  }
+  // sync BF account select under Prepare dataset -> Step 1
+  if (curateBFexistingaccountList.options[curateBFexistingaccountList.selectedIndex].value !== selectedbfaccount) {
+    curateBFexistingaccountList.value = selectedbfaccount;
+    curateShowAccountDetails(curateBFexistingaccountList)
   }
   refreshBfUsersList()
   refreshBfTeamsList(bfListTeams)
@@ -5587,8 +5615,11 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
     } else {
       curateBFAccountLoadStatus.innerHTML = "Loading account..."
       curateBFAccountLoad.style.display = 'block'
+      curateBFExistingAccountLoadStatus.innerHTML = "Loading account..."
+      curateBFExistingAccountLoad.style.display = 'block'
       updateBfAccountList();
       updateAllBfAccountList(curateBFaccountList);
+      updateAllBfAccountList(curateBFexistingaccountList);
       $("#bootbox-key-name").val("");
       $("#bootbox-api-key").val("");
       $("#bootbox-api-secret").val("");
@@ -6172,40 +6203,75 @@ function sortObjByKeys(object) {
 }
 
 function listItems(jsonObj, uiItem) {
-    var appendString = ''
-    var sortedObj = sortObjByKeys(jsonObj)
-    for (var item in sortedObj["folders"]) {
-      var emptyFolder = "";
-      if (! highLevelFolders.includes(item)) {
-        if (
-          JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
-          JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
-        ) {
-          emptyFolder = " empty";
-        }
+  var appendString = "";
+  var sortedObj = sortObjByKeys(jsonObj);
+  for (var item in sortedObj["folders"]) {
+    var emptyFolder = "";
+    if (!highLevelFolders.includes(item)) {
+      if (
+        JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
+        JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
+      ) {
+        emptyFolder = " empty";
       }
-      appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
-    }
-    for (var item in sortedObj["files"]) {
-      // not the auto-generated manifest
-      if (sortedObj["files"][item].length !== 1) {
-        var extension = sliceStringByValue(sortedObj["files"][item]["path"],  ".")
-        if (sortedObj["files"][item]["type"] == "bf")
-        {
-          extension = item.split('.').pop();
-        }
-        console.log(extension);
-        if (!["docx", "doc", "pdf", "txt", "jpg", "JPG", "xlsx", "xls", "csv", "png", "PNG"].includes(extension)) {
-          extension = "other"
-        }
-      } else {
-        extension = "other"
-      }
-      appendString = appendString + '<div class="single-item"><h1 class="myFile '+extension+'" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">'+item+'</div></div>'
     }
 
-    $(uiItem).empty()
-    $(uiItem).html(appendString)
+    if (sortedObj["folders"][item]["action"].includes("deleted")) {
+      emptyFolder += " deleted";
+    }
+
+    appendString =
+      appendString +
+      '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+      emptyFolder +
+      '"></h1><div class="folder_desc">' +
+      item +
+      "</div></div>";
+  }
+  for (var item in sortedObj["files"]) {
+    // not the auto-generated manifest
+    if (sortedObj["files"][item].length !== 1) {
+      var extension = sliceStringByValue(sortedObj["files"][item]["path"], ".");
+      if (sortedObj["files"][item]["type"] == "bf") {
+        extension = item.split(".").pop();
+      }
+      if (
+        ![
+          "docx",
+          "doc",
+          "pdf",
+          "txt",
+          "jpg",
+          "JPG",
+          "xlsx",
+          "xls",
+          "csv",
+          "png",
+          "PNG",
+        ].includes(extension)
+      ) {
+        extension = "other";
+      }
+    } else {
+      extension = "other";
+    }
+
+    if (sortedObj["files"][item]["action"].includes("deleted")) {
+      original_file_name = item.substring(0, item.lastIndexOf("-"));
+      original_extension = original_file_name.split(".").pop();
+      extension = original_extension + " deleted";
+    }
+    appendString =
+      appendString +
+      '<div class="single-item"><h1 class="myFile ' +
+      extension +
+      '" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">' +
+      item +
+      "</div></div>";
+  }
+
+  $(uiItem).empty();
+  $(uiItem).html(appendString);
 }
 
 function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {

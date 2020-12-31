@@ -427,16 +427,16 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
     $("#Question-generate-dataset-generate-div").show();
     $("#Question-generate-dataset-generate-div").children().show();
   }
-
+  
   if (!(ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")) {
     // create moving effects when new questions appear
     $("#Question-generate-dataset-generate-div").hide();
     $("#Question-generate-dataset-generate-div").children().hide();
     setTimeout(() => target.classList.add("test2"), 100);
   }
-
+  
   document.getElementById(currentDiv).classList.add("prev");
-
+  
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
   if (button === 'delete') {
     if ($(ev).siblings().length > 0) {
@@ -447,9 +447,9 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
   // when we hit the last question under Step 6, hide and disable Next button
-  if (ev.getAttribute('data-next') === "Question-getting-started-final") {
-    if ($(ev).children().find('.folder-input-check').prop('checked')) {
-      document.getElementById('nextBtn').disabled = false;
+  if (ev.getAttribute("data-next") === "Question-getting-started-final") {
+    if ($(ev).children().find(".folder-input-check").prop("checked")) {
+      document.getElementById("nextBtn").disabled = false;
       //$("#nextBtn").click();
     }
     if ($("#prepare-new").is(":checked")) {
@@ -460,54 +460,45 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       reset_ui();
       document.getElementById("nextBtn").disabled = false;
     }
-    // cj ~ if children.find has id "existing-bf" show two dropdowns(account, dataset) and login if need be. after that populate the stuff. disable button while loading?
+
     else if ($("#existing-bf").is(":checked")) {
-      //show two dropdowns for account and dataset
-      //also add code for on change for dropdowns
-      // populate dropdowns from god knows where
-      // python call to validate?
-      /////////////// test structure
-      tb = {
+      console.log("here");
+      $("#Question-getting-started-existing-BF-account").show();
+      $("#Question-getting-started-existing-BF-account").children().show();
+      sodaJSONObj = {
         "bf-account-selected": {
-          "account-name": "calmilinux",
+          "account-name": "calmilinux"
         },
-
         "bf-dataset-selected": {
-          "dataset-name": "testddataset",
+          "dataset-name": "testddataset"
         },
-
         "dataset-structure": {},
-
         "metadata-files": {},
-
         "manifest-files": {},
-
         "generate-dataset": {},
+        "starting-point": "bf"
       };
-      /////////////// test structure/
 
-      sodaJSONObj = tb;
-      sodaJSONObj["starting-point"] = "bf";
-      console.log(sodaJSONObj);
-      // add dropdowns to show this
-      // function call below can be sent with parameters
+      $('body').addClass('waiting');
       console.log("calling");
+      //sodaJSONObj["bf-account-selected"]["account-name"] = document.getElementById('bfexistingallaccountlist').value;
+      //sodaJSONObj["bf-dataset-selected"]["dataset-name"] = document.getElementById('curateexistingbfdatasetlist').value;
       document.getElementById("nextBtn").disabled = true;
       res = await bf_request_and_populate_dataset(sodaJSONObj);
       if (res == "error") {
         console.log(res);
         document.getElementById("nextBtn").disabled = true;
+        $('body').removeClass('waiting');
       } else {
         sodaJSONObj = res;
         datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
         console.log(datasetStructureJSONObj);
         populate_existing_folders(datasetStructureJSONObj);
         populate_existing_metadata(sodaJSONObj);
-        document.getElementById("nextBtn").disabled = false;
+        $("#nextBtn").prop("disabled", false);
+        $('body').removeClass('waiting');
       }
-    } else {
-      document.getElementById("nextBtn").disabled = true;
-    }
+    } 
   }
 }
 
@@ -522,6 +513,11 @@ reset_ui = () => {
   $(".button-individual-metadata.remove").each(function (i, obj) {
     $(obj).click();
   });
+  $("#Question-getting-started-existing-BF-account").hide();
+  $("#Question-getting-started-existing-BF-account").children().hide();
+  $("#Question-getting-started-existing-BF-dataset").hide();
+  $("#Question-getting-started-existing-BF-dataset").children().hide();
+  document.getElementById("nextBtn").disabled = true;
 };
 
 var populate_existing_folders = (datasetStructureJSONObj) => {
