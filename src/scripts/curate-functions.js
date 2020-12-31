@@ -177,13 +177,12 @@ function importGenerateDatasetStep(object) {
                   $($('#existing-files-'+existingFileOption).parents()[2]).click();
                 }
               }
-            }, 2000)
-
+            }, 3000)
           } else {
             $('#generate-BF-dataset-options-new').prop("checked", true);
             $($('#generate-BF-dataset-options-new').parents()[2]).click();
             $('#inputNewNameDataset').val(sodaJSONObj["generate-dataset"]["dataset-name"]);
-            $('#Question-generate-dataset-generate-div').css('display', 'flex')
+            $('#inputNewNameDataset').keyup()
           }
         }
       }
@@ -234,7 +233,7 @@ function loadProgressFile(ev) {
     document.getElementById('div-progress-file-loader').style.display = "none"
     document.getElementById('nextBtn').disabled = false;
     document.getElementById('para-progress-file-status').innerHTML = "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>"
-  }, 1200)
+  }, 1300)
 }
 
 // function to load Progress dropdown

@@ -55,7 +55,6 @@ function showParentTab(tabNow, nextOrPrev) {
       document.getElementById("nextBtn").disabled = true;
     }
   } else if (tabNow == 1){
-    document.getElementById("nextBtn").disabled = true;
     checkHighLevelFoldersInput();
     highLevelFoldersDisableOptions();
 } else {
@@ -78,6 +77,7 @@ function deleteEmptyKeysFromObject(object) {
 
 
 function checkHighLevelFoldersInput() {
+  document.getElementById("nextBtn").disabled = true;
   var optionCards = document.getElementsByClassName("option-card high-level-folders");
   var checked = false;
   for (var card of optionCards) {
@@ -88,8 +88,6 @@ function checkHighLevelFoldersInput() {
   }
   if (checked) {
     document.getElementById("nextBtn").disabled = false;
-  } else {
-    document.getElementById("nextBtn").disabled = true;
   }
   return checked
 }
@@ -295,64 +293,11 @@ $(".folder-input-check").click(function() {
 
 
 // ////////////// THIS IS FOR THE SUB-TABS OF GETTING STARTED and GENERATE DATASET sections /////////////////////////
-function transitionQuestions(ev, category, id) {
-  var individualQuestions = document.getElementsByClassName('individual-question');
-  var target = ev.getAttribute('data-next');
-  var height;
-  if ($($(ev).parents()[5]).hasClass("previous")) {
-    for (var j = 0; j < individualQuestions.length; j++) {
-      var question = individualQuestions[j];
-      if (! (question === $(ev).parents()[5])) {
-        $(question).removeClass('previous');
-      }
-    }
-    document.getElementById(target).className = document.getElementById(target).className + ' show'
-  } else {
-    for (var j = 0; j < individualQuestions.length; j++) {
-      var question = individualQuestions[j];
-      if (question.id === target) {
-        if (j>0) {
-          previousQuestion = individualQuestions[j-1]
-          previousQuestion.classList.add("previous");
-          if (j == 2) {
-            height = -30*j - 10;
-          } else {
-            height = -30*j + 10;
-          }
-          // TODO: Set by % instead of px here
-          $(previousQuestion).css("transform", "translateY("+height+"px)");
-          $(previousQuestion).css("transtition", "transform 0.4s ease-out");
-        }
-        question.classList.add("show");
-        $(question).css("transform", "translateY(-45%)");
-        $(question).css("transtition", "transform 0.4s ease-out");
-
-        if (category==='dropdown') {
-          var selectEle = document.getElementById(id);
-          var answer = selectEle.options[selectEle.selectedIndex].text;
-          $(ev).hide()
-        }
-      } else {
-        question.classList.remove("show");
-      }
-      if (target === "") {
-        document.getElementById("nextBtn").disabled = false;
-        $(ev).hide()
-        previousQuestion = $(ev).parents()[1];
-        previousQuestion.classList.add("previous");
-        height = -30*j + 10;
-        $(previousQuestion).css("transform", "translateY(-80%)");
-        $(previousQuestion).css("transtition", "transform 0.4s ease-out");
-        break
-      }
-    }
-  }
-}
 
 // transition between tabs under Step 1 and Step 6
 var divList = [];
 function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
-  document.getElementById("nextBtn").disabled = true;
+  // document.getElementById("nextBtn").disabled = true;
   $(ev).removeClass('non-selected');
   $(ev).children().find('.folder-input-check').prop('checked', true);
 
