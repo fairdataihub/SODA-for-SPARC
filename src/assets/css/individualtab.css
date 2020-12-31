@@ -18,6 +18,7 @@
   position: relative;
   box-shadow: 0px 0px 10px #d5d5d5;
   cursor: pointer;
+  pointer-events: auto
 }
 
 .option-card:hover {
@@ -76,6 +77,7 @@
   border: 1px solid #20b2aa;
   box-shadow: 0px 0px 3px 0px #20b2aa;
   opacity: 1;
+  pointer-events: none
 }
 
 .option-card.radio-button.non-selected {

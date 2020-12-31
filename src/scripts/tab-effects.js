@@ -339,9 +339,15 @@ function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
   }
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
-  // when we hit the last question under Step 6, hide and disable Next button
+  // when we hit the last question under Step 1, hide and disable Next button
   if (ev.getAttribute('data-next') === "Question-getting-started-final") {
-    if ($(ev).children().find('.folder-input-check').prop('checked')) {
+    // handle cases where
+    if ($('#prepare-new').prop('checked')) {
+      exitCurate();
+      $('#prepare-new').prop("checked", true);
+      $($('#prepare-new').parents()[2]).addClass("checked");
+      // $($('#prepare-new').parents()[2]).css("pointer-events", "none");
+      $($($($('#div-getting-started-prepare-new').parents()[0]).siblings()[0]).children()[0]).toggleClass('non-selected')
       document.getElementById('nextBtn').disabled = false;
       $("#nextBtn").click();
     } else {
@@ -666,6 +672,7 @@ function exitCurate() {
   // set metadata file paths to empty
   $('.para-metadata-file-status').text("");
   // un-show all divs from Generate dataset step
+  $($('#Question-generate-dataset').siblings()).removeClass('show');
   $('.generate-dataset').removeClass('prev');
   $('.generate-dataset').removeClass('show');
   $('.generate-dataset').removeClass('test2');

@@ -102,6 +102,8 @@ function progressFileParse(ev) {
       document.getElementById('para-progress-file-status').innerHTML = "<span style='color:red'>"+error+"</span>"
       return {}
     }
+  } else {
+      return {}
   }
 }
 
@@ -187,6 +189,13 @@ function importGenerateDatasetStep(object) {
         }
       }
     }
+  } else {
+    // the block of code below reverts all the checks to option cards if applicable
+    exitCurate();
+    $('#previous-progress').prop("checked", true);
+    $($('#previous-progress').parents()[2]).addClass("checked");
+    // $($('#previous-progress').parents()[2]).css("pointer-events", "none");
+    $($($($('#div-getting-started-previous-progress').parents()[0]).siblings()[0]).children()[0]).toggleClass('non-selected')
   }
 }
 
@@ -219,31 +228,45 @@ function loadProgressFile(ev) {
   document.getElementById('nextBtn').disabled = true;
   document.getElementById('div-progress-file-loader').style.display = "block";
   // create loading effect
-  setTimeout(function() {
-    var jsonContent = progressFileParse(ev);
+  var jsonContent = progressFileParse(ev);
+  if (JSON.stringify(jsonContent) !== "{}") {
     sodaJSONObj = jsonContent;
-    // first, load manifest file (if applicable)
-    importManifest(sodaJSONObj)
-    // load metadata files
-    importMetadataFiles(sodaJSONObj)
-    // load dataset structure
-    importDatasetStructure(sodaJSONObj)
-    // load step 6
-    importGenerateDatasetStep(sodaJSONObj)
-    document.getElementById('div-progress-file-loader').style.display = "none"
-    document.getElementById('nextBtn').disabled = false;
-    document.getElementById('para-progress-file-status').innerHTML = "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>"
-  }, 1300)
+    setTimeout(function() {
+      sodaJSONObj = jsonContent;
+      importManifest(sodaJSONObj)
+      importMetadataFiles(sodaJSONObj)
+      importDatasetStructure(sodaJSONObj)
+      importGenerateDatasetStep(sodaJSONObj)
+      document.getElementById('div-progress-file-loader').style.display = "none"
+      document.getElementById('nextBtn').disabled = false;
+      document.getElementById('para-progress-file-status').innerHTML = "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>"
+    }, 1300)
+  } else {
+      sodaJSONObj = {};
+      setTimeout(function() {
+        importManifest(sodaJSONObj)
+        importMetadataFiles(sodaJSONObj)
+        importDatasetStructure(sodaJSONObj)
+        importGenerateDatasetStep(sodaJSONObj)
+        document.getElementById('div-progress-file-loader').style.display = "none"
+        document.getElementById('para-progress-file-status').innerHTML = ""
+      }, 500)
+    }
 }
 
 // function to load Progress dropdown
 function importOrganizeProgressPrompt() {
+  document.getElementById('para-progress-file-status').innerHTML = ""
   removeOptions(progressFileDropdown);
   addOption(progressFileDropdown, "Select", "Select")
   var fileNames = fs.readdirSync(progressFilePath);
-  fileNames.forEach((item, i) => {
-    addOption(progressFileDropdown, path.parse(item).name, item)
-  });
+  if (fileNames.length > 0) {
+    fileNames.forEach((item, i) => {
+      addOption(progressFileDropdown, path.parse(item).name, item)
+    });
+  } else {
+    document.getElementById('para-progress-file-status').innerHTML = "<span style='color:var(--color)'>There is no existing progress to load. Please choose one of the other options above!</span>"
+  }
 }
 
 importOrganizeProgressPrompt()
