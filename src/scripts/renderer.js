@@ -3071,7 +3071,6 @@ bfAddAccountBtn.addEventListener('click', () => {
         bfAccountLoadProgress.style.display = 'block'
         updateBfAccountList();
         updateAllBfAccountList(curateBFaccountList);
-        updateAllBfAccountList(curateBFexistingaccountList);
         keyName.value = ''
         key.value = ''
         secret.value = ''
@@ -6055,26 +6054,57 @@ ipcRenderer.on('save-file-organization-dialog', (event) => {
 
 
 //// helper functions for hiding/showing context menus
-function showmenu(ev, category){
-    //stop the real right click menu
-    ev.preventDefault();
-    var mouseX;
-    if (ev.pageX <= 200) {
-      mouseX = ev.pageX + 10;
+function showmenu(ev, category, deleted = false) {
+  //stop the real right click menu
+  ev.preventDefault();
+  var mouseX;
+  let element = "";
+  if (ev.pageX <= 200) {
+    mouseX = ev.pageX + 10;
+  } else {
+    mouseX = ev.pageX - 210;
+  }
+  var mouseY = ev.pageY - 15;
+
+  if (category === "folder") {
+    if (deleted) {
+      $(menuFolder)
+        .children("#folder-delete")
+        .html("<i class='fas fa-undo-alt'></i> Restore");
     } else {
-      mouseX = ev.pageX - 210;
+      $(menuFolder)
+        .children("#folder-delete")
+        .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
     }
-    var mouseY = ev.pageY - 15;
-    if (category === "folder") {
-      menuFolder.style.display = "block";
-      $('.menu.reg-folder').css({'top':mouseY,'left':mouseX}).fadeIn('slow');
-    } else if (category === "high-level-folder") {
-      menuHighLevelFolders.style.display = "block";
-      $('.menu.high-level-folder').css({'top':mouseY,'left':mouseX}).fadeIn('slow');
+    menuFolder.style.display = "block";
+    $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
+  } else if (category === "high-level-folder") {
+    if (deleted) {
+      $(menuHighLevelFolders)
+        .children("#folder-delete")
+        .html("<i class='fas fa-undo-alt'></i> Restore");
     } else {
-        menuFile.style.display = "block";
-        $('.menu.file').css({'top':mouseY,'left':mouseX}).fadeIn('slow');
-      }
+      $(menuHighLevelFolders)
+        .children("#folder-delete")
+        .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+    }
+    menuHighLevelFolders.style.display = "block";
+    $(".menu.high-level-folder")
+      .css({ top: mouseY, left: mouseX })
+      .fadeIn("slow");
+  } else {
+    if (deleted) {
+      $(menuFile)
+        .children("#file-delete")
+        .html("<i class='fas fa-undo-alt'></i> Restore");
+    } else {
+      $(menuFile)
+        .children("#file-delete")
+        .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+    }
+    menuFile.style.display = "block";
+    $(".menu.file").css({ top: mouseY, left: mouseX }).fadeIn("slow");
+  }
 }
 
 /// options for regular sub-folders
@@ -6136,36 +6166,51 @@ function fileContextMenu(event) {
 
 // Trigger action when the contexmenu is about to be shown
 $(document).bind("contextmenu", function (event) {
-    // Avoid the real one
-    event.preventDefault();
-    /// check for high level folders
-    var highLevelFolderBool = false
-    var folderName = event.target.parentElement.innerText
-    if (highLevelFolders.includes(folderName)) {
-      highLevelFolderBool = true
-    }
-    // Show the rightcontextmenu for each clicked
-    // category (high-level folders, regular sub-folders, and files)
-    if (event.target.classList[0] === "myFol") {
-      if (highLevelFolderBool) {
-        showmenu(event, "high-level-folder")
-        hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
+  // Avoid the real one
+  event.preventDefault();
+  /// check for high level folders
+  var highLevelFolderBool = false;
+  var folderName = event.target.parentElement.innerText;
+  if (folderName.lastIndexOf("-") != -1) {
+    folderName = folderName.substring(0, folderName.lastIndexOf("-"));
+  }
+  if (highLevelFolders.includes(folderName)) {
+    highLevelFolderBool = true;
+  }
+  // Show the rightcontextmenu for each clicked
+  // category (high-level folders, regular sub-folders, and files)
+  if (event.target.classList[0] === "myFol") {
+    if (highLevelFolderBool) {
+      if (event.target.classList.contains("deleted")) {
+        showmenu(event, "high-level-folder", true);
       } else {
-        showmenu(event, "folder")
-        hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
+        showmenu(event, "high-level-folder");
       }
-    } else if (event.target.classList[0] === "myFile") {
-      showmenu(event, "file")
-      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-      // otherwise, do not show any menu
+      hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
     } else {
-      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-      hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
-      // hideFullPath()
-      hideFullName()
+      if (event.target.classList.contains("deleted")) {
+        showmenu(event, "folder", true);
+      } else {
+        showmenu(event, "folder");
+      }
+      hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
     }
+  } else if (event.target.classList[0] === "myFile") {
+    if (event.target.classList.contains("deleted")) {
+      showmenu(event, "file", true);
+    } else {
+      showmenu(event, "file");
+    }
+    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+    // otherwise, do not show any menu
+  } else {
+    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+    hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
+    // hideFullPath()
+    hideFullName();
+  }
 });
 
 $(document).bind("click", function (event) {

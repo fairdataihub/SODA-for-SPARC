@@ -32,35 +32,75 @@ function delFolder(
     type = "folders";
   }
 
-  bootbox.confirm({
-    title: "Delete " + promptVar,
-    message: "Are you sure you want to delete this " + promptVar + "?",
-    onEscape: true,
-    centerVertical: true,
-    callback: function (result) {
-      if (result !== null && result === true) {
-        /// get current location of folders or files
-        var filtered = getGlobalPath(organizeCurrentLocation);
-        var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
-        // update Json object with new folder created
-        if (myPath[type][itemToDelete]["type"] === "bf") {
-          if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
-            myPath[type][itemToDelete]["action"] = [];
-            myPath[type][itemToDelete]["action"].push("existing");
-            myPath[type][itemToDelete]["action"].push("deleted");
-            let itemToDelete_new_key = itemToDelete + "-DELETED";
-            myPath[type][itemToDelete_new_key] = myPath[type][itemToDelete];
+  if (ev.classList.value.includes("deleted")) {
+    bootbox.confirm({
+      title: "Restore " + promptVar,
+      message: "Are you sure you want to restore this " + promptVar + "?",
+      onEscape: true,
+      centerVertical: true,
+      callback: function (result) {
+        if (result !== null && result === true) {
+          /// get current location of folders or files
+          var filtered = getGlobalPath(organizeCurrentLocation);
+          var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+
+          // update Json object with new folder created
+          let index = myPath[type][itemToDelete]["action"].indexOf("deleted");
+          myPath[type][itemToDelete]["action"].splice(index, 1);
+          let itemToDelete_new_key = itemToDelete.substring(
+            0,
+            itemToDelete.lastIndexOf("-")
+          );
+          myPath[type][itemToDelete_new_key] = myPath[type][itemToDelete];
+          delete myPath[type][itemToDelete];
+
+          // update UI with updated jsonobj
+          listItems(myPath, uiItem);
+          getInFolder(
+            singleUIItem,
+            uiItem,
+            organizeCurrentLocation,
+            inputGlobal
+          );
+        }
+      },
+    });
+  } else {
+    bootbox.confirm({
+      title: "Delete " + promptVar,
+      message: "Are you sure you want to delete this " + promptVar + "?",
+      onEscape: true,
+      centerVertical: true,
+      callback: function (result) {
+        if (result !== null && result === true) {
+          /// get current location of folders or files
+          var filtered = getGlobalPath(organizeCurrentLocation);
+          var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+          // update Json object with new folder created
+          if (myPath[type][itemToDelete]["type"] === "bf") {
+            if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
+              myPath[type][itemToDelete]["action"] = [];
+              myPath[type][itemToDelete]["action"].push("existing");
+              myPath[type][itemToDelete]["action"].push("deleted");
+              let itemToDelete_new_key = itemToDelete + "-DELETED";
+              myPath[type][itemToDelete_new_key] = myPath[type][itemToDelete];
+              delete myPath[type][itemToDelete];
+            }
+          } else {
             delete myPath[type][itemToDelete];
           }
-        } else {
-          delete myPath[type][itemToDelete];
+          // update UI with updated jsonobj
+          listItems(myPath, uiItem);
+          getInFolder(
+            singleUIItem,
+            uiItem,
+            organizeCurrentLocation,
+            inputGlobal
+          );
         }
-        // update UI with updated jsonobj
-        listItems(myPath, uiItem);
-        getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
-      }
-    },
-  });
+      },
+    });
+  }
 }
 
 // helper function to rename files/folders
