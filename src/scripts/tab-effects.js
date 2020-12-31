@@ -43,6 +43,10 @@ function showParentTab(tabNow, nextOrPrev) {
   document.getElementById("prevBtn").style.display = "inline";
   document.getElementById("nextBtn").innerHTML = "Continue";
 
+  if (nextOrPrev === -1) {
+    document.getElementById("nextBtn").disabled = false;
+  }
+
   if (tabNow == 0) {
     document.getElementById("prevBtn").style.display = "none";
     if ($('input[name="getting-started-1"]:checked').length === 1) {
@@ -59,10 +63,6 @@ function showParentTab(tabNow, nextOrPrev) {
 }
   if (tabNow == (x.length - 1)) {
     document.getElementById("nextBtn").style.display = "none";
-  }
-
-  if (nextOrPrev === -1) {
-    document.getElementById("nextBtn").disabled = false;
   }
 }
 
