@@ -35,24 +35,31 @@ function delFolder(
   if (ev.classList.value.includes("deleted")) {
     bootbox.confirm({
       title: "Restore " + promptVar,
-      message: "Are you sure you want to restore this " + promptVar + "?",
+      message: "Are you sure you want to restore this " + promptVar + "? If any " + promptVar + " of the same name has been added, this restored file will be renamed.",
       onEscape: true,
       centerVertical: true,
       callback: function (result) {
         if (result !== null && result === true) {
           /// get current location of folders or files
+          let itemToRestore = itemToDelete;
           var filtered = getGlobalPath(organizeCurrentLocation);
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
 
-          // update Json object with new folder created
-          let index = myPath[type][itemToDelete]["action"].indexOf("deleted");
-          myPath[type][itemToDelete]["action"].splice(index, 1);
-          let itemToDelete_new_key = itemToDelete.substring(
+          // update Json object with the restored object
+          let index = myPath[type][itemToRestore]["action"].indexOf("deleted");
+          myPath[type][itemToRestore]["action"].splice(index, 1);
+          let itemToRestore_new_key = itemToRestore.substring(
             0,
-            itemToDelete.lastIndexOf("-")
+            itemToRestore.lastIndexOf("-")
           );
-          myPath[type][itemToDelete_new_key] = myPath[type][itemToDelete];
-          delete myPath[type][itemToDelete];
+          // Add a (1) if the file name already exists
+          if (itemToRestore_new_key in myPath[type])
+          {
+            myPath[type][itemToRestore]["action"].push("renamed");
+            itemToRestore_new_key = itemToRestore_new_key + "(1)";
+          }
+          myPath[type][itemToRestore_new_key] = myPath[type][itemToRestore];
+          delete myPath[type][itemToRestore];
 
           // update UI with updated jsonobj
           listItems(myPath, uiItem);
