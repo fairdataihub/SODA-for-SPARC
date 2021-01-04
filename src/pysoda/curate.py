@@ -1843,7 +1843,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
         index += 1
         
         if index < len(folderpath):
-            recursive_check_and_create_bf_file_path(folderpath, index, bfsd["folders"][folder])
+            return recursive_check_and_create_bf_file_path(folderpath, index, bfsd["folders"][folder])
         else:
             return bfsd["folders"][folder]["path"]
 
@@ -1881,10 +1881,13 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     # files and folders that exist inside.
     def recursive_folder_delete(folder):
         for item in list(folder["folders"]):
-            if "deleted" in folder["folders"][item]['action']:
-                file = bf.get(folder["folders"][item]['path'])
-                file.delete()
-                del folder["folders"][item]
+            if folder["folders"][item]["type"] == "bf": 
+                if "deleted" in folder["folders"][item]['action']:
+                    file = bf.get(folder["folders"][item]['path'])
+                    file.delete()
+                    del folder["folders"][item]
+                else:
+                    recursive_folder_delete(folder["folders"][item])
             else:
                 recursive_folder_delete(folder["folders"][item])
 

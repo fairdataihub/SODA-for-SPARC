@@ -6181,14 +6181,14 @@ $(document).bind("contextmenu", function (event) {
   // category (high-level folders, regular sub-folders, and files)
   if (event.target.classList[0] === "myFol") {
     if (highLevelFolderBool) {
-      if (event.target.classList.contains("deleted")) {
+      if (event.target.classList.contains("deleted_folder")) {
         showmenu(event, "high-level-folder", true);
       } else {
         showmenu(event, "high-level-folder");
       }
       hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
     } else {
-      if (event.target.classList.contains("deleted")) {
+      if (event.target.classList.contains("deleted_folder")) {
         showmenu(event, "folder", true);
       } else {
         showmenu(event, "folder");
@@ -6196,7 +6196,7 @@ $(document).bind("contextmenu", function (event) {
       hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
     }
   } else if (event.target.classList[0] === "myFile") {
-    if (event.target.classList.contains("deleted")) {
+    if (event.target.classList.contains("deleted_file")) {
       showmenu(event, "file", true);
     } else {
       showmenu(event, "file");
@@ -6261,15 +6261,30 @@ function listItems(jsonObj, uiItem) {
       }
     }
 
-    if (sortedObj["folders"][item]["action"].includes("deleted")) {
-      emptyFolder += " deleted";
+    cloud_item = "";
+    deleted_folder = false;
+
+    if ("action" in sortedObj["folders"][item])
+    {
+      if (sortedObj["folders"][item]["action"].includes("deleted")) {
+        emptyFolder += " deleted_folder";
+        deleted_folder = true;
+      }
+    }
+
+    if (sortedObj["folders"][item]["type"] == "bf"){
+      cloud_item = " blackfynn_folder";
+      if (deleted_folder)
+      {
+        cloud_item = " blackfynn_folder_deleted"
+      }
     }
 
     appendString =
       appendString +
       '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
       emptyFolder +
-      '"></h1><div class="folder_desc">' +
+      '"></h1><div class="folder_desc' + cloud_item + '">' +
       item +
       "</div></div>";
   }
@@ -6278,7 +6293,15 @@ function listItems(jsonObj, uiItem) {
     if (sortedObj["files"][item].length !== 1) {
       var extension = sliceStringByValue(sortedObj["files"][item]["path"], ".");
       if (sortedObj["files"][item]["type"] == "bf") {
-        extension = item.split(".").pop();
+        if (sortedObj["files"][item]["action"].includes("deleted"))
+        {
+          original_file_name = item.substring(0, item.lastIndexOf("-"));
+          extension = original_file_name.split(".").pop();
+        }
+        else
+        {
+          extension = item.split(".").pop();
+        }
       }
       if (
         ![
@@ -6300,17 +6323,29 @@ function listItems(jsonObj, uiItem) {
     } else {
       extension = "other";
     }
+    
+    cloud_item = "";
+    deleted_file = false;
 
     if (sortedObj["files"][item]["action"].includes("deleted")) {
-      original_file_name = item.substring(0, item.lastIndexOf("-"));
-      original_extension = original_file_name.split(".").pop();
-      extension = original_extension + " deleted";
+      extension += " deleted_file";
+      deleted_file = true;
     }
+
+
+    if (sortedObj["files"][item]["type"] == "bf"){
+      cloud_item = " blackfynn_file";
+      if (deleted_file)
+      {
+        cloud_item = " blackfynn_file_deleted"
+      }
+    }
+
     appendString =
       appendString +
       '<div class="single-item"><h1 class="myFile ' +
       extension +
-      '" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">' +
+      '" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc' + cloud_item + '">' +
       item +
       "</div></div>";
   }

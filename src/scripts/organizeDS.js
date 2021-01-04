@@ -35,7 +35,7 @@ function delFolder(
   if (ev.classList.value.includes("deleted")) {
     bootbox.confirm({
       title: "Restore " + promptVar,
-      message: "Are you sure you want to restore this " + promptVar + "? If any " + promptVar + " of the same name has been added, this restored file will be renamed.",
+      message: "Are you sure you want to restore this " + promptVar + "? If any " + promptVar + " of the same name has been added, this restored " + promptVar + " will be renamed.",
       onEscape: true,
       centerVertical: true,
       callback: function (result) {
@@ -403,11 +403,45 @@ function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, u
 
 ///// function to load details to show in display once
 ///// users click Show details
-function loadDetailsContextMenu(fileName, filePath, textareaID1, textareaID2, paraLocalPath) {
-  document.getElementById(textareaID1).value = filePath["files"][fileName]["description"];
-  document.getElementById(textareaID2).value = filePath["files"][fileName]["additional-metadata"];
-  document.getElementById(paraLocalPath).innerHTML = filePath["files"][fileName]["path"];
+function loadDetailsContextMenu(
+  fileName,
+  filePath,
+  textareaID1,
+  textareaID2,
+  paraLocalPath
+) {
+  if ("description" in filePath["files"][fileName]) {
+    document.getElementById(textareaID1).value =
+      filePath["files"][fileName]["description"];
+  } else {
+    document.getElementById(textareaID1).value = "";
+  }
+  if ("additional-metadata" in filePath["files"][fileName]) {
+    document.getElementById(textareaID2).value =
+      filePath["files"][fileName]["additional-metadata"];
+  } else {
+    document.getElementById(textareaID2).value = "";
+  }
+  path_label = document.querySelector(
+    "#organize-dataset-tab > div > div > div > div.div-display-details.file > div:nth-child(2) > label"
+  );
+  if (filePath["files"][fileName]["type"] === "bf") {
+    path_label.innerHTML = "<b>Blackfynn path:<br></b>";
+    bf_path = "";
+    filePath["files"][fileName]["bfpath"].forEach(
+      (item) => (bf_path += item + "/")
+    );
+    bf_path += fileName;
+    document.getElementById(paraLocalPath).innerHTML = bf_path;
+  } else {
+    path_label.innerHTML = "<b>Local path:<br></b>";
+    document.getElementById(paraLocalPath).innerHTML =
+      filePath["files"][fileName]["path"];
+  }
 }
+
+//path_label = document.querySelector("#organize-dataset-tab > div > div > div > div.div-display-details.file > div:nth-child(2) > label");
+
 
 function triggerManageDetailsPrompts(ev, fileName, filePath, textareaID1, textareaID2) {
   filePath["files"][fileName]["additional-metadata"] = document.getElementById(textareaID2).value.trim();

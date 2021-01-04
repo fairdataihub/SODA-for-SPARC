@@ -467,7 +467,7 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       $("#Question-getting-started-existing-BF-account").children().show();
       sodaJSONObj = {
         "bf-account-selected": {
-          "account-name": "homewindows"
+          "account-name": "calmilinux"
         },
         "bf-dataset-selected": {
           "dataset-name": "testddataset"
@@ -621,19 +621,21 @@ var populate_existing_metadata = (datasetStructureJSONObj) => {
 };
   
   
-  function obtainDivsbyCategory(category) {
-    var individualQuestions = document.getElementsByClassName('individual-question');
+function obtainDivsbyCategory(category) {
+  var individualQuestions = document.getElementsByClassName(
+    "individual-question"
+  );
   var categoryQuestionList = [];
   for (var i = 0; i < individualQuestions.length; i++) {
     var question = individualQuestions[i];
 
-    if (question.getAttribute('data-id') !== null) {
-      if (question.getAttribute('data-id').includes(category)) {
+    if (question.getAttribute("data-id") !== null) {
+      if (question.getAttribute("data-id").includes(category)) {
         categoryQuestionList.push(question.id);
       }
     }
   }
-  return categoryQuestionList
+  return categoryQuestionList;
 }
 
 // Hide showing divs when users click on different option

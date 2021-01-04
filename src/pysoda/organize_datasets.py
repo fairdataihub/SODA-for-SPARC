@@ -545,6 +545,22 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         else:
             return file_name
 
+    # Add a new key containing the path to all the files and folders on the 
+    # local data structure..
+    def recursive_item_path_create(folder, path):
+        if "files" in folder.keys():
+            for item in list(folder["files"]):
+                if "bfpath" not in folder["files"][item]:
+                    folder["files"][item]['bfpath'] = path[:]
+
+        for item in list(folder["folders"]):
+            if "bfpath" not in folder["folders"][item]:
+                folder["folders"][item]['bfpath'] = path[:]
+                folder["folders"][item]['bfpath'].append(item)
+            recursive_item_path_create(folder["folders"][item], folder["folders"][item]['bfpath'][:])
+
+        return
+
     def recursive_dataset_import(my_item, dataset_folder, metadata_files, my_folder_name, my_level, manifest_dict):
         col_count = 0
         file_count = 0
@@ -690,6 +706,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                         relative_path = ""
                         recursive_manifest_info_import(folder, relative_path, manifest_df)
 
+        recursive_item_path_create(soda_json_structure["dataset-structure"], [])
         success_message = "Data files under a valid high-level SPARC folders have been imported"
         return [soda_json_structure, success_message]
     

@@ -301,19 +301,19 @@ button[disabled]{
   margin-right: 10px
 }
 
-.myFol.deleted:before{
+.myFol.deleted_folder:before{
   opacity: 0.5;
 }
 
-.myFol.deleted:after {
+.myFol.deleted_folder:after {
   content: "\00D7";
   position: absolute;
-  bottom: 28px;
-  right: 24px;
+  bottom: 26px;
+  right: 23px;
   line-height: 1;
   color: rgb(252, 0, 0);
   z-index: 10;
-  font-size: 45px;
+  font-size: 35px;
   font-family: helvetica, arial, sans-serif;
   font-weight: bold;
 }
@@ -698,21 +698,81 @@ button[disabled]{
   margin-left: 10px;
 }
 
-.myFile.deleted:before{
+.myFile.deleted_file:before{
   opacity: 0.5;
 }
 
-.myFile.deleted:after {
+.myFile.deleted_file:after {
   content: "\00D7";
   position: absolute;
-  bottom: 23px;
-  right: 21px;
+  bottom: 26px;
+  right: 23px;
   line-height: 1;
   color: rgb(252, 0, 0);
   z-index: 10;
-  font-size: 45px;
+  font-size: 35px;
   font-family: helvetica, arial, sans-serif;
   font-weight: bold;
+}
+
+.folder_desc.blackfynn_folder:after {
+  content: "\f0c2";
+  position: absolute;
+  bottom: 34px;
+  left: 18px;
+  color: rgb(81, 176, 240);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+}
+
+.blackfynn_folder_deleted{
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.folder_desc.blackfynn_folder_deleted:after {
+  content: "\f0c2";
+  position: absolute;
+  bottom: 34px;
+  left: 18px;
+  color: rgb(185, 221, 245);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+}
+
+.folder_desc.blackfynn_file:after {
+  content: "\f0c2";
+  position: absolute;
+  bottom: 27px;
+  left: 34px;
+  color: rgb(81, 176, 240);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+}
+
+.blackfynn_file_deleted{
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.folder_desc.blackfynn_file_deleted:after {
+  content: "\f0c2";
+  position: absolute;
+  bottom: 27px;
+  left: 34px;
+  color: rgb(185, 221, 245);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
 }
 
 .menu-toggle {
