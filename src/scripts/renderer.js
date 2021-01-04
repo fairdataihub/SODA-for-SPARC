@@ -216,7 +216,8 @@ const menuFolder = document.querySelector('.menu.reg-folder');
 const menuFile = document.querySelector('.menu.file');
 const menuHighLevelFolders = document.querySelector('.menu.high-level-folder');
 const organizeNextStepBtn = document.getElementById("button-organize-confirm-create")
-const organizePrevStepBtn = document.getElementById("button-organize-prev")
+const organizePrevStepBtn = document.getElementById("button-organize-prev");
+const manifestFileCheck = document.getElementById("generate-manifest-curate");
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')

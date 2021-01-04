@@ -12,6 +12,14 @@ var currentTab = 0; // Current tab is set to be the first tab (0)
 showParentTab(0, 1)
 
 function showParentTab(tabNow, nextOrPrev) {
+
+  // check to show Save progress btn (only after step 2)
+  if (tabNow >= 2) {
+    document.getElementById("save-progress-btn").style.display = "block";
+  } else {
+    document.getElementById("save-progress-btn").style.display = "none";
+  }
+
   // This function will display the specified tab of the form ...
   var x = document.getElementsByClassName("parent-tabs");
   fixStepIndicator(tabNow)
@@ -35,6 +43,10 @@ function showParentTab(tabNow, nextOrPrev) {
   document.getElementById("prevBtn").style.display = "inline";
   document.getElementById("nextBtn").innerHTML = "Continue";
 
+  if (nextOrPrev === -1) {
+    document.getElementById("nextBtn").disabled = false;
+  }
+
   if (tabNow == 0) {
     document.getElementById("prevBtn").style.display = "none";
     if ($('input[name="getting-started-1"]:checked').length === 1) {
@@ -42,8 +54,7 @@ function showParentTab(tabNow, nextOrPrev) {
     } else if ($('input[name="getting-started-1"]:checked').length === 0) {
       document.getElementById("nextBtn").disabled = true;
     }
-  } else if (tabNow == 1) {
-    document.getElementById("nextBtn").disabled = true;
+  } else if (tabNow == 1){
     checkHighLevelFoldersInput();
     highLevelFoldersDisableOptions();
   } else {
@@ -51,10 +62,6 @@ function showParentTab(tabNow, nextOrPrev) {
   }
   if (tabNow == (x.length - 1)) {
     document.getElementById("nextBtn").style.display = "none";
-  }
-
-  if (nextOrPrev === -1) {
-    document.getElementById("nextBtn").disabled = false;
   }
 }
 
@@ -68,18 +75,9 @@ function deleteEmptyKeysFromObject(object) {
   }
 }
 
-// function deleteEmptyKeysFromObjectRecursive(object) {
-//   for (var key in object) {
-//     if (object[key] === null || object[key] === undefined || object[key] === "" || JSON.stringify(object[key]) === "{}") {
-//       delete object[key];
-//     } else {
-//       // object = object[key]
-//       deleteEmptyKeysFromObject(object[key])
-//     }
-//   }
-// }
 
 function checkHighLevelFoldersInput() {
+  document.getElementById("nextBtn").disabled = true;
   var optionCards = document.getElementsByClassName("option-card high-level-folders");
   var checked = false;
   for (var card of optionCards) {
@@ -90,8 +88,6 @@ function checkHighLevelFoldersInput() {
   }
   if (checked) {
     document.getElementById("nextBtn").disabled = false;
-  } else {
-    document.getElementById("nextBtn").disabled = true;
   }
   return checked
 }
@@ -199,7 +195,7 @@ function nextPrev(n) {
     //$("#button-preview-dataset").css("display", "none");
     //document.getElementById("generate-dataset-tab").appendChild(target);
     showParentTab(currentTab, n);
-  } 
+  }
   else if (x[currentTab].id === "manifest-file-tab" && sodaJSONObj["starting-point"] == "new")
   {
     console.log("showing");
@@ -312,9 +308,12 @@ function highLevelFoldersDisableOptions() {
       if (Object.keys(highLevelFolderOptions).includes(folder)) {
         var optionCard = $("#" + folder + "-check").parents()[2];
         $(optionCard).addClass('disabled');
-        $(optionCard).children()[0].children[1].children[0].checked = true;
-        $(optionCard).addClass('checked');
-        checkHighLevelFoldersInput();
+        if (!$(optionCard).hasClass('checked')) {
+          $(optionCard).addClass('checked');
+        }
+        if (!$("#"+folder+"-check").prop('checked')) {
+          $("#"+folder+"-check").prop('checked', true);
+        }
       } else {
         var optionCard = $("#" + folder + "-check").parents()[2];
         $(optionCard).removeClass('disabled');
@@ -338,64 +337,11 @@ $(".folder-input-check").click(function () {
 
 
 // ////////////// THIS IS FOR THE SUB-TABS OF GETTING STARTED and GENERATE DATASET sections /////////////////////////
-function transitionQuestions(ev, category, id) {
-  var individualQuestions = document.getElementsByClassName('individual-question');
-  var target = ev.getAttribute('data-next');
-  var height;
-  if ($($(ev).parents()[5]).hasClass("previous")) {
-    for (var j = 0; j < individualQuestions.length; j++) {
-      var question = individualQuestions[j];
-      if (!(question === $(ev).parents()[5])) {
-        $(question).removeClass('previous');
-      }
-    }
-    document.getElementById(target).className = document.getElementById(target).className + ' show'
-  } else {
-    for (var j = 0; j < individualQuestions.length; j++) {
-      var question = individualQuestions[j];
-      if (question.id === target) {
-        if (j > 0) {
-          previousQuestion = individualQuestions[j - 1]
-          previousQuestion.classList.add("previous");
-          if (j == 2) {
-            height = -30 * j - 10;
-          } else {
-            height = -30 * j + 10;
-          }
-          // TODO: Set by % instead of px here
-          $(previousQuestion).css("transform", "translateY(" + height + "px)");
-          $(previousQuestion).css("transtition", "transform 0.4s ease-out");
-        }
-        question.classList.add("show");
-        $(question).css("transform", "translateY(-45%)");
-        $(question).css("transtition", "transform 0.4s ease-out");
-
-        if (category === 'dropdown') {
-          var selectEle = document.getElementById(id);
-          var answer = selectEle.options[selectEle.selectedIndex].text;
-          $(ev).hide()
-        }
-      } else {
-        question.classList.remove("show");
-      }
-      if (target === "") {
-        document.getElementById("nextBtn").disabled = false;
-        $(ev).hide()
-        previousQuestion = $(ev).parents()[1];
-        previousQuestion.classList.add("previous");
-        height = -30 * j + 10;
-        $(previousQuestion).css("transform", "translateY(-80%)");
-        $(previousQuestion).css("transtition", "transform 0.4s ease-out");
-        break
-      }
-    }
-  }
-}
 
 // transition between tabs under Step 1 and Step 6
 var divList = [];
-async function transitionSubQuestions(ev, currentDiv, parentDiv, button, category) {
-  document.getElementById("nextBtn").disabled = true;
+async function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
+  // document.getElementById("nextBtn").disabled = true;
   $(ev).removeClass('non-selected');
   $(ev).children().find('.folder-input-check').prop('checked', true);
 
@@ -427,16 +373,16 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
     $("#Question-generate-dataset-generate-div").show();
     $("#Question-generate-dataset-generate-div").children().show();
   }
-  
+
   if (!(ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")) {
     // create moving effects when new questions appear
     $("#Question-generate-dataset-generate-div").hide();
     $("#Question-generate-dataset-generate-div").children().hide();
     setTimeout(() => target.classList.add("test2"), 100);
   }
-  
+
   document.getElementById(currentDiv).classList.add("prev");
-  
+
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
   if (button === 'delete') {
     if ($(ev).siblings().length > 0) {
@@ -446,11 +392,19 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
   }
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
-  // when we hit the last question under Step 6, hide and disable Next button
-  if (ev.getAttribute("data-next") === "Question-getting-started-final") {
-    if ($(ev).children().find(".folder-input-check").prop("checked")) {
-      document.getElementById("nextBtn").disabled = false;
-      //$("#nextBtn").click();
+  // when we hit the last question under Step 1, hide and disable Next button
+  if (ev.getAttribute('data-next') === "Question-getting-started-final") {
+    // handle cases where
+    if ($('#prepare-new').prop('checked')) {
+      exitCurate();
+      $('#prepare-new').prop("checked", true);
+      $($('#prepare-new').parents()[2]).addClass("checked");
+      // $($('#prepare-new').parents()[2]).css("pointer-events", "none");
+      $($($($('#div-getting-started-prepare-new').parents()[0]).siblings()[0]).children()[0]).toggleClass('non-selected')
+      document.getElementById('nextBtn').disabled = false;
+      $("#nextBtn").click();
+    } else {
+      document.getElementById('nextBtn').disabled = true
     }
     if ($("#prepare-new").is(":checked")) {
       sodaJSONObj["starting-point"] = "new";
@@ -498,7 +452,7 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
         $("#nextBtn").prop("disabled", false);
         $('body').removeClass('waiting');
       }
-    } 
+    }
   }
 }
 
@@ -619,8 +573,8 @@ var populate_existing_metadata = (datasetStructureJSONObj) => {
     }
   }
 };
-  
-  
+
+
   function obtainDivsbyCategory(category) {
     var individualQuestions = document.getElementsByClassName('individual-question');
   var categoryQuestionList = [];
@@ -834,7 +788,6 @@ function updateJSONStructureMetadataFiles() {
 // Step 5: Manifest file
 // update JSON object with manifest file information
 function updateJSONStructureManifest() {
-  const manifestFileCheck = document.getElementById("generate-manifest-curate");
   if (manifestFileCheck.checked) {
     if ("manifest-files" in sodaJSONObj) {
       // cj this might need to be changed
@@ -1040,6 +993,7 @@ function exitCurate() {
   // set metadata file paths to empty
   $('.para-metadata-file-status').text("");
   // un-show all divs from Generate dataset step
+  $($('#Question-generate-dataset').siblings()).removeClass('show');
   $('.generate-dataset').removeClass('prev');
   $('.generate-dataset').removeClass('show');
   $('.generate-dataset').removeClass('test2');
@@ -1101,6 +1055,7 @@ function updateJSONObjectProgress() {
   updateJSONStructureMetadataFiles()
   updateJSONStructureManifest()
   updateJSONStructureDSstructure()
+  updateJSONStructureGenerate()
 }
 
 function saveSODAJSONProgress(progressFileName) {
@@ -1113,6 +1068,7 @@ function saveSODAJSONProgress(progressFileName) {
   var filePath = path.join(progressFilePath, progressFileName + ".json");
   // record all information listed in SODA JSON Object before saving
   updateJSONObjectProgress()
+  console.log(sodaJSONObj)
   fs.writeFileSync(filePath, JSON.stringify(sodaJSONObj))
   bootbox.alert({
     message: "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved progress.",

@@ -35,10 +35,9 @@ const HeroSection = () => {
             transition = {{duration: 1}}
             >
                 <HeroText>
-                    <HeroH1>SODA</HeroH1>
-                    <HeroH2>Keep Calm and Curate</HeroH2>
+                    <HeroH1>SODA </HeroH1>
+                    <HeroH2>Scientific Data Curation and Sharing Made Easy</HeroH2>
                     <HeroP>
-                        Your one-stop tool for curating and submitting SPARC datasets by SPARC investigators, for SPARC investigators.
                     </HeroP>
                     <HeroBtnWrapper>
                         <Button 
