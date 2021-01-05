@@ -623,7 +623,7 @@
             <div id="submissionUpload" class="div-individual-metadata">
               <h5 style="text-align:center;color:#585858;font-size:16px">submission <br>(must be in .csv, .xlsx, or
                 .json format)</h5>
-              <div style="margin-top:25px">
+              <div style="margin-top:25px; text-align: center;">
                 <h5 style="text-align:center"></h5>
                 <div class="div-file-import" droppable="true"
                   ondrop="dropHandler(event, 'para-submission-file-path', 'submission');" ondragover="return false">
@@ -649,6 +649,23 @@
                     onclick="importMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
                     class="div-file-import-button">Choose file</button>
                 </div>
+                <div class="div-file-import" id="metadata-submission-blackfynn"
+                  style="display: none;">
+                  <p style="font-weight:bold">Import Blackfynn file</p>
+                  <div>
+                    <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
+                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd"
+                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                      <path fill-rule="evenodd"
+                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+                    </svg>
+                  </div>
+                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
+                  <button 
+                    onclick="importBlackfynnMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
+                    class="div-file-import-button">Use file</button>
+                </div>
               </div>
               <div style="width:80%;margin: 10px auto">
                 <p class="para-metadata-file-status" id="para-submission-file-path"></p>
@@ -672,7 +689,7 @@
             <div id="datasetDescriptionUpload" class="div-individual-metadata">
               <h5 style="text-align:center;color:#585858;font-size:16px">dataset_description <br>(must be in .csv,
                 .xlsx, or .json format)</h5>
-              <div style="margin-top:25px">
+              <div style="margin-top:25px; text-align: center;">
                 <h5 style="text-align:center"></h5>
                 <div class="div-file-import" droppable="true"
                   ondrop="dropHandler(event, 'para-ds-description-file-path', 'dataset_description');"
@@ -692,6 +709,23 @@
                   <button
                     onclick="importMetadataFiles(this, 'dataset_description', ['.csv', '.xlsx', '.xls', '.json'], 'para-ds-description-file-path')"
                     class="div-file-import-button">Choose file</button>
+                </div>
+                <div class="div-file-import" id="metadata-ds-description-blackfynn"
+                  style="display: none;">
+                  <p style="font-weight:bold">Import Blackfynn file</p>
+                  <div>
+                    <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
+                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd"
+                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                      <path fill-rule="evenodd"
+                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+                    </svg>
+                  </div>
+                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
+                  <button 
+                    onclick="importBlackfynnMetadataFiles(this, 'dataset_description', ['.csv', '.xlsx', '.xls', '.json'], 'para-ds-description-file-path')"
+                    class="div-file-import-button">Use file</button>
                 </div>
               </div>
               <div style="width:80%;margin: 10px auto">
@@ -715,7 +749,7 @@
             <div id="subjectsUpload" class="div-individual-metadata">
               <h5 style="text-align:center;color:#585858;font-size:16px">subjects <br>(must be in .csv, .xlsx, or .json
                 format)</h5>
-              <div style="margin-top:25px">
+              <div style="margin-top:25px; text-align: center;">
                 <h5 style="text-align:center"></h5>
                 <div class="div-file-import" droppable="true"
                   ondrop="dropHandler(event, 'para-subjects-file-path', 'subjects');" ondragover="return false">
@@ -734,6 +768,23 @@
                   <button
                     onclick="importMetadataFiles(this, 'subjects', ['.csv', '.xlsx', '.xls', '.json'], 'para-subjects-file-path')"
                     class="div-file-import-button">Choose file</button>
+                </div>
+                <div class="div-file-import" id="metadata-subjects-blackfynn"
+                  style="display: none;">
+                  <p style="font-weight:bold">Import Blackfynn file</p>
+                  <div>
+                    <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
+                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd"
+                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                      <path fill-rule="evenodd"
+                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+                    </svg>
+                  </div>
+                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
+                  <button 
+                    onclick="importBlackfynnMetadataFiles(this, 'subjects', ['.csv', '.xlsx', '.xls', '.json'], 'para-subjects-file-path')"
+                    class="div-file-import-button">Use file</button>
                 </div>
               </div>
               <div style="width:80%;margin: 10px auto">
@@ -757,7 +808,7 @@
             <div id="samplesUpload" class="div-individual-metadata">
               <h5 style="text-align:center;color:#585858;font-size:16px">samples <br>(must be in .csv, .xlsx, or .json
                 format)</h5>
-              <div style="margin-top:25px">
+              <div style="margin-top:25px; text-align: center;">
                 <h5 style="text-align:center"></h5>
                 <div class="div-file-import" droppable="true"
                   ondrop="dropHandler(event,'para-samples-file-path', 'samples');" ondragover="return false">
@@ -776,6 +827,23 @@
                   <button
                     onclick="importMetadataFiles(this, 'samples', ['.csv', '.xlsx', '.xls', '.json'], 'para-samples-file-path')"
                     class="div-file-import-button">Choose file</button>
+                </div>
+                <div class="div-file-import" id="metadata-samples-blackfynn"
+                  style="display: none;">
+                  <p style="font-weight:bold">Import Blackfynn file</p>
+                  <div>
+                    <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
+                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd"
+                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                      <path fill-rule="evenodd"
+                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+                    </svg>
+                  </div>
+                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
+                  <button 
+                    onclick="importBlackfynnMetadataFiles(this, 'samples', ['.csv', '.xlsx', '.xls', '.json'], 'para-samples-file-path')"
+                    class="div-file-import-button">Use file</button>
                 </div>
               </div>
               <div style="width:80%;margin: 10px auto">
@@ -798,7 +866,7 @@
             <!-- CHANGES -->
             <div id="changesUpload" class="div-individual-metadata">
               <h5 style="text-align:center;color:#585858;font-size:16px">CHANGES <br>(must be in .txt format)</h5>
-              <div style="margin-top:25px">
+              <div style="margin-top:25px; text-align: center;">
                 <h5 style="text-align:center"></h5>
                 <div class="div-file-import" droppable="true"
                   ondrop="dropHandler(event, 'para-changes-file-path', 'CHANGES');" ondragover="return false">
@@ -816,6 +884,23 @@
                     file here OR</p>
                   <button onclick="importMetadataFiles(this, 'CHANGES', ['.txt'], 'para-changes-file-path')"
                     class="div-file-import-button">Choose file</button>
+                </div>
+                <div class="div-file-import" id="metadata-CHANGES-blackfynn"
+                  style="display: none;">
+                  <p style="font-weight:bold">Import Blackfynn file</p>
+                  <div>
+                    <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
+                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd"
+                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                      <path fill-rule="evenodd"
+                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+                    </svg>
+                  </div>
+                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
+                  <button 
+                    onclick="importBlackfynnMetadataFiles(this, 'CHANGES', ['.txt'], 'para-changes-file-path')"
+                    class="div-file-import-button">Use file</button>
                 </div>
               </div>
               <div style="width:80%;margin: 10px auto">
@@ -838,7 +923,7 @@
             <!-- README -->
             <div id="readmeUpload" class="div-individual-metadata">
               <h5 style="text-align:center;color:#585858;font-size:16px">README <br>(must be in .txt format)</h5>
-              <div style="margin-top:25px">
+              <div style="margin-top:25px; text-align: center;">
                 <h5 style="text-align:center"></h5>
                 <div class="div-file-import" droppable="true"
                   ondrop="dropHandler(event, 'para-readme-file-path', 'README');" ondragover="return false">
@@ -856,6 +941,23 @@
                     file here OR</p>
                   <button onclick="importMetadataFiles(this, 'README', ['.txt'], 'para-readme-file-path')"
                     class="div-file-import-button">Choose file</button>
+                </div>
+                <div class="div-file-import" id="metadata-README-blackfynn"
+                  style="display: none;">
+                  <p style="font-weight:bold">Import Blackfynn file</p>
+                  <div>
+                    <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
+                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd"
+                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                      <path fill-rule="evenodd"
+                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+                    </svg>
+                  </div>
+                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
+                  <button 
+                    onclick="importBlackfynnMetadataFiles(this, 'README', ['.txt'], 'para-readme-file-path')"
+                    class="div-file-import-button">Use file</button>
                 </div>
               </div>
               <div style="width:80%;margin: 10px auto">

@@ -6866,6 +6866,45 @@ function importMetadataFiles(ev, metadataFile, extentionList, paraEle) {
   ipcRenderer.send('open-file-dialog-metadata-curate');
 }
 
+function importBlackfynnMetadataFiles(
+  ev,
+  metadataFile,
+  extensionList,
+  paraEle
+) {
+  extensionList.forEach((file_type) => {
+    file_name = metadataFile + file_type;
+    if (
+      file_name in sodaJSONObj["metadata-files"] &&
+      sodaJSONObj["metadata-files"][file_name]["type"] != "bf"
+    ) {
+      delete sodaJSONObj["metadata-files"][file_name];
+    }
+    deleted_file_name = file_name + "-DELETED";
+    if (
+      deleted_file_name in sodaJSONObj["metadata-files"] &&
+      sodaJSONObj["metadata-files"][deleted_file_name]["type"] === "bf"
+    ) {
+      // update Json object with the restored object
+      let index = sodaJSONObj["metadata-files"][deleted_file_name][
+        "action"
+      ].indexOf("deleted");
+      sodaJSONObj["metadata-files"][deleted_file_name]["action"].splice(
+        index,
+        1
+      );
+      let deleted_file_name_new_key = deleted_file_name.substring(
+        0,
+        deleted_file_name.lastIndexOf("-")
+      );
+      sodaJSONObj["metadata-files"][deleted_file_name_new_key] =
+        sodaJSONObj["metadata-files"][deleted_file_name];
+      delete sodaJSONObj["metadata-files"][deleted_file_name];
+    }
+  });
+  populate_existing_metadata(sodaJSONObj);
+}
+
 ipcRenderer.on('selected-metadataCurate', (event, mypath) => {
 
   if (mypath.length > 0) {

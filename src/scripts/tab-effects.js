@@ -99,7 +99,7 @@ function checkHighLevelFoldersInput() {
 // function associated with the Back/Continue buttons
 function nextPrev(n) {
   var x = document.getElementsByClassName("parent-tabs");
-  console.log(x);
+  console.log(sodaJSONObj);
   // update JSON structure
   updateOverallJSONStructure(x[currentTab].id);
 
@@ -534,8 +534,8 @@ var populate_existing_metadata = (datasetStructureJSONObj) => {
         target = $(".metadata-button[data-next='submissionUpload']");
         $(target).addClass("done");
         $("#para-submission-file-path").html(
-          "File present Blackfynn. <br> Online path: " +
-            metadataobject[key].path
+          "Using file present on Blackfynn. <br> File name: " +
+            key
         );
         $($("#para-submission-file-path").parents()[1])
           .find(".div-metadata-confirm")
@@ -543,13 +543,15 @@ var populate_existing_metadata = (datasetStructureJSONObj) => {
         $($("#para-submission-file-path").parents()[1])
           .find(".div-metadata-go-back")
           .css("display", "none");
+        $("#metadata-submission-blackfynn")
+          .css("display", "inline-block");
         break;
       case "dataset_description":
         target = $(".metadata-button[data-next='datasetDescriptionUpload']");
         $(target).addClass("done");
         $("#para-ds-description-file-path").html(
-          "File present Blackfynn. <br> Online path: " +
-            metadataobject[key].path
+          "Using file present on Blackfynn. <br> File name: " +
+            key
         );
         $($("#para-ds-description-file-path").parents()[1])
           .find(".div-metadata-confirm")
@@ -557,13 +559,15 @@ var populate_existing_metadata = (datasetStructureJSONObj) => {
         $($("#para-ds-description-file-path").parents()[1])
           .find(".div-metadata-go-back")
           .css("display", "none");
+        $("#metadata-ds-description-blackfynn")
+          .css("display", "inline-block");
         break;
       case "subjects":
         target = $(".metadata-button[data-next='subjectsUpload']");
         $(target).addClass("done");
         $("#para-subjects-file-path").html(
-          "File present Blackfynn. <br> Online path: " +
-            metadataobject[key].path
+          "Using file present on Blackfynn. <br> File name: " +
+            key
         );
         $($("#para-subjects-file-path").parents()[1])
           .find(".div-metadata-confirm")
@@ -571,13 +575,15 @@ var populate_existing_metadata = (datasetStructureJSONObj) => {
         $($("#para-subjects-file-path").parents()[1])
           .find(".div-metadata-go-back")
           .css("display", "none");
+        $("#metadata-subjects-blackfynn")
+          .css("display", "inline-block");
         break;
       case "samples":
         target = $(".metadata-button[data-next='samplesUpload']");
         $(target).addClass("done");
         $("#para-samples-file-path").html(
-          "File present Blackfynn. <br> Online path: " +
-            metadataobject[key].path
+          "Using file present on Blackfynn. <br> File name: " +
+            key
         );
         $($("#para-samples-file-path").parents()[1])
           .find(".div-metadata-confirm")
@@ -585,13 +591,15 @@ var populate_existing_metadata = (datasetStructureJSONObj) => {
         $($("#para-samples-file-path").parents()[1])
           .find(".div-metadata-go-back")
           .css("display", "none");
+        $("#metadata-samples-blackfynn")
+          .css("display", "inline-block");
         break;
       case "README":
         target = $(".metadata-button[data-next='readmeUpload']");
         $(target).addClass("done");
         $("#para-readme-file-path").html(
-          "File present Blackfynn. <br> Online path: " +
-            metadataobject[key].path
+          "Using file present on Blackfynn. <br> File name: " +
+            key
         );
         $($("#para-readme-file-path").parents()[1])
           .find(".div-metadata-confirm")
@@ -599,13 +607,15 @@ var populate_existing_metadata = (datasetStructureJSONObj) => {
         $($("#para-readme-file-path").parents()[1])
           .find(".div-metadata-go-back")
           .css("display", "none");
+        $("#metadata-README-blackfynn")
+          .css("display", "inline-block");
         break;
       case "CHANGES":
         target = $(".metadata-button[data-next='changesUpload']");
         $(target).addClass("done");
         $("#para-changes-file-path").html(
-          "File present Blackfynn. <br> Online path: " +
-            metadataobject[key].path
+          "Using file present on Blackfynn. <br> File name: " +
+            key
         );
         $($("#para-changes-file-path").parents()[1])
           .find(".div-metadata-confirm")
@@ -613,6 +623,8 @@ var populate_existing_metadata = (datasetStructureJSONObj) => {
         $($("#para-changes-file-path").parents()[1])
           .find(".div-metadata-go-back")
           .css("display", "none");
+        $("#metadata-CHANGES-blackfynn")
+          .css("display", "inline-block");
         break;
       default:
         break;
@@ -718,21 +730,28 @@ function populateMetadataObject(
   }
   for (let item in object["metadata-files"]) {
     if (
-      item.search(metadataFile) != -1 &&
+      item.search(metadataFile) != -1 && 
       object["metadata-files"][item]["type"] == "bf"
     ) {
-      if (metadataFilePath == "")
+      if (metadataFilePath == "" || metadataFilePath.indexOf("Using file present on Blackfynn") == -1)
       {
-        object["metadata-files"][item]["action"].push("deleted");
+        if (!object["metadata-files"][item]["action"].includes("deleted"))
+        {
+          object["metadata-files"][item]["action"].push("deleted");
+          let new_item = item + "-DELETED";
+          object["metadata-files"][new_item] = object["metadata-files"][item];
+          delete object["metadata-files"][item];
+          break;
+        }
       }
-      return;
+      //return;
     }
   }
   if (!optionList.includes(metadataFilePath)) {
     var mypath = path.basename(metadataFilePath);
     object["metadata-files"][mypath] = {
       type: "local",
-      action: "new",
+      action: ["new"],
       path: metadataFilePath,
       destination: "generate-dataset",
     };
