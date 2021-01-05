@@ -6261,9 +6261,10 @@ function listItems(jsonObj, uiItem) {
         emptyFolder = " empty";
       }
     }
-
-    if (sortedObj["folders"][item]["action"].includes("deleted")) {
-      emptyFolder += " deleted";
+    if ("action" in sortedObj["folders"][item]) {
+      if (sortedObj["folders"][item]["action"].includes("deleted")) {
+        emptyFolder += " deleted";
+      }
     }
 
     appendString =

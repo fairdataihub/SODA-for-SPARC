@@ -194,7 +194,6 @@ function importGenerateDatasetStep(object) {
     exitCurate();
     $('#previous-progress').prop("checked", true);
     $($('#previous-progress').parents()[2]).addClass("checked");
-    // $($('#previous-progress').parents()[2]).css("pointer-events", "none");
     $($($($('#div-getting-started-previous-progress').parents()[0]).siblings()[0]).children()[0]).toggleClass('non-selected')
   }
 }

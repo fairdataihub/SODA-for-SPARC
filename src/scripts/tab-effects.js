@@ -261,6 +261,7 @@ $(".option-card.radio-button").click(function () {
   $(this).addClass('checked');
   if ($(this).hasClass('checked')) {
     $(this).children()[0].children[0].children[0].checked = true;
+    $($(this).parents()[1]).find('.option-card.radio-button').addClass('non-selected')
     $(this).removeClass('non-selected')
   } else {
     $(this).children()[0].children[0].children[0].checked = false;
@@ -394,28 +395,25 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
   document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
   // when we hit the last question under Step 1, hide and disable Next button
   if (ev.getAttribute('data-next') === "Question-getting-started-final") {
+    $('#progress-files-dropdown').val('Select');
+    $('#para-progress-file-status').text('');
+    $("#nextBtn").prop("disabled", true);
     // handle cases where
     if ($('#prepare-new').prop('checked')) {
       exitCurate();
       $('#prepare-new').prop("checked", true);
       $($('#prepare-new').parents()[2]).addClass("checked");
-      // $($('#prepare-new').parents()[2]).css("pointer-events", "none");
       $($($($('#div-getting-started-prepare-new').parents()[0]).siblings()[0]).children()[0]).toggleClass('non-selected')
-      document.getElementById('nextBtn').disabled = false;
-      $("#nextBtn").click();
-    } else {
-      document.getElementById('nextBtn').disabled = true
-    }
-    if ($("#prepare-new").is(":checked")) {
+      $("#nextBtn").prop("disabled", false);
       sodaJSONObj["starting-point"] = "new";
       sodaJSONObj["dataset-structure"] = {};
       datasetStructureJSONObj = { folders: {} };
       sodaJSONObj["metadata-files"] = {};
       reset_ui();
-      document.getElementById("nextBtn").disabled = false;
+      $("#nextBtn").click();
     }
-
     else if ($("#existing-bf").is(":checked")) {
+      exitCurate()
       console.log("here");
       $("#Question-getting-started-existing-BF-account").show();
       $("#Question-getting-started-existing-BF-account").children().show();
@@ -437,11 +435,9 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       console.log("calling");
       //sodaJSONObj["bf-account-selected"]["account-name"] = document.getElementById('bfexistingallaccountlist').value;
       //sodaJSONObj["bf-dataset-selected"]["dataset-name"] = document.getElementById('curateexistingbfdatasetlist').value;
-      document.getElementById("nextBtn").disabled = true;
       res = await bf_request_and_populate_dataset(sodaJSONObj);
       if (res == "error") {
         console.log(res);
-        document.getElementById("nextBtn").disabled = true;
         $('body').removeClass('waiting');
       } else {
         sodaJSONObj = res;
@@ -452,6 +448,9 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
         $("#nextBtn").prop("disabled", false);
         $('body').removeClass('waiting');
       }
+    } else {
+      exitCurate();
+      $("#nextBtn").prop("disabled", true);
     }
   }
 }
