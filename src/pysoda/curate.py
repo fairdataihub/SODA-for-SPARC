@@ -1796,7 +1796,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     global start_generate
     global main_initial_bfdataset_size
     bfsd = ""
-recursive_metadata_file_delete(dataset_structure)
+
     # Delete any files on blackfynn that have been marked as deleted
     def recursive_file_delete(folder):
         if "files" in folder.keys():

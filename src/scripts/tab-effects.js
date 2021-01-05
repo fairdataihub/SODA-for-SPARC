@@ -586,19 +586,12 @@ var populate_existing_metadata = (datasetStructureJSONObj) => {
     }
   }
 };
-<<<<<<< HEAD
   
   
 function obtainDivsbyCategory(category) {
   var individualQuestions = document.getElementsByClassName(
     "individual-question"
   );
-=======
-
-
-  function obtainDivsbyCategory(category) {
-    var individualQuestions = document.getElementsByClassName('individual-question');
->>>>>>> merge3.1
   var categoryQuestionList = [];
   for (var i = 0; i < individualQuestions.length; i++) {
     var question = individualQuestions[i];

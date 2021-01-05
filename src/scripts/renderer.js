@@ -6261,7 +6261,6 @@ function listItems(jsonObj, uiItem) {
         emptyFolder = " empty";
       }
     }
-<<<<<<< HEAD
 
     cloud_item = "";
     deleted_folder = false;
@@ -6279,11 +6278,6 @@ function listItems(jsonObj, uiItem) {
       if (deleted_folder)
       {
         cloud_item = " blackfynn_folder_deleted"
-=======
-    if ("action" in sortedObj["folders"][item]) {
-      if (sortedObj["folders"][item]["action"].includes("deleted")) {
-        emptyFolder += " deleted";
->>>>>>> merge3.1
       }
     }
 
