@@ -144,9 +144,11 @@ function nextPrev(n) {
     if (!("metadata-files" in sodaJSONObj)) {
       sodaJSONObj["metadata-files"] = {};
     }
-    Object.keys(sodaJSONObj["metadata-files"]).forEach((element) =>
-      withoutExtMetadataArray.push(path.parse(element).name)
-    );
+    Object.keys(sodaJSONObj["metadata-files"]).forEach((element) => {
+      if (!element.includes("-DELETED")) {
+        withoutExtMetadataArray.push(path.parse(element).name);
+      }
+    });
     var subArrayBoolean = requiredFiles.every((val) =>
       withoutExtMetadataArray.includes(val)
     );
@@ -744,8 +746,11 @@ function populateMetadataObject(
           break;
         }
       }
-      //return;
     }
+  }
+  if (metadataFilePath.indexOf("Using file present on Blackfynn") != -1)
+  {
+    return
   }
   if (!optionList.includes(metadataFilePath)) {
     var mypath = path.basename(metadataFilePath);
@@ -758,7 +763,10 @@ function populateMetadataObject(
   } else {
     for (var key in object["metadata-files"]) {
       if (key.includes(metadataFile)) {
-        delete object["metadata-files"][key];
+        if (!key.includes("-DELETED"))
+        {
+          delete object["metadata-files"][key];
+        }
       }
     }
   }

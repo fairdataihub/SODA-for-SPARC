@@ -1796,7 +1796,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     global start_generate
     global main_initial_bfdataset_size
     bfsd = ""
-
+recursive_metadata_file_delete(dataset_structure)
     # Delete any files on blackfynn that have been marked as deleted
     def recursive_file_delete(folder):
         if "files" in folder.keys():
@@ -1808,6 +1808,16 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
 
         for item in list(folder["folders"]):
             recursive_file_delete(folder["folders"][item])
+        return
+
+    # Delete any files on blackfynn that have been marked as deleted
+    def recursive_metadata_file_delete(folder):
+        for item in list(folder):
+            if "deleted" in folder[item]['action']:
+                file = bf.get(folder[item]['path'])
+                file.delete()
+                del folder[item]
+
         return
     
     # Add a new key containing the path to all the files and folders on the 
@@ -1938,8 +1948,12 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     recursive_folder_delete(dataset_structure)
     main_curate_progress_message = "Deletion of additional folders complete"
 
+    # 6. Delete any metadata files that are marked as deleted. 
+    main_curate_progress_message = "Removing metadata files marked for deletion"
+    recursive_metadata_file_delete(soda_json_structure["metadata-files"])
+    main_curate_progress_message = "Removed metadata files marked for deletion"
 
-    # 6. Run the original code to upload any new files added to the dataset.
+    # 7. Run the original code to upload any new files added to the dataset.
     soda_json_structure["manifest-files"] = {"destination": "bf"}
     soda_json_structure["generate-dataset"] = {"destination" : "bf", "if-existing": "merge", "if-existing-files": "replace"}
     bf_generate_new_dataset(soda_json_structure, bf, ds)
