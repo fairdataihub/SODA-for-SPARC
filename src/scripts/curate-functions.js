@@ -115,7 +115,7 @@ function importManifest(object) {
   }
 }
 
-function importMetadataFiles(object) {
+function importMetadataFilesProgress(object) {
   populateMetadataProgress(false, '', '')
   if ("metadata-files" in object) {
     var metadataFileArray = Object.keys(object["metadata-files"]);
@@ -233,7 +233,7 @@ function loadProgressFile(ev) {
     setTimeout(function() {
       sodaJSONObj = jsonContent;
       importManifest(sodaJSONObj)
-      importMetadataFiles(sodaJSONObj)
+      importMetadataFilesProgress(sodaJSONObj)
       importDatasetStructure(sodaJSONObj)
       importGenerateDatasetStep(sodaJSONObj)
       document.getElementById('div-progress-file-loader').style.display = "none"
@@ -244,7 +244,7 @@ function loadProgressFile(ev) {
       sodaJSONObj = {};
       setTimeout(function() {
         importManifest(sodaJSONObj)
-        importMetadataFiles(sodaJSONObj)
+        importMetadataFilesProgress(sodaJSONObj)
         importDatasetStructure(sodaJSONObj)
         importGenerateDatasetStep(sodaJSONObj)
         document.getElementById('div-progress-file-loader').style.display = "none"
