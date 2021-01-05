@@ -415,6 +415,8 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       $("#nextBtn").click();
     }
     else if ($("#existing-bf").is(":checked")) {
+      // this exitCurate function gets called in the beginning here
+      // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
       exitCurate()
       console.log("here");
       $("#Question-getting-started-existing-BF-account").show();
@@ -586,8 +588,8 @@ var populate_existing_metadata = (datasetStructureJSONObj) => {
     }
   }
 };
-  
-  
+
+
 function obtainDivsbyCategory(category) {
   var individualQuestions = document.getElementsByClassName(
     "individual-question"
@@ -685,7 +687,7 @@ function populateMetadataObject(
   }
   for (let item in object["metadata-files"]) {
     if (
-      item.search(metadataFile) != -1 && 
+      item.search(metadataFile) != -1 &&
       object["metadata-files"][item]["type"] == "bf"
     ) {
       if (metadataFilePath == "" || metadataFilePath.indexOf("Using file present on Blackfynn") == -1)
