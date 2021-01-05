@@ -35,8 +35,9 @@ export const aboutObj = {
     id: 'about',
     imgStart: 'true',
     heading: 'About Us',
-    para1: 'SODA (Software to Organize Data Automatically) for SPARC is a desktop software intended to facilitate the data organization and submission process for SPARC investigators and thus promote the FAIR Data Principles.',
-    para2: 'The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public\'s Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA for SPARC is designed such that users can accomplish all the requirements to submit a SPARC dataset rapidly through a single interface.',
-    para3: 'Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduce users\' effort to a bare minimum during each step, often to just a few clicks.',
+    para1: 'We are a team of researchers from the California Medical Innovations Institute who believe that all scientific research data should be curated and shared according to applicable standards based on the FAIR Data Principles. We also believe that doing so should be easy for the researchers collecting that data.',
+    para2: 'This is why we are developing SODA (Software to Organize Data Automatically), an open-source desktop software that assists researchers in curating and sharing their data step by step such that it is intuitive, easy, efficient, and fun to do so.',
+    para3: 'Our current effort is oriented towards developing SODA for SPARC, a version of SODA tailored to the needs of the NIH SPARC Initiative.',
+    para4: 'We are looking forward to build more versions of SODA to support curation and sharing for other research programs and data types beyond SPARC.',
     img: require('../images/banner.svg').default
 };

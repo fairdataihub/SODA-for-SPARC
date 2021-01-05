@@ -12,7 +12,7 @@ import {
     AboutWrapper 
 } from './AboutElements'
 
-const AboutSection = ({id, imgStart, heading, para1, para2, para3, img}) => {
+const AboutSection = ({id, imgStart, heading, para1, para2, para3, para4, img}) => {
 
     const [show, doShow] = useState({
         itemOne: false
@@ -43,6 +43,7 @@ const AboutSection = ({id, imgStart, heading, para1, para2, para3, img}) => {
                             <Description>{para1}</Description>
 							<Description>{para2}</Description>
 							<Description>{para3}</Description>
+                            <Description>{para4}</Description>
                         </TextWrapper>
                     </Column1>
                     <Column2>

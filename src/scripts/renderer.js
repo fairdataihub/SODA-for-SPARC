@@ -216,7 +216,8 @@ const menuFolder = document.querySelector('.menu.reg-folder');
 const menuFile = document.querySelector('.menu.file');
 const menuHighLevelFolders = document.querySelector('.menu.high-level-folder');
 const organizeNextStepBtn = document.getElementById("button-organize-confirm-create")
-const organizePrevStepBtn = document.getElementById("button-organize-prev")
+const organizePrevStepBtn = document.getElementById("button-organize-prev");
+const manifestFileCheck = document.getElementById("generate-manifest-curate");
 
 // Organize dataset //
 const bfAccountCheckBtn = document.getElementById('button-check-bf-account-details')
@@ -6260,6 +6261,7 @@ function listItems(jsonObj, uiItem) {
         emptyFolder = " empty";
       }
     }
+<<<<<<< HEAD
 
     cloud_item = "";
     deleted_folder = false;
@@ -6277,6 +6279,11 @@ function listItems(jsonObj, uiItem) {
       if (deleted_folder)
       {
         cloud_item = " blackfynn_folder_deleted"
+=======
+    if ("action" in sortedObj["folders"][item]) {
+      if (sortedObj["folders"][item]["action"].includes("deleted")) {
+        emptyFolder += " deleted";
+>>>>>>> merge3.1
       }
     }
 
