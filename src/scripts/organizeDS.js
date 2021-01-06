@@ -84,7 +84,11 @@ function delFolder(
           var filtered = getGlobalPath(organizeCurrentLocation);
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
           // update Json object with new folder created
-          if (myPath[type][itemToDelete]["type"] === "bf") {
+          if (
+            myPath[type][itemToDelete]["type"] === "bf" ||
+            (myPath[type][itemToDelete]["type"] === "local" &&
+              myPath[type][itemToDelete]["action"].includes("existing"))
+          ) {
             if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
               myPath[type][itemToDelete]["action"] = [];
               myPath[type][itemToDelete]["action"].push("existing");

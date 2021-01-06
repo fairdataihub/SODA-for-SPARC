@@ -6281,6 +6281,14 @@ function listItems(jsonObj, uiItem) {
       }
     }
 
+    if (sortedObj["folders"][item]["type"] == "local" && sortedObj["folders"][item]["action"].includes("existing")){
+      cloud_item = " local_folder";
+      if (deleted_folder)
+      {
+        cloud_item = " local_folder_deleted"
+      }
+    }
+
     appendString =
       appendString +
       '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
@@ -6339,6 +6347,14 @@ function listItems(jsonObj, uiItem) {
       if (deleted_file)
       {
         cloud_item = " blackfynn_file_deleted"
+      }
+    }
+
+    if (sortedObj["files"][item]["type"] == "local" && sortedObj["files"][item]["action"].includes("existing")){
+      cloud_item = " local_file";
+      if (deleted_file)
+      {
+        cloud_item = " local_file_deleted"
       }
     }
 
@@ -6906,29 +6922,37 @@ function importBlackfynnMetadataFiles(
   populate_existing_metadata(sodaJSONObj);
 }
 
-ipcRenderer.on('selected-metadataCurate', (event, mypath) => {
-
+ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   if (mypath.length > 0) {
+    var dotCount = path.basename(mypath[0]).trim().split(".").length - 1;
+    if (dotCount === 1) {
+      var metadataWithoutExtension = path
+        .basename(mypath[0])
+        .slice(0, path.basename(mypath[0]).indexOf("."));
+      var extension = path
+        .basename(mypath[0])
+        .slice(path.basename(mypath[0]).indexOf("."));
 
-  var dotCount = path.basename(mypath[0]).trim().split(".").length - 1;
-  if (dotCount === 1)  {
-    var metadataWithoutExtension = path.basename(mypath[0]).slice(0, path.basename(mypath[0]).indexOf('.'));
-    var extension = path.basename(mypath[0]).slice(path.basename(mypath[0]).indexOf('.'));
-
-    if (metadataWithoutExtension === metadataIndividualFile) {
-      if (metadataAllowedExtensions.includes(extension)) {
-        document.getElementById(metadataParaElement).innerHTML = mypath[0];
-        $($("#"+metadataParaElement).parents()[1]).find('.div-metadata-confirm').css("display", "flex");
-        $($("#"+metadataParaElement).parents()[1]).find('.div-metadata-go-back').css("display", "none");
+      if (metadataWithoutExtension === metadataIndividualFile) {
+        if (metadataAllowedExtensions.includes(extension)) {
+          document.getElementById(metadataParaElement).innerHTML = mypath[0];
+          $($("#" + metadataParaElement).parents()[1])
+            .find(".div-metadata-confirm")
+            .css("display", "flex");
+          $($("#" + metadataParaElement).parents()[1])
+            .find(".div-metadata-go-back")
+            .css("display", "none");
+        } else {
+          document.getElementById(metadataParaElement).innerHTML =
+            "<span style='color:red'>Your SPARC metadata file must be in one of the formats listed above!</span>";
+        }
       } else {
-        document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>Your SPARC metadata file must be in one of the formats listed above!</span>"
-      }
-    } else {
-      document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>"
+        document.getElementById(metadataParaElement).innerHTML =
+          "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
       }
     }
   }
-})
+});
 
 
 document.getElementById('button-preview-dataset').addEventListener('click', function () {

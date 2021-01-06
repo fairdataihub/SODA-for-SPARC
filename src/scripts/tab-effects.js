@@ -226,7 +226,7 @@ function nextPrev(n) {
     }
     // Display the correct tab:
     showParentTab(currentTab, n);
-    console.log(JSON.stringify(sodaJSONObj));
+    //console.log(JSON.stringify(sodaJSONObj));
   }
 }
 
@@ -434,7 +434,6 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       };
 
       $('body').addClass('waiting');
-      console.log("calling");
       //sodaJSONObj["bf-account-selected"]["account-name"] = document.getElementById('bfexistingallaccountlist').value;
       //sodaJSONObj["bf-dataset-selected"]["dataset-name"] = document.getElementById('curateexistingbfdatasetlist').value;
       res = await bf_request_and_populate_dataset(sodaJSONObj);
@@ -444,18 +443,140 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       } else {
         sodaJSONObj = res;
         datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-        console.log(datasetStructureJSONObj);
         populate_existing_folders(datasetStructureJSONObj);
         populate_existing_metadata(sodaJSONObj);
         $("#nextBtn").prop("disabled", false);
         $('body').removeClass('waiting');
       }
+    } else if ($("#existing-local").is(":checked")){
+      sodaJSONObj = {
+        "bf-account-selected": {},
+        "bf-dataset-selected": {},
+        "dataset-structure": {},
+        "metadata-files": {},
+        "manifest-files": {},
+        "generate-dataset": {},
+        "starting-point": "local",
+        "local-path": "/home/dev/Desktop/datasetfolder"
+      }
+      // this should run after a folder is selected
+      verify_sparc_folder(sodaJSONObj["local-path"]);
+      create_json_object(sodaJSONObj);
+      console.log(sodaJSONObj);
+      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+      populate_existing_folders(datasetStructureJSONObj);
+      populate_local_existing_metadata(sodaJSONObj);
+      $("#nextBtn").prop("disabled", false);
     } else {
       exitCurate();
       $("#nextBtn").prop("disabled", true);
     }
   }
 }
+
+create_json_object = (sodaJSONObj) => {
+  high_level_metadata_sparc = [
+    "submission.xlsx", "submission.csv", "submission.json",
+    "dataset_description.xlsx", "dataset_description.csv", "dataset_description.json",
+    "subjects.xlsx", "subjects.csv", "subjects.json",
+    "samples.xlsx", "samples.csv", "samples.json",
+    "README.txt",
+    "CHANGES.txt",
+  ];
+  root_folder_path = sodaJSONObj["local-path"];
+  sodaJSONObj["dataset-structure"] = { folders: {} };
+  fs.readdirSync(root_folder_path).forEach((file) => {
+    console.log(file);
+    full_current_path = path.join(root_folder_path, file);
+    let stats = fs.statSync(full_current_path);
+    if (stats.isDirectory()) {
+      if (highLevelFolders.includes(file)) {
+        sodaJSONObj["dataset-structure"]["folders"][file] = {
+          folders: {},
+          files: {},
+          path: full_current_path,
+          type: "local",
+          action: ["existing"],
+        };
+      }
+    }
+    if (stats.isFile()) {
+      if (high_level_metadata_sparc.includes(file)) {
+        sodaJSONObj["metadata-files"][file] = {
+          path: full_current_path,
+          type: "local",
+          action: ["existing"],
+        };
+      }
+    }
+  });
+  // go through each individual high level folder and create the structure
+
+  for (folder in sodaJSONObj["dataset-structure"]["folders"])
+  {
+    recursive_structure_create(sodaJSONObj["dataset-structure"]["folders"][folder])
+  }
+};
+
+recursive_structure_create = (dataset_folder) => {
+  current_folder_path = dataset_folder["path"];
+  fs.readdirSync(current_folder_path).forEach((file) => {
+    current_file_path = path.join(current_folder_path, file);
+    let stats = fs.statSync(current_file_path);
+    if (stats.isFile()) {
+      dataset_folder["files"][file] = {
+        path: current_file_path,
+        type: "local",
+        action: ["existing"],
+      };
+    }
+    if (stats.isDirectory()) {
+      dataset_folder["folders"][file] = {
+        folders: {},
+        files: {},
+        path: current_file_path,
+        type: "local",
+        action: ["existing"],
+      };
+    }
+  });
+  for (folder in dataset_folder["folders"]) {
+    recursive_structure_create(dataset_folder["folders"][folder]);
+  }
+  return;
+};
+
+verify_sparc_folder = (root_folder_path) => {
+  possible_metadata_files = [
+    "submission",
+    "dataset_description",
+    "subjects",
+    "samples",
+    "README",
+    "CHANGES",
+  ];
+  valid_dataset = false;
+  fs.readdirSync(root_folder_path).map(fileName => {
+    console.log( path.join(root_folder_path, fileName))
+  })
+  fs.readdirSync(root_folder_path).forEach((file) => {
+    console.log(file);
+    if (highLevelFolders.includes(file)) {
+      valid_dataset = true;
+    }
+    for (item in possible_metadata_files)
+    {
+      if (item.indexOf(file) != -1)
+      {
+        valid_dataset = true;
+      }
+    }
+  });
+  if (valid_dataset === false)
+  {
+    //show bootbox for change folder
+  }
+};
 
 reset_ui = () => {
   $(".option-card.high-level-folders").each(function (i, obj) {
@@ -586,7 +707,84 @@ var populate_existing_metadata = (datasetStructureJSONObj) => {
     }
   }
 };
-  
+
+var populate_local_existing_metadata = (datasetStructureJSONObj) => {
+  let target = null;
+  let metadataobject = datasetStructureJSONObj["metadata-files"];
+  for (var key of Object.keys(metadataobject)) {
+    let file_name = require("path").parse(key).name;
+    switch (file_name) {
+      case "submission":
+        $(".metadata-button[data-next='submissionUpload']").addClass("done");
+        $("#para-submission-file-path").text(metadataobject[key]["path"]
+        );
+        $($("#para-submission-file-path").parents()[1])
+          .find(".div-metadata-confirm")
+          .css("display", "flex");
+        $($("#para-submission-file-path").parents()[1])
+          .find(".div-metadata-go-back")
+          .css("display", "none");
+        break;
+      case "dataset_description":
+        $(".metadata-button[data-next='datasetDescriptionUpload']").addClass("done");
+        $("#para-ds-description-file-path").text(metadataobject[key]["path"]
+        );
+        $($("#para-ds-description-file-path").parents()[1])
+          .find(".div-metadata-confirm")
+          .css("display", "flex");
+        $($("#para-ds-description-file-path").parents()[1])
+          .find(".div-metadata-go-back")
+          .css("display", "none");
+        break;
+      case "subjects":
+        $(".metadata-button[data-next='subjectsUpload']").addClass("done");
+        $("#para-subjects-file-path").text(metadataobject[key]["path"]
+        );
+        $($("#para-subjects-file-path").parents()[1])
+          .find(".div-metadata-confirm")
+          .css("display", "flex");
+        $($("#para-subjects-file-path").parents()[1])
+          .find(".div-metadata-go-back")
+          .css("display", "none");
+        break;
+      case "samples":
+        $(".metadata-button[data-next='samplesUpload']").addClass("done");
+        $("#para-samples-file-path").text(metadataobject[key]["path"]
+        );
+        $($("#para-samples-file-path").parents()[1])
+          .find(".div-metadata-confirm")
+          .css("display", "flex");
+        $($("#para-samples-file-path").parents()[1])
+          .find(".div-metadata-go-back")
+          .css("display", "none");
+        break;
+      case "README":
+        $(".metadata-button[data-next='readmeUpload']").addClass("done");
+        $("#para-readme-file-path").text(metadataobject[key]["path"]
+        );
+        $($("#para-readme-file-path").parents()[1])
+          .find(".div-metadata-confirm")
+          .css("display", "flex");
+        $($("#para-readme-file-path").parents()[1])
+          .find(".div-metadata-go-back")
+          .css("display", "none");
+        break;
+      case "CHANGES":
+        $(".metadata-button[data-next='changesUpload']").addClass("done");
+        $("#para-changes-file-path").text(metadataobject[key]["path"]
+        );
+        $($("#para-changes-file-path").parents()[1])
+          .find(".div-metadata-confirm")
+          .css("display", "flex");
+        $($("#para-changes-file-path").parents()[1])
+          .find(".div-metadata-go-back")
+          .css("display", "none");
+        break;
+      default:
+        break;
+    }
+  }
+};
   
 function obtainDivsbyCategory(category) {
   var individualQuestions = document.getElementsByClassName(

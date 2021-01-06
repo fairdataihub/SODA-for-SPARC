@@ -1351,9 +1351,9 @@ def generate_dataset_locally(soda_json_structure):
                             if isfile(file_path):
                                 destination_path = abspath(join(my_folderpath, file_key))
                                 if not isfile(destination_path):
-                                    if "existing" in file["action"]:
+                                    if ("existing" in file["action"] and soda_json_structure["generate-dataset"]["if-existing"] == "merge"):
                                         list_move_files.append([file_path, destination_path])
-                                    elif "new" in file["action"]:
+                                    else:
                                         main_total_generate_dataset_size += getsize(file_path)
                                         list_copy_files.append([file_path, destination_path])
             return list_copy_files, list_move_files

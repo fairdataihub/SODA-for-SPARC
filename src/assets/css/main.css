@@ -732,8 +732,38 @@ button[disabled]{
   color: rgba(0, 0, 0, 0.5);
 }
 
+.folder_desc.local_folder:after {
+  content: "\f7c2";
+  position: absolute;
+  bottom: 34px;
+  left: 18px;
+  color: rgb(81, 176, 240);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+}
+
+.local_folder_deleted{
+  color: rgba(0, 0, 0, 0.5);
+}
+
 .folder_desc.blackfynn_folder_deleted:after {
   content: "\f0c2";
+  position: absolute;
+  bottom: 34px;
+  left: 18px;
+  color: rgb(185, 221, 245);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+}
+
+.folder_desc.local_folder_deleted:after {
+  content: "\f7c2";
   position: absolute;
   bottom: 34px;
   left: 18px;
@@ -758,12 +788,42 @@ button[disabled]{
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
 }
 
+.folder_desc.local_file:after {
+  content: "\f7c2";
+  position: absolute;
+  bottom: 27px;
+  left: 34px;
+  color: rgb(81, 176, 240);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+}
+
 .blackfynn_file_deleted{
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.local_file_deleted{
   color: rgba(0, 0, 0, 0.5);
 }
 
 .folder_desc.blackfynn_file_deleted:after {
   content: "\f0c2";
+  position: absolute;
+  bottom: 27px;
+  left: 34px;
+  color: rgb(185, 221, 245);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+}
+
+.folder_desc.local_file_deleted:after {
+  content: "\f7c2";
   position: absolute;
   bottom: 27px;
   left: 34px;
