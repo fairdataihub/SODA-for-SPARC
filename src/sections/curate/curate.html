@@ -173,7 +173,7 @@
                 </div>
 
                     <div style="margin:15px 0;">
-                      <div class="option-card getting-started radio-button" data-next="Question-getting-started-final"
+                      <div class="option-card getting-started radio-button" data-next="Question-generate-dataset-locally-destination"
                         onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
                         <div class="card-head">
                           <div class="folder-checkbox">
@@ -1035,6 +1035,24 @@
                       </div>
                     </div>
                   </div> -->
+
+                  <div style="margin:15px 0;" id="generate-dataset-replace-existing">
+                    <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div"
+                      onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
+                      <div class="card-head">
+                        <div class="folder-checkbox">
+                          <input class="folder-input-check" name="generate-1" id="generate-local-existing"
+                            type="radio">
+                          <label for="generate-locally"></label>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <i class="fas fa-redo"></i>
+                        <h2>Replace files in current dataset folder</h2>
+                      </div>
+                    </div>
+                  </div>
+
                     <div style="margin:15px 0;">
                       <div class="option-card radio-button" data-next="Question-generate-dataset-locally-destination"
                         onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">

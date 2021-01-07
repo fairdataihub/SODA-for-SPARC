@@ -6523,7 +6523,25 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
     if (filepath != null){
       document.getElementById("input-destination-generate-dataset-locally").placeholder = filepath[0];
       // document.getElementById('div-confirm-destination-locally').style.display = "flex";
-      $("#div-confirm-destination-locally button").click()
+      if (sodaJSONObj["starting-point"] === "local" && sodaJSONObj["local-path"] == "")
+      {
+        console.log("called");
+        valid_dataset = verify_sparc_folder(document.getElementById("input-destination-generate-dataset-locally").placeholder);
+        if (valid_dataset == true)
+        {
+          sodaJSONObj["local-path"] = filepath[0];
+          create_json_object(sodaJSONObj);
+          console.log(sodaJSONObj);
+          datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+          populate_existing_folders(datasetStructureJSONObj);
+          populate_existing_metadata(sodaJSONObj);
+          $("#nextBtn").prop("disabled", false);
+        }
+      }
+      else
+      {
+        $("#div-confirm-destination-locally button").click()
+      }
     }
   } else {
       $("#Question-generate-dataset-locally-destination").nextAll().removeClass('show');
@@ -6572,6 +6590,10 @@ document
 
     // updateJSON structure after Generate dataset tab
     updateJSONStructureGenerate();
+    if (sodaJSONObj["starting-point"] === "local")
+    {
+      sodaJSONObj["starting-point"] = "new";
+    }
 
     //  from here you can modify
     document.getElementById("para-please-wait-new-curate").innerHTML =
