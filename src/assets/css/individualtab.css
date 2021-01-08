@@ -910,3 +910,60 @@
   font-size: 16px;
   margin-left:5px
 }
+
+.svg-change-current-account {
+  cursor:pointer;
+  transition: transform 0.07s ease-out;
+}
+
+.svg-change-current-account:hover {
+  transform: translateY(-3px);
+  fill: #000
+}
+
+.swal2-title {
+  margin: 0px !important;
+  font-size: 16px !important;
+  margin-bottom: 10px !important;
+}
+
+.swal2-select {
+  min-width: 100% !important;
+  font-size: 16px !important;
+}
+
+.swal2-popup {
+  padding: 20px 10px !important;
+}
+
+.swal2-confirm {
+  background-color: var(--color-light-green) !important;
+}
+
+.swal2-actions {
+  justify-content: flex-end !important;
+}
+
+.swal2-deny {
+  border: 1px solid var(--color-light-green) !important;
+  color:  var(--color-light-green) !important;
+}
+
+.swal2-validation-message {
+  background: transparent !important;
+  color: red !important;
+}
+
+.swal2-footer {
+  color: #363636 !important;
+}
+
+.swal2-footer a {
+  text-decoration: underline !important;
+  color: var(--color-light-green) !important;
+}
+
+ {
+   justify-content: flex-end !important;
+   padding-right:20px !important;
+ }

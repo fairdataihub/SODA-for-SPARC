@@ -269,3 +269,68 @@ function importOrganizeProgressPrompt() {
 }
 
 importOrganizeProgressPrompt()
+
+async function openDropdownPrompt(dropdown) {
+  if (dropdown === "bf") {
+    var resolveMessage = "";
+    if (bfAccountOptionsStatus === "") {
+        if (Object.keys(bfAccountOptions).length === 1) {
+        footerMessage = "No existing accounts to load. Please add an account!"
+      } else {
+        footerMessage = "<a href='#'>Need help?</a>"
+      }
+    } else {
+      footerMessage = bfAccountOptionsStatus;
+    }
+    const { value: bfAccount } = await Swal.fire({
+          title: 'Select your Blackfynn account',
+          input: 'select',
+          showCloseButton: true,
+          inputOptions: bfAccountOptions,
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Add account",
+          reverseButtons: true,
+          showCancelButton: true,
+          footer: footerMessage,
+          inputValidator: (value) => {
+            return new Promise((resolve) => {
+              if (value !== 'Select') {
+                resolve();
+              } else {
+                resolve("You need to select an account!")
+              }
+            })
+          }
+        })
+        if (bfAccount) {
+          Swal.fire(
+            {
+              title: 'Loading account details...',
+              timer: 2000,
+              timerProgressBar: true,
+              allowEscapeKey: false,
+              showConfirmButton: false
+            });
+          $('#current-bf-account').text("");
+          $('#para-account-detail-curate').html("");
+          client.invoke("api_bf_account_details", bfAccount, (error, res) => {
+            if(error) {
+              log.error(error)
+              console.error(error)
+              Swal.fire({
+                icon: 'error',
+                text: 'Something went wrong!',
+                footer: '<a href>Why do I have this issue?</a>'
+              })
+              $("#div-bf-account-btns").css("display", "none");
+              $('#div-bf-account-btns button').hide();
+            } else {
+                $('#para-account-detail-curate').html(res);
+                $('#current-bf-account').text(bfAccount);
+                $("#div-bf-account-btns").css("display", "flex");
+                $('#div-bf-account-btns button').show();
+               }
+          })
+        }
+  }
+}

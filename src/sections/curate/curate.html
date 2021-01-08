@@ -912,25 +912,48 @@
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">What is your Blackfynn account?</label>
               <div class="field" style="margin:5px 0;width:450px;">
-                  <select id="bfallaccountlist" name="Blackfynn account" class='ui selection dropdown' style="width:450px !important;border-radius:7px;padding:8px">
-                    <option disabled> Select </option>
-                  </select>
-                <div>
-                  <p id="para-account-details-curate"></p>
-                  <div id="div-bf-account-load-progress-curate" class="progressdiv">
-                    <div class="indeterminatebar"></div>
+                <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
+                  <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
+                    <div>
+                      <h5 style="color:#808080;font-size:15px">Current account:
+                      <span style="color:#000;font-weight:600;margin-left:8px;font-size:15px" id="current-bf-account">None</span></h5>
+                    </div>
+                    <svg class="svg-change-current-account" onclick="openDropdownPrompt('bf')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                      <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                      <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                    </svg>
                   </div>
-                  <p id='para-select-account-status-curate' style="margin-top:20px;text-align:left"> </p>
-                  <p id="para-account-details-curate"></p>
+                  <div style="display:flex; flex-direction:row;margin-bottom:15px; ">
+                    <h5 style="color:#808080;font-size:15px">Account details:</h5>
+                    <p style="color:#000;font-weight:600;margin-left:15px;font-size:15px" id="para-account-detail-curate">None</p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div id="div-bf-account-btns" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
-              <button onclick="showBFAddAccountBootbox()" style="float:right;border-radius: 8px;margin:0 10px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;width: 160px;border:1px solid var(--color-bg-plum)">Add account</button>
-              <button id="btn-bf-account" onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"  data-next="Question-generate-dataset-options" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 160px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm account</button>
+              <div id="div-bf-account-btns" style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
+                <button id="btn-bf-account" onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"  data-next="Question-generate-dataset-options" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
+                <!-- <button onclick="showBFAddAccountBootbox()" style="float:right;border-radius: 8px;margin:0 10px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;width: 160px;border:1px solid var(--color-bg-plum)">Add account</button> -->
+                </div>
             </div>
           </div>
         </div>
+        <!-- <div id="bf-account-select-bootbox" style="display:none">
+          <select id="bfallaccountlist" name="Blackfynn account" class='ui selection dropdown' style="width:450px !important;border-radius:7px;padding:8px">
+            <option disabled> Select </option>
+          </select>
+          <div>
+            <p id="para-account-details-curate"></p>
+            <div id="div-bf-account-load-progress-curate" class="progressdiv">
+              <div class="indeterminatebar"></div>
+            </div>
+            <!-- <p id='para-select-account-status-curate' style="margin-top:20px;text-align:left"> </p> -->
+            <!-- <p id="para-account-details-curate"></p>
+          </div>
+          <div id="div-bf-account-btns" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
+            <button onclick="showBFAddAccountBootbox()" style="float:right;border-radius: 8px;margin:0 10px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;width: 160px;border:1px solid var(--color-bg-plum)">Add account</button>
+            <button id="btn-bf-account" onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"  data-next="Question-generate-dataset-options" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 160px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm account</button>
+          </div>
+        </div>  -->
+
 
         <div class="individual-question generate-dataset" id="Question-generate-dataset-options">
             <div class="ui form" style="width:100%">
