@@ -328,8 +328,11 @@ async function openDropdownPrompt(dropdown) {
             } else {
                 $('#para-account-detail-curate').html(res);
                 $('#current-bf-account').text(bfAccount);
-                $("#div-bf-account-btns").css("display", "flex");
-                $('#div-bf-account-btns button').show();
+                updateBfAccountList()
+                if (!($('#Question-generate-dataset-BF-account').hasClass('prev'))) {
+                  $("#div-bf-account-btns").css("display", "flex");
+                  $('#div-bf-account-btns button').show();
+                }
                }
           })
         } else {

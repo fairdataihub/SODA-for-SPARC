@@ -3129,6 +3129,8 @@ bfAccountList.addEventListener('change', () => {
     option.textContent = myitemselect
     option.value = myitemselect
     bfUploadAccountList.value = selectedbfaccount
+    defaultBfAccount = myitemselect;
+    $('#current-bf-account').text(defaultBfAccount);
     showAccountDetails(bfAccountLoadProgress);
   }
   // sync BF account select under Prepare dataset -> Step 6
@@ -4549,6 +4551,7 @@ function showAccountDetails(loadProgress){
       loadProgress.style.display = 'none'
     } else {
         bfSelectAccountStatus.innerHTML = res;
+        $('#para-account-detail-curate').html(res);
         bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
         loadProgress.style.display = 'none'
         document.getElementById("div-permission-list").style.display = "block"
@@ -4757,6 +4760,8 @@ function loadDefaultAccount() {
         if (res.length > 0) {
           var myitemselect = res[0];
           $('#bfaccountlist option[value="'+myitemselect+'"]').prop('selected',true);
+          defaultBfAccount = myitemselect;
+          $('#current-bf-account').text(myitemselect);
           showAccountDetails(bfAccountLoadProgress)
           bfAccountLoadProgress.style.display = 'block';
           refreshBfUsersList()
@@ -4809,6 +4814,7 @@ function updateBfAccountList(){
       bfAccountList.options[0].disabled = true;
       // loadAllBFAccounts()
       loadDefaultAccount();
+
     }
     if (res[0] === "Select" && res.length === 1) {
       bfSelectAccountStatus.innerHTML = "No existing accounts to switch. Please add a new account!"
@@ -5645,6 +5651,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
       $("#bootbox-api-key").val("");
       $("#bootbox-api-secret").val("");
       bfAccountOptions[keyname] = keyname;
+      updateBfAccountList()
       client.invoke("api_bf_account_details", keyname, (error, res) => {
         if(error) {
           log.error(error)
