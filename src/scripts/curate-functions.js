@@ -270,7 +270,10 @@ function importOrganizeProgressPrompt() {
 
 importOrganizeProgressPrompt()
 
+var datasetPermissionDiv = document.getElementById('div-permission-list-2');
+
 async function openDropdownPrompt(dropdown) {
+  // if users edit current account
   if (dropdown === "bf") {
     var resolveMessage = "";
     if (bfAccountOptionsStatus === "") {
@@ -288,11 +291,16 @@ async function openDropdownPrompt(dropdown) {
           showCloseButton: true,
           inputOptions: bfAccountOptions,
           confirmButtonText: "Confirm",
-          cancelButtonText: "Add account",
+          denyButtonText: "Add account",
+          showDenyButton: true,
+          showCancelButton: false,
           inputValue: defaultBfAccount,
           reverseButtons: true,
-          showCancelButton: true,
           footer: footerMessage,
+          // didOpen: function(ele) {
+          //    $(ele).find('.swal2-select').addClass('mdb-select md-form md-selected').attr('data-live-search', true);
+          //    // $('.ui.dropdown').dropdown('show');
+          // },
           inputValidator: (value) => {
             return new Promise((resolve) => {
               if (value !== 'Select') {
@@ -335,9 +343,77 @@ async function openDropdownPrompt(dropdown) {
                 }
                }
           })
-        } else {
+        } else if (bfAccount === false) {
           // // else, if users click Add account
           showBFAddAccountBootbox()
         }
+  } else if (dropdown === "dataset") {
+    var bfDataset = "";
+    // if users edit Current dataset
+    datasetPermissionDiv.style.display = "block";
+    $('#select-permission-list-2').val('All');
+    $('#curatebfdatasetlist').attr('disabled', true);
+    $('#select-permission-list-2').change(function(e) {
+      var datasetPermission = $('#select-permission-list-2').val();
+      var bfacct = $("#current-bf-account").text();
+      if (bfacct === "None") {
+        document.getElementById("para-filter-datasets-status-2").innerHTML = "<span style='color:red'>Please select a Blackfynn account first!</span>"
+      } else {
+        updateDatasetList(bfacct, datasetPermission)
+      }
+    })
+    // $('#curatebfdatasetlist').change(function(e) {
+    //   bfDataset = $('#curatebfdatasetlist').val();
+    // })
+    const { value: bfDS } = await Swal.fire({
+      title: "Please choose a dataset",
+      html: datasetPermissionDiv,
+      showCloseButton: true,
+      showCancelButton: true,
+      focusConfirm: false,
+      confirmButtonText: "Confirm",
+      cancelButtonText: "Cancel",
+      preConfirm: () => {
+        bfDataset = $('#curatebfdatasetlist').val();
+        return bfDataset
+      }
+    })
+    if (bfDS !== "Select dataset" && bfDS !== undefined) {
+        $("#current-bf-dataset").text(bfDataset)
+    }
   }
+}
+
+function updateDatasetList(bfaccount, myPermission) {
+  removeOptions(curateDatasetDropdown)
+  addOption(curateDatasetDropdown, "Select dataset", "Select dataset")
+  var filteredDatasets = [];
+  if (myPermission.toLowerCase()==="all") {
+    for (var i=0; i<datasetList.length; i++) {
+      filteredDatasets.push(datasetList[i].name)
+    }
+  } else {
+      for (var i=0; i<datasetList.length; i++) {
+        if (datasetList[i].role === myPermission.toLowerCase()) {
+          filteredDatasets.push(datasetList[i].name)
+        }
+      }
+  }
+
+  filteredDatasets.sort(function (a, b) {
+    return a.toLowerCase().localeCompare(b.toLowerCase());
+  });
+
+  for (myitem in filteredDatasets){
+    var myitemselect = filteredDatasets[myitem]
+    var option = document.createElement("option")
+    option.textContent = myitemselect
+    option.value = myitemselect
+    curateDatasetDropdown.appendChild(option)
+  }
+
+  $('#curatebfdatasetlist').attr('disabled', false);
+  document.getElementById("div-permission-list-2").style.display = "block"
+  document.getElementById("div-filter-datasets-progress").style.display = "none"
+  document.getElementById("para-filter-datasets-status-2").innerHTML = filteredDatasets.length + " dataset(s) where you have " +  myPermission.toLowerCase() + " permissions were loaded successfully below. " + smileyCan
 }
