@@ -332,6 +332,9 @@ async function openDropdownPrompt(dropdown) {
                 $('#div-bf-account-btns button').show();
                }
           })
+        } else {
+          // // else, if users click Add account
+          showBFAddAccountBootbox()
         }
   }
 }

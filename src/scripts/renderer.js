@@ -5641,16 +5641,28 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
       log.error(error)
       console.error(error);
     } else {
-      curateBFAccountLoadStatus.innerHTML = "Loading account..."
-      curateBFAccountLoad.style.display = 'block'
-      curateBFExistingAccountLoadStatus.innerHTML = "Loading account..."
-      curateBFExistingAccountLoad.style.display = 'block'
-      updateBfAccountList();
-      // updateAllBfAccountList(curateBFaccountList);
-      // updateAllBfAccountList(curateBFexistingaccountList);
       $("#bootbox-key-name").val("");
       $("#bootbox-api-key").val("");
       $("#bootbox-api-secret").val("");
+      bfAccountOptions[keyname] = keyname;
+      client.invoke("api_bf_account_details", keyname, (error, res) => {
+        if(error) {
+          log.error(error)
+          console.error(error)
+          Swal.fire({
+            icon: 'error',
+            text: 'Something went wrong!',
+            footer: '<a href>Why do I have this issue?</a>'
+          })
+          $("#div-bf-account-btns").css("display", "none");
+          $('#div-bf-account-btns button').hide();
+        } else {
+            $('#para-account-detail-curate').html(res);
+            $('#current-bf-account').text(keyname);
+            $("#div-bf-account-btns").css("display", "flex");
+            $('#div-bf-account-btns button').show();
+           }
+      })
       myBootboxDialog.modal('hide')
       bootbox.alert({
         message: "Successfully added!",
