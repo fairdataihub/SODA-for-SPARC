@@ -933,7 +933,7 @@
 }
 
 .swal2-popup {
-  padding: 20px 10px !important;
+  padding: 20px 5px 15px !important;
 }
 
 .swal2-confirm {
@@ -956,14 +956,11 @@
 
 .swal2-footer {
   color: #363636 !important;
+  justify-content: flex-end !important;
+  padding-right:20px !important;
 }
 
 .swal2-footer a {
   text-decoration: underline !important;
   color: var(--color-light-green) !important;
 }
-
- {
-   justify-content: flex-end !important;
-   padding-right:20px !important;
- }

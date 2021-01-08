@@ -219,6 +219,7 @@ const organizeNextStepBtn = document.getElementById("button-organize-confirm-cre
 const organizePrevStepBtn = document.getElementById("button-organize-prev");
 const manifestFileCheck = document.getElementById("generate-manifest-curate");
 var bfAccountOptions;
+var defaultBfAccount;
 var bfAccountOptionsStatus;
 
 // Organize dataset //
@@ -5683,25 +5684,6 @@ function showBFAddAccountBootbox() {
 
 retrieveBFAccounts()
 
-// this function is called at the onchange event on Blackfynn account select
-function showBFAccountDetails(account) {
-  var string;
-  var bool;
-  client.invoke("api_bf_account_details", account, (error, res) => {
-    if(error) {
-      log.error(error)
-      console.error(error)
-      string = error;
-      bool = false
-    } else {
-      string = res;
-      bool = true
-    }
-  })
-  console.log(string);
-  return [string, bool]
-}
-
 // this function is called in the beginning to load bf accounts to a list
 // which will be fed as dropdown options
 function retrieveBFAccounts() {
@@ -5716,6 +5698,7 @@ function retrieveBFAccounts() {
       for (myitem in res) {
         bfAccountOptions[res[myitem]] = res[myitem]
       }
+      showDefaultBFAccount()
     }
   });
   return [bfAccountOptions, bfAccountOptionsStatus]
@@ -5729,23 +5712,22 @@ function showDefaultBFAccount() {
     } else {
         if (res.length > 0) {
           var myitemselect = res[0];
-          $('#bfaccountlist option[value="'+myitemselect+'"]').prop('selected',true);
-          showAccountDetails(bfAccountLoadProgress)
-          bfAccountLoadProgress.style.display = 'block';
-          refreshBfUsersList()
-          refreshBfTeamsList(bfListTeams)
-          bfSelectAccountStatus.innerHTML = "Loading Blackfynn account details..."
-      } else {
-          var myitemselect = "Select"
-          var option = bfAccountList.options[0]
-          option.textContent = myitemselect
-          option.value = myitemselect
-          bfAccountList.appendChild(option)
-          // var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
-          datasetPermissionList.disabled = true
-          bfSelectAccountStatus.innerHTML = "No existing accounts to load. Please add a new account!"
-          // bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
-          bfAccountLoadProgress.style.display = 'none'
+          defaultBfAccount = myitemselect;
+          client.invoke("api_bf_account_details", defaultBfAccount, (error, res) => {
+            if(error) {
+              log.error(error)
+              console.error(error);
+              $('#para-account-detail-curate').html("None");
+              $('#current-bf-account').text("None");
+              $("#div-bf-account-btns").css("display", "none");
+              $('#div-bf-account-btns button').hide();
+            } else {
+                $('#para-account-detail-curate').html(res);
+                $('#current-bf-account').text(defaultBfAccount);
+                $("#div-bf-account-btns").css("display", "flex");
+                $('#div-bf-account-btns button').show();
+               }
+          })
       }
     }
   })

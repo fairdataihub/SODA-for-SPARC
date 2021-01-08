@@ -289,6 +289,7 @@ async function openDropdownPrompt(dropdown) {
           inputOptions: bfAccountOptions,
           confirmButtonText: "Confirm",
           cancelButtonText: "Add account",
+          inputValue: defaultBfAccount,
           reverseButtons: true,
           showCancelButton: true,
           footer: footerMessage,
@@ -305,7 +306,7 @@ async function openDropdownPrompt(dropdown) {
         if (bfAccount) {
           Swal.fire(
             {
-              title: 'Loading account details...',
+              title: 'Loading your account details...',
               timer: 2000,
               timerProgressBar: true,
               allowEscapeKey: false,
