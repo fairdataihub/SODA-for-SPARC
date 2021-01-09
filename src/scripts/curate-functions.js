@@ -352,7 +352,6 @@ async function openDropdownPrompt(dropdown) {
     // if users edit Current dataset
     datasetPermissionDiv.style.display = "block";
     $('#select-permission-list-2').val('All');
-    $('#curatebfdatasetlist').attr('disabled', true);
     $('#select-permission-list-2').change(function(e) {
       var datasetPermission = $('#select-permission-list-2').val();
       var bfacct = $("#current-bf-account").text();
@@ -362,11 +361,8 @@ async function openDropdownPrompt(dropdown) {
         updateDatasetList(bfacct, datasetPermission)
       }
     })
-    // $('#curatebfdatasetlist').change(function(e) {
-    //   bfDataset = $('#curatebfdatasetlist').val();
-    // })
     const { value: bfDS } = await Swal.fire({
-      title: "Please choose a dataset",
+      title: "<h3 style='margin-bottom:20px !important'>Please choose a dataset</h3>",
       html: datasetPermissionDiv,
       showCloseButton: true,
       showCancelButton: true,
@@ -378,13 +374,26 @@ async function openDropdownPrompt(dropdown) {
         return bfDataset
       }
     })
-    if (bfDS !== "Select dataset" && bfDS !== undefined) {
-        $("#current-bf-dataset").text(bfDataset)
+    // check return value
+    if (bfDS) {
+      if (bfDS !== "Select dataset") {
+        $("#current-bf-dataset").text(bfDataset);
+        $('#button-confirm-bf-dataset').css("display", "block")
+      } else {
+        Swal.fire("Please select a dataset!")
+      }
+    } else {
+      Swal.showValidationMessage("Please select a dataset!")
+    }
+    // hide "Confirm" button if Current dataset set to None
+    if ($("#current-bf-dataset").text() === "None")  {
+      $('#button-confirm-bf-dataset').css("display", "none")
     }
   }
 }
 
 function updateDatasetList(bfaccount, myPermission) {
+  $('#curatebfdatasetlist').attr('disabled', true);
   removeOptions(curateDatasetDropdown)
   addOption(curateDatasetDropdown, "Select dataset", "Select dataset")
   var filteredDatasets = [];
@@ -415,5 +424,5 @@ function updateDatasetList(bfaccount, myPermission) {
   $('#curatebfdatasetlist').attr('disabled', false);
   document.getElementById("div-permission-list-2").style.display = "block"
   document.getElementById("div-filter-datasets-progress").style.display = "none"
-  document.getElementById("para-filter-datasets-status-2").innerHTML = filteredDatasets.length + " dataset(s) where you have " +  myPermission.toLowerCase() + " permissions were loaded successfully below. " + smileyCan
+  document.getElementById("para-filter-datasets-status-2").innerHTML = filteredDatasets.length + " dataset(s) where you have " +  myPermission.toLowerCase() + " permissions were loaded successfully below."
 }
