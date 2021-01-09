@@ -241,6 +241,11 @@ function nextPrev(n) {
       highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
+    if (n === -1 && currentTab === 0 && sodaJSONObj["starting-point"] === "local")
+    {
+      $("#div-getting-started-previous-progress").click();
+      $("#div-getting-started-existing-local").click();
+    }
     showParentTab(currentTab, n);
     console.log(JSON.stringify(sodaJSONObj));
   }
@@ -609,7 +614,6 @@ verify_sparc_folder = (root_folder_path) => {
     console.log( path.join(root_folder_path, fileName))
   })
   fs.readdirSync(root_folder_path).forEach((file) => {
-    console.log(file);
     if (highLevelFolders.includes(file)) {
       valid_dataset = true;
     }
@@ -621,14 +625,6 @@ verify_sparc_folder = (root_folder_path) => {
       }
     }
   });
-  if (valid_dataset === false)
-  {
-    console.log("invalid folder");
-  }
-  else
-  {
-    console.log("valid_folder");
-  }
   return valid_dataset;
 };
 

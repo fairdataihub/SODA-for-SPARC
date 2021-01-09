@@ -6525,17 +6525,44 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
       // document.getElementById('div-confirm-destination-locally').style.display = "flex";
       if (sodaJSONObj["starting-point"] === "local" && sodaJSONObj["local-path"] == "")
       {
-        console.log("called");
+        console.log("local-existing and step 1");
         valid_dataset = verify_sparc_folder(document.getElementById("input-destination-generate-dataset-locally").placeholder);
-        if (valid_dataset == true)
-        {
-          sodaJSONObj["local-path"] = filepath[0];
+        sodaJSONObj["local-path"] = filepath[0];
           create_json_object(sodaJSONObj);
           console.log(sodaJSONObj);
           datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
           populate_existing_folders(datasetStructureJSONObj);
           populate_existing_metadata(sodaJSONObj);
+        if (valid_dataset == true)
+        {
           $("#nextBtn").prop("disabled", false);
+          $("#nextBtn").click();
+        }
+        else
+        {
+          var bootboxDialog = bootbox.confirm({
+            message: "This folder does not seems to be a SPARC dataset folder. Do you want to continue or return and pick a different folder?",
+            buttons: {
+              confirm: {
+                label: "Continue",
+                className: "btn-success",
+              },
+              cancel: {
+                label: "Return",
+                className: "btn-danger",
+              },
+            },
+            centerVertical: true,
+            callback: function (result) {
+              if (result) {
+                $("#nextBtn").prop("disabled", false);
+                $("#nextBtn").click();
+              } else {
+                document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
+                sodaJSONObj["local-path"] = "";
+              }
+            },
+          });
         }
       }
       else
@@ -6778,6 +6805,7 @@ function initiate_generate() {
         var main_total_generate_dataset_size = res[3];
         var main_generated_dataset_size = res[4];
         var elapsed_time_formatted = res[5];
+        console.log(main_generated_dataset_size);
         if (start_generate === 1) {
           divGenerateProgressBar.style.display = "block";
           if (main_curate_progress_message.includes("Success: COMPLETED!")) {
@@ -6827,7 +6855,7 @@ function initiate_generate() {
               "%" +
               " (total size: " +
               totalSizePrint +
-              ")" +
+              ") " +
               "<br>";
             progressMessage +=
               "Elaspsed time: " + elapsed_time_formatted + "<br>";
