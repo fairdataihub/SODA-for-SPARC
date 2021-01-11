@@ -344,13 +344,11 @@ $(".folder-input-check").click(function () {
 // transition between tabs under Step 1 and Step 6
 var divList = [];
 async function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
-  // document.getElementById("nextBtn").disabled = true;
   $(ev).removeClass('non-selected');
   $(ev).children().find('.folder-input-check').prop('checked', true);
 
   // uncheck the other radio buttons
   $($(ev).parents()[0]).siblings().find('.option-card.radio-button').removeClass('checked');
-  // $($(ev).parents()[0]).siblings().find('.option-card.radio-button').css('pointer-events', 'auto');
   $($(ev).parents()[0]).siblings().find('.option-card.radio-button').addClass('non-selected');
 
   // first, handle target or the next div to show

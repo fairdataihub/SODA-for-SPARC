@@ -371,23 +371,29 @@ async function openDropdownPrompt(dropdown) {
       cancelButtonText: "Cancel",
       preConfirm: () => {
         bfDataset = $('#curatebfdatasetlist').val();
-        return bfDataset
+        if (!bfDataset) {
+          Swal.showValidationMessage("Please select a dataset!")
+          return undefined
+        } else {
+          if (bfDataset === "Select dataset") {
+             Swal.showValidationMessage("Please select a dataset!")
+             return undefined
+           } else {
+             return bfDataset
+           }
+        }
       }
     })
     // check return value
     if (bfDS) {
-      if (bfDS !== "Select dataset") {
         $("#current-bf-dataset").text(bfDataset);
-        $('#button-confirm-bf-dataset').css("display", "block")
-      } else {
-        Swal.fire("Please select a dataset!")
-      }
-    } else {
-      Swal.showValidationMessage("Please select a dataset!")
-    }
+        $($('#button-confirm-bf-dataset').parents()[0]).css("display", "flex")
+        $('#button-confirm-bf-dataset').show()
+      } 
     // hide "Confirm" button if Current dataset set to None
     if ($("#current-bf-dataset").text() === "None")  {
-      $('#button-confirm-bf-dataset').css("display", "none")
+      $($('#button-confirm-bf-dataset').parents()[0]).css("display", "none")
+      $('#button-confirm-bf-dataset').hide()
     }
   }
 }
