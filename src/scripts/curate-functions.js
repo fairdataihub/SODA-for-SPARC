@@ -387,15 +387,35 @@ async function openDropdownPrompt(dropdown) {
     // check return value
     if (bfDS) {
         $("#current-bf-dataset").text(bfDataset);
+        defaultBfDataset = bfDataset;
+        tempDatasetListsSync()
         $($('#button-confirm-bf-dataset').parents()[0]).css("display", "flex")
         $('#button-confirm-bf-dataset').show()
-      } 
+      }
     // hide "Confirm" button if Current dataset set to None
     if ($("#current-bf-dataset").text() === "None")  {
       $($('#button-confirm-bf-dataset').parents()[0]).css("display", "none")
       $('#button-confirm-bf-dataset').hide()
     }
   }
+}
+
+function tempDatasetListsSync() {
+  $("#bfdatasetlist_renamedataset").val(defaultBfDataset);
+  currentDatasetDropdowns = [bfDatasetListMetadata, bfUploadDatasetList, bfDatasetList, bfDatasetListDatasetStatus, bfDatasetListPermission,
+                            bfDatasetListPostCurationCuration, bfDatasetListPostCurationConsortium, bfDatasetListPostCurationPublish, datasetDescriptionFileDataset];
+  var listSelectedIndex = bfDatasetListRenameDataset.selectedIndex;
+  for (var list of currentDatasetDropdowns) {
+    list.selectedIndex = listSelectedIndex;
+  }
+  postCurationListChange()
+  showDatasetDescription()
+  metadataDatasetlistChange()
+  permissionDatasetlistChange()
+  datasetStatusListChange()
+  renameDatasetlistChange()
+  postCurationListChange()
+  showDatasetDescription()
 }
 
 function updateDatasetList(bfaccount, myPermission) {

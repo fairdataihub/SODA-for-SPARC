@@ -220,6 +220,7 @@ const organizePrevStepBtn = document.getElementById("button-organize-prev");
 const manifestFileCheck = document.getElementById("generate-manifest-curate");
 var bfAccountOptions;
 var defaultBfAccount;
+var defaultBfDataset;
 var bfAccountOptionsStatus;
 
 // Organize dataset //
@@ -3243,6 +3244,15 @@ function permissionDatasetlistChange(){
 
 function syncDatasetDropdownOption(dropdown) {
   var value;
+
+  // sync dataset under Organize dataset
+  defaultBfDataset = dropdown.value;
+  if (defaultBfDataset !== "Select dataset") {
+    $("#current-bf-dataset").text(defaultBfDataset);
+    $($('#button-confirm-bf-dataset').parents()[0]).css("display", "flex")
+    $('#button-confirm-bf-dataset').show()
+  }
+
   if (dropdown===bfDatasetListPermission) {
     var listSelectedIndex = bfDatasetListPermission.selectedIndex
     bfDatasetListMetadata.selectedIndex = listSelectedIndex

@@ -875,14 +875,11 @@ function updateJSONStructureGenerate() {
       };
 
       if ("bf-account-selected" in sodaJSONObj) {
-        sodaJSONObj["bf-account-selected"]["account-name"] = $(
-          $("#bfallaccountlist").find("option:selected")[0]
-        ).val();
+        sodaJSONObj["bf-account-selected"]["account-name"] =
+          $("#current-bf-dataset").text();
       } else {
         sodaJSONObj["bf-account-selected"] = {
-          "account-name": $(
-            $("#bfallaccountlist").find("option:selected")[0]
-          ).val(),
+          "account-name": $("#current-bf-dataset").text()
         };
       }
       // answer to Question if generate on BF, then: how to handle existing files and folders
@@ -929,14 +926,11 @@ function updateJSONStructureGenerate() {
         }
         // populate JSON obj with BF dataset and account
         if ("bf-dataset-selected" in sodaJSONObj) {
-          sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $(
-            $("#curatebfdatasetlist").find("option:selected")[0]
-          ).val();
+          sodaJSONObj["bf-dataset-selected"]["dataset-name"] =
+            $('#current-bf-dataset').text()
         } else {
           sodaJSONObj["bf-dataset-selected"] = {
-            "dataset-name": $(
-              $("#curatebfdatasetlist").find("option:selected")[0]
-            ).val(),
+            "dataset-name": $('#current-bf-dataset').text()
           };
         }
         // if generate to a new dataset, then update JSON object with a new dataset
