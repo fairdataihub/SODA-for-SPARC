@@ -432,7 +432,6 @@ function tempDatasetListsSync() {
 }
 
 function updateDatasetList(bfaccount, myPermission) {
-  document.getElementById("div-filter-datasets-progress").style.display = "block"
   removeOptions(curateDatasetDropdown)
   addOption(curateDatasetDropdown, "Select dataset", "Select dataset")
   initializeBootstrapSelect("#curatebfdatasetlist", "disabled")
@@ -461,7 +460,6 @@ function updateDatasetList(bfaccount, myPermission) {
   }
   initializeBootstrapSelect("#curatebfdatasetlist", "show")
   document.getElementById("div-permission-list-2").style.display = "block"
-  document.getElementById("div-filter-datasets-progress").style.display = "none"
   document.getElementById("para-filter-datasets-status-2").innerHTML = filteredDatasets.length + " dataset(s) where you have " +  myPermission.toLowerCase() + " permissions were loaded successfully below."
 }
 
