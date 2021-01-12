@@ -32,7 +32,22 @@ function delFolder(
     type = "folders";
   }
 
+  if ($(".selected-item").length > 2) {
+    type = "items";
+  }
+
   if (ev.classList.value.includes("deleted")) {
+    if (ev.classList.value.includes("selected-item") && type === "items")
+    {
+      bootbox.alert({
+        title: "Restore " + type,
+        message: "You can only restore one file at a time. Please select a single file for restoration.",
+        onEscape: true,
+        centerVertical: true,
+        backdrop: true
+      });
+      return;
+    }
     bootbox.confirm({
       title: "Restore " + promptVar,
       message:
@@ -79,10 +94,10 @@ function delFolder(
       },
     });
   } else {
-    if ($(".selected-file").length > 2) {
+    if (type === "items") {
       bootbox.confirm({
         title: "Delete " + promptVar,
-        message: "Are you sure you want to delete these " + promptVar + "s?",
+        message: "Are you sure you want to delete these " + type + "?",
         onEscape: true,
         centerVertical: true,
         callback: function (result) {
@@ -91,13 +106,16 @@ function delFolder(
             var filtered = getGlobalPath(organizeCurrentLocation);
             var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
 
-            $(".single-item, .selected-file").each(function (
+            $("div.single-item.selected-item > .folder_desc").each(function (
               index,
               current_element
             ) {
-              itemToDelete = $($(current_element).children()[1]).text();
-              // fix mypath
-              // update Json object with new folder created
+              itemToDelete = $(current_element).text();
+              if (itemToDelete in myPath["files"]) {
+                type = "files";
+              } else if (itemToDelete in myPath["folders"]) {
+                type = "folders";
+              }
               if (
                 myPath[type][itemToDelete]["type"] === "bf" ||
                 (myPath[type][itemToDelete]["type"] === "local" &&

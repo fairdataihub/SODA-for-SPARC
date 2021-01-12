@@ -261,11 +261,11 @@ button[disabled]{
     padding: 10px 0px 10px 0px;
 }
 
-.single-item.selected-file {
+.single-item.selected-item {
   background-color: #e4dede;
 }
 
-.single-item.selected-file:hover {
+.single-item.selected-item:hover {
   border: #c0c0c0;
   background-color: #eeeaea;
   /* transform: translateY(-6px); */
@@ -318,8 +318,8 @@ button[disabled]{
 .myFol.deleted_folder:after {
   content: "\00D7";
   position: absolute;
-  bottom: 26px;
-  right: 23px;
+  bottom: 30px;
+  right: 25px;
   line-height: 1;
   color: rgb(252, 0, 0);
   z-index: 10;
@@ -1039,6 +1039,7 @@ button[disabled]{
   grid-template-rows: auto;
   text-align: center;
   overflow-wrap: break-word;
+  z-index: 10;
 }
 
 .div-display-details div {

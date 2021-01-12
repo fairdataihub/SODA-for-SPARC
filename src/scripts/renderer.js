@@ -6073,14 +6073,18 @@ function showmenu(ev, category, deleted = false) {
         .children("#folder-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
     } else {
-      if ($(".selected-file").length > 2) {
+      if ($(".selected-item").length > 2) {
         $(menuFolder)
           .children("#folder-delete")
           .html('<i class="fas fa-minus-circle"></i> Delete All');
+        $(menuFolder).children("#folder-rename").hide();
+        $(menuFolder).children("#folder-description").hide();
       } else {
         $(menuFolder)
           .children("#folder-delete")
           .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+        $(menuFolder).children("#folder-rename").show();
+        $(menuFolder).children("#folder-description").show();
       }
     }
     menuFolder.style.display = "block";
@@ -6091,14 +6095,18 @@ function showmenu(ev, category, deleted = false) {
         .children("#folder-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
     } else {
-      if ($(".selected-file").length > 2) {
+      if ($(".selected-item").length > 2) {
         $(menuHighLevelFolders)
           .children("#folder-delete")
           .html('<i class="fas fa-minus-circle"></i> Delete All');
+        $(menuHighLevelFolders).children("#folder-rename").hide();
+        $(menuHighLevelFolders).children("#folder-description").hide();
       } else {
         $(menuHighLevelFolders)
           .children("#folder-delete")
           .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+        $(menuHighLevelFolders).children("#folder-rename").show();
+        $(menuHighLevelFolders).children("#folder-description").show();
       }
     }
     menuHighLevelFolders.style.display = "block";
@@ -6111,14 +6119,18 @@ function showmenu(ev, category, deleted = false) {
         .children("#file-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
     } else {
-      if ($(".selected-file").length > 2) {
+      if ($(".selected-item").length > 2) {
         $(menuFile)
           .children("#file-delete")
           .html('<i class="fas fa-minus-circle"></i> Delete All');
+        $(menuFile).children("#file-rename").hide();
+        $(menuFile).children("#file-description").hide();
       } else {
         $(menuFile)
           .children("#file-delete")
           .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+        $(menuFile).children("#file-rename").show();
+        $(menuFile).children("#file-description").show();
       }
     }
     menuFile.style.display = "block";
@@ -6219,9 +6231,9 @@ $(document).bind("contextmenu", function (event) {
   event.preventDefault();
 
   // Check for multiple selected files
-  if (!$(event.target).hasClass('selected-file'))
+  if (!$(event.target).hasClass('selected-item'))
   {
-    $('.selected-file').removeClass('selected-file');
+    $('.selected-item').removeClass('selected-item');
   }
 
   /// check for high level folders
@@ -6272,47 +6284,52 @@ $(document).bind("contextmenu", function (event) {
 $(document).bind("click", function (event) {
   if (
     event.target.classList[0] !== "myFol" &&
-    event.target.classList[0] !== "myFile" 
+    event.target.classList[0] !== "myFile"
   ) {
     hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
     hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
     // hideFullPath()
     hideFullName();
-    $(".selected-file").removeClass("selected-file");
   }
-  if (event.target.classList[0] === "myFile") {
+  if (event.target.classList[0] === "div-organize-items") {
+    $(".selected-item").removeClass("selected-item");
+  }
+  let selected_class = null;
+  let target_element = null;
+  let parent_element = null;
+
+  if (
+    event.target.classList[0] === "myFile" ||
+    event.target.classList[0] === "myFol"
+  ) {
+    selected_class = "selected-item";
     target_element = event.target;
     parent_element = $(target_element).parent();
-    if (event.ctrlKey) {
-      if ($(target_element).hasClass("selected-file")) {
-        $(target_element).removeClass("selected-file");
-        $(parent_element).removeClass("selected-file");
-      } else {
-        $(target_element).addClass("selected-file");
-        $(parent_element).addClass("selected-file");
-      }
-    } else {
-      $(".selected-file").removeClass("selected-file");
-      $(target_element).addClass("selected-file");
-      $(parent_element).addClass("selected-file");
-    }
-  }
-  if (event.target.classList[0] === "single-item") {
+  } else if (event.target.classList[0] === "single-item") {
     parent_element = event.target;
     target_element = $(parent_element).children()[0];
+    if (
+      $(target_element).hasClass("myFol") ||
+      $(target_element).hasClass("myFile")
+    ) {
+      selected_class = "selected-item";
+    }
+  }
+
+  if (selected_class != "") {
     if (event.ctrlKey) {
-      if ($(target_element).hasClass("selected-file")) {
-        $(target_element).removeClass("selected-file");
-        $(parent_element).removeClass("selected-file");
+      if ($(target_element).hasClass(selected_class)) {
+        $(target_element).removeClass(selected_class);
+        $(parent_element).removeClass(selected_class);
       } else {
-        $(target_element).addClass("selected-file");
-        $(parent_element).addClass("selected-file");
+        $(target_element).addClass(selected_class);
+        $(parent_element).addClass(selected_class);
       }
     } else {
-      $(".selected-file").removeClass("selected-file");
-      $(target_element).addClass("selected-file");
-      $(parent_element).addClass("selected-file");
+      $(".selected-item").removeClass(selected_class);
+      $(target_element).addClass(selected_class);
+      $(parent_element).addClass(selected_class);
     }
   }
 });
