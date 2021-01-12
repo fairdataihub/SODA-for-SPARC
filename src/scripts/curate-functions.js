@@ -363,18 +363,7 @@ async function openDropdownPrompt(dropdown) {
     var bfDataset = "";
     // if users edit Current dataset
     datasetPermissionDiv.style.display = "block";
-    $('#select-permission-list-2').val('All');
-    $("#curatebfdatasetlist").selectpicker();
-    $('#select-permission-list-2').change(function(e) {
-      $("#div-filter-datasets-progress").css("display", "block");
-      var datasetPermission = $('#select-permission-list-2').val();
-      var bfacct = $("#current-bf-account").text();
-      if (bfacct === "None") {
-        document.getElementById("para-filter-datasets-status-2").innerHTML = "<span style='color:red'>Please select a Blackfynn account first!</span>"
-      } else {
-        updateDatasetList(bfacct, datasetPermission)
-      }
-    })
+    $('#select-permission-list-2').val('All').trigger('change');
     const { value: bfDS } = await Swal.fire({
       title: "<h3 style='margin-bottom:20px !important'>Please choose a dataset</h3>",
       html: datasetPermissionDiv,
@@ -414,6 +403,18 @@ async function openDropdownPrompt(dropdown) {
   }
 }
 
+$('#select-permission-list-2').change(function(e) {
+  $("#div-filter-datasets-progress-2").css("display", "block");
+  var datasetPermission = $('#select-permission-list-2').val();
+  var bfacct = $("#current-bf-account").text();
+  if (bfacct === "None") {
+    document.getElementById("para-filter-datasets-status-2").innerHTML = "<span style='color:red'>Please select a Blackfynn account first!</span>"
+  } else {
+    $("#curatebfdatasetlist").selectpicker();
+    updateDatasetList(bfacct, datasetPermission)
+  }
+})
+
 function tempDatasetListsSync() {
   $("#bfdatasetlist_renamedataset").val(defaultBfDataset);
   currentDatasetDropdowns = [bfDatasetListMetadata, bfUploadDatasetList, bfDatasetList, bfDatasetListDatasetStatus, bfDatasetListPermission,
@@ -437,32 +438,35 @@ function updateDatasetList(bfaccount, myPermission) {
   addOption(curateDatasetDropdown, "Select dataset", "Select dataset")
   initializeBootstrapSelect("#curatebfdatasetlist", "disabled")
   var filteredDatasets = [];
-  if (myPermission.toLowerCase()==="all") {
-    for (var i=0; i<datasetList.length; i++) {
-      filteredDatasets.push(datasetList[i].name);
-    }
-  } else {
+  // waiting for dataset list to load first before initiating BF dataset dropdown list
+  setTimeout(function() {
+    if (myPermission.toLowerCase()==="all") {
+      for (var i=0; i<datasetList.length; i++) {
+        filteredDatasets.push(datasetList[i].name);
+      }
+    } else {
       for (var i=0; i<datasetList.length; i++) {
         if (datasetList[i].role === myPermission.toLowerCase()) {
           filteredDatasets.push(datasetList[i].name)
         }
       }
-  }
-  filteredDatasets.sort(function (a, b) {
-    return a.toLowerCase().localeCompare(b.toLowerCase());
-  });
+    }
+    filteredDatasets.sort(function (a, b) {
+      return a.toLowerCase().localeCompare(b.toLowerCase());
+    });
 
-  for (myitem in filteredDatasets){
-    var myitemselect = filteredDatasets[myitem]
-    var option = document.createElement("option")
-    option.textContent = myitemselect
-    option.value = myitemselect
-    curateDatasetDropdown.appendChild(option)
-  }
-  initializeBootstrapSelect("#curatebfdatasetlist", "show")
-  document.getElementById("div-permission-list-2").style.display = "block";
-  $("#div-filter-datasets-progress").css("display", "none");
-  document.getElementById("para-filter-datasets-status-2").innerHTML = filteredDatasets.length + " dataset(s) where you have " +  myPermission.toLowerCase() + " permissions were loaded successfully below."
+    for (myitem in filteredDatasets){
+      var myitemselect = filteredDatasets[myitem]
+      var option = document.createElement("option")
+      option.textContent = myitemselect
+      option.value = myitemselect
+      curateDatasetDropdown.appendChild(option)
+    }
+    initializeBootstrapSelect("#curatebfdatasetlist", "show")
+    document.getElementById("div-permission-list-2").style.display = "block";
+    $("#div-filter-datasets-progress-2").css("display", "none");
+    document.getElementById("para-filter-datasets-status-2").innerHTML = filteredDatasets.length + " dataset(s) where you have " +  myPermission.toLowerCase() + " permissions were loaded successfully below."
+  }, 2000)
 }
 
 /// helper function to refresh live search dropdowns per dataset permission on change event
