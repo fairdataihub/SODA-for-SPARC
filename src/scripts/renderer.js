@@ -2933,6 +2933,7 @@ bfAccountList.addEventListener('change', () => {
     defaultBfAccount = myitemselect;
     $('#current-bf-account').text(defaultBfAccount);
     showAccountDetails(bfAccountLoadProgress);
+    showHideDropdownButtons("account", "show");
   }
   refreshBfUsersList()
   refreshBfTeamsList(bfListTeams)
@@ -4520,6 +4521,7 @@ function loadDefaultAccount() {
           defaultBfAccount = myitemselect;
           $('#current-bf-account').text(myitemselect);
           showAccountDetails(bfAccountLoadProgress)
+          showHideDropdownButtons("account", "show");
           bfAccountLoadProgress.style.display = 'block';
           refreshBfUsersList()
           refreshBfTeamsList(bfListTeams)
@@ -5418,13 +5420,11 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
             text: 'Something went wrong!',
             footer: '<a href>Why do I have this issue?</a>'
           })
-          $("#div-bf-account-btns").css("display", "none");
-          $('#div-bf-account-btns button').hide();
+          showHideDropdownButtons("account", "hide");
         } else {
             $('#para-account-detail-curate').html(res);
             $('#current-bf-account').text(keyname);
-            $("#div-bf-account-btns").css("display", "flex");
-            $('#div-bf-account-btns button').show();
+            showHideDropdownButtons("account", "show");
            }
       })
       myBootboxDialog.modal('hide')
@@ -5495,13 +5495,11 @@ function showDefaultBFAccount() {
               console.error(error);
               $('#para-account-detail-curate').html("None");
               $('#current-bf-account').text("None");
-              $("#div-bf-account-btns").css("display", "none");
-              $('#div-bf-account-btns button').hide();
+              showHideDropdownButtons("account", "hide");
             } else {
                 $('#para-account-detail-curate').html(res);
                 $('#current-bf-account').text(defaultBfAccount);
-                $("#div-bf-account-btns").css("display", "flex");
-                $('#div-bf-account-btns button').show();
+                showHideDropdownButtons("account", "show");
                }
           })
       }

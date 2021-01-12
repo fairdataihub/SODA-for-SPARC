@@ -421,10 +421,10 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       $("#Question-getting-started-existing-BF-account").children().show();
       sodaJSONObj = {
         "bf-account-selected": {
-          "account-name": "calmilinux"
+          "account-name": $("#current-bf-account").text()
         },
         "bf-dataset-selected": {
-          "dataset-name": "testddataset"
+          "dataset-name": $("#current-bf-dataset").text()
         },
         "dataset-structure": {},
         "metadata-files": {},
@@ -618,7 +618,6 @@ function hidePrevDivs(currentDiv, category) {
 
         // /// remove all checkmarks and previous data input
         $("#" + currentDiv).nextAll().find('.option-card.radio-button').removeClass('checked');
-        // $("#"+currentDiv).nextAll().find('.option-card.radio-button').css('pointer-events', 'auto');
         $("#" + currentDiv).nextAll().find('.option-card.radio-button').removeClass('non-selected');
         $("#" + currentDiv).nextAll().find('.folder-input-check').prop('checked', false);
         $("#" + currentDiv).nextAll().find('#curatebfdatasetlist').prop("selectedIndex", 0);

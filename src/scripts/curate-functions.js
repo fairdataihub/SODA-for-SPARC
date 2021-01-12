@@ -340,8 +340,9 @@ async function openDropdownPrompt(dropdown) {
                     text: error,
                     footer: '<a href>Why do I have this issue?</a>'
                   })
-                  $("#div-bf-account-btns").css("display", "none");
-                  $('#div-bf-account-btns button').hide();
+                  showHideDropdownButtons("account", "hide");
+                  // $("#div-bf-account-btns").css("display", "none");
+                  // $('#div-bf-account-btns button').hide();
                 } else {
                   $('#para-account-detail-curate').html(res);
                   $('#current-bf-account').text(bfacct);
@@ -349,6 +350,10 @@ async function openDropdownPrompt(dropdown) {
                   if (!($('#Question-generate-dataset-BF-account').hasClass('prev'))) {
                     $("#div-bf-account-btns").css("display", "flex");
                     $('#div-bf-account-btns button').show();
+                  }
+                  if (!($('#Question-getting-started-BF-account').hasClass('prev'))) {
+                    $("#div-bf-account-btns-getting-started").css("display", "flex");
+                    $('#div-bf-account-btns-getting-started button').show();
                   }
                 }
               })
@@ -392,13 +397,15 @@ async function openDropdownPrompt(dropdown) {
         $("#current-bf-dataset").text(bfDataset);
         defaultBfDataset = bfDataset;
         tempDatasetListsSync()
-        $($('#button-confirm-bf-dataset').parents()[0]).css("display", "flex")
-        $('#button-confirm-bf-dataset').show()
+        showHideDropdownButtons("dataset", "show");
+        // $($('#button-confirm-bf-dataset').parents()[0]).css("display", "flex")
+        // $('#button-confirm-bf-dataset').show()
       }
     // hide "Confirm" button if Current dataset set to None
     if ($("#current-bf-dataset").text() === "None")  {
-      $($('#button-confirm-bf-dataset').parents()[0]).css("display", "none")
-      $('#button-confirm-bf-dataset').hide()
+      showHideDropdownButtons("dataset", "hide");
+      // $($('#button-confirm-bf-dataset').parents()[0]).css("display", "none")
+      // $('#button-confirm-bf-dataset').hide()
     }
   }
 }
@@ -483,4 +490,41 @@ function initializeBootstrapSelect(dropdown, action) {
     $(".dropdown.bootstrap-select button").removeClass('disabled');
     $(".dropdown.bootstrap-select").removeClass('disabled');
   }
+}
+
+// function to show dataset or account Confirm buttons
+function showHideDropdownButtons(category, action) {
+  if (category === "dataset") {
+    if (action === "show") {
+      // btn under Step 6
+      $($('#button-confirm-bf-dataset').parents()[0]).css("display", "flex");
+      $('#button-confirm-bf-dataset').show();
+      // btn under Step 1
+      $($('#button-confirm-bf-dataset-getting-started').parents()[0]).css("display", "flex");
+      $('#button-confirm-bf-dataset-getting-started').show();
+    } else {
+      // btn under Step 6
+      $($('#button-confirm-bf-dataset').parents()[0]).css("display", "none");
+      $('#button-confirm-bf-dataset').hide();
+      // btn under Step 1
+      $($('#button-confirm-bf-dataset-getting-started').parents()[0]).css("display", "none");
+      $('#button-confirm-bf-dataset-getting-started').hide();
+    }
+  } else if (category === "account") {
+      if (action === "show") {
+        // btn under Step 6
+        $("#div-bf-account-btns").css("display", "flex");
+        $('#div-bf-account-btns button').show();
+        // btn under Step 1
+        $("#div-bf-account-btns-getting-started").css("display", "flex");
+        $('#div-bf-account-btns-getting-started button').show();
+      } else {
+        // btn under Step 6
+        $("#div-bf-account-btns").css("display", "none");
+        $('#div-bf-account-btns button').hide();
+        // btn under Step 1
+        $("#div-bf-account-btns-getting-started").css("display", "none");
+        $('#div-bf-account-btns-getting-started button').hide();
+      }
+    }
 }
