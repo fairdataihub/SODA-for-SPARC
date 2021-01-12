@@ -630,8 +630,10 @@ function hidePrevDivs(currentDiv, category) {
             document.getElementById(child.id).value = "";
             document.getElementById(child.id).placeholder = "Type here";
           } else {
-            document.getElementById(child.id).value = "";
-            document.getElementById(child.id).placeholder = "Browse here";
+            if (document.getElementById(child.id)) {
+              document.getElementById(child.id).value = "";
+              document.getElementById(child.id).placeholder = "Browse here";
+            }
           }
         };
       }
@@ -876,10 +878,10 @@ function updateJSONStructureGenerate() {
 
       if ("bf-account-selected" in sodaJSONObj) {
         sodaJSONObj["bf-account-selected"]["account-name"] =
-          $("#current-bf-dataset").text();
+          $("#current-bf-account").text();
       } else {
         sodaJSONObj["bf-account-selected"] = {
-          "account-name": $("#current-bf-dataset").text()
+          "account-name": $("#current-bf-account").text()
         };
       }
       // answer to Question if generate on BF, then: how to handle existing files and folders

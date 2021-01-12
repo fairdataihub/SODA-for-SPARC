@@ -973,3 +973,27 @@
   text-decoration: underline !important;
   color: var(--color-light-green) !important;
 }
+
+.search-select-box {
+  width: 100% !important
+}
+
+.search-select-box button {
+  background-color: #fff !important;
+  padding: 10px 15px;
+  color: #363636 !important;
+  border-radius: 4px;
+  border: 1px solid #dbdbdb;
+}
+
+.swal2-actions {
+  z-index: 0 !important
+}
+
+.dropdown-menu.show {
+  z-index: 1 !important
+}
+
+.form-control:focus {
+  
+}

@@ -352,6 +352,7 @@ async function openDropdownPrompt(dropdown) {
     // if users edit Current dataset
     datasetPermissionDiv.style.display = "block";
     $('#select-permission-list-2').val('All');
+    $("#curatebfdatasetlist").selectpicker();
     $('#select-permission-list-2').change(function(e) {
       var datasetPermission = $('#select-permission-list-2').val();
       var bfacct = $("#current-bf-account").text();
@@ -420,12 +421,16 @@ function tempDatasetListsSync() {
 
 function updateDatasetList(bfaccount, myPermission) {
   $('#curatebfdatasetlist').attr('disabled', true);
+  $(".dropdown.bootstrap-select.w-100.dropup button").addClass('disabled');
+  $(".dropdown.bootstrap-select").addClass('disabled');
+  document.getElementById("div-filter-datasets-progress").style.display = "block"
   removeOptions(curateDatasetDropdown)
   addOption(curateDatasetDropdown, "Select dataset", "Select dataset")
+  $("#curatebfdatasetlist").selectpicker('refresh');
   var filteredDatasets = [];
   if (myPermission.toLowerCase()==="all") {
     for (var i=0; i<datasetList.length; i++) {
-      filteredDatasets.push(datasetList[i].name)
+      filteredDatasets.push(datasetList[i].name);
     }
   } else {
       for (var i=0; i<datasetList.length; i++) {
@@ -446,8 +451,12 @@ function updateDatasetList(bfaccount, myPermission) {
     option.value = myitemselect
     curateDatasetDropdown.appendChild(option)
   }
-
+  $("#curatebfdatasetlist").selectpicker();
+  $("#curatebfdatasetlist").selectpicker('refresh');
   $('#curatebfdatasetlist').attr('disabled', false);
+  $(".dropdown.bootstrap-select button").removeClass('disabled');
+  $(".dropdown.bootstrap-select").removeClass('disabled');
+
   document.getElementById("div-permission-list-2").style.display = "block"
   document.getElementById("div-filter-datasets-progress").style.display = "none"
   document.getElementById("para-filter-datasets-status-2").innerHTML = filteredDatasets.length + " dataset(s) where you have " +  myPermission.toLowerCase() + " permissions were loaded successfully below."
