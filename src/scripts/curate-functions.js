@@ -270,7 +270,7 @@ function importOrganizeProgressPrompt() {
 
 importOrganizeProgressPrompt()
 
-var datasetPermissionDiv = document.getElementById('div-permission-list-2');
+const datasetPermissionDiv = document.getElementById('div-permission-list-2');
 
 async function openDropdownPrompt(dropdown) {
   // if users edit current account
@@ -285,7 +285,8 @@ async function openDropdownPrompt(dropdown) {
     } else {
       footerMessage = bfAccountOptionsStatus;
     }
-    const { value: bfAccount } = await Swal.fire({
+    var bfacct;
+    const { value: bfAccountSwal } = await Swal.fire({
           title: 'Select your Blackfynn account',
           input: 'select',
           showCloseButton: true,
@@ -297,53 +298,64 @@ async function openDropdownPrompt(dropdown) {
           inputValue: defaultBfAccount,
           reverseButtons: true,
           footer: footerMessage,
-          // didOpen: function(ele) {
-          //    $(ele).find('.swal2-select').addClass('mdb-select md-form md-selected').attr('data-live-search', true);
-          //    // $('.ui.dropdown').dropdown('show');
-          // },
+          didOpen: function(ele) {
+             $(ele).find('.swal2-select').attr("id", "bfaccountdropdown");
+             $("#bfaccountdropdown").removeClass('swal2-select');
+             $("#bfaccountdropdown").addClass('w-100');
+             $("#bfaccountdropdown").attr('data-live-search', "true");
+             $("#bfaccountdropdown").wrap("<div class='search-select-box'></div>");
+             $("#bfaccountdropdown").selectpicker();
+             $("#bfaccountdropdown").attr('disabled', false);
+          },
           inputValidator: (value) => {
             return new Promise((resolve) => {
-              if (value !== 'Select') {
-                resolve();
-              } else {
-                resolve("You need to select an account!")
-              }
+                if (value !== 'Select') {
+                  bfacct = $("#bfaccountdropdown").val();
+                  resolve();
+                } else {
+                  bfacct = undefined;
+                  resolve("You need to select an account!")
+                }
             })
           }
         })
-        if (bfAccount) {
-          Swal.fire(
-            {
-              title: 'Loading your account details...',
-              timer: 2000,
-              timerProgressBar: true,
-              allowEscapeKey: false,
-              showConfirmButton: false
-            });
-          $('#current-bf-account').text("");
-          $('#para-account-detail-curate').html("");
-          client.invoke("api_bf_account_details", bfAccount, (error, res) => {
-            if(error) {
-              log.error(error)
-              console.error(error)
-              Swal.fire({
-                icon: 'error',
-                text: 'Something went wrong!',
-                footer: '<a href>Why do I have this issue?</a>'
-              })
-              $("#div-bf-account-btns").css("display", "none");
-              $('#div-bf-account-btns button').hide();
-            } else {
-                $('#para-account-detail-curate').html(res);
-                $('#current-bf-account').text(bfAccount);
-                updateBfAccountList()
-                if (!($('#Question-generate-dataset-BF-account').hasClass('prev'))) {
-                  $("#div-bf-account-btns").css("display", "flex");
-                  $('#div-bf-account-btns button').show();
+        if (bfAccountSwal === null) {
+          if (bfacct !== "Select") {
+            Swal.fire(
+              {
+                title: 'Loading your account details...',
+                timer: 2000,
+                timerProgressBar: true,
+                allowEscapeKey: false,
+                showConfirmButton: false
+              });
+              $('#current-bf-account').text("");
+              $('#para-account-detail-curate').html("");
+              client.invoke("api_bf_account_details", bfacct, (error, res) => {
+                if(error) {
+                  log.error(error)
+                  console.error(error)
+                  Swal.fire({
+                    icon: 'error',
+                    text: error,
+                    footer: '<a href>Why do I have this issue?</a>'
+                  })
+                  $("#div-bf-account-btns").css("display", "none");
+                  $('#div-bf-account-btns button').hide();
+                } else {
+                  $('#para-account-detail-curate').html(res);
+                  $('#current-bf-account').text(bfacct);
+                  updateBfAccountList()
+                  if (!($('#Question-generate-dataset-BF-account').hasClass('prev'))) {
+                    $("#div-bf-account-btns").css("display", "flex");
+                    $('#div-bf-account-btns button').show();
+                  }
                 }
-               }
-          })
-        } else if (bfAccount === false) {
+              })
+          } else {
+            Swal.showValidationMessage("Please select an account!")
+          }
+        } else if (bfAccountSwal === false) {
           // // else, if users click Add account
           showBFAddAccountBootbox()
         }
@@ -420,13 +432,10 @@ function tempDatasetListsSync() {
 }
 
 function updateDatasetList(bfaccount, myPermission) {
-  $('#curatebfdatasetlist').attr('disabled', true);
-  $(".dropdown.bootstrap-select.w-100.dropup button").addClass('disabled');
-  $(".dropdown.bootstrap-select").addClass('disabled');
   document.getElementById("div-filter-datasets-progress").style.display = "block"
   removeOptions(curateDatasetDropdown)
   addOption(curateDatasetDropdown, "Select dataset", "Select dataset")
-  $("#curatebfdatasetlist").selectpicker('refresh');
+  initializeBootstrapSelect("#curatebfdatasetlist", "disabled")
   var filteredDatasets = [];
   if (myPermission.toLowerCase()==="all") {
     for (var i=0; i<datasetList.length; i++) {
@@ -439,7 +448,6 @@ function updateDatasetList(bfaccount, myPermission) {
         }
       }
   }
-
   filteredDatasets.sort(function (a, b) {
     return a.toLowerCase().localeCompare(b.toLowerCase());
   });
@@ -451,13 +459,24 @@ function updateDatasetList(bfaccount, myPermission) {
     option.value = myitemselect
     curateDatasetDropdown.appendChild(option)
   }
-  $("#curatebfdatasetlist").selectpicker();
-  $("#curatebfdatasetlist").selectpicker('refresh');
-  $('#curatebfdatasetlist').attr('disabled', false);
-  $(".dropdown.bootstrap-select button").removeClass('disabled');
-  $(".dropdown.bootstrap-select").removeClass('disabled');
-
+  initializeBootstrapSelect("#curatebfdatasetlist", "show")
   document.getElementById("div-permission-list-2").style.display = "block"
   document.getElementById("div-filter-datasets-progress").style.display = "none"
   document.getElementById("para-filter-datasets-status-2").innerHTML = filteredDatasets.length + " dataset(s) where you have " +  myPermission.toLowerCase() + " permissions were loaded successfully below."
+}
+
+/// helper function to refresh live search dropdowns per dataset permission on change event
+function initializeBootstrapSelect(dropdown, action) {
+  if (action === "disabled") {
+    $(dropdown).attr('disabled', true);
+    $(".dropdown.bootstrap-select button").addClass('disabled');
+    $(".dropdown.bootstrap-select").addClass('disabled');
+    $(dropdown).selectpicker('refresh');
+  } else if (action === "show"){
+    $(dropdown).selectpicker();
+    $(dropdown).selectpicker('refresh');
+    $(dropdown).attr('disabled', false);
+    $(".dropdown.bootstrap-select button").removeClass('disabled');
+    $(".dropdown.bootstrap-select").removeClass('disabled');
+  }
 }
