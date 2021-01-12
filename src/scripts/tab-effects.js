@@ -437,7 +437,12 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       console.log("calling");
       //sodaJSONObj["bf-account-selected"]["account-name"] = document.getElementById('bfexistingallaccountlist').value;
       //sodaJSONObj["bf-dataset-selected"]["dataset-name"] = document.getElementById('curateexistingbfdatasetlist').value;
-      res = await bf_request_and_populate_dataset(sodaJSONObj);
+      // Swal.fire({
+      //   icon: 'error',
+      //   text: res + "Please choose another dataset!",
+      //   footer: '<a href>Why do I have this issue?</a>'
+      // })
+      var res = await bf_request_and_populate_dataset(sodaJSONObj);
       if (res == "error") {
         console.log(res);
         $('body').removeClass('waiting');
