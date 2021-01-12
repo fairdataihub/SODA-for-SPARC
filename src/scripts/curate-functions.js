@@ -258,11 +258,15 @@ function importOrganizeProgressPrompt() {
   document.getElementById('para-progress-file-status').innerHTML = ""
   removeOptions(progressFileDropdown);
   addOption(progressFileDropdown, "Select", "Select")
-  var fileNames = fs.readdirSync(progressFilePath);
-  if (fileNames.length > 0) {
-    fileNames.forEach((item, i) => {
-      addOption(progressFileDropdown, path.parse(item).name, item)
-    });
+  if (fs.existsSync(progressFilePath)) {
+    var fileNames = fs.readdirSync(progressFilePath);
+    if (fileNames.length > 0) {
+      fileNames.forEach((item, i) => {
+        addOption(progressFileDropdown, path.parse(item).name, item)
+      });
+    } else {
+      document.getElementById('para-progress-file-status').innerHTML = "<span style='color:var(--color)'>There is no existing progress to load. Please choose one of the other options above!</span>"
+    }
   } else {
     document.getElementById('para-progress-file-status').innerHTML = "<span style='color:var(--color)'>There is no existing progress to load. Please choose one of the other options above!</span>"
   }
