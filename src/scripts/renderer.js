@@ -6073,9 +6073,15 @@ function showmenu(ev, category, deleted = false) {
         .children("#folder-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
     } else {
-      $(menuFolder)
-        .children("#folder-delete")
-        .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+      if ($(".selected-file").length > 2) {
+        $(menuFolder)
+          .children("#folder-delete")
+          .html('<i class="fas fa-minus-circle"></i> Delete All');
+      } else {
+        $(menuFolder)
+          .children("#folder-delete")
+          .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+      }
     }
     menuFolder.style.display = "block";
     $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
@@ -6085,9 +6091,15 @@ function showmenu(ev, category, deleted = false) {
         .children("#folder-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
     } else {
-      $(menuHighLevelFolders)
-        .children("#folder-delete")
-        .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+      if ($(".selected-file").length > 2) {
+        $(menuHighLevelFolders)
+          .children("#folder-delete")
+          .html('<i class="fas fa-minus-circle"></i> Delete All');
+      } else {
+        $(menuHighLevelFolders)
+          .children("#folder-delete")
+          .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+      }
     }
     menuHighLevelFolders.style.display = "block";
     $(".menu.high-level-folder")
@@ -6099,9 +6111,15 @@ function showmenu(ev, category, deleted = false) {
         .children("#file-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
     } else {
-      $(menuFile)
-        .children("#file-delete")
-        .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+      if ($(".selected-file").length > 2) {
+        $(menuFile)
+          .children("#file-delete")
+          .html('<i class="fas fa-minus-circle"></i> Delete All');
+      } else {
+        $(menuFile)
+          .children("#file-delete")
+          .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+      }
     }
     menuFile.style.display = "block";
     $(".menu.file").css({ top: mouseY, left: mouseX }).fadeIn("slow");
@@ -6146,6 +6164,36 @@ function folderContextMenu(event) {
 }
 
 //////// options for files
+function file_click(event) {
+  if ($(".div-display-details.file").hasClass('show')) {
+    $(".div-display-details.file").removeClass('show')
+  }
+  if (event.ctrlKey){
+    //file_click
+    console.log("ctrl file click")
+  }
+  else
+  {
+    console.log("file click")
+  }
+  /*
+  $(".menu.file li").unbind().click(function(){
+    if ($(this).attr('id') === "file-rename") {
+        var itemDivElements = document.getElementById("items").children
+        renameFolder(event, organizeDSglobalPath, itemDivElements, datasetStructureJSONObj, '#items', '.single-item')
+      } else if ($(this).attr('id') === "file-delete") {
+        delFolder(event, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
+      } else if ($(this).attr('id') === "file-description") {
+        manageDesc(event)
+      }
+     // Hide it AFTER the action was triggered
+     hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
+ });
+ hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
+ */
+}
+
+//////// options for files
 function fileContextMenu(event) {
   if ($(".div-display-details.file").hasClass('show')) {
     $(".div-display-details.file").removeClass('show')
@@ -6169,6 +6217,13 @@ function fileContextMenu(event) {
 $(document).bind("contextmenu", function (event) {
   // Avoid the real one
   event.preventDefault();
+
+  // Check for multiple selected files
+  if (!$(event.target).hasClass('selected-file'))
+  {
+    $('.selected-file').removeClass('selected-file');
+  }
+
   /// check for high level folders
   var highLevelFolderBool = false;
   var folderName = event.target.parentElement.innerText;
@@ -6215,15 +6270,52 @@ $(document).bind("contextmenu", function (event) {
 });
 
 $(document).bind("click", function (event) {
-  if (event.target.classList[0] !== "myFol" &&
-      event.target.classList[0] !== "myFile") {
-        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-        hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
-        // hideFullPath()
-        hideFullName()
+  if (
+    event.target.classList[0] !== "myFol" &&
+    event.target.classList[0] !== "myFile" 
+  ) {
+    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+    hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
+    // hideFullPath()
+    hideFullName();
+    $(".selected-file").removeClass("selected-file");
+  }
+  if (event.target.classList[0] === "myFile") {
+    target_element = event.target;
+    parent_element = $(target_element).parent();
+    if (event.ctrlKey) {
+      if ($(target_element).hasClass("selected-file")) {
+        $(target_element).removeClass("selected-file");
+        $(parent_element).removeClass("selected-file");
+      } else {
+        $(target_element).addClass("selected-file");
+        $(parent_element).addClass("selected-file");
       }
-})
+    } else {
+      $(".selected-file").removeClass("selected-file");
+      $(target_element).addClass("selected-file");
+      $(parent_element).addClass("selected-file");
+    }
+  }
+  if (event.target.classList[0] === "single-item") {
+    parent_element = event.target;
+    target_element = $(parent_element).children()[0];
+    if (event.ctrlKey) {
+      if ($(target_element).hasClass("selected-file")) {
+        $(target_element).removeClass("selected-file");
+        $(parent_element).removeClass("selected-file");
+      } else {
+        $(target_element).addClass("selected-file");
+        $(parent_element).addClass("selected-file");
+      }
+    } else {
+      $(".selected-file").removeClass("selected-file");
+      $(target_element).addClass("selected-file");
+      $(parent_element).addClass("selected-file");
+    }
+  }
+});
 
 // sort JSON objects by keys alphabetically (folder by folder, file by file)
 function sortObjByKeys(object) {

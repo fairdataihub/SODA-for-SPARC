@@ -2234,16 +2234,15 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             progress_percentage_array[-1]["files"] = {}
             for file in list_upload:
                 file_size = os.path.getsize(file)
-                file_name = os.path.basename(file)
-                progress_percentage_array[-1]["files"][file_name] = file_size
+                #file_name = os.path.basename(file)
+                progress_percentage_array[-1]["files"][file] = file_size
                 total_size += file_size
             progress_percentage_array[-1]["output-stream"] = progress_percentage
             progress_percentage_array[-1].pop('completed-size', None)
 
             #upload
             main_curate_progress_message = "Uploading files in " + str(relative_path)
-            with redirect_stdout(progress_percentage):
-                bf_folder.upload(*list_upload, display_progress=True)
+            bf_folder.upload(*list_upload, display_progress=True)
             #bf_folder.update()
             progress_percentage_array[-1]["completed-size"] = total_size
 
@@ -2556,27 +2555,28 @@ def main_curate_function_progress():
     """
     def check_progress_stream_output(progress_output_list):
         total_size_uploaded = 0
-        test_total_size = 0
+        current_total_size = 0
         for i in range(len(progress_output_list)):
             if "completed-size" in progress_output_list[i].keys():
                 total_size_uploaded += progress_output_list[i]["completed-size"]
             else:
-                progess_output = progress_output_list[i]["output-stream"].getvalue()
-                progress_output.seek(0)
-                logger.debug(progess_output)
-                files_dict = {}
-                for line in progess_output.splitlines():
-                    percentage_index = line.find("%")
-                    if (percentage_index != -1):
-                        file_name = line[percentage_index + 2:]
-                        file_percentage = line[percentage_index - 5:percentage_index]
-                        files_dict[file_name] = file_percentage
-                        if (float(file_percentage) < 100 and float(file_percentage) > 0):
-                            logger.debug(file_name, file_percentage)
+                out_log_file_path = os.path.join(pathlib.Path.home(), ".blackfynn", "out.log")
+                #out_log_file = open(out_log_file_path, "r")
+                files_dict = progress_output_list[i]["files"]
                 for file in files_dict.keys():
-                    test_total_size += int(progress_output_list[i]["files"][file]) * (float(files_dict[file]) // 100.0)
-                progress_output_list[i]["completed-size"] = test_total_size  
-        return (total_size_uploaded + test_total_size)
+                    bytes_sent = 0
+                    for line in reversed(list(open(out_log_file_path, "r"))):
+                        file_index = line.find(file)
+                        if (file_index != -1):
+                            bytes_sent_index = line.find("bytes_sent")
+                            if (bytes_sent_index != -1):
+                                bytes_sent_end_index = line.find(",", bytes_sent_index)
+                                bytes_sent = max(int(line[bytes_sent_index + 11:bytes_sent_end_index]), bytes_sent)
+                            if (line.find("FileQueuedForUpload") != -1):
+                                current_total_size += bytes_sent
+                                break
+
+        return (total_size_uploaded + current_total_size)
 
     global main_curate_status # empty if curate on going, "Done" when main curate function stopped (error or completed)
     global main_curate_progress_message
@@ -2597,7 +2597,7 @@ def main_curate_function_progress():
     if start_generate == 1:
         if main_generate_destination == "bf":
             main_generated_dataset_size = bf_dataset_size() - main_initial_bfdataset_size
-            main_generated_dataset_size = check_progress_stream_output(progress_percentage_array.copy())
+            #main_generated_dataset_size = check_progress_stream_output(progress_percentage_array)
 
 
     return (main_curate_status, start_generate, main_curate_progress_message, main_total_generate_dataset_size, main_generated_dataset_size, elapsed_time_formatted)

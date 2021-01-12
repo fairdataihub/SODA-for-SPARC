@@ -245,6 +245,7 @@ function nextPrev(n) {
     {
       $("#div-getting-started-previous-progress").click();
       $("#div-getting-started-existing-local").click();
+      $("#nextBtn").prop("disabled", true);
     }
     showParentTab(currentTab, n);
     console.log(JSON.stringify(sodaJSONObj));

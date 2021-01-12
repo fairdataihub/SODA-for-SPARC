@@ -261,6 +261,16 @@ button[disabled]{
     padding: 10px 0px 10px 0px;
 }
 
+.single-item.selected-file {
+  background-color: #e4dede;
+}
+
+.single-item.selected-file:hover {
+  border: #c0c0c0;
+  background-color: #eeeaea;
+  /* transform: translateY(-6px); */
+}
+
 .single-item:active {
   -webkit-transform: all 3s;
 }
@@ -316,6 +326,7 @@ button[disabled]{
   font-size: 35px;
   font-family: helvetica, arial, sans-serif;
   font-weight: bold;
+  pointer-events: none;
 }
 
 .dropdown-item:hover {
@@ -335,7 +346,8 @@ button[disabled]{
     line-height: 1.5;
     margin-right: 5px;
     margin-left: 5px;
-    color: black
+    color: black;
+    pointer-events: none;
 }
 
 .blue {
@@ -713,6 +725,7 @@ button[disabled]{
   font-size: 35px;
   font-family: helvetica, arial, sans-serif;
   font-weight: bold;
+  pointer-events: none;
 }
 
 .folder_desc.blackfynn_folder:after {
@@ -726,6 +739,7 @@ button[disabled]{
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
 }
 
 .blackfynn_folder_deleted{
@@ -743,6 +757,7 @@ button[disabled]{
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
 }
 
 .local_folder_deleted{
@@ -760,6 +775,7 @@ button[disabled]{
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
 }
 
 .folder_desc.local_folder_deleted:after {
@@ -773,6 +789,7 @@ button[disabled]{
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
 }
 
 .folder_desc.blackfynn_file:after {
@@ -786,6 +803,7 @@ button[disabled]{
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
 }
 
 .folder_desc.local_file:after {
@@ -799,6 +817,7 @@ button[disabled]{
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
 }
 
 .blackfynn_file_deleted{
@@ -820,6 +839,7 @@ button[disabled]{
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
 }
 
 .folder_desc.local_file_deleted:after {
@@ -833,6 +853,7 @@ button[disabled]{
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
 }
 
 .menu-toggle {
