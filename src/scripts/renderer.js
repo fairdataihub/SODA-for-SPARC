@@ -309,6 +309,7 @@ const bfRenameDatasetBtn = document.getElementById('button-rename-dataset')
 const bfRefreshDatasetRenameDatasetBtn = document.getElementById('button-refresh-dataset-renamedataset-list')
 const renameDatasetName = document.querySelector('#bf-rename-dataset-name')
 const bfRenameDatasetStatus = document.getElementById('para-rename-dataset-status')
+const datasetPermissionDiv = document.getElementById('div-permission-list-2');
 
 // Blackfynn dataset metadata //
 const bfMetadataForm = document.querySelector('#bf-add-metadata-form')

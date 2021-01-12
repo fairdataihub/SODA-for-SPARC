@@ -634,7 +634,7 @@ height: 80%;
   /* font-weight: bold; */
   color: black;
   padding: 8px 12px;
-  z-index: 2000;
+  z-index: 1;
 }
 
 .info {

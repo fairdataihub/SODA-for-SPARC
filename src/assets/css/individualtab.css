@@ -997,7 +997,8 @@
 }
 
 .dropdown-menu.show {
-  z-index: 1 !important
+  z-index: 1 !important;
+  width: 70% !important
 }
 
 .swal2-header {

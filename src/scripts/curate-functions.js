@@ -269,9 +269,6 @@ function importOrganizeProgressPrompt() {
 }
 
 importOrganizeProgressPrompt()
-
-const datasetPermissionDiv = document.getElementById('div-permission-list-2');
-
 async function openDropdownPrompt(dropdown) {
   // if users edit current account
   if (dropdown === "bf") {
@@ -350,6 +347,9 @@ async function openDropdownPrompt(dropdown) {
                   if (!($('#Question-generate-dataset-BF-account').hasClass('prev'))) {
                     $("#div-bf-account-btns").css("display", "flex");
                     $('#div-bf-account-btns button').show();
+                  } else {
+                    $("#div-bf-account-btns").css("display", "none");
+                    $('#div-bf-account-btns button').hide();
                   }
                   if (!($('#Question-getting-started-BF-account').hasClass('prev'))) {
                     $("#div-bf-account-btns-getting-started").css("display", "flex");
