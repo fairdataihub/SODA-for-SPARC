@@ -366,6 +366,7 @@ async function openDropdownPrompt(dropdown) {
     $('#select-permission-list-2').val('All');
     $("#curatebfdatasetlist").selectpicker();
     $('#select-permission-list-2').change(function(e) {
+      $("#div-filter-datasets-progress").css("display", "block");
       var datasetPermission = $('#select-permission-list-2').val();
       var bfacct = $("#current-bf-account").text();
       if (bfacct === "None") {
@@ -459,7 +460,8 @@ function updateDatasetList(bfaccount, myPermission) {
     curateDatasetDropdown.appendChild(option)
   }
   initializeBootstrapSelect("#curatebfdatasetlist", "show")
-  document.getElementById("div-permission-list-2").style.display = "block"
+  document.getElementById("div-permission-list-2").style.display = "block";
+  $("#div-filter-datasets-progress").css("display", "none");
   document.getElementById("para-filter-datasets-status-2").innerHTML = filteredDatasets.length + " dataset(s) where you have " +  myPermission.toLowerCase() + " permissions were loaded successfully below."
 }
 
