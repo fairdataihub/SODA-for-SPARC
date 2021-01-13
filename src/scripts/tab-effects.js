@@ -340,8 +340,11 @@ $(".folder-input-check").click(function () {
 
 
 // ////////////// THIS IS FOR THE SUB-TABS OF GETTING STARTED and GENERATE DATASET sections /////////////////////////
-
-// transition between tabs under Step 1 and Step 6
+/*
+  Transition between tabs under Step 1 and Step 6;
+  *** Note: This onclick function below is only used for div: option-card and not buttons
+  due to some unique element restrictions the option-card div has
+*/
 var divList = [];
 async function transitionSubQuestions(
   ev,
@@ -502,6 +505,94 @@ async function transitionSubQuestions(
     $("#nextBtn").prop("disabled", true);
   }
 }
+
+// function similar to transitionSubQuestions, but for buttons
+async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, category){
+  /*
+    ev: the button being clicked
+    currentDiv: current option-card (question)
+    parentDiv: current parent-tab (step)
+    category: either getting-started or generate-dataset (currently only these 2 have multiple sub questions)
+  */
+
+  // first, handle target or the next div to show
+  var target = document.getElementById(ev.getAttribute('data-next'));
+  // display the target tab (data-next tab)
+  if (!(target.classList.contains('show'))) {
+    target.classList.add('show');
+  }
+
+  // here, handling existing folders and files tabs are independent of each other
+  if (!(ev.getAttribute('data-next') === "Question-generate-dataset-existing-files-options"
+  && target.classList.contains('prev'))) {
+    // append to parentDiv
+    document.getElementById(parentDiv).appendChild(target);
+  }
+  
+  // if buttons: Add account and Confirm account were hidden, show them again here
+  if (ev.getAttribute('data-next') === "Question-generate-dataset-BF-account") {
+    $("#" + ev.getAttribute('data-next') + " button").show();
+  }
+  if (ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")
+  {
+    $("#Question-generate-dataset-generate-div").show();
+    $("#Question-generate-dataset-generate-div").children().show();
+  }
+
+  if (!(ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")) {
+    // create moving effects when new questions appear
+    $("#Question-generate-dataset-generate-div").hide();
+    $("#Question-generate-dataset-generate-div").children().hide();
+    setTimeout(() => target.classList.add("test2"), 100);
+  }
+
+  document.getElementById(currentDiv).classList.add("prev");
+
+  // handle buttons (if buttons are confirm buttons -> delete after users confirm)
+  if (button === 'delete') {
+    if ($(ev).siblings().length > 0) {
+      $(ev).siblings().hide()
+    }
+    $(ev).hide();
+  }
+  // auto-scroll to bottom of div
+  document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
+
+  if (ev.id === "button-confirm-bf-dataset-getting-started") {
+    // this exitCurate function gets called in the beginning here
+    // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
+    exitCurate()
+    $("#Question-getting-started-existing-BF-account").show();
+    $("#Question-getting-started-existing-BF-account").children().show();
+    sodaJSONObj = {
+      "bf-account-selected": {
+        "account-name": $("#current-bf-account").text()
+      },
+      "bf-dataset-selected": {
+        "dataset-name": $("#current-bf-dataset").text()
+      },
+      "dataset-structure": {},
+      "metadata-files": {},
+      "manifest-files": {},
+      "generate-dataset": {},
+      "starting-point": "bf"
+    };
+
+    $('body').addClass('waiting');
+    var res = await bf_request_and_populate_dataset(sodaJSONObj);
+    if (res == "error") {
+      $('body').removeClass('waiting');
+    } else {
+      sodaJSONObj = res;
+      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+      populate_existing_folders(datasetStructureJSONObj);
+      populate_existing_metadata(sodaJSONObj);
+      $("#nextBtn").prop("disabled", false);
+      $('body').removeClass('waiting');
+    }
+  }
+}
+
 
 reset_ui = () => {
   $(".option-card.high-level-folders").each(function (i, obj) {
@@ -923,10 +1014,10 @@ function updateJSONStructureGenerate() {
 
       if ("bf-account-selected" in sodaJSONObj) {
         sodaJSONObj["bf-account-selected"]["account-name"] =
-          $("#current-bf-account").text();
+          $("#current-bf-account-generate").text();
       } else {
         sodaJSONObj["bf-account-selected"] = {
-          "account-name": $("#current-bf-account").text()
+          "account-name": $("#current-bf-account-generate").text()
         };
       }
       // answer to Question if generate on BF, then: how to handle existing files and folders
@@ -974,10 +1065,10 @@ function updateJSONStructureGenerate() {
         // populate JSON obj with BF dataset and account
         if ("bf-dataset-selected" in sodaJSONObj) {
           sodaJSONObj["bf-dataset-selected"]["dataset-name"] =
-            $('#current-bf-dataset').text()
+            $('#current-bf-dataset-generate').text()
         } else {
           sodaJSONObj["bf-dataset-selected"] = {
-            "dataset-name": $('#current-bf-dataset').text()
+            "dataset-name": $('#current-bf-dataset-generate').text()
           };
         }
         // if generate to a new dataset, then update JSON object with a new dataset
