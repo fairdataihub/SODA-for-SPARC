@@ -31,6 +31,8 @@ import json
 import collections
 from threading import Thread
 import pathlib
+import io
+from contextlib import redirect_stdout
 
 from datetime import datetime, timezone
 
@@ -1327,6 +1329,7 @@ def get_generate_dataset_size(soda_json_structure):
 def generate_dataset_locally(soda_json_structure):
 
     global main_curate_progress_message
+    global progress_percentage
     global main_total_generate_dataset_size
     global start_generate
 
@@ -1351,9 +1354,9 @@ def generate_dataset_locally(soda_json_structure):
                             if isfile(file_path):
                                 destination_path = abspath(join(my_folderpath, file_key))
                                 if not isfile(destination_path):
-                                    if "existing" in file["action"]:
+                                    if ("existing" in file["action"] and soda_json_structure["generate-dataset"]["if-existing"] == "merge"):
                                         list_move_files.append([file_path, destination_path])
-                                    elif "new" in file["action"]:
+                                    else:
                                         main_total_generate_dataset_size += getsize(file_path)
                                         list_copy_files.append([file_path, destination_path])
             return list_copy_files, list_move_files
@@ -1795,6 +1798,8 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     global main_total_generate_dataset_size
     global start_generate
     global main_initial_bfdataset_size
+    global progress_percentage
+    global progress_percentage_array
     bfsd = ""
 
     # Delete any files on blackfynn that have been marked as deleted
@@ -1967,6 +1972,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
     global main_total_generate_dataset_size
     global start_generate
     global main_initial_bfdataset_size
+    global progress_percentage
+    global progress_percentage_array
 
     try:
 
@@ -2220,10 +2227,24 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             tracking_folder = item[5]
             relative_path = item[6]
 
+            # track block upload size for a more reactive progress bar
+            progress_percentage = io.StringIO()
+            total_size = 0
+            progress_percentage_array.append({}); 
+            progress_percentage_array[-1]["files"] = {}
+            for file in list_upload:
+                file_size = os.path.getsize(file)
+                #file_name = os.path.basename(file)
+                progress_percentage_array[-1]["files"][file] = file_size
+                total_size += file_size
+            progress_percentage_array[-1]["output-stream"] = progress_percentage
+            progress_percentage_array[-1].pop('completed-size', None)
+
             #upload
             main_curate_progress_message = "Uploading files in " + str(relative_path)
-            bf_folder.upload(*list_upload)
+            bf_folder.upload(*list_upload, display_progress=True)
             #bf_folder.update()
+            progress_percentage_array[-1]["completed-size"] = total_size
 
             #rename to final name
             for index, projected_name in enumerate(list_projected_names):
@@ -2260,6 +2281,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
 main_curate_status = ""
 main_curate_print_status = ""
 main_curate_progress_message = ""
+progress_percentage = "0.0%"
+progress_percentage_array = []
 main_total_generate_dataset_size = 1
 main_generated_dataset_size = 0
 start_generate = 0
@@ -2366,6 +2389,8 @@ def main_curate_function(soda_json_structure):
     global generate_start_time
     global main_generate_destination
     global main_initial_bfdataset_size
+    global progress_percentage
+    global progress_percentage_array
 
     global bf
     global myds
@@ -2380,6 +2405,8 @@ def main_curate_function(soda_json_structure):
 
     main_curate_status = "Curating"
     main_curate_progress_message = "Starting dataset curation"
+    progress_percentage = "000.0%"
+    progress_percentage_array = []
     main_generate_destination = ""
     main_initial_bfdataset_size = 0
     bf = ""
@@ -2526,6 +2553,30 @@ def main_curate_function_progress():
     """
     Function frequently called by front end to help keep track of the dataset generation progress
     """
+    def check_progress_stream_output(progress_output_list):
+        total_size_uploaded = 0
+        current_total_size = 0
+        for i in range(len(progress_output_list)):
+            if "completed-size" in progress_output_list[i].keys():
+                total_size_uploaded += progress_output_list[i]["completed-size"]
+            else:
+                out_log_file_path = os.path.join(pathlib.Path.home(), ".blackfynn", "out.log")
+                #out_log_file = open(out_log_file_path, "r")
+                files_dict = progress_output_list[i]["files"]
+                for file in files_dict.keys():
+                    bytes_sent = 0
+                    for line in reversed(list(open(out_log_file_path, "r"))):
+                        file_index = line.find(file)
+                        if (file_index != -1):
+                            bytes_sent_index = line.find("bytes_sent")
+                            if (bytes_sent_index != -1):
+                                bytes_sent_end_index = line.find(",", bytes_sent_index)
+                                bytes_sent = max(int(line[bytes_sent_index + 11:bytes_sent_end_index]), bytes_sent)
+                            if (line.find("FileQueuedForUpload") != -1):
+                                current_total_size += bytes_sent
+                                break
+
+        return (total_size_uploaded + current_total_size)
 
     global main_curate_status # empty if curate on going, "Done" when main curate function stopped (error or completed)
     global main_curate_progress_message
@@ -2535,13 +2586,19 @@ def main_curate_function_progress():
     global generate_start_time
     global main_generate_destination
     global main_initial_bfdataset_size
+    global progress_percentage
+    global progress_percentage_array
 
     elapsed_time = time.time() - generate_start_time
     elapsed_time_formatted = time_format(elapsed_time)
+    return_percentage_value = ""
+    text_stream = ""
 
     if start_generate == 1:
         if main_generate_destination == "bf":
             main_generated_dataset_size = bf_dataset_size() - main_initial_bfdataset_size
+            #main_generated_dataset_size = check_progress_stream_output(progress_percentage_array)
+
 
     return (main_curate_status, start_generate, main_curate_progress_message, main_total_generate_dataset_size, main_generated_dataset_size, elapsed_time_formatted)
 
