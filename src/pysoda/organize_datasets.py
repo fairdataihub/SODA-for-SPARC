@@ -678,6 +678,8 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
     except Exception as e:
         raise e
     
+    level = 0
+
     try:
         # import files and folders in the soda json structure
         soda_json_structure["dataset-structure"] = {}
@@ -688,7 +690,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         level = 0
         folder_name = ""
         recursive_dataset_import(myds, dataset_folder, metadata_files, folder_name, level, manifest_dict)
-        
+
         #remove metadata files keys if empty
         metadata_files = soda_json_structure["metadata-files"]
         if not metadata_files:

@@ -343,39 +343,108 @@ $(".folder-input-check").click(function () {
 
 // transition between tabs under Step 1 and Step 6
 var divList = [];
-async function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
-  $(ev).removeClass('non-selected');
-  $(ev).children().find('.folder-input-check').prop('checked', true);
+async function transitionSubQuestions(
+  ev,
+  currentDiv,
+  parentDiv,
+  button,
+  category
+) {
+  $(ev).removeClass("non-selected");
+  $(ev).children().find(".folder-input-check").prop("checked", true);
 
   // uncheck the other radio buttons
-  $($(ev).parents()[0]).siblings().find('.option-card.radio-button').removeClass('checked');
-  $($(ev).parents()[0]).siblings().find('.option-card.radio-button').addClass('non-selected');
+  $($(ev).parents()[0])
+    .siblings()
+    .find(".option-card.radio-button")
+    .removeClass("checked");
+  $($(ev).parents()[0])
+    .siblings()
+    .find(".option-card.radio-button")
+    .addClass("non-selected");
+
+  if (currentDiv === "Question-getting-started-BF-dataset")
+  {
+    $("#nextBtn").prop("disabled", true);
+    $("#button-confirm-bf-dataset-getting-started").prop("disabled", true);
+    sodaJSONObj = {
+      "bf-account-selected": {
+        "account-name": {},
+      },
+      "bf-dataset-selected": {
+        "dataset-name": {},
+      },
+      "dataset-structure": {},
+      "metadata-files": {},
+      "manifest-files": {},
+      "generate-dataset": {},
+      "starting-point": "bf",
+    };
+
+    sodaJSONObj["bf-account-selected"]["account-name"] = $(
+      "#current-bf-account"
+    ).text();
+    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $(
+      "#current-bf-dataset"
+    ).text();
+
+    $("body").addClass("waiting");
+    var res = await bf_request_and_populate_dataset(sodaJSONObj);
+
+    if (res[0] == "error") {
+      Swal.fire({
+        icon: "error",
+        text: res[1] + "Please choose another dataset!",
+        footer: "<a href>Why do I have this issue?</a>",
+      });
+      $("#nextBtn").prop("disabled", true);
+      return;
+    } else {
+      sodaJSONObj = res[0];
+      console.log(sodaJSONObj);
+      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+      console.log(datasetStructureJSONObj);
+      populate_existing_folders(datasetStructureJSONObj);
+      populate_existing_metadata(sodaJSONObj);
+      $("#nextBtn").prop("disabled", false);
+    }
+    $("body").removeClass("waiting");
+    $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
+  }
 
   // first, handle target or the next div to show
-  var target = document.getElementById(ev.getAttribute('data-next'));
+  var target = document.getElementById(ev.getAttribute("data-next"));
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
-  if (!(target.classList.contains('show'))) {
-    target.classList.add('show');
+  if (!target.classList.contains("show")) {
+    target.classList.add("show");
   }
   // here, handling existing folders and files tabs are independent of each other
-  if (!(ev.getAttribute('data-next') === "Question-generate-dataset-existing-files-options"
-  && target.classList.contains('prev'))) {
+  if (
+    !(
+      ev.getAttribute("data-next") ===
+        "Question-generate-dataset-existing-files-options" &&
+      target.classList.contains("prev")
+    )
+  ) {
     // append to parentDiv
     document.getElementById(parentDiv).appendChild(target);
   }
   // if buttons: Add account and Confirm account were hidden, show them again here
-  if (ev.getAttribute('data-next') === "Question-generate-dataset-BF-account") {
-    $("#" + ev.getAttribute('data-next') + " button").show();
+  if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-account") {
+    $("#" + ev.getAttribute("data-next") + " button").show();
   }
 
-  if (ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")
-  {
+  if (
+    ev.getAttribute("data-next") === "Question-generate-dataset-generate-div"
+  ) {
     $("#Question-generate-dataset-generate-div").show();
     $("#Question-generate-dataset-generate-div").children().show();
   }
 
-  if (!(ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")) {
+  if (
+    !(ev.getAttribute("data-next") === "Question-generate-dataset-generate-div")
+  ) {
     // create moving effects when new questions appear
     $("#Question-generate-dataset-generate-div").hide();
     $("#Question-generate-dataset-generate-div").children().hide();
@@ -385,25 +454,31 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
   document.getElementById(currentDiv).classList.add("prev");
 
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
-  if (button === 'delete') {
+  if (button === "delete") {
     if ($(ev).siblings().length > 0) {
-      $(ev).siblings().hide()
+      $(ev).siblings().hide();
     }
     $(ev).hide();
   }
   // auto-scroll to bottom of div
-  document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
+  document.getElementById(parentDiv).scrollTop = document.getElementById(
+    parentDiv
+  ).scrollHeight;
   // when we hit the last question under Step 1, hide and disable Next button
-  if (ev.getAttribute('data-next') === "Question-getting-started-final") {
-    $('#progress-files-dropdown').val('Select');
-    $('#para-progress-file-status').text('');
+  if (ev.getAttribute("data-next") === "Question-getting-started-final") {
+    $("#progress-files-dropdown").val("Select");
+    $("#para-progress-file-status").text("");
     $("#nextBtn").prop("disabled", true);
-    // handle cases where
-    if ($('#prepare-new').prop('checked')) {
+    
+    if ($("#prepare-new").prop("checked")) {
       exitCurate();
-      $('#prepare-new').prop("checked", true);
-      $($('#prepare-new').parents()[2]).addClass("checked");
-      $($($($('#div-getting-started-prepare-new').parents()[0]).siblings()[0]).children()[0]).toggleClass('non-selected')
+      $("#prepare-new").prop("checked", true);
+      $($("#prepare-new").parents()[2]).addClass("checked");
+      $(
+        $(
+          $($("#div-getting-started-prepare-new").parents()[0]).siblings()[0]
+        ).children()[0]
+      ).toggleClass("non-selected");
       $("#nextBtn").prop("disabled", false);
       sodaJSONObj["starting-point"] = "new";
       sodaJSONObj["dataset-structure"] = {};
@@ -411,54 +486,20 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       sodaJSONObj["metadata-files"] = {};
       reset_ui();
       $("#nextBtn").click();
-    }
-    else if ($("#existing-bf").is(":checked")) {
+    } else if ($("#existing-bf").is(":checked")) {
       // this exitCurate function gets called in the beginning here
       // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
-      exitCurate()
-      console.log("here");
+      
       $("#Question-getting-started-existing-BF-account").show();
       $("#Question-getting-started-existing-BF-account").children().show();
-      sodaJSONObj = {
-        "bf-account-selected": {
-          "account-name": $("#current-bf-account").text()
-        },
-        "bf-dataset-selected": {
-          "dataset-name": $("#current-bf-dataset").text()
-        },
-        "dataset-structure": {},
-        "metadata-files": {},
-        "manifest-files": {},
-        "generate-dataset": {},
-        "starting-point": "bf"
-      };
-
-      $('body').addClass('waiting');
-      console.log("calling");
-      //sodaJSONObj["bf-account-selected"]["account-name"] = document.getElementById('bfexistingallaccountlist').value;
-      //sodaJSONObj["bf-dataset-selected"]["dataset-name"] = document.getElementById('curateexistingbfdatasetlist').value;
-      // Swal.fire({
-      //   icon: 'error',
-      //   text: res + "Please choose another dataset!",
-      //   footer: '<a href>Why do I have this issue?</a>'
-      // })
-      var res = await bf_request_and_populate_dataset(sodaJSONObj);
-      if (res == "error") {
-        console.log(res);
-        $('body').removeClass('waiting');
-      } else {
-        sodaJSONObj = res;
-        datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-        console.log(datasetStructureJSONObj);
-        populate_existing_folders(datasetStructureJSONObj);
-        populate_existing_metadata(sodaJSONObj);
+      if (sodaJSONObj["dataset-structure"] != {})
+      {
+        reset_ui();
         $("#nextBtn").prop("disabled", false);
-        $('body').removeClass('waiting');
       }
-    } else {
-      exitCurate();
-      $("#nextBtn").prop("disabled", true);
     }
+  } else {
+    $("#nextBtn").prop("disabled", true);
   }
 }
 
@@ -484,9 +525,9 @@ var populate_existing_folders = (datasetStructureJSONObj) => {
   // currently handled by old function
 }
 
-var populate_existing_metadata = (datasetStructureJSONObj) => {
+var populate_existing_metadata = (metadataJSONObj) => {
   let target = null;
-  let metadataobject = datasetStructureJSONObj["metadata-files"];
+  let metadataobject = metadataJSONObj["metadata-files"];
   for (var key of Object.keys(metadataobject)) {
     let file_name = require("path").parse(key).name;
     switch (file_name) {
