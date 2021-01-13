@@ -331,6 +331,7 @@ async function openDropdownPrompt(dropdown) {
                 showConfirmButton: false
               });
               $('#current-bf-account').text("");
+              $('#current-bf-account-generate').text("");
               $('#para-account-detail-curate').html("");
               client.invoke("api_bf_account_details", bfacct, (error, res) => {
                 if(error) {
@@ -347,18 +348,9 @@ async function openDropdownPrompt(dropdown) {
                 } else {
                   $('#para-account-detail-curate').html(res);
                   $('#current-bf-account').text(bfacct);
+                  $('#current-bf-account-generate').text(bfacct);
                   updateBfAccountList()
-                  if (!($('#Question-generate-dataset-BF-account').hasClass('prev'))) {
-                    $("#div-bf-account-btns").css("display", "flex");
-                    $('#div-bf-account-btns button').show();
-                  } else {
-                    $("#div-bf-account-btns").css("display", "none");
-                    $('#div-bf-account-btns button').hide();
-                  }
-                  if (!($('#Question-getting-started-BF-account').hasClass('prev'))) {
-                    $("#div-bf-account-btns-getting-started").css("display", "flex");
-                    $('#div-bf-account-btns-getting-started button').show();
-                  }
+                  checkPrevDivForConfirmButton("account")
                 }
               })
           } else {
@@ -399,9 +391,11 @@ async function openDropdownPrompt(dropdown) {
     // check return value
     if (bfDS) {
         $("#current-bf-dataset").text(bfDataset);
+        $("#current-bf-dataset-generate").text(bfDataset);
         defaultBfDataset = bfDataset;
         tempDatasetListsSync()
         showHideDropdownButtons("dataset", "show");
+        checkPrevDivForConfirmButton("dataset")
         // $($('#button-confirm-bf-dataset').parents()[0]).css("display", "flex")
         // $('#button-confirm-bf-dataset').show()
       }
@@ -425,6 +419,40 @@ $('#select-permission-list-2').change(function(e) {
     updateDatasetList(bfacct, datasetPermission)
   }
 })
+
+function checkPrevDivForConfirmButton(category) {
+  if (category === "account") {
+    if (!($('#Question-generate-dataset-BF-account').hasClass('prev'))) {
+      $("#div-bf-account-btns").css("display", "flex");
+      $('#div-bf-account-btns button').show();
+    } else {
+      $("#div-bf-account-btns").css("display", "none");
+      $('#div-bf-account-btns button').hide();
+    }
+    if (!($('#Question-getting-started-BF-account').hasClass('prev'))) {
+      $("#div-bf-account-btns-getting-started").css("display", "flex");
+      $('#div-bf-account-btns-getting-started button').show();
+    } else {
+      $("#div-bf-account-btns-getting-started").css("display", "none");
+      $('#div-bf-account-btns-getting-started button').hide();
+    }
+  } else  if (category === "dataset") {
+      if (!($('#Question-generate-dataset-BF-dataset').hasClass('prev'))) {
+        $($("#button-confirm-bf-dataset").parent()[0]).css("display", "flex");
+        $("#button-confirm-bf-dataset").show();
+      } else {
+        $($("#button-confirm-bf-dataset").parent()[0]).css("display", "none");
+        $("#button-confirm-bf-dataset").hide();
+      }
+      if (!($('#Question-getting-started-BF-dataset').hasClass('prev'))) {
+        $($("#button-confirm-bf-dataset-getting-started").parent()[0]).css("display", "flex");
+        $("#button-confirm-bf-dataset-getting-started").show();
+      } else {
+        $($("#button-confirm-bf-dataset-getting-started").parent()[0]).css("display", "none");
+        $("#button-confirm-bf-dataset-getting-started").hide();
+      }
+  }
+}
 
 function tempDatasetListsSync() {
   $("#bfdatasetlist_renamedataset").val(defaultBfDataset);
@@ -477,7 +505,7 @@ function updateDatasetList(bfaccount, myPermission) {
     document.getElementById("div-permission-list-2").style.display = "block";
     $("#div-filter-datasets-progress-2").css("display", "none");
     document.getElementById("para-filter-datasets-status-2").innerHTML = filteredDatasets.length + " dataset(s) where you have " +  myPermission.toLowerCase() + " permissions were loaded successfully below."
-  }, 2000)
+  }, 3000)
 }
 
 /// helper function to refresh live search dropdowns per dataset permission on change event

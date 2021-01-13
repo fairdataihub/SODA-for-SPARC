@@ -2933,6 +2933,7 @@ bfAccountList.addEventListener('change', () => {
   // sync BF account under Step 6: Generate
     defaultBfAccount = myitemselect;
     $('#current-bf-account').text(defaultBfAccount);
+    $('#current-bf-account-generate').text(defaultBfAccount);
     showAccountDetails(bfAccountLoadProgress);
     showHideDropdownButtons("account", "show");
   }
@@ -3251,8 +3252,8 @@ function syncDatasetDropdownOption(dropdown) {
   defaultBfDataset = dropdown.value;
   if (defaultBfDataset !== "Select dataset") {
     $("#current-bf-dataset").text(defaultBfDataset);
-    $($('#button-confirm-bf-dataset').parents()[0]).css("display", "flex")
-    $('#button-confirm-bf-dataset').show()
+    $("#current-bf-dataset-generate").text(defaultBfDataset);
+    showHideDropdownButtons("dataset", "show");
   }
 
   if (dropdown===bfDatasetListPermission) {
@@ -4328,6 +4329,7 @@ function showAccountDetails(loadProgress){
     } else {
         bfSelectAccountStatus.innerHTML = res;
         $('#para-account-detail-curate').html(res);
+        $('#para-account-detail-curate-generate').html(res);
         bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
         loadProgress.style.display = 'none'
         document.getElementById("div-permission-list").style.display = "block"
@@ -4521,6 +4523,7 @@ function loadDefaultAccount() {
           $('#bfaccountlist option[value="'+myitemselect+'"]').prop('selected',true);
           defaultBfAccount = myitemselect;
           $('#current-bf-account').text(myitemselect);
+          $('#current-bf-account-generate').text(myitemselect);
           showAccountDetails(bfAccountLoadProgress)
           showHideDropdownButtons("account", "show");
           bfAccountLoadProgress.style.display = 'block';
@@ -5425,6 +5428,8 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
         } else {
             $('#para-account-detail-curate').html(res);
             $('#current-bf-account').text(keyname);
+            $('#current-bf-account-generate').text(keyname);
+            $('#para-account-detail-curate-generate').html(res);
             showHideDropdownButtons("account", "show");
            }
       })
@@ -5496,10 +5501,14 @@ function showDefaultBFAccount() {
               console.error(error);
               $('#para-account-detail-curate').html("None");
               $('#current-bf-account').text("None");
+              $('#current-bf-account-generate').text("None");
+              $('#para-account-detail-curate-generate').html("None");
               showHideDropdownButtons("account", "hide");
             } else {
                 $('#para-account-detail-curate').html(res);
                 $('#current-bf-account').text(defaultBfAccount);
+                $('#current-bf-account-generate').text(defaultBfAccount);
+                $('#para-account-detail-curate-generate').html(res);
                 showHideDropdownButtons("account", "show");
                }
           })
