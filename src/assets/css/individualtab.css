@@ -910,3 +910,97 @@
   font-size: 16px;
   margin-left:5px
 }
+
+.svg-change-current-account {
+  cursor:pointer;
+  transition: transform 0.07s ease-out;
+}
+
+.svg-change-current-account:hover {
+  transform: translateY(-3px);
+  fill: #000
+}
+
+.swal2-title {
+  margin: 0px !important;
+  font-size: 16px !important;
+  margin-bottom: 10px !important;
+}
+
+.swal2-select {
+  min-width: 100% !important;
+  font-size: 16px !important;
+}
+
+.swal2-popup {
+  padding: 20px 5px 15px !important;
+}
+
+.swal2-confirm {
+  background-color: var(--color-light-green) !important;
+  width: 120px !important;
+}
+
+.swal2-actions {
+  justify-content: flex-end !important;
+}
+
+.swal2-deny {
+  width: 120px !important;
+  border: 1px solid #dbdbdb !important;
+  color:  #363636 !important;
+  font-weight: 400 !important;
+  width: 140px !important;
+  font-size: 14px !important;
+  padding: 8px 10px !important;
+  background: #fff !important;
+}
+
+.swal2-cancel {
+  width: 120px !important;
+}
+
+.swal2-deny:hover {
+  background-image:linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)) !important;
+}
+
+.swal2-validation-message {
+  background: transparent !important;
+  color: red !important;
+}
+
+.swal2-footer {
+  color: #363636 !important;
+  justify-content: flex-end !important;
+  padding-right:20px !important;
+}
+
+.swal2-footer a {
+  text-decoration: underline !important;
+  color: var(--color-light-green) !important;
+}
+
+.search-select-box {
+  width: 100% !important
+}
+
+.search-select-box button {
+  background-color: #fff !important;
+  padding: 10px 15px;
+  color: #363636 !important;
+  border-radius: 4px;
+  border: 1px solid #dbdbdb;
+}
+
+.swal2-actions {
+  z-index: 0 !important
+}
+
+.dropdown-menu.show {
+  z-index: 1 !important;
+  width: 70% !important
+}
+
+.swal2-header {
+  margin-bottom: 15px !important;
+}

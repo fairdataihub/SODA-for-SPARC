@@ -328,10 +328,10 @@ button[disabled]{
   font-weight: bold;
   pointer-events: none;
 }
-
+/* 
 .dropdown-item:hover {
   background-color: #F0F0F0 !important;
-}
+} */
 
 .folder_desc {
     text-align: center;

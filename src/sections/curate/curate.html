@@ -1,137 +1,123 @@
+
 <template class="task-template">
   <section id="curate-section" class="section js-section u-category-windows" style="left:235px;">
 
-    <head>
+  <head>
       <title>SODA - Keep calm and curate</title>
       <!-- <link rel="import" href="sections/curate/organize_files.html"> -->
-    </head>
+  </head>
 
-    <main class="dash-content main show" id="curate_main" style="grid-template-columns: 1% 84% 15%">
-      <h1 style="color: var(--color-sidebar);margin-bottom:0;">
-        <svg style="margin-right: 20px; margin-bottom:-4px;" width="25px" height="25px" viewBox="0 0 16 16"
-          class="bi bi-folder-plus" fill="black" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd"
-            d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3zm-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139z" />
+<main class="dash-content main show" id="curate_main" style="grid-template-columns: 1% 84% 15%">
+<h1 style="color: var(--color-sidebar);margin-bottom:0;">
+  <svg style="margin-right: 20px; margin-bottom:-4px;" width="25px" height="25px" viewBox="0 0 16 16" class="bi bi-folder-plus" fill="black" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3zm-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139z"/>
+  </svg>
+  Prepare Dataset
+</h1>
+<!-- These are the main tab for each step -->
+  <div class="form-tabs tab-active" id="curate-tab">
+    <h3 class='question-title'><br>
+      <span style="color: #696969;font-size:13px">Please select one: </span>
+    </h3>
+    <div class="div-organize-generate-dataset" style="flex-direction:row">
+      <button class="button-generate-dataset" data-section="organize" id="button-section-organize-dataset">
+        <h5 data-section="organize" style="font-family:'Raleway', sans-serif;color:#585858;font-size:17px">Organize dataset</h5>
+        <i data-section="organize" class="fas fa-sitemap" style="font-size: 58px;color:var(--tagify-dd-color-primary);"></i>
+        <p data-section="organize"> Generate your SPARC format dataset</p>
+      </button>
+      <button class="button-generate-dataset" data-section="validate" style="background: #f6f6f6;pointer-events: none;" id="button-section-validate-dataset">
+        <h5 style="font-family:'Raleway', sans-serif;color:#585858;font-size:17px">Validate dataset</h5>
+        <svg width="60px" height="60px" viewBox="0 0 16 16" class="bi bi-clipboard-check" fill="#585858" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+          <path fill-rule="evenodd" d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3zm4.354 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
         </svg>
-        Prepare Dataset
-      </h1>
-      <!-- These are the main tab for each step -->
-      <div class="form-tabs tab-active" id="curate-tab">
-        <h3 class='question-title'><br>
-          <span style="color: #696969;font-size:13px">Please select one: </span>
-        </h3>
-        <div class="div-organize-generate-dataset" style="flex-direction:row">
-          <button class="button-generate-dataset" data-section="organize" id="button-section-organize-dataset">
-            <h5 data-section="organize" style="font-family:'Raleway', sans-serif;color:#585858;font-size:17px">Organize
-              dataset</h5>
-            <i data-section="organize" class="fas fa-sitemap"
-              style="font-size: 58px;color:var(--tagify-dd-color-primary);"></i>
-            <p data-section="organize"> Generate your SPARC format dataset</p>
-          </button>
-          <button class="button-generate-dataset" data-section="validate"
-            style="background: #f6f6f6;pointer-events: none;" id="button-section-validate-dataset">
-            <h5 style="font-family:'Raleway', sans-serif;color:#585858;font-size:17px">Validate dataset</h5>
-            <svg width="60px" height="60px" viewBox="0 0 16 16" class="bi bi-clipboard-check" fill="#585858"
-              xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd"
-                d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" />
-              <path fill-rule="evenodd"
-                d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3zm4.354 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z" />
-            </svg>
-            <p>Coming soon...</p>
-          </button>
-        </div>
+        <p>Coming soon...</p>
+      </button>
+    </div>
+  </div>
+</main>
+</section>
+
+<section id="organize-section" class="section js-section u-category-windows" style="padding-left:15px">
+
+<main class="dash-content" id="organize_main" style="flex-direction:column;justify-content:space-between">
+  <h3 style="color: var(--color-sidebar);margin-bottom:10px;margin-left:5px"><i class="fas fa-sitemap" style="margin-right:10px;margin-bottom:5px;"></i>Organize dataset
+  </h3>
+    <!-- <div style="display:flex; flex-direction:column;">
+      <p>Current BF account: My account here</p>
+      <p>Current dataset: My dataset here</p>
+    </div> -->
+
+
+<!-- These are the main tab for each step -->
+
+<div style="display:flex;flex-direction:column;justify-content:space-between;height:100%">
+  <div style="display:flex;flex-direction:row;justify-content:space-evenly;width:100%;height:90%;border-top:1px solid #f5f5f5;padding-left:20px;padding-top:15px">
+
+    <div id="div-vertical-progress-bar" class="vertical-progress-bar">
+      <div class="vertical-progress-bar-step">
+        <span>1</span>
+        <span>
+          <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
+        <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+          </svg>
+        </span>
       </div>
-    </main>
-  </section>
+      <div class="vertical-progress-bar-step">
+        <span>2</span>
+        <span>
+          <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
+        <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+          </svg>
+        </span>
+      </div>
+      <div class="vertical-progress-bar-step">
+        <span>3</span>
+        <span>
+          <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
+        <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+          </svg>
+        </span>
+      </div>
+      <div class="vertical-progress-bar-step">
+        <span>4</span>
+        <span>
+          <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
+        <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+          </svg>
+        </span>
+      </div>
+      <div class="vertical-progress-bar-step">
+        <span>5</span>
+        <span>
+          <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
+        <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+          </svg>
+        </span>
+      </div>
+      <div class="vertical-progress-bar-step last">
+        <span>6</span>
+        <span>
+          <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
+        <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+          </svg>
+        </span>
+      </div>
+    </div>
 
-  <section id="organize-section" class="section js-section u-category-windows" style="padding-left:15px">
+  <!-- 1. Getting started tab -->
+  <div class="parent-tabs condensed" id="getting-started-tab" style="overflow-y:scroll;overflow-x:hidden;flex-direction:column;justify-content:flex-start;height:100%;">
+    <h3 id="getting-started-summary-message" class="question-title" style="color:var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:60px;font-weight:600">Step 1: Getting started
+      <!-- <span style="color: #898989;font-size:13px;font-weight:500">Please answer the below questions: </span> -->
+      <a style="padding:0px 0px 0px 5px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-1-getting-started" >
+        <img class="nav-video" src="assets/img/documentation-icon.png">
+      </a>
+    </h3>
 
-    <main class="dash-content" id="organize_main" style="flex-direction:column;justify-content:space-between">
-      <h3 style="color: var(--color-sidebar);margin-bottom:10px;margin-left:5px"><i class="fas fa-sitemap"
-          style="margin-right:10px;margin-bottom:5px;"></i>Organize dataset</h3>
-
-      <!-- These are the main tab for each step -->
-
-      <div style="display:flex;flex-direction:column;justify-content:space-between;height:100%">
-        <div
-          style="display:flex;flex-direction:row;justify-content:space-evenly;width:100%;height:100%;border-top:1px solid #f5f5f5;padding-left:20px;padding-top:15px">
-
-          <div id="div-vertical-progress-bar" class="vertical-progress-bar">
-            <div class="vertical-progress-bar-step">
-              <span>1</span>
-              <span>
-                <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
-                  <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
-                </svg>
-              </span>
-            </div>
-            <div class="vertical-progress-bar-step">
-              <span>2</span>
-              <span>
-                <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
-                  <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
-                </svg>
-              </span>
-            </div>
-            <div class="vertical-progress-bar-step">
-              <span>3</span>
-              <span>
-                <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
-                  <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
-                </svg>
-              </span>
-            </div>
-            <div class="vertical-progress-bar-step">
-              <span>4</span>
-              <span>
-                <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
-                  <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
-                </svg>
-              </span>
-            </div>
-            <div class="vertical-progress-bar-step">
-              <span>5</span>
-              <span>
-                <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
-                  <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
-                </svg>
-              </span>
-            </div>
-            <div class="vertical-progress-bar-step last">
-              <span>6</span>
-              <span>
-                <svg style="width:16.41px;12.12px" viewBox="0 0 24 24">
-                  <path fill="#FFFFFF" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
-                </svg>
-              </span>
-            </div>
-          </div>
-
-          <!-- 1. Getting started tab -->
-          <div class="parent-tabs condensed" id="getting-started-tab"
-            style="overflow-y:scroll;overflow-x:hidden;flex-direction:column;justify-content:flex-start;height:100%;">
-            <h3 id="getting-started-summary-message" class="question-title"
-              style="color:var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:60px;font-weight:600">
-              Step 1: Getting started
-              <!-- <span style="color: #898989;font-size:13px;font-weight:500">Please answer the below questions: </span> -->
-              <a style="padding:0px 0px 0px 5px" class="github-wiki-link"
-                href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-1-getting-started">
-                <img class="nav-video" src="assets/img/documentation-icon.png">
-              </a>
-            </h3>
-
-            <div class="individual-question getting-started show" id="Question-getting-started-1">
-              <div class="ui form" style="width:100%">
-                <div class="grouped fields">
-                  <label style="font-size:17px;text-align:center;color:var(--color-bg-plum)">Let's get started. What
-                    would you like to do?
-
-                    <!-- tooltip -->
-                    <!-- <div class="ui icon button" data-tooltip="Hello. This is the data for tooltip. Let's get started. What would you like to do? Let's get started. What would you like to do?" data-position="top left">
-              <i class="fas fa-info-circle"></i>
-            </div> -->
-            <!-- end of tooltip -->
+    <div class="individual-question getting-started show" id="Question-getting-started-1">
+        <div class="ui form" style="width:100%">
+        <div class="grouped fields">
+          <label style="font-size:17px;text-align:center;color:var(--color-bg-plum)">Let's get started. What would you like to do?
 
           <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
           <div style="display:flex;flex-direction:row;">
@@ -144,18 +130,14 @@
                     </div>
                   </div>
                   <div class="card-body">
-                    <svg width="35px" height="35px" viewBox="0 0 16 16" class="bi bi-folder-plus" fill="green"
-                      xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z" />
-                      <path fill-rule="evenodd"
-                        d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z" />
+                    <svg width="35px" height="35px" viewBox="0 0 16 16" class="bi bi-folder-plus" fill="green" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"/>
+                      <path fill-rule="evenodd" d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z"/>
                     </svg>
-                    <!-- <i class="fas fa-plus" style="color: green"></i> -->
                     <h2>Prepare a new dataset</h2>
                   </div>
-                  </div>
-                  </div>
+                </div>
+            </div>
 
             <div style="margin:15px 0;">
               <div class="option-card  radio-button" id="div-getting-started-previous-progress" data-next="Question-getting-started-previously-initiated-SODA" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
@@ -169,102 +151,55 @@
                     <i class="far fa-save"></i>
                     <h2>Continue with a previously initiated dataset in SODA </h2>
                   </div>
-                </div>
-                </div>
+              </div>
+            </div>
 
-                    <div style="margin:15px 0;">
-                      <div class="option-card getting-started radio-button" id="div-getting-started-existing-local" data-next="Question-generate-dataset-locally-destination"
-                        onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" id="existing-local" name="getting-started-1" type="radio">
-                            <label for="prepare-new"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-laptop" fill="#585858"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M13.5 3h-11a.5.5 0 0 0-.5.5V11h12V3.5a.5.5 0 0 0-.5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11z" />
-                            <path d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z" />
-                          </svg>
-                          <h2>Continue working on an existing local dataset</h2>
-                        </div>
+            <div style="margin:15px 0;">
+              <div class="option-card radio-button" 
+              id="div-getting-started-existing-local" data-next="Question-generate-dataset-locally-destination" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input class="folder-input-check" id="existing-local" name="getting-started-1" type="radio">
+                      <label for="prepare-new"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-laptop" fill="#585858" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M13.5 3h-11a.5.5 0 0 0-.5.5V11h12V3.5a.5.5 0 0 0-.5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11z"/>
+                      <path d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"/>
+                    </svg>
+                    <h2>Continue working on an existing local dataset</h2>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin:15px 0;">
+                <div class="option-card radio-button" data-next="Question-getting-started-BF-account" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
+                    <div class="card-head">
+                      <div class="folder-checkbox">
+                        <input class="folder-input-check" id="existing-bf" name="getting-started-1" type="radio">
+                        <label for="prepare-new"></label>
                       </div>
                     </div>
-
-                    <div style="margin:15px 0;">
-                      <div class="option-card radio-button" data-next="Question-getting-started-final"
-                        onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" id="existing-bf" name="getting-started-1" type="radio">
-                            <label for="prepare-new"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-folder-check" fill="var(--tagify-dd-color-primary)"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z" />
-                            <path fill-rule="evenodd"
-                              d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z" />
-                          </svg>
-                          <!-- <i class="fas fa-plus" style="color: green"></i> -->
-                          <h2>Continue working on an existing Blackfynn dataset</h2>
-                        </div>
-                      </div>
+                    <div class="card-body">
+                      <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-folder-check" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"/>
+                        <path fill-rule="evenodd" d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                      </svg>
+                      <h2>Continue working on an existing Blackfynn dataset</h2>
                     </div>
+                  </div>
+                </div>
 
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- If modify an existing dataset, specify where it is -->
-            <!-- <div class="individual-question getting-started" id="Question-getting-started-existing-dataset">
-      <div class="ui form" style="width:450px">
-      <div class="grouped fields">
-        <label style="font-size:17px;color:var(--color-bg-plum);text-align:center;">Where is the existing dataset stored?
-        <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
-        <div style="display:flex;flex-direction:row;">
-          <div style="margin:15px 0;">
-            <div class="option-card radio-button" data-next="Question-getting-started-locally-destination" onclick="transitionSubQuestions(this, 'Question-getting-started-existing-dataset', 'getting-started-tab', '', 'individual-question getting-started')">
-                <div class="card-head">
-                  <div class="folder-checkbox">
-                    <input class="folder-input-check" id="existing-location" name="getting-started-2" type="radio">
-                    <label for="existing-location"></label>
-                  </div>
-                </div>
-                <div class="card-body">
-                  <i class="fas fa-desktop" style="color: orange"></i>
-                  <h2>Stored locally on my computer</h2>
-                </div>
-              </div>
-            </div>
-          <div style="margin:15px 0;">
-            <div class="option-card radio-button" data-next="Question-getting-started-BF-account" onclick="transitionSubQuestions(this, 'Question-getting-started-existing-dataset', 'getting-started-tab', '', 'individual-question getting-started')">
-                <div class="card-head">
-                  <div class="folder-checkbox">
-                    <input class="folder-input-check" id="existing-BF" name="getting-started-2" type="radio">
-                    <label for="curate-new-dataset"></label>
-                  </div>
-                </div>
-                <div class="card-body">
-                  <i class="fas fa-cloud-upload-alt" style="color: blue"></i>
-                  <h2>Stored on my Blackfynn account</h2>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
-      </div>
-    </div> -->
+    </div>
+  </div>
 
     <div class="individual-question getting-started" id="Question-getting-started-previously-initiated-SODA">
       <div class="ui form" style="width:450px">
         <div class="grouped fields">
-          <label style="font-size:17px;color:var(--color-bg-plum);text-align:center;">Which progress would you like to continue working on?
+          <label style="font-size:17px;color:var(--color-bg-plum);text-align:center;">Which dataset would you like to continue working on?
           <br><span style="color: #696969;font-size:13px">Please select one: </span></label>
           <div class="field" style="margin:15px 0;width:450px;">
             <select id="progress-files-dropdown" onchange="loadProgressFile(this)" name="progress file" class='ui selection dropdown' style="width:450px !important;border-radius:7px;padding:8px">
@@ -277,1297 +212,1107 @@
         </div>
       </div>
 
+
+        <div class="individual-question getting-started" id="Question-getting-started-BF-account">
+          <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">What is your Blackfynn account?</label>
+              <div class="field" style="margin:5px 0;width:450px;">
+                <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
+                  <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
+                    <div>
+                      <h5 style="color:#808080;font-size:15px">Current account:
+                      <span style="color:#000;font-weight:600;margin-left:8px;font-size:15px" id="current-bf-account">None</span></h5>
+                    </div>
+                    <svg class="svg-change-current-account" onclick="openDropdownPrompt('bf')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                    </svg>
+                  </div>
+                  <div style="display:flex; flex-direction:row;margin-bottom:15px; ">
+                    <h5 style="color:#808080;font-size:15px">Account details:</h5>
+                    <p style="color:#000;font-weight:600;margin-left:15px;font-size:15px" id="para-account-detail-curate">None</p>
+                  </div>
+                </div>
+              </div>
+              <div id="div-bf-account-btns-getting-started" style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
+                <button id="btn-bf-account-getting-started" onclick="transitionSubQuestions(this, 'Question-getting-started-BF-account', 'getting-started-tab', 'delete', 'individual-question getting-started')"  data-next="Question-getting-started-BF-dataset" style="cursor:pointer;border-radius: 8px;margin:0 10px; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="individual-question getting-started" id="Question-getting-started-BF-dataset">
+            <div class="ui form" style="width:100%">
+              <div class="grouped fields">
+                <label style="font-size:17px;color:var(--color-bg-plum);">Which existing Blackfynn dataset would you like to use?</label>
+                <div class="field" style="margin:15px 0;width:450px">
+                  <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
+                    <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
+                      <div>
+                        <h5 style="color:#808080;font-size:15px">Current dataset:
+                        <span style="color:#000;font-weight:600;margin-left:8px;font-size:15px" id="current-bf-dataset">None</span></h5>
+                      </div>
+                      <svg class="svg-change-current-account" onclick="openDropdownPrompt('dataset')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                        <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
+                    <button id="button-confirm-bf-dataset-getting-started" onclick="transitionSubQuestionsButton(this, 'Question-getting-started-BF-dataset', 'getting-started-tab', 'delete', 'individual-question getting-started')" data-next="Question-getting-started-final" style="display:none;cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
     <!--  confirm before proceed, empty for now -->
-      <div class="individual-question getting-started" id="Question-getting-started-final" style="margin-top:25px;justify-content:flex-start">
+    <div class="individual-question getting-started" id="Question-getting-started-final" style="margin-top:25px;justify-content:flex-start">
+    </div>
+
+  <!-- 2. Specify high Level folders -->
+  </div>
+  <div class="parent-tabs" id="high-level-folders-tab" style="flex-direction:column;justify-content:flex-start;height:100%;margin-right:50px">
+    <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:50px;font-weight:600;">Step 2: Specify high-level folders
+      <a style="padding:0px 0px 0px 5px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-2-specify-high-level-folders" >
+        <img class="nav-video" src="assets/img/documentation-icon.png">
+      </a>
+    </h3>
+    <div class="container-body condensed" style="min-height:450px">
+      <h3 class="question-title" style="text-align:center;padding-bottom:5px;margin-bottom:0">
+       Which SPARC high-level folders<br>
+        would you like to add to your dataset?<br>
+        <span style="color: #696969;font-size:13px">Please select at least one: </span>
+      </h3>
+      <div>
+      <div class="first-three-high-level-folders">
+        <div class="option-card high-level-folders">
+        <div class="card-head">
+          <h2><i class="fas fa-folder"></i>code</h2>
+          <div class="folder-checkbox" style="float:right">
+            <input class="folder-input-check" id="code-check" type="checkbox">
+            <label for="code-check"></label>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>Folder containing all the source code used in the study</p>
+        </div>
+      </div>
+      <div class="option-card high-level-folders">
+        <div class="card-head">
+          <h2><i class="fas fa-folder"></i>primary</h2>
+          <div class="folder-checkbox">
+            <input class="folder-input-check" id="primary-check" type="checkbox">
+            <label for="primary-check"></label>
+          </div>
+        </div>
+        <div class="card-body">
+            <p>Folder containing all folders and files for experimental subjects and/or samples</p>
+        </div>
+      </div>
+      <div class="option-card high-level-folders">
+        <div class="card-head">
+          <h2><i class="fas fa-folder"></i>source</h2>
+          <div class="folder-checkbox">
+            <input class="folder-input-check" id="source-check" type="checkbox">
+            <label for="source-check"></label>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>Folder containing very raw data i.e. raw or untouched files from an experiment</p>
+        </div>
+      </div>
+    </div>
+    <div class="first-three-high-level-folders">
+      <div class="option-card high-level-folders">
+        <div class="card-head">
+          <h2><i class="fas fa-folder"></i>docs</h2>
+          <div class="folder-checkbox">
+            <input class="folder-input-check" id="docs-check" type="checkbox">
+            <label for="docs-check"></label>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>Folder containing all other supporting files that don't belong to any of the other folders</p>
+        </div>
+      </div>
+      <div class="option-card high-level-folders">
+        <div class="card-head">
+          <h2><i class="fas fa-folder"></i>protocol</h2>
+          <div class="folder-checkbox">
+            <input class="folder-input-check" id="protocol-check" type="checkbox">
+            <label for="protocol-check"></label>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>Folder containing supplementary files to accompany the protocols submitted to Protocols.io. </p>
+        </div>
+      </div>
+      <div class="option-card high-level-folders">
+        <div class="card-head">
+          <h2 style="padding-left:15px"><i class="fas fa-folder"></i>derivative</h2>
+          <div class="folder-checkbox">
+            <input class="folder-input-check" id="derivative-check" type="checkbox">
+            <label for="derivative-check"></label>
+          </div>
+        </div>
+        <div class="card-body">
+          <p> Folder containing data files derived from raw data </p>
+        </div>
+      </div>
+      </div>
+    </div>
+    </div>
+  </div>
+
+
+  <!-- 3. Organize dataset -->
+  <div class="parent-tabs condensed" id="organize-dataset-tab" style="grid-template-rows: auto">
+    <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center; font-weight:600;padding-bottom:5px">Step 3: Structure dataset files
+      <a style="padding:0px 0px 0px 5px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-3-structure-dataset-files" >
+        <img class="nav-video" src="assets/img/documentation-icon.png">
+      </a>
+      <br><br>
+      <span style="margin-top:0;color: #000;font-size:14px;font-weight:500"> Virtually structure your dataset in the interface below <br>
+      by importing files, creating folders, renaming, and adding metadata to your files.</span>
+    </h3>
+
+    <div style="border-top:1px solid #f0f0f0;padding: 0 0;margin:3px 3px;margin-left:60px;display:flex;flex-direction:row;justify-content:space-between">
+    <div style="width:100%;display:flex;flex-direction:row">
+    <div class="container-fluid" style="margin-top:40px;height:auto;border-radius:3px;">
+      <div>
+        <!-- <div> -->
+        <!-- <h5 style="cursor: pointer;float:left;font-size:15px;color:var(--tagify-dd-color-primary)">
+          <a style="text-decoration:underline" id="globa-path-folder-1">My dataset </a><i class="fas fa-chevron-right" style="margin-left:5px;margin-right:5px;font-size:12px;"></i>
+        </h5> -->
+        <button id="button-back" class="button-back" style="float:left;"><i class="fas fa-arrow-left fa-fw"></i></button>
+      <input style="float:left;margin-left: 15px;height: 40px;border: none; font-family: 'Raleway', sans-serif;font-size: 14px;font-weight:600;text-decoration:underline;cursor:default;color:#898989;width: 300px" id="input-global-path" value="My_dataset_folder/" readonly></input>
+
+          <div class="div-organize-dataset-menu">
+            <button id="new-folder" style="float:right;margin-right:10px;background:var(--tagify-dd-color-primary);color:#fff;border:none"><i class="fas fa-folder-plus"></i> New folder</button>
+            <div class="btn-group" role="group">
+              <button id="btnGroupDrop1" type="button" style="color:var(--tagify-dd-color-primary);background:#fff;border: 1px solid var(--tagify-dd-color-primary);font-weight:600" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <svg style="margin-right:10px" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-upload" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                  <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                </svg>Import
+              </button>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop1">
+                <a class="dropdown-item" id="add-files" href="#"><i class="fas fa-upload" style="margin-right:5px"></i>Import files</a>
+                <a class="dropdown-item" id="add-folders" href="#"><i class="fas fa-upload" style="margin-right:5px"></i>Import folders</a>
+              </div>
+            </div>
+            </div>
+      </div>
+      <!-- These are the context menu options, will not appear on the UI until prompted -->
+        <ul class="menu reg-folder off">
+          <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
+          <li id="folder-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
+        </ul>
+        <ul class="menu high-level-folder off">
+          <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
+          <li id="folder-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
+          <li id="tooltip-folders"><i class="fas fa-info fa-fw"></i>Details</li>
+        </ul>
+        <ul class="menu file off">
+          <li id="file-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
+          <li id="file-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
+          <li id="file-description"><i class="far fa-plus-square fa-fw"></i>Details</li>
+        </ul>
+        <!-- <span class="hoverPath" style="display: none"></span> -->
+        <span class="hoverFullName" style="display: none"></span>
+      <!-- END -->
+        <div id="items" class="div-organize-items" ondrop="drop(event);" ondragover="allowDrop(event);">
+        </div>
+        <div class="div-display-details file">
+          <button class="button-display-details">X</button>
+          <div>
+            <label><b>Local path: <br></b></label>
+            <p style="margin: 10px 0;" id="para-local-path-file"></p>
+          </div>
+          <div>
+            <label><b>Description: </b></label>
+            <textarea id="textarea-file-description"></textarea>
+            <input id="input-add-file-description" type="checkbox" style="color:#000;float:left"></input><label style="color:#000;float:left">Apply to all files in this folder</label>
+          </div>
+          <div>
+            <label><b>Additional metadata:</b></label>
+            <textarea id="textarea-file-metadata"></textarea>
+            <input  id="input-add-file-metadata" type="checkbox" style="color:#000;float:left"></input><label style="color:#000;float:left">Apply to all files in this folder</label>
+          </div>
+          <button id="button-confirm-display-details-file" onclick="addDetailsForFile(this)" class="transition-btn" style="width:100px;margin:10px auto;height:30px;font-size:13px;padding:5px;">Confirm</button>
+      </div>
+
+    </div>
+  </div>
+    </div>
+  </div>
+
+  <!-- 4. Metadata files -->
+  <div class="parent-tabs condensed" id="metadata-files-tab" style="grid-template-rows: 10% 90%;">
+    <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;font-weight:600;">Step 4: Specify high-level metadata files
+      <a style="padding:0px 0px 0px 5px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-4-specify-high-level-metadata-files" >
+        <img class="nav-video" src="assets/img/documentation-icon.png">
+      </a>
+      <br>
+    </h3>
+    <div class="div-organize-generate-dataset metadata">
+      <h3 class="question-title">
+      Specify
+        metadata files<br>
+        to be included in your dataset<br>
+        <span style="color: #696969;font-size:13px">Click below to add desired files.</span>
+      </h3>
+      <div style="margin-bottom:15px;">
+      <button class="metadata-button button-generate-dataset" data-next="submissionUpload">
+        <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
+          <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2" fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        <!-- <i class="fas fa-file-medical" style="font-size: 65px;color:var(--tagify-dd-color-primary)"></i> -->
+        <p style="margin-top:30px;font-family:'Raleway', sans-serif">submission</p>
+      </button>
+
+      <button class="metadata-button button-generate-dataset" data-next="datasetDescriptionUpload">
+        <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
+          <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2" fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        <p style="margin-top:30px;font-family:'Raleway', sans-serif">dataset_description</p>
+      </button>
+
+      <button class="metadata-button button-generate-dataset" data-next="subjectsUpload">
+        <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
+          <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2" fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        <p style="margin-top:30px;font-family:'Raleway', sans-serif">subjects</p>
+      </button>
+    </div>
+      <div>
+      <button class="metadata-button button-generate-dataset" data-next="samplesUpload">
+        <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
+          <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2" fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        <p style="margin-top:30px;font-family:'Raleway', sans-serif">samples</p>
+      </button>
+      <button class="metadata-button button-generate-dataset" data-next="readmeUpload">
+        <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
+          <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2" fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        <p style="margin-top:30px;font-family:'Raleway', sans-serif">README</p>
+      </button>
+
+      <button class="metadata-button button-generate-dataset" data-next="changesUpload">
+        <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"/>
+          <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"/>
+          <path fill-rule="evenodd" d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2" fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        <p style="margin-top:30px;font-family:'Raleway', sans-serif">CHANGES</p>
+      </button>
+
+      </div>
+      </div>
+
+    <!-- submission -->
+    <div id="submissionUpload" class="div-individual-metadata">
+      <h5 style="text-align:center;color:#585858;font-size:16px">submission <br>(must be in .csv, .xlsx, or .json format)</h5>
+      <div style="margin-top:25px;text-align: center;">
+      <h5 style="text-align:center"></h5>
+      <div class="div-file-import" droppable="true" ondrop="dropHandler(event, 'para-submission-file-path', 'submission');" ondragover="return false">
+        <p style="font-weight:bold">Import existing file</p>
+        <div>
+          <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+          </svg>
+          <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2" fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+          </svg>
+          <!-- <i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i> -->
+        </div>
+        <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
+          file here OR</p>
+          <button id="button-sub" onclick="importMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')" class="div-file-import-button">Choose file</button>
+        </div>
+        <div class="div-file-import" id="metadata-submission-blackfynn"
+            style="display: none;">
+            <p style="font-weight:bold">Import Blackfynn file</p>
+            <div>
+              <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
+                fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                  d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                <path fill-rule="evenodd"
+                  d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+              </svg>
+            </div>
+            <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
+            <button
+              onclick="importBlackfynnMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
+              class="div-file-import-button">Use file</button>
+          </div>
+      </div>
+      <div style="width:80%;margin: 10px auto">
+        <p class="para-metadata-file-status" id="para-submission-file-path"></p>
+      </div>
+      <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
+        <button class="button-individual-metadata confirm transition-btn" onclick="confirmMetadataFilePath(this)" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
+        <button class="button-individual-metadata remove transition-btn" style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i class="fas fa-times" style="margin-right:10px"></i>Remove</button>
+      </div>
+      <div class="div-metadata-go-back" style="margin-top:15px;display:flex;flex-direction:column">
+        <button class="button-individual-metadata go-back transition-btn" style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
       </div>
     </div>
 
-            <!-- 2. Specify high Level folders -->
-          <div class="parent-tabs" id="high-level-folders-tab"
-            style="flex-direction:column;justify-content:flex-start;height:100%;margin-right:50px">
-            <h3 class="question-title"
-              style="color: var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:50px;font-weight:600;">
-              Step 2: Specify high-level folders
-              <a style="padding:0px 0px 0px 5px" class="github-wiki-link"
-                href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-2-specify-high-level-folders">
-                <img class="nav-video" src="assets/img/documentation-icon.png">
-              </a>
-            </h3>
-            <div class="container-body condensed" style="min-height:450px">
-              <h3 class="question-title" style="text-align:center;padding-bottom:5px;margin-bottom:0">
-                Which SPARC high-level folders<br>
-                would you like to add to your dataset?<br>
-                <span style="color: #696969;font-size:13px">Please select at least one: </span>
-              </h3>
-              <div>
-                <div class="first-three-high-level-folders">
-                  <div class="option-card high-level-folders">
-                    <div class="card-head">
-                      <h2><i class="fas fa-folder"></i>code</h2>
-                      <div class="folder-checkbox" style="float:right">
-                        <input class="folder-input-check" id="code-check" type="checkbox">
-                        <label for="code-check"></label>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <p>Folder containing all the source code used in the study</p>
-                    </div>
-                  </div>
-                  <div class="option-card high-level-folders">
-                    <div class="card-head">
-                      <h2><i class="fas fa-folder"></i>primary</h2>
-                      <div class="folder-checkbox">
-                        <input class="folder-input-check" id="primary-check" type="checkbox">
-                        <label for="primary-check"></label>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <p>Folder containing all folders and files for experimental subjects and/or samples</p>
-                    </div>
-                  </div>
-                  <div class="option-card high-level-folders">
-                    <div class="card-head">
-                      <h2><i class="fas fa-folder"></i>source</h2>
-                      <div class="folder-checkbox">
-                        <input class="folder-input-check" id="source-check" type="checkbox">
-                        <label for="source-check"></label>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <p>Folder containing very raw data i.e. raw or untouched files from an experiment</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="first-three-high-level-folders">
-                  <div class="option-card high-level-folders">
-                    <div class="card-head">
-                      <h2><i class="fas fa-folder"></i>docs</h2>
-                      <div class="folder-checkbox">
-                        <input class="folder-input-check" id="docs-check" type="checkbox">
-                        <label for="docs-check"></label>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <p>Folder containing all other supporting files that don't belong to any of the other folders</p>
-                    </div>
-                  </div>
-                  <div class="option-card high-level-folders">
-                    <div class="card-head">
-                      <h2><i class="fas fa-folder"></i>protocol</h2>
-                      <div class="folder-checkbox">
-                        <input class="folder-input-check" id="protocol-check" type="checkbox">
-                        <label for="protocol-check"></label>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <p>Folder containing supplementary files to accompany the protocols submitted to Protocols.io.
-                      </p>
-                    </div>
-                  </div>
-                  <div class="option-card high-level-folders">
-                    <div class="card-head">
-                      <h2 style="padding-left:15px"><i class="fas fa-folder"></i>derivative</h2>
-                      <div class="folder-checkbox">
-                        <input class="folder-input-check" id="derivative-check" type="checkbox">
-                        <label for="derivative-check"></label>
-                      </div>
-                    </div>
-                    <div class="card-body">
-                      <p> Folder containing data files derived from raw data </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-          <!-- 3. Organize dataset -->
-          <div class="parent-tabs condensed" id="organize-dataset-tab" style="grid-template-rows: auto">
-            <h3 class="question-title"
-              style="color: var(--color-bg-plum);font-size:15px;text-align:center; font-weight:600;padding-bottom:5px">
-              Step 3: Structure dataset files
-              <a style="padding:0px 0px 0px 5px" class="github-wiki-link"
-                href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-3-structure-dataset-files">
-                <img class="nav-video" src="assets/img/documentation-icon.png">
-              </a>
-              <br><br>
-              <span style="margin-top:0;color: #000;font-size:14px;font-weight:500"> Virtually structure your dataset in
-                the interface below <br>
-                by importing files, creating folders, renaming, and adding metadata to your files.</span>
-            </h3>
-
-            <div
-              style="border-top:1px solid #f0f0f0;padding: 0 0;margin:3px 3px;margin-left:60px;display:flex;flex-direction:row;justify-content:space-between">
-              <div style="width:100%;display:flex;flex-direction:row">
-                <div class="container-fluid" style="margin-top:40px;height:auto;border-radius:3px;">
-                  <div>
-                    <!-- <div> -->
-                    <!-- <h5 style="cursor: pointer;float:left;font-size:15px;color:var(--tagify-dd-color-primary)">
-          <a style="text-decoration:underline" id="globa-path-folder-1">My dataset </a><i class="fas fa-chevron-right" style="margin-left:5px;margin-right:5px;font-size:12px;"></i>
-        </h5> -->
-                    <button id="button-back" class="button-back" style="float:left;"><i
-                        class="fas fa-arrow-left fa-fw"></i></button>
-                    <input
-                      style="float:left;margin-left: 15px;height: 40px;border: none; font-family: 'Raleway', sans-serif;font-size: 14px;font-weight:600;text-decoration:underline;cursor:default;color:#898989;width: 300px"
-                      id="input-global-path" value="My_dataset_folder/" readonly></input>
-
-                    <div class="div-organize-dataset-menu">
-                      <button id="new-folder"
-                        style="float:right;margin-right:10px;background:var(--tagify-dd-color-primary);color:#fff;border:none"><i
-                          class="fas fa-folder-plus"></i> New folder</button>
-                      <div class="btn-group" role="group">
-                        <button id="btnGroupDrop1" type="button"
-                          style="color:var(--tagify-dd-color-primary);background:#fff;border: 1px solid var(--tagify-dd-color-primary);font-weight:600"
-                          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <svg style="margin-right:10px" width="1em" height="1em" viewBox="0 0 16 16"
-                            class="bi bi-upload" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                            <path fill-rule="evenodd"
-                              d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                          </svg>Import
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop1">
-                          <a class="dropdown-item" id="add-files" href="#"><i class="fas fa-upload"
-                              style="margin-right:5px"></i>Import files</a>
-                          <a class="dropdown-item" id="add-folders" href="#"><i class="fas fa-upload"
-                              style="margin-right:5px"></i>Import folders</a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- These are the context menu options, will not appear on the UI until prompted -->
-                  <ul class="menu reg-folder off">
-                    <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
-                    <li id="folder-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
-                  </ul>
-                  <ul class="menu high-level-folder off">
-                    <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
-                    <li id="folder-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
-                    <li id="tooltip-folders"><i class="fas fa-info fa-fw"></i>Details</li>
-                  </ul>
-                  <ul class="menu file off">
-                    <li id="file-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
-                    <li id="file-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
-                    <li id="file-description"><i class="far fa-plus-square fa-fw"></i>Details</li>
-                  </ul>
-                  <!-- <span class="hoverPath" style="display: none"></span> -->
-                  <span class="hoverFullName" style="display: none"></span>
-                  <!-- END -->
-                  <div id="items" class="div-organize-items" ondrop="drop(event);" ondragover="allowDrop(event);">
-                  </div>
-                  <div class="div-display-details file">
-                    <button class="button-display-details">X</button>
-                    <div>
-                      <label><b>Local path: <br></b></label>
-                      <p style="margin: 10px 0;" id="para-local-path-file"></p>
-                    </div>
-                    <div>
-                      <label><b>Description: </b></label>
-                      <textarea id="textarea-file-description"></textarea>
-                      <input id="input-add-file-description" type="checkbox"
-                        style="color:#000;float:left"></input><label style="color:#000;float:left">Apply to all files in
-                        this folder</label>
-                    </div>
-                    <div>
-                      <label><b>Additional metadata:</b></label>
-                      <textarea id="textarea-file-metadata"></textarea>
-                      <input id="input-add-file-metadata" type="checkbox" style="color:#000;float:left"></input><label
-                        style="color:#000;float:left">Apply to all files in this folder</label>
-                    </div>
-                    <button id="button-confirm-display-details-file" onclick="addDetailsForFile(this)"
-                      class="transition-btn"
-                      style="width:100px;margin:10px auto;height:30px;font-size:13px;padding:5px;">Confirm</button>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 4. Metadata files -->
-          <div class="parent-tabs condensed" id="metadata-files-tab" style="grid-template-rows: 10% 90%;">
-            <h3 class="question-title"
-              style="color: var(--color-bg-plum);font-size:15px;text-align:center;font-weight:600;">Step 4: Specify
-              high-level metadata files
-              <a style="padding:0px 0px 0px 5px" class="github-wiki-link"
-                href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-4-specify-high-level-metadata-files">
-                <img class="nav-video" src="assets/img/documentation-icon.png">
-              </a>
-              <br>
-            </h3>
-            <div class="div-organize-generate-dataset metadata">
-              <h3 class="question-title">
-                Specify
-                metadata files<br>
-                to be included in your dataset<br>
-                <span style="color: #696969;font-size:13px">Click below to add desired files.</span>
-              </h3>
-              <div style="margin-bottom:15px;">
-                <button class="metadata-button button-generate-dataset" data-next="submissionUpload">
-                  <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus"
-                    fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
-                    <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
-                    <path fill-rule="evenodd"
-                      d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z" />
-                  </svg>
-                  <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                    fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd"
-                      d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                  </svg>
-                  <!-- <i class="fas fa-file-medical" style="font-size: 65px;color:var(--tagify-dd-color-primary)"></i> -->
-                  <p style="margin-top:30px;font-family:'Raleway', sans-serif">submission</p>
-                </button>
-
-                <button class="metadata-button button-generate-dataset" data-next="datasetDescriptionUpload">
-                  <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus"
-                    fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
-                    <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
-                    <path fill-rule="evenodd"
-                      d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z" />
-                  </svg>
-                  <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                    fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd"
-                      d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                  </svg>
-                  <p style="margin-top:30px;font-family:'Raleway', sans-serif">dataset_description</p>
-                </button>
-
-                <button class="metadata-button button-generate-dataset" data-next="subjectsUpload">
-                  <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus"
-                    fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
-                    <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
-                    <path fill-rule="evenodd"
-                      d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z" />
-                  </svg>
-                  <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                    fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd"
-                      d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                  </svg>
-                  <p style="margin-top:30px;font-family:'Raleway', sans-serif">subjects</p>
-                </button>
-              </div>
-              <div>
-                <button class="metadata-button button-generate-dataset" data-next="samplesUpload">
-                  <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus"
-                    fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
-                    <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
-                    <path fill-rule="evenodd"
-                      d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z" />
-                  </svg>
-                  <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                    fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd"
-                      d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                  </svg>
-                  <p style="margin-top:30px;font-family:'Raleway', sans-serif">samples</p>
-                </button>
-                <button class="metadata-button button-generate-dataset" data-next="readmeUpload">
-                  <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus"
-                    fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
-                    <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
-                    <path fill-rule="evenodd"
-                      d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z" />
-                  </svg>
-                  <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                    fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd"
-                      d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                  </svg>
-                  <p style="margin-top:30px;font-family:'Raleway', sans-serif">README</p>
-                </button>
-
-                <button class="metadata-button button-generate-dataset" data-next="changesUpload">
-                  <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-file-earmark-plus"
-                    fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z" />
-                    <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z" />
-                    <path fill-rule="evenodd"
-                      d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z" />
-                  </svg>
-                  <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                    fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd"
-                      d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                  </svg>
-                  <p style="margin-top:30px;font-family:'Raleway', sans-serif">CHANGES</p>
-                </button>
-
-              </div>
-            </div>
-
-            <!-- submission -->
-            <div id="submissionUpload" class="div-individual-metadata">
-              <h5 style="text-align:center;color:#585858;font-size:16px">submission <br>(must be in .csv, .xlsx, or
-                .json format)</h5>
-              <div style="margin-top:25px; text-align: center;">
-                <h5 style="text-align:center"></h5>
-                <div class="div-file-import" droppable="true"
-                  ondrop="dropHandler(event, 'para-submission-file-path', 'submission');" ondragover="return false">
-                  <p style="font-weight:bold">Import existing file</p>
-                  <div>
-                    <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                    <svg style="display:none" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-check2"
-                      fill="#20b2aa" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
-                    </svg>
-                    <!-- <i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i> -->
-                  </div>
-                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
-                    file here OR</p>
-                  <button id="button-sub"
-                    onclick="importMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
-                    class="div-file-import-button">Choose file</button>
-                </div>
-                <div class="div-file-import" id="metadata-submission-blackfynn"
-                  style="display: none;">
-                  <p style="font-weight:bold">Import Blackfynn file</p>
-                  <div>
-                    <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
-                  <button 
-                    onclick="importBlackfynnMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
-                    class="div-file-import-button">Use file</button>
-                </div>
-              </div>
-              <div style="width:80%;margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-submission-file-path"></p>
-              </div>
-              <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
-                <button class="button-individual-metadata confirm transition-btn"
-                  style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i
-                    class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
-                <button class="button-individual-metadata remove transition-btn"
-                  style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i
-                    class="fas fa-times" style="margin-right:10px"></i>Remove</button>
-              </div>
-              <div class="div-metadata-go-back" style="margin-top:15px;display:flex;flex-direction:column">
-                <button class="button-individual-metadata go-back transition-btn"
-                  style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)"><i
-                    class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
-              </div>
-            </div>
-
-            <!-- dataset desc. -->
-            <div id="datasetDescriptionUpload" class="div-individual-metadata">
-              <h5 style="text-align:center;color:#585858;font-size:16px">dataset_description <br>(must be in .csv,
-                .xlsx, or .json format)</h5>
-              <div style="margin-top:25px; text-align: center;">
-                <h5 style="text-align:center"></h5>
-                <div class="div-file-import" droppable="true"
-                  ondrop="dropHandler(event, 'para-ds-description-file-path', 'dataset_description');"
-                  ondragover="return false">
-                  <p style="font-weight:bold">Import existing file</p>
-                  <div>
-                    <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
-                    file here OR</p>
-                  <button
-                    onclick="importMetadataFiles(this, 'dataset_description', ['.csv', '.xlsx', '.xls', '.json'], 'para-ds-description-file-path')"
-                    class="div-file-import-button">Choose file</button>
-                </div>
-                <div class="div-file-import" id="metadata-ds-description-blackfynn"
-                  style="display: none;">
-                  <p style="font-weight:bold">Import Blackfynn file</p>
-                  <div>
-                    <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
-                  <button 
-                    onclick="importBlackfynnMetadataFiles(this, 'dataset_description', ['.csv', '.xlsx', '.xls', '.json'], 'para-ds-description-file-path')"
-                    class="div-file-import-button">Use file</button>
-                </div>
-              </div>
-              <div style="width:80%;margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-ds-description-file-path"></p>
-              </div>
-              <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
-                <button class="button-individual-metadata confirm transition-btn"
-                  style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i
-                    class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
-                <button class="button-individual-metadata remove transition-btn"
-                  style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i
-                    class="fas fa-times" style="margin-right:10px"></i>Remove</button>
-              </div>
-              <div class="div-metadata-go-back" style="margin-top:15px;display:flex;flex-direction:column">
-                <button class="button-individual-metadata go-back transition-btn"
-                  style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)"><i
-                    class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
-              </div>
-            </div>
-            <!-- subjects -->
-            <div id="subjectsUpload" class="div-individual-metadata">
-              <h5 style="text-align:center;color:#585858;font-size:16px">subjects <br>(must be in .csv, .xlsx, or .json
-                format)</h5>
-              <div style="margin-top:25px; text-align: center;">
-                <h5 style="text-align:center"></h5>
-                <div class="div-file-import" droppable="true"
-                  ondrop="dropHandler(event, 'para-subjects-file-path', 'subjects');" ondragover="return false">
-                  <p style="font-weight:bold">Import existing file</p>
-                  <div>
-                    <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
-                    file here OR</p>
-                  <button
-                    onclick="importMetadataFiles(this, 'subjects', ['.csv', '.xlsx', '.xls', '.json'], 'para-subjects-file-path')"
-                    class="div-file-import-button">Choose file</button>
-                </div>
-                <div class="div-file-import" id="metadata-subjects-blackfynn"
-                  style="display: none;">
-                  <p style="font-weight:bold">Import Blackfynn file</p>
-                  <div>
-                    <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
-                  <button 
-                    onclick="importBlackfynnMetadataFiles(this, 'subjects', ['.csv', '.xlsx', '.xls', '.json'], 'para-subjects-file-path')"
-                    class="div-file-import-button">Use file</button>
-                </div>
-              </div>
-              <div style="width:80%;margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-subjects-file-path"></p>
-              </div>
-              <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
-                <button class="button-individual-metadata confirm transition-btn"
-                  style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i
-                    class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
-                <button class="button-individual-metadata remove transition-btn"
-                  style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i
-                    class="fas fa-times" style="margin-right:10px"></i>Remove</button>
-              </div>
-              <div class="div-metadata-go-back" style="margin-top:15px;display:flex;flex-direction:column">
-                <button class="button-individual-metadata go-back transition-btn"
-                  style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)"><i
-                    class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
-              </div>
-            </div>
-            <!-- samples -->
-            <div id="samplesUpload" class="div-individual-metadata">
-              <h5 style="text-align:center;color:#585858;font-size:16px">samples <br>(must be in .csv, .xlsx, or .json
-                format)</h5>
-              <div style="margin-top:25px; text-align: center;">
-                <h5 style="text-align:center"></h5>
-                <div class="div-file-import" droppable="true"
-                  ondrop="dropHandler(event,'para-samples-file-path', 'samples');" ondragover="return false">
-                  <p style="font-weight:bold">Import existing file</p>
-                  <div>
-                    <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
-                    file here OR</p>
-                  <button
-                    onclick="importMetadataFiles(this, 'samples', ['.csv', '.xlsx', '.xls', '.json'], 'para-samples-file-path')"
-                    class="div-file-import-button">Choose file</button>
-                </div>
-                <div class="div-file-import" id="metadata-samples-blackfynn"
-                  style="display: none;">
-                  <p style="font-weight:bold">Import Blackfynn file</p>
-                  <div>
-                    <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
-                  <button 
-                    onclick="importBlackfynnMetadataFiles(this, 'samples', ['.csv', '.xlsx', '.xls', '.json'], 'para-samples-file-path')"
-                    class="div-file-import-button">Use file</button>
-                </div>
-              </div>
-              <div style="width:80%;margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-samples-file-path"></p>
-              </div>
-              <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
-                <button class="button-individual-metadata confirm transition-btn"
-                  style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i
-                    class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
-                <button class="button-individual-metadata remove transition-btn"
-                  style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i
-                    class="fas fa-times" style="margin-right:10px"></i>Remove</button>
-              </div>
-              <div class="div-metadata-go-back" style="margin-top:15px;display:flex;flex-direction:column">
-                <button class="button-individual-metadata go-back transition-btn"
-                  style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)"><i
-                    class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
-              </div>
-            </div>
-            <!-- CHANGES -->
-            <div id="changesUpload" class="div-individual-metadata">
-              <h5 style="text-align:center;color:#585858;font-size:16px">CHANGES <br>(must be in .txt format)</h5>
-              <div style="margin-top:25px; text-align: center;">
-                <h5 style="text-align:center"></h5>
-                <div class="div-file-import" droppable="true"
-                  ondrop="dropHandler(event, 'para-changes-file-path', 'CHANGES');" ondragover="return false">
-                  <p style="font-weight:bold">Import existing file</p>
-                  <div>
-                    <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
-                    file here OR</p>
-                  <button onclick="importMetadataFiles(this, 'CHANGES', ['.txt'], 'para-changes-file-path')"
-                    class="div-file-import-button">Choose file</button>
-                </div>
-                <div class="div-file-import" id="metadata-CHANGES-blackfynn"
-                  style="display: none;">
-                  <p style="font-weight:bold">Import Blackfynn file</p>
-                  <div>
-                    <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
-                  <button 
-                    onclick="importBlackfynnMetadataFiles(this, 'CHANGES', ['.txt'], 'para-changes-file-path')"
-                    class="div-file-import-button">Use file</button>
-                </div>
-              </div>
-              <div style="width:80%;margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-changes-file-path"></p>
-              </div>
-              <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
-                <button class="button-individual-metadata confirm transition-btn"
-                  style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i
-                    class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
-                <button class="button-individual-metadata remove transition-btn"
-                  style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i
-                    class="fas fa-times" style="margin-right:10px"></i>Remove</button>
-              </div>
-              <div class="div-metadata-go-back" style="margin-top:15px;display:flex;flex-direction:column">
-                <button class="button-individual-metadata go-back transition-btn"
-                  style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)"><i
-                    class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
-              </div>
-            </div>
-            <!-- README -->
-            <div id="readmeUpload" class="div-individual-metadata">
-              <h5 style="text-align:center;color:#585858;font-size:16px">README <br>(must be in .txt format)</h5>
-              <div style="margin-top:25px; text-align: center;">
-                <h5 style="text-align:center"></h5>
-                <div class="div-file-import" droppable="true"
-                  ondrop="dropHandler(event, 'para-readme-file-path', 'README');" ondragover="return false">
-                  <p style="font-weight:bold">Import existing file</p>
-                  <div>
-                    <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
-                    file here OR</p>
-                  <button onclick="importMetadataFiles(this, 'README', ['.txt'], 'para-readme-file-path')"
-                    class="div-file-import-button">Choose file</button>
-                </div>
-                <div class="div-file-import" id="metadata-README-blackfynn"
-                  style="display: none;">
-                  <p style="font-weight:bold">Import Blackfynn file</p>
-                  <div>
-                    <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
-                      fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                      <path fill-rule="evenodd"
-                        d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                      <path fill-rule="evenodd"
-                        d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                    </svg>
-                  </div>
-                  <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
-                  <button 
-                    onclick="importBlackfynnMetadataFiles(this, 'README', ['.txt'], 'para-readme-file-path')"
-                    class="div-file-import-button">Use file</button>
-                </div>
-              </div>
-              <div style="width:80%;margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-readme-file-path"></p>
-              </div>
-              <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
-                <button class="button-individual-metadata confirm transition-btn"
-                  style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i
-                    class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
-                <button class="button-individual-metadata remove transition-btn"
-                  style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i
-                    class="fas fa-times" style="margin-right:10px"></i>Remove</button>
-              </div>
-              <div class="div-metadata-go-back" style="margin-top:15px;display:flex;flex-direction:column">
-                <button class="button-individual-metadata go-back transition-btn"
-                  style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)"><i
-                    class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- 5. manifest file -->
-          <div class="parent-tabs" id="manifest-file-tab" style="grid-template-rows: 10% 90%;">
-            <h3 class="question-title"
-              style="color: var(--color-bg-plum);font-size:15px;text-align:center;font-weight:600;">Step 5: Request
-              manifest files
-              <a style="padding:0px 0px 0px 5px" class="github-wiki-link"
-                href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-5-request-manifest-files">
-                <img class="nav-video" src="assets/img/documentation-icon.png">
-              </a>
-              <br><br>
-            </h3>
-            <div id="manifestUpload" style="margin-top:50px">
-              <h5 style="text-align:center;color:var(--color);font-size:17px"> Would you like SODA to auto-generate your
-                manifest files? </h5>
-              <div style="height:150px;text-align:center;margin:100px">
-                <div style="margin-top:30px">
-                  <label class="labelradiocurate-manifest no" style="padding-left:10px"> No
-                  </label>
-                  <label class="switch">
-                    <input id="generate-manifest-curate" name="manifest" type="checkbox" class="with-style-manifest"
-                      onclick="updateManifestLabelColor(this)" />
-                    <span class="slider round"></span>
-                  </label>
-                  <label class="labelradiocurate-manifest yes" style="padding-left:10px"> Yes
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 6. Generate dataset -->
-          <div class="parent-tabs" id="generate-dataset-tab" style="overflow-y:scroll;">
-            <h3 class="question-title"
-              style="color: var(--color-bg-plum);font-weight:600;font-size:15px;text-align:center;margin-bottom:70px">
-              Step 6: Generate dataset
-              <a style="padding:0px 0px 0px 5px" class="github-wiki-link"
-                href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-6-generate-dataset">
-                <img class="nav-video" src="assets/img/documentation-icon.png">
-              </a>
-              <br><br>
-            </h3>
-            <div class="individual-question generate-dataset" id="Question-generate-dataset">
-              <div class="ui form" style="width:100%">
-                <div class="grouped fields">
-                  <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Where would you like to
-                    generate your dataset?
-                    <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
-                  <div style="display:flex;flex-direction:row;">
-
-                    <!-- <div style="margin:15px 0;display:none" id="div-modify-current-local-dataset">
-                  <div class="option-card radio-button" data-next="Question-generate-dataset-modify-current-ds" onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
-                      <div class="card-head">
-                        <div class="folder-checkbox">
-                          <input class="folder-input-check" name="generate-1" id="generate-modify-local" type="radio">
-                          <label for="generate-locally"></label>
-                        </div>
-                      </div>
-                      <div class="card-body">
-                        <i class="far fa-folder" style="color: var(--color-light-green)"></i>
-                        <h2>Modify current local dataset</h2>
-                      </div>
-                    </div>
-                  </div> -->
-
-                  <div style="margin:15px 0;" id="generate-dataset-replace-existing">
-                    <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div"
-                      onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
-                      <div class="card-head">
-                        <div class="folder-checkbox">
-                          <input class="folder-input-check" name="generate-1" id="generate-local-existing"
-                            type="radio">
-                          <label for="generate-locally"></label>
-                        </div>
-                      </div>
-                      <div class="card-body">
-                        <i class="fas fa-redo"></i>
-                        <h2>Replace files in current dataset folder</h2>
-                      </div>
-                    </div>
-                  </div>
-
-                    <div style="margin:15px 0;">
-                      <div class="option-card radio-button" data-next="Question-generate-dataset-locally-destination"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" name="generate-1" id="generate-local-desktop"
-                              type="radio">
-                            <label for="generate-locally"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <i class="fas fa-desktop"></i>
-                          <h2>Generate on my computer</h2>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style="margin:15px 0;">
-                      <!-- <button> -->
-                      <div class="option-card radio-button" data-next="Question-generate-dataset-BF-account"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" id="generate-upload-BF" name="generate-1" type="radio">
-                            <label for="generate-upload-BF"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-cloud-arrow-up"
-                            fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z" />
-                            <path fill-rule="evenodd"
-                              d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z" />
-                          </svg>
-                          <h2 style="margin-top:10px">Generate directly on Blackfynn</h2>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="individual-question generate-dataset" id="Question-generate-dataset-BF-account">
-                    <div class="ui form" style="width:100%">
-                      <div class="grouped fields">
-                        <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">What is your
-                          Blackfynn account?</label>
-                        <div class="field" style="margin:5px 0;width:450px;">
-                          <select id="bfallaccountlist" name="Blackfynn account" class='ui selection dropdown'
-                            style="width:450px !important;border-radius:7px;padding:8px">
-                            <option disabled> Select </option>
-                          </select>
-                          <div>
-                            <p id="para-account-details-curate"></p>
-                            <div id="div-bf-account-load-progress-curate" class="progressdiv">
-                              <div class="indeterminatebar"></div>
-                            </div>
-                            <p id='para-select-account-status-curate' style="margin-top:20px;text-align:left"> </p>
-                            <p id="para-account-details-curate"></p>
-                          </div>
-                        </div>
-                      </div>
-                      <div id="div-bf-account-btns"
-                        style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
-                        <button onclick="showBFAddAccountBootbox()"
-                          style="float:right;border-radius: 8px;margin:0 10px;opacity:0.9;background: #fff;color:var(--color-bg-plum);font-weight:600;width: 160px;border:1px solid var(--color-bg-plum)">Add
-                          account</button>
-                        <button id="btn-bf-account"
-                          onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"
-                          data-next="Question-generate-dataset-options"
-                          style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 160px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm
-                          account</button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="individual-question generate-dataset" id="Question-generate-dataset-options">
-                    <div class="ui form" style="width:100%">
-                      <div class="grouped fields">
-                        <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Which dataset would
-                          you like to generate on?
-                          <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
-                        <div style="display:flex;flex-direction:row;">
-                          <div style="margin:15px 0;">
-                            <div class="option-card radio-button" data-next="Question-generate-dataset-choose-ds-name"
-                              onclick="transitionSubQuestions(this, 'Question-generate-dataset-options', 'generate-dataset-tab', '', 'generate-dataset')">
-                              <div class="card-head">
-                                <div class="folder-checkbox">
-                                  <input class="folder-input-check" name="generate-4"
-                                    id="generate-BF-dataset-options-new" type="radio">
-                                  <label for="generate-BF-dataset-options-new"></label>
-                                </div>
-                              </div>
-                              <div class="card-body">
-                                <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-folder-plus"
-                                  fill="var(--color-bg-orange)" xmlns="http://www.w3.org/2000/svg">
-                                  <path fill-rule="evenodd"
-                                    d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z" />
-                                  <path fill-rule="evenodd"
-                                    d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z" />
-                                </svg>
-                                <h2>I want to generate on a new dataset</h2>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div style="margin:15px 0;">
-                            <!-- <button> -->
-                            <div class="option-card radio-button" data-next="Question-generate-dataset-BF-dataset"
-                              onclick="transitionSubQuestions(this, 'Question-generate-dataset-options', 'generate-dataset-tab', '', 'generate-dataset')">
-                              <div class="card-head">
-                                <div class="folder-checkbox">
-                                  <input class="folder-input-check" name="generate-4"
-                                    id="generate-BF-dataset-options-existing" type="radio">
-                                  <label for="generate-BF-dataset-options-existing"></label>
-                                </div>
-                              </div>
-                              <div class="card-body">
-                                <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-folder-check"
-                                  fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                                  <path fill-rule="evenodd"
-                                    d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z" />
-                                  <path fill-rule="evenodd"
-                                    d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z" />
-                                </svg>
-                                <h2>I want to generate on an existing dataset</h2>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="individual-question generate-dataset" id="Question-generate-dataset-choose-ds-name">
-                    <div class="ui form" style="width:450px">
-                      <div class="grouped fields">
-                        <label style="font-size:17px;color:var(--color-bg-plum);width:100%;text-align:center">What is
-                          the name of the new dataset?</label>
-                        <div class="field" style="margin:15px 0;">
-                          <input type="text" class="form-control"
-                            style="background: #fff !important;width:450px !important" id="inputNewNameDataset"
-                            placeholder="Type here">
-                        </div>
-                      </div>
-                      <!-- <br> -->
-                      <p style="color:red;width:440px" id="para-new-name-dataset-message"></p>
-                      <div id="div-confirm-inputNewNameDataset"
-                        style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
-                        <button
-                          onclick="transitionSubQuestions(this, 'Question-generate-dataset-choose-ds-name', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"
-                          data-next="Question-generate-dataset-generate-div"
-                          style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 10px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm</button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="individual-question generate-dataset" id="Question-generate-dataset-BF-dataset">
-                    <div class="ui form" style="width:100%">
-                      <div class="grouped fields">
-                        <label style="font-size:17px;color:var(--color-bg-plum);">Which existing Blackfynn dataset would
-                          you like to use?</label>
-                        <div class="field" style="margin:15px 0;">
-                          <select id="curatebfdatasetlist" name="Blackfynn dataset" class="ui search dropdown"
-                            style="width:450px;border-radius:7px;padding:8px">
-                            <option value="" disabled> Loading... </option>
-                          </select>
-                        </div>
-                      </div>
-                      <button id="button-confirm-bf-dataset"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset-BF-dataset', 'generate-dataset-tab', 'delete', 'generate-dataset')"
-                        data-next="Question-generate-dataset-existing-folders-options"
-                        style="margin:0 auto;display:none;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm
-                        dataset</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="individual-question generate-dataset" id="Question-generate-dataset-existing-folders-options">
-              <div class="ui form" style="width:100%">
-                <div class="grouped fields">
-                  <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">How would you like to
-                    handle existing folders?
-                    <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                      <span class="tooltiptext" style="font-size: 12px">
-                        Tell SODA how to handle folders specified during Step 3 that are already existing (same name,
-                        same relative location) on your Blackfynn dataset
-                        <ul>
-                          <li>Create duplicate: Create another copy of existing folders.</li>
-                          <li>Replace: Delete existing folders on Blackfynn then upload new ones</li>
-                          <li>Merge: Upload new files into the existing folders. Existing files will be handles as
-                            intructed in the next step.</li>
-                          <li>Skip: Existing folders will not be uploaded.</li>
-                        </ul>
-                      </span>
-                    </div>
-
-                    <br><span style="color: #898989;font-size:12px">Please select one:</span>
-                  </label>
-                  <div style="display:flex;flex-direction:row;">
-                    <div style="margin:15px 0;">
-                      <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" name="generate-5" id="existing-folders-duplicate"
-                              type="radio">
-                            <label for="existing-folders-duplicate"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-
-                          <i class="far fa-copy" style="color:var(--tagify-dd-color-primary)"></i>
-                          <h2>Create a duplicate</h2>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style="margin:15px 0;">
-
-                      <!-- <button> -->
-                      <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" name="generate-5" id="existing-folders-replace"
-                              type="radio">
-                            <label for="existing-folders-replace"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <i class="fas fa-eraser" style="color: red;font-size:43px"></i>
-                          <h2>Replace</h2>
-                        </div>
-                      </div>
-                    </div>
-                    <div style="margin:15px 0;">
-                      <!-- <button> -->
-                      <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" name="generate-5" id="existing-folders-merge"
-                              type="radio">
-                            <label for="existing-folders-merge"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <svg width="45px" height="45px" viewBox="0 0 16 16" class="bi bi-intersect" fill="#EC6713"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm5 10v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2v5a2 2 0 0 1-2 2H5zm6-8H6a2 2 0 0 0-2 2v5H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2z" />
-                          </svg>
-                          <h2>Merge</h2>
-                        </div>
-                      </div>
-                    </div>
-                    <div style="margin:15px 0;">
-                      <!-- <button> -->
-                      <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" name="generate-5" id="existing-folders-skip" type="radio">
-                            <label for="existing-folders-skip"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <svg width="45px" height="45px" viewBox="0 0 16 16" class="bi bi-skip-forward"
-                            fill="var(--color-teal)" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.752l-6.267 3.636c-.52.302-1.233-.043-1.233-.696v-2.94l-6.267 3.636C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696L7.5 7.248v-2.94c0-.653.713-.998 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5zM1 4.633v6.734L6.804 8 1 4.633zm7.5 0v6.734L14.304 8 8.5 4.633z" />
-                          </svg>
-                          <!-- <i class="fas fa-forward" style="color: ;font-size:43px"></i> -->
-                          <h2>Skip</h2>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="individual-question generate-dataset" id="Question-generate-dataset-existing-files-options">
-              <div class="ui form" style="width:100%">
-                <div class="grouped fields">
-                  <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">How would you like to
-                    handle existing files?
-                    <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                      <span class="tooltiptext" style="font-size: 12px">
-                        Tell SODA how to handle files specified during Step 3 and metadata files specified during Step 4
-                        that are already existing (same name, same relative location) on your Blackfynn dataset
-                        <ul>
-                          <li>Create duplicate: Create another copy of existing files.</li>
-                          <li>Replace: Delete existing files on Blackfynn then upload new ones</li>
-                          <li>Skip: Existing files will not be uploaded.</li>
-                        </ul>
-                      </span>
-                    </div>
-                    <br><span style="color: #898989;font-size:12px">Please select one:</span>
-                  </label>
-                  <div style="display:flex;flex-direction:row;">
-                    <div style="margin:15px 0;">
-                      <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" name="generate-6" id="existing-files-duplicate"
-                              type="radio">
-                            <label for="existing-files-duplicate"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <i class="far fa-copy" style="color:var(--tagify-dd-color-primary);font-size:43px"></i>
-                          <h2>Create a duplicate</h2>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style="margin:15px 0;">
-                      <!-- <button> -->
-                      <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" name="generate-6" id="existing-files-replace"
-                              type="radio">
-                            <label for="existing-files-replace"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <i class="fas fa-eraser" style="color: red;font-size:43px"></i>
-                          <h2>Replace</h2>
-                        </div>
-                      </div>
-                    </div>
-                    <div style="margin:15px 0;">
-                      <!-- <button> -->
-                      <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div"
-                        onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" name="generate-6" id="existing-files-skip" type="radio">
-                            <label for="existing-files-skip"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <svg width="45px" height="45px" viewBox="0 0 16 16" class="bi bi-skip-forward"
-                            fill="var(--color-teal)" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.752l-6.267 3.636c-.52.302-1.233-.043-1.233-.696v-2.94l-6.267 3.636C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696L7.5 7.248v-2.94c0-.653.713-.998 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5zM1 4.633v6.734L6.804 8 1 4.633zm7.5 0v6.734L14.304 8 8.5 4.633z" />
-                          </svg>
-                          <h2>Skip</h2>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-
-            <div class="individual-question generate-dataset" id="Question-generate-dataset-locally-destination">
-              <div class="ui form" style="width:450px">
-                <div class="grouped fields">
-                  <label style="font-size:17px;color:var(--color-bg-plum);text-align:center;">At which location should
-                    we generate the dataset?</label>
-                  <div class="field" style="margin:15px 0;">
-                    <input class="form-control" style="width:450px !important"
-                      id="input-destination-generate-dataset-locally" type="text" readonly placeholder="Browse here">
-                  </div>
-                </div>
-                <br>
-                <div id="div-confirm-destination-locally"
-                  style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
-                  <button class="transition-btn"
-                    onclick="transitionSubQuestions(this, 'Question-generate-dataset-locally-destination', 'generate-dataset-tab', 'delete', 'generate-dataset')"
-                    data-next="Question-generate-dataset-choose-ds-name"
-                    style="display:flex;flex-direction:row;justify-content:center;width: 100px;height:40px;">Confirm</button>
-                </div>
-              </div>
-            </div>
-
-
-            <!-- <div class="individual-question generate-dataset" id="Question-generate-dataset-modify-current-ds">
-        <h3 class="question-title" id="modify-current-confirmation" style='text-align:left;line-height:2'></h3>
-        <br>
-        <button id="generate" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;border-radius: 8px;margin:0 auto; width: 180px;height:40px;background: var(--color-bg-plum);font-size:14px;color:#fff;font-weight:600;border:none">Generate</button>
-      </div> -->
-
-
-            <div class="individual-question generate-dataset" id="Question-generate-dataset-generate-div"
-              style="flex-direction:row;justify-content:center">
-              <button id="button-preview-dataset"
-                style="cursor:pointer;border-radius: 8px;margin:5px; width: 120px;height:40px;background: #fff;color:var(--color-bg-plum);font-weight:600; border-style: solid; border-color:var(--color-bg-plum)">
-                Preview dataset</button>
-              <button id="button-generate"
-                style="cursor:pointer;border-radius: 8px;margin:5px; width: 120px;height:40px;background: var(--color-bg-plum);color:#fff;font-weight:600;border:none">Generate</button>
-            </div>
-
-
-            <!-- <div class="individual-question generate-dataset" id="Question-generate-dataset-bf-confirmation">
-        <h3 class="question-title" id="generate-bf-confirmation" style='text-align:left;line-height:2'></h3>
-        <br>
-        <button id="generate" style="display:flex;flex-direction:row;justify-content:center;cursor:pointer;font-size:15px;border-radius: 8px;margin:0 auto; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Generate</button>
-      </div> -->
-          </div>
-
-          <div class="generate-progress-tab"
-            style='display:none;flex-direction:column;justify-content:flex-start;width:80%; height: 100%, margin-top:50px'
-            id="generate-dataset-progress-tab">
-
-            <h3 id="generating-dataset-summary-message" class="question-title"
-              style="color: var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:60px;font-weight:600; width: 100%">
-              Generating dataset progress <br>
-              <!-- <span style="color: #898989;font-size:13px;font-weight:500">Please answer the below questions: </span> -->
-            </h3>
-
-            <div
-              style="clear: both; margin-top:50px; text-align:center; justify-content:center; flex-direction:row; width: 100%">
-              <p id="para-please-wait-new-curate"> </p>
-            </div>
-
-            <div
-              style="clear: both; margin-top:80px; text-align:center; justify-content:center; flex-direction:row; width: 100%"
-              id="div-new-curate-progress-bar-error-status">
-              <p id='para-new-curate-progress-bar-error-status'>
-              <p>
-            </div>
-
-            <div id="div-new-curate-progress" style="clear: both; width: 100%">
-              <div id="div-new-curate-meter-progress">
-                <progress class=progresstrack id="progress-bar-new-curate" max="100" value="0"></progress>
-              </div>
-              <div id="div-new-curate-progress-bar-status" style="clear: both; width: 100%">
-                <p id='para-new-curate-progress-bar-status'>
-                <p>
-              </div>
-            </div>
-
-            <div id="div-generate-comeback"
-              style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
-              <button id="button-generate-comeback"
-                style="display:flex;flex-direction:row;justify-content:center;font-size:15px;cursor:pointer;border-radius: 8px;margin:0 10px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none"><i
-                  class="fas fa-undo-alt" style="margin-right:15px"></i>Return</button>
-              <button data-section="curate" onclick="exitCurate()"
-                style="display:flex;flex-direction:row;justify-content:center;font-size:15px;cursor:pointer;border-radius: 8px;margin:0 10px; width: 180px;height:40px;background: #fff;color:red;font-weight:600;border:1px solid red">
-                <svg style="margin-right:15px" width="18px" height="18px" viewBox="0 0 16 16" class="bi bi-x-circle"
-                  fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                  <path fill-rule="evenodd"
-                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
-                </svg>
-                Exit</button>
-            </div>
-
-          </div>
-
+    <!-- dataset desc. -->
+    <div id="datasetDescriptionUpload" class="div-individual-metadata">
+      <h5 style="text-align:center;color:#585858;font-size:16px">dataset_description <br>(must be in .csv, .xlsx, or .json format)</h5>
+      <div style="margin-top:25px;text-align: center;">
+      <h5 style="text-align:center"></h5>
+      <div class="div-file-import" droppable="true" ondrop="dropHandler(event, 'para-ds-description-file-path', 'dataset_description');" ondragover="return false">
+        <p style="font-weight:bold">Import existing file</p>
+        <div>
+          <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+          </svg>
         </div>
-
-        <div
-          style="border-top:1px solid #f0f0f0;padding:10px;padding-top:15px;height:50px;display:flex;flex-direction:row;justify-content:space-between">
-          <div style="display:flex;flex-direction:row;width:110px">
-            <button type="button" onclick="nextPrev(-1)" id="prevBtn" class="transition-btn prev"><i
-                class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
-          </div>
-          <!-- <div style="display:flex;flex-direction:row;">
-    <!-- <button type="button" onclick="exitOrganizeSection()" class="transition-btn" style="background:red; color: #fff;font-weight:600;padding:5px;width:130px;margin-right:10px"><i class="fas fa-times" style="margin-right:10px"></i>Exit section</button>
-    <button type="button" onclick="saveOrganizeProgress()" class="transition-btn" style="background:#fff; color:var(--color-light-green);border: 1px solid var(--color-light-green);padding:5px;width:135px"><i class="far fa-save" style="margin-right:10px"></i>Save progress</button> -->
-          <!-- </div>  -->
-          <div style="display:flex;flex-direction:row;">
-            <button type="button" id="save-progress-btn" onclick="saveOrganizeProgressPrompt()" class="transition-btn" style="background:#fff; color:var(--color-light-green);border: 1px solid var(--color-light-green);padding:5px;width:135px;margin-right:10px"><i class="far fa-save" style="margin-right:10px"></i>Save progress</button>
-            <button style="float:right" onclick="nextPrev(1)" id="nextBtn" type="button" class="transition-btn" disabled>Continue</button>
-          </div>
+        <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
+          file here OR</p>
+          <button onclick="importMetadataFiles(this, 'dataset_description', ['.csv', '.xlsx', '.xls', '.json'], 'para-ds-description-file-path')"  class="div-file-import-button">Choose file</button>
         </div>
+        <div class="div-file-import" id="metadata-submission-blackfynn"
+            style="display: none;">
+            <p style="font-weight:bold">Import Blackfynn file</p>
+            <div>
+              <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
+                fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                  d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                <path fill-rule="evenodd"
+                  d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+              </svg>
+            </div>
+            <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
+            <button
+              onclick="importBlackfynnMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
+              class="div-file-import-button">Use file</button>
+          </div>
+      </div>
+      <div style="width:80%;margin: 10px auto">
+        <p class="para-metadata-file-status" id="para-ds-description-file-path"></p>
+      </div>
+      <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
+        <button class="button-individual-metadata confirm transition-btn" onclick="confirmMetadataFilePath(this)" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
+        <button class="button-individual-metadata remove transition-btn" style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i class="fas fa-times" style="margin-right:10px"></i>Remove</button>
+      </div>
+      <div class="div-metadata-go-back" style="margin-top:15px;display:flex;flex-direction:column">
+        <button class="button-individual-metadata go-back transition-btn" style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
+      </div>
+    </div>
+    <!-- subjects -->
+    <div id="subjectsUpload" class="div-individual-metadata">
+      <h5 style="text-align:center;color:#585858;font-size:16px">subjects <br>(must be in .csv, .xlsx, or .json format)</h5>
+      <div style="margin-top:25px;text-align: center;">
+      <h5 style="text-align:center"></h5>
+      <div class="div-file-import" droppable="true" ondrop="dropHandler(event, 'para-subjects-file-path', 'subjects');" ondragover="return false">
+        <p style="font-weight:bold">Import existing file</p>
+        <div>
+          <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+          </svg>
         </div>
+        <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
+          file here OR</p>
+          <button onclick="importMetadataFiles(this, 'subjects', ['.csv', '.xlsx', '.xls', '.json'], 'para-subjects-file-path')" class="div-file-import-button">Choose file</button>
+        </div>
+        <div class="div-file-import" id="metadata-submission-blackfynn"
+            style="display: none;">
+            <p style="font-weight:bold">Import Blackfynn file</p>
+            <div>
+              <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
+                fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                  d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                <path fill-rule="evenodd"
+                  d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+              </svg>
+            </div>
+            <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
+            <button
+              onclick="importBlackfynnMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
+              class="div-file-import-button">Use file</button>
+          </div>
+      </div>
+      <div style="width:80%;margin: 10px auto">
+        <p class="para-metadata-file-status" id="para-subjects-file-path"></p>
+      </div>
+      <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
+        <button class="button-individual-metadata confirm transition-btn" onclick="confirmMetadataFilePath(this)" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
+        <button class="button-individual-metadata remove transition-btn" style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i class="fas fa-times" style="margin-right:10px"></i>Remove</button>
+      </div>
+      <div class="div-metadata-go-back" style="margin-top:15px;display:flex;flex-direction:column">
+        <button class="button-individual-metadata go-back transition-btn" style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
+      </div>
+    </div>
+    <!-- samples -->
+    <div id="samplesUpload" class="div-individual-metadata">
+      <h5 style="text-align:center;color:#585858;font-size:16px">samples <br>(must be in .csv, .xlsx, or .json format)</h5>
+      <div style="margin-top:25px;text-align: center;">
+      <h5 style="text-align:center"></h5>
+      <div class="div-file-import" droppable="true" ondrop="dropHandler(event,'para-samples-file-path', 'samples');" ondragover="return false">
+        <p style="font-weight:bold">Import existing file</p>
+        <div>
+          <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+          </svg>
+        </div>
+        <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
+          file here OR</p>
+          <button onclick="importMetadataFiles(this, 'samples', ['.csv', '.xlsx', '.xls', '.json'], 'para-samples-file-path')" class="div-file-import-button">Choose file</button>
+        </div>
+        <div class="div-file-import" id="metadata-submission-blackfynn"
+            style="display: none;">
+            <p style="font-weight:bold">Import Blackfynn file</p>
+            <div>
+              <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
+                fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                  d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                <path fill-rule="evenodd"
+                  d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+              </svg>
+            </div>
+            <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
+            <button
+              onclick="importBlackfynnMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
+              class="div-file-import-button">Use file</button>
+          </div>
+      </div>
+      <div style="width:80%;margin: 10px auto">
+        <p class="para-metadata-file-status" id="para-samples-file-path"></p>
+      </div>
+      <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
+        <button class="button-individual-metadata confirm transition-btn" onclick="confirmMetadataFilePath(this)" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
+        <button class="button-individual-metadata remove transition-btn" style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i class="fas fa-times" style="margin-right:10px"></i>Remove</button>
+      </div>
+      <div class="div-metadata-go-back" style="margin-top:15px;display:flex;flex-direction:column">
+        <button class="button-individual-metadata go-back transition-btn" style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
+      </div>
+    </div>
+    <!-- CHANGES -->
+    <div id="changesUpload" class="div-individual-metadata">
+      <h5 style="text-align:center;color:#585858;font-size:16px">CHANGES <br>(must be in .txt format)</h5>
+      <div style="margin-top:25px;text-align: center;">
+      <h5 style="text-align:center"></h5>
+      <div class="div-file-import" droppable="true" ondrop="dropHandler(event, 'para-changes-file-path', 'CHANGES');" ondragover="return false">
+        <p style="font-weight:bold">Import existing file</p>
+        <div>
+          <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+          </svg>
+        </div>
+        <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
+          file here OR</p>
+          <button onclick="importMetadataFiles(this, 'CHANGES', ['.txt'], 'para-changes-file-path')" class="div-file-import-button">Choose file</button>
+        </div>
+        <div class="div-file-import" id="metadata-submission-blackfynn"
+            style="display: none;">
+            <p style="font-weight:bold">Import Blackfynn file</p>
+            <div>
+              <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
+                fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                  d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                <path fill-rule="evenodd"
+                  d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+              </svg>
+            </div>
+            <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
+            <button
+              onclick="importBlackfynnMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
+              class="div-file-import-button">Use file</button>
+          </div>
+      </div>
+      <div style="width:80%;margin: 10px auto">
+        <p class="para-metadata-file-status" id="para-changes-file-path"></p>
+      </div>
+      <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
+        <button class="button-individual-metadata confirm transition-btn" onclick="confirmMetadataFilePath(this)" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
+        <button class="button-individual-metadata remove transition-btn" style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i class="fas fa-times" style="margin-right:10px"></i>Remove</button>
+      </div>
+      <div class="div-metadata-go-back" style="margin-top:15px;display:flex;flex-direction:column">
+        <button class="button-individual-metadata go-back transition-btn" style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
+      </div>
+    </div>
+    <!-- README -->
+    <div id="readmeUpload" class="div-individual-metadata">
+      <h5 style="text-align:center;color:#585858;font-size:16px">README <br>(must be in .txt format)</h5>
+      <div style="margin-top:25px;text-align: center;">
+      <h5 style="text-align:center"></h5>
+      <div class="div-file-import" droppable="true" ondrop="dropHandler(event, 'para-readme-file-path', 'README');" ondragover="return false">
+        <p style="font-weight:bold">Import existing file</p>
+        <div>
+          <svg width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+          </svg>
+        </div>
+        <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Drag and drop your <br>
+          file here OR</p>
+          <button onclick="importMetadataFiles(this, 'README', ['.txt'], 'para-readme-file-path')" class="div-file-import-button">Choose file</button>
+        </div>
+        <div class="div-file-import" id="metadata-submission-blackfynn"
+            style="display: none;">
+            <p style="font-weight:bold">Import Blackfynn file</p>
+            <div>
+              <svg style="transform: rotate(180deg);" width="65px" height="65px" viewBox="0 0 16 16" class="bi bi-upload"
+                fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                  d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                <path fill-rule="evenodd"
+                  d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+              </svg>
+            </div>
+            <p style="font-size:13px;margin-top:10px;margin-bottom:5px">Use the file present <br> on Blackfynn </p>
+            <button
+              onclick="importBlackfynnMetadataFiles(this, 'submission', ['.csv', '.xlsx', '.xls', '.json'], 'para-submission-file-path')"
+              class="div-file-import-button">Use file</button>
+          </div>
+      </div>
+      <div style="width:80%;margin: 10px auto">
+        <p class="para-metadata-file-status" id="para-readme-file-path"></p>
+      </div>
+      <div class="div-metadata-confirm" style="margin-top:15px;display:none;flex-direction:column">
+        <button class="button-individual-metadata confirm transition-btn" onclick="confirmMetadataFilePath(this)" style="margin: 30px auto;margin-bottom:10px; width: 200px;height:40px;font-size:15px"><i class="fas fa-check" style="margin-right:10px"></i>Confirm</button>
+        <button class="button-individual-metadata remove transition-btn" style="display:block;margin: 0 auto; width: 200px;height:40px;color: #fff;background:#dc3545;border:1px solid #dc3545;font-size:15px"><i class="fas fa-times" style="margin-right:10px"></i>Remove</button>
+      </div>
+      <div class="div-metadata-go-back" style="margin-top:15px;display:flex;flex-direction:column">
+        <button class="button-individual-metadata go-back transition-btn" style="margin: 0 auto; width: 200px;height:40px;background: #fff;color:var(--color-bg-plum);border:1px solid var(--color-bg-plum)"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
+      </div>
+    </div>
 
-    </main>
-  </section>
+  </div>
 
-  <section id="validate-section" class="section js-section u-category-windows">
+  <!-- 5. manifest file -->
+  <div class="parent-tabs" id="manifest-file-tab" style="grid-template-rows: 10% 90%;">
+    <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;font-weight:600;">Step 5: Request manifest files
+      <a style="padding:0px 0px 0px 5px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-5-request-manifest-files" >
+        <img class="nav-video" src="assets/img/documentation-icon.png">
+      </a>
+      <br><br>
+    </h3>
+    <div id="manifestUpload" style="margin-top:50px">
+      <h5 style="text-align:center;color:var(--color);font-size:17px"> Would you like SODA to auto-generate your manifest files? </h5>
+      <div style="height:150px;text-align:center;margin:100px">
+      <div style="margin-top:30px">
+        <label class="labelradiocurate-manifest no" style="padding-left:10px"> No
+        </label>
+        <label class="switch">
+          <input id="generate-manifest-curate" name="manifest" type="checkbox" class="with-style-manifest" onclick="updateManifestLabelColor(this)"/>
+          <span class="slider round"></span>
+        </label>
+        <label class="labelradiocurate-manifest yes" style="padding-left:10px"> Yes
+        </label>
+      </div>
+      </div>
+    </div>
+  </div>
 
-    <main class="dash-content main" id="validate_main">
-      <h5 class="dash-title" style="border-bottom:none;font-size:17px;color:var(--color-sidebar)"><i
-          class="fas fa-chevron-right" style="margin-right:10px"></i>Validate dataset</h5>
-      <div class="form-tabs tab-active" id="validate-tab">
-        <h3 class="question-title">Upload <span style="color:var(--color-bg-plum)">your dataset</span>
-          <br> below to <span style="color:var(--color-bg-plum)">validate</span>
+  <!-- 6. Generate dataset -->
+  <div class="parent-tabs" id="generate-dataset-tab" style="overflow-y:scroll;">
+      <h3 class="question-title" style="color: var(--color-bg-plum);font-weight:600;font-size:15px;text-align:center;margin-bottom:70px">Step 6: Generate dataset
+        <a style="padding:0px 0px 0px 5px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-6-generate-dataset" >
+          <img class="nav-video" src="assets/img/documentation-icon.png">
+        </a>
+        <br><br>
         </h3>
-        <div class="div-organize-generate-dataset">
-          <li class="folder-upload-div">
-            <p>Upload dataset</p>
-            <div><i style="font-size: 60px" class="fas fa-cloud-upload-alt"></i></div>
-            <p style="font-size:11px">Drag and drop your <br>
-              folder here</p>
-            <p style="font-size:12px">OR</p>
-            <button>Choose folder</button>
-          </li>
+        <div class="individual-question generate-dataset" id="Question-generate-dataset">
+            <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Where would you like to generate your dataset?
+              <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
+              <div style="display:flex;flex-direction:row;">
+                <div style="margin:15px 0;">
+                  <div class="option-card radio-button" data-next="Question-generate-dataset-locally-destination" onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
+                      <div class="card-head">
+                        <div class="folder-checkbox">
+                          <input class="folder-input-check" name="generate-1" id="generate-local-desktop" type="radio">
+                          <label for="generate-locally"></label>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <i class="fas fa-desktop"></i>
+                        <h2>Generate on my computer</h2>
+                      </div>
+                    </div>
+                  </div>
+
+              <div style="margin:15px 0;">
+                <!-- <button> -->
+                <div class="option-card radio-button" data-next="Question-generate-dataset-BF-account" onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
+                    <div class="card-head">
+                      <div class="folder-checkbox">
+                        <input class="folder-input-check" id="generate-upload-BF" name="generate-1" type="radio">
+                        <label for="generate-upload-BF"></label>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <svg width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-cloud-arrow-up" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>
+                        <path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"/>
+                      </svg>
+                      <h2 style="margin-top:10px">Generate directly on Blackfynn</h2>
+                    </div>
+                </div>
+              </div>
+            </div>
+        <div class="individual-question generate-dataset" id="Question-generate-dataset-BF-account">
+          <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">What is your Blackfynn account?</label>
+              <div class="field" style="margin:5px 0;width:450px;">
+                <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
+                  <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
+                    <div>
+                      <h5 style="color:#808080;font-size:15px">Current account:
+                      <span style="color:#000;font-weight:600;margin-left:8px;font-size:15px" id="current-bf-account-generate">None</span></h5>
+                    </div>
+                    <svg class="svg-change-current-account" onclick="openDropdownPrompt('bf')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                    </svg>
+                    <!-- <svg class="svg-change-current-account" onclick="openDropdownPrompt('bf')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                      <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                      <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                    </svg> -->
+                  </div>
+                  <div style="display:flex; flex-direction:row;margin-bottom:15px; ">
+                    <h5 style="color:#808080;font-size:15px">Account details:</h5>
+                    <p style="color:#000;font-weight:600;margin-left:15px;font-size:15px" id="para-account-detail-curate-generate">None</p>
+                  </div>
+                </div>
+              </div>
+              <div id="div-bf-account-btns" style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
+                <button id="btn-bf-account" onclick="transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"  data-next="Question-generate-dataset-options" style="cursor:pointer;border-radius: 8px;margin:0 10px; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="individual-question generate-dataset" id="Question-generate-dataset-options">
+            <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Which dataset would you like to generate on?
+              <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
+              <div style="display:flex;flex-direction:row;">
+                <div style="margin:15px 0;">
+                  <div class="option-card radio-button" data-next="Question-generate-dataset-choose-ds-name" onclick="transitionSubQuestions(this, 'Question-generate-dataset-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                      <div class="card-head">
+                        <div class="folder-checkbox">
+                          <input class="folder-input-check" name="generate-4" id="generate-BF-dataset-options-new" type="radio">
+                          <label for="generate-BF-dataset-options-new"></label>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-folder-plus" fill="var(--color-bg-orange)" xmlns="http://www.w3.org/2000/svg">
+                          <path fill-rule="evenodd" d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"/>
+                          <path fill-rule="evenodd" d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z"/>
+                        </svg>
+                        <h2>I want to generate on a new dataset</h2>
+                      </div>
+                    </div>
+                  </div>
+
+              <div style="margin:15px 0;">
+                <div class="option-card radio-button" data-next="Question-generate-dataset-BF-dataset" onclick="transitionSubQuestions(this, 'Question-generate-dataset-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                    <div class="card-head">
+                      <div class="folder-checkbox">
+                        <input class="folder-input-check" name="generate-4" id="generate-BF-dataset-options-existing" type="radio">
+                        <label for="generate-BF-dataset-options-existing"></label>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-folder-check" fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"/>
+                        <path fill-rule="evenodd" d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                      </svg>
+                      <h2>I want to generate on an existing dataset</h2>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div>
-        <button type="button" class="transition-btn prev"><i class="fas fa-arrow-left"
-            style="margin-right:10px"></i>Back</button>
-        <button style="float:right" type="button" class="transition-btn">Next</button>
+      <div class="individual-question generate-dataset" id="Question-generate-dataset-choose-ds-name">
+        <div class="ui form" style="width:450px">
+          <div class="grouped fields">
+            <label style="font-size:17px;color:var(--color-bg-plum);width:100%;text-align:center">What is the name of the new dataset?</label>
+            <div class="field" style="margin:15px 0;">
+              <input type="text" class="form-control" style="background: #fff !important;width:450px !important" id="inputNewNameDataset" placeholder="Type here">
+            </div>
+          </div>
+          <p style="color:red;width:440px" id="para-new-name-dataset-message"></p>
+          <div id="div-confirm-inputNewNameDataset" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
+            <button id="btn-confirm-new-dataset-name" onclick="transitionSubQuestionsButton(this, 'Question-generate-dataset-choose-ds-name', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')" data-next="Question-generate-dataset-generate-div" style="cursor:pointer;border-radius: 8px;margin:0 10px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none">Confirm</button>
+          </div>
+        </div>
       </div>
-    </main>
-  </section>
 
-  <script>window.$ = window.jQuery = require('jquery')</script>
+      <div class="individual-question generate-dataset" id="Question-generate-dataset-BF-dataset">
+          <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:17px;color:var(--color-bg-plum);">Which existing Blackfynn dataset would you like to use?</label>
+              <div class="field" style="margin:15px 0;width:450px">
+                <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
+                  <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
+                    <div>
+                      <h5 style="color:#808080;font-size:15px">Current dataset:
+                      <span style="color:#000;font-weight:600;margin-left:8px;font-size:15px" id="current-bf-dataset-generate">None</span></h5>
+                    </div>
+                    <svg class="svg-change-current-account" onclick="openDropdownPrompt('dataset')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                    </svg>
+                    <!-- this is what is shown in the Edit Current dataset prompt  -->
+                    <div style="display:none" id="div-permission-list-2">
+                      <h5 style="text-align:left;color:#000"> Select permissions for filtering dataset lists:
+                        <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                          <span class="tooltiptext">
+                            You will see multiple dropdown lists throughout the SODA interface listing you Blackfynn datasets. You can filter those lists based on your permissions on the dataset.
+                            <br><br>
+                            The default filter is "All" that shows you all the datasets for which you have permissions.
+                            <br><br>
+                            See our <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> on Blackfynn permissions for more information.
+                          </span>
+                        </div>
+                      </h5>
+                      <div>
+                        <select class="my-dropdown" style="width:100%;" id="select-permission-list-2">
+                          <option default> All </option>
+                          <option> Owner </option>
+                          <option> Manager </option>
+                          <option> Editor </option>
+                          <option> Viewer </option>
+                        </select>
+                      </div>
+                      <div id="div-filter-datasets-progress-2" class="ui active green inline loader" style="display:none;margin:10px auto"></div>
+                      <p id='para-filter-datasets-status-2' style="font-size:14px"> </p>
 
-  <script src='./scripts/renderer.js' type='text/javascript'></script>
-  <script src='./scripts/organizeDS.js' type='text/javascript'></script>
-  <script src='./scripts/curate-functions.js' type='text/javascript'></script>
-  <script src='./scripts/tab-effects.js' type='text/javascript'></script>
+                      <h5 style="text-align:left;color:#000"> Select your dataset</h5>
+                      <div class="search-select-box">
+                      <select class="w-100" id="curatebfdatasetlist" data-live-search="true" name="Blackfynn dataset" style="width:450px;border-radius:7px;padding:8px">
+                        <option value="" disabled> Loading... </option>
+                      </select>
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+                  <div style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
+                    <button id="button-confirm-bf-dataset" onclick="transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-dataset', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')" data-next="Question-generate-dataset-existing-folders-options" style="display:none;cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="individual-question generate-dataset" id="Question-generate-dataset-existing-folders-options">
+          <div class="ui form" style="width:100%">
+          <div class="grouped fields">
+            <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">How would you like to handle existing folders?
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style = "font-size: 12px">
+                Tell SODA how to handle folders specified during Step 3 that are already existing (same name, same relative location) on your Blackfynn dataset
+                <ul>
+                  <li>Create duplicate: Create another copy of existing folders.</li>
+                  <li>Replace: Delete existing folders on Blackfynn then upload new ones</li>
+                  <li>Merge: Upload new files into the existing folders. Existing files will be handles as intructed in the next step.</li>
+                  <li>Skip: Existing folders will not be uploaded.</li>
+                </ul>
+              </span>
+            </div>
+
+            <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
+            <div style="display:flex;flex-direction:row;">
+              <div style="margin:15px 0;">
+                <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                    <div class="card-head">
+                      <div class="folder-checkbox">
+                        <input class="folder-input-check" name="generate-5" id="existing-folders-duplicate" type="radio">
+                        <label for="existing-folders-duplicate"></label>
+                      </div>
+                    </div>
+                    <div class="card-body">
+
+                      <i class="far fa-copy" style="color:var(--tagify-dd-color-primary)"></i>
+                      <h2>Create a duplicate</h2>
+                    </div>
+                  </div>
+                </div>
+
+            <div style="margin:15px 0;">
+
+              <!-- <button> -->
+              <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input class="folder-input-check" name="generate-5" id="existing-folders-replace" type="radio">
+                      <label for="existing-folders-replace"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <i class="fas fa-eraser" style="color: red;font-size:43px"></i>
+                    <h2>Replace</h2>
+                  </div>
+              </div>
+            </div>
+            <div style="margin:15px 0;">
+              <!-- <button> -->
+              <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input class="folder-input-check" name="generate-5" id="existing-folders-merge" type="radio">
+                      <label for="existing-folders-merge"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <svg width="45px" height="45px" viewBox="0 0 16 16" class="bi bi-intersect" fill="#EC6713" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm5 10v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2v5a2 2 0 0 1-2 2H5zm6-8H6a2 2 0 0 0-2 2v5H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2z"/>
+                    </svg>
+                    <h2>Merge</h2>
+                  </div>
+              </div>
+            </div>
+            <div style="margin:15px 0;">
+              <!-- <button> -->
+              <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input class="folder-input-check" name="generate-5" id="existing-folders-skip" type="radio">
+                      <label for="existing-folders-skip"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <svg width="45px" height="45px" viewBox="0 0 16 16" class="bi bi-skip-forward" fill="var(--color-teal)" xmlns="http://www.w3.org/2000/svg">
+                      <path fill-rule="evenodd" d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.752l-6.267 3.636c-.52.302-1.233-.043-1.233-.696v-2.94l-6.267 3.636C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696L7.5 7.248v-2.94c0-.653.713-.998 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5zM1 4.633v6.734L6.804 8 1 4.633zm7.5 0v6.734L14.304 8 8.5 4.633z"/>
+                    </svg>
+                    <!-- <i class="fas fa-forward" style="color: ;font-size:43px"></i> -->
+                    <h2>Skip</h2>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="individual-question generate-dataset" id="Question-generate-dataset-existing-files-options">
+        <div class="ui form" style="width:100%">
+        <div class="grouped fields">
+          <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">How would you like to handle existing files?
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext" style = "font-size: 12px">
+              Tell SODA how to handle files specified during Step 3 and metadata files specified during Step 4 that are already existing (same name, same relative location) on your Blackfynn dataset
+                <ul>
+                  <li>Create duplicate: Create another copy of existing files.</li>
+                  <li>Replace: Delete existing files on Blackfynn then upload new ones</li>
+                  <li>Skip: Existing files will not be uploaded.</li>
+                </ul>
+              </span>
+            </div>
+          <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
+          <div style="display:flex;flex-direction:row;">
+            <div style="margin:15px 0;">
+              <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input class="folder-input-check" name="generate-6" id="existing-files-duplicate" type="radio">
+                      <label for="existing-files-duplicate"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <i class="far fa-copy" style="color:var(--tagify-dd-color-primary);font-size:43px"></i>
+                    <h2>Create a duplicate</h2>
+                  </div>
+                </div>
+              </div>
+
+          <div style="margin:15px 0;">
+            <!-- <button> -->
+            <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input class="folder-input-check" name="generate-6" id="existing-files-replace" type="radio">
+                    <label for="existing-files-replace"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <i class="fas fa-eraser" style="color: red;font-size:43px"></i>
+                  <h2>Replace</h2>
+                </div>
+            </div>
+          </div>
+          <div style="margin:15px 0;">
+            <!-- <button> -->
+            <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')">
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input class="folder-input-check" name="generate-6" id="existing-files-skip" type="radio">
+                    <label for="existing-files-skip"></label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <svg width="45px" height="45px" viewBox="0 0 16 16" class="bi bi-skip-forward" fill="var(--color-teal)" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.752l-6.267 3.636c-.52.302-1.233-.043-1.233-.696v-2.94l-6.267 3.636C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696L7.5 7.248v-2.94c0-.653.713-.998 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5zM1 4.633v6.734L6.804 8 1 4.633zm7.5 0v6.734L14.304 8 8.5 4.633z"/>
+                  </svg>
+                  <h2>Skip</h2>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+      <div class="individual-question generate-dataset" id="Question-generate-dataset-locally-destination">
+        <div class="ui form" style="width:450px">
+          <div class="grouped fields">
+            <label style="font-size:17px;color:var(--color-bg-plum);text-align:center;">At which location should we generate the dataset?</label>
+            <div class="field" style="margin:15px 0;">
+              <input class="form-control" style="width:450px !important" id="input-destination-generate-dataset-locally" type="text" readonly placeholder="Browse here">
+            </div>
+          </div>
+            <br>
+            <div id="div-confirm-destination-locally" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
+              <button id="btn-confirm-local-destination" class="transition-btn" onclick="transitionSubQuestions(this, 'Question-generate-dataset-locally-destination', 'generate-dataset-tab', 'delete', 'generate-dataset')" data-next="Question-generate-dataset-choose-ds-name" style="display:flex;flex-direction:row;justify-content:center;width: 100px;height:40px;">Confirm</button>
+            </div>
+          </div>
+      </div>
+
+      <div class="individual-question generate-dataset" id="Question-generate-dataset-generate-div" style = "flex-direction:row;justify-content:center">
+      <button id="button-preview-dataset" style="cursor:pointer;border-radius: 8px;margin:5px; width: 120px;height:40px;background: #fff;color:var(--color-bg-plum);font-weight:600; border-style: solid; border-color:var(--color-bg-plum)"> Preview dataset</button>
+        <button id="button-generate" style="cursor:pointer;border-radius: 8px;margin:5px; width: 120px;height:40px;background: var(--color-bg-plum);color:#fff;font-weight:600;border:none">Generate</button>
+      </div>
+
+    </div>
+
+    <div class="generate-progress-tab" style='display:none;flex-direction:column;justify-content:flex-start;width:80%; height: 100%, margin-top:50px' id="generate-dataset-progress-tab">
+
+      <h3 id="generating-dataset-summary-message" class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:60px;font-weight:600; width: 100%"> Generating dataset progress <br>
+      <!-- <span style="color: #898989;font-size:13px;font-weight:500">Please answer the below questions: </span> -->
+      </h3>
+
+      <div style="clear: both; margin-top:50px; text-align:center; justify-content:center; flex-direction:row; width: 100%">
+        <p id="para-please-wait-new-curate"> </p>
+      </div>
+
+      <div style="clear: both; margin-top:80px; text-align:center; justify-content:center; flex-direction:row; width: 100%" id="div-new-curate-progress-bar-error-status">
+        <p id='para-new-curate-progress-bar-error-status'> <p>
+      </div>
+
+      <div id="div-new-curate-progress" style = "clear: both; width: 100%">
+        <div id="div-new-curate-meter-progress">
+          <progress class=progresstrack id="progress-bar-new-curate" max="100" value="0"></progress>
+        </div>
+        <div id="div-new-curate-progress-bar-status" style = "clear: both; width: 100%">
+          <p id='para-new-curate-progress-bar-status'> <p>
+        </div>
+      </div>
+
+      <div id="div-generate-comeback" style="display: none;flex-direction:row;justify-content:center;margin:0 auto">
+        <button id="button-generate-comeback" style="display:flex;flex-direction:row;justify-content:center;font-size:15px;cursor:pointer;border-radius: 8px;margin:0 10px; width: 180px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none"><i class="fas fa-undo-alt" style="margin-right:15px"></i>Return</button>
+        <button data-section="curate" onclick="exitCurate()" style="display:flex;flex-direction:row;justify-content:center;font-size:15px;cursor:pointer;border-radius: 8px;margin:0 10px; width: 180px;height:40px;background: #fff;color:red;font-weight:600;border:1px solid red">
+          <svg style="margin-right:15px" width="18px" height="18px" viewBox="0 0 16 16" class="bi bi-x-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+            <path fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+          </svg>
+          Exit</button>
+      </div>
+
+    </div>
+
+  </div>
+
+<div style="border-top:1px solid #f0f0f0;padding:10px;padding-top:15px;height:50px;display:flex;flex-direction:row;justify-content:space-between">
+  <div style="display:flex;flex-direction:row;width:110px">
+    <button type="button" onclick="nextPrev(-1)" id="prevBtn" class="transition-btn prev"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
+  </div>
+  <div style="display:flex;flex-direction:row;">
+    <!-- <button type="button" onclick="exitOrganizeSection()" class="transition-btn" style="background:red; color: #fff;font-weight:600;padding:5px;width:130px;margin-right:10px"><i class="fas fa-times" style="margin-right:10px"></i>Exit section</button> -->
+  </div>
+  <div style="display:flex;flex-direction:row;">
+    <button type="button" id="save-progress-btn" onclick="saveOrganizeProgressPrompt()" class="transition-btn" style="background:#fff; color:var(--color-light-green);border: 1px solid var(--color-light-green);padding:5px;width:135px;margin-right:10px"><i class="far fa-save" style="margin-right:10px"></i>Save progress</button>
+    <button style="float:right" onclick="nextPrev(1)" id="nextBtn" type="button" class="transition-btn" disabled>Continue</button>
+  </div>
+</div>
+
+</main>
+</section>
+
+<section id="validate-section" class="section js-section u-category-windows">
+
+<main class="dash-content main" id="validate_main">
+  <h5 class="dash-title" style="border-bottom:none;font-size:17px;color:var(--color-sidebar)"><i class="fas fa-chevron-right" style="margin-right:10px"></i>Validate dataset</h5>
+   <div class="form-tabs tab-active"id="validate-tab">
+     <h3 class="question-title">Upload <span style="color:var(--color-bg-plum)">your dataset</span>
+       <br> below to <span style="color:var(--color-bg-plum)">validate</span></h3>
+       <div class = "div-organize-generate-dataset">
+         <li class="folder-upload-div">
+           <p>Upload dataset</p>
+           <div><i style="font-size: 60px" class="fas fa-cloud-upload-alt"></i></div>
+           <p style="font-size:11px">Drag and drop your <br>
+             folder here</p> <p style="font-size:12px">OR</p>
+             <button>Choose folder</button>
+         </li>
+        </div>
+       </div>
+
+ <div>
+   <button type="button" class="transition-btn prev"><i class="fas fa-arrow-left" style="margin-right:10px"></i>Back</button>
+   <button style="float:right" type="button" class="transition-btn">Next</button>
+ </div>
+</main>
+</section>
+
+<script>window.$ = window.jQuery = require('jquery');</script>
+
+<script src='./scripts/renderer.js' type='text/javascript'></script>
+<script src='./scripts/organizeDS.js' type='text/javascript'></script>
+<script src='./scripts/tab-effects.js' type='text/javascript'></script>
+<script src='./scripts/curate-functions.js' type='text/javascript'></script>
 
   <script type='text/javascript'>
     require('./renderer-process/native-ui/dialogs/open-file')
@@ -1575,10 +1320,10 @@
   </script>
 
 
-  <script>
-    $('.button-display-details').click(function () {
-      $(this).parent().toggleClass('show')
-    });
-  </script>
+ <script>
+   $('.button-display-details').click(function() {
+     $(this).parent().toggleClass('show')
+   });
+   </script>
 
 </template>

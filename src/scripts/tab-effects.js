@@ -362,8 +362,11 @@ $(".folder-input-check").click(function () {
 
 
 // ////////////// THIS IS FOR THE SUB-TABS OF GETTING STARTED and GENERATE DATASET sections /////////////////////////
-
-// transition between tabs under Step 1 and Step 6
+/*
+  Transition between tabs under Step 1 and Step 6;
+  *** Note: This onclick function below is only used for div: option-card and not buttons
+  due to some unique element restrictions the option-card div has
+*/
 var divList = [];
 async function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
   // document.getElementById("nextBtn").disabled = true;
@@ -376,15 +379,15 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
 
   // uncheck the other radio buttons
   $($(ev).parents()[0]).siblings().find('.option-card.radio-button').removeClass('checked');
-  // $($(ev).parents()[0]).siblings().find('.option-card.radio-button').css('pointer-events', 'auto');
   $($(ev).parents()[0]).siblings().find('.option-card.radio-button').addClass('non-selected');
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute('data-next'));
+  console.log(ev, currentDiv, parentDiv, button)
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
-  if (!(target.classList.contains('show'))) {
-    target.classList.add('show');
+  if (!($(target).hasClass('show'))) {
+    $(target).addClass('show');
   }
   // here, handling existing folders and files tabs are independent of each other
   if (!(ev.getAttribute('data-next') === "Question-generate-dataset-existing-files-options"
@@ -419,8 +422,12 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
     }
     $(ev).hide();
   }
+
+  let dataset_location = document.querySelector("#Question-generate-dataset-locally-destination > div > div.grouped.fields > label");
+
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
+
   // when we hit the last question under Step 1, hide and disable Next button
   if (ev.getAttribute('data-next') === "Question-getting-started-final") {
     $('#progress-files-dropdown').val('Select');
@@ -441,16 +448,18 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       $("#nextBtn").click();
     }
     else if ($("#existing-bf").is(":checked")) {
+      // this exitCurate function gets called in the beginning here
+      // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
       exitCurate()
       console.log("here");
       $("#Question-getting-started-existing-BF-account").show();
       $("#Question-getting-started-existing-BF-account").children().show();
       sodaJSONObj = {
         "bf-account-selected": {
-          "account-name": "calmilinux"
+          "account-name": $("#current-bf-account").text()
         },
         "bf-dataset-selected": {
-          "dataset-name": "testddataset"
+          "dataset-name": $("#current-bf-dataset").text()
         },
         "dataset-structure": {},
         "metadata-files": {},
@@ -462,7 +471,12 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       $('body').addClass('waiting');
       //sodaJSONObj["bf-account-selected"]["account-name"] = document.getElementById('bfexistingallaccountlist').value;
       //sodaJSONObj["bf-dataset-selected"]["dataset-name"] = document.getElementById('curateexistingbfdatasetlist').value;
-      res = await bf_request_and_populate_dataset(sodaJSONObj);
+      // Swal.fire({
+      //   icon: 'error',
+      //   text: res + "Please choose another dataset!",
+      //   footer: '<a href>Why do I have this issue?</a>'
+      // })
+      var res = await bf_request_and_populate_dataset(sodaJSONObj);
       if (res == "error") {
         console.log(res);
         $('body').removeClass('waiting');
@@ -474,34 +488,9 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
         $("#nextBtn").prop("disabled", false);
         $('body').removeClass('waiting');
       }
-    } else if ($("#existing-local").is(":checked")){
-      exitCurate();
-      sodaJSONObj = {
-        "bf-account-selected": {},
-        "bf-dataset-selected": {},
-        "dataset-structure": {},
-        "metadata-files": {},
-        "manifest-files": {},
-        "generate-dataset": {},
-        "starting-point": "local",
-      }
-      // this should run after a folder is selected
-      reset_ui();
-      let dataset_location = document.querySelector("#Question-generate-dataset-locally-destination > div > div.grouped.fields > label");
-      $(dataset_location).text("What is the location of the dataset?");
-      //verify_sparc_folder(sodaJSONObj["local-path"]);
-      create_json_object(sodaJSONObj);
-      console.log(sodaJSONObj);
-      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-      populate_existing_folders(datasetStructureJSONObj);
-      populate_existing_metadata(sodaJSONObj);
-      $("#nextBtn").prop("disabled", false);
-    } else {
-      exitCurate();
-      $("#nextBtn").prop("disabled", true);
     }
   }
-  let dataset_location = document.querySelector("#Question-generate-dataset-locally-destination > div > div.grouped.fields > label");
+
   if (ev.getAttribute('data-next') === "Question-generate-dataset-locally-destination")
   {
     if ($("#existing-local").is(":checked") && currentDiv == "Question-getting-started-1"){
@@ -526,7 +515,7 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
   else
   {
     $(dataset_location).text("At which location should we generate the dataset?");
-  }
+  } 
 }
 
 create_json_object = (sodaJSONObj) => {
@@ -628,6 +617,115 @@ verify_sparc_folder = (root_folder_path) => {
   });
   return valid_dataset;
 };
+// function similar to transitionSubQuestions, but for buttons
+async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, category){
+  /*
+    ev: the button being clicked
+    currentDiv: current option-card (question)
+    parentDiv: current parent-tab (step)
+    category: either getting-started or generate-dataset (currently only these 2 have multiple sub questions)
+  */
+
+  // first, handle target or the next div to show
+  var target = document.getElementById(ev.getAttribute('data-next'));
+  // display the target tab (data-next tab)
+  if (!(target.classList.contains('show'))) {
+    target.classList.add('show');
+  }
+
+  // here, handling existing folders and files tabs are independent of each other
+  if (!(ev.getAttribute('data-next') === "Question-generate-dataset-existing-files-options"
+  && target.classList.contains('prev'))) {
+    // append to parentDiv
+    document.getElementById(parentDiv).appendChild(target);
+  }
+  
+  // if buttons: Add account and Confirm account were hidden, show them again here
+  if (ev.getAttribute('data-next') === "Question-generate-dataset-BF-account") {
+    $("#" + ev.getAttribute('data-next') + " button").show();
+  }
+  if (ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")
+  {
+    $("#Question-generate-dataset-generate-div").show();
+    $("#Question-generate-dataset-generate-div").children().show();
+  }
+
+  if (!(ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")) {
+    // create moving effects when new questions appear
+    $("#Question-generate-dataset-generate-div").hide();
+    $("#Question-generate-dataset-generate-div").children().hide();
+    setTimeout(() => target.classList.add("test2"), 100);
+  }
+
+  document.getElementById(currentDiv).classList.add("prev");
+
+  // handle buttons (if buttons are confirm buttons -> delete after users confirm)
+  if (button === 'delete') {
+    if ($(ev).siblings().length > 0) {
+      $(ev).siblings().hide()
+    }
+    $(ev).hide();
+  }
+  // auto-scroll to bottom of div
+  document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
+
+  if (ev.id === "button-confirm-bf-dataset-getting-started") {
+    // this exitCurate function gets called in the beginning here
+    // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
+    exitCurate()
+    $("#Question-getting-started-existing-BF-account").show();
+    $("#Question-getting-started-existing-BF-account").children().show();
+    sodaJSONObj = {
+      "bf-account-selected": {
+        "account-name": $("#current-bf-account").text()
+      },
+      "bf-dataset-selected": {
+        "dataset-name": $("#current-bf-dataset").text()
+      },
+      "dataset-structure": {},
+      "metadata-files": {},
+      "manifest-files": {},
+      "generate-dataset": {},
+      "starting-point": "bf"
+    };
+
+    $('body').addClass('waiting');
+    var res = await bf_request_and_populate_dataset(sodaJSONObj);
+    if (res == "error") {
+      $('body').removeClass('waiting');
+    } else {
+      sodaJSONObj = res;
+      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+      populate_existing_folders(datasetStructureJSONObj);
+      populate_existing_metadata(sodaJSONObj);
+      $("#nextBtn").prop("disabled", false);
+      $('body').removeClass('waiting');
+    }
+  }
+  let dataset_location = document.querySelector("#Question-generate-dataset-locally-destination > div > div.grouped.fields > label");
+  if (ev.getAttribute('data-next') === "Question-generate-dataset-locally-destination")
+  {
+    if ($("#existing-local").is(":checked") && currentDiv == "Question-getting-started-1"){
+      sodaJSONObj = {
+        "bf-account-selected": {},
+        "bf-dataset-selected": {},
+        "dataset-structure": {},
+        "metadata-files": {},
+        "manifest-files": {},
+        "generate-dataset": {},
+        "starting-point": "local",
+        "local-path": ""
+      }
+      // this should run after a folder is selected
+      reset_ui();
+
+      $(dataset_location).text("What is the location of the dataset?");
+
+      $("#nextBtn").prop("disabled", true);
+    } 
+  }
+}
+
 
 reset_ui = () => {
   $(".option-card.high-level-folders").each(function (i, obj) {
@@ -829,7 +927,6 @@ function hidePrevDivs(currentDiv, category) {
 
         // /// remove all checkmarks and previous data input
         $("#" + currentDiv).nextAll().find('.option-card.radio-button').removeClass('checked');
-        // $("#"+currentDiv).nextAll().find('.option-card.radio-button').css('pointer-events', 'auto');
         $("#" + currentDiv).nextAll().find('.option-card.radio-button').removeClass('non-selected');
         $("#" + currentDiv).nextAll().find('.folder-input-check').prop('checked', false);
         $("#" + currentDiv).nextAll().find('#curatebfdatasetlist').prop("selectedIndex", 0);
@@ -841,8 +938,10 @@ function hidePrevDivs(currentDiv, category) {
             document.getElementById(child.id).value = "";
             document.getElementById(child.id).placeholder = "Type here";
           } else {
-            document.getElementById(child.id).value = "";
-            document.getElementById(child.id).placeholder = "Browse here";
+            if (document.getElementById(child.id)) {
+              document.getElementById(child.id).value = "";
+              document.getElementById(child.id).placeholder = "Browse here";
+            }
           }
         };
       }
@@ -896,7 +995,7 @@ function populateMetadataObject(
   }
   for (let item in object["metadata-files"]) {
     if (
-      item.search(metadataFile) != -1 && 
+      item.search(metadataFile) != -1 &&
       object["metadata-files"][item]["type"] == "bf"
     ) {
       if (metadataFilePath == "" || metadataFilePath.indexOf("Using file present on Blackfynn") == -1)
@@ -1106,14 +1205,11 @@ function updateJSONStructureGenerate() {
       };
 
       if ("bf-account-selected" in sodaJSONObj) {
-        sodaJSONObj["bf-account-selected"]["account-name"] = $(
-          $("#bfallaccountlist").find("option:selected")[0]
-        ).val();
+        sodaJSONObj["bf-account-selected"]["account-name"] =
+          $("#current-bf-account-generate").text();
       } else {
         sodaJSONObj["bf-account-selected"] = {
-          "account-name": $(
-            $("#bfallaccountlist").find("option:selected")[0]
-          ).val(),
+          "account-name": $("#current-bf-account-generate").text()
         };
       }
       // answer to Question if generate on BF, then: how to handle existing files and folders
@@ -1160,14 +1256,11 @@ function updateJSONStructureGenerate() {
         }
         // populate JSON obj with BF dataset and account
         if ("bf-dataset-selected" in sodaJSONObj) {
-          sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $(
-            $("#curatebfdatasetlist").find("option:selected")[0]
-          ).val();
+          sodaJSONObj["bf-dataset-selected"]["dataset-name"] =
+            $('#current-bf-dataset-generate').text()
         } else {
           sodaJSONObj["bf-dataset-selected"] = {
-            "dataset-name": $(
-              $("#curatebfdatasetlist").find("option:selected")[0]
-            ).val(),
+            "dataset-name": $('#current-bf-dataset-generate').text()
           };
         }
         // if generate to a new dataset, then update JSON object with a new dataset

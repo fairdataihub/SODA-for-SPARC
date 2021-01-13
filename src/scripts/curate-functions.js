@@ -258,14 +258,305 @@ function importOrganizeProgressPrompt() {
   document.getElementById('para-progress-file-status').innerHTML = ""
   removeOptions(progressFileDropdown);
   addOption(progressFileDropdown, "Select", "Select")
-  var fileNames = fs.readdirSync(progressFilePath);
-  if (fileNames.length > 0) {
-    fileNames.forEach((item, i) => {
-      addOption(progressFileDropdown, path.parse(item).name, item)
-    });
+  if (fs.existsSync(progressFilePath)) {
+    var fileNames = fs.readdirSync(progressFilePath);
+    if (fileNames.length > 0) {
+      fileNames.forEach((item, i) => {
+        addOption(progressFileDropdown, path.parse(item).name, item)
+      });
+    } else {
+      document.getElementById('para-progress-file-status').innerHTML = "<span style='color:var(--color)'>There is no existing progress to load. Please choose one of the other options above!</span>"
+    }
   } else {
     document.getElementById('para-progress-file-status').innerHTML = "<span style='color:var(--color)'>There is no existing progress to load. Please choose one of the other options above!</span>"
   }
 }
 
 importOrganizeProgressPrompt()
+async function openDropdownPrompt(dropdown) {
+  // if users edit current account
+  if (dropdown === "bf") {
+    var resolveMessage = "";
+    if (bfAccountOptionsStatus === "") {
+        if (Object.keys(bfAccountOptions).length === 1) {
+        footerMessage = "No existing accounts to load. Please add an account!"
+      } else {
+        footerMessage = "<a href='#'>Need help?</a>"
+      }
+    } else {
+      footerMessage = bfAccountOptionsStatus;
+    }
+    var bfacct;
+    const { value: bfAccountSwal } = await Swal.fire({
+          title: 'Select your Blackfynn account',
+          input: 'select',
+          showCloseButton: true,
+          inputOptions: bfAccountOptions,
+          confirmButtonText: "Confirm",
+          denyButtonText: "Add account",
+          showDenyButton: true,
+          showCancelButton: false,
+          inputValue: defaultBfAccount,
+          reverseButtons: true,
+          footer: footerMessage,
+          didOpen: function(ele) {
+             $(ele).find('.swal2-select').attr("id", "bfaccountdropdown");
+             $("#bfaccountdropdown").removeClass('swal2-select');
+             $("#bfaccountdropdown").addClass('w-100');
+             $("#bfaccountdropdown").attr('data-live-search', "true");
+             $("#bfaccountdropdown").wrap("<div class='search-select-box'></div>");
+             $("#bfaccountdropdown").selectpicker();
+             $("#bfaccountdropdown").attr('disabled', false);
+          },
+          inputValidator: (value) => {
+            return new Promise((resolve) => {
+                if (value !== 'Select') {
+                  bfacct = $("#bfaccountdropdown").val();
+                  resolve();
+                } else {
+                  bfacct = undefined;
+                  resolve("You need to select an account!")
+                }
+            })
+          }
+        })
+        if (bfAccountSwal === null) {
+          if (bfacct !== "Select") {
+            Swal.fire(
+              {
+                title: 'Loading your account details...',
+                timer: 2000,
+                timerProgressBar: true,
+                allowEscapeKey: false,
+                showConfirmButton: false
+              });
+              $('#current-bf-account').text("");
+              $('#current-bf-account-generate').text("");
+              $('#para-account-detail-curate').html("");
+              client.invoke("api_bf_account_details", bfacct, (error, res) => {
+                if(error) {
+                  log.error(error)
+                  console.error(error)
+                  Swal.fire({
+                    icon: 'error',
+                    text: error,
+                    footer: '<a href>Why do I have this issue?</a>'
+                  })
+                  showHideDropdownButtons("account", "hide");
+                  // $("#div-bf-account-btns").css("display", "none");
+                  // $('#div-bf-account-btns button').hide();
+                } else {
+                  $('#para-account-detail-curate').html(res);
+                  $('#current-bf-account').text(bfacct);
+                  $('#current-bf-account-generate').text(bfacct);
+                  updateBfAccountList()
+                  checkPrevDivForConfirmButton("account")
+                }
+              })
+          } else {
+            Swal.showValidationMessage("Please select an account!")
+          }
+        } else if (bfAccountSwal === false) {
+          // // else, if users click Add account
+          showBFAddAccountBootbox()
+        }
+  } else if (dropdown === "dataset") {
+    var bfDataset = "";
+    // if users edit Current dataset
+    datasetPermissionDiv.style.display = "block";
+    $('#select-permission-list-2').val('All').trigger('change');
+    const { value: bfDS } = await Swal.fire({
+      title: "<h3 style='margin-bottom:20px !important'>Please choose a dataset</h3>",
+      html: datasetPermissionDiv,
+      showCloseButton: true,
+      showCancelButton: true,
+      focusConfirm: false,
+      confirmButtonText: "Confirm",
+      cancelButtonText: "Cancel",
+      preConfirm: () => {
+        bfDataset = $('#curatebfdatasetlist').val();
+        if (!bfDataset) {
+          Swal.showValidationMessage("Please select a dataset!")
+          return undefined
+        } else {
+          if (bfDataset === "Select dataset") {
+             Swal.showValidationMessage("Please select a dataset!")
+             return undefined
+           } else {
+             return bfDataset
+           }
+        }
+      }
+    })
+    // check return value
+    if (bfDS) {
+        $("#current-bf-dataset").text(bfDataset);
+        $("#current-bf-dataset-generate").text(bfDataset);
+        defaultBfDataset = bfDataset;
+        tempDatasetListsSync()
+        showHideDropdownButtons("dataset", "show");
+        checkPrevDivForConfirmButton("dataset")
+        // $($('#button-confirm-bf-dataset').parents()[0]).css("display", "flex")
+        // $('#button-confirm-bf-dataset').show()
+      }
+    // hide "Confirm" button if Current dataset set to None
+    if ($("#current-bf-dataset").text() === "None")  {
+      showHideDropdownButtons("dataset", "hide");
+      // $($('#button-confirm-bf-dataset').parents()[0]).css("display", "none")
+      // $('#button-confirm-bf-dataset').hide()
+    }
+  }
+}
+
+$('#select-permission-list-2').change(function(e) {
+  $("#div-filter-datasets-progress-2").css("display", "block");
+  var datasetPermission = $('#select-permission-list-2').val();
+  var bfacct = $("#current-bf-account").text();
+  if (bfacct === "None") {
+    document.getElementById("para-filter-datasets-status-2").innerHTML = "<span style='color:red'>Please select a Blackfynn account first!</span>"
+  } else {
+    $("#curatebfdatasetlist").selectpicker();
+    updateDatasetList(bfacct, datasetPermission)
+  }
+})
+
+function checkPrevDivForConfirmButton(category) {
+  if (category === "account") {
+    if (!($('#Question-generate-dataset-BF-account').hasClass('prev'))) {
+      $("#div-bf-account-btns").css("display", "flex");
+      $('#div-bf-account-btns button').show();
+    } else {
+      $("#div-bf-account-btns").css("display", "none");
+      $('#div-bf-account-btns button').hide();
+    }
+    if (!($('#Question-getting-started-BF-account').hasClass('prev'))) {
+      $("#div-bf-account-btns-getting-started").css("display", "flex");
+      $('#div-bf-account-btns-getting-started button').show();
+    } else {
+      $("#div-bf-account-btns-getting-started").css("display", "none");
+      $('#div-bf-account-btns-getting-started button').hide();
+    }
+  } else  if (category === "dataset") {
+      if (!($('#Question-generate-dataset-BF-dataset').hasClass('prev'))) {
+        $($("#button-confirm-bf-dataset").parent()[0]).css("display", "flex");
+        $("#button-confirm-bf-dataset").show();
+      } else {
+        $($("#button-confirm-bf-dataset").parent()[0]).css("display", "none");
+        $("#button-confirm-bf-dataset").hide();
+      }
+      if (!($('#Question-getting-started-BF-dataset').hasClass('prev'))) {
+        $($("#button-confirm-bf-dataset-getting-started").parent()[0]).css("display", "flex");
+        $("#button-confirm-bf-dataset-getting-started").show();
+      } else {
+        $($("#button-confirm-bf-dataset-getting-started").parent()[0]).css("display", "none");
+        $("#button-confirm-bf-dataset-getting-started").hide();
+      }
+  }
+}
+
+function tempDatasetListsSync() {
+  $("#bfdatasetlist_renamedataset").val(defaultBfDataset);
+  currentDatasetDropdowns = [bfDatasetListMetadata, bfUploadDatasetList, bfDatasetList, bfDatasetListDatasetStatus, bfDatasetListPermission,
+                            bfDatasetListPostCurationCuration, bfDatasetListPostCurationConsortium, bfDatasetListPostCurationPublish, datasetDescriptionFileDataset];
+  var listSelectedIndex = bfDatasetListRenameDataset.selectedIndex;
+  for (var list of currentDatasetDropdowns) {
+    list.selectedIndex = listSelectedIndex;
+  }
+  postCurationListChange()
+  showDatasetDescription()
+  metadataDatasetlistChange()
+  permissionDatasetlistChange()
+  datasetStatusListChange()
+  renameDatasetlistChange()
+  postCurationListChange()
+  showDatasetDescription()
+}
+
+function updateDatasetList(bfaccount, myPermission) {
+  removeOptions(curateDatasetDropdown)
+  addOption(curateDatasetDropdown, "Select dataset", "Select dataset")
+  initializeBootstrapSelect("#curatebfdatasetlist", "disabled")
+  var filteredDatasets = [];
+  // waiting for dataset list to load first before initiating BF dataset dropdown list
+  setTimeout(function() {
+    if (myPermission.toLowerCase()==="all") {
+      for (var i=0; i<datasetList.length; i++) {
+        filteredDatasets.push(datasetList[i].name);
+      }
+    } else {
+      for (var i=0; i<datasetList.length; i++) {
+        if (datasetList[i].role === myPermission.toLowerCase()) {
+          filteredDatasets.push(datasetList[i].name)
+        }
+      }
+    }
+    filteredDatasets.sort(function (a, b) {
+      return a.toLowerCase().localeCompare(b.toLowerCase());
+    });
+
+    for (myitem in filteredDatasets){
+      var myitemselect = filteredDatasets[myitem]
+      var option = document.createElement("option")
+      option.textContent = myitemselect
+      option.value = myitemselect
+      curateDatasetDropdown.appendChild(option)
+    }
+    initializeBootstrapSelect("#curatebfdatasetlist", "show")
+    document.getElementById("div-permission-list-2").style.display = "block";
+    $("#div-filter-datasets-progress-2").css("display", "none");
+    document.getElementById("para-filter-datasets-status-2").innerHTML = filteredDatasets.length + " dataset(s) where you have " +  myPermission.toLowerCase() + " permissions were loaded successfully below."
+  }, 3000)
+}
+
+/// helper function to refresh live search dropdowns per dataset permission on change event
+function initializeBootstrapSelect(dropdown, action) {
+  if (action === "disabled") {
+    $(dropdown).attr('disabled', true);
+    $(".dropdown.bootstrap-select button").addClass('disabled');
+    $(".dropdown.bootstrap-select").addClass('disabled');
+    $(dropdown).selectpicker('refresh');
+  } else if (action === "show"){
+    $(dropdown).selectpicker();
+    $(dropdown).selectpicker('refresh');
+    $(dropdown).attr('disabled', false);
+    $(".dropdown.bootstrap-select button").removeClass('disabled');
+    $(".dropdown.bootstrap-select").removeClass('disabled');
+  }
+}
+
+// function to show dataset or account Confirm buttons
+function showHideDropdownButtons(category, action) {
+  if (category === "dataset") {
+    if (action === "show") {
+      // btn under Step 6
+      $($('#button-confirm-bf-dataset').parents()[0]).css("display", "flex");
+      $('#button-confirm-bf-dataset').show();
+      // btn under Step 1
+      $($('#button-confirm-bf-dataset-getting-started').parents()[0]).css("display", "flex");
+      $('#button-confirm-bf-dataset-getting-started').show();
+    } else {
+      // btn under Step 6
+      $($('#button-confirm-bf-dataset').parents()[0]).css("display", "none");
+      $('#button-confirm-bf-dataset').hide();
+      // btn under Step 1
+      $($('#button-confirm-bf-dataset-getting-started').parents()[0]).css("display", "none");
+      $('#button-confirm-bf-dataset-getting-started').hide();
+    }
+  } else if (category === "account") {
+      if (action === "show") {
+        // btn under Step 6
+        $("#div-bf-account-btns").css("display", "flex");
+        $('#div-bf-account-btns button').show();
+        // btn under Step 1
+        $("#div-bf-account-btns-getting-started").css("display", "flex");
+        $('#div-bf-account-btns-getting-started button').show();
+      } else {
+        // btn under Step 6
+        $("#div-bf-account-btns").css("display", "none");
+        $('#div-bf-account-btns button').hide();
+        // btn under Step 1
+        $("#div-bf-account-btns-getting-started").css("display", "none");
+        $('#div-bf-account-btns-getting-started button').hide();
+      }
+    }
+}
