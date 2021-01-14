@@ -261,6 +261,16 @@ button[disabled]{
     padding: 10px 0px 10px 0px;
 }
 
+.single-item.selected-item {
+  background-color: #e4dede;
+}
+
+.single-item.selected-item:hover {
+  border: #c0c0c0;
+  background-color: #eeeaea;
+  /* transform: translateY(-6px); */
+}
+
 .single-item:active {
   -webkit-transform: all 3s;
 }
@@ -308,14 +318,15 @@ button[disabled]{
 .myFol.deleted_folder:after {
   content: "\00D7";
   position: absolute;
-  bottom: 26px;
-  right: 23px;
+  bottom: 30px;
+  right: 25px;
   line-height: 1;
   color: rgb(252, 0, 0);
   z-index: 10;
   font-size: 35px;
   font-family: helvetica, arial, sans-serif;
   font-weight: bold;
+  pointer-events: none;
 }
 /* 
 .dropdown-item:hover {
@@ -335,7 +346,8 @@ button[disabled]{
     line-height: 1.5;
     margin-right: 5px;
     margin-left: 5px;
-    color: black
+    color: black;
+    pointer-events: none;
 }
 
 .blue {
@@ -713,6 +725,7 @@ button[disabled]{
   font-size: 35px;
   font-family: helvetica, arial, sans-serif;
   font-weight: bold;
+  pointer-events: none;
 }
 
 .folder_desc.blackfynn_folder:after {
@@ -726,9 +739,28 @@ button[disabled]{
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
 }
 
 .blackfynn_folder_deleted{
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.folder_desc.local_folder:after {
+  content: "\f7c2";
+  position: absolute;
+  bottom: 34px;
+  left: 18px;
+  color: rgb(81, 176, 240);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
+}
+
+.local_folder_deleted{
   color: rgba(0, 0, 0, 0.5);
 }
 
@@ -743,6 +775,21 @@ button[disabled]{
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
+}
+
+.folder_desc.local_folder_deleted:after {
+  content: "\f7c2";
+  position: absolute;
+  bottom: 34px;
+  left: 18px;
+  color: rgb(185, 221, 245);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
 }
 
 .folder_desc.blackfynn_file:after {
@@ -756,9 +803,28 @@ button[disabled]{
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
+}
+
+.folder_desc.local_file:after {
+  content: "\f7c2";
+  position: absolute;
+  bottom: 27px;
+  left: 34px;
+  color: rgb(81, 176, 240);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
 }
 
 .blackfynn_file_deleted{
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.local_file_deleted{
   color: rgba(0, 0, 0, 0.5);
 }
 
@@ -773,6 +839,21 @@ button[disabled]{
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
+}
+
+.folder_desc.local_file_deleted:after {
+  content: "\f7c2";
+  position: absolute;
+  bottom: 27px;
+  left: 34px;
+  color: rgb(185, 221, 245);
+  z-index: 5;
+  font-size: 21px;
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+  pointer-events: none;
 }
 
 .menu-toggle {
@@ -958,6 +1039,7 @@ button[disabled]{
   grid-template-rows: auto;
   text-align: center;
   overflow-wrap: break-word;
+  z-index: 10;
 }
 
 .div-display-details div {

@@ -32,10 +32,32 @@ function delFolder(
     type = "folders";
   }
 
+  if ($(".selected-item").length > 2) {
+    type = "items";
+  }
+
   if (ev.classList.value.includes("deleted")) {
+    if (ev.classList.value.includes("selected-item") && type === "items")
+    {
+      bootbox.alert({
+        title: "Restore " + type,
+        message: "You can only restore one file at a time. Please select a single file for restoration.",
+        onEscape: true,
+        centerVertical: true,
+        backdrop: true
+      });
+      return;
+    }
     bootbox.confirm({
       title: "Restore " + promptVar,
-      message: "Are you sure you want to restore this " + promptVar + "? If any " + promptVar + " of the same name has been added, this restored " + promptVar + " will be renamed.",
+      message:
+        "Are you sure you want to restore this " +
+        promptVar +
+        "? If any " +
+        promptVar +
+        " of the same name has been added, this restored " +
+        promptVar +
+        " will be renamed.",
       onEscape: true,
       centerVertical: true,
       callback: function (result) {
@@ -53,8 +75,7 @@ function delFolder(
             itemToRestore.lastIndexOf("-")
           );
           // Add a (1) if the file name already exists
-          if (itemToRestore_new_key in myPath[type])
-          {
+          if (itemToRestore_new_key in myPath[type]) {
             myPath[type][itemToRestore]["action"].push("renamed");
             itemToRestore_new_key = itemToRestore_new_key + "(1)";
           }
@@ -73,40 +94,98 @@ function delFolder(
       },
     });
   } else {
-    bootbox.confirm({
-      title: "Delete " + promptVar,
-      message: "Are you sure you want to delete this " + promptVar + "?",
-      onEscape: true,
-      centerVertical: true,
-      callback: function (result) {
-        if (result !== null && result === true) {
-          /// get current location of folders or files
-          var filtered = getGlobalPath(organizeCurrentLocation);
-          var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
-          // update Json object with new folder created
-          if (myPath[type][itemToDelete]["type"] === "bf") {
-            if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
-              myPath[type][itemToDelete]["action"] = [];
-              myPath[type][itemToDelete]["action"].push("existing");
-              myPath[type][itemToDelete]["action"].push("deleted");
-              let itemToDelete_new_key = itemToDelete + "-DELETED";
-              myPath[type][itemToDelete_new_key] = myPath[type][itemToDelete];
+    if (type === "items") {
+      bootbox.confirm({
+        title: "Delete " + promptVar,
+        message: "Are you sure you want to delete these " + type + "?",
+        onEscape: true,
+        centerVertical: true,
+        callback: function (result) {
+          if (result !== null && result === true) {
+            /// get current location of folders or files
+            var filtered = getGlobalPath(organizeCurrentLocation);
+            var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+
+            $("div.single-item.selected-item > .folder_desc").each(function (
+              index,
+              current_element
+            ) {
+              itemToDelete = $(current_element).text();
+              if (itemToDelete in myPath["files"]) {
+                type = "files";
+              } else if (itemToDelete in myPath["folders"]) {
+                type = "folders";
+              }
+              if (
+                myPath[type][itemToDelete]["type"] === "bf" ||
+                (myPath[type][itemToDelete]["type"] === "local" &&
+                  myPath[type][itemToDelete]["action"].includes("existing"))
+              ) {
+                if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
+                  myPath[type][itemToDelete]["action"] = [];
+                  myPath[type][itemToDelete]["action"].push("existing");
+                  myPath[type][itemToDelete]["action"].push("deleted");
+                  let itemToDelete_new_key = itemToDelete + "-DELETED";
+                  myPath[type][itemToDelete_new_key] =
+                    myPath[type][itemToDelete];
+                  delete myPath[type][itemToDelete];
+                }
+              } else {
+                delete myPath[type][itemToDelete];
+              }
+            });
+
+            // update UI with updated jsonobj
+            listItems(myPath, uiItem);
+            getInFolder(
+              singleUIItem,
+              uiItem,
+              organizeCurrentLocation,
+              inputGlobal
+            );
+          }
+        },
+      });
+    } else {
+      bootbox.confirm({
+        title: "Delete " + promptVar,
+        message: "Are you sure you want to delete this " + promptVar + "?",
+        onEscape: true,
+        centerVertical: true,
+        callback: function (result) {
+          if (result !== null && result === true) {
+            /// get current location of folders or files
+            var filtered = getGlobalPath(organizeCurrentLocation);
+            var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+            // update Json object with new folder created
+            if (
+              myPath[type][itemToDelete]["type"] === "bf" ||
+              (myPath[type][itemToDelete]["type"] === "local" &&
+                myPath[type][itemToDelete]["action"].includes("existing"))
+            ) {
+              if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
+                myPath[type][itemToDelete]["action"] = [];
+                myPath[type][itemToDelete]["action"].push("existing");
+                myPath[type][itemToDelete]["action"].push("deleted");
+                let itemToDelete_new_key = itemToDelete + "-DELETED";
+                myPath[type][itemToDelete_new_key] = myPath[type][itemToDelete];
+                delete myPath[type][itemToDelete];
+              }
+            } else {
               delete myPath[type][itemToDelete];
             }
-          } else {
-            delete myPath[type][itemToDelete];
+            // update UI with updated jsonobj
+            listItems(myPath, uiItem);
+            getInFolder(
+              singleUIItem,
+              uiItem,
+              organizeCurrentLocation,
+              inputGlobal
+            );
           }
-          // update UI with updated jsonobj
-          listItems(myPath, uiItem);
-          getInFolder(
-            singleUIItem,
-            uiItem,
-            organizeCurrentLocation,
-            inputGlobal
-          );
-        }
-      },
-    });
+        },
+      });
+    }
   }
 }
 

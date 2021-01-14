@@ -198,7 +198,7 @@ function nextPrev(n) {
     //document.getElementById("generate-dataset-tab").appendChild(target);
     showParentTab(currentTab, n);
   }
-  else if (x[currentTab].id === "manifest-file-tab" && sodaJSONObj["starting-point"] == "new")
+  else if (x[currentTab].id === "manifest-file-tab" && (sodaJSONObj["starting-point"] === "new" || sodaJSONObj["starting-point"] === "local"))
   {
     console.log("showing");
     $(x[currentTab]).removeClass("tab-active");
@@ -207,6 +207,22 @@ function nextPrev(n) {
     $("#Question-generate-dataset").children().show();
     $("#Question-generate-dataset-generate-div").hide();
     $("#Question-generate-dataset-generate-div").children().hide();
+    
+    let dataset_location = document.querySelector("#Question-generate-dataset-locally-destination > div > div.grouped.fields > label");
+    $(dataset_location).text("At which location should we generate the dataset??");
+
+    // Show/or hide the replace existing button
+    if (sodaJSONObj["starting-point"] === "local") {
+      $("#generate-dataset-replace-existing").show();
+      $("#generate-dataset-replace-existing").children().show();
+      $("#input-destination-generate-dataset-locally").attr("placeholder", "Browse here");
+      //$(document.querySelector("#generate-dataset-replace-existing > div")).click();
+      //$(document.querySelector("#Question-generate-dataset > div > div > div:nth-child(2) > div:nth-child(2) > div")).click();
+      //$(document.querySelector("#generate-dataset-replace-existing > div")).click();
+    } else {
+      $("#generate-dataset-replace-existing").hide();
+      $("#generate-dataset-replace-existing").children().hide();
+    }
     //$("#button-preview-dataset").hide();
     //$("#button-generate").hide();
     //("#button-preview-dataset").show();
@@ -225,6 +241,12 @@ function nextPrev(n) {
       highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
+    if (n === -1 && currentTab === 0 && sodaJSONObj["starting-point"] === "local")
+    {
+      $("#div-getting-started-previous-progress").click();
+      $("#div-getting-started-existing-local").click();
+      $("#nextBtn").prop("disabled", true);
+    }
     showParentTab(currentTab, n);
     console.log(JSON.stringify(sodaJSONObj));
   }
@@ -347,38 +369,57 @@ $(".folder-input-check").click(function () {
 */
 var divList = [];
 async function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
+  // document.getElementById("nextBtn").disabled = true;
+  if (currentDiv === "Question-getting-started-1")
+  {
+    exitCurate();
+  }
   $(ev).removeClass('non-selected');
   $(ev).children().find('.folder-input-check').prop('checked', true);
 
   // uncheck the other radio buttons
-  $($(ev).parents()[0]).siblings().find('.option-card.radio-button').removeClass('checked');
-  $($(ev).parents()[0]).siblings().find('.option-card.radio-button').addClass('non-selected');
+  $($(ev).parents()[0])
+    .siblings()
+    .find(".option-card.radio-button")
+    .removeClass("checked");
+  $($(ev).parents()[0])
+    .siblings()
+    .find(".option-card.radio-button")
+    .addClass("non-selected");
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute('data-next'));
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
-  if (!(target.classList.contains('show'))) {
-    target.classList.add('show');
+  if (!($(target).hasClass('show'))) {
+    $(target).addClass('show');
   }
   // here, handling existing folders and files tabs are independent of each other
-  if (!(ev.getAttribute('data-next') === "Question-generate-dataset-existing-files-options"
-  && target.classList.contains('prev'))) {
+  if (
+    !(
+      ev.getAttribute("data-next") ===
+        "Question-generate-dataset-existing-files-options" &&
+      target.classList.contains("prev")
+    )
+  ) {
     // append to parentDiv
     document.getElementById(parentDiv).appendChild(target);
   }
   // if buttons: Add account and Confirm account were hidden, show them again here
-  if (ev.getAttribute('data-next') === "Question-generate-dataset-BF-account") {
-    $("#" + ev.getAttribute('data-next') + " button").show();
+  if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-account") {
+    $("#" + ev.getAttribute("data-next") + " button").show();
   }
 
-  if (ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")
-  {
+  if (
+    ev.getAttribute("data-next") === "Question-generate-dataset-generate-div"
+  ) {
     $("#Question-generate-dataset-generate-div").show();
     $("#Question-generate-dataset-generate-div").children().show();
   }
 
-  if (!(ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")) {
+  if (
+    !(ev.getAttribute("data-next") === "Question-generate-dataset-generate-div")
+  ) {
     // create moving effects when new questions appear
     $("#Question-generate-dataset-generate-div").hide();
     $("#Question-generate-dataset-generate-div").children().hide();
@@ -388,26 +429,34 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
   document.getElementById(currentDiv).classList.add("prev");
 
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
-  if (button === 'delete') {
+  if (button === "delete") {
     if ($(ev).siblings().length > 0) {
-      $(ev).siblings().hide()
+      $(ev).siblings().hide();
     }
     $(ev).hide();
   }
-  // auto-scroll to bottom of div
-  document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
 
+  let dataset_location = document.querySelector("#Question-generate-dataset-locally-destination > div > div.grouped.fields > label");
+
+  // auto-scroll to bottom of div
+  document.getElementById(parentDiv).scrollTop = document.getElementById(
+    parentDiv
+  ).scrollHeight;
   // when we hit the last question under Step 1, hide and disable Next button
-  if (ev.getAttribute('data-next') === "Question-getting-started-final") {
-    $('#progress-files-dropdown').val('Select');
-    $('#para-progress-file-status').text('');
+  if (ev.getAttribute("data-next") === "Question-getting-started-final") {
+    $("#progress-files-dropdown").val("Select");
+    $("#para-progress-file-status").text("");
     $("#nextBtn").prop("disabled", true);
-    // handle cases where
-    if ($('#prepare-new').prop('checked')) {
+    
+    if ($("#prepare-new").prop("checked")) {
       exitCurate();
-      $('#prepare-new').prop("checked", true);
-      $($('#prepare-new').parents()[2]).addClass("checked");
-      $($($($('#div-getting-started-prepare-new').parents()[0]).siblings()[0]).children()[0]).toggleClass('non-selected')
+      $("#prepare-new").prop("checked", true);
+      $($("#prepare-new").parents()[2]).addClass("checked");
+      $(
+        $(
+          $($("#div-getting-started-prepare-new").parents()[0]).siblings()[0]
+        ).children()[0]
+      ).toggleClass("non-selected");
       $("#nextBtn").prop("disabled", false);
       sodaJSONObj["starting-point"] = "new";
       sodaJSONObj["dataset-structure"] = {};
@@ -415,57 +464,148 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       sodaJSONObj["metadata-files"] = {};
       reset_ui();
       $("#nextBtn").click();
-    }
-    else if ($("#existing-bf").is(":checked")) {
+    } else if ($("#existing-bf").is(":checked")) {
       // this exitCurate function gets called in the beginning here
       // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
-      exitCurate()
-      console.log("here");
+      
       $("#Question-getting-started-existing-BF-account").show();
       $("#Question-getting-started-existing-BF-account").children().show();
+      if (sodaJSONObj["dataset-structure"] != {})
+      {
+        reset_ui();
+        $("#nextBtn").prop("disabled", false);
+      }
+    }
+  } else {
+    $("#nextBtn").prop("disabled", true);
+  }
+
+  if (ev.getAttribute('data-next') === "Question-generate-dataset-locally-destination")
+  {
+    if ($("#existing-local").is(":checked") && currentDiv == "Question-getting-started-1"){
       sodaJSONObj = {
-        "bf-account-selected": {
-          "account-name": $("#current-bf-account").text()
-        },
-        "bf-dataset-selected": {
-          "dataset-name": $("#current-bf-dataset").text()
-        },
+        "bf-account-selected": {},
+        "bf-dataset-selected": {},
         "dataset-structure": {},
         "metadata-files": {},
         "manifest-files": {},
         "generate-dataset": {},
-        "starting-point": "bf"
-      };
-
-      $('body').addClass('waiting');
-      console.log("calling");
-      //sodaJSONObj["bf-account-selected"]["account-name"] = document.getElementById('bfexistingallaccountlist').value;
-      //sodaJSONObj["bf-dataset-selected"]["dataset-name"] = document.getElementById('curateexistingbfdatasetlist').value;
-      // Swal.fire({
-      //   icon: 'error',
-      //   text: res + "Please choose another dataset!",
-      //   footer: '<a href>Why do I have this issue?</a>'
-      // })
-      var res = await bf_request_and_populate_dataset(sodaJSONObj);
-      if (res == "error") {
-        console.log(res);
-        $('body').removeClass('waiting');
-      } else {
-        sodaJSONObj = res;
-        datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-        console.log(datasetStructureJSONObj);
-        populate_existing_folders(datasetStructureJSONObj);
-        populate_existing_metadata(sodaJSONObj);
-        $("#nextBtn").prop("disabled", false);
-        $('body').removeClass('waiting');
+        "starting-point": "local",
+        "local-path": ""
       }
-    } else {
-      exitCurate();
+      // this should run after a folder is selected
+      reset_ui();
+
+      $(dataset_location).text("What is the location of the dataset?");
+
       $("#nextBtn").prop("disabled", true);
-    }
+    } 
   }
+  else
+  {
+    $(dataset_location).text("At which location should we generate the dataset?");
+  } 
 }
 
+create_json_object = (sodaJSONObj) => {
+  high_level_metadata_sparc = [
+    "submission.xlsx", "submission.csv", "submission.json",
+    "dataset_description.xlsx", "dataset_description.csv", "dataset_description.json",
+    "subjects.xlsx", "subjects.csv", "subjects.json",
+    "samples.xlsx", "samples.csv", "samples.json",
+    "README.txt",
+    "CHANGES.txt",
+  ];
+  root_folder_path = $("#input-destination-generate-dataset-locally").attr('placeholder');
+  sodaJSONObj["dataset-structure"] = { folders: {} };
+  fs.readdirSync(root_folder_path).forEach((file) => {
+    console.log(file);
+    full_current_path = path.join(root_folder_path, file);
+    let stats = fs.statSync(full_current_path);
+    if (stats.isDirectory()) {
+      if (highLevelFolders.includes(file)) {
+        sodaJSONObj["dataset-structure"]["folders"][file] = {
+          folders: {},
+          files: {},
+          path: full_current_path,
+          type: "local",
+          action: ["existing"],
+        };
+      }
+    }
+    if (stats.isFile()) {
+      if (high_level_metadata_sparc.includes(file)) {
+        sodaJSONObj["metadata-files"][file] = {
+          path: full_current_path,
+          type: "local",
+          action: ["existing"],
+        };
+      }
+    }
+  });
+  // go through each individual high level folder and create the structure
+
+  for (folder in sodaJSONObj["dataset-structure"]["folders"])
+  {
+    recursive_structure_create(sodaJSONObj["dataset-structure"]["folders"][folder])
+  }
+};
+
+recursive_structure_create = (dataset_folder) => {
+  current_folder_path = dataset_folder["path"];
+  fs.readdirSync(current_folder_path).forEach((file) => {
+    current_file_path = path.join(current_folder_path, file);
+    let stats = fs.statSync(current_file_path);
+    if (stats.isFile()) {
+      dataset_folder["files"][file] = {
+        path: current_file_path,
+        type: "local",
+        action: ["existing"],
+      };
+    }
+    if (stats.isDirectory()) {
+      dataset_folder["folders"][file] = {
+        folders: {},
+        files: {},
+        path: current_file_path,
+        type: "local",
+        action: ["existing"],
+      };
+    }
+  });
+  for (folder in dataset_folder["folders"]) {
+    recursive_structure_create(dataset_folder["folders"][folder]);
+  }
+  return;
+};
+
+verify_sparc_folder = (root_folder_path) => {
+  possible_metadata_files = [
+    "submission",
+    "dataset_description",
+    "subjects",
+    "samples",
+    "README",
+    "CHANGES",
+  ];
+  valid_dataset = false;
+  fs.readdirSync(root_folder_path).map(fileName => {
+    console.log( path.join(root_folder_path, fileName))
+  })
+  fs.readdirSync(root_folder_path).forEach((file) => {
+    if (highLevelFolders.includes(file)) {
+      valid_dataset = true;
+    }
+    for (item in possible_metadata_files)
+    {
+      if (item.indexOf(file) != -1)
+      {
+        valid_dataset = true;
+      }
+    }
+  });
+  return valid_dataset;
+};
 // function similar to transitionSubQuestions, but for buttons
 async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, category){
   /*
@@ -474,6 +614,55 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
     parentDiv: current parent-tab (step)
     category: either getting-started or generate-dataset (currently only these 2 have multiple sub questions)
   */
+
+ if (currentDiv === "Question-getting-started-BF-dataset")
+ {
+   $("#nextBtn").prop("disabled", true);
+   $("#button-confirm-bf-dataset-getting-started").prop("disabled", true);
+   sodaJSONObj = {
+     "bf-account-selected": {
+       "account-name": {},
+     },
+     "bf-dataset-selected": {
+       "dataset-name": {},
+     },
+     "dataset-structure": {},
+     "metadata-files": {},
+     "manifest-files": {},
+     "generate-dataset": {},
+     "starting-point": "bf",
+   };
+
+   sodaJSONObj["bf-account-selected"]["account-name"] = $(
+     "#current-bf-account"
+   ).text();
+   sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $(
+     "#current-bf-dataset"
+   ).text();
+
+   $("body").addClass("waiting");
+   var res = await bf_request_and_populate_dataset(sodaJSONObj);
+
+   if (res[0] == "error") {
+     Swal.fire({
+       icon: "error",
+       text: res[1] + "Please choose another dataset!",
+       footer: "<a href>Why do I have this issue?</a>",
+     });
+     $("#nextBtn").prop("disabled", true);
+     return;
+   } else {
+     sodaJSONObj = res[0];
+     console.log(sodaJSONObj);
+     datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+     console.log(datasetStructureJSONObj);
+     populate_existing_folders(datasetStructureJSONObj);
+     populate_existing_metadata(sodaJSONObj);
+     $("#nextBtn").prop("disabled", false);
+   }
+   $("body").removeClass("waiting");
+   $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
+ }
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute('data-next'));
@@ -517,39 +706,28 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
   }
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
+  
+  let dataset_location = document.querySelector("#Question-generate-dataset-locally-destination > div > div.grouped.fields > label");
+  if (ev.getAttribute('data-next') === "Question-generate-dataset-locally-destination")
+  {
+    if ($("#existing-local").is(":checked") && currentDiv == "Question-getting-started-1"){
+      sodaJSONObj = {
+        "bf-account-selected": {},
+        "bf-dataset-selected": {},
+        "dataset-structure": {},
+        "metadata-files": {},
+        "manifest-files": {},
+        "generate-dataset": {},
+        "starting-point": "local",
+        "local-path": ""
+      }
+      // this should run after a folder is selected
+      reset_ui();
 
-  if (ev.id === "button-confirm-bf-dataset-getting-started") {
-    // this exitCurate function gets called in the beginning here
-    // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
-    exitCurate()
-    $("#Question-getting-started-existing-BF-account").show();
-    $("#Question-getting-started-existing-BF-account").children().show();
-    sodaJSONObj = {
-      "bf-account-selected": {
-        "account-name": $("#current-bf-account").text()
-      },
-      "bf-dataset-selected": {
-        "dataset-name": $("#current-bf-dataset").text()
-      },
-      "dataset-structure": {},
-      "metadata-files": {},
-      "manifest-files": {},
-      "generate-dataset": {},
-      "starting-point": "bf"
-    };
+      $(dataset_location).text("What is the location of the dataset?");
 
-    $('body').addClass('waiting');
-    var res = await bf_request_and_populate_dataset(sodaJSONObj);
-    if (res == "error") {
-      $('body').removeClass('waiting');
-    } else {
-      sodaJSONObj = res;
-      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-      populate_existing_folders(datasetStructureJSONObj);
-      populate_existing_metadata(sodaJSONObj);
-      $("#nextBtn").prop("disabled", false);
-      $('body').removeClass('waiting');
-    }
+      $("#nextBtn").prop("disabled", true);
+    } 
   }
 }
 
@@ -565,11 +743,22 @@ reset_ui = () => {
   $(".button-individual-metadata.remove").each(function (i, obj) {
     $(obj).click();
   });
+
+  $("#metadata-submission-blackfynn").css("display", "none");
+  $("#metadata-ds-description-blackfynn").css("display", "none");
+  $("#metadata-CHANGES-blackfynn").css("display", "none");
+  $("#metadata-samples-blackfynn").css("display", "none");
+  $("#metadata-README-blackfynn").css("display", "none");
+  $("#metadata-subjects-blackfynn").css("display", "none");
+
   $("#Question-getting-started-existing-BF-account").hide();
   $("#Question-getting-started-existing-BF-account").children().hide();
   $("#Question-getting-started-existing-BF-dataset").hide();
   $("#Question-getting-started-existing-BF-dataset").children().hide();
   document.getElementById("nextBtn").disabled = true;
+
+  let dataset_location = document.querySelector("#Question-generate-dataset-locally-destination > div > div.grouped.fields > label");
+  $(dataset_location).text('At which location should we generate the dataset?');
 };
 
 var populate_existing_folders = (datasetStructureJSONObj) => {
@@ -577,33 +766,34 @@ var populate_existing_folders = (datasetStructureJSONObj) => {
 }
 
 var populate_existing_metadata = (datasetStructureJSONObj) => {
-  let target = null;
   let metadataobject = datasetStructureJSONObj["metadata-files"];
+  console.log(datasetStructureJSONObj["metadata-files"])
   for (var key of Object.keys(metadataobject)) {
     let file_name = require("path").parse(key).name;
     switch (file_name) {
       case "submission":
-        target = $(".metadata-button[data-next='submissionUpload']");
-        $(target).addClass("done");
-        $("#para-submission-file-path").html(
-          "Using file present on Blackfynn. <br> File name: " +
-            key
-        );
+        $(".metadata-button[data-next='submissionUpload']").addClass("done");
         $($("#para-submission-file-path").parents()[1])
           .find(".div-metadata-confirm")
           .css("display", "flex");
         $($("#para-submission-file-path").parents()[1])
           .find(".div-metadata-go-back")
           .css("display", "none");
-        $("#metadata-submission-blackfynn")
-          .css("display", "inline-block");
+        if (metadataobject[key]["type"] == "bf") {
+          $("#para-submission-file-path").html(
+            "Using file present on Blackfynn. <br> File name: " + key
+          );
+          $("#metadata-submission-blackfynn").css("display", "inline-block");
+        } else if (
+          metadataobject[key]["type"] == "local" &&
+          metadataobject[key]["action"].includes("existing")
+        ) {
+          $("#para-submission-file-path").text(metadataobject[key]["path"]);
+        }
         break;
       case "dataset_description":
-        target = $(".metadata-button[data-next='datasetDescriptionUpload']");
-        $(target).addClass("done");
-        $("#para-ds-description-file-path").html(
-          "Using file present on Blackfynn. <br> File name: " +
-            key
+        $(".metadata-button[data-next='datasetDescriptionUpload']").addClass(
+          "done"
         );
         $($("#para-ds-description-file-path").parents()[1])
           .find(".div-metadata-confirm")
@@ -611,80 +801,108 @@ var populate_existing_metadata = (datasetStructureJSONObj) => {
         $($("#para-ds-description-file-path").parents()[1])
           .find(".div-metadata-go-back")
           .css("display", "none");
-        $("#metadata-ds-description-blackfynn")
-          .css("display", "inline-block");
+        if (metadataobject[key]["type"] == "bf") {
+          $("#para-ds-description-file-path").html(
+            "Using file present on Blackfynn. <br> File name: " + key
+          );
+          $("#metadata-ds-description-blackfynn").css(
+            "display",
+            "inline-block"
+          );
+        } else if (
+          metadataobject[key]["type"] == "local" &&
+          metadataobject[key]["action"].includes("existing")
+        ) {
+          $("#para-ds-description-file-path").text(metadataobject[key]["path"]);
+        }
         break;
       case "subjects":
-        target = $(".metadata-button[data-next='subjectsUpload']");
-        $(target).addClass("done");
-        $("#para-subjects-file-path").html(
-          "Using file present on Blackfynn. <br> File name: " +
-            key
-        );
+        $(".metadata-button[data-next='subjectsUpload']").addClass("done");
+
         $($("#para-subjects-file-path").parents()[1])
           .find(".div-metadata-confirm")
           .css("display", "flex");
         $($("#para-subjects-file-path").parents()[1])
           .find(".div-metadata-go-back")
           .css("display", "none");
-        $("#metadata-subjects-blackfynn")
-          .css("display", "inline-block");
+        if (metadataobject[key]["type"] == "bf") {
+          $("#para-subjects-file-path").html(
+            "Using file present on Blackfynn. <br> File name: " + key
+          );
+          $("#metadata-subjects-blackfynn").css("display", "inline-block");
+        } else if (
+          metadataobject[key]["type"] == "local" &&
+          metadataobject[key]["action"].includes("existing")
+        ) {
+          $("#para-subjects-file-path").text(metadataobject[key]["path"]);
+        }
         break;
       case "samples":
-        target = $(".metadata-button[data-next='samplesUpload']");
-        $(target).addClass("done");
-        $("#para-samples-file-path").html(
-          "Using file present on Blackfynn. <br> File name: " +
-            key
-        );
+        $(".metadata-button[data-next='samplesUpload']").addClass("done");
         $($("#para-samples-file-path").parents()[1])
           .find(".div-metadata-confirm")
           .css("display", "flex");
         $($("#para-samples-file-path").parents()[1])
           .find(".div-metadata-go-back")
           .css("display", "none");
-        $("#metadata-samples-blackfynn")
-          .css("display", "inline-block");
+        if (metadataobject[key]["type"] == "bf") {
+          $("#para-samples-file-path").html(
+            "Using file present on Blackfynn. <br> File name: " + key
+          );
+          $("#metadata-samples-blackfynn").css("display", "inline-block");
+        } else if (
+          metadataobject[key]["type"] == "local" &&
+          metadataobject[key]["action"].includes("existing")
+        ) {
+          $("#para-samples-file-path").text(metadataobject[key]["path"]);
+        }
         break;
       case "README":
-        target = $(".metadata-button[data-next='readmeUpload']");
-        $(target).addClass("done");
-        $("#para-readme-file-path").html(
-          "Using file present on Blackfynn. <br> File name: " +
-            key
-        );
+        $(".metadata-button[data-next='readmeUpload']").addClass("done");
         $($("#para-readme-file-path").parents()[1])
           .find(".div-metadata-confirm")
           .css("display", "flex");
         $($("#para-readme-file-path").parents()[1])
           .find(".div-metadata-go-back")
           .css("display", "none");
-        $("#metadata-README-blackfynn")
-          .css("display", "inline-block");
+        if (metadataobject[key]["type"] == "bf") {
+          $("#para-readme-file-path").html(
+            "Using file present on Blackfynn. <br> File name: " + key
+          );
+          $("#metadata-README-blackfynn").css("display", "inline-block");
+        } else if (
+          metadataobject[key]["type"] == "local" &&
+          metadataobject[key]["action"].includes("existing")
+        ) {
+          $("#para-readme-file-path").text(metadataobject[key]["path"]);
+        }
         break;
       case "CHANGES":
-        target = $(".metadata-button[data-next='changesUpload']");
-        $(target).addClass("done");
-        $("#para-changes-file-path").html(
-          "Using file present on Blackfynn. <br> File name: " +
-            key
-        );
+        $(".metadata-button[data-next='changesUpload']").addClass("done");
         $($("#para-changes-file-path").parents()[1])
           .find(".div-metadata-confirm")
           .css("display", "flex");
         $($("#para-changes-file-path").parents()[1])
           .find(".div-metadata-go-back")
           .css("display", "none");
-        $("#metadata-CHANGES-blackfynn")
-          .css("display", "inline-block");
+        if (metadataobject[key]["type"] == "bf") {
+          $("#para-changes-file-path").html(
+            "Using file present on Blackfynn. <br> File name: " + key
+          );
+          $("#metadata-CHANGES-blackfynn").css("display", "inline-block");
+        } else if (
+          metadataobject[key]["type"] == "local" &&
+          metadataobject[key]["action"].includes("existing")
+        ) {
+          $("#para-changes-file-path").text(metadataobject[key]["path"]);
+        }
         break;
       default:
         break;
     }
   }
 };
-
-
+  
 function obtainDivsbyCategory(category) {
   var individualQuestions = document.getElementsByClassName(
     "individual-question"
@@ -940,8 +1158,28 @@ function updateJSONStructureGenerate() {
     }
     sodaJSONObj["generate-dataset"] = {
       destination: "bf",
-      "generate-option": "existing",
+      "generate-option": "existing-bf",
     };
+  }
+  if (sodaJSONObj["starting-point"] == "local") {
+    var localDestination = require("path").dirname(sodaJSONObj["local-path"]);
+    var newDatasetName = require("path").basename(sodaJSONObj["local-path"]);
+    delete sodaJSONObj["local-path"];
+    sodaJSONObj["generate-dataset"] = {
+      destination: "local",
+      path: localDestination,
+      "dataset-name": newDatasetName,
+      "if-existing": "merge",
+      "generate-option": "new",
+    };
+    // delete bf account and dataset keys
+    if ("bf-account-selected" in sodaJSONObj) {
+      delete sodaJSONObj["bf-account-selected"];
+    }
+    if ("bf-dataset-selected" in sodaJSONObj) {
+      delete sodaJSONObj["bf-dataset-selected"];
+    }
+    sodaJSONObj["starting-point"] = "new";
   }
   if (sodaJSONObj["starting-point"] == "new") {
     if (

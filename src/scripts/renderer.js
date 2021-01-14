@@ -5884,9 +5884,19 @@ function showmenu(ev, category, deleted = false) {
         .children("#folder-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
     } else {
-      $(menuFolder)
-        .children("#folder-delete")
-        .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+      if ($(".selected-item").length > 2) {
+        $(menuFolder)
+          .children("#folder-delete")
+          .html('<i class="fas fa-minus-circle"></i> Delete All');
+        $(menuFolder).children("#folder-rename").hide();
+        $(menuFolder).children("#folder-description").hide();
+      } else {
+        $(menuFolder)
+          .children("#folder-delete")
+          .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+        $(menuFolder).children("#folder-rename").show();
+        $(menuFolder).children("#folder-description").show();
+      }
     }
     menuFolder.style.display = "block";
     $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
@@ -5896,9 +5906,19 @@ function showmenu(ev, category, deleted = false) {
         .children("#folder-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
     } else {
-      $(menuHighLevelFolders)
-        .children("#folder-delete")
-        .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+      if ($(".selected-item").length > 2) {
+        $(menuHighLevelFolders)
+          .children("#folder-delete")
+          .html('<i class="fas fa-minus-circle"></i> Delete All');
+        $(menuHighLevelFolders).children("#folder-rename").hide();
+        $(menuHighLevelFolders).children("#folder-description").hide();
+      } else {
+        $(menuHighLevelFolders)
+          .children("#folder-delete")
+          .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+        $(menuHighLevelFolders).children("#folder-rename").show();
+        $(menuHighLevelFolders).children("#folder-description").show();
+      }
     }
     menuHighLevelFolders.style.display = "block";
     $(".menu.high-level-folder")
@@ -5910,9 +5930,19 @@ function showmenu(ev, category, deleted = false) {
         .children("#file-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
     } else {
-      $(menuFile)
-        .children("#file-delete")
-        .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+      if ($(".selected-item").length > 2) {
+        $(menuFile)
+          .children("#file-delete")
+          .html('<i class="fas fa-minus-circle"></i> Delete All');
+        $(menuFile).children("#file-rename").hide();
+        $(menuFile).children("#file-description").hide();
+      } else {
+        $(menuFile)
+          .children("#file-delete")
+          .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+        $(menuFile).children("#file-rename").show();
+        $(menuFile).children("#file-description").show();
+      }
     }
     menuFile.style.display = "block";
     $(".menu.file").css({ top: mouseY, left: mouseX }).fadeIn("slow");
@@ -5957,6 +5987,36 @@ function folderContextMenu(event) {
 }
 
 //////// options for files
+function file_click(event) {
+  if ($(".div-display-details.file").hasClass('show')) {
+    $(".div-display-details.file").removeClass('show')
+  }
+  if (event.ctrlKey){
+    //file_click
+    console.log("ctrl file click")
+  }
+  else
+  {
+    console.log("file click")
+  }
+  /*
+  $(".menu.file li").unbind().click(function(){
+    if ($(this).attr('id') === "file-rename") {
+        var itemDivElements = document.getElementById("items").children
+        renameFolder(event, organizeDSglobalPath, itemDivElements, datasetStructureJSONObj, '#items', '.single-item')
+      } else if ($(this).attr('id') === "file-delete") {
+        delFolder(event, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
+      } else if ($(this).attr('id') === "file-description") {
+        manageDesc(event)
+      }
+     // Hide it AFTER the action was triggered
+     hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
+ });
+ hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
+ */
+}
+
+//////// options for files
 function fileContextMenu(event) {
   if ($(".div-display-details.file").hasClass('show')) {
     $(".div-display-details.file").removeClass('show')
@@ -5980,6 +6040,13 @@ function fileContextMenu(event) {
 $(document).bind("contextmenu", function (event) {
   // Avoid the real one
   event.preventDefault();
+
+  // Check for multiple selected files
+  if (!$(event.target).hasClass('selected-item'))
+  {
+    $('.selected-item').removeClass('selected-item');
+  }
+
   /// check for high level folders
   var highLevelFolderBool = false;
   var folderName = event.target.parentElement.innerText;
@@ -6026,15 +6093,57 @@ $(document).bind("contextmenu", function (event) {
 });
 
 $(document).bind("click", function (event) {
-  if (event.target.classList[0] !== "myFol" &&
-      event.target.classList[0] !== "myFile") {
-        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-        hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
-        // hideFullPath()
-        hideFullName()
+  if (
+    event.target.classList[0] !== "myFol" &&
+    event.target.classList[0] !== "myFile"
+  ) {
+    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+    hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
+    // hideFullPath()
+    hideFullName();
+  }
+  if (event.target.classList[0] === "div-organize-items") {
+    $(".selected-item").removeClass("selected-item");
+  }
+  let selected_class = null;
+  let target_element = null;
+  let parent_element = null;
+
+  if (
+    event.target.classList[0] === "myFile" ||
+    event.target.classList[0] === "myFol"
+  ) {
+    selected_class = "selected-item";
+    target_element = event.target;
+    parent_element = $(target_element).parent();
+  } else if (event.target.classList[0] === "single-item") {
+    parent_element = event.target;
+    target_element = $(parent_element).children()[0];
+    if (
+      $(target_element).hasClass("myFol") ||
+      $(target_element).hasClass("myFile")
+    ) {
+      selected_class = "selected-item";
+    }
+  }
+
+  if (selected_class != "") {
+    if (event.ctrlKey) {
+      if ($(target_element).hasClass(selected_class)) {
+        $(target_element).removeClass(selected_class);
+        $(parent_element).removeClass(selected_class);
+      } else {
+        $(target_element).addClass(selected_class);
+        $(parent_element).addClass(selected_class);
       }
-})
+    } else {
+      $(".selected-item").removeClass(selected_class);
+      $(target_element).addClass(selected_class);
+      $(parent_element).addClass(selected_class);
+    }
+  }
+});
 
 // sort JSON objects by keys alphabetically (folder by folder, file by file)
 function sortObjByKeys(object) {
@@ -6089,6 +6198,14 @@ function listItems(jsonObj, uiItem) {
       if (deleted_folder)
       {
         cloud_item = " blackfynn_folder_deleted"
+      }
+    }
+
+    if (sortedObj["folders"][item]["type"] == "local" && sortedObj["folders"][item]["action"].includes("existing")){
+      cloud_item = " local_folder";
+      if (deleted_folder)
+      {
+        cloud_item = " local_folder_deleted"
       }
     }
 
@@ -6150,6 +6267,14 @@ function listItems(jsonObj, uiItem) {
       if (deleted_file)
       {
         cloud_item = " blackfynn_file_deleted"
+      }
+    }
+
+    if (sortedObj["files"][item]["type"] == "local" && sortedObj["files"][item]["action"].includes("existing")){
+      cloud_item = " local_file";
+      if (deleted_file)
+      {
+        cloud_item = " local_file_deleted"
       }
     }
 
@@ -6318,7 +6443,52 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
     if (filepath != null){
       document.getElementById("input-destination-generate-dataset-locally").placeholder = filepath[0];
       // document.getElementById('div-confirm-destination-locally').style.display = "flex";
-      $("#div-confirm-destination-locally button").click()
+      if (sodaJSONObj["starting-point"] === "local" && sodaJSONObj["local-path"] == "")
+      {
+        console.log("local-existing and step 1");
+        valid_dataset = verify_sparc_folder(document.getElementById("input-destination-generate-dataset-locally").placeholder);
+        sodaJSONObj["local-path"] = filepath[0];
+          create_json_object(sodaJSONObj);
+          console.log(sodaJSONObj);
+          datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+          populate_existing_folders(datasetStructureJSONObj);
+          populate_existing_metadata(sodaJSONObj);
+        if (valid_dataset == true)
+        {
+          $("#nextBtn").prop("disabled", false);
+          $("#nextBtn").click();
+        }
+        else
+        {
+          var bootboxDialog = bootbox.confirm({
+            message: "This folder does not seems to be a SPARC dataset folder. Do you want to continue or return and pick a different folder?",
+            buttons: {
+              confirm: {
+                label: "Continue",
+                className: "btn-success",
+              },
+              cancel: {
+                label: "Return",
+                className: "btn-danger",
+              },
+            },
+            centerVertical: true,
+            callback: function (result) {
+              if (result) {
+                $("#nextBtn").prop("disabled", false);
+                $("#nextBtn").click();
+              } else {
+                document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
+                sodaJSONObj["local-path"] = "";
+              }
+            },
+          });
+        }
+      }
+      else
+      {
+        $("#div-confirm-destination-locally button").click()
+      }
     }
   } else {
       $("#Question-generate-dataset-locally-destination").nextAll().removeClass('show');
@@ -6367,6 +6537,10 @@ document
 
     // updateJSON structure after Generate dataset tab
     updateJSONStructureGenerate();
+    if (sodaJSONObj["starting-point"] === "local")
+    {
+      sodaJSONObj["starting-point"] = "new";
+    }
 
     //  from here you can modify
     document.getElementById("para-please-wait-new-curate").innerHTML =
@@ -6551,6 +6725,7 @@ function initiate_generate() {
         var main_total_generate_dataset_size = res[3];
         var main_generated_dataset_size = res[4];
         var elapsed_time_formatted = res[5];
+        console.log(main_generated_dataset_size);
         if (start_generate === 1) {
           divGenerateProgressBar.style.display = "block";
           if (main_curate_progress_message.includes("Success: COMPLETED!")) {
@@ -6600,7 +6775,7 @@ function initiate_generate() {
               "%" +
               " (total size: " +
               totalSizePrint +
-              ")" +
+              ") " +
               "<br>";
             progressMessage +=
               "Elaspsed time: " + elapsed_time_formatted + "<br>";
@@ -6717,29 +6892,37 @@ function importBlackfynnMetadataFiles(
   populate_existing_metadata(sodaJSONObj);
 }
 
-ipcRenderer.on('selected-metadataCurate', (event, mypath) => {
-
+ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   if (mypath.length > 0) {
+    var dotCount = path.basename(mypath[0]).trim().split(".").length - 1;
+    if (dotCount === 1) {
+      var metadataWithoutExtension = path
+        .basename(mypath[0])
+        .slice(0, path.basename(mypath[0]).indexOf("."));
+      var extension = path
+        .basename(mypath[0])
+        .slice(path.basename(mypath[0]).indexOf("."));
 
-  var dotCount = path.basename(mypath[0]).trim().split(".").length - 1;
-  if (dotCount === 1)  {
-    var metadataWithoutExtension = path.basename(mypath[0]).slice(0, path.basename(mypath[0]).indexOf('.'));
-    var extension = path.basename(mypath[0]).slice(path.basename(mypath[0]).indexOf('.'));
-
-    if (metadataWithoutExtension === metadataIndividualFile) {
-      if (metadataAllowedExtensions.includes(extension)) {
-        document.getElementById(metadataParaElement).innerHTML = mypath[0];
-        $($("#"+metadataParaElement).parents()[1]).find('.div-metadata-confirm').css("display", "flex");
-        $($("#"+metadataParaElement).parents()[1]).find('.div-metadata-go-back').css("display", "none");
+      if (metadataWithoutExtension === metadataIndividualFile) {
+        if (metadataAllowedExtensions.includes(extension)) {
+          document.getElementById(metadataParaElement).innerHTML = mypath[0];
+          $($("#" + metadataParaElement).parents()[1])
+            .find(".div-metadata-confirm")
+            .css("display", "flex");
+          $($("#" + metadataParaElement).parents()[1])
+            .find(".div-metadata-go-back")
+            .css("display", "none");
+        } else {
+          document.getElementById(metadataParaElement).innerHTML =
+            "<span style='color:red'>Your SPARC metadata file must be in one of the formats listed above!</span>";
+        }
       } else {
-        document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>Your SPARC metadata file must be in one of the formats listed above!</span>"
-      }
-    } else {
-      document.getElementById(metadataParaElement).innerHTML = "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>"
+        document.getElementById(metadataParaElement).innerHTML =
+          "<span style='color:red'>Your SPARC metadata file must be named and formatted exactly as listed above!</span>";
       }
     }
   }
-})
+});
 
 
 document.getElementById('button-preview-dataset').addEventListener('click', function () {
@@ -6761,12 +6944,12 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
       sodaJSONObj,
       (error, res) => {
         if (error) {
-          reject(res);
+          reject(["error", res]);
           log.error(error);
           console.error(error);
         } else {
           //console.log(res);
-          resolve(res[0]);
+          resolve(res);
         }
       }
     );

@@ -681,6 +681,9 @@ height: 80%;
 #div-meter {border:2px solid #000;width:100%}
 #div-progress-bar {background:#333;height:25px;width:0%}
 
+.progresstrack::-webkit-progress-value {
+  transition: width 1s;
+}
 
 progress.progresstrack[value] {
   width: 100%;
@@ -703,6 +706,7 @@ progress.progresstrack[value]::-webkit-progress-value {
      -webkit-linear-gradient(left, hsl(339,90%,30%), hsl(190, 60%, 36%));
   border-radius: 2px;
   background-size: 35px 25px, 100% 100%, 100% 100%;
+  
 }
 
 /*https://codepen.io/holdencreative/pen/vEVbwv*/

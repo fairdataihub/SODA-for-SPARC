@@ -140,7 +140,7 @@
             </div>
 
             <div style="margin:15px 0;">
-              <div class="option-card getting-started radio-button" id="div-getting-started-previous-progress" data-next="Question-getting-started-previously-initiated-SODA" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
+              <div class="option-card  radio-button" id="div-getting-started-previous-progress" data-next="Question-getting-started-previously-initiated-SODA" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
                   <div class="card-head">
                     <div class="folder-checkbox">
                       <input class="folder-input-check" id="previous-progress" name="getting-started-1" type="radio">
@@ -155,7 +155,8 @@
             </div>
 
             <div style="margin:15px 0;">
-              <div class="option-card radio-button coming-soon" data-next="Question-getting-started-final" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
+              <div class="option-card radio-button" 
+              id="div-getting-started-existing-local" data-next="Question-generate-dataset-locally-destination" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
                   <div class="card-head">
                     <div class="folder-checkbox">
                       <input class="folder-input-check" id="existing-local" name="getting-started-1" type="radio">
@@ -567,7 +568,7 @@
     <!-- submission -->
     <div id="submissionUpload" class="div-individual-metadata">
       <h5 style="text-align:center;color:#585858;font-size:16px">submission <br>(must be in .csv, .xlsx, or .json format)</h5>
-      <div style="margin-top:25px">
+      <div style="margin-top:25px;text-align: center;">
       <h5 style="text-align:center"></h5>
       <div class="div-file-import" droppable="true" ondrop="dropHandler(event, 'para-submission-file-path', 'submission');" ondragover="return false">
         <p style="font-weight:bold">Import existing file</p>
@@ -618,7 +619,7 @@
     <!-- dataset desc. -->
     <div id="datasetDescriptionUpload" class="div-individual-metadata">
       <h5 style="text-align:center;color:#585858;font-size:16px">dataset_description <br>(must be in .csv, .xlsx, or .json format)</h5>
-      <div style="margin-top:25px">
+      <div style="margin-top:25px;text-align: center;">
       <h5 style="text-align:center"></h5>
       <div class="div-file-import" droppable="true" ondrop="dropHandler(event, 'para-ds-description-file-path', 'dataset_description');" ondragover="return false">
         <p style="font-weight:bold">Import existing file</p>
@@ -664,7 +665,7 @@
     <!-- subjects -->
     <div id="subjectsUpload" class="div-individual-metadata">
       <h5 style="text-align:center;color:#585858;font-size:16px">subjects <br>(must be in .csv, .xlsx, or .json format)</h5>
-      <div style="margin-top:25px">
+      <div style="margin-top:25px;text-align: center;">
       <h5 style="text-align:center"></h5>
       <div class="div-file-import" droppable="true" ondrop="dropHandler(event, 'para-subjects-file-path', 'subjects');" ondragover="return false">
         <p style="font-weight:bold">Import existing file</p>
@@ -710,7 +711,7 @@
     <!-- samples -->
     <div id="samplesUpload" class="div-individual-metadata">
       <h5 style="text-align:center;color:#585858;font-size:16px">samples <br>(must be in .csv, .xlsx, or .json format)</h5>
-      <div style="margin-top:25px">
+      <div style="margin-top:25px;text-align: center;">
       <h5 style="text-align:center"></h5>
       <div class="div-file-import" droppable="true" ondrop="dropHandler(event,'para-samples-file-path', 'samples');" ondragover="return false">
         <p style="font-weight:bold">Import existing file</p>
@@ -756,7 +757,7 @@
     <!-- CHANGES -->
     <div id="changesUpload" class="div-individual-metadata">
       <h5 style="text-align:center;color:#585858;font-size:16px">CHANGES <br>(must be in .txt format)</h5>
-      <div style="margin-top:25px">
+      <div style="margin-top:25px;text-align: center;">
       <h5 style="text-align:center"></h5>
       <div class="div-file-import" droppable="true" ondrop="dropHandler(event, 'para-changes-file-path', 'CHANGES');" ondragover="return false">
         <p style="font-weight:bold">Import existing file</p>
@@ -802,7 +803,7 @@
     <!-- README -->
     <div id="readmeUpload" class="div-individual-metadata">
       <h5 style="text-align:center;color:#585858;font-size:16px">README <br>(must be in .txt format)</h5>
-      <div style="margin-top:25px">
+      <div style="margin-top:25px;text-align: center;">
       <h5 style="text-align:center"></h5>
       <div class="div-file-import" droppable="true" ondrop="dropHandler(event, 'para-readme-file-path', 'README');" ondragover="return false">
         <p style="font-weight:bold">Import existing file</p>
