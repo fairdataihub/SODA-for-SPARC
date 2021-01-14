@@ -923,8 +923,7 @@
 
 .card-container{
   display: flex; 
-  flex-direction: row; 
-  justify-content: space-between;
+  flex-direction: row;
   margin-bottom: 15px
 }
 
@@ -937,7 +936,7 @@
   color:#000;
   font-weight: 600;
   margin-left: 8px;
-  font-size: 15px
+  font-size: 15px;
 }
 
 .swal2-title {

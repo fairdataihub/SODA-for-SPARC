@@ -1246,12 +1246,15 @@
       </a>
       <br><br>
       </h3>
-      <div class="individual-question generate-dataset" id="Question-generate-dataset">
+      <div class="individual-question generate-dataset" id="Question-preview-dataset-structure">
           <div class="ui form" style="width:100%">
           <div class="grouped fields">
             <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Preview your current dataset and all the changes made to it
             <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
-            <!-- jstree structure here -->
+            <div> jstree structure here </div>
+            <div id="div-preview-dataset-structure-btns" style="flex-direction:row;justify-content:center;margin:10px auto">
+              <button id="preview-dataset-structure-btn" onclick="transitionSubQuestionsButton(this, 'Question-preview-dataset-structure', 'preview-dataset-tab', 'delete', 'individual-question generate-dataset')"  data-next="Question-preview-dataset-details" style="cursor:pointer;border-radius: 8px;margin:0 10px; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
+              </div>
       </div>
       </div>
     </div>
@@ -1261,7 +1264,7 @@
         <div class="grouped fields">
           <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Confirm dataset details</label>
           <div class="field" style="margin:5px 0;width:450px;">
-            <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
+            <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px" id="div-preview-dataset-details">
               <div class="card-container">
                 <div>
                   <h5 class="card-left">Current account:
@@ -1276,15 +1279,15 @@
               </div>
             </div>
           </div>
-          <div id="div-bf-account-btns" style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
-            <button id="btn-bf-account" onclick="transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"  data-next="Question-generate-dataset-options" style="cursor:pointer;border-radius: 8px;margin:0 10px; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
+          <div id="div-preview-dataset-details-btns" style="flex-direction:row;justify-content:center;margin:10px auto">
+            <button id="preview-dataset-details-btn" onclick="transitionSubQuestionsButton(this, 'Question-preview-dataset-details', 'preview-dataset-tab', 'delete', 'individual-question generate-dataset')"  data-next="Question-generate-dataset-generate-div" style="cursor:pointer;border-radius: 8px;margin:0 10px; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
             </div>
         </div>
       </div>
     </div>
 
     <div class="individual-question generate-dataset" id="Question-generate-dataset-generate-div" style = "flex-direction:row;justify-content:center">
-    <button id="button-preview-dataset" style="cursor:pointer;border-radius: 8px;margin:5px; width: 120px;height:40px;background: #fff;color:var(--color-bg-plum);font-weight:600; border-style: solid; border-color:var(--color-bg-plum)"> Preview dataset</button>
+    <button id="button-preview-dataset" style="display:none;cursor:pointer;border-radius: 8px;margin:5px; width: 120px;height:40px;background: #fff;color:var(--color-bg-plum);font-weight:600; border-style: solid; border-color:var(--color-bg-plum)"> Preview dataset</button>
       <button id="button-generate" style="cursor:pointer;border-radius: 8px;margin:5px; width: 120px;height:40px;background: var(--color-bg-plum);color:#fff;font-weight:600;border:none">Generate</button>
     </div>
 

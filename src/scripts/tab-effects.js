@@ -78,7 +78,58 @@ function showParentTab(tabNow, nextOrPrev) {
 
   if (tabNow == (x.length - 1)) {
     document.getElementById("nextBtn").style.display = "none";
+    $("#Question-preview-dataset-structure").show();
+    $("#Question-preview-dataset-structure").children().show();
+    //$("#preview-dataset-structure-btn").show();
+    fill_info_details();
   }
+}
+
+const fill_info_details = () => {
+  $("#div-preview-dataset-details").empty();
+  if (sodaJSONObj["starting-point"] === "bf")
+  {
+    add_card_detail("Current account", sodaJSONObj["bf-account-selected"]["account-name"]);
+    add_card_detail("Current dataset", sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
+    metadataFile_present = ""
+    for (file in sodaJSONObj["metadata-files"])
+    {
+      if (file.indexOf("-DELETED") === -1)
+      {
+        metadataFile_present += file + "<br>";
+      }
+    }
+    if (metadataFile_present === "")
+    {
+      metadataFile_present = "None";
+    }
+    add_card_detail("Metadata files", metadataFile_present);
+  }
+  if (sodaJSONObj["starting-point"] === "local")
+  {
+    add_card_detail("Current dataset location", sodaJSONObj["local-path"]);
+    add_card_detail("Current dataset", sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
+    metadataFile_present = ""
+    for (file in sodaJSONObj["metadata-files"])
+    {
+      if (file.indexOf("-DELETED") === -1)
+      {
+        metadataFile_present += file + "<br>";
+      }
+    }
+    if (metadataFile_present === "")
+    {
+      metadataFile_present = "None";
+    }
+    add_card_detail("Metadata files", metadataFile_present);
+  }
+};
+
+const add_card_detail = (card_left, card_right) =>
+{
+  let parent_element = $("#div-preview-dataset-details");
+  let new_card_element = "<div class='card-container'><h5 class='card-left'>" + card_left + ":</h5><p class='card-right'>" + card_right + "</p></div>";
+  $(parent_element).append(new_card_element);
 }
 
 
@@ -221,11 +272,11 @@ function nextPrev(n) {
       $("#nextBtn").prop("disabled", true);
     }
     // if bf existing, hide everything but the generate button, for now.
-    $("#Question-generate-dataset").hide();
-    $("#Question-generate-dataset").children().hide();
-    $("#Question-generate-dataset-generate-div").show();
-    $("#button-preview-dataset").hide();
-    $("#button-generate").show();
+    // $("#Question-generate-dataset").hide();
+    // $("#Question-generate-dataset").children().hide();
+    // $("#Question-generate-dataset-generate-div").show();
+    // $("#button-preview-dataset").hide();
+    // $("#button-generate").show();
     
     //var target = document.getElementById('Question-generate-dataset-generate-div');
     //$("#button-preview-dataset").css("display", "none");
