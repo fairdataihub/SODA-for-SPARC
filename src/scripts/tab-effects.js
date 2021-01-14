@@ -12,7 +12,7 @@ var currentTab = 0; // Current tab is set to be the first tab (0)
 showParentTab(0, 1)
 
 function showParentTab(tabNow, nextOrPrev) {
-
+  document.getElementById("nextBtn").disabled = true;
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
     document.getElementById("save-progress-btn").style.display = "block";
@@ -31,7 +31,7 @@ function showParentTab(tabNow, nextOrPrev) {
 
   $(x[tabNow]).addClass('tab-active');
 
-  var inActiveTabArray = [0, 1, 2, 3, 4, 5].filter(function (element) {
+  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6].filter(function (element) {
     return ![tabNow].includes(element);
   });
 
@@ -57,12 +57,146 @@ function showParentTab(tabNow, nextOrPrev) {
   } else if (tabNow == 1){
     checkHighLevelFoldersInput();
     highLevelFoldersDisableOptions();
-  } else {
+  }else if (tabNow == 5){
+    //document.getElementById("nextBtn").disabled = true;
+  } 
+  else {
     document.getElementById("nextBtn").disabled = false;
   }
+
+  if (tabNow == 5) {
+    if (
+      $("#inputNewNameDataset").val() !== "" ||
+      $("#Question-generate-dataset-existing-files-options")
+        .find(".option-card")
+        .hasClass("checked") ||
+      $("#generate-dataset-replace-existing")
+        .find(".option-card")
+        .hasClass("checked")
+    ) {
+      document.getElementById("nextBtn").disabled = false;
+    } else {
+      document.getElementById("nextBtn").disabled = true;
+    }
+  }
+
   if (tabNow == (x.length - 1)) {
     document.getElementById("nextBtn").style.display = "none";
+    $("#Question-preview-dataset-structure").show();
+    $("#Question-preview-dataset-structure").children().show();
+    //$("#preview-dataset-structure-btn").show();
+    fill_info_details();
   }
+}
+
+const fill_info_details = () => {
+  $("#div-preview-dataset-details").empty();
+  if (sodaJSONObj["starting-point"] === "bf")
+  {
+    add_card_detail("Current account", sodaJSONObj["bf-account-selected"]["account-name"]);
+    add_card_detail("Current dataset", sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
+    metadataFile_present = ""
+    for (file in sodaJSONObj["metadata-files"])
+    {
+      if (file.indexOf("-DELETED") === -1)
+      {
+        metadataFile_present += file + "<br>";
+      }
+    }
+    if (metadataFile_present === "")
+    {
+      metadataFile_present = "None";
+    }
+    add_card_detail("Metadata files", metadataFile_present);
+  }
+  if (sodaJSONObj["starting-point"] === "local" || sodaJSONObj["starting-point"] === "new")
+  {
+    if ($('input[name="generate-1"]:checked')[0].id === "generate-local-existing")
+    {
+      add_card_detail("Current dataset location", sodaJSONObj["local-path"]);
+    }
+    else if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop")
+    {
+      if (sodaJSONObj["starting-point"] === "local")
+      {
+        add_card_detail("Original dataset location", sodaJSONObj["local-path"]);
+      }
+      add_card_detail("New dataset location", $("#input-destination-generate-dataset-locally")[0].placeholder);
+      add_card_detail("New dataset name", $("#inputNewNameDataset").val().trim());
+    }
+    else if ( $('input[name="generate-1"]:checked')[0].id === "generate-upload-BF")
+    {
+      if (sodaJSONObj["starting-point"] === "local")
+      {
+        add_card_detail("Original dataset location", sodaJSONObj["local-path"]);
+      }
+      add_card_detail("New dataset location", "Blackfynn");
+      if (
+        $('input[name="generate-4"]:checked')[0].id ===
+        "generate-BF-dataset-options-existing"
+      ) {
+        add_card_detail("Dataset name", $('#current-bf-dataset-generate').text());
+        if (
+          $('input[name="generate-5"]:checked')[0].id ===
+          "existing-folders-duplicate"
+        ) {
+          add_card_detail("For existing folders", "Create a duplicate");
+        } else if (
+          $('input[name="generate-5"]:checked')[0].id ===
+          "existing-folders-replace"
+        ) {
+          add_card_detail("For existing folders", "Replace");
+        } else if (
+          $('input[name="generate-5"]:checked')[0].id ===
+          "existing-folders-merge"
+        ) {
+          add_card_detail("For existing folders", "Merge");
+        } else if (
+          $('input[name="generate-5"]:checked')[0].id ===
+          "existing-folders-skip"
+        ) {
+          add_card_detail("For existing folders", "Skip");
+        }
+        if (
+          $('input[name="generate-6"]:checked')[0].id ===
+          "existing-files-duplicate"
+        ) {
+          add_card_detail("For existing files", "Create duplicates");
+        } else if (
+          $('input[name="generate-6"]:checked')[0].id ===
+          "existing-files-replace"
+        ) {
+          add_card_detail("For existing files", "Replace");
+        } else if (
+          $('input[name="generate-6"]:checked')[0].id === "existing-files-skip"
+        ) {
+          add_card_detail("For existing files", "Skip");
+        }
+      } else {
+        add_card_detail("New Dataset name ", $("#inputNewNameDataset").val().trim());
+      }
+    }
+    metadataFile_present = ""
+    for (file in sodaJSONObj["metadata-files"])
+    {
+      if (file.indexOf("-DELETED") === -1)
+      {
+        metadataFile_present += file + "<br>";
+      }
+    }
+    if (metadataFile_present === "")
+    {
+      metadataFile_present = "None";
+    }
+    add_card_detail("Metadata files", metadataFile_present);
+  }
+};
+
+const add_card_detail = (card_left, card_right) =>
+{
+  let parent_element = $("#div-preview-dataset-details");
+  let new_card_element = "<div class='card-container'><h5 class='card-left'>" + card_left + ":</h5><p class='card-right'>" + card_right + "</p></div>";
+  $(parent_element).append(new_card_element);
 }
 
 
@@ -182,17 +316,35 @@ function nextPrev(n) {
       // Display the correct tab:
       showParentTab(currentTab, n);
     }
+  }else if (x[currentTab].id === "preview-dataset-tab" && sodaJSONObj["starting-point"] == "bf")
+  {
+    $(x[currentTab]).removeClass("tab-active");
+    currentTab = currentTab - 2;
+    showParentTab(currentTab, n);
+    $("#nextBtn").prop("disabled", false);
   } else if (x[currentTab].id === "manifest-file-tab" && sodaJSONObj["starting-point"] == "bf")
   {
+    // cj -skip step 6
     console.log("hiding");
     $(x[currentTab]).removeClass("tab-active");
-    currentTab = currentTab + n;
+    if (n == -1)
+    {
+      currentTab = currentTab + n;
+      $("#nextBtn").prop("disabled", false);
+    }
+    else
+    {
+      currentTab = currentTab + 2
+      fixStepDone(4)
+      $("#nextBtn").prop("disabled", true);
+    }
     // if bf existing, hide everything but the generate button, for now.
-    $("#Question-generate-dataset").hide();
-    $("#Question-generate-dataset").children().hide();
-    $("#Question-generate-dataset-generate-div").show();
-    $("#button-preview-dataset").hide();
-    $("#button-generate").show();
+    // $("#Question-generate-dataset").hide();
+    // $("#Question-generate-dataset").children().hide();
+    // $("#Question-generate-dataset-generate-div").show();
+    // $("#button-preview-dataset").hide();
+    // $("#button-generate").show();
+    
     //var target = document.getElementById('Question-generate-dataset-generate-div');
     //$("#button-preview-dataset").css("display", "none");
     //document.getElementById("generate-dataset-tab").appendChild(target);
@@ -210,7 +362,7 @@ function nextPrev(n) {
     
     let dataset_location = document.querySelector("#Question-generate-dataset-locally-destination > div > div.grouped.fields > label");
     $(dataset_location).text("At which location should we generate the dataset??");
-
+    
     // Show/or hide the replace existing button
     if (sodaJSONObj["starting-point"] === "local") {
       $("#generate-dataset-replace-existing").show();
@@ -229,6 +381,7 @@ function nextPrev(n) {
     //$("#button-generate").show();
     //$("#Question-generate-dataset-generate-div").removeClass('show');
     //$("#Question-generate-dataset-generate-div").children().removeClass('show');
+    $("#nextBtn").prop("disabled", true);
     showParentTab(currentTab, n);
   }
   else {
@@ -247,6 +400,8 @@ function nextPrev(n) {
       $("#div-getting-started-existing-local").click();
       $("#nextBtn").prop("disabled", true);
     }
+
+    
     showParentTab(currentTab, n);
     console.log(JSON.stringify(sodaJSONObj));
   }
@@ -405,6 +560,7 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
     // append to parentDiv
     document.getElementById(parentDiv).appendChild(target);
   }
+
   // if buttons: Add account and Confirm account were hidden, show them again here
   if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-account") {
     $("#" + ev.getAttribute("data-next") + " button").show();
@@ -477,6 +633,15 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       }
     }
   } else {
+    $("#nextBtn").prop("disabled", true);
+  }
+
+  if (ev.getAttribute('data-next') === "Question-generate-dataset-generate-div-old")
+  {
+    $("#nextBtn").prop("disabled", false);
+  }
+  else
+  {
     $("#nextBtn").prop("disabled", true);
   }
 
@@ -615,7 +780,7 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
     category: either getting-started or generate-dataset (currently only these 2 have multiple sub questions)
   */
 
- if (currentDiv === "Question-getting-started-BF-dataset")
+  if (currentDiv === "Question-getting-started-BF-dataset")
  {
    $("#nextBtn").prop("disabled", true);
    $("#button-confirm-bf-dataset-getting-started").prop("disabled", true);
@@ -682,6 +847,7 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
   if (ev.getAttribute('data-next') === "Question-generate-dataset-BF-account") {
     $("#" + ev.getAttribute('data-next') + " button").show();
   }
+
   if (ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")
   {
     $("#Question-generate-dataset-generate-div").show();
