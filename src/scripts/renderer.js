@@ -6419,13 +6419,20 @@ $("#inputNewNameDataset").keyup(function() {
     if (check_forbidden_characters_bf(newName)) {
       // document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
       document.getElementById('para-new-name-dataset-message').innerHTML = "Error: A Blackfynn dataset name cannot contain any of the following characters: \/:*?'<>."
+      $("#nextBtn").prop("disabled", true);
+      $("#Question-generate-dataset-generate-div-old").removeClass("show")
     } else {
       // document.getElementById('div-confirm-inputNewNameDataset').style.display = "flex";
       $("#Question-generate-dataset-generate-div").show();
       $("#Question-generate-dataset-generate-div").children().show();
       $('#div-confirm-inputNewNameDataset button').click();
+      $("#nextBtn").prop("disabled", false);
+      $("#Question-generate-dataset-generate-div-old").addClass("show")
       document.getElementById('para-new-name-dataset-message').innerHTML = "";
     }
+  }
+  else{
+    $("#nextBtn").prop("disabled", true);
   }
 });
 

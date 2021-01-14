@@ -921,6 +921,25 @@
   fill: #000
 }
 
+.card-container{
+  display: flex; 
+  flex-direction: row; 
+  justify-content: space-between;
+  margin-bottom: 15px
+}
+
+.card-left{
+  color:#808080;
+  font-size: 15px
+}
+
+.card-right{
+  color:#000;
+  font-weight: 600;
+  margin-left: 8px;
+  font-size: 15px
+}
+
 .swal2-title {
   margin: 0px !important;
   font-size: 16px !important;
