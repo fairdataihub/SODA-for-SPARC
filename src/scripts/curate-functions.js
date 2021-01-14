@@ -560,3 +560,109 @@ function showHideDropdownButtons(category, action) {
       }
     }
 }
+
+function create_child_node(oldFormatNode, nodeName, type, ext) {
+  var newFormatNode = {"text": nodeName, "state": {"opened": true}, "children": [], "type": type + ext}
+  for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
+    var new_node = create_child_node(value, key, "folder", "");
+    newFormatNode["children"].push(new_node);
+  }
+  for (const [key, value] of Object.entries(oldFormatNode["files"])) {
+    if (["png", "PNG", "xls", "xlsx", "pdf", "txt", "jpeg", "JPEG", "csv", "CSV", "DOC", "DOCX", "doc", "docx"].includes(path.parse(key).ext)) {
+      nodeType = "file " + path.parse(key).ext;
+    } else {
+      nodeType = "file other"
+    }
+    var new_node = {"text": key, "state": {"disabled": true}, "type": nodeType};
+    newFormatNode["children"].push(new_node)
+  }
+  return newFormatNode
+}
+
+const dataOldStructure = {
+    "files":{},
+    "folders": {
+        "primary":{"folders":{"manage_submit":{"type":"local","path":"C:\\Users\\Public\\SODA-packaging\\SODA\\src\\sections\\manage_submit",
+                                              "folders":{},
+                                              "files":{"manage_submit.html":{"path":"C:\\Users\\Public\\SODA-packaging\\SODA\\src\\sections\\manage_submit\\manage_submit.html","description":"","additional-metadata":"","type":"local","action":["new"]}},"action":["new"]},
+                              "one-step-curation":{"type":"local","path":"C:\\Users\\Public\\SODA-packaging\\SODA\\src\\sections\\one-step-curation",
+                                                  "folders":{},
+                                                  "files":{"one-step-curation.html":{"path":"C:\\Users\\Public\\SODA-packaging\\SODA\\src\\sections\\one-step-curation\\one-step-curation.html","description":"","additional-metadata":"","type":"local","action":["new"]}},
+                                                  "action":["new"]}
+                              },
+                    "files":{},"type":""},
+        "source":{"folders":{},"files":{},"type":""}}}
+var jsTreeData = create_child_node(dataOldStructure, "My_dataset_folder", "folder", "")
+
+$(document).ready(function(){
+  $('#data').jstree({
+    "core" : {
+        "check_callback" : true,
+        "data": jsTreeData
+      },
+    "plugins": ["types"],
+    "types" : {
+        'folder' : {
+                'icon' : 'fas fa-folder-open fa-fw'
+        },
+        'folder closed' : {
+            'icon' : 'fas fa-folder fa-fw'
+        },
+        'file xlsx': {
+          'icon' : './assets/img/excel-file.png'
+        },
+        'file xls': {
+          'icon' : './assets/img/excel-file.png'
+        },
+        'file png': {
+          'icon' : './assets/img/png-file.png'
+        },
+        'file PNG': {
+          'icon' : './assets/img/png-file.png'
+        },
+        'file pdf': {
+          'icon' : './assets/img/pdf-file.png'
+        },
+        'file txt': {
+          'icon' : './assets/img/txt-file.png'
+        },
+        'file csv': {
+          'icon' : './assets/img/csv-file.png'
+        },
+        'file CSV': {
+          'icon' : './assets/img/csv-file.png'
+        },
+        'file DOC': {
+          'icon' : './assets/img/doc-file.png'
+        },
+        'file DOCX': {
+          'icon' : './assets/img/doc-file.png'
+        },
+        'file docs': {
+          'icon' : './assets/img/doc-file.png'
+        },
+        'file doc': {
+          'icon' : './assets/img/doc-file.png'
+        },
+        'file jpeg': {
+          'icon' : './assets/img/jpeg-file.png'
+        },
+        'file JPEG': {
+          'icon' : './assets/img/jpeg-file.png'
+        },
+        'file other': {
+          'icon' : './assets/img/other-file.png'
+        }
+      }
+    })
+    $('#data').on('changed.jstree', function (e, data) {
+      console.log(data.node.text);
+    })
+})
+
+$("#data").on('open_node.jstree', function (event, data) {
+    data.instance.set_type(data.node,'folder open');
+});
+$("#data").on('close_node.jstree', function (event, data) {
+    data.instance.set_type(data.node,'folder closed');
+});

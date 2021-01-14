@@ -83,6 +83,7 @@
     "html2canvas": "^1.0.0-rc.5",
     "image-data-uri": "^2.0.1",
     "jquery": "^3.5.1",
+    "jstree": "^3.3.11",
     "node-localstorage": "^2.1.6",
     "pdfkit": "^0.11.0",
     "remove-markdown": "^0.3.0",
