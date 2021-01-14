@@ -545,7 +545,7 @@ function create_child_node(oldFormatNode, nodeName, type, ext) {
     } else {
       nodeType = "file other"
     }
-    var new_node = {"text": key, "type": nodeType};
+    var new_node = {"text": key, "state": {"disabled": true}, "type": nodeType};
     newFormatNode["children"].push(new_node)
   }
   return newFormatNode
@@ -564,7 +564,7 @@ const dataOldStructure = {
                               },
                     "files":{},"type":""},
         "source":{"folders":{},"files":{},"type":""}}}
-var jsTreeData = create_child_node(dataOldStructure, "My_dataset_folder", "root", "")
+var jsTreeData = create_child_node(dataOldStructure, "My_dataset_folder", "folder", "")
 
 $(document).ready(function(){
   $('#data').jstree({
@@ -574,18 +574,10 @@ $(document).ready(function(){
       },
     "plugins": ["types"],
     "types" : {
-        "root" : {
-          "icon" : "fas fa-folder root",
-          "valid_children" : ["default"]
-        },
         'folder' : {
-            'icon': 'fas fa-folder',
-            'font-weight': "600"
-        },
-        'f-open' : {
                 'icon' : 'fas fa-folder-open fa-fw'
         },
-        'f-closed' : {
+        'folder closed' : {
             'icon' : 'fas fa-folder fa-fw'
         },
         'file xlsx': {
@@ -641,8 +633,8 @@ $(document).ready(function(){
 })
 
 $("#data").on('open_node.jstree', function (event, data) {
-    data.instance.set_type(data.node,'f-open');
+    data.instance.set_type(data.node,'folder open');
 });
 $("#data").on('close_node.jstree', function (event, data) {
-    data.instance.set_type(data.node,'f-closed');
+    data.instance.set_type(data.node,'folder closed');
 });

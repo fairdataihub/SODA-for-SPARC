@@ -1015,5 +1015,9 @@
 }
 
 .jstree-icon.jstree-themeicon.jstree-themeicon-custom {
-  background-size: cover !important 
+  background-size: cover !important
+}
+
+.jstree-default .jstree-disabled>.jstree-icon {
+  filter: none !important
 }
