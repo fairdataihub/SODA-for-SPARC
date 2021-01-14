@@ -532,3 +532,66 @@ function showHideDropdownButtons(category, action) {
       }
     }
 }
+
+function create_child_node(oldFormatNode, nodeName) {
+  var newFormatNode = {"text": nodeName, "state": {"opened": true}, "children": []}
+  for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
+    var new_node = create_child_node(value, key);
+    newFormatNode["children"].push(new_node);
+  }
+  for (const [key, value] of Object.entries(oldFormatNode["files"])) {
+    var new_node = {"text": key};
+    newFormatNode["children"].push(new_node)
+  }
+  return newFormatNode
+}
+
+const dataOldStructure = {
+    "files":{},
+    "folders": {
+        "primary":{"folders":{"manage_submit":{"type":"local","path":"C:\\Users\\Public\\SODA-packaging\\SODA\\src\\sections\\manage_submit",
+                                              "folders":{},
+                                              "files":{"manage_submit.html":{"path":"C:\\Users\\Public\\SODA-packaging\\SODA\\src\\sections\\manage_submit\\manage_submit.html","description":"","additional-metadata":"","type":"local","action":["new"]}},"action":["new"]},
+                              "one-step-curation":{"type":"local","path":"C:\\Users\\Public\\SODA-packaging\\SODA\\src\\sections\\one-step-curation",
+                                                  "folders":{},
+                                                  "files":{"one-step-curation.html":{"path":"C:\\Users\\Public\\SODA-packaging\\SODA\\src\\sections\\one-step-curation\\one-step-curation.html","description":"","additional-metadata":"","type":"local","action":["new"]}},
+                                                  "action":["new"]}
+                              },
+                    "files":{},"type":""},
+        "source":{"folders":{},"files":{},"type":""}}}
+var jsTreeData = create_child_node(dataOldStructure, "My_dataset_folder")
+
+$(document).ready(function(){
+  $('#data').jstree({
+    "core" : {
+        "check_callback" : true,
+        "data": jsTreeData
+      },
+    "plugins": ["types"],
+    "types" : {
+        "root" : {
+          "icon" : "fas fa-folder root",
+          "valid_children" : ["default"]
+        },
+        'default' : {
+            'icon': 'fas fa-folder'
+        },
+        'f-open' : {
+                'icon' : 'fas fa-folder-open fa-fw'
+        },
+        'f-closed' : {
+            'icon' : 'fas fa-folder fa-fw'
+        }
+      }
+    })
+    $('#data').on('changed.jstree', function (e, data) {
+      console.log(data.node.text);
+    })
+})
+
+$("#data").on('open_node.jstree', function (event, data) {
+    data.instance.set_type(data.node,'f-open');
+});
+$("#data").on('close_node.jstree', function (event, data) {
+    data.instance.set_type(data.node,'f-closed');
+});

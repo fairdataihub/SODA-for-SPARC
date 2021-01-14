@@ -1004,3 +1004,16 @@
 .swal2-header {
   margin-bottom: 15px !important;
 }
+
+.jstree-default .jstree-themeicon-custom {
+  color: var(--color-bg-yellow) !important;
+  font-size: 18px !important;
+}
+
+.jstree-anchor, .jstree-anchor:link, .jstree-anchor:visited, .jstree-anchor:hover, .jstree-anchor:active {
+  color: var(--color-sidebar)!important;
+}
+
+.jstree-icon.jstree-themeicon.far.fa-file-alt.jstree-themeicon-custom {
+  color: green !important
+}
