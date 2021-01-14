@@ -869,7 +869,25 @@
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Where would you like to generate your dataset?
               <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
+              
               <div style="display:flex;flex-direction:row;">
+                <div style="margin:15px 0;" id="generate-dataset-replace-existing">
+                  <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div-old"
+                    onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
+                    <div class="card-head">
+                      <div class="folder-checkbox">
+                        <input class="folder-input-check" name="generate-1" id="generate-local-existing"
+                          type="radio">
+                        <label for="generate-locally"></label>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <i class="fas fa-redo"></i>
+                      <h2>Replace files in current dataset folder</h2>
+                    </div>
+                  </div>
+                </div>
+
                 <div style="margin:15px 0;">
                   <div class="option-card radio-button" data-next="Question-generate-dataset-locally-destination" onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
                       <div class="card-head">
@@ -1263,7 +1281,7 @@
       <div class="ui form" style="width:100%">
         <div class="grouped fields">
           <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Confirm dataset details</label>
-          <div class="field" style="margin:5px 0;width:450px;">
+          <div class="field" style="margin:5px 0;width:auto;max-width:650px;">
             <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px" id="div-preview-dataset-details">
               <div class="card-container">
                 <div>

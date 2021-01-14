@@ -64,14 +64,18 @@ function showParentTab(tabNow, nextOrPrev) {
     document.getElementById("nextBtn").disabled = false;
   }
 
-  if (tabNow == 5)
-  {
-    if (($("#inputNewNameDataset").val() !== "") || $("#Question-generate-dataset-existing-files-options").find('.option-card').hasClass("checked"))
-    {
-      document.getElementById("nextBtn").disabled = false
-    }
-    else
-    {
+  if (tabNow == 5) {
+    if (
+      $("#inputNewNameDataset").val() !== "" ||
+      $("#Question-generate-dataset-existing-files-options")
+        .find(".option-card")
+        .hasClass("checked") ||
+      $("#generate-dataset-replace-existing")
+        .find(".option-card")
+        .hasClass("checked")
+    ) {
+      document.getElementById("nextBtn").disabled = false;
+    } else {
       document.getElementById("nextBtn").disabled = true;
     }
   }
@@ -105,10 +109,73 @@ const fill_info_details = () => {
     }
     add_card_detail("Metadata files", metadataFile_present);
   }
-  if (sodaJSONObj["starting-point"] === "local")
+  if (sodaJSONObj["starting-point"] === "local" || sodaJSONObj["starting-point"] === "new")
   {
-    add_card_detail("Current dataset location", sodaJSONObj["local-path"]);
-    add_card_detail("Current dataset", sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
+    if ($('input[name="generate-1"]:checked')[0].id === "generate-local-existing")
+    {
+      add_card_detail("Current dataset location", sodaJSONObj["local-path"]);
+    }
+    else if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop")
+    {
+      if (sodaJSONObj["starting-point"] === "local")
+      {
+        add_card_detail("Original dataset location", sodaJSONObj["local-path"]);
+      }
+      add_card_detail("New dataset location", $("#input-destination-generate-dataset-locally")[0].placeholder);
+      add_card_detail("New dataset name", $("#inputNewNameDataset").val().trim());
+    }
+    else if ( $('input[name="generate-1"]:checked')[0].id === "generate-upload-BF")
+    {
+      if (sodaJSONObj["starting-point"] === "local")
+      {
+        add_card_detail("Original dataset location", sodaJSONObj["local-path"]);
+      }
+      add_card_detail("New dataset location", "Blackfynn");
+      if (
+        $('input[name="generate-4"]:checked')[0].id ===
+        "generate-BF-dataset-options-existing"
+      ) {
+        add_card_detail("Dataset name", $('#current-bf-dataset-generate').text());
+        if (
+          $('input[name="generate-5"]:checked')[0].id ===
+          "existing-folders-duplicate"
+        ) {
+          add_card_detail("For existing folders", "Create a duplicate");
+        } else if (
+          $('input[name="generate-5"]:checked')[0].id ===
+          "existing-folders-replace"
+        ) {
+          add_card_detail("For existing folders", "Replace");
+        } else if (
+          $('input[name="generate-5"]:checked')[0].id ===
+          "existing-folders-merge"
+        ) {
+          add_card_detail("For existing folders", "Merge");
+        } else if (
+          $('input[name="generate-5"]:checked')[0].id ===
+          "existing-folders-skip"
+        ) {
+          add_card_detail("For existing folders", "Skip");
+        }
+        if (
+          $('input[name="generate-6"]:checked')[0].id ===
+          "existing-files-duplicate"
+        ) {
+          add_card_detail("For existing files", "Create duplicates");
+        } else if (
+          $('input[name="generate-6"]:checked')[0].id ===
+          "existing-files-replace"
+        ) {
+          add_card_detail("For existing files", "Replace");
+        } else if (
+          $('input[name="generate-6"]:checked')[0].id === "existing-files-skip"
+        ) {
+          add_card_detail("For existing files", "Skip");
+        }
+      } else {
+        add_card_detail("New Dataset name ", $("#inputNewNameDataset").val().trim());
+      }
+    }
     metadataFile_present = ""
     for (file in sodaJSONObj["metadata-files"])
     {

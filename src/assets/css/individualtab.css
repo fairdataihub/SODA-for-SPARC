@@ -924,7 +924,6 @@
 .card-container{
   display: flex; 
   flex-direction: row;
-  margin-bottom: 15px
 }
 
 .card-left{
