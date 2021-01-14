@@ -1014,6 +1014,6 @@
   color: var(--color-sidebar)!important;
 }
 
-.jstree-icon.jstree-themeicon.far.fa-file-alt.jstree-themeicon-custom {
-  color: green !important
+.jstree-icon.jstree-themeicon.jstree-themeicon-custom {
+  background-size: cover !important 
 }
