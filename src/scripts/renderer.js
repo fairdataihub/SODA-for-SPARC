@@ -5965,6 +5965,8 @@ function folderContextMenu(event) {
         renameFolder(event, organizeDSglobalPath, itemDivElements, datasetStructureJSONObj, '#items', '.single-item')
       } else if ($(this).attr('id') === "folder-delete") {
         delFolder(event, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
+      } else if ($(this).attr('id') === "folder-move") {
+        moveItems(event, "folders", organizeDSglobalPath);
       }
      // Hide it AFTER the action was triggered
      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)

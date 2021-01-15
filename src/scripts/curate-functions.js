@@ -596,76 +596,87 @@ function create_child_node(oldFormatNode, nodeName, type, ext) {
 
 var selected = false;
 var selectedNode;
-var jsTreeData;
+var jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "");
 var jstreeInstance = document.getElementById('data');
+$(document).ready(function() {
+  $('#data').jstree({
+  "core" : {
+    "check_callback" : true,
+    "data": {}
+  },
+  "plugins": ["types"],
+  "types" : {
+    'folder' : {
+      'icon' : 'fas fa-folder-open fa-fw'
+    },
+    'folder closed' : {
+      'icon' : 'fas fa-folder fa-fw'
+    },
+    'file xlsx': {
+      'icon' : './assets/img/excel-file.png'
+    },
+    'file xls': {
+      'icon' : './assets/img/excel-file.png'
+    },
+    'file png': {
+      'icon' : './assets/img/png-file.png'
+    },
+    'file PNG': {
+      'icon' : './assets/img/png-file.png'
+    },
+    'file pdf': {
+      'icon' : './assets/img/pdf-file.png'
+    },
+    'file txt': {
+      'icon' : './assets/img/txt-file.png'
+    },
+    'file csv': {
+      'icon' : './assets/img/csv-file.png'
+    },
+    'file CSV': {
+      'icon' : './assets/img/csv-file.png'
+    },
+    'file DOC': {
+      'icon' : './assets/img/doc-file.png'
+    },
+    'file DOCX': {
+      'icon' : './assets/img/doc-file.png'
+    },
+    'file docx': {
+      'icon' : './assets/img/doc-file.png'
+    },
+    'file doc': {
+      'icon' : './assets/img/doc-file.png'
+    },
+    'file jpeg': {
+      'icon' : './assets/img/jpeg-file.png'
+    },
+    'file JPEG': {
+      'icon' : './assets/img/jpeg-file.png'
+    },
+    'file other': {
+      'icon' : './assets/img/other-file.png'
+    }
+  }
+})
+})
+
 async function moveItems(ev, category, location) {
-  // Note: somehow, html element "#data" was destroyed after closing the Swal popup. Creating the element again after it was destroyed.
+
+  // reset previously selected items first
+  jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "");
+  // Note: somehow, html element "#data" was destroyed after closing the Swal popup.
+  // Creating the element again after it was destroyed.
   if (!(jstreeInstance)) {
     $("#items").prepend('<div id="data"></div>');
     jstreeInstance = document.getElementById('data');
   }
-  jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "");
+  $(jstreeInstance).jstree(true).settings.core.data = jsTreeData;
+  $(jstreeInstance).jstree(true).refresh();
+  selected = false;
+  selectedNode = undefined;
+
   // first, convert datasetStructureJSONObj to jsTree's json structure
-  $('#data').jstree({
-    "core" : {
-        "check_callback" : true,
-        "data": jsTreeData
-      },
-    "plugins": ["types"],
-    "types" : {
-        'folder' : {
-            'icon' : 'fas fa-folder-open fa-fw'
-        },
-        'folder closed' : {
-            'icon' : 'fas fa-folder fa-fw'
-        },
-        'file xlsx': {
-          'icon' : './assets/img/excel-file.png'
-        },
-        'file xls': {
-          'icon' : './assets/img/excel-file.png'
-        },
-        'file png': {
-          'icon' : './assets/img/png-file.png'
-        },
-        'file PNG': {
-          'icon' : './assets/img/png-file.png'
-        },
-        'file pdf': {
-          'icon' : './assets/img/pdf-file.png'
-        },
-        'file txt': {
-          'icon' : './assets/img/txt-file.png'
-        },
-        'file csv': {
-          'icon' : './assets/img/csv-file.png'
-        },
-        'file CSV': {
-          'icon' : './assets/img/csv-file.png'
-        },
-        'file DOC': {
-          'icon' : './assets/img/doc-file.png'
-        },
-        'file DOCX': {
-          'icon' : './assets/img/doc-file.png'
-        },
-        'file docs': {
-          'icon' : './assets/img/doc-file.png'
-        },
-        'file doc': {
-          'icon' : './assets/img/doc-file.png'
-        },
-        'file jpeg': {
-          'icon' : './assets/img/jpeg-file.png'
-        },
-        'file JPEG': {
-          'icon' : './assets/img/jpeg-file.png'
-        },
-        'file other': {
-          'icon' : './assets/img/other-file.png'
-        }
-      }
-    })
   // show swal2 with jstree in here
   const { value: folderDestination } = await Swal.fire({
     title: "<h3 style='margin-bottom:20px !important'>Please choose a folder destination:</h3>",
@@ -680,7 +691,7 @@ async function moveItems(ev, category, location) {
         Swal.showValidationMessage("Please select a folder destination!")
         return undefined
       } else {
-         return selectedNode
+        return selectedNode
       }
     }
   })
@@ -702,36 +713,62 @@ async function moveItems(ev, category, location) {
             });
         }
         // action to move and delete here
-        let itemToMove = ev.parentElement.textContent;
-        var filtered = getGlobalPath(organizeDSglobalPath);
-        var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-        myPath[category][itemToMove]["action"].push("moved");
-
-        // move to a new location, first we need a function to convert selectedNode to a JSON path
-        var selectedNodeList = selectedNode.split("/").slice(1);
-        var destination = getRecursivePath(selectedNodeList, datasetStructureJSONObj);
-        destination[category][itemToMove] = myPath[category][itemToMove];
-
-        //delete item from the original location
-        delete myPath[category][itemToMove];
-        listItems(myPath, '#items');
-        console.log(datasetStructureJSONObj)
-        // reset items
-        jsTreeData = {};
-        selected = false;
-        selectedNode = undefined;
+        // multiple files/folders
+        if ($("div.single-item.selected-item").toArray().length > 1) {
+          $("div.single-item.selected-item").toArray().forEach(element => {
+            let itemToMove = element.textContent;
+            var itemType;
+            if ($(element.firstElementChild).hasClass("myFile")) {
+              itemType = "files";
+            } else if ($(element.firstElementChild).hasClass("myFol")) {
+              itemType = "folders";
+            }
+            moveItemsHelper(itemToMove, selectedNode, itemType);
+          })
+        // only 1 file/folder
+        } else {
+          let itemToMove = ev.parentElement.textContent;
+          var itemType;
+          if ($(ev).hasClass("myFile")) {
+            itemType = "files";
+          } else if ($(ev).hasClass("myFol")) {
+            itemType = "folders";
+          }
+          moveItemsHelper(itemToMove, selectedNode, itemType);
+        }
       })
-  }
+    }
 }
 
-$('#data').on('changed.jstree', function (e, data) {
+function moveItemsHelper(item, destination, category) {
+  var filtered = getGlobalPath(organizeDSglobalPath);
+  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+  if ("action" in myPath[category][item]) {
+    myPath[category][item]["action"].push("moved");
+  } else {
+    myPath[category][item]["action"] = ["moved"]
+  }
+
+  // move to a new location, first we need a function to convert selectedNode to a JSON path
+  var selectedNodeList = destination.split("/").slice(1);
+  var destinationPath = getRecursivePath(selectedNodeList, datasetStructureJSONObj);
+  destinationPath[category][item] = myPath[category][item];
+
+  //delete item from the original location
+  delete myPath[category][item];
+  listItems(myPath, '#items');
+}
+
+$(jstreeInstance).on('changed.jstree', function (e, data) {
   selected = true;
-  selectedNode = data.instance.get_path(data.node,'/');
+  if (data.node) {
+    selectedNode = data.instance.get_path(data.node,'/');
+  }
 })
 
-$("#data").on('open_node.jstree', function (event, data) {
+$(jstreeInstance).on('open_node.jstree', function (event, data) {
     data.instance.set_type(data.node,'folder open');
 });
-$("#data").on('close_node.jstree', function (event, data) {
+$(jstreeInstance).on('close_node.jstree', function (event, data) {
     data.instance.set_type(data.node,'folder closed');
 });

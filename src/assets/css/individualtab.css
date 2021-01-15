@@ -944,6 +944,10 @@
   margin-bottom: 10px !important;
 }
 
+.swal2-content {
+  overflow: auto !important; 
+}
+
 .swal2-select {
   min-width: 100% !important;
   font-size: 16px !important;

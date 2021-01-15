@@ -1269,7 +1269,6 @@ function updateJSONStructureDSstructure() {
     JSON.stringify(sodaJSONObj["dataset-structure"]["folders"]) === "{}") {
     delete sodaJSONObj["dataset-structure"]
   }
-  console.log(sodaJSONObj["dataset-structure"])
 }
 
 // Step 4: Metadata files
