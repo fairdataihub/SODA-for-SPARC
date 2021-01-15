@@ -5888,12 +5888,16 @@ function showmenu(ev, category, deleted = false) {
         $(menuFolder)
           .children("#folder-delete")
           .html('<i class="fas fa-minus-circle"></i> Delete All');
+        $(menuFolder)
+          .children("#folder-move")
+          .html('<i class="fas fa-external-link-alt"></i> Move All');
         $(menuFolder).children("#folder-rename").hide();
         $(menuFolder).children("#folder-description").hide();
       } else {
         $(menuFolder)
           .children("#folder-delete")
           .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+        $(menuFolder).children("#folder-move").show();
         $(menuFolder).children("#folder-rename").show();
         $(menuFolder).children("#folder-description").show();
       }
@@ -5934,12 +5938,16 @@ function showmenu(ev, category, deleted = false) {
         $(menuFile)
           .children("#file-delete")
           .html('<i class="fas fa-minus-circle"></i> Delete All');
+        $(menuFile)
+          .children("#file-move")
+          .html('<i class="fas fa-external-link-alt"></i> Move All');
         $(menuFile).children("#file-rename").hide();
         $(menuFile).children("#file-description").hide();
       } else {
         $(menuFile)
           .children("#file-delete")
           .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+        $(menuFile).children("#file-move").show();
         $(menuFile).children("#file-rename").show();
         $(menuFile).children("#file-description").show();
       }
@@ -6027,6 +6035,8 @@ function fileContextMenu(event) {
         renameFolder(event, organizeDSglobalPath, itemDivElements, datasetStructureJSONObj, '#items', '.single-item')
       } else if ($(this).attr('id') === "file-delete") {
         delFolder(event, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
+      } else if ($(this).attr('id') === "file-move") {
+        moveItems(event, "files", organizeDSglobalPath);
       } else if ($(this).attr('id') === "file-description") {
         manageDesc(event)
       }

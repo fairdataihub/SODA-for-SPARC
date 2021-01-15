@@ -922,7 +922,7 @@
 }
 
 .card-container{
-  display: flex; 
+  display: flex;
   flex-direction: row;
 }
 
@@ -1010,7 +1010,8 @@
 }
 
 .swal2-actions {
-  z-index: 0 !important
+  z-index: 0 !important;
+  margin-top: 30px !important
 }
 
 .dropdown-menu.show {
@@ -1037,4 +1038,17 @@
 
 .jstree-default .jstree-disabled>.jstree-icon {
   filter: none !important
+}
+
+.swal2-content {
+  text-align: left !important
+}
+
+#data {
+  font-size: 14px !important
+}
+
+.jstree-default .jstree-anchor {
+  line-height: 28px !important;
+  height: 28px !important
 }

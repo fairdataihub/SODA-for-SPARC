@@ -163,7 +163,7 @@
             </div>
 
             <div style="margin:15px 0;">
-              <div class="option-card radio-button" 
+              <div class="option-card radio-button"
               id="div-getting-started-existing-local" data-next="Question-generate-dataset-locally-destination" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
                   <div class="card-head">
                     <div class="folder-checkbox">
@@ -213,32 +213,6 @@
             <select id="progress-files-dropdown" onchange="loadProgressFile(this)" name="progress file" class='ui selection dropdown' style="width:450px !important;border-radius:7px;padding:8px">
               <option> Select </option>
             </select>
-          </div>
-
-          <div id="data">
-            <!-- <ul>
-              <li data-jstree='{"disabled":true}'>My_dataset_folder
-                <ul>
-                  <li>Code
-                    <ul>
-                      <li>Sub-code 1</li>
-                      <li>Sub-code 2</li>
-                      <li data-jstree='{"icon":"far fa-file-alt"}'>code.py</li>
-                    </ul>
-                  </li>
-                  <li>Primary
-                    <ul>
-                      <li>Sub-1</li>
-                      <li>Sub-2</li>
-                      <li>Sub-3</li>
-                      <li>Sub-4</li>
-                    </ul>
-                  </li>
-                  <li>Docs</li>
-                </ul>
-              </li>
-            </ul> -->
-
           </div>
           <div class="ui active grey inline loader" id="div-progress-file-loader" style="display:none;margin:0 auto"></div>
           <p id="para-progress-file-status" style="text-align:center;font-weight:600"></p>
@@ -439,23 +413,28 @@
       </div>
       <!-- These are the context menu options, will not appear on the UI until prompted -->
         <ul class="menu reg-folder off">
-          <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
           <li id="folder-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
+          <li id="folder-move"><i class="fas fa-external-link-alt"></i>Move</li>
+          <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
         </ul>
         <ul class="menu high-level-folder off">
-          <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
           <li id="folder-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
+          <li id="folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
           <li id="tooltip-folders"><i class="fas fa-info fa-fw"></i>Details</li>
         </ul>
         <ul class="menu file off">
-          <li id="file-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
           <li id="file-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
+          <li id="file-move"><i class="fas fa-external-link-alt"></i>Move</li>
+          <li id="file-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
           <li id="file-description"><i class="far fa-plus-square fa-fw"></i>Details</li>
         </ul>
         <!-- <span class="hoverPath" style="display: none"></span> -->
         <span class="hoverFullName" style="display: none"></span>
       <!-- END -->
         <div id="items" class="div-organize-items" ondrop="drop(event);" ondragover="allowDrop(event);">
+        </div>
+        <!-- "data" is jstree html element -->
+        <div id="data">
         </div>
         <div class="div-display-details file">
           <button class="button-display-details">X</button>
@@ -895,7 +874,7 @@
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Where would you like to generate your dataset?
               <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
-              
+
               <div style="display:flex;flex-direction:row;">
                 <div style="margin:15px 0;" id="generate-dataset-replace-existing">
                   <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div-old"

@@ -564,37 +564,48 @@ function showHideDropdownButtons(category, action) {
 function create_child_node(oldFormatNode, nodeName, type, ext) {
   var newFormatNode = {"text": nodeName, "state": {"opened": true}, "children": [], "type": type + ext}
   for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
-    var new_node = create_child_node(value, key, "folder", "");
-    newFormatNode["children"].push(new_node);
+    if ('action' in oldFormatNode["folders"][key]) {
+      if (!(oldFormatNode["folders"][key]["action"].includes("deleted"))) {
+        var new_node = create_child_node(value, key, "folder", "");
+        newFormatNode["children"].push(new_node);
+      }
+    } else {
+      var new_node = create_child_node(value, key, "folder", "");
+      newFormatNode["children"].push(new_node);
+    }
   }
   for (const [key, value] of Object.entries(oldFormatNode["files"])) {
-    if (["png", "PNG", "xls", "xlsx", "pdf", "txt", "jpeg", "JPEG", "csv", "CSV", "DOC", "DOCX", "doc", "docx"].includes(path.parse(key).ext)) {
-      nodeType = "file " + path.parse(key).ext;
+    if ('action' in oldFormatNode["files"][key]) {
+      if (!(oldFormatNode["files"][key]["action"].includes("deleted"))) {
+        if ([".png", ".PNG", ".xls", ".xlsx", ".pdf", ".txt", ".jpeg", ".JPEG", ".csv", ".CSV", ".DOC", ".DOCX", ".doc", ".docx"].includes(path.parse(key).ext)) {
+          nodeType = "file " + path.parse(key).ext.slice(1);
+        } else {
+          nodeType = "file other"
+        }
+        var new_node = {"text": key, "state": {"disabled": true}, "type": nodeType};
+        newFormatNode["children"].push(new_node)
+      }
     } else {
-      nodeType = "file other"
+      var new_node = {"text": key, "state": {"disabled": true}, "type": nodeType};
+      newFormatNode["children"].push(new_node)
     }
-    var new_node = {"text": key, "state": {"disabled": true}, "type": nodeType};
-    newFormatNode["children"].push(new_node)
   }
   return newFormatNode
 }
 
-const dataOldStructure = {
-    "files":{},
-    "folders": {
-        "primary":{"folders":{"manage_submit":{"type":"local","path":"C:\\Users\\Public\\SODA-packaging\\SODA\\src\\sections\\manage_submit",
-                                              "folders":{},
-                                              "files":{"manage_submit.html":{"path":"C:\\Users\\Public\\SODA-packaging\\SODA\\src\\sections\\manage_submit\\manage_submit.html","description":"","additional-metadata":"","type":"local","action":["new"]}},"action":["new"]},
-                              "one-step-curation":{"type":"local","path":"C:\\Users\\Public\\SODA-packaging\\SODA\\src\\sections\\one-step-curation",
-                                                  "folders":{},
-                                                  "files":{"one-step-curation.html":{"path":"C:\\Users\\Public\\SODA-packaging\\SODA\\src\\sections\\one-step-curation\\one-step-curation.html","description":"","additional-metadata":"","type":"local","action":["new"]}},
-                                                  "action":["new"]}
-                              },
-                    "files":{},"type":""},
-        "source":{"folders":{},"files":{},"type":""}}}
-var jsTreeData = create_child_node(dataOldStructure, "My_dataset_folder", "folder", "")
 
-$(document).ready(function(){
+var selected = false;
+var selectedNode;
+var jsTreeData;
+var jstreeInstance = document.getElementById('data');
+async function moveItems(ev, category, location) {
+  // Note: somehow, html element "#data" was destroyed after closing the Swal popup. Creating the element again after it was destroyed.
+  if (!(jstreeInstance)) {
+    $("#items").prepend('<div id="data"></div>');
+    jstreeInstance = document.getElementById('data');
+  }
+  jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "");
+  // first, convert datasetStructureJSONObj to jsTree's json structure
   $('#data').jstree({
     "core" : {
         "check_callback" : true,
@@ -603,7 +614,7 @@ $(document).ready(function(){
     "plugins": ["types"],
     "types" : {
         'folder' : {
-                'icon' : 'fas fa-folder-open fa-fw'
+            'icon' : 'fas fa-folder-open fa-fw'
         },
         'folder closed' : {
             'icon' : 'fas fa-folder fa-fw'
@@ -655,9 +666,67 @@ $(document).ready(function(){
         }
       }
     })
-    $('#data').on('changed.jstree', function (e, data) {
-      console.log(data.node.text);
-    })
+  // show swal2 with jstree in here
+  const { value: folderDestination } = await Swal.fire({
+    title: "<h3 style='margin-bottom:20px !important'>Please choose a folder destination:</h3>",
+    html: jstreeInstance,
+    showCloseButton: true,
+    showCancelButton: true,
+    focusConfirm: false,
+    confirmButtonText: "Confirm",
+    cancelButtonText: "Cancel",
+    preConfirm: () => {
+      if (!(selectedNode)) {
+        Swal.showValidationMessage("Please select a folder destination!")
+        return undefined
+      } else {
+         return selectedNode
+      }
+    }
+  })
+  if (folderDestination) {
+    Swal.fire({
+      title: "Are you sure you want to move selected item(s) to: " + selectedNode + "?",
+      showCancelButton: true,
+      confirmButtonText: "Yes"
+    }).then((result) => {
+        if (result.isConfirmed) {
+          // loading effect
+          Swal.fire(
+            {
+              title: 'Moving items...',
+              timer: 1500,
+              timerProgressBar: true,
+              allowEscapeKey: false,
+              showConfirmButton: false
+            });
+        }
+        // action to move and delete here
+        let itemToMove = ev.parentElement.textContent;
+        var filtered = getGlobalPath(organizeDSglobalPath);
+        var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+        myPath[category][itemToMove]["action"].push("moved");
+
+        // move to a new location, first we need a function to convert selectedNode to a JSON path
+        var selectedNodeList = selectedNode.split("/").slice(1);
+        var destination = getRecursivePath(selectedNodeList, datasetStructureJSONObj);
+        destination[category][itemToMove] = myPath[category][itemToMove];
+
+        //delete item from the original location
+        delete myPath[category][itemToMove];
+        listItems(myPath, '#items');
+        console.log(datasetStructureJSONObj)
+        // reset items
+        jsTreeData = {};
+        selected = false;
+        selectedNode = undefined;
+      })
+  }
+}
+
+$('#data').on('changed.jstree', function (e, data) {
+  selected = true;
+  selectedNode = data.instance.get_path(data.node,'/');
 })
 
 $("#data").on('open_node.jstree', function (event, data) {
