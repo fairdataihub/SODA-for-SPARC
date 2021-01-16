@@ -177,6 +177,7 @@ button[disabled]{
     display: none;
     top: -210%;
     left: -210%;
+    position: absolute;
 }
 
 .menu.file li {

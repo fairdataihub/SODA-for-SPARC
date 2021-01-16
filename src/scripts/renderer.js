@@ -5907,17 +5907,13 @@ function showmenu(ev, category, deleted = false) {
         .html("<i class='fas fa-undo-alt'></i> Restore");
     } else {
       if ($(".selected-item").length > 2) {
-        $(menuHighLevelFolders)
-          .children("#folder-delete")
-          .html('<i class="fas fa-minus-circle"></i> Delete All');
+        $(menuHighLevelFolders).children("#folder-delete").hide();
         $(menuHighLevelFolders).children("#folder-rename").hide();
-        $(menuHighLevelFolders).children("#folder-description").hide();
+        $(menuHighLevelFolders).children("#tooltip-folders").show();
       } else {
-        $(menuHighLevelFolders)
-          .children("#folder-delete")
-          .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
-        $(menuHighLevelFolders).children("#folder-rename").show();
-        $(menuHighLevelFolders).children("#folder-description").show();
+        $(menuHighLevelFolders).children("#folder-delete").hide();
+        $(menuHighLevelFolders).children("#folder-rename").hide();
+        $(menuHighLevelFolders).children("#tooltip-folders").show();
       }
     }
     menuHighLevelFolders.style.display = "block";
@@ -6932,17 +6928,21 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 });
 
 
-document.getElementById('button-preview-dataset').addEventListener('click', function () {
+/* 
+document
+  .getElementById("button-preview-dataset")
+  .addEventListener("click", function () {
     client.invoke("api_preview_dataset", sodaJSONObj, (error, res) => {
-        if (error) {
-            var emessage = userError(error)
-            log.error(error)
-            console.error(error)
-        } else {
-            console.log(res)
-        }
-    })
-})
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+      } else {
+        console.log(res);
+      }
+    });
+  }); 
+*/
 
 var bf_request_and_populate_dataset = (sodaJSONObj) => {
   return new Promise((resolve, reject) => {
