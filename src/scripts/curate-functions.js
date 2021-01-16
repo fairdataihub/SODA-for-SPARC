@@ -743,17 +743,64 @@ async function moveItems(ev, category, location) {
 function moveItemsHelper(item, destination, category) {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  if ("action" in myPath[category][item]) {
-    myPath[category][item]["action"].push("moved");
-  } else {
-    myPath[category][item]["action"] = ["moved"]
-  }
-
-  // move to a new location, first we need a function to convert selectedNode to a JSON path
   var selectedNodeList = destination.split("/").slice(1);
   var destinationPath = getRecursivePath(selectedNodeList, datasetStructureJSONObj);
-  destinationPath[category][item] = myPath[category][item];
 
+  // handle duplicates in destination folder
+  if (category === "files") {
+    var uiFilesWithoutExtension = {};
+    if (JSON.stringify(destinationPath["files"]) !== "{}") {
+      for (var file in destinationPath["files"]) {
+        uiFilesWithoutExtension[path.parse(file).name] = 1
+      }
+    }
+    var fileBaseName = path.basename(item);
+    var originalFileNameWithoutExt = path.parse(fileBaseName).name;
+    var fileNameWithoutExt = originalFileNameWithoutExt;
+    var j = 1;
+    while (fileNameWithoutExt in uiFilesWithoutExtension) {
+      fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
+      j++;
+    }
+    if ("action" in myPath[category][item]) {
+      myPath[category][item]["action"].push("moved");
+      if (fileNameWithoutExt !== originalFileNameWithoutExt) {
+        myPath[category][item]["action"].push("renamed");
+      }
+    } else {
+      myPath[category][item]["action"] = ["moved"];
+      if (fileNameWithoutExt !== originalFileNameWithoutExt) {
+        myPath[category][item]["action"].push("renamed");
+        }
+      }
+    destinationPath[category][fileNameWithoutExt + path.parse(fileBaseName).ext] = myPath[category][item];
+    } else if (category === "folders") {
+      var uiFolders = {};
+      if (JSON.stringify(destinationPath["folders"]) !== "{}") {
+        for (var folder in destinationPath["folders"]) {
+          uiFolders[folder] = 1
+        }
+      }
+      var originalFolderName = path.basename(item);
+      var renamedFolderName = originalFolderName;
+      var j = 1;
+      while (renamedFolderName in uiFolders) {
+        renamedFolderName = `${originalFolderName} (${j})`;
+        j++;
+      }
+      if ("action" in myPath[category][item]) {
+        myPath[category][item]["action"].push("moved");
+        if (renamedFolderName !== originalFolderName) {
+          myPath[category][item]["action"].push("renamed");
+        }
+      } else {
+        myPath[category][item]["action"] = ["moved"];
+        if (renamedFolderName !== originalFolderName) {
+          myPath[category][item]["action"].push("renamed");
+          }
+        }
+      destinationPath[category][renamedFolderName] = myPath[category][item];
+    }
   //delete item from the original location
   delete myPath[category][item];
   listItems(myPath, '#items');
