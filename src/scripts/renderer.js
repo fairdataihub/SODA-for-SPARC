@@ -5897,6 +5897,9 @@ function showmenu(ev, category, deleted = false) {
         $(menuFolder)
           .children("#folder-delete")
           .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+        $(menuFolder)
+          .children("#folder-move")
+          .html('<i class="fas fa-external-link-alt"></i> Move');
         $(menuFolder).children("#folder-move").show();
         $(menuFolder).children("#folder-rename").show();
         $(menuFolder).children("#folder-description").show();
@@ -5947,7 +5950,9 @@ function showmenu(ev, category, deleted = false) {
         $(menuFile)
           .children("#file-delete")
           .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
-        $(menuFile).children("#file-move").show();
+        $(menuFile)
+          .children("#file-move")
+          .html('<i class="fas fa-external-link-alt"></i> Move');
         $(menuFile).children("#file-rename").show();
         $(menuFile).children("#file-description").show();
       }
@@ -5966,7 +5971,7 @@ function folderContextMenu(event) {
       } else if ($(this).attr('id') === "folder-delete") {
         delFolder(event, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
       } else if ($(this).attr('id') === "folder-move") {
-        moveItems(event, "folders", organizeDSglobalPath);
+        moveItems(event, "folders");
       }
      // Hide it AFTER the action was triggered
      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
@@ -6038,7 +6043,7 @@ function fileContextMenu(event) {
       } else if ($(this).attr('id') === "file-delete") {
         delFolder(event, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
       } else if ($(this).attr('id') === "file-move") {
-        moveItems(event, "files", organizeDSglobalPath);
+        moveItems(event, "files");
       } else if ($(this).attr('id') === "file-description") {
         manageDesc(event)
       }

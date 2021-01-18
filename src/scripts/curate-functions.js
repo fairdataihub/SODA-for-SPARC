@@ -604,7 +604,7 @@ $(document).ready(function() {
     "check_callback" : true,
     "data": {}
   },
-  "plugins": ["types"],
+  "plugins": ["types", "changed"],
   "types" : {
     'folder' : {
       'icon' : 'fas fa-folder-open fa-fw'
@@ -661,15 +661,19 @@ $(document).ready(function() {
 })
 })
 
-async function moveItems(ev, category, location) {
-
+async function moveItems(ev, category) {
+  var filtered = getGlobalPath(organizeDSglobalPath);
+  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+  var selectedOrginalLocation = filtered[filtered.length - 1];
   // reset previously selected items first
-  jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "");
+  jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, selectedOrginalLocation);
   // Note: somehow, html element "#data" was destroyed after closing the Swal popup.
   // Creating the element again after it was destroyed.
   if (!(jstreeInstance)) {
     $("#items").prepend('<div id="data"></div>');
     jstreeInstance = document.getElementById('data');
+  } else {
+    jstreeInstance.style.display = "block";
   }
   $(jstreeInstance).jstree(true).settings.core.data = jsTreeData;
   $(jstreeInstance).jstree(true).refresh();
