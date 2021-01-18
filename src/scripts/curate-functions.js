@@ -737,7 +737,6 @@ async function moveItems(ev, category) {
               allowEscapeKey: false,
               showConfirmButton: false
             });
-        }
         // action to move and delete here
         // multiple files/folders
         if ($("div.single-item.selected-item").toArray().length > 1) {
@@ -761,6 +760,7 @@ async function moveItems(ev, category) {
             itemType = "folders";
           }
           moveItemsHelper(itemToMove, selectedNode, itemType);
+        }
         }
       })
     }

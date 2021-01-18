@@ -6112,7 +6112,7 @@ $(document).bind("click", function (event) {
   let parent_element = null;
 
   // Assign target(folder/file) and parent elements
-  // 
+  //
   if (
     event.target.classList[0] === "myFile" ||
     event.target.classList[0] === "myFol"
