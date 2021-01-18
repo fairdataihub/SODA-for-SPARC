@@ -82,15 +82,17 @@ function showParentTab(tabNow, nextOrPrev) {
 
   if (tabNow == (x.length - 1)) {
     document.getElementById("nextBtn").style.display = "none";
-    $("#Question-preview-dataset-structure").show();
-    $("#Question-preview-dataset-structure").children().show();
+    $("#Question-preview-dataset-details").show();
+    $("#Question-preview-dataset-details").children().show();
+    $("#Question-generate-dataset-generate-div").show();
+    $("#Question-generate-dataset-generate-div").children().show();
     //$("#preview-dataset-structure-btn").show();
     fill_info_details();
   }
 }
 
 const fill_info_details = () => {
-  $("#div-preview-dataset-details").empty();
+  $(".card-container").remove()
   if (sodaJSONObj["starting-point"] === "bf")
   {
     add_card_detail("Current account", sodaJSONObj["bf-account-selected"]["account-name"]);
@@ -107,13 +109,13 @@ const fill_info_details = () => {
     {
       metadataFile_present = "None";
     }
-    add_card_detail("Metadata files", metadataFile_present);
+    //add_card_detail("Metadata files", metadataFile_present);
   }
   if (sodaJSONObj["starting-point"] === "local" || sodaJSONObj["starting-point"] === "new")
   {
     if ($('input[name="generate-1"]:checked')[0].id === "generate-local-existing")
     {
-      add_card_detail("Current dataset location", sodaJSONObj["local-path"]);
+      add_card_detail("Current dataset location", sodaJSONObj["local-path"], 1);
     }
     else if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop")
     {
@@ -121,8 +123,8 @@ const fill_info_details = () => {
       {
         add_card_detail("Original dataset location", sodaJSONObj["local-path"]);
       }
-      add_card_detail("New dataset location", $("#input-destination-generate-dataset-locally")[0].placeholder);
-      add_card_detail("New dataset name", $("#inputNewNameDataset").val().trim());
+      add_card_detail("New dataset location", $("#input-destination-generate-dataset-locally")[0].placeholder, 1);
+      add_card_detail("New dataset name", $("#inputNewNameDataset").val().trim(), 1);
     }
     else if ( $('input[name="generate-1"]:checked')[0].id === "generate-upload-BF")
     {
@@ -135,45 +137,45 @@ const fill_info_details = () => {
         $('input[name="generate-4"]:checked')[0].id ===
         "generate-BF-dataset-options-existing"
       ) {
-        add_card_detail("Dataset name", $('#current-bf-dataset-generate').text());
+        add_card_detail("Dataset name", $('#current-bf-dataset-generate').text(), 1);
         if (
           $('input[name="generate-5"]:checked')[0].id ===
           "existing-folders-duplicate"
         ) {
-          add_card_detail("For existing folders", "Create a duplicate");
+          add_card_detail("For existing folders", "Create a duplicate", 1);
         } else if (
           $('input[name="generate-5"]:checked')[0].id ===
           "existing-folders-replace"
         ) {
-          add_card_detail("For existing folders", "Replace");
+          add_card_detail("For existing folders", "Replace", 1);
         } else if (
           $('input[name="generate-5"]:checked')[0].id ===
           "existing-folders-merge"
         ) {
-          add_card_detail("For existing folders", "Merge");
+          add_card_detail("For existing folders", "Merge", 1);
         } else if (
           $('input[name="generate-5"]:checked')[0].id ===
           "existing-folders-skip"
         ) {
-          add_card_detail("For existing folders", "Skip");
+          add_card_detail("For existing folders", "Skip", 1);
         }
         if (
           $('input[name="generate-6"]:checked')[0].id ===
           "existing-files-duplicate"
         ) {
-          add_card_detail("For existing files", "Create duplicates");
+          add_card_detail("For existing files", "Create duplicates", 1);
         } else if (
           $('input[name="generate-6"]:checked')[0].id ===
           "existing-files-replace"
         ) {
-          add_card_detail("For existing files", "Replace");
+          add_card_detail("For existing files", "Replace", 1);
         } else if (
           $('input[name="generate-6"]:checked')[0].id === "existing-files-skip"
         ) {
-          add_card_detail("For existing files", "Skip");
+          add_card_detail("For existing files", "Skip", 1);
         }
       } else {
-        add_card_detail("New Dataset name ", $("#inputNewNameDataset").val().trim());
+        add_card_detail("New Dataset name ", $("#inputNewNameDataset").val().trim(), 1);
       }
     }
     metadataFile_present = ""
@@ -188,16 +190,34 @@ const fill_info_details = () => {
     {
       metadataFile_present = "None";
     }
-    add_card_detail("Metadata files", metadataFile_present);
+    //add_card_detail("Metadata files", metadataFile_present);
   }
 };
 
-const add_card_detail = (card_left, card_right) =>
-{
+const traverse_back = (amount) => {
+  for (i = 0; i < amount; i++) {
+    nextPrev(-1);
+  }
+};
+
+const add_card_detail = (card_left, card_right, parent_tab = -1) => {
+  let link_item =
+    "<i class='far fa-edit jump-back' onclick='traverse_back(";
+  link_item += parent_tab.toString();
+  link_item += ")'></i>";
   let parent_element = $("#div-preview-dataset-details");
-  let new_card_element = "<div class='card-container'><h5 class='card-left'>" + card_left + ":</h5><p class='card-right'>" + card_right + "</p></div>";
+  let new_card_element =
+    "<div class='card-container'><h5 class='card-left'>" +
+    card_left +
+    ":</h5><p class='card-right'>" +
+    card_right;
+  if (parent_tab === -1) {
+    new_card_element += "</p></div>";
+  } else {
+    new_card_element += link_item + "</p></div>";
+  }
   $(parent_element).append(new_card_element);
-}
+};
 
 
 // helper function to delete empty keys from objects
@@ -338,21 +358,11 @@ function nextPrev(n) {
       fixStepDone(4)
       $("#nextBtn").prop("disabled", true);
     }
-    // if bf existing, hide everything but the generate button, for now.
-    // $("#Question-generate-dataset").hide();
-    // $("#Question-generate-dataset").children().hide();
-    // $("#Question-generate-dataset-generate-div").show();
-    // $("#button-preview-dataset").hide();
-    // $("#button-generate").show();
-
-    //var target = document.getElementById('Question-generate-dataset-generate-div');
-    //$("#button-preview-dataset").css("display", "none");
-    //document.getElementById("generate-dataset-tab").appendChild(target);
     showParentTab(currentTab, n);
   }
   else if (x[currentTab].id === "manifest-file-tab" && (sodaJSONObj["starting-point"] === "new" || sodaJSONObj["starting-point"] === "local"))
   {
-    console.log("showing");
+    //console.log("showing");
     $(x[currentTab]).removeClass("tab-active");
     currentTab = currentTab + n;
     $("#Question-generate-dataset").show();
@@ -367,20 +377,11 @@ function nextPrev(n) {
     if (sodaJSONObj["starting-point"] === "local") {
       $("#generate-dataset-replace-existing").show();
       $("#generate-dataset-replace-existing").children().show();
-      $("#input-destination-generate-dataset-locally").attr("placeholder", "Browse here");
-      //$(document.querySelector("#generate-dataset-replace-existing > div")).click();
-      //$(document.querySelector("#Question-generate-dataset > div > div > div:nth-child(2) > div:nth-child(2) > div")).click();
-      //$(document.querySelector("#generate-dataset-replace-existing > div")).click();
+      //$("#input-destination-generate-dataset-locally").attr("placeholder", "Browse here");
     } else {
       $("#generate-dataset-replace-existing").hide();
       $("#generate-dataset-replace-existing").children().hide();
     }
-    //$("#button-preview-dataset").hide();
-    //$("#button-generate").hide();
-    //("#button-preview-dataset").show();
-    //$("#button-generate").show();
-    //$("#Question-generate-dataset-generate-div").removeClass('show');
-    //$("#Question-generate-dataset-generate-div").children().removeClass('show');
     $("#nextBtn").prop("disabled", true);
     showParentTab(currentTab, n);
   }
@@ -400,7 +401,6 @@ function nextPrev(n) {
       $("#div-getting-started-existing-local").click();
       $("#nextBtn").prop("disabled", true);
     }
-
 
     showParentTab(currentTab, n);
     console.log(JSON.stringify(sodaJSONObj));
@@ -481,7 +481,7 @@ function showSubTab(section, tab, input) {
 // function to check if certain high level folders already chosen and have files/sub-folders
 // then disable the option (users cannot un-choose)
 function highLevelFoldersDisableOptions() {
-  console.log(datasetStructureJSONObj);
+  //console.log(datasetStructureJSONObj);
   var highLevelFolderOptions = datasetStructureJSONObj["folders"];
   if (highLevelFolderOptions) {
     for (var folder of highLevelFolders) {
@@ -684,7 +684,7 @@ create_json_object = (sodaJSONObj) => {
   root_folder_path = $("#input-destination-generate-dataset-locally").attr('placeholder');
   sodaJSONObj["dataset-structure"] = { folders: {} };
   fs.readdirSync(root_folder_path).forEach((file) => {
-    console.log(file);
+    //console.log(file);
     full_current_path = path.join(root_folder_path, file);
     let stats = fs.statSync(full_current_path);
     if (stats.isDirectory()) {
@@ -754,9 +754,9 @@ verify_sparc_folder = (root_folder_path) => {
     "CHANGES",
   ];
   valid_dataset = false;
-  fs.readdirSync(root_folder_path).map(fileName => {
-    console.log( path.join(root_folder_path, fileName))
-  })
+  // fs.readdirSync(root_folder_path).map(fileName => {
+  //   //console.log( path.join(root_folder_path, fileName))
+  // })
   fs.readdirSync(root_folder_path).forEach((file) => {
     if (highLevelFolders.includes(file)) {
       valid_dataset = true;
@@ -806,6 +806,7 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
    ).text();
 
    $("body").addClass("waiting");
+   $("#bf-dataset-spinner").css("visibility", "visible");
    var res = await bf_request_and_populate_dataset(sodaJSONObj);
 
    if (res[0] == "error") {
@@ -818,14 +819,15 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
      return;
    } else {
      sodaJSONObj = res[0];
-     console.log(sodaJSONObj);
+     //console.log(sodaJSONObj);
      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-     console.log(datasetStructureJSONObj);
+     //console.log(datasetStructureJSONObj);
      populate_existing_folders(datasetStructureJSONObj);
      populate_existing_metadata(sodaJSONObj);
      $("#nextBtn").prop("disabled", false);
    }
    $("body").removeClass("waiting");
+   $("#bf-dataset-spinner").css("visibility", "hidden");
    $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
  }
 
@@ -933,7 +935,11 @@ var populate_existing_folders = (datasetStructureJSONObj) => {
 
 var populate_existing_metadata = (datasetStructureJSONObj) => {
   let metadataobject = datasetStructureJSONObj["metadata-files"];
-  console.log(datasetStructureJSONObj["metadata-files"])
+  //console.log(datasetStructureJSONObj["metadata-files"])
+  if (metadataobject == null || metadataobject == undefined )
+  {
+    return;
+  }
   for (var key of Object.keys(metadataobject)) {
     let file_name = require("path").parse(key).name;
     switch (file_name) {
@@ -1269,6 +1275,7 @@ function updateJSONStructureDSstructure() {
     JSON.stringify(sodaJSONObj["dataset-structure"]["folders"]) === "{}") {
     delete sodaJSONObj["dataset-structure"]
   }
+  //console.log(sodaJSONObj["dataset-structure"])
 }
 
 // Step 4: Metadata files
