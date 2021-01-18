@@ -1320,6 +1320,7 @@ function updateJSONStructureManifest() {
 // Step 6: Generate dataset
 // update JSON object after users finish Generate dataset step
 function updateJSONStructureGenerate() {
+
   //cj - add code here to update the json structure to account for the new stuff
   // answer to Question 1: where to generate: locally or BF
   if (sodaJSONObj["starting-point"] == "bf") {

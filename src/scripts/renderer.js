@@ -6568,8 +6568,10 @@ document
 
     progressBarNewCurate.value = 0;
 
-    console.log(sodaJSONObj);
+    // delete datasetStructureObject["files"] value that was added only for the Preview tree view
+    sodaJSONObj["dataset-structure"]["files"] = {};
 
+    console.log(sodaJSONObj);
     client.invoke(
       "api_check_empty_files_folders",
       sodaJSONObj,
@@ -6939,7 +6941,7 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 });
 
 
-/* 
+/*
 document
   .getElementById("button-preview-dataset")
   .addEventListener("click", function () {
@@ -6952,7 +6954,7 @@ document
         console.log(res);
       }
     });
-  }); 
+  });
 */
 
 var bf_request_and_populate_dataset = (sodaJSONObj) => {
