@@ -561,16 +561,38 @@ function showHideDropdownButtons(category, action) {
     }
 }
 
-function create_child_node(oldFormatNode, nodeName, type, ext) {
-  var newFormatNode = {"text": nodeName, "state": {"opened": true}, "children": [], "type": type + ext}
+function create_child_node(oldFormatNode, nodeName, type, ext, openedState, selectedState, selectedOriginalLocation, viewOptions) {
+  /*
+  oldFormatNode: node in the format under "dataset-structure" key in SODA object
+  nodeName: text to show for each node (name)
+  type: "folder" or "file"
+  ext: track ext of files to match with the right CSS icons
+  openedState, selectedState: states of a jstree node
+  selectedOrginalLocation: current folder of selected items
+  viewOptions: preview or moveItems
+  */
+  var newFormatNode = {"text": nodeName, "state": {"opened": openedState, "selected": selectedState}, "children": [], "type": type + ext}
+  if (viewOptions === "moveItems") {
+    // var newFormatNode = {"text": nodeName, "state": {"opened": openedState, "selected": selectedState}, "children": [], "type": type + ext}
+  } else {
+    selectedOriginalLocation = "";
+  }
   for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
     if ('action' in oldFormatNode["folders"][key]) {
       if (!(oldFormatNode["folders"][key]["action"].includes("deleted"))) {
-        var new_node = create_child_node(value, key, "folder", "");
+        if (key === selectedOriginalLocation) {
+          var new_node = create_child_node(value, key, "folder", "", true, true, selectedOriginalLocation, viewOptions);
+        } else {
+          var new_node = create_child_node(value, key, "folder", "", false, false, selectedOriginalLocation, viewOptions);
+        }
         newFormatNode["children"].push(new_node);
       }
     } else {
-      var new_node = create_child_node(value, key, "folder", "");
+      if (key === selectedOriginalLocation) {
+        var new_node = create_child_node(value, key, "folder", "", true, true, selectedOriginalLocation, viewOptions);
+      } else {
+        var new_node = create_child_node(value, key, "folder", "", false, false, selectedOriginalLocation, viewOptions);
+      }
       newFormatNode["children"].push(new_node);
     }
   }
@@ -596,7 +618,7 @@ function create_child_node(oldFormatNode, nodeName, type, ext) {
 
 var selected = false;
 var selectedNode;
-var jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "");
+var jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, "", "moveItems");
 var jstreeInstance = document.getElementById('data');
 $(document).ready(function() {
   $('#data').jstree({
@@ -666,7 +688,7 @@ async function moveItems(ev, category) {
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedOrginalLocation = filtered[filtered.length - 1];
   // reset previously selected items first
-  jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, selectedOrginalLocation);
+  jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, selectedOrginalLocation, "moveItems");
   // Note: somehow, html element "#data" was destroyed after closing the Swal popup.
   // Creating the element again after it was destroyed.
   if (!(jstreeInstance)) {
@@ -813,13 +835,83 @@ function moveItemsHelper(item, destination, category) {
 $(jstreeInstance).on('changed.jstree', function (e, data) {
   selected = true;
   if (data.node) {
+    var selected = data.changed.selected
     selectedNode = data.instance.get_path(data.node,'/');
+    var parentNode = $(jstreeInstance).jstree('get_selected');
+    // alert(parentNode);
   }
 })
-
 $(jstreeInstance).on('open_node.jstree', function (event, data) {
     data.instance.set_type(data.node,'folder open');
 });
 $(jstreeInstance).on('close_node.jstree', function (event, data) {
     data.instance.set_type(data.node,'folder closed');
 });
+
+function showTreeViewPreview(datasetStructureObject) {
+  datasetStructureObject["files"] = sodaJSONObj["metadata-files"];
+  jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, "", "preview");
+  var jstreePreview = document.getElementById('div-dataset-tree-preview');
+  $(document).ready(function() {
+    $(jstreePreview).jstree({
+    "core" : {
+      "check_callback" : true,
+      "data": jsTreeData
+    },
+    "plugins": ["types", "changed"],
+    "types" : {
+      'folder' : {
+        'icon' : 'fas fa-folder-open fa-fw'
+      },
+      'folder closed' : {
+        'icon' : 'fas fa-folder fa-fw'
+      },
+      'file xlsx': {
+        'icon' : './assets/img/excel-file.png'
+      },
+      'file xls': {
+        'icon' : './assets/img/excel-file.png'
+      },
+      'file png': {
+        'icon' : './assets/img/png-file.png'
+      },
+      'file PNG': {
+        'icon' : './assets/img/png-file.png'
+      },
+      'file pdf': {
+        'icon' : './assets/img/pdf-file.png'
+      },
+      'file txt': {
+        'icon' : './assets/img/txt-file.png'
+      },
+      'file csv': {
+        'icon' : './assets/img/csv-file.png'
+      },
+      'file CSV': {
+        'icon' : './assets/img/csv-file.png'
+      },
+      'file DOC': {
+        'icon' : './assets/img/doc-file.png'
+      },
+      'file DOCX': {
+        'icon' : './assets/img/doc-file.png'
+      },
+      'file docx': {
+        'icon' : './assets/img/doc-file.png'
+      },
+      'file doc': {
+        'icon' : './assets/img/doc-file.png'
+      },
+      'file jpeg': {
+        'icon' : './assets/img/jpeg-file.png'
+      },
+      'file JPEG': {
+        'icon' : './assets/img/jpeg-file.png'
+      },
+      'file other': {
+        'icon' : './assets/img/other-file.png'
+      }
+    }
+  })
+  })
+}

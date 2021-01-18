@@ -82,6 +82,7 @@ function showParentTab(tabNow, nextOrPrev) {
 
   if (tabNow == (x.length - 1)) {
     document.getElementById("nextBtn").style.display = "none";
+    showTreeViewPreview(datasetStructureJSONObj);
     $("#Question-preview-dataset-details").show();
     $("#Question-preview-dataset-details").children().show();
     $("#Question-generate-dataset-generate-div").show();
