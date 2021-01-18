@@ -31,7 +31,8 @@ function delFolder(
     promptVar = "folder";
     type = "folders";
   }
-
+  
+  // selected-item class will always be in multiples of two
   if ($(".selected-item").length > 2) {
     type = "items";
   }
@@ -48,6 +49,7 @@ function delFolder(
       });
       return;
     }
+    // Handle file/folder restore
     bootbox.confirm({
       title: "Restore " + promptVar,
       message:
@@ -74,11 +76,34 @@ function delFolder(
             0,
             itemToRestore.lastIndexOf("-")
           );
-          // Add a (1) if the file name already exists
+
+          // Add a (somenumber) if the file name already exists
+          // Done using a loop to avoid a case where the same file number exists
           if (itemToRestore_new_key in myPath[type]) {
             myPath[type][itemToRestore]["action"].push("renamed");
-            itemToRestore_new_key = itemToRestore_new_key + "(1)";
+            itemToRestore_new_key_file_name = path.parse(itemToRestore_new_key)
+              .name;
+            itemToRestore_new_key_file_ext = path.parse(itemToRestore_new_key)
+              .ext;
+            file_number = 1;
+            while (true) {
+              itemToRestore_potential_new_key =
+                itemToRestore_new_key_file_name +
+                " (" +
+                file_number +
+                ")" +
+                itemToRestore_new_key_file_ext;
+              if (
+                !myPath[type].hasOwnProperty(itemToRestore_potential_new_key)
+              ) {
+                itemToRestore_new_key = itemToRestore_potential_new_key;
+                break;
+              }
+              file_number++;
+            }
           }
+
+          // Add the restored item with the new file name back into the object. 
           myPath[type][itemToRestore_new_key] = myPath[type][itemToRestore];
           delete myPath[type][itemToRestore];
 
@@ -190,40 +215,64 @@ function delFolder(
 }
 
 // helper function to rename files/folders
-function checkValidRenameInput(event, input, type, oldName, newName, itemElement, myBootboxDialog) {
+function checkValidRenameInput(
+  event,
+  input,
+  type,
+  oldName,
+  newName,
+  itemElement,
+  myBootboxDialog
+) {
   var duplicate = false;
   // if renaming a file
-  if (type==="files") {
-    newName = input.trim() + path.parse(oldName).ext
+  if (type === "files") {
+    newName = input.trim() + path.parse(oldName).ext;
     // check for duplicate or files with the same name
-    for (var i=0;i<itemElement.length;i++) {
-      if (path.parse(newName).name === path.parse(itemElement[i].innerText).name) {
-        duplicate = true
-        break
+    for (var i = 0; i < itemElement.length; i++) {
+      if (!itemElement[i].innerText.includes("-DELETED")){
+        if (
+          path.parse(newName).name === path.parse(itemElement[i].innerText).name
+        ) {
+          duplicate = true;
+          break;
+        }
       }
     }
     if (duplicate) {
-      $(myBootboxDialog).find(".modal-footer span").text("")
-      myBootboxDialog.find(".modal-footer").prepend("<span style='color:red;padding-right:10px;display:inline-block;'>The file name: "+newName+" already exists, please rename to a different name!</span>");
+      $(myBootboxDialog).find(".modal-footer span").text("");
+      myBootboxDialog
+        .find(".modal-footer")
+        .prepend(
+          "<span style='color:red;padding-right:10px;display:inline-block;'>The file name: " +
+            newName +
+            " already exists, please rename to a different name!</span>"
+        );
       newName = "";
     }
-  //// if renaming a folder
+    //// if renaming a folder
   } else {
-      newName = input.trim()
-      // check for duplicate folder as shown in the UI
-      for (var i=0;i<itemElement.length;i++) {
-        if (input.trim() === itemElement[i].innerText) {
-          duplicate = true
-          break
-        }
+    newName = input.trim();
+    // check for duplicate folder as shown in the UI
+    for (var i = 0; i < itemElement.length; i++) {
+      if (input.trim() === itemElement[i].innerText) {
+        duplicate = true;
+        break;
       }
-      if (duplicate) {
-        $(myBootboxDialog).find(".modal-footer span").text("")
-        myBootboxDialog.find(".modal-footer").prepend("<span style='color:red;padding-right:10px;display:inline-block;'>The folder name: "+input.trim()+" already exists, please rename to a different name!</span>");
-        newName = "";
-      }
+    }
+    if (duplicate) {
+      $(myBootboxDialog).find(".modal-footer span").text("");
+      myBootboxDialog
+        .find(".modal-footer")
+        .prepend(
+          "<span style='color:red;padding-right:10px;display:inline-block;'>The folder name: " +
+            input.trim() +
+            " already exists, please rename to a different name!</span>"
+        );
+      newName = "";
+    }
   }
-  return newName
+  return newName;
 }
 
 ///// Option to rename a folder and files

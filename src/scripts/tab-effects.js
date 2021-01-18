@@ -115,7 +115,7 @@ const fill_info_details = () => {
   {
     if ($('input[name="generate-1"]:checked')[0].id === "generate-local-existing")
     {
-      add_card_detail("Current dataset location", sodaJSONObj["local-path"]);
+      add_card_detail("Current dataset location", sodaJSONObj["local-path"], 1);
     }
     else if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop")
     {
@@ -362,7 +362,7 @@ function nextPrev(n) {
   }
   else if (x[currentTab].id === "manifest-file-tab" && (sodaJSONObj["starting-point"] === "new" || sodaJSONObj["starting-point"] === "local"))
   {
-    console.log("showing");
+    //console.log("showing");
     $(x[currentTab]).removeClass("tab-active");
     currentTab = currentTab + n;
     $("#Question-generate-dataset").show();
@@ -377,7 +377,7 @@ function nextPrev(n) {
     if (sodaJSONObj["starting-point"] === "local") {
       $("#generate-dataset-replace-existing").show();
       $("#generate-dataset-replace-existing").children().show();
-      $("#input-destination-generate-dataset-locally").attr("placeholder", "Browse here");
+      //$("#input-destination-generate-dataset-locally").attr("placeholder", "Browse here");
     } else {
       $("#generate-dataset-replace-existing").hide();
       $("#generate-dataset-replace-existing").children().hide();
@@ -402,7 +402,6 @@ function nextPrev(n) {
       $("#nextBtn").prop("disabled", true);
     }
 
-    
     showParentTab(currentTab, n);
     console.log(JSON.stringify(sodaJSONObj));
   }
@@ -482,7 +481,7 @@ function showSubTab(section, tab, input) {
 // function to check if certain high level folders already chosen and have files/sub-folders
 // then disable the option (users cannot un-choose)
 function highLevelFoldersDisableOptions() {
-  console.log(datasetStructureJSONObj);
+  //console.log(datasetStructureJSONObj);
   var highLevelFolderOptions = datasetStructureJSONObj["folders"];
   if (highLevelFolderOptions) {
     for (var folder of highLevelFolders) {
@@ -685,7 +684,7 @@ create_json_object = (sodaJSONObj) => {
   root_folder_path = $("#input-destination-generate-dataset-locally").attr('placeholder');
   sodaJSONObj["dataset-structure"] = { folders: {} };
   fs.readdirSync(root_folder_path).forEach((file) => {
-    console.log(file);
+    //console.log(file);
     full_current_path = path.join(root_folder_path, file);
     let stats = fs.statSync(full_current_path);
     if (stats.isDirectory()) {
@@ -755,9 +754,9 @@ verify_sparc_folder = (root_folder_path) => {
     "CHANGES",
   ];
   valid_dataset = false;
-  fs.readdirSync(root_folder_path).map(fileName => {
-    console.log( path.join(root_folder_path, fileName))
-  })
+  // fs.readdirSync(root_folder_path).map(fileName => {
+  //   //console.log( path.join(root_folder_path, fileName))
+  // })
   fs.readdirSync(root_folder_path).forEach((file) => {
     if (highLevelFolders.includes(file)) {
       valid_dataset = true;
@@ -820,9 +819,9 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
      return;
    } else {
      sodaJSONObj = res[0];
-     console.log(sodaJSONObj);
+     //console.log(sodaJSONObj);
      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-     console.log(datasetStructureJSONObj);
+     //console.log(datasetStructureJSONObj);
      populate_existing_folders(datasetStructureJSONObj);
      populate_existing_metadata(sodaJSONObj);
      $("#nextBtn").prop("disabled", false);
@@ -936,7 +935,7 @@ var populate_existing_folders = (datasetStructureJSONObj) => {
 
 var populate_existing_metadata = (datasetStructureJSONObj) => {
   let metadataobject = datasetStructureJSONObj["metadata-files"];
-  console.log(datasetStructureJSONObj["metadata-files"])
+  //console.log(datasetStructureJSONObj["metadata-files"])
   if (metadataobject == null || metadataobject == undefined )
   {
     return;
@@ -1276,7 +1275,7 @@ function updateJSONStructureDSstructure() {
     JSON.stringify(sodaJSONObj["dataset-structure"]["folders"]) === "{}") {
     delete sodaJSONObj["dataset-structure"]
   }
-  console.log(sodaJSONObj["dataset-structure"])
+  //console.log(sodaJSONObj["dataset-structure"])
 }
 
 // Step 4: Metadata files

@@ -267,7 +267,7 @@
                   </div>
                   <div style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
                     <button id="button-confirm-bf-dataset-getting-started" onclick="transitionSubQuestionsButton(this, 'Question-getting-started-BF-dataset', 'getting-started-tab', 'delete', 'individual-question getting-started')" data-next="Question-getting-started-final" style="display:none;cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
-                    <div id="bf-dataset-spinner" class="spinner" style="visibility:hidden;">
+                    <div id="bf-dataset-spinner" class="spinner" style="visibility:hidden;position: absolute;right:10px">
                       <div class="rect1"></div>
                       <div class="rect2"></div>
                       <div class="rect3"></div>
@@ -1276,7 +1276,7 @@
               <div style="margin-bottom: 10px;" id="div-dataset-preview">
                 <h4 style="width:100%;text-align:center;color:#000;">Current dataset structure <i class="far fa-edit jump-back" onclick="traverse_back(4)"></i></h4>
                 <br>
-                <div>
+                <div id="div-dataset-tree-preview">
                   js tree here.
                 </div>
               </div>

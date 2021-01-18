@@ -949,6 +949,7 @@
   margin-left: 15px;
   cursor: pointer;
   right: 10px;
+  position: absolute;
 }
 
 @-webkit-keyframes jump-back {

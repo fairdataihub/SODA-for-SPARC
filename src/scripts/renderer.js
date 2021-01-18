@@ -5883,6 +5883,8 @@ function showmenu(ev, category, deleted = false) {
       $(menuFolder)
         .children("#folder-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
+        $(menuFolder).children("#folder-rename").hide();
+        $(menuFolder).children("#folder-description").hide();
     } else {
       if ($(".selected-item").length > 2) {
         $(menuFolder)
@@ -5905,6 +5907,8 @@ function showmenu(ev, category, deleted = false) {
       $(menuHighLevelFolders)
         .children("#folder-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
+        $(menuHighLevelFolders).children("#folder-rename").hide();
+        $(menuHighLevelFolders).children("#tooltip-folders").show();
     } else {
       if ($(".selected-item").length > 2) {
         $(menuHighLevelFolders).children("#folder-delete").hide();
@@ -5925,6 +5929,8 @@ function showmenu(ev, category, deleted = false) {
       $(menuFile)
         .children("#file-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
+        $(menuFile).children("#file-rename").hide();
+        $(menuFile).children("#file-description").hide();
     } else {
       if ($(".selected-item").length > 2) {
         $(menuFile)
@@ -5983,36 +5989,6 @@ function folderContextMenu(event) {
 }
 
 //////// options for files
-function file_click(event) {
-  if ($(".div-display-details.file").hasClass('show')) {
-    $(".div-display-details.file").removeClass('show')
-  }
-  if (event.ctrlKey){
-    //file_click
-    console.log("ctrl file click")
-  }
-  else
-  {
-    console.log("file click")
-  }
-  /*
-  $(".menu.file li").unbind().click(function(){
-    if ($(this).attr('id') === "file-rename") {
-        var itemDivElements = document.getElementById("items").children
-        renameFolder(event, organizeDSglobalPath, itemDivElements, datasetStructureJSONObj, '#items', '.single-item')
-      } else if ($(this).attr('id') === "file-delete") {
-        delFolder(event, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
-      } else if ($(this).attr('id') === "file-description") {
-        manageDesc(event)
-      }
-     // Hide it AFTER the action was triggered
-     hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
- });
- hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
- */
-}
-
-//////// options for files
 function fileContextMenu(event) {
   if ($(".div-display-details.file").hasClass('show')) {
     $(".div-display-details.file").removeClass('show')
@@ -6037,10 +6013,16 @@ $(document).bind("contextmenu", function (event) {
   // Avoid the real one
   event.preventDefault();
 
-  // Check for multiple selected files
-  if (!$(event.target).hasClass('selected-item'))
-  {
-    $('.selected-item').removeClass('selected-item');
+  // Right click behaviour for multiple files (Linux os behaviour)
+  // ** if right click with ctrl -> include file in selection
+  // ** if right click without ctrl -> remove selection from other files
+  if (!$(event.target).hasClass("selected-item")) {
+    if (event.ctrlKey) {
+      $(event.target).addClass("selected-item");
+      $(event.target).parent().addClass("selected-item");
+    } else {
+      $(".selected-item").removeClass("selected-item");
+    }
   }
 
   /// check for high level folders
@@ -6054,6 +6036,7 @@ $(document).bind("contextmenu", function (event) {
   }
   // Show the rightcontextmenu for each clicked
   // category (high-level folders, regular sub-folders, and files)
+  // The third parameter in show menu is used to show the restore option
   if (event.target.classList[0] === "myFol") {
     if (highLevelFolderBool) {
       if (event.target.classList.contains("deleted_folder")) {
@@ -6089,23 +6072,26 @@ $(document).bind("contextmenu", function (event) {
 });
 
 $(document).bind("click", function (event) {
-  if (
-    event.target.classList[0] !== "myFol" &&
-    event.target.classList[0] !== "myFile"
-  ) {
-    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
-    hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
-    // hideFullPath()
-    hideFullName();
-  }
+  // If there is weird right click menu behaviour, check the hideMenu block
+  // 
+  hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+  hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+  hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
+  // hideFullPath()
+  hideFullName();
+
+  // Handle clearing selection when clicked outside.
+  // Currntly only handles clicks inside the folder holder area
   if (event.target.classList[0] === "div-organize-items") {
     $(".selected-item").removeClass("selected-item");
   }
-  let selected_class = null;
+
+  let selected_class = "";
   let target_element = null;
   let parent_element = null;
 
+  // Assign target(folder/file) and parent elements
+  // 
   if (
     event.target.classList[0] === "myFile" ||
     event.target.classList[0] === "myFol"
@@ -6124,6 +6110,8 @@ $(document).bind("click", function (event) {
     }
   }
 
+  // Add selected-item class to the elements.
+  // Handle ctrl selection - Follows linux native os behaviour
   if (selected_class != "") {
     if (event.ctrlKey) {
       if ($(target_element).hasClass(selected_class)) {
@@ -6459,6 +6447,7 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
         if (valid_dataset == true)
         {
           $("#nextBtn").prop("disabled", false);
+          $("#input-destination-generate-dataset-locally").attr("placeholder", "Browse here");
           $("#nextBtn").click();
         }
         else
@@ -6479,6 +6468,7 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
             callback: function (result) {
               if (result) {
                 $("#nextBtn").prop("disabled", false);
+                $("#input-destination-generate-dataset-locally").attr("placeholder", "Browse here");
                 $("#nextBtn").click();
               } else {
                 document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
