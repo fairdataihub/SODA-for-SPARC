@@ -850,15 +850,15 @@ $(jstreeInstance).on('close_node.jstree', function (event, data) {
 
 function showTreeViewPreview(datasetStructureObject) {
   datasetStructureObject["files"] = sodaJSONObj["metadata-files"];
-  jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, "", "preview");
+  var jsTreePreviewData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, "", "preview");
   var jstreePreview = document.getElementById('div-dataset-tree-preview');
   $(document).ready(function() {
     $(jstreePreview).jstree({
     "core" : {
       "check_callback" : true,
-      "data": jsTreeData
+      "data": jsTreePreviewData
     },
-    "plugins": ["types", "changed"],
+    "plugins": ["types"],
     "types" : {
       'folder' : {
         'icon' : 'fas fa-folder-open fa-fw'
