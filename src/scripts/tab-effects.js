@@ -22,21 +22,21 @@ function showParentTab(tabNow, nextOrPrev) {
 
   // This function will display the specified tab of the form ...
   var x = document.getElementsByClassName("parent-tabs");
-  fixStepIndicator(tabNow)
+  fixStepIndicator(tabNow);
   if (tabNow === 0) {
-    fixStepDone(tabNow)
+    fixStepDone(tabNow);
   } else {
-    fixStepDone(tabNow - 1)
+    fixStepDone(tabNow - 1);
   }
 
-  $(x[tabNow]).addClass('tab-active');
+  $(x[tabNow]).addClass("tab-active");
 
   var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6].filter(function (element) {
     return ![tabNow].includes(element);
   });
 
   for (var i of inActiveTabArray) {
-    $(x[i]).removeClass('tab-active');
+    $(x[i]).removeClass("tab-active");
   }
 
   document.getElementById("nextBtn").style.display = "inline";
@@ -54,13 +54,12 @@ function showParentTab(tabNow, nextOrPrev) {
     } else if ($('input[name="getting-started-1"]:checked').length === 0) {
       document.getElementById("nextBtn").disabled = true;
     }
-  } else if (tabNow == 1){
+  } else if (tabNow == 1) {
     checkHighLevelFoldersInput();
     highLevelFoldersDisableOptions();
-  }else if (tabNow == 5){
+  } else if (tabNow == 5) {
     //document.getElementById("nextBtn").disabled = true;
-  }
-  else {
+  } else {
     document.getElementById("nextBtn").disabled = false;
   }
 
@@ -80,7 +79,7 @@ function showParentTab(tabNow, nextOrPrev) {
     }
   }
 
-  if (tabNow == (x.length - 1)) {
+  if (tabNow == x.length - 1) {
     document.getElementById("nextBtn").style.display = "none";
     $("#Question-preview-dataset-details").show();
     $("#Question-preview-dataset-details").children().show();
@@ -201,8 +200,7 @@ const traverse_back = (amount) => {
 };
 
 const add_card_detail = (card_left, card_right, parent_tab = -1) => {
-  let link_item =
-    "<i class='far fa-edit jump-back' onclick='traverse_back(";
+  let link_item = "<i class='far fa-edit jump-back' onclick='traverse_back(";
   link_item += parent_tab.toString();
   link_item += ")'></i>";
   let parent_element = $("#div-preview-dataset-details");
@@ -223,7 +221,12 @@ const add_card_detail = (card_left, card_right, parent_tab = -1) => {
 // helper function to delete empty keys from objects
 function deleteEmptyKeysFromObject(object) {
   for (var key in object) {
-    if (object[key] === null || object[key] === undefined || object[key] === "" || JSON.stringify(object[key]) === "{}") {
+    if (
+      object[key] === null ||
+      object[key] === undefined ||
+      object[key] === "" ||
+      JSON.stringify(object[key]) === "{}"
+    ) {
       delete object[key];
     }
   }
@@ -232,18 +235,20 @@ function deleteEmptyKeysFromObject(object) {
 
 function checkHighLevelFoldersInput() {
   document.getElementById("nextBtn").disabled = true;
-  var optionCards = document.getElementsByClassName("option-card high-level-folders");
+  var optionCards = document.getElementsByClassName(
+    "option-card high-level-folders"
+  );
   var checked = false;
   for (var card of optionCards) {
-    if ($(card).hasClass('checked')) {
+    if ($(card).hasClass("checked")) {
       checked = true;
-      break
+      break;
     }
   }
   if (checked) {
     document.getElementById("nextBtn").disabled = false;
   }
-  return checked
+  return checked;
 }
 
 // function associated with the Back/Continue buttons
@@ -336,32 +341,35 @@ function nextPrev(n) {
       // Display the correct tab:
       showParentTab(currentTab, n);
     }
-  }else if (x[currentTab].id === "preview-dataset-tab" && sodaJSONObj["starting-point"] == "bf")
-  {
+  } else if (
+    x[currentTab].id === "preview-dataset-tab" &&
+    sodaJSONObj["starting-point"] == "bf"
+  ) {
     $(x[currentTab]).removeClass("tab-active");
     currentTab = currentTab - 2;
     showParentTab(currentTab, n);
     $("#nextBtn").prop("disabled", false);
-  } else if (x[currentTab].id === "manifest-file-tab" && sodaJSONObj["starting-point"] == "bf")
-  {
+  } else if (
+    x[currentTab].id === "manifest-file-tab" &&
+    sodaJSONObj["starting-point"] == "bf"
+  ) {
     // cj -skip step 6
     console.log("hiding");
     $(x[currentTab]).removeClass("tab-active");
-    if (n == -1)
-    {
+    if (n == -1) {
       currentTab = currentTab + n;
       $("#nextBtn").prop("disabled", false);
-    }
-    else
-    {
-      currentTab = currentTab + 2
-      fixStepDone(4)
+    } else {
+      currentTab = currentTab + 2;
+      fixStepDone(4);
       $("#nextBtn").prop("disabled", true);
     }
     showParentTab(currentTab, n);
-  }
-  else if (x[currentTab].id === "manifest-file-tab" && (sodaJSONObj["starting-point"] === "new" || sodaJSONObj["starting-point"] === "local"))
-  {
+  } else if (
+    x[currentTab].id === "manifest-file-tab" &&
+    (sodaJSONObj["starting-point"] === "new" ||
+      sodaJSONObj["starting-point"] === "local")
+  ) {
     //console.log("showing");
     $(x[currentTab]).removeClass("tab-active");
     currentTab = currentTab + n;
@@ -370,8 +378,12 @@ function nextPrev(n) {
     $("#Question-generate-dataset-generate-div").hide();
     $("#Question-generate-dataset-generate-div").children().hide();
 
-    let dataset_location = document.querySelector("#Question-generate-dataset-locally-destination > div > div.grouped.fields > label");
-    $(dataset_location).text("At which location should we generate the dataset??");
+    let dataset_location = document.querySelector(
+      "#Question-generate-dataset-locally-destination > div > div.grouped.fields > label"
+    );
+    $(dataset_location).text(
+      "At which location should we generate the dataset??"
+    );
 
     // Show/or hide the replace existing button
     if (sodaJSONObj["starting-point"] === "local") {
@@ -384,8 +396,7 @@ function nextPrev(n) {
     }
     $("#nextBtn").prop("disabled", true);
     showParentTab(currentTab, n);
-  }
-  else {
+  } else {
     // Hide the current tab:
     $(x[currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
@@ -395,8 +406,11 @@ function nextPrev(n) {
       highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
-    if (n === -1 && currentTab === 0 && sodaJSONObj["starting-point"] === "local")
-    {
+    if (
+      n === -1 &&
+      currentTab === 0 &&
+      sodaJSONObj["starting-point"] === "local"
+    ) {
       $("#div-getting-started-previous-progress").click();
       $("#div-getting-started-existing-local").click();
       $("#nextBtn").prop("disabled", true);

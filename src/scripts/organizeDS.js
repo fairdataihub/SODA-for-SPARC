@@ -5,11 +5,11 @@ function showTooltips(ev) {
     message: highLevelFolderToolTip[folderName],
     button: {
       ok: {
-        className: 'btn-primary'
-      }
+        className: "btn-primary",
+      },
     },
-    centerVertical: true
-  })
+    centerVertical: true,
+  });
 }
 
 ///////// Option to delete folders or files
@@ -31,21 +31,21 @@ function delFolder(
     promptVar = "folder";
     type = "folders";
   }
-  
+
   // selected-item class will always be in multiples of two
   if ($(".selected-item").length > 2) {
     type = "items";
   }
 
   if (ev.classList.value.includes("deleted")) {
-    if (ev.classList.value.includes("selected-item") && type === "items")
-    {
+    if (ev.classList.value.includes("selected-item") && type === "items") {
       bootbox.alert({
         title: "Restore " + type,
-        message: "You can only restore one file at a time. Please select a single file for restoration.",
+        message:
+          "You can only restore one file at a time. Please select a single file for restoration.",
         onEscape: true,
         centerVertical: true,
-        backdrop: true
+        backdrop: true,
       });
       return;
     }
@@ -103,7 +103,7 @@ function delFolder(
             }
           }
 
-          // Add the restored item with the new file name back into the object. 
+          // Add the restored item with the new file name back into the object.
           myPath[type][itemToRestore_new_key] = myPath[type][itemToRestore];
           delete myPath[type][itemToRestore];
 
@@ -230,7 +230,7 @@ function checkValidRenameInput(
     newName = input.trim() + path.parse(oldName).ext;
     // check for duplicate or files with the same name
     for (var i = 0; i < itemElement.length; i++) {
-      if (!itemElement[i].innerText.includes("-DELETED")){
+      if (!itemElement[i].innerText.includes("-DELETED")) {
         if (
           path.parse(newName).name === path.parse(itemElement[i].innerText).name
         ) {
@@ -392,141 +392,206 @@ function getGlobalPath(path) {
 }
 
 function loadFileFolder(myPath) {
-
-  var appendString = ""
-  var sortedObj = sortObjByKeys(myPath)
+  var appendString = "";
+  var sortedObj = sortObjByKeys(myPath);
 
   for (var item in sortedObj["folders"]) {
     var emptyFolder = "";
-    if (! highLevelFolders.includes(item)) {
+    if (!highLevelFolders.includes(item)) {
       if (
         JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
         JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
-    ) {
+      ) {
         emptyFolder = " empty";
       }
     }
-    appendString = appendString + '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol'+emptyFolder+'"></h1><div class="folder_desc">'+item+'</div></div>'
+    appendString =
+      appendString +
+      '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+      emptyFolder +
+      '"></h1><div class="folder_desc">' +
+      item +
+      "</div></div>";
   }
   for (var item in sortedObj["files"]) {
     // not the auto-generated manifest
     if (sortedObj["files"][item].length !== 1) {
-      var extension = sliceStringByValue(sortedObj["files"][item]["path"],  ".")
-      if (!["docx", "doc", "pdf", "txt", "jpg", "JPG", "xlsx", "xls", "csv", "png", "PNG"].includes(extension)) {
-        extension = "other"
+      var extension = sliceStringByValue(sortedObj["files"][item]["path"], ".");
+      if (
+        ![
+          "docx",
+          "doc",
+          "pdf",
+          "txt",
+          "jpg",
+          "JPG",
+          "xlsx",
+          "xls",
+          "csv",
+          "png",
+          "PNG",
+        ].includes(extension)
+      ) {
+        extension = "other";
       }
     } else {
-      extension = "other"
+      extension = "other";
     }
-    appendString = appendString + '<div class="single-item"><h1 class="myFile '+extension+'" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">'+item+'</div></div>'
+    appendString =
+      appendString +
+      '<div class="single-item"><h1 class="myFile ' +
+      extension +
+      '" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc">' +
+      item +
+      "</div></div>";
   }
 
-  return appendString
+  return appendString;
 }
 
 function getRecursivePath(filteredList, inputObj) {
   var myPath = inputObj;
   for (var item of filteredList) {
-    if (item.trim()!=="") {
-      myPath = myPath["folders"][item]
+    if (item.trim() !== "") {
+      myPath = myPath["folders"][item];
     }
   }
-  return myPath
+  return myPath;
 }
 
 /// check if an array contains another array
 function checkSubArrayBool(parentArray, childArray) {
-  var bool = true
+  var bool = true;
   for (var element of childArray) {
     if (!parentArray.includes(element)) {
-      bool = false
-      break
+      bool = false;
+      break;
     }
   }
-  return bool
+  return bool;
 }
 
 function showItemsAsListBootbox(arrayOfItems) {
   var htmlElement = "";
   for (var element of arrayOfItems) {
-    htmlElement = htmlElement + "<li>" + element + "</li>"
+    htmlElement = htmlElement + "<li>" + element + "</li>";
   }
-  return htmlElement
+  return htmlElement;
 }
 
-function addFilesfunction(fileArray, currentLocation, organizeCurrentLocation, uiItem, singleUIItem, globalPathValue) {
-
+function addFilesfunction(
+  fileArray,
+  currentLocation,
+  organizeCurrentLocation,
+  uiItem,
+  singleUIItem,
+  globalPathValue
+) {
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
   var regularFiles = {};
   var uiFilesWithoutExtension = {};
 
   for (var file in currentLocation["files"]) {
-    uiFilesWithoutExtension[path.parse(file).name] = 1
+    uiFilesWithoutExtension[path.parse(file).name] = 1;
   }
 
-  for (var i=0; i<fileArray.length;i++) {
+  for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
     // check if dataset structure level is at high level folder
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
     if (slashCount === 1) {
       bootbox.alert({
-        message: "<p>SPARC metadata files can be imported in the next step!</p>",
-        centerVertical: true
-      })
-      break
+        message:
+          "<p>SPARC metadata files can be imported in the next step!</p>",
+        centerVertical: true,
+      });
+      break;
     } else {
-        if (JSON.stringify(currentLocation["files"]) === "{}" && JSON.stringify(regularFiles) === "{}") {
-          regularFiles[path.parse(fileName).name] = {"path": fileName, "basename":path.parse(fileName).base}
-        } else {
-            for (var objectKey in currentLocation["files"]) {
-              if (objectKey !== undefined) {
-                var nonAllowedDuplicate = false;
-                if (fileName === currentLocation["files"][objectKey]["path"]) {
-                  nonAllowedDuplicateFiles.push(fileName);
-                  nonAllowedDuplicate = true;
-                  break
-                }
-              }
-            }
-            if (!nonAllowedDuplicate) {
-              var j = 1;
-              var fileBaseName = path.basename(fileName);
-              var originalFileNameWithoutExt = path.parse(fileBaseName).name;
-              var fileNameWithoutExt = originalFileNameWithoutExt;
-              while (fileNameWithoutExt in uiFilesWithoutExtension || fileNameWithoutExt in regularFiles) {
-                fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
-                j++;
-              }
-              regularFiles[fileNameWithoutExt] = {"path": fileName, "basename": fileNameWithoutExt + path.parse(fileName).ext};
+      if (
+        JSON.stringify(currentLocation["files"]) === "{}" &&
+        JSON.stringify(regularFiles) === "{}"
+      ) {
+        regularFiles[path.parse(fileName).name] = {
+          path: fileName,
+          basename: path.parse(fileName).base,
+        };
+      } else {
+        for (var objectKey in currentLocation["files"]) {
+          if (objectKey !== undefined) {
+            var nonAllowedDuplicate = false;
+            if (fileName === currentLocation["files"][objectKey]["path"]) {
+              nonAllowedDuplicateFiles.push(fileName);
+              nonAllowedDuplicate = true;
+              break;
             }
           }
-      }
-    }
-
-    // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
-    // and regular files (append to UI)
-    if (Object.keys(regularFiles).length > 0) {
-      for (var element in regularFiles) {
-        currentLocation["files"][regularFiles[element]["basename"]] = {"path": regularFiles[element]["path"], "type": "local", "description":"", "additional-metadata":"", "action":["new"]}
-        // append "renamed" to "action" key if file is auto-renamed by UI
-        var originalName = path.parse(currentLocation["files"][regularFiles[element]["basename"]]["path"]).name;
-        if (element !== originalName) {
-          currentLocation["files"][regularFiles[element]["basename"]]["action"].push('renamed');
         }
-        var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+regularFiles[element]["basename"]+'</div></div>'
-        $(uiItem).html(appendString)
-        listItems(currentLocation, uiItem)
-        getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue)
+        if (!nonAllowedDuplicate) {
+          var j = 1;
+          var fileBaseName = path.basename(fileName);
+          var originalFileNameWithoutExt = path.parse(fileBaseName).name;
+          var fileNameWithoutExt = originalFileNameWithoutExt;
+          while (
+            fileNameWithoutExt in uiFilesWithoutExtension ||
+            fileNameWithoutExt in regularFiles
+          ) {
+            fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
+            j++;
+          }
+          regularFiles[fileNameWithoutExt] = {
+            path: fileName,
+            basename: fileNameWithoutExt + path.parse(fileName).ext,
+          };
+        }
       }
     }
-    if (nonAllowedDuplicateFiles.length > 0) {
-      var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles)
-      bootbox.alert({
-        message: 'The following files are already imported into the current location of your dataset: <p><ul>'+listElements+'</ul></p>',
-        centerVertical: true
-      })
+  }
+
+  // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
+  // and regular files (append to UI)
+  if (Object.keys(regularFiles).length > 0) {
+    for (var element in regularFiles) {
+      currentLocation["files"][regularFiles[element]["basename"]] = {
+        path: regularFiles[element]["path"],
+        type: "local",
+        description: "",
+        "additional-metadata": "",
+        action: ["new"],
+      };
+      // append "renamed" to "action" key if file is auto-renamed by UI
+      var originalName = path.parse(
+        currentLocation["files"][regularFiles[element]["basename"]]["path"]
+      ).name;
+      if (element !== originalName) {
+        currentLocation["files"][regularFiles[element]["basename"]][
+          "action"
+        ].push("renamed");
+      }
+      var appendString =
+        '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+        regularFiles[element]["basename"] +
+        "</div></div>";
+      $(uiItem).html(appendString);
+      listItems(currentLocation, uiItem);
+      getInFolder(
+        singleUIItem,
+        uiItem,
+        organizeCurrentLocation,
+        globalPathValue
+      );
     }
+  }
+  if (nonAllowedDuplicateFiles.length > 0) {
+    var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
+    bootbox.alert({
+      message:
+        "The following files are already imported into the current location of your dataset: <p><ul>" +
+        listElements +
+        "</ul></p>",
+      centerVertical: true,
+    });
+  }
 }
 
 ///// function to load details to show in display once
