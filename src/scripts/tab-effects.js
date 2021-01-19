@@ -1529,12 +1529,12 @@ function updateOverallJSONStructure(id) {
 //////////////////////////////// END OF Functions to update JSON object //////////////////////////////////////////
 
 // function associated with the Exit button (Step 6: Generate dataset -> Generate div)
-function exitCurate() {
+function exitCurate(resetProgressTabs=false) {
   document.getElementById('generate-dataset-progress-tab').style.display = "none";
-  wipeOutCurateProgress()
+  wipeOutCurateProgress(resetProgressTabs=false)
 }
 
-function wipeOutCurateProgress() {
+function wipeOutCurateProgress(resetProgressTabs) {
   // set SODA json object back
   sodaJSONObj = {};
   // uncheck all radio buttons and checkboxes
@@ -1545,6 +1545,9 @@ function wipeOutCurateProgress() {
   $('.metadata-button.button-generate-dataset').removeClass('done');
   $('#organize-section input:checkbox').prop('checked', false);
   $('#organize-section input:radio').prop('checked', false);
+  // reset UI of Continue with previous progress file
+  $("#progress-files-dropdown").val("Select");
+  $("#para-progress-file-status").text("");
   // set metadata file paths to empty
   $('.para-metadata-file-status').text("");
   // un-show all divs from Generate dataset step
@@ -1557,8 +1560,10 @@ function wipeOutCurateProgress() {
   // uncheck auto-generated manifest checkbox
   $("#generate-manifest-curate").prop('checked', false);
   // reset Curate's vertical progress bar step
-  $('.vertical-progress-bar-step').removeClass('is-current')
-  $('.vertical-progress-bar-step').removeClass('done')
+  if (resetProgressTabs) {
+    $('.vertical-progress-bar-step').removeClass('is-current')
+    $('.vertical-progress-bar-step').removeClass('done')
+  } 
 }
 
 // once users click on option card: Organize dataset
