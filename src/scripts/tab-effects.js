@@ -94,7 +94,7 @@ function showParentTab(tabNow, nextOrPrev) {
 
 const fill_info_details = () => {
   $(".card-container").remove()
-  if (sodaJSONObj["starting-point"] === "bf")
+  if (sodaJSONObj["starting-point"]["type"] === "bf")
   {
     add_card_detail("Current account", sodaJSONObj["bf-account-selected"]["account-name"]);
     add_card_detail("Current dataset", sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
@@ -112,26 +112,26 @@ const fill_info_details = () => {
     }
     //add_card_detail("Metadata files", metadataFile_present);
   }
-  if (sodaJSONObj["starting-point"] === "local" || sodaJSONObj["starting-point"] === "new")
+  if (sodaJSONObj["starting-point"]["type"] === "local" || sodaJSONObj["starting-point"]["type"] === "new")
   {
     if ($('input[name="generate-1"]:checked')[0].id === "generate-local-existing")
     {
-      add_card_detail("Current dataset location", sodaJSONObj["local-path"], 1, "Question-generate-dataset");
+      add_card_detail("Current dataset location", sodaJSONObj["starting-point"]["local-path"], 1, "Question-generate-dataset");
     }
     else if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop")
     {
-      if (sodaJSONObj["starting-point"] === "local")
+      if (sodaJSONObj["starting-point"]["type"] === "local")
       {
-        add_card_detail("Original dataset location", sodaJSONObj["local-path"]);
+        add_card_detail("Original dataset location", sodaJSONObj["starting-point"]["local-path"]);
       }
       add_card_detail("New dataset location", $("#input-destination-generate-dataset-locally")[0].placeholder, 1, "input-destination-generate-dataset-locally");
       add_card_detail("New dataset name", $("#inputNewNameDataset").val().trim(), 1, "inputNewNameDataset");
     }
     else if ( $('input[name="generate-1"]:checked')[0].id === "generate-upload-BF")
     {
-      if (sodaJSONObj["starting-point"] === "local")
+      if (sodaJSONObj["starting-point"]["type"] === "local")
       {
-        add_card_detail("Original dataset location", sodaJSONObj["local-path"]);
+        add_card_detail("Original dataset location", sodaJSONObj["starting-point"]["local-path"]);
       }
 
       add_card_detail("New dataset location", "Blackfynn", 1, "Question-generate-dataset");
@@ -353,7 +353,7 @@ function nextPrev(n) {
     }
   } else if (
     x[currentTab].id === "preview-dataset-tab" &&
-    sodaJSONObj["starting-point"] == "bf"
+    sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
     $(x[currentTab]).removeClass("tab-active");
     currentTab = currentTab - 2;
@@ -361,7 +361,7 @@ function nextPrev(n) {
     $("#nextBtn").prop("disabled", false);
   } else if (
     x[currentTab].id === "manifest-file-tab" &&
-    sodaJSONObj["starting-point"] == "bf"
+    sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
     // cj -skip step 6
     console.log("hiding");
@@ -377,8 +377,8 @@ function nextPrev(n) {
     showParentTab(currentTab, n);
   } else if (
     x[currentTab].id === "manifest-file-tab" &&
-    (sodaJSONObj["starting-point"] === "new" ||
-      sodaJSONObj["starting-point"] === "local")
+    (sodaJSONObj["starting-point"]["type"] === "new" ||
+      sodaJSONObj["starting-point"]["type"] === "local")
   ) {
     //console.log("showing");
     $(x[currentTab]).removeClass("tab-active");
@@ -396,7 +396,7 @@ function nextPrev(n) {
     );
 
     // Show/or hide the replace existing button
-    if (sodaJSONObj["starting-point"] === "local") {
+    if (sodaJSONObj["starting-point"]["type"] === "local") {
       $("#generate-dataset-replace-existing").show();
       $("#generate-dataset-replace-existing").children().show();
       //$("#input-destination-generate-dataset-locally").attr("placeholder", "Browse here");
@@ -419,7 +419,7 @@ function nextPrev(n) {
     if (
       n === -1 &&
       currentTab === 0 &&
-      sodaJSONObj["starting-point"] === "local"
+      sodaJSONObj["starting-point"]["type"] === "local"
     ) {
       bootbox.confirm({
         title: "Reset progress",
@@ -653,7 +653,7 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
         ).children()[0]
       ).toggleClass("non-selected");
       $("#nextBtn").prop("disabled", false);
-      sodaJSONObj["starting-point"] = "new";
+      sodaJSONObj["starting-point"]["type"] = "new";
       sodaJSONObj["dataset-structure"] = {};
       datasetStructureJSONObj = { folders: {}, files: {}};
       sodaJSONObj["metadata-files"] = {};
@@ -694,8 +694,10 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
         "metadata-files": {},
         "manifest-files": {},
         "generate-dataset": {},
-        "starting-point": "local",
-        "local-path": ""
+        "starting-point": {
+          "type": "local",
+          "local-path": ""
+        }
       }
       // this should run after a folder is selected
       reset_ui();
@@ -834,7 +836,9 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
      "metadata-files": {},
      "manifest-files": {},
      "generate-dataset": {},
-     "starting-point": "bf",
+     "starting-point": {
+       "type": "new"
+     },
    };
 
    sodaJSONObj["bf-account-selected"]["account-name"] = $(
@@ -925,8 +929,10 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
         "metadata-files": {},
         "manifest-files": {},
         "generate-dataset": {},
-        "starting-point": "local",
-        "local-path": ""
+        "starting-point": {
+          "type": "local",
+          "local-path": ""
+        }
       }
       // this should run after a folder is selected
       reset_ui();
@@ -1361,7 +1367,7 @@ function updateJSONStructureGenerate() {
 
   //cj - add code here to update the json structure to account for the new stuff
   // answer to Question 1: where to generate: locally or BF
-  if (sodaJSONObj["starting-point"] == "bf") {
+  if (sodaJSONObj["starting-point"]["type"] == "bf") {
     if (!("bf-account-selected" in sodaJSONObj)) {
       console.log("bf-account-selected not in structure");
     }
@@ -1373,10 +1379,10 @@ function updateJSONStructureGenerate() {
       "generate-option": "existing-bf",
     };
   }
-  if (sodaJSONObj["starting-point"] == "local") {
-    var localDestination = require("path").dirname(sodaJSONObj["local-path"]);
-    var newDatasetName = require("path").basename(sodaJSONObj["local-path"]);
-    delete sodaJSONObj["local-path"];
+  if (sodaJSONObj["starting-point"]["type"] == "local") {
+    var localDestination = require("path").dirname(sodaJSONObj["starting-point"]["local-path"]);
+    var newDatasetName = require("path").basename(sodaJSONObj["starting-point"]["local-path"]);
+    delete sodaJSONObj["starting-point"]["local-path"];
     sodaJSONObj["generate-dataset"] = {
       destination: "local",
       path: localDestination,
@@ -1391,9 +1397,9 @@ function updateJSONStructureGenerate() {
     if ("bf-dataset-selected" in sodaJSONObj) {
       delete sodaJSONObj["bf-dataset-selected"];
     }
-    sodaJSONObj["starting-point"] = "new";
+    sodaJSONObj["starting-point"]["type"] = "new";
   }
-  if (sodaJSONObj["starting-point"] == "new") {
+  if (sodaJSONObj["starting-point"]["type"] == "new") {
     if (
       $('input[name="generate-1"]:checked')[0].id === "generate-local-desktop"
     ) {
