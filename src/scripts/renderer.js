@@ -21,6 +21,7 @@ const html2canvas = require("html2canvas");
 const removeMd = require('remove-markdown');
 const electron = require('electron');
 const bootbox = require('bootbox');
+const DragSelect = require('dragselect')
 const app = remote.app;
 
 //////////////////////////////////
@@ -67,18 +68,18 @@ log.info("Current SODA version:", appVersion)
 console.log("Current SODA version:", appVersion)
 
 //check user's internet connection and connect to default Blackfynn account //
-require('dns').resolve('www.google.com', function(err) {
+require("dns").resolve("www.google.com", function (err) {
   if (err) {
-     console.error("No internet connection");
-     log.error("No internet connection")
-     ipcRenderer.send('warning-no-internet-connection')
+    console.error("No internet connection");
+    log.error("No internet connection");
+    ipcRenderer.send("warning-no-internet-connection");
   } else {
-     console.log("Connected to the internet");
-     log.info("Connected to the internet")
-     //Check new app version
-     checkNewAppVersion() // changed this function definition
-     //Load Default/global blackfynn account if available
-     updateBfAccountList()
+    console.log("Connected to the internet");
+    log.info("Connected to the internet");
+    //Check new app version
+    checkNewAppVersion(); // changed this function definition
+    //Load Default/global blackfynn account if available
+    updateBfAccountList();
   }
 });
 
@@ -104,14 +105,13 @@ ipcRenderer.on("update_available", () => {
 
 ipcRenderer.on("update_downloaded", () => {
   ipcRenderer.removeAllListeners("update_downloaded");
-  if (process.platform == 'darwin')
-  {
-    message.innerText = "Update downloaded. It will be installed when you close and relaunch the app. Close the app now?";
+  if (process.platform == "darwin") {
+    message.innerText =
+      "Update downloaded. It will be installed when you close and relaunch the app. Close the app now?";
     document.getElementById("restart-button").innerText = "Close SODA";
-  }
-  else
-  {
-    message.innerText = "Update downloaded. It will be installed on the restart of the app. Restart the app now?";
+  } else {
+    message.innerText =
+      "Update downloaded. It will be installed on the restart of the app. Restart the app now?";
   }
   restartButton.classList.remove("hidden");
   notification.classList.remove("hidden");
@@ -417,6 +417,16 @@ function openSidebar(buttonElement) {
     open = false;
   }
 }
+
+// Assign dragable area in the code to allow for dragging and selecting items//
+let drag_event_fired = false;
+let dragselect_area = new DragSelect({
+  selectables: document.querySelectorAll('.single-item'),
+  callback: e => select_items(e),
+  draggability: false,
+  area: document.getElementById('items'),
+  onDragStart: e => select_items_ctrl(e)
+});
 
 // Button selection to move on to next step under Prepare Dataset //
 document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
@@ -6092,6 +6102,51 @@ $(document).bind("contextmenu", function (event) {
   }
 });
 
+const select_items_ctrl = (event) => {
+  if (event["ctrlKey"]) {
+  } else {
+    $(".selected-item").removeClass("selected-item");
+  }
+};
+
+const select_items = (event_list) => {
+  //console.log(event_list);
+
+  let selected_class = "";
+
+  event_list.forEach((event_item) => {
+    let target_element = null;
+    let parent_element = null;
+
+    if (event_item.classList[0] === "single-item") {
+      parent_element = event_item;
+      target_element = $(parent_element).children()[0];
+      if (
+        $(target_element).hasClass("myFol") ||
+        $(target_element).hasClass("myFile")
+      ) {
+        selected_class = "selected-item";
+        drag_event_fired = true;
+      }
+    }
+
+    if (selected_class != "") {
+      if (event_item.ctrlKey) {
+        if ($(target_element).hasClass(selected_class)) {
+          $(target_element).removeClass(selected_class);
+          $(parent_element).removeClass(selected_class);
+        } else {
+          $(target_element).addClass(selected_class);
+          $(parent_element).addClass(selected_class);
+        }
+      } else {
+        $(target_element).addClass(selected_class);
+        $(parent_element).addClass(selected_class);
+      }
+    }
+  });
+};
+
 $(document).bind("click", function (event) {
   // If there is weird right click menu behaviour, check the hideMenu block
   //
@@ -6104,7 +6159,13 @@ $(document).bind("click", function (event) {
   // Handle clearing selection when clicked outside.
   // Currntly only handles clicks inside the folder holder area
   if (event.target.classList[0] === "div-organize-items") {
-    $(".selected-item").removeClass("selected-item");
+    if (drag_event_fired)
+    {
+      drag_event_fired = false;
+    }
+    else{
+      $(".selected-item").removeClass("selected-item");
+    }
   }
 
   let selected_class = "";
@@ -6294,6 +6355,15 @@ function listItems(jsonObj, uiItem) {
 
   $(uiItem).empty();
   $(uiItem).html(appendString);
+  dragselect_area.stop();
+  dragselect_area = new DragSelect({
+    selectables: document.querySelectorAll('.single-item'),
+    callback: e => select_items(e),
+    draggability: false,
+    area: document.getElementById("items"),
+    onDragStart: e => select_items_ctrl(e)
+  });
+  drag_event_fired = false;
 }
 
 function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
