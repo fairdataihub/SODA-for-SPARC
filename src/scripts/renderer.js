@@ -5233,25 +5233,8 @@ listItems(datasetStructureJSONObj, '#items')
 getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
 
 var sodaJSONObj = {}
-//
-// "bf-account-selected": {
-//       "account-name": "",
-//   },
-//   "bf-dataset-selected": {
-//       "dataset-name": "",
-//   },
-//   "dataset-structure": {"folders": {}, "files": {}},
-//   "metadata-files": {},
-//   "generate-dataset": {
-//       "destination": "",
-//       "path": "",
-//       "dataset-name": "",
-//       "if-existing": "",
-//       "generate-option": ""
-//   }
 
-
-/// back button
+/// back button Curate
 organizeDSbackButton.addEventListener("click", function() {
   // var currentPath = organizeDSglobalPath.value.trim()
   // if (currentPath !== "/") {

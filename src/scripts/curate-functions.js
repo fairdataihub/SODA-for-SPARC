@@ -745,7 +745,6 @@ function create_child_node(oldFormatNode, nodeName, type, ext, openedState, sele
   return newFormatNode;
 }
 
-
 var selected = false;
 var selectedNode;
 var jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, "", "moveItems");

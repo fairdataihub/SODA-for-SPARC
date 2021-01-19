@@ -471,19 +471,7 @@ $(".option-card.high-level-folders").click(function () {
   checkHighLevelFoldersInput()
 })
 
-// // Other radio buttons check mark effect
-// $(".option-card.radio-button").click(function () {
-//   $(this).removeClass('non-selected');
-//   $(this).addClass('checked');
-//   if ($(this).hasClass('checked')) {
-//     $(this).children()[0].children[0].children[0].checked = true;
-//     $($(this).parents()[1]).find('.option-card.radio-button').addClass('non-selected')
-//     $(this).removeClass('non-selected')
-//   } else {
-//     $(this).children()[0].children[0].children[0].checked = false;
-//     $(this).addClass('non-selected')
-//   }
-// })
+var globalGettingStarted1stQuestionBool = false;
 
 $(".folder-input-check").click(function () {
   var parentCard = $(this).parents()[2];
@@ -559,12 +547,58 @@ $(".folder-input-check").click(function () {
   *** Note: This onclick function below is only used for div: option-card and not buttons
   due to some unique element restrictions the option-card div has
 */
+
+// raise warning before wiping out existing sodaJSONObj
+// show warning message
+function raiseWarningGettingStarted(ev) {
+  return new Promise(resolve => {
+    if (!((JSON.stringify(sodaJSONObj) === '{}') ||
+      (JSON.stringify(sodaJSONObj) === '{"starting-point":{"type":"new"},"dataset-structure":{},"metadata-files":{}}') ||
+      (JSON.stringify(sodaJSONObj) === '{"starting-point":{"type":""},"dataset-structure":{},"metadata-files":{}}') ||
+      (JSON.stringify(sodaJSONObj) === '{"bf-account-selected":{},"bf-dataset-selected":{},"dataset-structure":{},"metadata-files":{},"manifest-files":{},"generate-dataset":{},"starting-point":"local","local-path":""}') ||
+      (JSON.stringify(sodaJSONObj) === '{"bf-account-selected":{"account-name":{}}, "bf-dataset-selected":{"dataset-name":{}}, "dataset-structure":{},"metadata-files":{}, "manifest-files":{}, "generate-dataset":{}, "starting-point":"bf"}')
+      )) {
+        bootbox.confirm({
+          message: "This will reset your progress so far. Are you sure you want to continue?",
+          buttons: {
+            confirm: {
+              label: "Yes",
+              className: "btn-success",
+            },
+            cancel: {
+              label: "No",
+              className: "btn-danger",
+            },
+          },
+          centerVertical: true,
+          callback: function (result) {
+            if (result) {
+              globalGettingStarted1stQuestionBool = true;
+              resolve(globalGettingStarted1stQuestionBool)
+            } else {
+              globalGettingStarted1stQuestionBool = false;
+              resolve(globalGettingStarted1stQuestionBool)
+            }
+          }
+        });
+    } else {
+      globalGettingStarted1stQuestionBool = true;
+      resolve(globalGettingStarted1stQuestionBool)
+    }
+  })
+}
+
 var divList = [];
 async function transitionSubQuestions(ev, currentDiv, parentDiv, button, category){
-  // document.getElementById("nextBtn").disabled = true;
-  if (currentDiv === "Question-getting-started-1")
-  {
-    exitCurate();
+  if (currentDiv === "Question-getting-started-1") {
+    globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
+    if (globalGettingStarted1stQuestionBool) {
+      exitCurate();
+      globalGettingStarted1stQuestionBool = false;
+    } else {
+      globalGettingStarted1stQuestionBool = false;
+      return;
+    }
   }
   $(ev).removeClass('non-selected');
   $(ev).children().find('.folder-input-check').prop('checked', true);
@@ -579,7 +613,6 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
     .siblings()
     .find(".option-card.radio-button")
     .addClass("non-selected");
-
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute('data-next'));
@@ -1228,30 +1261,6 @@ function populateMetadataObject(
   }
 }
 
-// under Generate dataset step: not needed for now
-// function checkJSONObjGenerate() {
-//   var optionShown = "";
-//   if (sodaJSONObj["generate-dataset"]["path"] === "" && sodaJSONObj["bf-account-selected"]["account-name"] === ""  && sodaJSONObj["bf-dataset-selected"]["dataset-name"] === "") {
-//     optionShown = "curate-new"
-//   } else if (sodaJSONObj["generate-dataset"]["path"] !== "") {
-//     optionShown = "modify-existing-local-dataset"
-//   } else if (sodaJSONObj["bf-account-selected"]["account-name"] !== "") {
-//     optionShown = "modify-existing-bf-dataset"
-//   }
-//   // show modify local existing dataset or create dataset under a new folder
-//  if (optionShown === "modify-existing-local-dataset") {
-//     document.getElementById("div-modify-current-local-dataset").style.display = "block";
-//     document.getElementById('Question-generate-dataset').classList.add('show');
-//     document.getElementById('modify-current-confirmation').innerHTML = "SODA will modify this dataset: <b style='color:var(--color-bg-plum)'>" +sodaJSONObj["generate-dataset"]["path"]+"</b>.<br>Please click the button below to confirm."
-//   } else if (optionShown === "modify-existing-bf-dataset") {
-//     document.getElementById('Question-generate-dataset').classList.remove('show');
-//     document.getElementById('Question-generate-dataset-bf-confirmation').classList.add('show');
-//     document.getElementById("generate-bf-confirmation").innerHTML = "SODA will modify this dataset: <b style='color:var(--color-bg-plum)'>" + sodaJSONObj["bf-dataset-selected"] + "</b><br>You specify this Blackfynn account: <b style='color:var(--color-bg-plum)'>" + sodaJSONObj["bf-account-selected"]["account-name"] + "</b>.<br> Please confirm by clicking the button below."
-//   } else {
-//     document.getElementById('Question-generate-dataset').classList.add('show');
-//   }
-// }
-
 /// function to populate/reload Organize dataset UI when users move around between tabs and make changes
 // (to high-level folders)
 function populateOrganizeDatasetUI(currentLocation, datasetFolder) {
@@ -1290,7 +1299,6 @@ function updateJSONStructureDSstructure() {
     JSON.stringify(sodaJSONObj["dataset-structure"]["folders"]) === "{}") {
     delete sodaJSONObj["dataset-structure"]
   }
-  //console.log(sodaJSONObj["dataset-structure"])
 }
 
 // Step 4: Metadata files
