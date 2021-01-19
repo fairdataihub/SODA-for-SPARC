@@ -6517,6 +6517,7 @@ document.getElementById("input-destination-generate-dataset-locally").addEventLi
   $("#Question-generate-dataset-locally-destination").nextAll().removeClass('test2');
   $("#Question-generate-dataset-locally-destination").nextAll().removeClass('prev');
   document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
+  document.getElementById("nextBtn").disabled = true;
   ipcRenderer.send('open-file-dialog-local-destination-curate');
 })
 

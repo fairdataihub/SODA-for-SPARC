@@ -63,6 +63,7 @@ function showParentTab(tabNow, nextOrPrev) {
     document.getElementById("nextBtn").disabled = false;
   }
 
+  console.log($("#input-destination-generate-dataset-locally")[0].placeholder)
   if (tabNow == 5) {
     if (
       $("#inputNewNameDataset").val() !== "" ||
@@ -71,7 +72,7 @@ function showParentTab(tabNow, nextOrPrev) {
         .hasClass("checked") ||
       $("#generate-dataset-replace-existing")
         .find(".option-card")
-        .hasClass("checked")
+        .hasClass("checked") || $("#input-destination-generate-dataset-locally")[0].placeholder !== "Browse here"
     ) {
       document.getElementById("nextBtn").disabled = false;
     } else {
@@ -132,12 +133,15 @@ const fill_info_details = () => {
       {
         add_card_detail("Original dataset location", sodaJSONObj["local-path"]);
       }
+
       add_card_detail("New dataset location", "Blackfynn", 1, "Question-generate-dataset");
+      add_card_detail("Current account", $("#current-bf-account-generate").text(), 1, "Question-generate-dataset-BF-account");
+      add_card_detail("Account details", $("#para-account-detail-curate-generate").html(), 1, "Question-generate-dataset-BF-account");
       if (
         $('input[name="generate-4"]:checked')[0].id ===
         "generate-BF-dataset-options-existing"
       ) {
-        add_card_detail("Dataset name", $('#current-bf-dataset-generate').text(), 1, "current-bf-dataset-generate");
+        add_card_detail("Dataset name", $('#current-bf-dataset-generate').text(), 1, "Question-generate-dataset-BF-account");
         if (
           $('input[name="generate-5"]:checked')[0].id ===
           "existing-folders-duplicate"
@@ -417,11 +421,26 @@ function nextPrev(n) {
       currentTab === 0 &&
       sodaJSONObj["starting-point"] === "local"
     ) {
-      $("#div-getting-started-previous-progress").click();
-      $("#div-getting-started-existing-local").click();
-      $("#nextBtn").prop("disabled", true);
+      bootbox.confirm({
+        title: "Reset progress",
+        message: "Your progress will be reset. Do you want to continue?",
+        centerVertical: true,
+        callback: (choice) => {
+          if (choice === true) {
+            $("#div-getting-started-previous-progress").click();
+            $("#div-getting-started-existing-local").click();
+            $("#nextBtn").prop("disabled", true);
+          }
+          else
+          {
+            currentTab = currentTab + 1;
+            $(x[currentTab]).addClass("tab-active");
+            showParentTab(currentTab, n);
+            return;
+          }
+        }
+      })
     }
-
     showParentTab(currentTab, n);
     console.log(JSON.stringify(sodaJSONObj));
   }
@@ -1592,39 +1611,40 @@ document.getElementById('button-section-organize-dataset').addEventListener('cli
 
 function hideNextDivs(currentDiv) {
   // make currentDiv current class
-  $('#' + currentDiv).removeClass('prev')
-  $('#' + currentDiv).removeClass('test2')
+  $("#" + currentDiv).removeClass("prev");
+  $("#" + currentDiv).removeClass("test2");
   // hide subsequent divs
-  $($('#' + currentDiv).nextAll()).removeClass('prev');
-  $($('#' + currentDiv).nextAll()).removeClass('show');
-  $($('#' + currentDiv).nextAll()).removeClass('test2');
+  $($("#" + currentDiv).nextAll()).removeClass("prev");
+  $($("#" + currentDiv).nextAll()).removeClass("show");
+  $($("#" + currentDiv).nextAll()).removeClass("test2");
 }
 
 // save progress up until step 5 for now
 function updateJSONObjectProgress() {
-  updateJSONStructureGettingStarted()
-  updateJSONStructureMetadataFiles()
-  updateJSONStructureManifest()
-  updateJSONStructureDSstructure()
-  updateJSONStructureGenerate()
+  updateJSONStructureGettingStarted();
+  updateJSONStructureMetadataFiles();
+  updateJSONStructureManifest();
+  updateJSONStructureDSstructure();
+  updateJSONStructureGenerate();
 }
 
 function saveSODAJSONProgress(progressFileName) {
   try {
     fs.mkdirSync(progressFilePath, { recursive: true });
   } catch (error) {
-    log.error(error)
-    console.log(error)
+    log.error(error);
+    console.log(error);
   }
   var filePath = path.join(progressFilePath, progressFileName + ".json");
   // record all information listed in SODA JSON Object before saving
-  updateJSONObjectProgress()
-  console.log(sodaJSONObj)
-  fs.writeFileSync(filePath, JSON.stringify(sodaJSONObj))
+  updateJSONObjectProgress();
+  console.log(sodaJSONObj);
+  fs.writeFileSync(filePath, JSON.stringify(sodaJSONObj));
   bootbox.alert({
-    message: "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved progress.",
-    centerVertical: true
-  })
+    message:
+      "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved progress.",
+    centerVertical: true,
+  });
 }
 
 // function to save Progress
@@ -1643,9 +1663,9 @@ function saveOrganizeProgressPrompt() {
       callback: function (result) {
         if (result !== null && result !== "") {
           sodaJSONObj["save-progress"] = result.trim();
-          saveSODAJSONProgress(result.trim())
+          saveSODAJSONProgress(result.trim());
         }
-      }
-    })
+      },
+    });
   }
 }
