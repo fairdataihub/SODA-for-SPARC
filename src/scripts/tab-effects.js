@@ -81,6 +81,7 @@ function showParentTab(tabNow, nextOrPrev) {
 
   if (tabNow == x.length - 1) {
     document.getElementById("nextBtn").style.display = "none";
+    showTreeViewPreview(datasetStructureJSONObj);
     $("#Question-preview-dataset-details").show();
     $("#Question-preview-dataset-details").children().show();
     $("#Question-generate-dataset-generate-div").show();
@@ -1333,6 +1334,7 @@ function updateJSONStructureManifest() {
 // Step 6: Generate dataset
 // update JSON object after users finish Generate dataset step
 function updateJSONStructureGenerate() {
+
   //cj - add code here to update the json structure to account for the new stuff
   // answer to Question 1: where to generate: locally or BF
   if (sodaJSONObj["starting-point"] == "bf") {

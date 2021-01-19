@@ -272,6 +272,18 @@ button[disabled]{
   /* transform: translateY(-6px); */
 }
 
+.single-item.selected-item:focus {
+  border: #c0c0c0;
+  background-color: #eeeaea;
+  /* transform: translateY(-6px); */
+}
+
+.ds-selected{
+  border: #c0c0c0;
+  background-color: #eeeaea;
+  /* transform: translateY(-6px); */
+}
+
 .single-item:active {
   -webkit-transform: all 3s;
 }

@@ -21,6 +21,7 @@ const html2canvas = require("html2canvas");
 const removeMd = require('remove-markdown');
 const electron = require('electron');
 const bootbox = require('bootbox');
+const DragSelect = require('dragselect')
 const app = remote.app;
 
 //////////////////////////////////
@@ -416,6 +417,16 @@ function openSidebar(buttonElement) {
     open = false;
   }
 }
+
+// Assign dragable area in the code to allow for dragging and selecting items//
+let drag_event_fired = false;
+let dragselect_area = new DragSelect({
+  selectables: document.querySelectorAll('.single-item'),
+  callback: e => select_items(e),
+  draggability: false,
+  area: document.getElementById('items'),
+  onDragStart: e => select_items_ctrl(e)
+});
 
 // Button selection to move on to next step under Prepare Dataset //
 document.getElementById('button-organize-next-step').addEventListener('click', (event) => {
@@ -6091,6 +6102,51 @@ $(document).bind("contextmenu", function (event) {
   }
 });
 
+const select_items_ctrl = (event) => {
+  if (event["ctrlKey"]) {
+  } else {
+    $(".selected-item").removeClass("selected-item");
+  }
+};
+
+const select_items = (event_list) => {
+  //console.log(event_list);
+
+  let selected_class = "";
+
+  event_list.forEach((event_item) => {
+    let target_element = null;
+    let parent_element = null;
+
+    if (event_item.classList[0] === "single-item") {
+      parent_element = event_item;
+      target_element = $(parent_element).children()[0];
+      if (
+        $(target_element).hasClass("myFol") ||
+        $(target_element).hasClass("myFile")
+      ) {
+        selected_class = "selected-item";
+        drag_event_fired = true;
+      }
+    }
+
+    if (selected_class != "") {
+      if (event_item.ctrlKey) {
+        if ($(target_element).hasClass(selected_class)) {
+          $(target_element).removeClass(selected_class);
+          $(parent_element).removeClass(selected_class);
+        } else {
+          $(target_element).addClass(selected_class);
+          $(parent_element).addClass(selected_class);
+        }
+      } else {
+        $(target_element).addClass(selected_class);
+        $(parent_element).addClass(selected_class);
+      }
+    }
+  });
+};
+
 $(document).bind("click", function (event) {
   // If there is weird right click menu behaviour, check the hideMenu block
   // 
@@ -6103,7 +6159,13 @@ $(document).bind("click", function (event) {
   // Handle clearing selection when clicked outside.
   // Currntly only handles clicks inside the folder holder area
   if (event.target.classList[0] === "div-organize-items") {
-    $(".selected-item").removeClass("selected-item");
+    if (drag_event_fired)
+    {
+      drag_event_fired = false;
+    }
+    else{
+      $(".selected-item").removeClass("selected-item");
+    }
   }
 
   let selected_class = "";
@@ -6111,7 +6173,7 @@ $(document).bind("click", function (event) {
   let parent_element = null;
 
   // Assign target(folder/file) and parent elements
-  // 
+  //
   if (
     event.target.classList[0] === "myFile" ||
     event.target.classList[0] === "myFol"
@@ -6293,6 +6355,15 @@ function listItems(jsonObj, uiItem) {
 
   $(uiItem).empty();
   $(uiItem).html(appendString);
+  dragselect_area.stop();
+  dragselect_area = new DragSelect({
+    selectables: document.querySelectorAll('.single-item'),
+    callback: e => select_items(e),
+    draggability: false,
+    area: document.getElementById("items"),
+    onDragStart: e => select_items_ctrl(e)
+  });
+  drag_event_fired = false;
 }
 
 function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
@@ -6567,8 +6638,10 @@ document
 
     progressBarNewCurate.value = 0;
 
-    console.log(sodaJSONObj);
+    // delete datasetStructureObject["files"] value that was added only for the Preview tree view
+    sodaJSONObj["dataset-structure"]["files"] = {};
 
+    console.log(sodaJSONObj);
     client.invoke(
       "api_check_empty_files_folders",
       sodaJSONObj,
@@ -6938,7 +7011,7 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 });
 
 
-/* 
+/*
 document
   .getElementById("button-preview-dataset")
   .addEventListener("click", function () {
@@ -6951,7 +7024,7 @@ document
         console.log(res);
       }
     });
-  }); 
+  });
 */
 
 var bf_request_and_populate_dataset = (sodaJSONObj) => {
