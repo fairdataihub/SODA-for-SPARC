@@ -6517,6 +6517,7 @@ document.getElementById("input-destination-generate-dataset-locally").addEventLi
   $("#Question-generate-dataset-locally-destination").nextAll().removeClass('test2');
   $("#Question-generate-dataset-locally-destination").nextAll().removeClass('prev');
   document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
+  document.getElementById("nextBtn").disabled = true;
   ipcRenderer.send('open-file-dialog-local-destination-curate');
 })
 
@@ -6525,11 +6526,11 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
     if (filepath != null){
       document.getElementById("input-destination-generate-dataset-locally").placeholder = filepath[0];
       // document.getElementById('div-confirm-destination-locally').style.display = "flex";
-      if (sodaJSONObj["starting-point"] === "local" && sodaJSONObj["local-path"] == "")
+      if (sodaJSONObj["starting-point"]["type"] === "local" && sodaJSONObj["starting-point"]["local-path"] == "")
       {
         console.log("local-existing and step 1");
         valid_dataset = verify_sparc_folder(document.getElementById("input-destination-generate-dataset-locally").placeholder);
-        sodaJSONObj["local-path"] = filepath[0];
+        sodaJSONObj["starting-point"]["local-path"] = filepath[0];
           create_json_object(sodaJSONObj);
           console.log(sodaJSONObj);
           datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
@@ -6563,7 +6564,7 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
                 $("#nextBtn").click();
               } else {
                 document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
-                sodaJSONObj["local-path"] = "";
+                sodaJSONObj["starting-point"]["local-path"] = "";
               }
             },
           });
@@ -6621,9 +6622,9 @@ document
 
     // updateJSON structure after Generate dataset tab
     updateJSONStructureGenerate();
-    if (sodaJSONObj["starting-point"] === "local")
+    if (sodaJSONObj["starting-point"]["type"] === "local")
     {
-      sodaJSONObj["starting-point"] = "new";
+      sodaJSONObj["starting-point"]["type"] = "new";
     }
 
     //  from here you can modify
