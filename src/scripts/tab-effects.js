@@ -62,7 +62,6 @@ function showParentTab(tabNow, nextOrPrev) {
   } else {
     document.getElementById("nextBtn").disabled = false;
   }
-
   console.log($("#input-destination-generate-dataset-locally")[0].placeholder)
   if (tabNow == 5) {
     if (
@@ -264,7 +263,6 @@ function checkHighLevelFoldersInput() {
 // function associated with the Back/Continue buttons
 function nextPrev(n) {
   var x = document.getElementsByClassName("parent-tabs");
-  console.log(sodaJSONObj);
   // update JSON structure
   updateOverallJSONStructure(x[currentTab].id);
 
@@ -473,19 +471,19 @@ $(".option-card.high-level-folders").click(function () {
   checkHighLevelFoldersInput()
 })
 
-// Other radio buttons check mark effect
-$(".option-card.radio-button").click(function () {
-  $(this).removeClass('non-selected');
-  $(this).addClass('checked');
-  if ($(this).hasClass('checked')) {
-    $(this).children()[0].children[0].children[0].checked = true;
-    $($(this).parents()[1]).find('.option-card.radio-button').addClass('non-selected')
-    $(this).removeClass('non-selected')
-  } else {
-    $(this).children()[0].children[0].children[0].checked = false;
-    $(this).addClass('non-selected')
-  }
-})
+// // Other radio buttons check mark effect
+// $(".option-card.radio-button").click(function () {
+//   $(this).removeClass('non-selected');
+//   $(this).addClass('checked');
+//   if ($(this).hasClass('checked')) {
+//     $(this).children()[0].children[0].children[0].checked = true;
+//     $($(this).parents()[1]).find('.option-card.radio-button').addClass('non-selected')
+//     $(this).removeClass('non-selected')
+//   } else {
+//     $(this).children()[0].children[0].children[0].checked = false;
+//     $(this).addClass('non-selected')
+//   }
+// })
 
 $(".folder-input-check").click(function () {
   var parentCard = $(this).parents()[2];
@@ -570,7 +568,8 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
   }
   $(ev).removeClass('non-selected');
   $(ev).children().find('.folder-input-check').prop('checked', true);
-
+  $(ev).addClass('checked');
+  //
   // uncheck the other radio buttons
   $($(ev).parents()[0])
     .siblings()
@@ -580,6 +579,7 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
     .siblings()
     .find(".option-card.radio-button")
     .addClass("non-selected");
+
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute('data-next'));
@@ -647,11 +647,10 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       exitCurate();
       $("#prepare-new").prop("checked", true);
       $($("#prepare-new").parents()[2]).addClass("checked");
-      $(
-        $(
-          $($("#div-getting-started-prepare-new").parents()[0]).siblings()[0]
-        ).children()[0]
-      ).toggleClass("non-selected");
+      $($($("#div-getting-started-prepare-new").parents()[0])
+        .siblings()
+        .children()
+      ).addClass("non-selected");
       $("#nextBtn").prop("disabled", false);
       sodaJSONObj["starting-point"]["type"] = "new";
       sodaJSONObj["dataset-structure"] = {};
@@ -1175,35 +1174,6 @@ function hidePrevDivs(currentDiv, category) {
 
 function updateJSONStructureGettingStarted() {
   document.getElementById('input-global-path').value = "My_dataset_folder/"
-  // if ($('input[name="getting-started-1"]:checked')[0].id === "prepare-new") {
-  //   sodaJSONObj["generate-dataset"] = {'path':'', 'destination':'', 'dataset-name': "", "if-existing": "", "generate-option": "new", "if-existing-files": ""}
-  // }
-  //   var newDatasetName = $('#inputNewNameDataset').val().trim();
-  //   sodaJSONObj["bf-account-selected"]["account-name"] = "";
-  //   sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
-  //   sodaJSONObj["generate-dataset"] = {'path':'', 'destination':'', 'dataset-name': newDatasetName, "if-existing": "", "generate-option": "new", "if-existing-files": ""}
-  // } else if ($('input[name="getting-started-1"]:checked')[0].id === "previous-progress") {
-  //
-  // }
-  //
-  // } else if ($('input[name="getting-started-1"]:checked')[0].id === "modify-existing") {
-  //     if ($('input[name="getting-started-2"]:checked')[0].id === "existing-location") {
-  //       var localPath = $('#location-new-dataset')[0].placeholder;
-  //       sodaJSONObj["generate-dataset"]["path"] = localPath;
-  //       sodaJSONObj["generate-dataset"]["dataset-name"] = path.basename(localPath);
-  //       // populateOrganizeDatasetUI(sodaJSONObj['dataset-structure'], sodaJSONObj['generate-dataset']['path']);
-  //
-  //     } else if ($('input[name="getting-started-2"]:checked')[0].id === "existing-BF") {
-  //       sodaJSONObj["bf-account-selected"]["account-name"] = $($('#bfallaccountlist').find('option:selected')[0]).val();
-  //       sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $($('#curatebfdatasetlist').find('option:selected')[0]).val();
-  //       sodaJSONObj["generate-dataset"]["destination"] = "bf";
-  //     }
-  // }
-  // if (sodaJSONObj["generate-dataset"]["dataset-name"] !== "") {
-  // if (document.getElementById('input-global-path').value === "/") {
-  //   document.getElementById('input-global-path').value = "Mydatasetfolder/"
-  // }
-  // }
 }
 
 // function to populate metadata files
@@ -1561,7 +1531,7 @@ function exitCurate(resetProgressTabs=false) {
 
 function wipeOutCurateProgress(resetProgressTabs) {
   // set SODA json object back
-  sodaJSONObj = {};
+  sodaJSONObj = {"starting-point": {"type": ""}, "dataset-structure": {}, "metadata-files": {}};
   // uncheck all radio buttons and checkboxes
   $(".option-card").removeClass('checked');
   $(".option-card.radio-button").removeClass('non-selected');
@@ -1570,9 +1540,9 @@ function wipeOutCurateProgress(resetProgressTabs) {
   $('.metadata-button.button-generate-dataset').removeClass('done');
   $('#organize-section input:checkbox').prop('checked', false);
   $('#organize-section input:radio').prop('checked', false);
-  // reset UI of Continue with previous progress file
-  $("#progress-files-dropdown").val("Select");
-  $("#para-progress-file-status").text("");
+  // // reset UI of Continue with previous progress file
+  // $("#progress-files-dropdown").val("Select");
+  // $("#para-progress-file-status").text("");
   // set metadata file paths to empty
   $('.para-metadata-file-status').text("");
   // un-show all divs from Generate dataset step
@@ -1652,7 +1622,6 @@ function saveSODAJSONProgress(progressFileName) {
   var filePath = path.join(progressFilePath, progressFileName + ".json");
   // record all information listed in SODA JSON Object before saving
   updateJSONObjectProgress();
-  console.log(sodaJSONObj);
   fs.writeFileSync(filePath, JSON.stringify(sodaJSONObj));
   bootbox.alert({
     message:
