@@ -694,7 +694,6 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
     } else if ($("#existing-bf").is(":checked")) {
       // this exitCurate function gets called in the beginning here
       // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
-
       $("#Question-getting-started-existing-BF-account").show();
       $("#Question-getting-started-existing-BF-account").children().show();
       if (sodaJSONObj["dataset-structure"] != {})
@@ -733,9 +732,7 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       }
       // this should run after a folder is selected
       reset_ui();
-
       $(dataset_location).text("What is the location of the dataset?");
-
       $("#nextBtn").prop("disabled", true);
     }
   }
@@ -1548,9 +1545,8 @@ function wipeOutCurateProgress(resetProgressTabs) {
   $('.metadata-button.button-generate-dataset').removeClass('done');
   $('#organize-section input:checkbox').prop('checked', false);
   $('#organize-section input:radio').prop('checked', false);
-  // // reset UI of Continue with previous progress file
-  // $("#progress-files-dropdown").val("Select");
-  // $("#para-progress-file-status").text("");
+  // set back local destination for folders to empty
+  $("#input-destination-generate-dataset-locally").val("");
   // set metadata file paths to empty
   $('.para-metadata-file-status').text("");
   // un-show all divs from Generate dataset step

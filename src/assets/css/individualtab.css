@@ -53,7 +53,7 @@
 
 .option-card.radio-button .card-body i {
   font-size: 39px;
-  color: var(--color-bg-orange)
+  color: green
 }
 
 .option-card.radio-button .card-body h2 {
@@ -926,13 +926,14 @@
   flex-direction: row;
   width: inherit;
   max-width: 600px;
+  overflow: auto;
 }
 
 .card-left{
   color:#808080;
   font-size: 15px;
-  width: 265px;
-  text-align: right;
+  width: 30%;
+  text-align: left;
 }
 
 .card-right{
@@ -940,15 +941,16 @@
   font-weight: 600;
   margin-left: 8px;
   font-size: 15px;
-  width: 100%;
+  width: 70%;
   display: flex;
   justify-content: space-between;
+  word-break: break-word
 }
 
 .jump-back{
   margin-left: 15px;
   cursor: pointer;
-  right: 10px;
+  right: 13px;
   position: absolute;
 }
 
