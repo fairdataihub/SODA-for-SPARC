@@ -1563,7 +1563,7 @@ function wipeOutCurateProgress(resetProgressTabs) {
   if (resetProgressTabs) {
     $('.vertical-progress-bar-step').removeClass('is-current')
     $('.vertical-progress-bar-step').removeClass('done')
-  } 
+  }
 }
 
 // once users click on option card: Organize dataset
@@ -1573,8 +1573,7 @@ document.getElementById('button-section-organize-dataset').addEventListener('cli
   if (!($('#getting-started-tab').hasClass('tab-active'))) {
     $('#getting-started-tab').addClass('tab-active');
   }
-  currentTab = 0
-  showParentTab(0, 1)
+  showParentTab(currentTab, 1)
 })
 
 // function exitOrganizeSection() {
