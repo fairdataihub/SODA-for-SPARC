@@ -241,7 +241,7 @@ function loadProgressFile(ev) {
       document.getElementById('para-progress-file-status').innerHTML = "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>"
     }, 1300)
   } else {
-      sodaJSONObj = {};
+      sodaJSONObj = '{"starting-point":"new","dataset-structure":{},"metadata-files":{}}';
       setTimeout(function() {
         importManifest(sodaJSONObj)
         importMetadataFilesProgress(sodaJSONObj)

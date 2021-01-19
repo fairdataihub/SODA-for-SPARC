@@ -6094,7 +6094,7 @@ $(document).bind("contextmenu", function (event) {
 
 $(document).bind("click", function (event) {
   // If there is weird right click menu behaviour, check the hideMenu block
-  // 
+  //
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
@@ -6571,7 +6571,6 @@ document
     // delete datasetStructureObject["files"] value that was added only for the Preview tree view
     sodaJSONObj["dataset-structure"]["files"] = {};
 
-    console.log(sodaJSONObj);
     client.invoke(
       "api_check_empty_files_folders",
       sodaJSONObj,

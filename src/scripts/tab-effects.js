@@ -1512,6 +1512,10 @@ function updateOverallJSONStructure(id) {
 // function associated with the Exit button (Step 6: Generate dataset -> Generate div)
 function exitCurate() {
   document.getElementById('generate-dataset-progress-tab').style.display = "none";
+  wipeOutCurateProgress()
+}
+
+function wipeOutCurateProgress() {
   // set SODA json object back
   sodaJSONObj = {};
   // uncheck all radio buttons and checkboxes
