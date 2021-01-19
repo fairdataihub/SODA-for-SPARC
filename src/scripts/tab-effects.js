@@ -115,7 +115,7 @@ const fill_info_details = () => {
   {
     if ($('input[name="generate-1"]:checked')[0].id === "generate-local-existing")
     {
-      add_card_detail("Current dataset location", sodaJSONObj["starting-point"]["local-path"], 1, "Question-generate-dataset");
+      add_card_detail("Current dataset location", sodaJSONObj["starting-point"]["local-path"], 1, "Question-generate-dataset", true);
     }
     else if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop")
     {
@@ -123,8 +123,8 @@ const fill_info_details = () => {
       {
         add_card_detail("Original dataset location", sodaJSONObj["starting-point"]["local-path"]);
       }
-      add_card_detail("New dataset location", $("#input-destination-generate-dataset-locally")[0].placeholder, 1, "input-destination-generate-dataset-locally");
-      add_card_detail("New dataset name", $("#inputNewNameDataset").val().trim(), 1, "inputNewNameDataset");
+      add_card_detail("New dataset location", $("#input-destination-generate-dataset-locally")[0].placeholder, 1, "input-destination-generate-dataset-locally", true);
+      add_card_detail("New dataset name", $("#inputNewNameDataset").val().trim(), 1, "inputNewNameDataset", true);
     }
     else if ( $('input[name="generate-1"]:checked')[0].id === "generate-upload-BF")
     {
@@ -133,52 +133,52 @@ const fill_info_details = () => {
         add_card_detail("Original dataset location", sodaJSONObj["starting-point"]["local-path"]);
       }
 
-      add_card_detail("New dataset location", "Blackfynn", 1, "Question-generate-dataset");
-      add_card_detail("Current account", $("#current-bf-account-generate").text(), 1, "Question-generate-dataset-BF-account");
-      add_card_detail("Account details", $("#para-account-detail-curate-generate").html(), 1, "Question-generate-dataset-BF-account");
+      add_card_detail("New dataset location", "Blackfynn", 1, "Question-generate-dataset", true);
+      add_card_detail("Current account", $("#current-bf-account-generate").text(), 1, "Question-generate-dataset-BF-account", true);
+      add_card_detail("Account details", $("#para-account-detail-curate-generate").html(), 1, "Question-generate-dataset-BF-account", true);
       if (
         $('input[name="generate-4"]:checked')[0].id ===
         "generate-BF-dataset-options-existing"
       ) {
-        add_card_detail("Dataset name", $('#current-bf-dataset-generate').text(), 1, "Question-generate-dataset-BF-account");
+        add_card_detail("Dataset name", $('#current-bf-dataset-generate').text(), 1, "Question-generate-dataset-BF-dataset", true);
         if (
           $('input[name="generate-5"]:checked')[0].id ===
           "existing-folders-duplicate"
         ) {
-          add_card_detail("For existing folders", "Create a duplicate", 1, 'Question-generate-dataset-existing-folders-options');
+          add_card_detail("For existing folders", "Create a duplicate", 1, 'Question-generate-dataset-existing-folders-options', true);
         } else if (
           $('input[name="generate-5"]:checked')[0].id ===
           "existing-folders-replace"
         ) {
-          add_card_detail("For existing folders", "Replace", 1, "Question-generate-dataset-existing-folders-options");
+          add_card_detail("For existing folders", "Replace", 1, "Question-generate-dataset-existing-folders-options", true);
         } else if (
           $('input[name="generate-5"]:checked')[0].id ===
           "existing-folders-merge"
         ) {
-          add_card_detail("For existing folders", "Merge", 1, "Question-generate-dataset-existing-folders-options");
+          add_card_detail("For existing folders", "Merge", 1, "Question-generate-dataset-existing-folders-options", true);
         } else if (
           $('input[name="generate-5"]:checked')[0].id ===
           "existing-folders-skip"
         ) {
-          add_card_detail("For existing folders", "Skip", 1, "Question-generate-dataset-existing-folders-options");
+          add_card_detail("For existing folders", "Skip", 1, "Question-generate-dataset-existing-folders-options", true);
         }
         if (
           $('input[name="generate-6"]:checked')[0].id ===
           "existing-files-duplicate"
         ) {
-          add_card_detail("For existing files", "Create duplicates", 1, "Question-generate-dataset-existing-files-options");
+          add_card_detail("For existing files", "Create duplicates", 1, "Question-generate-dataset-existing-files-options", true);
         } else if (
           $('input[name="generate-6"]:checked')[0].id ===
           "existing-files-replace"
         ) {
-          add_card_detail("For existing files", "Replace", 1, "Question-generate-dataset-existing-files-options");
+          add_card_detail("For existing files", "Replace", 1, "Question-generate-dataset-existing-files-options", true);
         } else if (
           $('input[name="generate-6"]:checked')[0].id === "existing-files-skip"
         ) {
-          add_card_detail("For existing files", "Skip", 1, "Question-generate-dataset-existing-files-options");
+          add_card_detail("For existing files", "Skip", 1, "Question-generate-dataset-existing-files-options", true);
         }
       } else {
-        add_card_detail("New Dataset name ", $("#inputNewNameDataset").val().trim(), 1, "inputNewNameDataset");
+        add_card_detail("New Dataset name ", $("#inputNewNameDataset").val().trim(), 1, "inputNewNameDataset", true);
       }
     }
     metadataFile_present = ""
@@ -197,19 +197,31 @@ const fill_info_details = () => {
   }
 };
 
-const traverse_back = (amount, element = "") => {
+const traverse_back = (amount, element = "", pulse_animation = false) => {
   for (i = 0; i < amount; i++) {
     nextPrev(-1);
   }
   if (element != "") {
-    document.getElementById(element).scrollIntoView({ behavior: "smooth" });
+    document
+      .getElementById(element)
+      .scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      });
   }
+  if (pulse_animation == true) {
+    $("#" + element).addClass("pulse-blue");
+  }
+  setTimeout(() => {
+    $(".pulse-blue").removeClass("pulse-blue");
+  }, 4000);
 };
 
-const add_card_detail = (card_left, card_right, parent_tab = -1, element_id = "") => {
+const add_card_detail = (card_left, card_right, parent_tab = -1, element_id = "", pulse = false) => {
   let link_item = "<i class='far fa-edit jump-back' onclick='traverse_back(";
   link_item += parent_tab.toString();
-  temp = ', "' + element_id + '")'
+  temp = ', "' + element_id + '", ' + pulse + ')';
   link_item += temp
   link_item += "'></i>";
   let parent_element = $("#div-preview-dataset-details");
@@ -685,6 +697,7 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
         .children()
       ).addClass("non-selected");
       $("#nextBtn").prop("disabled", false);
+      sodaJSONObj["starting-point"]= {};
       sodaJSONObj["starting-point"]["type"] = "new";
       sodaJSONObj["dataset-structure"] = {};
       datasetStructureJSONObj = { folders: {}, files: {}};
@@ -866,7 +879,7 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
      "manifest-files": {},
      "generate-dataset": {},
      "starting-point": {
-       "type": "new"
+       "type": "bf"
      },
    };
 
