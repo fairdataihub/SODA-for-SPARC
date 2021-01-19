@@ -1178,7 +1178,7 @@
 
 .pulse-blue{
 	box-shadow: 0 0 0 0 rgba(52, 172, 224, 1);
-	animation: pulse-blue-animation 1.5s infinite;
+	animation: pulse-blue-animation 2s infinite;
 }
 
 @keyframes pulse-blue-animation {

@@ -665,6 +665,7 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
         ).children()[0]
       ).toggleClass("non-selected");
       $("#nextBtn").prop("disabled", false);
+      sodaJSONObj["starting-point"]= {};
       sodaJSONObj["starting-point"]["type"] = "new";
       sodaJSONObj["dataset-structure"] = {};
       datasetStructureJSONObj = { folders: {}, files: {}};
@@ -849,7 +850,7 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
      "manifest-files": {},
      "generate-dataset": {},
      "starting-point": {
-       "type": "new"
+       "type": "bf"
      },
    };
 

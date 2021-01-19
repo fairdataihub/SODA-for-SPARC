@@ -561,6 +561,8 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
 
         return
 
+    level = 0
+
     def recursive_dataset_import(my_item, dataset_folder, metadata_files, my_folder_name, my_level, manifest_dict):
         col_count = 0
         file_count = 0
