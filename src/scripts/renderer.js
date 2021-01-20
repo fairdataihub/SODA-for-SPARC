@@ -5516,38 +5516,6 @@ function showDefaultBFAccount() {
   })
 }
 
-//
-// /// reset progress
-// resetProgress.addEventListener("click", function() {
-//   bootbox.confirm({
-//     title: "Reset progress",
-//     message: "<p>Are you sure you want to clear the current file organization?</p>",
-//     centerVertical: true,
-//     callback: function(r) {
-//       if (r!==null) {
-//         organizeDSglobalPath.value = "/"
-//         datasetStructureJSONObj = {
-//           "type": "virtual",
-//           "folders": {
-//             "code": {"type": "virtual", "folders": {}, "files": {}},
-//             "derivative": {"type": "virtual", "folders": {}, "files": {}},
-//             "primary": {"type": "virtual", "folders": {}, "files": {}},
-//             "source": {"type": "virtual", "folders": {}, "files": {}},
-//             "docs": {"type": "virtual", "folders": {}, "files": {}},
-//             "protocols": {"type": "virtual", "folders": {}, "files": {}}
-//           },
-//           "files": {}
-//         }
-//         listItems(datasetStructureJSONObj, '#items')
-//         getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-//         hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-//         hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-//       }
-//     }
-//   })
-// })
-
-
 ////// function to trigger action for each context menu option
 function hideMenu(category, menu1, menu2, menu3){
   if (category === "folder") {
@@ -6357,7 +6325,7 @@ function listItems(jsonObj, uiItem) {
   $(uiItem).html(appendString);
 
   dragselect_area.stop();
-  
+
   dragselect_area = new DragSelect({
     selectables: document.querySelectorAll(".single-item"),
     draggability: false,

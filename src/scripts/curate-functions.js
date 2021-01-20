@@ -966,6 +966,7 @@ function moveItemsHelper(item, destination, category) {
   //delete item from the original location
   delete myPath[category][item];
   listItems(myPath, '#items');
+  getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
 }
 
 $(jstreeInstance).on("changed.jstree", function (e, data) {
