@@ -745,7 +745,8 @@ function create_child_node(oldFormatNode, nodeName, type, ext, openedState, sele
   return newFormatNode;
 }
 
-var selected = false;
+// var selected = false;
+var selectedPath;
 var selectedNode;
 var jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, "", "moveItems");
 var jstreeInstance = document.getElementById('data');
@@ -828,8 +829,8 @@ async function moveItems(ev, category) {
   }
   $(jstreeInstance).jstree(true).settings.core.data = jsTreeData;
   $(jstreeInstance).jstree(true).refresh();
-  selected = false;
-  selectedNode = undefined;
+  selectedPath = undefined;
+  selectedNode = "";
 
   // first, convert datasetStructureJSONObj to jsTree's json structure
   // show swal2 with jstree in here
@@ -842,17 +843,23 @@ async function moveItems(ev, category) {
     confirmButtonText: "Confirm",
     cancelButtonText: "Cancel",
     preConfirm: () => {
-      if (!(selectedNode)) {
+      Swal.resetValidationMessage();
+      if (!selectedPath) {
         Swal.showValidationMessage("Please select a folder destination!")
         return undefined
       } else {
-        return selectedNode
-      }
+          if (selectedNode === "My_dataset_folder") {
+            Swal.showValidationMessage("Items cannot be moved to this level of the dataset!");
+            return undefined
+          } else {
+              return selectedPath
+            }
+          }
     }
   })
   if (folderDestination) {
     Swal.fire({
-      title: "Are you sure you want to move selected item(s) to: " + selectedNode + "?",
+      title: "Are you sure you want to move selected item(s) to: " + selectedPath + "?",
       showCancelButton: true,
       confirmButtonText: "Yes"
     }).then((result) => {
@@ -877,7 +884,7 @@ async function moveItems(ev, category) {
             } else if ($(element.firstElementChild).hasClass("myFol")) {
               itemType = "folders";
             }
-            moveItemsHelper(itemToMove, selectedNode, itemType);
+            moveItemsHelper(itemToMove, selectedPath, itemType);
           })
         // only 1 file/folder
         } else {
@@ -888,7 +895,7 @@ async function moveItems(ev, category) {
           } else if ($(ev).hasClass("myFol")) {
             itemType = "folders";
           }
-          moveItemsHelper(itemToMove, selectedNode, itemType);
+          moveItemsHelper(itemToMove, selectedPath, itemType);
         }
         }
       })
@@ -962,12 +969,11 @@ function moveItemsHelper(item, destination, category) {
 }
 
 $(jstreeInstance).on("changed.jstree", function (e, data) {
-  selected = true;
   if (data.node) {
-    var selected = data.changed.selected
-    selectedNode = data.instance.get_path(data.node,'/');
+    selectedNode = data.node.text;
+    selectedPath = data.instance.get_path(data.node,'/');
     var parentNode = $(jstreeInstance).jstree('get_selected');
-    // alert(parentNode);
+
   }
 })
 $(jstreeInstance).on('open_node.jstree', function (event, data) {
