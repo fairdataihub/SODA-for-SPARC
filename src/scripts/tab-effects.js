@@ -647,9 +647,31 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
     document.getElementById(parentDiv).appendChild(target);
   }
 
-  // if buttons: Add account and Confirm account were hidden, show them again here
+  // if buttons: Confirm account were hidden, show them again here
+  // under Step 6
   if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-account") {
     $("#" + ev.getAttribute("data-next") + " button").show();
+  }
+  // under Step 1
+  if (ev.getAttribute("data-next") === "Question-getting-started-BF-account") {
+    $("#div-bf-account-btns-getting-started").css("display", "flex");
+    $("#div-bf-account-btns-getting-started button").show();
+  }
+
+  // If Confirm dataset btn was hidden, show it again here
+  // under Step 6
+  if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-dataset") {
+    if ($("#current-bf-dataset-generate").text() !== "None") {
+      $($("#button-confirm-bf-dataset").parents()[0]).css("display", "flex");
+      $("#button-confirm-bf-dataset").show();
+    }
+  }
+  // under Step 1
+  if (ev.getAttribute("data-next") === "Question-getting-started-BF-dataset") {
+    if ($("#current-bf-dataset").text() !== "None") {
+      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "flex");
+      $("#button-confirm-bf-dataset-getting-started").show();
+    }
   }
 
   if (

@@ -489,14 +489,14 @@ async function openDropdownPrompt(dropdown) {
       tempDatasetListsSync();
       showHideDropdownButtons("dataset", "show");
       checkPrevDivForConfirmButton("dataset");
-      // $($('#button-confirm-bf-dataset').parents()[0]).css("display", "flex")
-      // $('#button-confirm-bf-dataset').show()
     }
     // hide "Confirm" button if Current dataset set to None
     if ($("#current-bf-dataset").text() === "None") {
       showHideDropdownButtons("dataset", "hide");
-      // $($('#button-confirm-bf-dataset').parents()[0]).css("display", "none")
-      // $('#button-confirm-bf-dataset').hide()
+    }
+    // hide "Confirm" button if Current dataset under Getting started set to None
+    if ($("#current-bf-dataset").text() === "None") {
+      showHideDropdownButtons("dataset", "hide");
     }
   }
 }
