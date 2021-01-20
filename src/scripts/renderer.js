@@ -6053,6 +6053,7 @@ $(document).bind("contextmenu", function (event) {
       $(event.target).parent().addClass("selected-item");
     } else {
       $(".selected-item").removeClass("selected-item");
+      dragselect_area.clearSelection();
     }
   }
 
