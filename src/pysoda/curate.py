@@ -1869,7 +1869,9 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
                 if "moved" in folder["files"][item]['action'] and folder["files"][item]["type"] == "bf":
                     new_folder_id = ""
                     new_folder_id = recursive_check_and_create_bf_file_path(folder["files"][item]["folderpath"].copy(), 0, bfsd)
+                    logger.info(new_folder_id)
                     destination_folder = bf.get(new_folder_id)
+                    logger.info(destination_folder) 
                     bf.move(destination_folder, folder["files"][item]["path"])
 
         for item in list(folder["folders"]):
@@ -2536,7 +2538,7 @@ def main_curate_function(soda_json_structure):
                     # if "manifest-files" in main_keys:
                     #     main_curate_progress_message = "Generating manifest files"
                     #     bf_add_manifest_files(manifest_files_structure, myds)
-                if generate_option == "existing":
+                if generate_option == "existing-bf":
                     myds = bf.get_dataset(bfdataset)
                     bf_update_existing_dataset(soda_json_structure, bf, myds)
 
