@@ -917,7 +917,7 @@
 }
 
 .svg-change-current-account:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   fill: #000
 }
 
@@ -927,6 +927,7 @@
   width: inherit;
   max-width: 600px;
   overflow: auto;
+  margin-bottom: 5px;
 }
 
 .card-left{
@@ -950,8 +951,9 @@
 .jump-back{
   margin-left: 15px;
   cursor: pointer;
-  right: 13px;
-  position: absolute;
+  right: 0;
+  position: relative;
+  line-height: 1.5 !important;
 }
 
 @-webkit-keyframes jump-back {
@@ -970,28 +972,28 @@
 }
 @keyframes jump-back {
   0% {
-    -webkit-transform: translateY(-4px);
-    transform: translateY(-4px);
+    -webkit-transform: translateY(-3px);
+    transform: translateY(-3px);
   }
   50% {
     -webkit-transform: translateY(-2px);
     transform: translateY(-2px);
   }
   100% {
-    -webkit-transform: translateY(-4px);
-    transform: translateY(-4px);
+    -webkit-transform: translateY(-3px);
+    transform: translateY(-3px);
   }
 }
 @-webkit-keyframes jump-back-float {
   100% {
-    -webkit-transform: translateY(-4px);
-    transform: translateY(-4px);
+    -webkit-transform: translateY(-3px);
+    transform: translateY(-3px);
   }
 }
 @keyframes jump-back-float {
   100% {
-    -webkit-transform: translateY(-4px);
-    transform: translateY(-4px);
+    -webkit-transform: translateY(-3px);
+    transform: translateY(-3px);
   }
 }
 
@@ -1187,11 +1189,11 @@
 	0% {
 		box-shadow: 0 0 0 0 rgba(52, 172, 224, 0.7);
 	}
-	
+
 	50% {
 		box-shadow: 0 0 0 10px rgba(52, 172, 224, 0);
 	}
-	
+
 	100% {
 		box-shadow: 0 0 0 0 rgba(52, 172, 224, 0);
 	}
