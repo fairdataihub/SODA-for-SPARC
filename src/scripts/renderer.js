@@ -421,11 +421,17 @@ function openSidebar(buttonElement) {
 // Assign dragable area in the code to allow for dragging and selecting items//
 let drag_event_fired = false;
 let dragselect_area = new DragSelect({
-  selectables: document.querySelectorAll('.single-item'),
-  callback: e => select_items(e),
+  selectables: document.querySelectorAll(".single-item"),
   draggability: false,
-  area: document.getElementById('items'),
-  onDragStart: e => select_items_ctrl(e)
+  area: document.getElementById("items"),
+});
+
+dragselect_area.subscribe("callback", ({ items, event }) => {
+  select_items(items);
+});
+
+dragselect_area.subscribe("onDragStart", (e) => {
+  select_items_ctrl(e);
 });
 
 // Button selection to move on to next step under Prepare Dataset //
@@ -6356,13 +6362,21 @@ function listItems(jsonObj, uiItem) {
 
   $(uiItem).empty();
   $(uiItem).html(appendString);
+
   dragselect_area.stop();
+  
   dragselect_area = new DragSelect({
-    selectables: document.querySelectorAll('.single-item'),
-    callback: e => select_items(e),
+    selectables: document.querySelectorAll(".single-item"),
     draggability: false,
     area: document.getElementById("items"),
-    onDragStart: e => select_items_ctrl(e)
+  });
+
+  dragselect_area.subscribe("callback", ({ items, event }) => {
+    select_items(items);
+  });
+
+  dragselect_area.subscribe("onDragStart", (e) => {
+    select_items_ctrl(e);
   });
   drag_event_fired = false;
 }
