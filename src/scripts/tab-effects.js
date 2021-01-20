@@ -605,6 +605,8 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
   if (currentDiv === "Question-getting-started-1") {
     globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
     if (globalGettingStarted1stQuestionBool) {
+      $("#progress-files-dropdown").val("Select");
+      $("#para-progress-file-status").text("");
       exitCurate();
       globalGettingStarted1stQuestionBool = false;
     } else {

@@ -971,7 +971,7 @@ $(jstreeInstance).on("changed.jstree", function (e, data) {
   }
 })
 $(jstreeInstance).on('open_node.jstree', function (event, data) {
-    data.instance.set_type(data.node,'folder open');
+    data.instance.set_type(data.node,'folder');
 });
 $(jstreeInstance).on("close_node.jstree", function (event, data) {
   data.instance.set_type(data.node, "folder closed");
