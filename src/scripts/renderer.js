@@ -421,11 +421,17 @@ function openSidebar(buttonElement) {
 // Assign dragable area in the code to allow for dragging and selecting items//
 let drag_event_fired = false;
 let dragselect_area = new DragSelect({
-  selectables: document.querySelectorAll('.single-item'),
-  callback: e => select_items(e),
+  selectables: document.querySelectorAll(".single-item"),
   draggability: false,
-  area: document.getElementById('items'),
-  onDragStart: e => select_items_ctrl(e)
+  area: document.getElementById("items"),
+});
+
+dragselect_area.subscribe("callback", ({ items, event }) => {
+  select_items(items, event, isDragging);
+});
+
+dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
+  select_items_ctrl(items, event, isDragging);
 });
 
 // Button selection to move on to next step under Prepare Dataset //
@@ -6086,19 +6092,20 @@ $(document).bind("contextmenu", function (event) {
   }
 });
 
-const select_items_ctrl = (event) => {
+const select_items_ctrl = (items, event, isDragging) => {
   if (event["ctrlKey"]) {
   } else {
     $(".selected-item").removeClass("selected-item");
+    dragselect_area.clearSelection();
   }
 };
 
-const select_items = (event_list) => {
+const select_items = (items, event, isDragging) => {
   //console.log(event_list);
 
   let selected_class = "";
 
-  event_list.forEach((event_item) => {
+  items.forEach((event_item) => {
     let target_element = null;
     let parent_element = null;
 
@@ -6114,8 +6121,9 @@ const select_items = (event_list) => {
       }
     }
 
+    /*
     if (selected_class != "") {
-      if (event_item.ctrlKey) {
+      if (event.ctrlKey) {
         if ($(target_element).hasClass(selected_class)) {
           $(target_element).removeClass(selected_class);
           $(parent_element).removeClass(selected_class);
@@ -6128,6 +6136,13 @@ const select_items = (event_list) => {
         $(parent_element).addClass(selected_class);
       }
     }
+    */
+   $(".selected-item").removeClass("selected-item");
+   $(".ds-selected").addClass(selected_class);
+   $(".ds-selected").each((index, element) => {
+      target_element = $(element).children()[0];
+      $(target_element).addClass(selected_class);
+   })
   });
 };
 
@@ -6141,7 +6156,7 @@ $(document).bind("click", function (event) {
   hideFullName();
 
   // Handle clearing selection when clicked outside.
-  // Currntly only handles clicks inside the folder holder area
+  // Currently only handles clicks inside the folder holder area
   if (event.target.classList[0] === "div-organize-items") {
     if (drag_event_fired)
     {
@@ -6158,6 +6173,7 @@ $(document).bind("click", function (event) {
 
   // Assign target(folder/file) and parent elements
   //
+  /*
   if (
     event.target.classList[0] === "myFile" ||
     event.target.classList[0] === "myFol"
@@ -6178,7 +6194,7 @@ $(document).bind("click", function (event) {
 
   // Add selected-item class to the elements.
   // Handle ctrl selection - Follows linux native os behaviour
-  if (selected_class != "") {
+  /*if (selected_class != "") {
     if (event.ctrlKey) {
       if ($(target_element).hasClass(selected_class)) {
         $(target_element).removeClass(selected_class);
@@ -6192,7 +6208,7 @@ $(document).bind("click", function (event) {
       $(target_element).addClass(selected_class);
       $(parent_element).addClass(selected_class);
     }
-  }
+  }*/
 });
 
 // sort JSON objects by keys alphabetically (folder by folder, file by file)
@@ -6339,13 +6355,21 @@ function listItems(jsonObj, uiItem) {
 
   $(uiItem).empty();
   $(uiItem).html(appendString);
+
   dragselect_area.stop();
+  
   dragselect_area = new DragSelect({
-    selectables: document.querySelectorAll('.single-item'),
-    callback: e => select_items(e),
+    selectables: document.querySelectorAll(".single-item"),
     draggability: false,
     area: document.getElementById("items"),
-    onDragStart: e => select_items_ctrl(e)
+  });
+
+  dragselect_area.subscribe("callback", ({ items, event, isDragging }) => {
+    select_items(items, event, isDragging);
+  });
+
+  dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
+    select_items_ctrl(items, event, isDragging);
   });
   drag_event_fired = false;
 }

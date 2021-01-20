@@ -262,13 +262,9 @@ button[disabled]{
     padding: 10px 0px 10px 0px;
 }
 
-.single-item.selected-item {
-  background-color: #e4dede;
-}
-
 .single-item.selected-item:hover {
   border: #c0c0c0;
-  background-color: #eeeaea;
+  background-color: #d8d7d7;
   /* transform: translateY(-6px); */
 }
 
