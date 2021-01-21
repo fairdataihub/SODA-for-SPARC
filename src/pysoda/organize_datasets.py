@@ -553,12 +553,12 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 if "bfpath" not in folder["files"][item]:
                     folder["files"][item]['bfpath'] = path[:]
 
-        for item in list(folder["folders"]):
-            if "bfpath" not in folder["folders"][item]:
-                folder["folders"][item]['bfpath'] = path[:]
-                folder["folders"][item]['bfpath'].append(item)
-            recursive_item_path_create(folder["folders"][item], folder["folders"][item]['bfpath'][:])
-
+        if "folders" in folder.keys():
+            for item in list(folder["folders"]):
+                if "bfpath" not in folder["folders"][item]:
+                    folder["folders"][item]['bfpath'] = path[:]
+                    folder["folders"][item]['bfpath'].append(item)
+                recursive_item_path_create(folder["folders"][item], folder["folders"][item]['bfpath'][:])
         return
 
     level = 0
