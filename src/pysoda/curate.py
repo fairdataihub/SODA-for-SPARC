@@ -1816,12 +1816,14 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
         return
 
     # Delete any files on blackfynn that have been marked as deleted
-    def recursive_metadata_file_delete(folder):
-        for item in list(folder):
-            if "deleted" in folder[item]['action']:
-                file = bf.get(folder[item]['path'])
-                file.delete()
-                del folder[item]
+    def metadata_file_delete(soda_json_structure):
+        if "metadata-files" in soda_json_structure.keys():
+            folder = soda_json_structure["metadata-files"]
+            for item in list(folder):
+                if "deleted" in folder[item]['action']:
+                    file = bf.get(folder[item]['path'])
+                    file.delete()
+                    del folder[item]
 
         return
     
@@ -1921,42 +1923,42 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
 
         return
 
-    # 1. Remove all existing files on blackfynn, that the user deleted.
-    main_curate_progress_message = "Deleting files on blackfynn"
+    # 1. Remove all existing files on Blackfynn, that the user deleted.
+    main_curate_progress_message = "Deleting files on Blackfynn"
     dataset_structure = soda_json_structure["dataset-structure"]
     recursive_file_delete(dataset_structure)
-    main_curate_progress_message = "Files on blackfynn marked for deletion have been deleted"
+    main_curate_progress_message = "Files on Blackfynn marked for deletion have been deleted"
     
-    # 2. Get the status of all files currently on blackfynn and create 
+    # 2. Get the status of all files currently on Blackfynn and create 
     # the folderpath for all items in both dataset structures.
-    main_curate_progress_message = "Retreiving files and folders from blackfynn"
+    main_curate_progress_message = "Fetching files and folders from Blackfynn"
     current_bf_dataset_files_folders = bf_get_dataset_files_folders (soda_json_structure.copy())[0]
     bfsd = current_bf_dataset_files_folders["dataset-structure"]
-    main_curate_progress_message = "Creating file paths for all files on blackfynn"
+    main_curate_progress_message = "Creating file paths for all files on Blackfynn"
     recursive_item_path_create(dataset_structure, [])
     recursive_item_path_create(bfsd, [])
     main_curate_progress_message = "File paths created"
     
 
-    # 3. Move any files that are marked as moved on blackfynn. 
+    # 3. Move any files that are marked as moved on Blackfynn. 
     # Create any additional folders if required
     main_curate_progress_message = "Moving all files requested by the user"
     recursive_check_moved_files(dataset_structure)
     main_curate_progress_message = "Moved all files requested by the user"
 
-    # 4. Rename any blackfynn files that are marked as renamed. 
+    # 4. Rename any Blackfynn files that are marked as renamed. 
     main_curate_progress_message = "Renaming all files requested by the user"
     recursive_file_rename(dataset_structure)
     main_curate_progress_message = "Renamed all files requested by the user"
 
-    # 5. Delete any blackfynn folders that are marked as deleted. 
-    main_curate_progress_message = "Deleting any additional folders present on blackfynn"
+    # 5. Delete any Blackfynn folders that are marked as deleted. 
+    main_curate_progress_message = "Deleting any additional folders present on Blackfynn"
     recursive_folder_delete(dataset_structure)
     main_curate_progress_message = "Deletion of additional folders complete"
 
     # 6. Delete any metadata files that are marked as deleted. 
     main_curate_progress_message = "Removing metadata files marked for deletion"
-    recursive_metadata_file_delete(soda_json_structure["metadata-files"])
+    metadata_file_delete(soda_json_structure)
     main_curate_progress_message = "Removed metadata files marked for deletion"
 
     # 7. Run the original code to upload any new files added to the dataset.

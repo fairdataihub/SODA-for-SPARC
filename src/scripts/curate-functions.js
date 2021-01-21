@@ -487,6 +487,7 @@ async function openDropdownPrompt(dropdown) {
       $("#current-bf-dataset-generate").text(bfDataset);
       defaultBfDataset = bfDataset;
       tempDatasetListsSync();
+      $("#dataset-loaded-message").hide();
       showHideDropdownButtons("dataset", "show");
       checkPrevDivForConfirmButton("dataset");
       // $($('#button-confirm-bf-dataset').parents()[0]).css("display", "flex")

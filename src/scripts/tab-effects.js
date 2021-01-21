@@ -913,6 +913,7 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
    }
    $("body").removeClass("waiting");
    $("#bf-dataset-spinner").css("visibility", "hidden");
+   $("#dataset-loaded-message").show();
    $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
  }
 
@@ -1541,9 +1542,10 @@ function updateOverallJSONStructure(id) {
 }
 //////////////////////////////// END OF Functions to update JSON object //////////////////////////////////////////
 
-// function associated with the Exit button (Step 6: Generate dataset -> Generate div)
+// function associated with the Exit button (Step 7: Generate dataset -> Generate div)
 function exitCurate(resetProgressTabs=false) {
   document.getElementById('generate-dataset-progress-tab').style.display = "none";
+  $("#dataset-loaded-message").hide();
   wipeOutCurateProgress(resetProgressTabs=false)
 }
 
