@@ -81,7 +81,7 @@ function showParentTab(tabNow, nextOrPrev) {
 
   if (tabNow == x.length - 1) {
     document.getElementById("nextBtn").style.display = "none";
-    showTreeViewPreview(datasetStructureJSONObj);
+    showTreeViewPreview();
     $("#Question-preview-dataset-details").show();
     $("#Question-preview-dataset-details").children().show();
     $("#Question-generate-dataset-generate-div").show();
@@ -1663,6 +1663,15 @@ function saveSODAJSONProgress(progressFileName) {
   var filePath = path.join(progressFilePath, progressFileName + ".json");
   // record all information listed in SODA JSON Object before saving
   updateJSONObjectProgress();
+  // delete datasetStructureObject["files"] value that was added only for the Preview tree view
+  sodaJSONObj["dataset-structure"]["files"] = {};
+  // delete manifest files added for treeview
+  for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+    if ("manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]
+        && sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"]["forTreeview"]) {
+      delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
+    }
+  }
   fs.writeFileSync(filePath, JSON.stringify(sodaJSONObj));
   bootbox.alert({
     message:

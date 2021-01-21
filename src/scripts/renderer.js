@@ -6617,7 +6617,15 @@ document
 
     // delete datasetStructureObject["files"] value that was added only for the Preview tree view
     sodaJSONObj["dataset-structure"]["files"] = {};
+    // delete manifest files added for treeview
+    for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+      if ("manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]
+          && sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"]["forTreeview"]) {
+        delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
+      }
+    }
 
+    console.log(sodaJSONObj["dataset-structure"]["folders"])
     client.invoke(
       "api_check_empty_files_folders",
       sodaJSONObj,

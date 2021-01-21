@@ -995,18 +995,29 @@ $(jstreeInstance).on("changed.jstree", function (e, data) {
     selectedNode = data.node.text;
     selectedPath = data.instance.get_path(data.node,'/');
     var parentNode = $(jstreeInstance).jstree('get_selected');
-
+    console.log(parentNode)
   }
 })
+
 $(jstreeInstance).on('open_node.jstree', function (event, data) {
-    data.instance.set_type(data.node,'folder');
+    data.instance.set_type(data.node,'folder open');
 });
+
 $(jstreeInstance).on("close_node.jstree", function (event, data) {
   data.instance.set_type(data.node, "folder closed");
 });
 
-function showTreeViewPreview(datasetStructureObject) {
-  datasetStructureObject["files"] = sodaJSONObj["metadata-files"];
+function showTreeViewPreview() {
+  datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
+  if (manifestFileCheck.checked) {
+    for (var key in datasetStructureJSONObj["folders"]) {
+      if (highLevelFolders.includes(key)) {
+        if (!("manifest.xlsx" in datasetStructureJSONObj["folders"][key]["files"])) {
+          datasetStructureJSONObj["folders"][key]["files"]["manifest.xlsx"] = {"forTreeview": true};
+        }
+      }
+    }
+  }
   var jsTreePreviewData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, "", "preview");
   var jstreePreview = document.getElementById('div-dataset-tree-preview');
   $(document).ready(function() {
