@@ -926,6 +926,7 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
    }
    $("body").removeClass("waiting");
    $("#bf-dataset-spinner").css("visibility", "hidden");
+   $("#dataset-loaded-message").show();
    $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
  }
 
@@ -1589,6 +1590,7 @@ function raiseWarningExit() {
 }
 
 async function exitCurate(resetProgressTabs) {
+  $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
     var res = await raiseWarningExit();
