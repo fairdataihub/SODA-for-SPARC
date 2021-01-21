@@ -62,7 +62,6 @@ function showParentTab(tabNow, nextOrPrev) {
   } else {
     document.getElementById("nextBtn").disabled = false;
   }
-  console.log($("#input-destination-generate-dataset-locally")[0].placeholder)
   if (tabNow == 5) {
     if (
       $("#inputNewNameDataset").val() !== "" ||
@@ -374,7 +373,6 @@ function nextPrev(n) {
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
     // cj -skip step 6
-    console.log("hiding");
     $(x[currentTab]).removeClass("tab-active");
     if (n == -1) {
       currentTab = currentTab + n;
@@ -390,7 +388,6 @@ function nextPrev(n) {
     (sodaJSONObj["starting-point"]["type"] === "new" ||
       sodaJSONObj["starting-point"]["type"] === "local")
   ) {
-    //console.log("showing");
     $(x[currentTab]).removeClass("tab-active");
     currentTab = currentTab + n;
     $("#Question-generate-dataset").show();
@@ -452,7 +449,6 @@ function nextPrev(n) {
       })
     }
     showParentTab(currentTab, n);
-    console.log(JSON.stringify(sodaJSONObj));
   }
 }
 
@@ -518,7 +514,6 @@ function showSubTab(section, tab, input) {
 // function to check if certain high level folders already chosen and have files/sub-folders
 // then disable the option (users cannot un-choose)
 function highLevelFoldersDisableOptions() {
-  //console.log(datasetStructureJSONObj);
   var highLevelFolderOptions = datasetStructureJSONObj["folders"];
   if (highLevelFolderOptions) {
     for (var folder of highLevelFolders) {
@@ -607,7 +602,7 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
     if (globalGettingStarted1stQuestionBool) {
       $("#progress-files-dropdown").val("Select");
       $("#para-progress-file-status").text("");
-      exitCurate();
+      exitCurate(false);
       globalGettingStarted1stQuestionBool = false;
     } else {
       globalGettingStarted1stQuestionBool = false;
@@ -713,7 +708,7 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
     $("#nextBtn").prop("disabled", true);
 
     if ($("#prepare-new").prop("checked")) {
-      exitCurate();
+      exitCurate(false);
       $("#prepare-new").prop("checked", true);
       $($("#prepare-new").parents()[2]).addClass("checked");
       $($($("#div-getting-started-prepare-new").parents()[0])
@@ -791,7 +786,6 @@ create_json_object = (sodaJSONObj) => {
   root_folder_path = $("#input-destination-generate-dataset-locally").attr('placeholder');
   sodaJSONObj["dataset-structure"] = { folders: {} };
   fs.readdirSync(root_folder_path).forEach((file) => {
-    //console.log(file);
     full_current_path = path.join(root_folder_path, file);
     let stats = fs.statSync(full_current_path);
     if (stats.isDirectory()) {
@@ -861,9 +855,6 @@ verify_sparc_folder = (root_folder_path) => {
     "CHANGES",
   ];
   valid_dataset = false;
-  // fs.readdirSync(root_folder_path).map(fileName => {
-  //   //console.log( path.join(root_folder_path, fileName))
-  // })
   fs.readdirSync(root_folder_path).forEach((file) => {
     if (highLevelFolders.includes(file)) {
       valid_dataset = true;
@@ -928,9 +919,7 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
      return;
    } else {
      sodaJSONObj = res[0];
-     //console.log(sodaJSONObj);
      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
-     //console.log(datasetStructureJSONObj);
      populate_existing_folders(datasetStructureJSONObj);
      populate_existing_metadata(sodaJSONObj);
      $("#nextBtn").prop("disabled", false);
@@ -1046,7 +1035,6 @@ var populate_existing_folders = (datasetStructureJSONObj) => {
 
 var populate_existing_metadata = (datasetStructureJSONObj) => {
   let metadataobject = datasetStructureJSONObj["metadata-files"];
-  //console.log(datasetStructureJSONObj["metadata-files"])
   if (metadataobject == null || metadataobject == undefined )
   {
     return;
@@ -1380,12 +1368,6 @@ function updateJSONStructureGenerate() {
   //cj - add code here to update the json structure to account for the new stuff
   // answer to Question 1: where to generate: locally or BF
   if (sodaJSONObj["starting-point"]["type"] == "bf") {
-    if (!("bf-account-selected" in sodaJSONObj)) {
-      console.log("bf-account-selected not in structure");
-    }
-    if (!("bf-dataset-selected" in sodaJSONObj)) {
-      console.log("bf-dataset-selected not in structure");
-    }
     sodaJSONObj["generate-dataset"] = {
       destination: "bf",
       "generate-option": "existing-bf",
@@ -1440,7 +1422,7 @@ function updateJSONStructureGenerate() {
             destination: "bf",
             "generate-option": "new",
           };
-          if (!($("#current-bf-account-generate").text("None"))) {
+          if ($("#current-bf-account-generate").text() === "None") {
             if ("bf-account-selected" in sodaJSONObj) {
               sodaJSONObj["bf-account-selected"]["account-name"] =
               $("#current-bf-account-generate").text();
@@ -1498,7 +1480,7 @@ function updateJSONStructureGenerate() {
                 }
               }
               // populate JSON obj with BF dataset and account
-              if (!($('#current-bf-dataset-generate').text("None"))) {
+              if ($('#current-bf-dataset-generate').text() !== "None") {
                 if ("bf-dataset-selected" in sodaJSONObj) {
                   sodaJSONObj["bf-dataset-selected"]["dataset-name"] =
                   $('#current-bf-dataset-generate').text()
@@ -1576,13 +1558,62 @@ function updateOverallJSONStructure(id) {
 }
 //////////////////////////////// END OF Functions to update JSON object //////////////////////////////////////////
 
-// function associated with the Exit button (Step 6: Generate dataset -> Generate div)
-function exitCurate(resetProgressTabs=false) {
-  document.getElementById('generate-dataset-progress-tab').style.display = "none";
-  wipeOutCurateProgress(resetProgressTabs=false)
+var generateExitButtonBool = false;
+function raiseWarningExit() {
+  // function associated with the Exit button (Step 6: Generate dataset -> Generate div)
+  return new Promise(resolve => {
+    bootbox.confirm({
+      message: "This will reset your progress so far. We recommend saving your progress before exiting. Are you sure you want to continue?",
+      buttons: {
+        confirm: {
+          label: "Yes",
+          className: "btn-success",
+        },
+        cancel: {
+          label: "No",
+          className: "btn-danger",
+        },
+      },
+      centerVertical: true,
+      callback: function (result) {
+        if (result) {
+          generateExitButtonBool = true;
+          resolve(generateExitButtonBool)
+        } else {
+          generateExitButtonBool = false;
+          resolve(generateExitButtonBool)
+        }
+      }
+    });
+  })
 }
 
-function wipeOutCurateProgress(resetProgressTabs) {
+async function exitCurate(resetProgressTabs) {
+  // if exit Btn is clicked after Generate
+  if (resetProgressTabs) {
+    var res = await raiseWarningExit();
+    if (res) {
+      $('.vertical-progress-bar-step').removeClass('is-current')
+      $('.vertical-progress-bar-step').removeClass('done');
+      $('.getting-started').removeClass('prev');
+      $('.getting-started').removeClass('show');
+      $('.getting-started').removeClass('test2');
+      $('#Question-getting-started-1').addClass('show');
+      document.getElementById('generate-dataset-progress-tab').style.display = "none";
+      currentTab = 0;
+      wipeOutCurateProgress();
+      $("#prepare-dataset-a")[0].click();
+      globalGettingStarted1stQuestionBool = false;
+    } else {
+      globalGettingStarted1stQuestionBool = false;
+      return
+    }
+  } else {
+    wipeOutCurateProgress()
+  }
+}
+
+function wipeOutCurateProgress() {
   // set SODA json object back
   sodaJSONObj = {"starting-point": {"type": ""}, "dataset-structure": {}, "metadata-files": {}};
   // uncheck all radio buttons and checkboxes
@@ -1599,6 +1630,7 @@ function wipeOutCurateProgress(resetProgressTabs) {
   $('.para-metadata-file-status').text("");
   // un-show all divs from Generate dataset step
   $($('#Question-generate-dataset').siblings()).removeClass('show');
+
   $('.generate-dataset').removeClass('prev');
   $('.generate-dataset').removeClass('show');
   $('.generate-dataset').removeClass('test2');
@@ -1606,11 +1638,7 @@ function wipeOutCurateProgress(resetProgressTabs) {
   datasetStructureJSONObj = { "folders": {}, "files": {} }
   // uncheck auto-generated manifest checkbox
   $("#generate-manifest-curate").prop('checked', false);
-  // reset Curate's vertical progress bar step
-  if (resetProgressTabs) {
-    $('.vertical-progress-bar-step').removeClass('is-current')
-    $('.vertical-progress-bar-step').removeClass('done')
-  }
+
 }
 
 // once users click on option card: Organize dataset

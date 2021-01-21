@@ -6504,11 +6504,9 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
       // document.getElementById('div-confirm-destination-locally').style.display = "flex";
       if (sodaJSONObj["starting-point"]["type"] === "local" && sodaJSONObj["starting-point"]["local-path"] == "")
       {
-        console.log("local-existing and step 1");
         valid_dataset = verify_sparc_folder(document.getElementById("input-destination-generate-dataset-locally").placeholder);
         sodaJSONObj["starting-point"]["local-path"] = filepath[0];
           create_json_object(sodaJSONObj);
-          console.log(sodaJSONObj);
           datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
           populate_existing_folders(datasetStructureJSONObj);
           populate_existing_metadata(sodaJSONObj);
@@ -6626,7 +6624,6 @@ document
       }
     }
 
-    console.log(sodaJSONObj["dataset-structure"]["folders"])
     client.invoke(
       "api_check_empty_files_folders",
       sodaJSONObj,
@@ -6719,7 +6716,6 @@ const divGenerateProgressBar = document.getElementById("div-new-curate-meter-pro
 const generateProgressBar = document.getElementById("progress-bar-new-curate")
 
 function initiate_generate() {
-  console.log(sodaJSONObj);
   // Initiate curation by calling Python funtion
   var main_curate_status = "Solving";
   document.getElementById("para-new-curate-progress-bar-status").innerHTML =

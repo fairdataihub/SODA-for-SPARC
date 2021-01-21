@@ -184,75 +184,67 @@ function importGenerateDatasetStep(object) {
       ) {
         var bfAccountSelected =
           sodaJSONObj["bf-account-selected"]["account-name"];
-        if (
-          $('#bfallaccountlist option[value="' + bfAccountSelected + '"]').prop(
-            "selected",
-            true
-          ).length
-        ) {
-          $('#bfallaccountlist option[value="' + bfAccountSelected + '"]').prop(
-            "selected",
-            true
-          );
-          $("#btn-bf-account").click();
-          // Step 3: choose to generate on an existing or new dataset
-          if (
-            "bf-dataset-selected" in sodaJSONObj &&
-            sodaJSONObj["bf-dataset-selected"]["dataset-name"] !== ""
-          ) {
-            $("#generate-BF-dataset-options-existing").prop("checked", true);
-            $($("#generate-BF-dataset-options-existing").parents()[2]).click();
-            var bfDatasetSelected =
-              sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-            setTimeout(function () {
-              if (
-                $(
-                  '#curatebfdatasetlist option[value="' +
-                    bfDatasetSelected +
-                    '"]'
-                ).prop("selected", true).length
-              ) {
-                $(
-                  '#curatebfdatasetlist option[value="' +
-                    bfDatasetSelected +
-                    '"]'
-                ).prop("selected", true);
-                $("#button-confirm-bf-dataset").click();
-                // Step 4: Handle existing files and folders
-                if ("if-existing" in sodaJSONObj["generate-dataset"]) {
-                  var existingFolderOption =
-                    sodaJSONObj["generate-dataset"]["if-existing"];
-                  $("#existing-folders-" + existingFolderOption).prop(
-                    "checked",
-                    true
-                  );
-                  $(
-                    $("#existing-folders-" + existingFolderOption).parents()[2]
-                  ).click();
-                }
-                if ("if-existing-files" in sodaJSONObj["generate-dataset"]) {
-                  var existingFileOption =
-                    sodaJSONObj["generate-dataset"]["if-existing-files"];
-                  $("#existing-files-" + existingFileOption).prop(
-                    "checked",
-                    true
-                  );
-                  $(
-                    $("#existing-files-" + existingFileOption).parents()[2]
-                  ).click();
-                }
-              }
-            }, 3000);
+        $("#current-bf-account-generate").text(bfAccountSelected);
+        $("#para-account-detail-curate").html("");
+        client.invoke("api_bf_account_details", bfAccountSelected, (error, res) => {
+          if (error) {
+            log.error(error);
+            console.error(error);
+            showHideDropdownButtons("account", "hide");
           } else {
-            $("#generate-BF-dataset-options-new").prop("checked", true);
-            $($("#generate-BF-dataset-options-new").parents()[2]).click();
-            $("#inputNewNameDataset").val(
-              sodaJSONObj["generate-dataset"]["dataset-name"]
-            );
-            $("#inputNewNameDataset").keyup();
+            $("#para-account-detail-curate").html(res);
+            updateBfAccountList();
+            checkPrevDivForConfirmButton("account");
+          }
+        });
+        // $("#div-bf-account-btns").css("display", "flex");
+        $("#btn-bf-account").trigger("click");
+        // Step 3: choose to generate on an existing or new dataset
+        if (
+          "bf-dataset-selected" in sodaJSONObj &&
+          sodaJSONObj["bf-dataset-selected"]["dataset-name"] !== ""
+        ) {
+          $("#generate-BF-dataset-options-existing").prop("checked", true);
+          $($("#generate-BF-dataset-options-existing").parents()[2]).click();
+          var bfDatasetSelected =
+          sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+          setTimeout(function () {
+            $("#current-bf-dataset-generate").text(bfDatasetSelected);
+            // $($("#button-confirm-bf-dataset").parents()[0]).css("display", "flex");
+            $("#button-confirm-bf-dataset").click();
+            // Step 4: Handle existing files and folders
+            if ("if-existing" in sodaJSONObj["generate-dataset"]) {
+              var existingFolderOption =
+              sodaJSONObj["generate-dataset"]["if-existing"];
+              $("#existing-folders-" + existingFolderOption).prop(
+                "checked",
+                true
+              );
+              $(
+                $("#existing-folders-" + existingFolderOption).parents()[2]
+              ).click();
+            }
+            if ("if-existing-files" in sodaJSONObj["generate-dataset"]) {
+              var existingFileOption =
+              sodaJSONObj["generate-dataset"]["if-existing-files"];
+              $("#existing-files-" + existingFileOption).prop(
+                "checked",
+                true
+              );
+              $(
+                $("#existing-files-" + existingFileOption).parents()[2]
+              ).click();
+            }
+          }, 3000);
+        } else {
+          $("#generate-BF-dataset-options-new").prop("checked", true);
+          $($("#generate-BF-dataset-options-new").parents()[2]).click();
+          $("#inputNewNameDataset").val(
+            sodaJSONObj["generate-dataset"]["dataset-name"]
+          );
+          $("#inputNewNameDataset").keyup();
           }
         }
-      }
     }
   } else {
     // the block of code below reverts all the checks to option cards if applicable
@@ -346,6 +338,15 @@ function loadProgressFile(ev) {
     }
 }
 
+function removeOptions(selectbox)
+{
+    var i;
+    for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
+    {
+        selectbox.remove(i);
+    }
+}
+
 // function to load Progress dropdown
 function importOrganizeProgressPrompt() {
   document.getElementById('para-progress-file-status').innerHTML = ""
@@ -366,6 +367,7 @@ function importOrganizeProgressPrompt() {
 }
 
 importOrganizeProgressPrompt()
+
 async function openDropdownPrompt(dropdown) {
   // if users edit current account
   if (dropdown === "bf") {
@@ -435,8 +437,6 @@ async function openDropdownPrompt(dropdown) {
               footer: "<a href>Why do I have this issue?</a>",
             });
             showHideDropdownButtons("account", "hide");
-            // $("#div-bf-account-btns").css("display", "none");
-            // $('#div-bf-account-btns button').hide();
           } else {
             $("#para-account-detail-curate").html(res);
             $("#current-bf-account").text(bfacct);
@@ -994,7 +994,6 @@ $(jstreeInstance).on("changed.jstree", function (e, data) {
     selectedNode = data.node.text;
     selectedPath = data.instance.get_path(data.node,'/');
     var parentNode = $(jstreeInstance).jstree('get_selected');
-    console.log(parentNode)
   }
 })
 
