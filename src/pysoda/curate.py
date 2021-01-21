@@ -1835,11 +1835,12 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
                 if "folderpath" not in folder["files"][item]:
                     folder["files"][item]['folderpath'] = path[:]
 
-        for item in list(folder["folders"]):
-            if "folderpath" not in folder["folders"][item]:
-                folder["folders"][item]['folderpath'] = path[:]
-                folder["folders"][item]['folderpath'].append(item)
-            recursive_item_path_create(folder["folders"][item], folder["folders"][item]['folderpath'][:])
+        if "folders" in folder.keys():
+            for item in list(folder["folders"]):
+                if "folderpath" not in folder["folders"][item]:
+                    folder["folders"][item]['folderpath'] = path[:]
+                    folder["folders"][item]['folderpath'].append(item)
+                recursive_item_path_create(folder["folders"][item], folder["folders"][item]['folderpath'][:])
 
         return
 
@@ -2536,7 +2537,7 @@ def main_curate_function(soda_json_structure):
                     # if "manifest-files" in main_keys:
                     #     main_curate_progress_message = "Generating manifest files"
                     #     bf_add_manifest_files(manifest_files_structure, myds)
-                if generate_option == "existing":
+                if generate_option == "existing-bf":
                     myds = bf.get_dataset(bfdataset)
                     bf_update_existing_dataset(soda_json_structure, bf, myds)
 
