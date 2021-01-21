@@ -130,7 +130,7 @@
           <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
           <div style="display:flex;flex-direction:row;">
             <div style="margin:15px 0;">
-              <div class="option-card radio-button" id="div-getting-started-prepare-new" data-next="Question-getting-started-final" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
+              <div class="option-card radio-button getting-started-1st-question" id="div-getting-started-prepare-new" data-next="Question-getting-started-final" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
                   <div class="card-head">
                     <div class="folder-checkbox">
                       <input class="folder-input-check" id="prepare-new" name="getting-started-1" type="radio">
@@ -138,7 +138,7 @@
                     </div>
                   </div>
                   <div class="card-body">
-                    <svg width="35px" height="35px" viewBox="0 0 16 16" class="bi bi-folder-plus" fill="green" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="35px" height="35px" viewBox="0 0 16 16" class="bi bi-folder-plus" fill="var(--color-bg-orange)" xmlns="http://www.w3.org/2000/svg">
                       <path fill-rule="evenodd" d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"/>
                       <path fill-rule="evenodd" d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z"/>
                     </svg>
@@ -148,7 +148,7 @@
             </div>
 
             <div style="margin:15px 0;">
-              <div class="option-card  radio-button" id="div-getting-started-previous-progress" data-next="Question-getting-started-previously-initiated-SODA" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
+              <div class="option-card radio-button getting-started-1st-question" id="div-getting-started-previous-progress" data-next="Question-getting-started-previously-initiated-SODA" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
                   <div class="card-head">
                     <div class="folder-checkbox">
                       <input class="folder-input-check" id="previous-progress" name="getting-started-1" type="radio">
@@ -163,7 +163,7 @@
             </div>
 
             <div style="margin:15px 0;">
-              <div class="option-card radio-button"
+              <div class="option-card radio-button getting-started-1st-question"
               id="div-getting-started-existing-local" data-next="Question-generate-dataset-locally-destination" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
                   <div class="card-head">
                     <div class="folder-checkbox">
@@ -182,7 +182,7 @@
               </div>
 
               <div style="margin:15px 0;">
-                <div class="option-card radio-button" data-next="Question-getting-started-BF-account" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
+                <div class="option-card radio-button getting-started-1st-question" data-next="Question-getting-started-BF-account" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
                     <div class="card-head">
                       <div class="folder-checkbox">
                         <input class="folder-input-check" id="existing-bf" name="getting-started-1" type="radio">
@@ -894,7 +894,7 @@
                       </div>
                     </div>
                     <div class="card-body">
-                      <i class="fas fa-redo"></i>
+                      <i class="fas fa-redo" style="color: var(--color-bg-orange)"></i>
                       <h2>Replace files in current dataset folder</h2>
                     </div>
                   </div>
@@ -1272,7 +1272,7 @@
       <br><br>
       </h3>
 
-    <div class="individual-question generate-dataset" id="Question-preview-dataset-details">
+    <div class="individual-question generate-dataset" id="Question-preview-dataset-details" style="width:70%">
       <div class="ui form" style="width:100%">
         <div class="grouped fields">
           <!-- <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Confirm details for dataset generation</label> -->
