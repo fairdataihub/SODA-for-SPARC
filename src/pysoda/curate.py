@@ -1929,7 +1929,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
 
     # 2. Get the status of all files currently on blackfynn and create
     # the folderpath for all items in both dataset structures.
-    main_curate_progress_message = "Retreiving files and folders from blackfynn"
+    main_curate_progress_message = "Retrieving files and folders from blackfynn"
     current_bf_dataset_files_folders = bf_get_dataset_files_folders (soda_json_structure.copy())[0]
     bfsd = current_bf_dataset_files_folders["dataset-structure"]
     main_curate_progress_message = "Creating file paths for all files on blackfynn"

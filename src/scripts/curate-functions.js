@@ -1006,6 +1006,82 @@ $(jstreeInstance).on("close_node.jstree", function (event, data) {
   data.instance.set_type(data.node, "folder closed");
 });
 
+var jstreePreview = document.getElementById('div-dataset-tree-preview');
+// var jsTreePreviewData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, "", "preview");
+$(document).ready(function() {
+  $(jstreePreview).jstree({
+  "core" : {
+    "check_callback" : true,
+    "data": {}
+  },
+  "plugins": ["types"],
+  "types" : {
+    'folder' : {
+      'icon' : 'fas fa-folder fa-fw'
+    },
+    'folder open' : {
+      'icon' : 'fas fa-folder-open fa-fw'
+    },
+    'folder closed' : {
+      'icon' : 'fas fa-folder fa-fw'
+    },
+    'file xlsx': {
+      'icon' : './assets/img/excel-file.png'
+    },
+    'file xls': {
+      'icon' : './assets/img/excel-file.png'
+    },
+    'file png': {
+      'icon' : './assets/img/png-file.png'
+    },
+    'file PNG': {
+      'icon' : './assets/img/png-file.png'
+    },
+    'file pdf': {
+      'icon' : './assets/img/pdf-file.png'
+    },
+    'file txt': {
+      'icon' : './assets/img/txt-file.png'
+    },
+    'file csv': {
+      'icon' : './assets/img/csv-file.png'
+    },
+    'file CSV': {
+      'icon' : './assets/img/csv-file.png'
+    },
+    'file DOC': {
+      'icon' : './assets/img/doc-file.png'
+    },
+    'file DOCX': {
+      'icon' : './assets/img/doc-file.png'
+    },
+    'file docx': {
+      'icon' : './assets/img/doc-file.png'
+    },
+    'file doc': {
+      'icon' : './assets/img/doc-file.png'
+    },
+    'file jpeg': {
+      'icon' : './assets/img/jpeg-file.png'
+    },
+    'file JPEG': {
+      'icon' : './assets/img/jpeg-file.png'
+    },
+    'file other': {
+      'icon' : './assets/img/other-file.png'
+    }
+  }
+  })
+})
+
+$(jstreePreview).on('open_node.jstree', function (event, data) {
+    data.instance.set_type(data.node,'folder open');
+});
+
+$(jstreePreview).on("close_node.jstree", function (event, data) {
+  data.instance.set_type(data.node, "folder closed");
+});
+
 function showTreeViewPreview() {
   datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
   if (manifestFileCheck.checked) {
@@ -1018,70 +1094,6 @@ function showTreeViewPreview() {
     }
   }
   var jsTreePreviewData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, "", "preview");
-  var jstreePreview = document.getElementById('div-dataset-tree-preview');
-  $(document).ready(function() {
-    $(jstreePreview).jstree({
-    "core" : {
-      "check_callback" : true,
-      "data": jsTreePreviewData
-    },
-    "plugins": ["types"],
-    "types" : {
-      'folder' : {
-        'icon' : 'fas fa-folder fa-fw'
-      },
-      'folder open' : {
-        'icon' : 'fas fa-folder-open fa-fw'
-      },
-      'folder closed' : {
-        'icon' : 'fas fa-folder fa-fw'
-      },
-      'file xlsx': {
-        'icon' : './assets/img/excel-file.png'
-      },
-      'file xls': {
-        'icon' : './assets/img/excel-file.png'
-      },
-      'file png': {
-        'icon' : './assets/img/png-file.png'
-      },
-      'file PNG': {
-        'icon' : './assets/img/png-file.png'
-      },
-      'file pdf': {
-        'icon' : './assets/img/pdf-file.png'
-      },
-      'file txt': {
-        'icon' : './assets/img/txt-file.png'
-      },
-      'file csv': {
-        'icon' : './assets/img/csv-file.png'
-      },
-      'file CSV': {
-        'icon' : './assets/img/csv-file.png'
-      },
-      'file DOC': {
-        'icon' : './assets/img/doc-file.png'
-      },
-      'file DOCX': {
-        'icon' : './assets/img/doc-file.png'
-      },
-      'file docx': {
-        'icon' : './assets/img/doc-file.png'
-      },
-      'file doc': {
-        'icon' : './assets/img/doc-file.png'
-      },
-      'file jpeg': {
-        'icon' : './assets/img/jpeg-file.png'
-      },
-      'file JPEG': {
-        'icon' : './assets/img/jpeg-file.png'
-      },
-      'file other': {
-        'icon' : './assets/img/other-file.png'
-      }
-    }
-  })
-  })
+  $(jstreePreview).jstree(true).settings.core.data = jsTreePreviewData;
+  $(jstreePreview).jstree(true).refresh();
 }
