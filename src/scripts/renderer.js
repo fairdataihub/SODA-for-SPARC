@@ -6564,7 +6564,8 @@ document.getElementById("button-generate-comeback").addEventListener('click', fu
   document.getElementById('generate-dataset-progress-tab').style.display = "none";
   document.getElementById('div-vertical-progress-bar').style.display = "flex";
   document.getElementById('prevBtn').style.display = "inline";
-  $('#generate-dataset-tab').addClass('tab-active');
+  document.getElementById('nextBtn').style.display = "inline";
+  showParentTab(currentTab, 1)
 })
 
 // function to hide the sidebar and disable the sidebar expand button

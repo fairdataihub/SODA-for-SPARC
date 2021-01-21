@@ -1027,6 +1027,9 @@ function showTreeViewPreview() {
     },
     "plugins": ["types"],
     "types" : {
+      'folder' : {
+        'icon' : 'fas fa-folder fa-fw'
+      },
       'folder open' : {
         'icon' : 'fas fa-folder-open fa-fw'
       },
