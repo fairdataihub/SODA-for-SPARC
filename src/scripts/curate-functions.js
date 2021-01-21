@@ -686,7 +686,6 @@ function create_child_node(oldFormatNode, nodeName, type, ext, openedState, sele
   */
   var newFormatNode = {"text": nodeName, "state": {"opened": openedState, "selected": selectedState}, "children": [], "type": type + ext}
   if (viewOptions === "moveItems") {
-    // var newFormatNode = {"text": nodeName, "state": {"opened": openedState, "selected": selectedState}, "children": [], "type": type + ext}
   } else {
     selectedOriginalLocation = "";
   }
