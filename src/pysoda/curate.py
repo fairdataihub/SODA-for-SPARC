@@ -1962,7 +1962,9 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     main_curate_progress_message = "Removed metadata files marked for deletion"
 
     # 7. Run the original code to upload any new files added to the dataset.
-    soda_json_structure["manifest-files"] = {"destination": "bf"}
+    if "manifest-files" in soda_json_structure.keys():
+        soda_json_structure["manifest-files"] = {"destination": "bf"}
+
     soda_json_structure["generate-dataset"] = {"destination" : "bf", "if-existing": "merge", "if-existing-files": "replace"}
     bf_generate_new_dataset(soda_json_structure, bf, ds)
 
