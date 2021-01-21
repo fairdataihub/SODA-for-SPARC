@@ -725,6 +725,7 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
         document.getElementById("nextBtn").disabled = false;
       }, 1000)
     } else if ($("#existing-bf").is(":checked")) {
+      $("#nextBtn").prop("disabled", true);
       // this exitCurate function gets called in the beginning here
       // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
       $("#Question-getting-started-existing-BF-account").show();
