@@ -1412,108 +1412,119 @@ function updateJSONStructureGenerate() {
     sodaJSONObj["starting-point"]["type"] = "new";
   }
   if (sodaJSONObj["starting-point"]["type"] == "new") {
-    if (
-      $('input[name="generate-1"]:checked')[0].id === "generate-local-desktop"
-    ) {
-      var localDestination = $("#input-destination-generate-dataset-locally")[0]
+    if ($('input[name="generate-1"]:checked').length > 0) {
+      if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop") {
+        var localDestination = $("#input-destination-generate-dataset-locally")[0]
         .placeholder;
-      var newDatasetName = $("#inputNewNameDataset").val().trim();
-      sodaJSONObj["generate-dataset"] = {
-        destination: "local",
-        path: localDestination,
-        "dataset-name": newDatasetName,
-        "generate-option": "new",
-        "if-existing": "new",
-      };
-      // delete bf account and dataset keys
-      if ("bf-account-selected" in sodaJSONObj) {
-        delete sodaJSONObj["bf-account-selected"];
-      }
-      if ("bf-dataset-selected" in sodaJSONObj) {
-        delete sodaJSONObj["bf-dataset-selected"];
-      }
-    } else if (
-      $('input[name="generate-1"]:checked')[0].id === "generate-upload-BF"
-    ) {
-      sodaJSONObj["generate-dataset"] = {
-        destination: "bf",
-        "generate-option": "new",
-      };
-
-      if ("bf-account-selected" in sodaJSONObj) {
-        sodaJSONObj["bf-account-selected"]["account-name"] =
-          $("#current-bf-account-generate").text();
-      } else {
-        sodaJSONObj["bf-account-selected"] = {
-          "account-name": $("#current-bf-account-generate").text()
-        };
-      }
-      // answer to Question if generate on BF, then: how to handle existing files and folders
-      if (
-        $('input[name="generate-4"]:checked')[0].id ===
-        "generate-BF-dataset-options-existing"
-      ) {
-        if (
-          $('input[name="generate-5"]:checked')[0].id ===
-          "existing-folders-duplicate"
-        ) {
-          sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";
-        } else if (
-          $('input[name="generate-5"]:checked')[0].id ===
-          "existing-folders-replace"
-        ) {
-          sodaJSONObj["generate-dataset"]["if-existing"] = "replace";
-        } else if (
-          $('input[name="generate-5"]:checked')[0].id ===
-          "existing-folders-merge"
-        ) {
-          sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
-        } else if (
-          $('input[name="generate-5"]:checked')[0].id ===
-          "existing-folders-skip"
-        ) {
-          sodaJSONObj["generate-dataset"]["if-existing"] = "skip";
+        if (localDestination === "Browse here") {
+          localDestination = "";
         }
-        if (
-          $('input[name="generate-6"]:checked')[0].id ===
-          "existing-files-duplicate"
-        ) {
-          sodaJSONObj["generate-dataset"]["if-existing-files"] =
-            "create-duplicate";
-        } else if (
-          $('input[name="generate-6"]:checked')[0].id ===
-          "existing-files-replace"
-        ) {
-          sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
-        } else if (
-          $('input[name="generate-6"]:checked')[0].id === "existing-files-skip"
-        ) {
-          sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
-        }
-        // populate JSON obj with BF dataset and account
-        if ("bf-dataset-selected" in sodaJSONObj) {
-          sodaJSONObj["bf-dataset-selected"]["dataset-name"] =
-            $('#current-bf-dataset-generate').text()
-        } else {
-          sodaJSONObj["bf-dataset-selected"] = {
-            "dataset-name": $('#current-bf-dataset-generate').text()
-          };
-        }
-        // if generate to a new dataset, then update JSON object with a new dataset
-      } else if (
-        $('input[name="generate-4"]:checked')[0].id ===
-        "generate-BF-dataset-options-new"
-      ) {
         var newDatasetName = $("#inputNewNameDataset").val().trim();
-        sodaJSONObj["generate-dataset"]["dataset-name"] = newDatasetName;
-        sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";
-        sodaJSONObj["generate-dataset"]["if-existing-files"] =
-          "create-duplicate";
-        // if upload to a new bf dataset, then delete key below from JSON object
+        sodaJSONObj["generate-dataset"] = {
+          destination: "local",
+          path: localDestination,
+          "dataset-name": newDatasetName,
+          "generate-option": "new",
+          "if-existing": "new",
+        };
+        // delete bf account and dataset keys
+        if ("bf-account-selected" in sodaJSONObj) {
+          delete sodaJSONObj["bf-account-selected"];
+        }
         if ("bf-dataset-selected" in sodaJSONObj) {
           delete sodaJSONObj["bf-dataset-selected"];
         }
-      }
+      } else if (
+        $('input[name="generate-1"]:checked')[0].id === "generate-upload-BF") {
+          sodaJSONObj["generate-dataset"] = {
+            destination: "bf",
+            "generate-option": "new",
+          };
+          if (!($("#current-bf-account-generate").text("None"))) {
+            if ("bf-account-selected" in sodaJSONObj) {
+              sodaJSONObj["bf-account-selected"]["account-name"] =
+              $("#current-bf-account-generate").text();
+            } else {
+              sodaJSONObj["bf-account-selected"] = {
+                "account-name": $("#current-bf-account-generate").text()
+              };
+            }
+          }
+          // answer to Question if generate on BF, then: how to handle existing files and folders
+          if ($('input[name="generate-4"]:checked').length > 0) {
+            if (
+              $('input[name="generate-4"]:checked')[0].id ===
+              "generate-BF-dataset-options-existing"
+            ) {
+              if ($('input[name="generate-5"]:checked').length > 0) {
+                if (
+                  $('input[name="generate-5"]:checked')[0].id ===
+                  "existing-folders-duplicate"
+                ) {
+                  sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";
+                } else if (
+                  $('input[name="generate-5"]:checked')[0].id ===
+                  "existing-folders-replace"
+                ) {
+                  sodaJSONObj["generate-dataset"]["if-existing"] = "replace";
+                } else if (
+                  $('input[name="generate-5"]:checked')[0].id ===
+                  "existing-folders-merge"
+                ) {
+                  sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
+                } else if (
+                  $('input[name="generate-5"]:checked')[0].id ===
+                  "existing-folders-skip"
+                ) {
+                  sodaJSONObj["generate-dataset"]["if-existing"] = "skip";
+                }
+              }
+              if ($('input[name="generate-6"]:checked').length > 0) {
+                if (
+                  $('input[name="generate-6"]:checked')[0].id ===
+                  "existing-files-duplicate"
+                ) {
+                  sodaJSONObj["generate-dataset"]["if-existing-files"] =
+                  "create-duplicate";
+                } else if (
+                  $('input[name="generate-6"]:checked')[0].id ===
+                  "existing-files-replace"
+                ) {
+                  sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
+                } else if (
+                  $('input[name="generate-6"]:checked')[0].id === "existing-files-skip"
+                ) {
+                  sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
+                }
+              }
+              // populate JSON obj with BF dataset and account
+              if (!($('#current-bf-dataset-generate').text("None"))) {
+                if ("bf-dataset-selected" in sodaJSONObj) {
+                  sodaJSONObj["bf-dataset-selected"]["dataset-name"] =
+                  $('#current-bf-dataset-generate').text()
+                } else {
+                  sodaJSONObj["bf-dataset-selected"] = {
+                    "dataset-name": $('#current-bf-dataset-generate').text()
+                  };
+                }
+              }
+              // if generate to a new dataset, then update JSON object with a new dataset
+            } else if (
+              $('input[name="generate-4"]:checked')[0].id ===
+              "generate-BF-dataset-options-new"
+            ) {
+              var newDatasetName = $("#inputNewNameDataset").val().trim();
+              sodaJSONObj["generate-dataset"]["dataset-name"] = newDatasetName;
+              sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";
+              sodaJSONObj["generate-dataset"]["if-existing-files"] =
+              "create-duplicate";
+              // if upload to a new bf dataset, then delete key below from JSON object
+              if ("bf-dataset-selected" in sodaJSONObj) {
+                delete sodaJSONObj["bf-dataset-selected"];
+              }
+            }
+          }
+        }
     }
   }
 }
