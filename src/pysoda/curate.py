@@ -1793,7 +1793,7 @@ def get_base_file_name(file_name):
     else:
         return output
 
-def bf_update_existing_dataset(soda_json_structure, bf, ds):    
+def bf_update_existing_dataset(soda_json_structure, bf, ds):
     global main_curate_progress_message
     global main_total_generate_dataset_size
     global start_generate
@@ -1826,10 +1826,10 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
                     del folder[item]
 
         return
-    
-    # Add a new key containing the path to all the files and folders on the 
+
+    # Add a new key containing the path to all the files and folders on the
     # local data structure.
-    # Allows us to see if the folder path of a specfic file already 
+    # Allows us to see if the folder path of a specfic file already
     # exists on blackfynn.
     def recursive_item_path_create(folder, path):
         if "files" in folder.keys():
@@ -1849,7 +1849,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     # Check and create any non existing folders for the file move process
     def recursive_check_and_create_bf_file_path(folderpath, index, bfsd):
         folder = folderpath[index]
-        
+
         if folder not in bfsd["folders"]:
             if (index == 0):
                 new_folder = ds.create_collection(folder)
@@ -1857,9 +1857,9 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
                 current_folder = bf.get(bfsd["path"])
                 new_folder = current_folder.create_collection(folder)
             bfsd["folders"][folder] = {"type": "bf", "action": ["existing"], "path": new_folder.id, "folders":{}, "files":{}}
-            
+
         index += 1
-        
+
         if index < len(folderpath):
             return recursive_check_and_create_bf_file_path(folderpath, index, bfsd["folders"][folder])
         else:
@@ -1893,13 +1893,13 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
             recursive_file_rename(folder["folders"][item])
 
         return
-    
+
     # Delete any stray folders that exist on blackfynn
-    # Only top level files are deleted since the api deletes any 
+    # Only top level files are deleted since the api deletes any
     # files and folders that exist inside.
     def recursive_folder_delete(folder):
         for item in list(folder["folders"]):
-            if folder["folders"][item]["type"] == "bf": 
+            if folder["folders"][item]["type"] == "bf":
                 if "deleted" in folder["folders"][item]['action']:
                     file = bf.get(folder["folders"][item]['path'])
                     file.delete()
@@ -1938,7 +1938,6 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     recursive_item_path_create(dataset_structure, [])
     recursive_item_path_create(bfsd, [])
     main_curate_progress_message = "File paths created"
-    
 
     # 3. Move any files that are marked as moved on Blackfynn. 
     # Create any additional folders if required
@@ -1956,7 +1955,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     recursive_folder_delete(dataset_structure)
     main_curate_progress_message = "Deletion of additional folders complete"
 
-    # 6. Delete any metadata files that are marked as deleted. 
+    # 6. Delete any metadata files that are marked as deleted.
     main_curate_progress_message = "Removing metadata files marked for deletion"
     metadata_file_delete(soda_json_structure)
     main_curate_progress_message = "Removed metadata files marked for deletion"
@@ -2185,14 +2184,14 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                                 index_file = my_bf_existing_files_name.index(initial_name)
                                 my_file = my_bf_existing_files[index_file]
                                 my_file.delete()
-                                
+
                         if existing_file_option == "skip":
                             if initial_name in my_bf_existing_files_name:
                                 continue
 
                         list_upload_metadata_files.append(metadata_path)
                         main_total_generate_dataset_size += getsize(metadata_path)
-            
+
         # 4. Prepare and add manifest files to a list
         list_upload_manifest_files = []
         if "manifest-files" in soda_json_structure.keys():
@@ -2235,7 +2234,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             # track block upload size for a more reactive progress bar
             progress_percentage = io.StringIO()
             total_size = 0
-            progress_percentage_array.append({}); 
+            progress_percentage_array.append({});
             progress_percentage_array[-1]["files"] = {}
             for file in list_upload:
                 file_size = os.path.getsize(file)
@@ -2306,7 +2305,7 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
     Output:
         error: error message with list of non valid local data files, if any
     """
-    
+
     def recursive_bf_dataset_check(my_folder, my_relative_path, error):
         if "folders" in my_folder.keys():
             for folder_key, folder in my_folder["folders"].items():
@@ -2323,7 +2322,7 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
                 error = recursive_bf_dataset_check(folder, relative_path, error)
         if "files" in my_folder.keys():
             for file_key, file in my_folder["files"].items():
-                file_type = file["type"] 
+                file_type = file["type"]
                 if file_type == "bf":
                     package_id = file["path"]
                     try:
@@ -2333,9 +2332,9 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
                         error_message = relative_path + " (id: " + package_id + ")"
                         error.append(error_message)
                         pass
-                    
+
         return error
-    
+
     error = []
     if "dataset-structure" in soda_json_structure.keys():
         dataset_structure = soda_json_structure["dataset-structure"]
@@ -2364,11 +2363,11 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
                         error_message = relative_path + " (id: " + package_id + ")"
                         error.append(error_message)
                         pass
-    
+
     if "metadata-files" in soda_json_structure:
         metadata_files = soda_json_structure["metadata-files"]
         for file_key, file in metadata_files.items():
-            file_type = file["type"] 
+            file_type = file["type"]
             if file_type == "bf":
                 package_id = file["path"]
                 try:
@@ -2377,11 +2376,11 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
                     error_message = file_key + " (id: " + package_id + ")"
                     error.append(error_message)
                     pass
-        
+
     if len(error)>0:
         error_message = ["Error: The following Blackfynn files/folders are invalid. Specify them again or remove them."]
         error = error_message + error
-        
+
     return error
 
 def main_curate_function(soda_json_structure):

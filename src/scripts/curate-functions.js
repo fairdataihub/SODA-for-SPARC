@@ -490,14 +490,14 @@ async function openDropdownPrompt(dropdown) {
       $("#dataset-loaded-message").hide();
       showHideDropdownButtons("dataset", "show");
       checkPrevDivForConfirmButton("dataset");
-      // $($('#button-confirm-bf-dataset').parents()[0]).css("display", "flex")
-      // $('#button-confirm-bf-dataset').show()
     }
     // hide "Confirm" button if Current dataset set to None
     if ($("#current-bf-dataset").text() === "None") {
       showHideDropdownButtons("dataset", "hide");
-      // $($('#button-confirm-bf-dataset').parents()[0]).css("display", "none")
-      // $('#button-confirm-bf-dataset').hide()
+    }
+    // hide "Confirm" button if Current dataset under Getting started set to None
+    if ($("#current-bf-dataset").text() === "None") {
+      showHideDropdownButtons("dataset", "hide");
     }
   }
 }
@@ -687,7 +687,6 @@ function create_child_node(oldFormatNode, nodeName, type, ext, openedState, sele
   */
   var newFormatNode = {"text": nodeName, "state": {"opened": openedState, "selected": selectedState}, "children": [], "type": type + ext}
   if (viewOptions === "moveItems") {
-    // var newFormatNode = {"text": nodeName, "state": {"opened": openedState, "selected": selectedState}, "children": [], "type": type + ext}
   } else {
     selectedOriginalLocation = "";
   }
@@ -695,70 +694,92 @@ function create_child_node(oldFormatNode, nodeName, type, ext, openedState, sele
     if ('action' in oldFormatNode["folders"][key]) {
       if (!(oldFormatNode["folders"][key]["action"].includes("deleted"))) {
         if (key === selectedOriginalLocation) {
+          newFormatNode.state.selected = true;
+          newFormatNode.state.opened = true;
           var new_node = create_child_node(value, key, "folder", "", true, true, selectedOriginalLocation, viewOptions);
         } else {
+          // newFormatNode.state.selected = false;
+          // newFormatNode.state.opened = false;
           var new_node = create_child_node(value, key, "folder", "", false, false, selectedOriginalLocation, viewOptions);
         }
         newFormatNode["children"].push(new_node);
       }
     } else {
       if (key === selectedOriginalLocation) {
+        newFormatNode.state.selected = true;
+        newFormatNode.state.opened = true;
         var new_node = create_child_node(value, key, "folder", "", true, true, selectedOriginalLocation, viewOptions);
       } else {
+        // newFormatNode.state.selected = false;
+        // newFormatNode.state.opened = false;
         var new_node = create_child_node(value, key, "folder", "", false, false, selectedOriginalLocation, viewOptions);
       }
       newFormatNode["children"].push(new_node);
     }
   }
   for (const [key, value] of Object.entries(oldFormatNode["files"])) {
+    if (
+      [
+        ".png",
+        ".PNG",
+        ".xls",
+        ".xlsx",
+        ".pdf",
+        ".txt",
+        ".jpeg",
+        ".JPEG",
+        ".csv",
+        ".CSV",
+        ".DOC",
+        ".DOCX",
+        ".doc",
+        ".docx",
+      ].includes(path.parse(key).ext)
+    ) {
+      nodeType = "file " + path.parse(key).ext.slice(1);
+    } else {
+      nodeType = "file other";
+    }
     if ("action" in oldFormatNode["files"][key]) {
       if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
-        if (
-          [
-            ".png",
-            ".PNG",
-            ".xls",
-            ".xlsx",
-            ".pdf",
-            ".txt",
-            ".jpeg",
-            ".JPEG",
-            ".csv",
-            ".CSV",
-            ".DOC",
-            ".DOCX",
-            ".doc",
-            ".docx",
-          ].includes(path.parse(key).ext)
-        ) {
-          nodeType = "file " + path.parse(key).ext.slice(1);
-        } else {
-          nodeType = "file other";
-        }
         var new_node = { text: key, state: { disabled: true }, type: nodeType };
         newFormatNode["children"].push(new_node);
       }
     } else {
-      var new_node = { text: key, state: { disabled: true }, type: nodeType };
+      var new_node = { text: key, state: { disabled: true  }, type: nodeType };
       newFormatNode["children"].push(new_node);
     }
   }
   return newFormatNode;
 }
 
-var selected = false;
+function recursiveExpandNodes(object) {
+  // var newFormatNode = {"text": nodeName,
+                      // "state": {"opened": openedState, "selected": selectedState},
+                      // "children": [], "type": type + ext}
+  if (object.state.selected) {
+
+  }
+}
+
+// var selected = false;
+var selectedPath;
 var selectedNode;
-var jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, "", "moveItems");
+var jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, true, "", "moveItems");
 var jstreeInstance = document.getElementById('data');
 $(document).ready(function() {
   $('#data').jstree({
   "core" : {
     "check_callback" : true,
-    "data": {}
+    "data": {},
+    "expand_selected_onload" : true
   },
   "plugins": ["types", "changed"],
   "types" : {
     'folder' : {
+      'icon' : 'fas fa-folder fa-fw'
+    },
+    'folder open' : {
       'icon' : 'fas fa-folder-open fa-fw'
     },
     'folder closed' : {
@@ -818,7 +839,7 @@ async function moveItems(ev, category) {
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedOrginalLocation = filtered[filtered.length - 1];
   // reset previously selected items first
-  jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, selectedOrginalLocation, "moveItems");
+  jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, true, selectedOrginalLocation, "moveItems");
   // Note: somehow, html element "#data" was destroyed after closing the Swal popup.
   // Creating the element again after it was destroyed.
   if (!(jstreeInstance)) {
@@ -829,8 +850,8 @@ async function moveItems(ev, category) {
   }
   $(jstreeInstance).jstree(true).settings.core.data = jsTreeData;
   $(jstreeInstance).jstree(true).refresh();
-  selected = false;
-  selectedNode = undefined;
+  selectedPath = undefined;
+  selectedNode = "";
 
   // first, convert datasetStructureJSONObj to jsTree's json structure
   // show swal2 with jstree in here
@@ -843,17 +864,23 @@ async function moveItems(ev, category) {
     confirmButtonText: "Confirm",
     cancelButtonText: "Cancel",
     preConfirm: () => {
-      if (!(selectedNode)) {
+      Swal.resetValidationMessage();
+      if (!selectedPath) {
         Swal.showValidationMessage("Please select a folder destination!")
         return undefined
       } else {
-        return selectedNode
-      }
+          if (selectedNode === "My_dataset_folder") {
+            Swal.showValidationMessage("Items cannot be moved to this level of the dataset!");
+            return undefined
+          } else {
+              return selectedPath
+            }
+          }
     }
   })
   if (folderDestination) {
     Swal.fire({
-      title: "Are you sure you want to move selected item(s) to: " + selectedNode + "?",
+      title: "Are you sure you want to move selected item(s) to: " + selectedPath + "?",
       showCancelButton: true,
       confirmButtonText: "Yes"
     }).then((result) => {
@@ -878,7 +905,7 @@ async function moveItems(ev, category) {
             } else if ($(element.firstElementChild).hasClass("myFol")) {
               itemType = "folders";
             }
-            moveItemsHelper(itemToMove, selectedNode, itemType);
+            moveItemsHelper(itemToMove, selectedPath, itemType);
           })
         // only 1 file/folder
         } else {
@@ -889,7 +916,7 @@ async function moveItems(ev, category) {
           } else if ($(ev).hasClass("myFol")) {
             itemType = "folders";
           }
-          moveItemsHelper(itemToMove, selectedNode, itemType);
+          moveItemsHelper(itemToMove, selectedPath, itemType);
         }
         }
       })
@@ -960,88 +987,114 @@ function moveItemsHelper(item, destination, category) {
   //delete item from the original location
   delete myPath[category][item];
   listItems(myPath, '#items');
+  getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
 }
 
 $(jstreeInstance).on("changed.jstree", function (e, data) {
-  selected = true;
   if (data.node) {
-    var selected = data.changed.selected
-    selectedNode = data.instance.get_path(data.node,'/');
+    selectedNode = data.node.text;
+    selectedPath = data.instance.get_path(data.node,'/');
     var parentNode = $(jstreeInstance).jstree('get_selected');
-    // alert(parentNode);
+    console.log(parentNode)
   }
 })
+
 $(jstreeInstance).on('open_node.jstree', function (event, data) {
     data.instance.set_type(data.node,'folder open');
 });
+
 $(jstreeInstance).on("close_node.jstree", function (event, data) {
   data.instance.set_type(data.node, "folder closed");
 });
 
-function showTreeViewPreview(datasetStructureObject) {
-  datasetStructureObject["files"] = sodaJSONObj["metadata-files"];
-  var jsTreePreviewData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, "", "preview");
-  var jstreePreview = document.getElementById('div-dataset-tree-preview');
-  $(document).ready(function() {
-    $(jstreePreview).jstree({
-    "core" : {
-      "check_callback" : true,
-      "data": jsTreePreviewData
+var jstreePreview = document.getElementById('div-dataset-tree-preview');
+// var jsTreePreviewData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, "", "preview");
+$(document).ready(function() {
+  $(jstreePreview).jstree({
+  "core" : {
+    "check_callback" : true,
+    "data": {}
+  },
+  "plugins": ["types"],
+  "types" : {
+    'folder' : {
+      'icon' : 'fas fa-folder fa-fw'
     },
-    "plugins": ["types"],
-    "types" : {
-      'folder' : {
-        'icon' : 'fas fa-folder-open fa-fw'
-      },
-      'folder closed' : {
-        'icon' : 'fas fa-folder fa-fw'
-      },
-      'file xlsx': {
-        'icon' : './assets/img/excel-file.png'
-      },
-      'file xls': {
-        'icon' : './assets/img/excel-file.png'
-      },
-      'file png': {
-        'icon' : './assets/img/png-file.png'
-      },
-      'file PNG': {
-        'icon' : './assets/img/png-file.png'
-      },
-      'file pdf': {
-        'icon' : './assets/img/pdf-file.png'
-      },
-      'file txt': {
-        'icon' : './assets/img/txt-file.png'
-      },
-      'file csv': {
-        'icon' : './assets/img/csv-file.png'
-      },
-      'file CSV': {
-        'icon' : './assets/img/csv-file.png'
-      },
-      'file DOC': {
-        'icon' : './assets/img/doc-file.png'
-      },
-      'file DOCX': {
-        'icon' : './assets/img/doc-file.png'
-      },
-      'file docx': {
-        'icon' : './assets/img/doc-file.png'
-      },
-      'file doc': {
-        'icon' : './assets/img/doc-file.png'
-      },
-      'file jpeg': {
-        'icon' : './assets/img/jpeg-file.png'
-      },
-      'file JPEG': {
-        'icon' : './assets/img/jpeg-file.png'
-      },
-      'file other': {
-        'icon' : './assets/img/other-file.png'
+    'folder open' : {
+      'icon' : 'fas fa-folder-open fa-fw'
+    },
+    'folder closed' : {
+      'icon' : 'fas fa-folder fa-fw'
+    },
+    'file xlsx': {
+      'icon' : './assets/img/excel-file.png'
+    },
+    'file xls': {
+      'icon' : './assets/img/excel-file.png'
+    },
+    'file png': {
+      'icon' : './assets/img/png-file.png'
+    },
+    'file PNG': {
+      'icon' : './assets/img/png-file.png'
+    },
+    'file pdf': {
+      'icon' : './assets/img/pdf-file.png'
+    },
+    'file txt': {
+      'icon' : './assets/img/txt-file.png'
+    },
+    'file csv': {
+      'icon' : './assets/img/csv-file.png'
+    },
+    'file CSV': {
+      'icon' : './assets/img/csv-file.png'
+    },
+    'file DOC': {
+      'icon' : './assets/img/doc-file.png'
+    },
+    'file DOCX': {
+      'icon' : './assets/img/doc-file.png'
+    },
+    'file docx': {
+      'icon' : './assets/img/doc-file.png'
+    },
+    'file doc': {
+      'icon' : './assets/img/doc-file.png'
+    },
+    'file jpeg': {
+      'icon' : './assets/img/jpeg-file.png'
+    },
+    'file JPEG': {
+      'icon' : './assets/img/jpeg-file.png'
+    },
+    'file other': {
+      'icon' : './assets/img/other-file.png'
+    }
+  }
+  })
+})
+
+$(jstreePreview).on('open_node.jstree', function (event, data) {
+    data.instance.set_type(data.node,'folder open');
+});
+
+$(jstreePreview).on("close_node.jstree", function (event, data) {
+  data.instance.set_type(data.node, "folder closed");
+});
+
+function showTreeViewPreview() {
+  datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
+  if (manifestFileCheck.checked) {
+    for (var key in datasetStructureJSONObj["folders"]) {
+      if (highLevelFolders.includes(key)) {
+        if (!("manifest.xlsx" in datasetStructureJSONObj["folders"][key]["files"])) {
+          datasetStructureJSONObj["folders"][key]["files"]["manifest.xlsx"] = {"forTreeview": true};
+        }
       }
     }
-  })
-  })
+  }
+  var jsTreePreviewData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, "", "preview");
+  $(jstreePreview).jstree(true).settings.core.data = jsTreePreviewData;
+  $(jstreePreview).jstree(true).refresh();
 }
