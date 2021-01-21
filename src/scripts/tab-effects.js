@@ -715,14 +715,15 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
         .siblings()
         .children()
       ).addClass("non-selected");
-      $("#nextBtn").prop("disabled", false);
       sodaJSONObj["starting-point"]= {};
       sodaJSONObj["starting-point"]["type"] = "new";
       sodaJSONObj["dataset-structure"] = {};
       datasetStructureJSONObj = { folders: {}, files: {}};
       sodaJSONObj["metadata-files"] = {};
       reset_ui();
-      $("#nextBtn").click();
+      setTimeout(function(){
+        document.getElementById("nextBtn").disabled = false;
+      }, 1000)
     } else if ($("#existing-bf").is(":checked")) {
       // this exitCurate function gets called in the beginning here
       // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option

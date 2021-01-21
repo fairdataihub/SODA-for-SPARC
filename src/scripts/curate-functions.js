@@ -427,6 +427,8 @@ async function openDropdownPrompt(dropdown) {
         $("#current-bf-account").text("");
         $("#current-bf-account-generate").text("");
         $("#para-account-detail-curate").html("");
+        $("#current-bf-dataset").text("None");
+        showHideDropdownButtons("dataset", "hide");
         client.invoke("api_bf_account_details", bfacct, (error, res) => {
           if (error) {
             log.error(error);
