@@ -452,8 +452,9 @@ function nextPrev(n) {
       })
     }
     showParentTab(currentTab, n);
-    console.log(JSON.stringify(sodaJSONObj));
   }
+  console.log(sodaJSONObj);
+  console.log(JSON.stringify(sodaJSONObj));
 }
 
 function fixStepIndicator(n) {
