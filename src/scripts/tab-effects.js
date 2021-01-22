@@ -1497,7 +1497,6 @@ function updateJSONStructureManifest() {
 }
 
 const recursive_remove_local_deleted_files = (dataset_folder) => {
-  console.log(dataset_folder);
   if ("files" in dataset_folder) {
     for (file in dataset_folder["files"]) {
       if ("forTreeview" in dataset_folder["files"][file]) {

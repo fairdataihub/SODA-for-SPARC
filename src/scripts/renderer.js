@@ -6511,7 +6511,6 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
         valid_dataset = verify_sparc_folder(document.getElementById("input-destination-generate-dataset-locally").placeholder);
         sodaJSONObj["starting-point"]["local-path"] = filepath[0];
           create_json_object(sodaJSONObj);
-          console.log(sodaJSONObj);
           datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
           populate_existing_folders(datasetStructureJSONObj);
           populate_existing_metadata(sodaJSONObj);
