@@ -6489,12 +6489,13 @@ $("#inputNewNameDataset").keyup(function() {
   }
 });
 
-//// Select to choose a local dataset
-document.getElementById("input-destination-generate-dataset-locally").addEventListener("click", function() {
-  $("#Question-generate-dataset-locally-destination").nextAll().removeClass('show');
-  $("#Question-generate-dataset-locally-destination").nextAll().removeClass('test2');
-  $("#Question-generate-dataset-locally-destination").nextAll().removeClass('prev');
-  document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
+//// Select to choose a local dataset (getting started)
+document.getElementById("input-destination-getting-started-locally").addEventListener("click", function() {
+  $("#Question-getting-started-locally-destination").nextAll().removeClass('show');
+  $("#Question-getting-started-locally-destination").nextAll().removeClass('test2');
+  $("#Question-getting-started-locally-destination").nextAll().removeClass('prev');
+  document.getElementById("input-destination-getting-started-locally").placeholder = "Browse here";
+  $("#para-continue-location-dataset-getting-started").text("");
   document.getElementById("nextBtn").disabled = true;
   ipcRenderer.send('open-file-dialog-local-destination-curate');
 })
@@ -6502,11 +6503,11 @@ document.getElementById("input-destination-generate-dataset-locally").addEventLi
 ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => {
   if (filepath.length > 0) {
     if (filepath != null){
-      document.getElementById("input-destination-generate-dataset-locally").placeholder = filepath[0];
-      // document.getElementById('div-confirm-destination-locally').style.display = "flex";
+      sodaJSONObj["starting-point"]["local-path"] = "";
+      document.getElementById("input-destination-getting-started-locally").placeholder = filepath[0];
       if (sodaJSONObj["starting-point"]["type"] === "local" && sodaJSONObj["starting-point"]["local-path"] == "")
       {
-        valid_dataset = verify_sparc_folder(document.getElementById("input-destination-generate-dataset-locally").placeholder);
+        valid_dataset = verify_sparc_folder(document.getElementById("input-destination-getting-started-locally").placeholder);
         sodaJSONObj["starting-point"]["local-path"] = filepath[0];
           create_json_object(sodaJSONObj);
           datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
@@ -6515,20 +6516,18 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
         if (valid_dataset == true)
         {
           $("#nextBtn").prop("disabled", false);
-          $("#input-destination-generate-dataset-locally").attr("placeholder", "Browse here");
-          $("#nextBtn").click();
         }
         else
         {
           var bootboxDialog = bootbox.confirm({
-            message: "This folder does not seems to be a SPARC dataset folder. Do you want to continue or return and pick a different folder?",
+            message: "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
             buttons: {
               confirm: {
-                label: "Continue",
+                label: "Yes",
                 className: "btn-success",
               },
               cancel: {
-                label: "Return",
+                label: "Cancel",
                 className: "btn-danger",
               },
             },
@@ -6536,27 +6535,48 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
             callback: function (result) {
               if (result) {
                 $("#nextBtn").prop("disabled", false);
-                $("#input-destination-generate-dataset-locally").attr("placeholder", "Browse here");
-                $("#nextBtn").click();
+                $("#para-continue-location-dataset-getting-started").text("Please continue below.")
               } else {
-                document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
+                document.getElementById("input-destination-getting-started-locally").placeholder = "Browse here";
                 sodaJSONObj["starting-point"]["local-path"] = "";
+                $("#para-continue-location-dataset-getting-started").text("")
               }
             },
           });
         }
       }
-      else
-      {
-        $("#div-confirm-destination-locally button").click()
-      }
     }
   } else {
-      $("#Question-generate-dataset-locally-destination").nextAll().removeClass('show');
-      $("#Question-generate-dataset-locally-destination").nextAll().removeClass('test2');
-      $("#Question-generate-dataset-locally-destination").nextAll().removeClass('prev');
-      // document.getElementById("div-confirm-destination-locally").style.display = "none";
-      // $("#div-confirm-destination-locally button").hide()
+    document.getElementById("nextBtn").disabled = true;
+    $("#para-continue-location-dataset-getting-started").text("");
+  }
+})
+
+//// Select to choose a local dataset (generate dataset)
+document.getElementById("input-destination-generate-dataset-locally").addEventListener("click", function() {
+  $("#Question-generate-dataset-locally-destination").nextAll().removeClass('show');
+  $("#Question-generate-dataset-locally-destination").nextAll().removeClass('test2');
+  $("#Question-generate-dataset-locally-destination").nextAll().removeClass('prev');
+  document.getElementById("nextBtn").disabled = true;
+  ipcRenderer.send('open-file-dialog-local-destination-curate-generate');
+})
+
+ipcRenderer.on('selected-local-destination-datasetCurate-generate', (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null){
+      $("#div-confirm-destination-locally").css("display", "flex");
+      $("#div-confirm-destination-locally button").show();
+      document.getElementById("input-destination-generate-dataset-locally").placeholder = filepath[0];
+      document.getElementById("nextBtn").disabled = true;
+    } else {
+      $("#div-confirm-destination-locally").css("display", "none");
+      $("#div-confirm-destination-locally button").hide();
+      document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
+    }
+  } else {
+    $("#div-confirm-destination-locally").css("display", "none");
+    $("#div-confirm-destination-locally button").hide();
+    document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
   }
 })
 
@@ -6617,12 +6637,14 @@ document
     progressBarNewCurate.value = 0;
 
     // delete datasetStructureObject["files"] value that was added only for the Preview tree view
-    sodaJSONObj["dataset-structure"]["files"] = {};
-    // delete manifest files added for treeview
-    for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
-      if ("manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]
-          && sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"]["forTreeview"]) {
-        delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
+    if ("files" in sodaJSONObj["dataset-structure"]) {
+      sodaJSONObj["dataset-structure"]["files"] = {};
+      // delete manifest files added for treeview
+      for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+        if ("manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]
+        && sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"]["forTreeview"]) {
+          delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
+        }
       }
     }
 
@@ -7017,11 +7039,10 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
       sodaJSONObj,
       (error, res) => {
         if (error) {
-          reject(["error", res]);
+          reject(userError(error));
           log.error(error);
           console.error(error);
         } else {
-          //console.log(res);
           resolve(res);
         }
       }

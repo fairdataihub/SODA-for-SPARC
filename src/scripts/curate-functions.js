@@ -493,6 +493,7 @@ async function openDropdownPrompt(dropdown) {
     $(datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
     $(datasetPermissionDiv).find("#select-permission-list-2").val("All").trigger("change");
     $(datasetPermissionDiv).find("#curatebfdatasetlist").val("Select dataset").trigger("change");
+    initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
     const { value: bfDS } = await Swal.fire({
       title:
         "<h3 style='margin-bottom:20px !important'>Please choose a dataset</h3>",
@@ -631,7 +632,7 @@ function updateDatasetList(bfaccount) {
   var filteredDatasets = [];
   // waiting for dataset list to load first before initiating BF dataset dropdown list
   setTimeout(function () {
-    var myPermission = $("#select-permission-list-2").val();
+    var myPermission = $(datasetPermissionDiv).find("#select-permission-list-2").val();
     if (myPermission.toLowerCase() === "all") {
       for (var i = 0; i < datasetList.length; i++) {
         filteredDatasets.push(datasetList[i].name);
