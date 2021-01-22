@@ -5886,15 +5886,24 @@ function showmenu(ev, category, deleted = false) {
         .children("#folder-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
         $(menuHighLevelFolders).children("#folder-rename").hide();
+        $(menuHighLevelFolders).children("#folder-move").hide();
         $(menuHighLevelFolders).children("#tooltip-folders").show();
     } else {
       if ($(".selected-item").length > 2) {
-        $(menuHighLevelFolders).children("#folder-delete").hide();
+        $(menuHighLevelFolders)
+          .children("#folder-delete")
+          .html('<i class="fas fa-minus-circle"></i> Delete All');
+        $(menuHighLevelFolders).children("#folder-delete").show();
         $(menuHighLevelFolders).children("#folder-rename").hide();
+        $(menuHighLevelFolders).children("#folder-move").hide();
         $(menuHighLevelFolders).children("#tooltip-folders").show();
       } else {
-        $(menuHighLevelFolders).children("#folder-delete").hide();
+        $(menuHighLevelFolders)
+        .children("#folder-delete")
+        .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+        $(menuHighLevelFolders).children("#folder-delete").show();
         $(menuHighLevelFolders).children("#folder-rename").hide();
+        $(menuHighLevelFolders).children("#folder-move").hide();
         $(menuHighLevelFolders).children("#tooltip-folders").show();
       }
     }
