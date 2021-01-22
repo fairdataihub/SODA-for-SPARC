@@ -22,8 +22,6 @@ const removeMd = require('remove-markdown');
 const electron = require('electron');
 const bootbox = require('bootbox');
 const DragSelect = require('dragselect')
-const excelToJson = require('convert-excel-to-json');
-const csvToJson = require('convert-csv-to-json');
 const app = remote.app;
 
 //////////////////////////////////
@@ -6623,7 +6621,6 @@ document
     updateJSONStructureGenerate();
     if (sodaJSONObj["starting-point"]["type"] === "local")
     {
-      console.log(sodaJSONObj);
       sodaJSONObj["starting-point"]["type"] = "new";
     }
 

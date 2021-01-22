@@ -1792,28 +1792,6 @@ document.getElementById('button-section-organize-dataset').addEventListener('cli
   showParentTab(currentTab, 1)
 })
 
-// function exitOrganizeSection() {
-//   bootbox.confirm({
-//     title: "Exit section",
-//     message: "<p>Are you sure you want to exit the current section and clear the current file organization?</p>",
-//     centerVertical: true,
-//     callback: function(r) {
-//       if (r!==null) {
-//         bootbox.confirm({
-//           title: "Exit section",
-//           message: "<p>Would you like to save your progress?</p>",
-//           centerVertical: true,
-//           callback: function(result) {
-//             if (result!==null) {
-//
-//             }
-//       }
-// }
-//
-// function saveOrganizeProgress() {
-//
-// }
-
 function hideNextDivs(currentDiv) {
   // make currentDiv current class
   $("#" + currentDiv).removeClass("prev");
