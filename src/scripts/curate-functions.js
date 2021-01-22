@@ -346,6 +346,14 @@ function removeOptions(selectbox)
     }
 }
 
+// Function to add options to dropdown list
+function addOption(selectbox, text, value) {
+    var opt = document.createElement("OPTION");
+    opt.text = text;
+    opt.value = value;
+    selectbox.options.add(opt);
+}
+
 // function to load Progress dropdown
 function importOrganizeProgressPrompt() {
   document.getElementById('para-progress-file-status').innerHTML = ""

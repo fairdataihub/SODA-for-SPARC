@@ -951,16 +951,14 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
     $("#" + ev.getAttribute('data-next') + " button").show();
   }
 
-  if (ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")
+  if (ev.getAttribute('data-next') === "Question-generate-dataset-generate-div-old")
   {
-    $("#Question-generate-dataset-generate-div").show();
-    $("#Question-generate-dataset-generate-div").children().show();
+    $("#nextBtn").prop("disabled", false)
   }
 
-  if (!(ev.getAttribute('data-next') === "Question-generate-dataset-generate-div")) {
+  if (!(ev.getAttribute('data-next') === "Question-generate-dataset-generate-div-old")) {
     // create moving effects when new questions appear
-    $("#Question-generate-dataset-generate-div").hide();
-    $("#Question-generate-dataset-generate-div").children().hide();
+    $("#nextBtn").prop("disabled", false)
     setTimeout(() => target.classList.add("test2"), 100);
   }
 

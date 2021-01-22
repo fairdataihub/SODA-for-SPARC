@@ -6468,16 +6468,18 @@ $("#inputNewNameDataset").keyup(function() {
   var newName = $("#inputNewNameDataset").val().trim();
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
-      // document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
+      document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
+      $('#btn-confirm-new-dataset-name').hide();
       document.getElementById('para-new-name-dataset-message').innerHTML = "Error: A Blackfynn dataset name cannot contain any of the following characters: \/:*?'<>."
       $("#nextBtn").prop("disabled", true);
       $("#Question-generate-dataset-generate-div-old").removeClass("show")
     } else {
-      // document.getElementById('div-confirm-inputNewNameDataset').style.display = "flex";
+      document.getElementById('div-confirm-inputNewNameDataset').style.display = "flex";
+      $('#btn-confirm-new-dataset-name').show();
       $("#Question-generate-dataset-generate-div").show();
       $("#Question-generate-dataset-generate-div").children().show();
-      $('#div-confirm-inputNewNameDataset button').click();
-      $("#nextBtn").prop("disabled", false);
+      // $('#div-confirm-inputNewNameDataset button').click();
+      // $("#nextBtn").prop("disabled", false);
       $("#Question-generate-dataset-generate-div-old").addClass("show")
       document.getElementById('para-new-name-dataset-message').innerHTML = "";
     }
