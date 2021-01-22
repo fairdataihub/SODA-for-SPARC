@@ -424,31 +424,6 @@ function nextPrev(n) {
       highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
-    if (
-      n === -1 &&
-      currentTab === 0 &&
-      sodaJSONObj["starting-point"]["type"] === "local"
-    ) {
-      bootbox.confirm({
-        title: "Reset progress",
-        message: "Your progress will be reset. Do you want to continue?",
-        centerVertical: true,
-        callback: (choice) => {
-          if (choice === true) {
-            $("#div-getting-started-previous-progress").click();
-            $("#div-getting-started-existing-local").click();
-            $("#nextBtn").prop("disabled", true);
-          }
-          else
-          {
-            currentTab = currentTab + 1;
-            $(x[currentTab]).addClass("tab-active");
-            showParentTab(currentTab, n);
-            return;
-          }
-        }
-      })
-    }
     showParentTab(currentTab, n);
   }
   console.log(sodaJSONObj);
@@ -1034,6 +1009,9 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
    ).text();
    $("#para-continue-bf-dataset-getting-started").text("");
    $("body").addClass("waiting");
+   $("#button-confirm-bf-dataset-getting-started").prop("disabled", true);
+   $("#bf-dataset-spinner").show();
+   $("#bf-dataset-spinner").children().show();
    $("#bf-dataset-spinner").css("visibility", "visible");
    var result;
    try {
@@ -1055,6 +1033,8 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
      $("#current-bf-dataset").text("None");
      $(datasetPermissionDiv).find("#curatebfdatasetlist").val("Select dataset").trigger("change");
      sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
+     $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
+     $("body").removeClass("waiting");
      return;
    } else {
      sodaJSONObj = result[1][0];
@@ -1068,6 +1048,7 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
    }
    $("body").removeClass("waiting");
    $("#bf-dataset-spinner").css("visibility", "hidden");
+   $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
    $("#dataset-loaded-message").show();
    // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
  }
