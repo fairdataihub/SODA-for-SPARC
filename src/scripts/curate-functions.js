@@ -184,75 +184,66 @@ function importGenerateDatasetStep(object) {
       ) {
         var bfAccountSelected =
           sodaJSONObj["bf-account-selected"]["account-name"];
-        if (
-          $('#bfallaccountlist option[value="' + bfAccountSelected + '"]').prop(
-            "selected",
-            true
-          ).length
-        ) {
-          $('#bfallaccountlist option[value="' + bfAccountSelected + '"]').prop(
-            "selected",
-            true
-          );
-          $("#btn-bf-account").click();
-          // Step 3: choose to generate on an existing or new dataset
-          if (
-            "bf-dataset-selected" in sodaJSONObj &&
-            sodaJSONObj["bf-dataset-selected"]["dataset-name"] !== ""
-          ) {
-            $("#generate-BF-dataset-options-existing").prop("checked", true);
-            $($("#generate-BF-dataset-options-existing").parents()[2]).click();
-            var bfDatasetSelected =
-              sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-            setTimeout(function () {
-              if (
-                $(
-                  '#curatebfdatasetlist option[value="' +
-                    bfDatasetSelected +
-                    '"]'
-                ).prop("selected", true).length
-              ) {
-                $(
-                  '#curatebfdatasetlist option[value="' +
-                    bfDatasetSelected +
-                    '"]'
-                ).prop("selected", true);
-                $("#button-confirm-bf-dataset").click();
-                // Step 4: Handle existing files and folders
-                if ("if-existing" in sodaJSONObj["generate-dataset"]) {
-                  var existingFolderOption =
-                    sodaJSONObj["generate-dataset"]["if-existing"];
-                  $("#existing-folders-" + existingFolderOption).prop(
-                    "checked",
-                    true
-                  );
-                  $(
-                    $("#existing-folders-" + existingFolderOption).parents()[2]
-                  ).click();
-                }
-                if ("if-existing-files" in sodaJSONObj["generate-dataset"]) {
-                  var existingFileOption =
-                    sodaJSONObj["generate-dataset"]["if-existing-files"];
-                  $("#existing-files-" + existingFileOption).prop(
-                    "checked",
-                    true
-                  );
-                  $(
-                    $("#existing-files-" + existingFileOption).parents()[2]
-                  ).click();
-                }
-              }
-            }, 3000);
+        $("#current-bf-account-generate").text(bfAccountSelected);
+        $("#para-account-detail-curate").html("");
+        client.invoke("api_bf_account_details", bfAccountSelected, (error, res) => {
+          if (error) {
+            log.error(error);
+            console.error(error);
+            showHideDropdownButtons("account", "hide");
           } else {
-            $("#generate-BF-dataset-options-new").prop("checked", true);
-            $($("#generate-BF-dataset-options-new").parents()[2]).click();
-            $("#inputNewNameDataset").val(
-              sodaJSONObj["generate-dataset"]["dataset-name"]
-            );
-            $("#inputNewNameDataset").keyup();
+            $("#para-account-detail-curate").html(res);
+            updateBfAccountList();
+            // checkPrevDivForConfirmButton("account");
+          }
+        });
+        // $("#div-bf-account-btns").css("display", "flex");
+        $("#btn-bf-account").trigger("click");
+        // Step 3: choose to generate on an existing or new dataset
+        if (
+          "bf-dataset-selected" in sodaJSONObj &&
+          sodaJSONObj["bf-dataset-selected"]["dataset-name"] !== ""
+        ) {
+          $("#generate-BF-dataset-options-existing").prop("checked", true);
+          $($("#generate-BF-dataset-options-existing").parents()[2]).click();
+          var bfDatasetSelected =
+          sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+          setTimeout(function () {
+            $("#current-bf-dataset-generate").text(bfDatasetSelected);
+            $("#button-confirm-bf-dataset").click();
+            // Step 4: Handle existing files and folders
+            if ("if-existing" in sodaJSONObj["generate-dataset"]) {
+              var existingFolderOption =
+              sodaJSONObj["generate-dataset"]["if-existing"];
+              $("#existing-folders-" + existingFolderOption).prop(
+                "checked",
+                true
+              );
+              $(
+                $("#existing-folders-" + existingFolderOption).parents()[2]
+              ).click();
+            }
+            if ("if-existing-files" in sodaJSONObj["generate-dataset"]) {
+              var existingFileOption =
+              sodaJSONObj["generate-dataset"]["if-existing-files"];
+              $("#existing-files-" + existingFileOption).prop(
+                "checked",
+                true
+              );
+              $(
+                $("#existing-files-" + existingFileOption).parents()[2]
+              ).click();
+            }
+          }, 3000);
+        } else {
+          $("#generate-BF-dataset-options-new").prop("checked", true);
+          $($("#generate-BF-dataset-options-new").parents()[2]).click();
+          $("#inputNewNameDataset").val(
+            sodaJSONObj["generate-dataset"]["dataset-name"]
+          );
+          $("#inputNewNameDataset").keyup();
           }
         }
-      }
     }
   } else {
     // the block of code below reverts all the checks to option cards if applicable
@@ -346,6 +337,23 @@ function loadProgressFile(ev) {
     }
 }
 
+function removeOptions(selectbox)
+{
+    var i;
+    for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
+    {
+        selectbox.remove(i);
+    }
+}
+
+// Function to add options to dropdown list
+function addOption(selectbox, text, value) {
+    var opt = document.createElement("OPTION");
+    opt.text = text;
+    opt.value = value;
+    selectbox.options.add(opt);
+}
+
 // function to load Progress dropdown
 function importOrganizeProgressPrompt() {
   document.getElementById('para-progress-file-status').innerHTML = ""
@@ -366,6 +374,7 @@ function importOrganizeProgressPrompt() {
 }
 
 importOrganizeProgressPrompt()
+
 async function openDropdownPrompt(dropdown) {
   // if users edit current account
   if (dropdown === "bf") {
@@ -424,7 +433,16 @@ async function openDropdownPrompt(dropdown) {
         });
         $("#current-bf-account").text("");
         $("#current-bf-account-generate").text("");
+        $("#current-bf-dataset").text("None");
+        $("#current-bf-dataset-generate").text("None");
+        defaultBfDataset = "Select dataset";
+        tempDatasetListsSync();
+        $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "none");
+        $("#button-confirm-bf-dataset-getting-started").hide();
+
         $("#para-account-detail-curate").html("");
+        $("#current-bf-dataset").text("None");
+        showHideDropdownButtons("dataset", "hide");
         client.invoke("api_bf_account_details", bfacct, (error, res) => {
           if (error) {
             log.error(error);
@@ -435,14 +453,24 @@ async function openDropdownPrompt(dropdown) {
               footer: "<a href>Why do I have this issue?</a>",
             });
             showHideDropdownButtons("account", "hide");
-            // $("#div-bf-account-btns").css("display", "none");
-            // $('#div-bf-account-btns button').hide();
           } else {
             $("#para-account-detail-curate").html(res);
             $("#current-bf-account").text(bfacct);
             $("#current-bf-account-generate").text(bfacct);
             updateBfAccountList();
-            checkPrevDivForConfirmButton("account");
+            client.invoke("api_bf_dataset_account", bfacct, (error, result) => {
+              if (error) {
+                log.error(error)
+                console.log(error)
+                var emessage = error
+                document.getElementById("para-filter-datasets-status-2").innerHTML = "<span style='color: red'>" + emessage + "</span>"
+              } else {
+                datasetList = [];
+                datasetList = result;
+              }
+            })
+            showHideDropdownButtons("account", "hide");
+            // checkPrevDivForConfirmButton("account");
           }
         });
       } else {
@@ -456,7 +484,15 @@ async function openDropdownPrompt(dropdown) {
     var bfDataset = "";
     // if users edit Current dataset
     datasetPermissionDiv.style.display = "block";
-    $("#select-permission-list-2").val("All").trigger("change");
+    $(datasetPermissionDiv).find('#curatebfdatasetlist')
+    .find('option')
+    .empty()
+    .append('<option value="Select dataset">Select dataset</option>')
+    .val('Select dataset');
+    $(datasetPermissionDiv).find('#div-filter-datasets-progress-2').css("display", "block");
+    $(datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
+    $(datasetPermissionDiv).find("#select-permission-list-2").val("All").trigger("change");
+    $(datasetPermissionDiv).find("#curatebfdatasetlist").val("Select dataset").trigger("change");
     const { value: bfDS } = await Swal.fire({
       title:
         "<h3 style='margin-bottom:20px !important'>Please choose a dataset</h3>",
@@ -489,29 +525,34 @@ async function openDropdownPrompt(dropdown) {
       tempDatasetListsSync();
       $("#dataset-loaded-message").hide();
       showHideDropdownButtons("dataset", "show");
-      checkPrevDivForConfirmButton("dataset");
+      // checkPrevDivForConfirmButton("dataset");
     }
     // hide "Confirm" button if Current dataset set to None
-    if ($("#current-bf-dataset").text() === "None") {
+    if ($("#current-bf-dataset-generate").text() === "None") {
       showHideDropdownButtons("dataset", "hide");
+    } else {
+      showHideDropdownButtons("dataset", "show");
     }
     // hide "Confirm" button if Current dataset under Getting started set to None
     if ($("#current-bf-dataset").text() === "None") {
       showHideDropdownButtons("dataset", "hide");
+    } else {
+      showHideDropdownButtons("dataset", "show");
     }
   }
 }
 
 $("#select-permission-list-2").change(function (e) {
   $("#div-filter-datasets-progress-2").css("display", "block");
-  var datasetPermission = $("#select-permission-list-2").val();
+  // var datasetPermission = $("#select-permission-list-2").val();
   var bfacct = $("#current-bf-account").text();
   if (bfacct === "None") {
     document.getElementById("para-filter-datasets-status-2").innerHTML =
       "<span style='color:red'>Please select a Blackfynn account first!</span>";
+    $(datasetPermissionDiv).find('#div-filter-datasets-progress-2').css("display", "none");
   } else {
     $("#curatebfdatasetlist").selectpicker();
-    updateDatasetList(bfacct, datasetPermission);
+    updateDatasetList(bfacct);
   }
 });
 
@@ -582,13 +623,15 @@ function tempDatasetListsSync() {
   showDatasetDescription();
 }
 
-function updateDatasetList(bfaccount, myPermission) {
+function updateDatasetList(bfaccount) {
+  $("#div-filter-datasets-progress-2").css("display", "block");
   removeOptions(curateDatasetDropdown);
   addOption(curateDatasetDropdown, "Select dataset", "Select dataset");
   initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
   var filteredDatasets = [];
   // waiting for dataset list to load first before initiating BF dataset dropdown list
   setTimeout(function () {
+    var myPermission = $("#select-permission-list-2").val();
     if (myPermission.toLowerCase() === "all") {
       for (var i = 0; i < datasetList.length; i++) {
         filteredDatasets.push(datasetList[i].name);
@@ -995,7 +1038,6 @@ $(jstreeInstance).on("changed.jstree", function (e, data) {
     selectedNode = data.node.text;
     selectedPath = data.instance.get_path(data.node,'/');
     var parentNode = $(jstreeInstance).jstree('get_selected');
-    console.log(parentNode)
   }
 })
 
