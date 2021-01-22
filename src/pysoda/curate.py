@@ -1501,7 +1501,7 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
                     relative_file_name += folder["files"][item]["folderpath"][i] + "/"
                     i += 1
                 relative_file_name += item
-
+                filename.replace("\\","/")
                 dict_folder_manifest["filename"].append(relative_file_name)
                 file_extension = os.path.splitext(item)[1]
                 dict_folder_manifest["file type"].append(file_extension)

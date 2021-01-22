@@ -623,35 +623,36 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
 
 
     def recursive_manifest_info_import(my_folder, my_relative_path, manifest_df):
-        logger.debug("my_folder", json.dumps(my_folder))
-        logger.debug("my_folderkeys()", my_folder.keys())
+        #logger.debug("my_folder", json.dumps(my_folder))
+        #logger.debug("my_folderkeys()", my_folder.keys())
 
         if "files" in my_folder.keys():
             for file_key, file in my_folder["files"].items():
                     filename = join(my_relative_path, file_key)
                     colum_headers = manifest_df.columns.tolist()
-                    logger.debug(colum_headers)
+                    filename.replace("\\","/")
+                    
                     if filename in list(manifest_df["filename"].values):
                         if "description" in colum_headers:
                             mydescription = manifest_df[manifest_df['filename'] == filename]["description"].values[0]
-                            logger.debug("description", mydescription)
+                            #logger.debug("description", mydescription)
                             if mydescription:
                                 file["description"] = mydescription
                         if "Additional Metadata" in colum_headers:
                             my_additional_medata = manifest_df[manifest_df['filename'] == filename]["Additional Metadata"].values[0]
-                            logger.debug("additional-metadata", my_additional_medata)
+                            #logger.debug("additional-metadata", my_additional_medata)
                             if mydescription:
                                 file["additional-metadata"] = my_additional_medata
                         if "timestamp" in colum_headers:
                             my_timestamp = manifest_df[manifest_df['filename'] == filename]["timestamp"].values[0]
-                            logger.debug("timestamp", my_timestamp)
+                            #logger.debug("timestamp", my_timestamp)
                             if my_timestamp:
                                 file["timestamp"] = my_timestamp
 
         if "folders" in my_folder.keys():
             for folder_key, folder in my_folder["folders"].items():
                 relative_path = join(my_relative_path, folder_key)
-                logger.debug("relative_path", relative_path)
+                #logger.debug("relative_path", relative_path)
                 
                 recursive_manifest_info_import(folder, relative_path, manifest_df)
     
@@ -708,6 +709,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
             del soda_json_structure['metadata-files']
         
         dataset_folder = soda_json_structure["dataset-structure"]
+        #logger.debug("data", json.dumps(dataset_folder))
         # pull information from the manifest files if they satisfy the SPARC format
         if "folders" in dataset_folder.keys():
             for folder_key in manifest_dict.keys():
