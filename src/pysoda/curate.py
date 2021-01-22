@@ -1431,7 +1431,9 @@ def generate_dataset_locally(soda_json_structure):
             shutil.rmtree(original_dataset_path)
             rename(datasetpath, original_dataset_path)
 
+        open_file(join(dataset_absolute_path, dataset_name))
         return datasetpath
+        
 
     except Exception as e:
         raise e
@@ -1491,6 +1493,7 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
     """
     high_level_folders_present = []
     manifest_files_structure = {}
+    local_timezone = TZLOCAL()
 
     def recursive_folder_traversal(folder, dict_folder_manifest):
         if "files" in folder.keys():
