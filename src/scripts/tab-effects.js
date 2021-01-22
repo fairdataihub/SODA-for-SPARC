@@ -912,8 +912,7 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
 
    if (!(result[0])) {
      Swal.fire({
-       html: "<p style='color:red'>" + result[1] + ".<br>Please choose another dataset!</p>",
-       footer: "<a href>Why do I have this issue?</a>",
+       html: "<p style='color:red'>" + result[1] + ".<br>Please choose another dataset!</p>"
      });
      $("#nextBtn").prop("disabled", true);
      $("#para-continue-bf-dataset-getting-started").text("");

@@ -381,9 +381,9 @@ async function openDropdownPrompt(dropdown) {
     var resolveMessage = "";
     if (bfAccountOptionsStatus === "") {
       if (Object.keys(bfAccountOptions).length === 1) {
-        footerMessage = "No existing accounts to load. Please add an account!";
+        footerMessage = "No existing accounts to load. Please add an account.";
       } else {
-        footerMessage = "<a href='#'>Need help?</a>";
+        footerMessage = "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Blackfynn-account'>Need help?</a>";
       }
     } else {
       footerMessage = bfAccountOptionsStatus;
@@ -412,7 +412,7 @@ async function openDropdownPrompt(dropdown) {
       },
       inputValidator: (value) => {
         return new Promise((resolve) => {
-          if (value !== "Select") {
+          if ((value) && (value !== "Select")) {
             bfacct = $("#bfaccountdropdown").val();
             resolve();
           } else {
@@ -450,7 +450,7 @@ async function openDropdownPrompt(dropdown) {
             Swal.fire({
               icon: "error",
               text: error,
-              footer: "<a href>Why do I have this issue?</a>",
+              footer: "<a href='https://help.blackfynn.com/en/articles/1488536-creating-an-api-key-for-the-blackfynn-clients'>Why do I have this issue?</a>",
             });
             showHideDropdownButtons("account", "hide");
           } else {
