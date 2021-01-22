@@ -1786,6 +1786,8 @@ function wipeOutCurateProgress() {
   $("#input-destination-getting-started-locally").val("");
   // set metadata file paths to empty
   $('.para-metadata-file-status').text("");
+  // set back Please continue para element
+  $("#para-continue-prepare-new-getting-started").text("");
   // un-show all divs from Generate dataset step
   $($('#Question-generate-dataset').siblings()).removeClass('show');
 
