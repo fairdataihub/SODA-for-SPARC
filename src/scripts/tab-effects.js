@@ -926,9 +926,6 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
      return;
    } else {
      sodaJSONObj = result[1][0];
-     // sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $(
-     //   "#current-bf-dataset"
-     // ).text();
      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
      populate_existing_folders(datasetStructureJSONObj);
      populate_existing_metadata(sodaJSONObj);

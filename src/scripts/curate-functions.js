@@ -491,6 +491,7 @@ async function openDropdownPrompt(dropdown) {
     .val('Select dataset');
     $(datasetPermissionDiv).find('#div-filter-datasets-progress-2').css("display", "block");
     $(datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
+    $("#para-continue-bf-dataset-getting-started").text("");
     $(datasetPermissionDiv).find("#select-permission-list-2").val("All").trigger("change");
     $(datasetPermissionDiv).find("#curatebfdatasetlist").val("Select dataset").trigger("change");
     initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
