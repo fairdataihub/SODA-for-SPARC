@@ -5516,38 +5516,6 @@ function showDefaultBFAccount() {
   })
 }
 
-//
-// /// reset progress
-// resetProgress.addEventListener("click", function() {
-//   bootbox.confirm({
-//     title: "Reset progress",
-//     message: "<p>Are you sure you want to clear the current file organization?</p>",
-//     centerVertical: true,
-//     callback: function(r) {
-//       if (r!==null) {
-//         organizeDSglobalPath.value = "/"
-//         datasetStructureJSONObj = {
-//           "type": "virtual",
-//           "folders": {
-//             "code": {"type": "virtual", "folders": {}, "files": {}},
-//             "derivative": {"type": "virtual", "folders": {}, "files": {}},
-//             "primary": {"type": "virtual", "folders": {}, "files": {}},
-//             "source": {"type": "virtual", "folders": {}, "files": {}},
-//             "docs": {"type": "virtual", "folders": {}, "files": {}},
-//             "protocols": {"type": "virtual", "folders": {}, "files": {}}
-//           },
-//           "files": {}
-//         }
-//         listItems(datasetStructureJSONObj, '#items')
-//         getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-//         hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-//         hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-//       }
-//     }
-//   })
-// })
-
-
 ////// function to trigger action for each context menu option
 function hideMenu(category, menu1, menu2, menu3){
   if (category === "folder") {
@@ -6357,7 +6325,7 @@ function listItems(jsonObj, uiItem) {
   $(uiItem).html(appendString);
 
   dragselect_area.stop();
-  
+
   dragselect_area = new DragSelect({
     selectables: document.querySelectorAll(".single-item"),
     draggability: false,
@@ -6500,16 +6468,18 @@ $("#inputNewNameDataset").keyup(function() {
   var newName = $("#inputNewNameDataset").val().trim();
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
-      // document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
+      document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
+      $('#btn-confirm-new-dataset-name').hide();
       document.getElementById('para-new-name-dataset-message').innerHTML = "Error: A Blackfynn dataset name cannot contain any of the following characters: \/:*?'<>."
       $("#nextBtn").prop("disabled", true);
       $("#Question-generate-dataset-generate-div-old").removeClass("show")
     } else {
-      // document.getElementById('div-confirm-inputNewNameDataset').style.display = "flex";
+      document.getElementById('div-confirm-inputNewNameDataset').style.display = "flex";
+      $('#btn-confirm-new-dataset-name').show();
       $("#Question-generate-dataset-generate-div").show();
       $("#Question-generate-dataset-generate-div").children().show();
-      $('#div-confirm-inputNewNameDataset button').click();
-      $("#nextBtn").prop("disabled", false);
+      // $('#div-confirm-inputNewNameDataset button').click();
+      // $("#nextBtn").prop("disabled", false);
       $("#Question-generate-dataset-generate-div-old").addClass("show")
       document.getElementById('para-new-name-dataset-message').innerHTML = "";
     }
@@ -6536,11 +6506,9 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
       // document.getElementById('div-confirm-destination-locally').style.display = "flex";
       if (sodaJSONObj["starting-point"]["type"] === "local" && sodaJSONObj["starting-point"]["local-path"] == "")
       {
-        console.log("local-existing and step 1");
         valid_dataset = verify_sparc_folder(document.getElementById("input-destination-generate-dataset-locally").placeholder);
         sodaJSONObj["starting-point"]["local-path"] = filepath[0];
           create_json_object(sodaJSONObj);
-          console.log(sodaJSONObj);
           datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
           populate_existing_folders(datasetStructureJSONObj);
           populate_existing_metadata(sodaJSONObj);
@@ -6596,7 +6564,8 @@ document.getElementById("button-generate-comeback").addEventListener('click', fu
   document.getElementById('generate-dataset-progress-tab').style.display = "none";
   document.getElementById('div-vertical-progress-bar').style.display = "flex";
   document.getElementById('prevBtn').style.display = "inline";
-  $('#generate-dataset-tab').addClass('tab-active');
+  document.getElementById('nextBtn').style.display = "inline";
+  showParentTab(currentTab, 1)
 })
 
 // function to hide the sidebar and disable the sidebar expand button
@@ -6649,6 +6618,13 @@ document
 
     // delete datasetStructureObject["files"] value that was added only for the Preview tree view
     sodaJSONObj["dataset-structure"]["files"] = {};
+    // delete manifest files added for treeview
+    for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+      if ("manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]
+          && sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"]["forTreeview"]) {
+        delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
+      }
+    }
 
     client.invoke(
       "api_check_empty_files_folders",
@@ -6742,7 +6718,6 @@ const divGenerateProgressBar = document.getElementById("div-new-curate-meter-pro
 const generateProgressBar = document.getElementById("progress-bar-new-curate")
 
 function initiate_generate() {
-  console.log(sodaJSONObj);
   // Initiate curation by calling Python funtion
   var main_curate_status = "Solving";
   document.getElementById("para-new-curate-progress-bar-status").innerHTML =

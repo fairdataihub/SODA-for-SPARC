@@ -553,12 +553,12 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 if "bfpath" not in folder["files"][item]:
                     folder["files"][item]['bfpath'] = path[:]
 
-        for item in list(folder["folders"]):
-            if "bfpath" not in folder["folders"][item]:
-                folder["folders"][item]['bfpath'] = path[:]
-                folder["folders"][item]['bfpath'].append(item)
-            recursive_item_path_create(folder["folders"][item], folder["folders"][item]['bfpath'][:])
-
+        if "folders" in folder.keys():
+            for item in list(folder["folders"]):
+                if "bfpath" not in folder["folders"][item]:
+                    folder["folders"][item]['bfpath'] = path[:]
+                    folder["folders"][item]['bfpath'].append(item)
+                recursive_item_path_create(folder["folders"][item], folder["folders"][item]['bfpath'][:])
         return
 
     level = 0
@@ -579,7 +579,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                     continue
                 if col_count == 1:
                     #dataset_folder["folders"] = {}
-                    level = my_level + 1
+                    my_level = my_level + 1
                 dataset_folder["folders"][folder_name] = {
                     "type": "bf", "action": ["existing"], "path": item.id}
                 sub_folder = dataset_folder["folders"][folder_name]
@@ -588,7 +588,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 if "files" not in sub_folder:
                     sub_folder["files"] = {}
                 recursive_dataset_import(
-                    item, sub_folder, metadata_files, folder_name, level, manifest_dict)
+                    item, sub_folder, metadata_files, folder_name, my_level, manifest_dict)
             else:
                 if "folders" not in dataset_folder:
                     dataset_folder["folders"] = {}
@@ -637,6 +637,10 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                             my_additional_medata = manifest_df[manifest_df['filename'] == filename]["Additional Metadata"].values[0]
                             if mydescription:
                                 file["additional-metadata"] = my_additional_medata
+                        if "timestamp" in colum_headers:
+                            my_timestamp = manifest_df[manifest_df['filename'] == filename]["timestamp"].values[0]
+                            if my_timestamp:
+                                file["timestamp"] = my_timestamp
 
         if "folders" in my_folder.keys():
             for folder_key, folder in my_folder["folders"].items():
