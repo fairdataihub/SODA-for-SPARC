@@ -395,6 +395,13 @@ function nextPrev(n) {
     $("#Question-generate-dataset-generate-div").hide();
     $("#Question-generate-dataset-generate-div").children().hide();
 
+    let dataset_location = document.querySelector(
+      "#Question-generate-dataset-locally-destination > div > div.grouped.fields > label"
+    );
+    $(dataset_location).text(
+      "At which location should we generate the dataset?"
+    );
+
     // Show/or hide the replace existing button
     if (sodaJSONObj["starting-point"]["type"] === "local") {
       $("#generate-dataset-replace-existing").show();

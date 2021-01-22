@@ -1481,6 +1481,85 @@ def bf_create_new_dataset(datasetname, bf):
     except Exception as e:
         raise e
 
+def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure):
+    """
+    Function to create manifest files for each high-level SPARC folder for an existing blackfynn dataset.
+    Args:
+        soda_json_structure: soda dict with information about the dataset to be generated/modified
+    Action:
+        manifest_files_structure: dict including the local path of the manifest files
+    """
+    high_level_folders_present = []
+    manifest_files_structure = {}
+
+    def recursive_folder_traversal(folder, dict_folder_manifest):
+        if "files" in folder.keys():
+            for item in list(folder["files"]):
+                relative_file_name = ""
+                i = 1
+                while i < len(folder["files"][item]["folderpath"]):
+                    relative_file_name += folder["files"][item]["folderpath"][i] + "/"
+                    i += 1
+                relative_file_name += item
+                relative_file_name.replace("\\","/")
+                dict_folder_manifest["filename"].append(relative_file_name)
+                file_extension = os.path.splitext(item)[1]
+                dict_folder_manifest["file type"].append(file_extension)
+
+                if folder["files"][item]["type"] == "bf":
+                    dict_folder_manifest["timestamp"].append(folder["files"][item]["timestamp"])
+                elif folder["files"][item]["type"] == "local":
+                    file_path = folder["files"][item]["path"]
+                    filepath = pathlib.Path(file_path)
+                    mtime = filepath.stat().st_mtime
+                    lastmodtime = datetime.fromtimestamp(mtime).astimezone(local_timezone)
+                    dict_folder_manifest["timestamp"].append(lastmodtime.isoformat().replace('.', ',').replace('+00:00', 'Z'))
+
+                if "description" in folder["files"][item].keys():
+                    dict_folder_manifest["description"].append(folder["files"][item]["description"])
+                else:
+                    dict_folder_manifest["description"].append("")
+
+                if "additional-metadata" in folder["files"][item].keys():
+                    dict_folder_manifest["Additional Metadata"].append(folder["files"][item]["additional-metadata"])
+                else:
+                    dict_folder_manifest["Additional Metadata"].append("")
+
+        if "folders" in folder.keys():
+            for item in list(folder["folders"]):
+                recursive_folder_traversal(folder["folders"][item], dict_folder_manifest)
+
+        return
+
+    dataset_structure = soda_json_structure["dataset-structure"]
+
+    #create local folder to save manifest files temporarly (delete any existing one first)
+    shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
+    makedirs(manifest_folder_path)
+
+    for high_level_folder in list(dataset_structure["folders"]):
+        high_level_folders_present.append(high_level_folder)
+
+        folderpath = join(manifest_folder_path, high_level_folder)
+        makedirs(folderpath)
+        manifestfilepath = join(folderpath, 'manifest.xlsx')
+
+        # Initialize dict where manifest info will be stored
+        dict_folder_manifest = {}
+        dict_folder_manifest["filename"] = []
+        dict_folder_manifest["timestamp"] = []
+        dict_folder_manifest["description"] = []
+        dict_folder_manifest["file type"] = []
+        dict_folder_manifest["Additional Metadata"] = []
+
+        recursive_folder_traversal(dataset_structure["folders"][high_level_folder], dict_folder_manifest)
+
+        df = pd.DataFrame.from_dict(dict_folder_manifest)
+        df.to_excel(manifestfilepath, index=None, header=True)
+        manifest_files_structure[high_level_folder] = manifestfilepath
+
+    return manifest_files_structure
+
 def create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds):
     """
     Function to create manifest files for each high-level SPARC folder.
@@ -1847,16 +1926,16 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
         return
 
     # Check and create any non existing folders for the file move process
-    def recursive_check_and_create_bf_file_path(folderpath, index, bfsd):
+    def recursive_check_and_create_bf_file_path(folderpath, index, current_folder_structure):
         folder = folderpath[index]
 
-        if folder not in bfsd["folders"]:
+        if folder not in current_folder_structure["folders"]:
             if (index == 0):
                 new_folder = ds.create_collection(folder)
             else:
-                current_folder = bf.get(bfsd["path"])
+                current_folder = bf.get(current_folder_structure["path"])
                 new_folder = current_folder.create_collection(folder)
-            bfsd["folders"][folder] = {"type": "bf", "action": ["existing"], "path": new_folder.id, "folders":{}, "files":{}}
+            current_folder_structure["folders"][folder] = {"type": "bf", "action": ["existing"], "path": new_folder.id, "folders":{}, "files":{}}
 
         index += 1
 
@@ -1965,7 +2044,10 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
         soda_json_structure["manifest-files"] = {"destination": "bf"}
 
     soda_json_structure["generate-dataset"] = {"destination" : "bf", "if-existing": "merge", "if-existing-files": "replace"}
-    bf_generate_new_dataset(soda_json_structure, bf, ds)
+
+    bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+    myds = bf.get_dataset(bfdataset)
+    bf_generate_new_dataset(soda_json_structure, bf, myds)
 
     return
 
@@ -2197,12 +2279,15 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
         if "manifest-files" in soda_json_structure.keys():
 
             # prepare manifest files
-            if soda_json_structure["generate-dataset"]["destination"] == "bf" and "dataset-name" not in soda_json_structure["generate-dataset"]:
-                #generating dataset on an existing bf dataset - account for existing files and manifest files
-                manifest_files_structure = create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds)
+            if soda_json_structure["starting-point"]["type"] == "bf":
+                manifest_files_structure = create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure)
             else:
-                #generating on new bf
-                manifest_files_structure = create_high_level_manifest_files(soda_json_structure)
+                if soda_json_structure["generate-dataset"]["destination"] == "bf" and "dataset-name" not in soda_json_structure["generate-dataset"]:
+                    #generating dataset on an existing bf dataset - account for existing files and manifest files
+                    manifest_files_structure = create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds)
+                else:
+                    #generating on new bf
+                    manifest_files_structure = create_high_level_manifest_files(soda_json_structure)
 
             # add manifest files to list after deleting existing ones
             list_upload_manifest_files = []
