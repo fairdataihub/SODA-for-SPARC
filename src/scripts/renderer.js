@@ -6795,7 +6795,6 @@ function initiate_generate() {
         var main_generated_dataset_size = res[4];
         var elapsed_time_formatted = res[5];
         console.log(main_generated_dataset_size);
-        console.log(main_curate_progress_message);
         if (start_generate === 1) {
           divGenerateProgressBar.style.display = "block";
           if (main_curate_progress_message.includes("Success: COMPLETED!")) {
@@ -6867,7 +6866,6 @@ function initiate_generate() {
     });
 
     if (main_curate_status === "Done") {
-      generateProgressBar.value = 100;
       countDone++;
       if (countDone > 1) {
         log.info("Done curate track");
