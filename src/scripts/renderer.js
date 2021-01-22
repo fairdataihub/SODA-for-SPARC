@@ -22,6 +22,8 @@ const removeMd = require('remove-markdown');
 const electron = require('electron');
 const bootbox = require('bootbox');
 const DragSelect = require('dragselect')
+const excelToJson = require('convert-excel-to-json');
+const csvToJson = require('convert-csv-to-json');
 const app = remote.app;
 
 //////////////////////////////////
@@ -6509,6 +6511,7 @@ ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => 
         valid_dataset = verify_sparc_folder(document.getElementById("input-destination-generate-dataset-locally").placeholder);
         sodaJSONObj["starting-point"]["local-path"] = filepath[0];
           create_json_object(sodaJSONObj);
+          console.log(sodaJSONObj);
           datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
           populate_existing_folders(datasetStructureJSONObj);
           populate_existing_metadata(sodaJSONObj);
@@ -6601,6 +6604,7 @@ document
     updateJSONStructureGenerate();
     if (sodaJSONObj["starting-point"]["type"] === "local")
     {
+      console.log(sodaJSONObj);
       sodaJSONObj["starting-point"]["type"] = "new";
     }
 

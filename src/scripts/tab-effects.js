@@ -1,3 +1,5 @@
+const { relative } = require("path");
+
 // JSON object of all the tabs
 var allParentStepsJSON = {
   'getting-started': 'getting-started-tab',
@@ -450,6 +452,7 @@ function nextPrev(n) {
     }
     showParentTab(currentTab, n);
   }
+  console.log(sodaJSONObj);
 }
 
 function fixStepIndicator(n) {
@@ -785,11 +788,12 @@ create_json_object = (sodaJSONObj) => {
     "README.txt",
     "CHANGES.txt",
   ];
-  root_folder_path = $("#input-destination-generate-dataset-locally").attr('placeholder');
+  let root_folder_path = $("#input-destination-generate-dataset-locally").attr('placeholder');
   sodaJSONObj["dataset-structure"] = { folders: {} };
+  let stats = "";
   fs.readdirSync(root_folder_path).forEach((file) => {
     full_current_path = path.join(root_folder_path, file);
-    let stats = fs.statSync(full_current_path);
+    stats = fs.statSync(full_current_path);
     if (stats.isDirectory()) {
       if (highLevelFolders.includes(file)) {
         sodaJSONObj["dataset-structure"]["folders"][file] = {
@@ -815,34 +819,163 @@ create_json_object = (sodaJSONObj) => {
 
   for (folder in sodaJSONObj["dataset-structure"]["folders"])
   {
-    recursive_structure_create(sodaJSONObj["dataset-structure"]["folders"][folder])
+    sodaJSONObj["starting-point"][folder] = {}
+    sodaJSONObj["starting-point"][folder]["path"] = ""
+    temp_file_path_xlsx = path.join(root_folder_path, folder, "manifest.xlsx");
+    temp_file_path_csv = path.join(root_folder_path, folder, "manifest.csv");
+    if (fs.existsSync(temp_file_path_xlsx)){
+      sodaJSONObj["starting-point"][folder]["path"] = temp_file_path_xlsx
+      sodaJSONObj["starting-point"][folder]["manifest"] = (excelToJson({
+        sourceFile: sodaJSONObj["starting-point"][folder]["path"]
+      }))["Sheet1"];
+    }
+    else if (fs.existsSync(temp_file_path_csv)) {
+      sodaJSONObj["starting-point"][folder]["path"] = temp_file_path_csv;
+      sodaJSONObj["starting-point"][folder]["manifest"] = csvToJson.parseSubArray(';',',').getJsonFromCsv(sodaJSONObj["starting-point"][folder]["path"]);
+    }
+    recursive_structure_create(sodaJSONObj["dataset-structure"]["folders"][folder], folder, path.join(root_folder_path, folder))
   }
 };
 
-recursive_structure_create = (dataset_folder) => {
+recursive_structure_create = (
+  dataset_folder,
+  high_level_folder,
+  root_folder_path
+) => {
   current_folder_path = dataset_folder["path"];
+  let manifest_object = {
+    filename: "",
+    timestamp: "",
+    description: "",
+    "file-type": "",
+    "additional-metadata": "",
+  };
   fs.readdirSync(current_folder_path).forEach((file) => {
     current_file_path = path.join(current_folder_path, file);
     let stats = fs.statSync(current_file_path);
-    if (stats.isFile()) {
+    if (
+      stats.isFile() &&
+      path.parse(current_file_path).name != "manifest" &&
+      high_level_folder != dataset_folder
+    ) {
+      if (sodaJSONObj["starting-point"][high_level_folder]["path"] !== "") {
+        extension = path.extname(
+          sodaJSONObj["starting-point"][high_level_folder]["path"]
+        );
+        if (extension == ".xlsx") {
+          temp_current_file_path = current_file_path.replace("\\", "/");
+          relative_path = temp_current_file_path.replace(
+            root_folder_path + "/",
+            ""
+          );
+          for (item in sodaJSONObj["starting-point"][high_level_folder][
+            "manifest"
+          ]) {
+            if (
+              sodaJSONObj["starting-point"][high_level_folder]["manifest"][
+                item
+              ]["A"] == relative_path
+            ) {
+              if (
+                sodaJSONObj["starting-point"][high_level_folder]["manifest"][
+                  item
+                ]["C"] != undefined
+              ) {
+                manifest_object["description"] =
+                  sodaJSONObj["starting-point"][high_level_folder]["manifest"][
+                    item
+                  ]["C"];
+              }
+              else
+              {
+                manifest_object["description"] = ""
+              }
+              if (
+                sodaJSONObj["starting-point"][high_level_folder]["manifest"][
+                  item
+                ]["E"] != undefined
+              ) {
+                manifest_object["additional-metadata"] =
+                  sodaJSONObj["starting-point"][high_level_folder]["manifest"][
+                    item
+                  ]["E"];
+              }
+              else
+              {
+                manifest_object["additional-metadata"] = ""
+              }
+            }
+          }
+        } else if (extension == ".csv") {
+          temp_current_file_path = current_file_path.replace("\\", "/");
+          relative_path = temp_current_file_path.replace(
+            root_folder_path + "/",
+            ""
+          );
+          for (item in sodaJSONObj["starting-point"][high_level_folder][
+            "manifest"
+          ]) {
+            if (
+              sodaJSONObj["starting-point"][high_level_folder]["manifest"][
+                item
+              ]["filename"] == relative_path
+            ) {
+              if (
+                sodaJSONObj["starting-point"][high_level_folder]["manifest"][
+                  item
+                ]["description"] != undefined
+              ) {
+                manifest_object["description"] =
+                  sodaJSONObj["starting-point"][high_level_folder]["manifest"][
+                    item
+                  ]["description"];
+              }
+              else
+              {
+                manifest_object["description"] = ""
+              }
+              if (
+                sodaJSONObj["starting-point"][high_level_folder]["manifest"][
+                  item
+                ]["AdditionalMetadata"] != undefined
+              ) {
+                manifest_object["additional-metadata"] =
+                  sodaJSONObj["starting-point"][high_level_folder]["manifest"][
+                    item
+                  ]["AdditionalMetadata"];
+              }
+              else
+              {
+                manifest_object["additional-metadata"] = ""
+              }
+            }
+          }
+        }
+      }
       dataset_folder["files"][file] = {
-        path: current_file_path,
-        type: "local",
-        action: ["existing"],
+        "path": current_file_path,
+        "type": "local",
+        "action": ["existing"],
+        "description": manifest_object["description"],
+        "additional-metadata": manifest_object["additional-metadata"],
       };
     }
     if (stats.isDirectory()) {
       dataset_folder["folders"][file] = {
-        folders: {},
-        files: {},
-        path: current_file_path,
-        type: "local",
-        action: ["existing"],
+        "folders": {},
+        "files": {},
+        "path": current_file_path,
+        "type": "local",
+        "action": ["existing"],
       };
     }
   });
   for (folder in dataset_folder["folders"]) {
-    recursive_structure_create(dataset_folder["folders"][folder]);
+    recursive_structure_create(
+      dataset_folder["folders"][folder],
+      high_level_folder,
+      root_folder_path
+    );
   }
   return;
 };
@@ -1363,6 +1496,25 @@ function updateJSONStructureManifest() {
   }
 }
 
+const recursive_remove_local_deleted_files = (dataset_folder) => {
+  console.log(dataset_folder);
+  if ("files" in dataset_folder) {
+    for (file in dataset_folder["files"]) {
+      if ("forTreeview" in dataset_folder["files"][file]) {
+        continue;
+      }
+      if (dataset_folder["files"][file]["action"].includes("deleted")) {
+        delete dataset_folder["files"][file];
+      }
+    }
+  }
+  if ("folders" in dataset_folder) {
+    for (folder in dataset_folder["folders"]) {
+      recursive_remove_local_deleted_files(dataset_folder["folders"][folder]);
+    }
+  }
+};
+
 // Step 6: Generate dataset
 // update JSON object after users finish Generate dataset step
 function updateJSONStructureGenerate() {
@@ -1394,6 +1546,7 @@ function updateJSONStructureGenerate() {
       delete sodaJSONObj["bf-dataset-selected"];
     }
     sodaJSONObj["starting-point"]["type"] = "new";
+    recursive_remove_local_deleted_files(sodaJSONObj["dataset-structure"]);
   }
   if (sodaJSONObj["starting-point"]["type"] == "new") {
     if ($('input[name="generate-1"]:checked').length > 0) {
