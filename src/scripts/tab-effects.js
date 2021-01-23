@@ -1486,7 +1486,7 @@ function updateJSONStructureManifest() {
 
 const recursive_remove_local_deleted_files = (dataset_folder) => {
   if ("files" in dataset_folder) {
-    for (file in dataset_folder["files"]) {
+    for (let file in dataset_folder["files"]) {
       if ("forTreeview" in dataset_folder["files"][file]) {
         continue;
       }
@@ -1496,8 +1496,15 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
     }
   }
   if ("folders" in dataset_folder) {
-    for (folder in dataset_folder["folders"]) {
+    for (let folder in dataset_folder["folders"]) {
       recursive_remove_local_deleted_files(dataset_folder["folders"][folder]);
+      if (Object.keys(dataset_folder["folders"]).length !== 0)
+      {
+        if (dataset_folder["folders"][folder]["action"].includes("deleted"))
+        {
+          delete dataset_folder["folders"][folder];
+        }
+      }
     }
   }
 };
