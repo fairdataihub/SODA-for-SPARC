@@ -1495,13 +1495,14 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
       }
     }
   }
-  if ("folders" in dataset_folder) {
+  if (
+    "folders" in dataset_folder &&
+    Object.keys(dataset_folder["folders"]).length !== 0
+  ) {
     for (let folder in dataset_folder["folders"]) {
       recursive_remove_local_deleted_files(dataset_folder["folders"][folder]);
-      if (Object.keys(dataset_folder["folders"]).length !== 0)
-      {
-        if (dataset_folder["folders"][folder]["action"].includes("deleted"))
-        {
+      if ("action" in dataset_folder["folders"][folder]) {
+        if (dataset_folder["folders"][folder]["action"].includes("deleted")) {
           delete dataset_folder["folders"][folder];
         }
       }
@@ -1706,6 +1707,7 @@ function updateOverallJSONStructure(id) {
             folders: {},
             files: {},
             type: "",
+            action: []
           };
         }
       }
