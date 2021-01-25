@@ -93,18 +93,21 @@ const checkNewAppVersion = () => {
   ipcRenderer.send("app_version");
 };
 
+// Check app version on current app and display in the side bar
 ipcRenderer.on("app_version", (event, arg) => {
   const version = document.getElementById("version");
   ipcRenderer.removeAllListeners("app_version");
   version.innerText = "v. " + arg.version;
 });
 
+// Check for update and show the pop up box
 ipcRenderer.on("update_available", () => {
   ipcRenderer.removeAllListeners("update_available");
   message.innerText = "A new update is available. Downloading now...";
   notification.classList.remove("hidden");
 });
 
+// When the update is downloaded, show the restart message
 ipcRenderer.on("update_downloaded", () => {
   ipcRenderer.removeAllListeners("update_downloaded");
   if (process.platform == "darwin") {
@@ -119,10 +122,12 @@ ipcRenderer.on("update_downloaded", () => {
   notification.classList.remove("hidden");
 });
 
+// Close the app update notification
 const closeNotification = () => {
   notification.classList.add("hidden");
 };
 
+// Restart the app for update. Does not restart on macos
 const restartApp = () => {
   ipcRenderer.send("restart_app");
 };
@@ -428,10 +433,12 @@ let dragselect_area = new DragSelect({
   area: document.getElementById("items"),
 });
 
+// Assign the callback event for selecting items
 dragselect_area.subscribe("callback", ({ items, event }) => {
   select_items(items, event, isDragging);
 });
 
+// Assign an additional event to allow for ctrl drag behaviour
 dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
   select_items_ctrl(items, event, isDragging);
 });
@@ -6232,9 +6239,12 @@ function listItems(jsonObj, uiItem) {
 
     if ("action" in sortedObj["folders"][item])
     {
-      if (sortedObj["folders"][item]["action"].includes("deleted")) {
+      if (sortedObj["folders"][item]["action"].includes("deleted") || sortedObj["folders"][item]["action"].includes("recursive_deleted")) {
         emptyFolder += " deleted_folder";
         deleted_folder = true;
+        if (sortedObj["folders"][item]["action"].includes("recursive_deleted")){
+          emptyFolder += " recursive_deleted_file"
+        }
       }
     }
 
@@ -6301,9 +6311,13 @@ function listItems(jsonObj, uiItem) {
     cloud_item = "";
     deleted_file = false;
 
-    if (sortedObj["files"][item]["action"].includes("deleted")) {
+    if (sortedObj["files"][item]["action"].includes("deleted") || sortedObj["files"][item]["action"].includes("recursive_deleted")) {
       extension += " deleted_file";
       deleted_file = true;
+      if (sortedObj["files"][item]["action"].includes("recursive_deleted"))
+      {
+        extension += " recursive_deleted_file"
+      }
     }
 
 
