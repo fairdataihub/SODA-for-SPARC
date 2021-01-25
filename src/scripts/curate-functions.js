@@ -883,7 +883,21 @@ async function moveItems(ev, category) {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedOrginalLocation = filtered[filtered.length - 1];
-  // reset previously selected items first
+  /*
+  Reset previously selected items first, create jsTreeData again with updated dataset structure JSON object.
+  Always remember to exclude/delete:
+      1. metadata files added for preview show
+      2. added manifest files for show (for preview) before showing the tree here
+  */
+  if ("files" in datasetStructureJSONObj) {
+    datasetStructureJSONObj["files"] = {};
+  }
+  for (var highLevelFol in datasetStructureJSONObj["folders"]) {
+    if ("manifest.xlsx" in datasetStructureJSONObj["folders"][highLevelFol]["files"]
+    && datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"]["forTreeview"]) {
+      delete datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"];
+    }
+  }
   jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, true, selectedOrginalLocation, "moveItems");
   // Note: somehow, html element "#data" was destroyed after closing the Swal popup.
   // Creating the element again after it was destroyed.
@@ -1092,7 +1106,6 @@ $(jstreeInstance).on("close_node.jstree", function (event, data) {
 });
 
 var jstreePreview = document.getElementById('div-dataset-tree-preview');
-// var jsTreePreviewData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, "", "preview");
 $(document).ready(function() {
   $(jstreePreview).jstree({
   "core" : {
