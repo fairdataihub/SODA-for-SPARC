@@ -1018,11 +1018,13 @@ function moveItemsHelper(item, destination, category) {
       }
       if ("action" in myPath[category][item]) {
         myPath[category][item]["action"].push("moved");
+        addMovedRecursively(myPath[category][item]);
         if (renamedFolderName !== originalFolderName) {
           myPath[category][item]["action"].push("renamed");
         }
       } else {
         myPath[category][item]["action"] = ["moved"];
+        addMovedRecursively(myPath[category][item]);
         if (renamedFolderName !== originalFolderName) {
           myPath[category][item]["action"].push("renamed");
           }
@@ -1033,6 +1035,36 @@ function moveItemsHelper(item, destination, category) {
   delete myPath[category][item];
   listItems(myPath, '#items');
   getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+}
+
+// helper functions to add "moved" to leaf nodes a.k.a files
+function addMovedRecursively(object) {
+  Object.keys(object["files"]).forEach(key => {
+    if ("action" in object["files"][key]) {
+      object["files"][key]["action"].push("moved");
+    } else {
+      object["files"][key]["action"] = ["moved"]
+    }
+  })
+  Object.keys(object["folders"]).forEach(key => {
+    if ("action" in object["folders"][key]) {
+      object["folders"][key]["action"].push("moved");
+    } else {
+      object["folders"][key]["action"] = ["moved"]
+    }
+    if (Object.keys(object["folders"][key]["files"]).length > 0) {
+      Object.keys(object["folders"][key]["files"]).forEach(ele => {
+        if ("action" in object["folders"][key]["files"][ele]) {
+          object["folders"][key]["files"][ele]["action"].push("moved");
+        } else {
+          object["folders"][key]["files"][ele]["action"] = ["moved"]
+        }
+      })
+    }
+    if (Object.keys(object["folders"][key]["folders"]).length > 0) {
+      addMovedRecursively(object["folders"][key])
+    }
+  })
 }
 
 $(jstreeInstance).on("changed.jstree", function (e, data) {
