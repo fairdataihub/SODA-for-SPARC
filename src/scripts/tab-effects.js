@@ -754,6 +754,7 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
   }
 }
 
+// Create the dataset structure for sodaJSONObj
 create_json_object = (sodaJSONObj) => {
   high_level_metadata_sparc = [
     "submission.xlsx", "submission.csv", "submission.json",
@@ -766,6 +767,7 @@ create_json_object = (sodaJSONObj) => {
   let root_folder_path = $("#input-destination-getting-started-locally").attr('placeholder');
   sodaJSONObj["dataset-structure"] = { folders: {} };
   let stats = "";
+  // Get high level folders and metadata files first
   fs.readdirSync(root_folder_path).forEach((file) => {
     full_current_path = path.join(root_folder_path, file);
     stats = fs.statSync(full_current_path);
@@ -790,8 +792,9 @@ create_json_object = (sodaJSONObj) => {
       }
     }
   });
-  // go through each individual high level folder and create the structure
 
+  // go through each individual high level folder and create the structure
+  // If a manifest file exists, read information from the manifest file into a json object
   for (folder in sodaJSONObj["dataset-structure"]["folders"])
   {
     sodaJSONObj["starting-point"][folder] = {}
@@ -812,7 +815,29 @@ create_json_object = (sodaJSONObj) => {
   }
 };
 
-recursive_structure_create = (
+// replace any duplicate file names
+// Modify for consistency with blackfynn naming when the update their system
+const check_file_name_for_blackfynn_duplicate = (dataset_folder, file) => {
+  file_name = path.parse(file).name;
+  file_extension = path.parse(file).ext;
+  let i = 1;
+  let projected_number = "";
+  for (item in dataset_folder) {
+    if (item != file) {
+      item_name = path.parse(item).name;
+      item_extension = path.parse(item).ext;
+      if (file_name + projected_number == item_name) {
+        projected_number = ` (${i})`;
+        i += 1;
+      }
+    }
+  }
+  return file_name + projected_number + file_extension;
+};
+
+// Create the dataset structure for each high level folder.
+// If a manifest file exists, read the file to get any additional metadata from the file.
+const recursive_structure_create = (
   dataset_folder,
   high_level_folder,
   root_folder_path
@@ -860,10 +885,8 @@ recursive_structure_create = (
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
                     item
                   ]["C"];
-              }
-              else
-              {
-                manifest_object["description"] = ""
+              } else {
+                manifest_object["description"] = "";
               }
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
@@ -874,10 +897,8 @@ recursive_structure_create = (
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
                     item
                   ]["E"];
-              }
-              else
-              {
-                manifest_object["additional-metadata"] = ""
+              } else {
+                manifest_object["additional-metadata"] = "";
               }
             }
           }
@@ -904,10 +925,8 @@ recursive_structure_create = (
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
                     item
                   ]["description"];
-              }
-              else
-              {
-                manifest_object["description"] = ""
+              } else {
+                manifest_object["description"] = "";
               }
               if (
                 sodaJSONObj["starting-point"][high_level_folder]["manifest"][
@@ -918,30 +937,38 @@ recursive_structure_create = (
                   sodaJSONObj["starting-point"][high_level_folder]["manifest"][
                     item
                   ]["AdditionalMetadata"];
-              }
-              else
-              {
-                manifest_object["additional-metadata"] = ""
+              } else {
+                manifest_object["additional-metadata"] = "";
               }
             }
           }
         }
       }
       dataset_folder["files"][file] = {
-        "path": current_file_path,
-        "type": "local",
-        "action": ["existing"],
-        "description": manifest_object["description"],
+        path: current_file_path,
+        type: "local",
+        action: ["existing"],
+        description: manifest_object["description"],
         "additional-metadata": manifest_object["additional-metadata"],
       };
+      projected_file_name = check_file_name_for_blackfynn_duplicate(
+        dataset_folder["files"],
+        file
+      );
+      if (file != projected_file_name) {
+        dataset_folder["files"][projected_file_name] =
+          dataset_folder["files"][file];
+        dataset_folder["files"][projected_file_name]["action"].push("renamed");
+        delete dataset_folder["files"][file];
+      }
     }
     if (stats.isDirectory()) {
       dataset_folder["folders"][file] = {
-        "folders": {},
-        "files": {},
-        "path": current_file_path,
-        "type": "local",
-        "action": ["existing"],
+        folders: {},
+        files: {},
+        path: current_file_path,
+        type: "local",
+        action: ["existing"],
       };
     }
   });
@@ -955,7 +982,10 @@ recursive_structure_create = (
   return;
 };
 
-verify_sparc_folder = (root_folder_path) => {
+// Function to verify if a local folder is a SPARC folder
+// Is no high level folders or any possible metadata files 
+// are found the folder is marked as invalid
+const verify_sparc_folder = (root_folder_path) => {
   possible_metadata_files = [
     "submission",
     "dataset_description",
@@ -979,6 +1009,7 @@ verify_sparc_folder = (root_folder_path) => {
   });
   return valid_dataset;
 };
+
 // function similar to transitionSubQuestions, but for buttons
 async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, category){
   /*
@@ -1596,7 +1627,7 @@ function updateJSONStructureGenerate(progress = false) {
           destination: "bf",
           "generate-option": "new",
         };
-        if ($("#current-bf-account-generate").text() === "None") {
+        if ($("#current-bf-account-generate").text() !== "None") {
           if ("bf-account-selected" in sodaJSONObj) {
             sodaJSONObj["bf-account-selected"]["account-name"] = $(
               "#current-bf-account-generate"
