@@ -12,6 +12,62 @@ function showTooltips(ev) {
   });
 }
 
+const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
+  if ("files" in dataset_folder) {
+    for (let file in dataset_folder["files"]) {
+      if ("forTreeview" in dataset_folder["files"][file]) {
+        continue;
+      }
+      if (mode === "delete") {
+        if (
+          !dataset_folder["files"][file]["action"].includes("recursive_deleted")
+        ) {
+          dataset_folder["files"][file]["action"].push("recursive_deleted");
+        }
+      } else if (mode === "restore") {
+        if (
+          dataset_folder["files"][file]["action"].includes("recursive_deleted")
+        ) {
+          let index = dataset_folder["files"][file]["action"].indexOf(
+            "recursive_deleted"
+          );
+          dataset_folder["files"][file]["action"].splice(index, 1);
+        }
+      }
+    }
+  }
+  if (
+    "folders" in dataset_folder &&
+    Object.keys(dataset_folder["folders"]).length !== 0
+  ) {
+    for (let folder in dataset_folder["folders"]) {
+      recursive_mark_sub_files_deleted(dataset_folder["folders"][folder], mode);
+      if ("action" in dataset_folder["folders"][folder]) {
+        if (mode === "delete") {
+          if (
+            !dataset_folder["folders"][folder]["action"].includes(
+              "recursive_deleted"
+            )
+          ) {
+            dataset_folder["folders"][folder]["action"].push("recursive_deleted");
+          }
+        } else if (mode === "restore") {
+          if (
+            dataset_folder["folders"][folder]["action"].includes(
+              "recursive_deleted"
+            )
+          ) {
+            let index = dataset_folder["folders"][folder]["action"].indexOf(
+              "recursive_deleted"
+            );
+            dataset_folder["folders"][folder]["action"].splice(index, 1);
+          }
+        }
+      }
+    }
+  }
+};
+
 ///////// Option to delete folders or files
 function delFolder(
   ev,
@@ -49,6 +105,18 @@ function delFolder(
       });
       return;
     }
+    if (ev.classList.value.includes("recursive_deleted_file")) {
+      bootbox.alert({
+        title: "Restore " + type,
+        message:
+          "The parent folder for this item has been marked for deletion. Please restore that folder to recover this item.",
+        onEscape: true,
+        centerVertical: true,
+        backdrop: true,
+      });
+      return;
+    }
+    
     // Handle file/folder restore
     bootbox.confirm({
       title: "Restore " + promptVar,
@@ -68,6 +136,11 @@ function delFolder(
           let itemToRestore = itemToDelete;
           var filtered = getGlobalPath(organizeCurrentLocation);
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+
+          if (type === "folders")
+          {
+            recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "restore");
+          }
 
           // update Json object with the restored object
           let index = myPath[type][itemToRestore]["action"].indexOf("deleted");
@@ -146,6 +219,11 @@ function delFolder(
                 (myPath[type][itemToDelete]["type"] === "local" &&
                   myPath[type][itemToDelete]["action"].includes("existing"))
               ) {
+                if (type === "folders")
+                {
+                  recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "delete");
+                }
+
                 if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
                   myPath[type][itemToDelete]["action"] = [];
                   myPath[type][itemToDelete]["action"].push("existing");
@@ -188,6 +266,12 @@ function delFolder(
               (myPath[type][itemToDelete]["type"] === "local" &&
                 myPath[type][itemToDelete]["action"].includes("existing"))
             ) {
+              
+              if (type === "folders")
+              {
+                recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "delete");
+              }
+
               if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
                 myPath[type][itemToDelete]["action"] = [];
                 myPath[type][itemToDelete]["action"].push("existing");

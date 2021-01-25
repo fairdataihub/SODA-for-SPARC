@@ -1490,6 +1490,14 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
       if ("forTreeview" in dataset_folder["files"][file]) {
         continue;
       }
+      if (
+        dataset_folder["files"][file]["action"].includes("recursive_deleted")
+      ) {
+        let index = dataset_folder["files"][file]["action"].indexOf(
+          "recursive_deleted"
+        );
+        dataset_folder["files"][file]["action"].splice(index, 1);
+      }
       if (dataset_folder["files"][file]["action"].includes("deleted")) {
         delete dataset_folder["files"][file];
       }
@@ -1502,6 +1510,16 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
     for (let folder in dataset_folder["folders"]) {
       recursive_remove_local_deleted_files(dataset_folder["folders"][folder]);
       if ("action" in dataset_folder["folders"][folder]) {
+        if (
+          dataset_folder["folders"][folder]["action"].includes(
+            "recursive_deleted"
+          )
+        ) {
+          let index = dataset_folder["folders"][folder]["action"].indexOf(
+            "recursive_deleted"
+          );
+          dataset_folder["folders"][folder]["action"].splice(index, 1);
+        }
         if (dataset_folder["folders"][folder]["action"].includes("deleted")) {
           delete dataset_folder["folders"][folder];
         }
