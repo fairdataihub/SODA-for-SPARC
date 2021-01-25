@@ -991,7 +991,9 @@ function moveItemsHelper(item, destination, category) {
       j++;
     }
     if ("action" in myPath[category][item]) {
-      myPath[category][item]["action"].push("moved");
+      if (!(myPath[category][item]["action"].includes("moved"))) {
+        myPath[category][item]["action"].push("moved");
+      }
       if (fileNameWithoutExt !== originalFileNameWithoutExt) {
         myPath[category][item]["action"].push("renamed");
       }
@@ -1040,29 +1042,35 @@ function moveItemsHelper(item, destination, category) {
 // helper functions to add "moved" to leaf nodes a.k.a files
 function addMovedRecursively(object) {
   Object.keys(object["files"]).forEach(key => {
-    if ("action" in object["files"][key]) {
-      object["files"][key]["action"].push("moved");
+    var file = object["files"][key];
+    if ("action" in file) {
+      if (!(file["action"].includes("moved"))) {
+        file["action"].push("moved");
+      }
     } else {
-      object["files"][key]["action"] = ["moved"]
+      file["action"] = ["moved"]
     }
   })
   Object.keys(object["folders"]).forEach(key => {
-    if ("action" in object["folders"][key]) {
-      object["folders"][key]["action"].push("moved");
+    var folder = object["folders"][key];
+    if ("action" in folder) {
+      folder["action"].push("moved");
     } else {
-      object["folders"][key]["action"] = ["moved"]
+      folder["action"] = ["moved"]
     }
-    if (Object.keys(object["folders"][key]["files"]).length > 0) {
-      Object.keys(object["folders"][key]["files"]).forEach(ele => {
-        if ("action" in object["folders"][key]["files"][ele]) {
-          object["folders"][key]["files"][ele]["action"].push("moved");
+    if (Object.keys(folder["files"]).length > 0) {
+      Object.keys(folder["files"]).forEach(ele => {
+        if ("action" in folder["files"][ele]) {
+          if (!(folder["files"][ele]["action"].includes("moved"))) {
+            folder["files"][ele]["action"].push("moved");
+          }
         } else {
-          object["folders"][key]["files"][ele]["action"] = ["moved"]
+          folder["files"][ele]["action"] = ["moved"]
         }
       })
     }
-    if (Object.keys(object["folders"][key]["folders"]).length > 0) {
-      addMovedRecursively(object["folders"][key])
+    if (Object.keys(folder["folders"]).length > 0) {
+      addMovedRecursively(folder)
     }
   })
 }
