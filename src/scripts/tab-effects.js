@@ -205,16 +205,18 @@ const traverse_back = (amount, element = "", pulse_animation = false) => {
     nextPrev(-1);
   }
   if (element != "") {
-    document
-      .getElementById(element)
-      .scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-        inline: "center",
-      });
-  }
-  if (pulse_animation == true) {
-    $("#" + element).addClass("pulse-blue");
+    setTimeout(() => {
+      document
+        .getElementById(element)
+        .scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "center",
+        });
+        if (pulse_animation == true) {
+          $("#" + element).addClass("pulse-blue");
+        }
+    }, 600);
   }
   setTimeout(() => {
     $(".pulse-blue").removeClass("pulse-blue");
