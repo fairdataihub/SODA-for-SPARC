@@ -33,7 +33,8 @@ function showParentTab(tabNow, nextOrPrev) {
 
   $(x[tabNow]).addClass("tab-active");
 
-  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6].filter(function (element) {
+
+  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter(function (element) {
     return ![tabNow].includes(element);
   });
 
@@ -383,6 +384,7 @@ function nextPrev(n) {
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
     $(x[currentTab]).removeClass("tab-active");
+
     currentTab = currentTab - 2;
     showParentTab(currentTab, n);
     $("#nextBtn").prop("disabled", false);
@@ -999,7 +1001,7 @@ const recursive_structure_create = (
 };
 
 // Function to verify if a local folder is a SPARC folder
-// Is no high level folders or any possible metadata files 
+// Is no high level folders or any possible metadata files
 // are found the folder is marked as invalid
 const verify_sparc_folder = (root_folder_path) => {
   possible_metadata_files = [

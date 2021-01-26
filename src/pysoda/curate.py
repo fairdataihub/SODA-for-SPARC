@@ -1433,7 +1433,7 @@ def generate_dataset_locally(soda_json_structure):
 
         open_file(join(dataset_absolute_path, dataset_name))
         return datasetpath
-        
+
 
     except Exception as e:
         raise e
@@ -2010,8 +2010,8 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     dataset_structure = soda_json_structure["dataset-structure"]
     recursive_file_delete(dataset_structure)
     main_curate_progress_message = "Files on Blackfynn marked for deletion have been deleted"
-    
-    # 2. Get the status of all files currently on Blackfynn and create 
+
+    # 2. Get the status of all files currently on Blackfynn and create
     # the folderpath for all items in both dataset structures.
     main_curate_progress_message = "Fetching files and folders from Blackfynn"
     current_bf_dataset_files_folders = bf_get_dataset_files_folders (soda_json_structure.copy())[0]
@@ -2021,18 +2021,18 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     recursive_item_path_create(bfsd, [])
     main_curate_progress_message = "File paths created"
 
-    # 3. Move any files that are marked as moved on Blackfynn. 
+    # 3. Move any files that are marked as moved on Blackfynn.
     # Create any additional folders if required
     main_curate_progress_message = "Moving all files requested by the user"
     recursive_check_moved_files(dataset_structure)
     main_curate_progress_message = "Moved all files requested by the user"
 
-    # 4. Rename any Blackfynn files that are marked as renamed. 
+    # 4. Rename any Blackfynn files that are marked as renamed.
     main_curate_progress_message = "Renaming all files requested by the user"
     recursive_file_rename(dataset_structure)
     main_curate_progress_message = "Renamed all files requested by the user"
 
-    # 5. Delete any Blackfynn folders that are marked as deleted. 
+    # 5. Delete any Blackfynn folders that are marked as deleted.
     main_curate_progress_message = "Deleting any additional folders present on Blackfynn"
     recursive_folder_delete(dataset_structure)
     main_curate_progress_message = "Deletion of additional folders complete"
