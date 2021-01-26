@@ -316,13 +316,16 @@
 }
 
 .parent-tabs {
-  display:none;
-  flex-direction: column;
+  opacity:0;
+  display: flex;
   margin-top: 70px;
-  height: 100%;
+  flex-direction: column;
   width: 100%;
   margin-top: 0;
   overflow: auto;
+  height: 0 !important;
+  transition: height 0.4s ease;
+  transition-delay: 0.1s;
 }
 
 .parent-tabs.condensed {
@@ -330,8 +333,10 @@
 }
 
 .parent-tabs.tab-active {
+  opacity:1;
   display: flex;
   visibility: visible;
+  height: 100% !important;
 }
 
 .sub-tabs {
