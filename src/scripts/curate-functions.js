@@ -411,6 +411,7 @@ async function openDropdownPrompt(dropdown) {
         $("#bfaccountdropdown").attr("disabled", false);
       },
       inputValidator: (value) => {
+        value = $("#bfaccountdropdown").val();
         return new Promise((resolve) => {
           if ((value) && (value !== "Select")) {
             bfacct = $("#bfaccountdropdown").val();
