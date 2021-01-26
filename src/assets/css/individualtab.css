@@ -322,9 +322,9 @@
   flex-direction: column;
   width: 100%;
   margin-top: 0;
-  overflow: auto;
+  overflow: hidden;
   height: 0 !important;
-  transition: height 0.4s ease;
+  transition: height 0.6s ease-in-out;
   transition-delay: 0.1s;
 }
 

@@ -32,7 +32,9 @@ function showParentTab(tabNow, nextOrPrev) {
   }
 
   $(x[tabNow]).addClass("tab-active");
-
+  setTimeout(function() {
+    $(x[tabNow]).css("overflow", "auto");
+  }, 1500)
 
   var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter(function (element) {
     return ![tabNow].includes(element);
@@ -40,6 +42,7 @@ function showParentTab(tabNow, nextOrPrev) {
 
   for (var i of inActiveTabArray) {
     $(x[i]).removeClass("tab-active");
+    $(x[tabNow]).css("overflow", "hidden");
   }
 
   document.getElementById("nextBtn").style.display = "inline";
