@@ -1563,7 +1563,7 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
 
     return manifest_files_structure
 
-def create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds):
+def create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds, my_tracking_folder):
     """
     Function to create manifest files for each high-level SPARC folder.
 
@@ -1787,7 +1787,7 @@ def create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds):
                 bf_folder_exists = True
                 dict_folder_manifest = manifest_dict_save[folder_key]['manifest']
 
-            elif folder_key in manifest_dict_save.keys() and existing_folder_option == "skip":
+            elif folder_key in manifest_dict_save.keys() and folder_key not in my_tracking_folder["folders"].keys() and existing_folder_option == "skip":
                 continue
 
             else:
@@ -2293,7 +2293,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             else:
                 if soda_json_structure["generate-dataset"]["destination"] == "bf" and "dataset-name" not in soda_json_structure["generate-dataset"]:
                     #generating dataset on an existing bf dataset - account for existing files and manifest files
-                    manifest_files_structure = create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds)
+                    manifest_files_structure = create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds, tracking_json_structure)
                 else:
                     #generating on new bf
                     manifest_files_structure = create_high_level_manifest_files(soda_json_structure)

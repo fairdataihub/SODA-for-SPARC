@@ -216,7 +216,7 @@ const traverse_back = (amount, element = "", pulse_animation = false) => {
         if (pulse_animation == true) {
           $("#" + element).addClass("pulse-blue");
         }
-    }, 600);
+    }, 550);
   }
   setTimeout(() => {
     $(".pulse-blue").removeClass("pulse-blue");
