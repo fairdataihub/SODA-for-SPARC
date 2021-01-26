@@ -116,7 +116,7 @@ function delFolder(
       });
       return;
     }
-    
+
     // Handle file/folder restore
     bootbox.confirm({
       title: "Restore " + promptVar,
@@ -266,7 +266,7 @@ function delFolder(
               (myPath[type][itemToDelete]["type"] === "local" &&
                 myPath[type][itemToDelete]["action"].includes("existing"))
             ) {
-              
+
               if (type === "folders")
               {
                 recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "delete");
@@ -500,7 +500,12 @@ function loadFileFolder(myPath) {
   for (var item in sortedObj["files"]) {
     // not the auto-generated manifest
     if (sortedObj["files"][item].length !== 1) {
-      var extension = sliceStringByValue(sortedObj["files"][item]["path"], ".");
+      if ("path" in sortedObj["files"][item]) {
+        var extension = path.extname(sortedObj["files"][item]["path"]);
+        extension = extension.slice(1);;
+      } else {
+        var extension = "other";
+      }
       if (
         ![
           "docx",

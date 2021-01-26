@@ -279,6 +279,22 @@ function nextPrev(n) {
   // update JSON structure
   updateOverallJSONStructure(x[currentTab].id);
 
+  // reset datasetStructureObject["files"] back to {},
+  // and delete ui preview-added manifest files
+  if (x[currentTab].id === "high-level-folders-tab" || x[currentTab].id === "metadata-files-tab") {
+    // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
+    if ("files" in datasetStructureJSONObj) {
+      datasetStructureJSONObj["files"] = {};
+    }
+    // delete manifest files added for treeview
+    for (var highLevelFol in datasetStructureJSONObj["folders"]) {
+      if ("manifest.xlsx" in datasetStructureJSONObj["folders"][highLevelFol]["files"]
+      && datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"]["forTreeview"]) {
+        delete datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"];
+      }
+    }
+  }
+
   if (
     n === 1 &&
     x[currentTab].id === "organize-dataset-tab" &&
@@ -1596,7 +1612,7 @@ function updateJSONStructureGenerate(progress = false) {
           destination: "bf",
           "generate-option": "new",
         };
-        if ($("#current-bf-account-generate").text() === "None") {
+        if ($("#current-bf-account-generate").text() !== "None") {
           if ("bf-account-selected" in sodaJSONObj) {
             sodaJSONObj["bf-account-selected"]["account-name"] = $(
               "#current-bf-account-generate"

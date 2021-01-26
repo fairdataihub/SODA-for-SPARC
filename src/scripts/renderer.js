@@ -5261,7 +5261,9 @@ organizeDSbackButton.addEventListener("click", function() {
     } else {
       organizeDSglobalPath.value = filtered.slice(0,filtered.length-1).join("/") + "/"
     }
+
     var myPath = datasetStructureJSONObj;
+
     for (var item of filtered.slice(1,filtered.length-1)) {
       myPath = myPath["folders"][item]
     }
@@ -6223,6 +6225,7 @@ function sortObjByKeys(object) {
 function listItems(jsonObj, uiItem) {
   var appendString = "";
   var sortedObj = sortObjByKeys(jsonObj);
+
   for (var item in sortedObj["folders"]) {
     var emptyFolder = "";
     if (!highLevelFolders.includes(item)) {
@@ -6275,7 +6278,11 @@ function listItems(jsonObj, uiItem) {
   for (var item in sortedObj["files"]) {
     // not the auto-generated manifest
     if (sortedObj["files"][item].length !== 1) {
-      var extension = sliceStringByValue(sortedObj["files"][item]["path"], ".");
+      if ("path" in sortedObj["files"][item]) {
+        var extension = path.extname(sortedObj["files"][item]["path"]).slice(1);
+      } else {
+        var extension = "other"
+      }
       if (sortedObj["files"][item]["type"] == "bf") {
         if (sortedObj["files"][item]["action"].includes("deleted"))
         {
@@ -6311,12 +6318,14 @@ function listItems(jsonObj, uiItem) {
     cloud_item = "";
     deleted_file = false;
 
-    if (sortedObj["files"][item]["action"].includes("deleted") || sortedObj["files"][item]["action"].includes("recursive_deleted")) {
-      extension += " deleted_file";
-      deleted_file = true;
-      if (sortedObj["files"][item]["action"].includes("recursive_deleted"))
-      {
-        extension += " recursive_deleted_file"
+    if ("action" in sortedObj["files"][item]) {
+      if (sortedObj["files"][item]["action"].includes("deleted") || sortedObj["files"][item]["action"].includes("recursive_deleted")) {
+        extension += " deleted_file";
+        deleted_file = true;
+        if (sortedObj["files"][item]["action"].includes("recursive_deleted"))
+        {
+          extension += " recursive_deleted_file"
+        }
       }
     }
 
