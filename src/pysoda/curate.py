@@ -1943,9 +1943,9 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
         index += 1
 
         if index < len(folderpath):
-            return recursive_check_and_create_bf_file_path(folderpath, index, bfsd["folders"][folder])
+            return recursive_check_and_create_bf_file_path(folderpath, index, current_folder_structure["folders"][folder])
         else:
-            return bfsd["folders"][folder]["path"]
+            return current_folder_structure["folders"][folder]["path"]
 
     # Check for any files that have been moved and verify paths before moving
     def recursive_check_moved_files(folder):
@@ -1982,9 +1982,14 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     def recursive_folder_delete(folder):
         for item in list(folder["folders"]):
             if folder["folders"][item]["type"] == "bf":
+                if "moved" in folder["folders"][item]['action']:
+                    file = bf.get(folder["folders"][item]['path'])
+                    if file is not None:
+                        file.delete()
                 if "deleted" in folder["folders"][item]['action']:
                     file = bf.get(folder["folders"][item]['path'])
-                    file.delete()
+                    if file is not None:
+                        file.delete()
                     del folder["folders"][item]
                 else:
                     recursive_folder_delete(folder["folders"][item])
