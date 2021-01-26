@@ -1846,7 +1846,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     relative_path = generate_relative_path(my_relative_path, folder_key)
 
                     if existing_folder_option == "skip":
-                        if folder_key in my_bf_existing_folders_name:
+                        if folder_key in my_tracking_folder["folders"].keys():
                             continue
 
                     tracking_folder = my_tracking_folder["folders"][folder_key]
