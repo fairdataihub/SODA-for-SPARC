@@ -266,7 +266,7 @@ def create_folder_level_manifest(jsonpath, jsondescription):
 def return_new_path(topath):
     """
     This function checks if a folder already exists and in such cases,
-    appends (2) or (3) etc. to the folder name
+    appends (1) or (2) etc. to the folder name
 
     Args:
         topath: path where the folder is supposed to be created (string)
@@ -274,7 +274,7 @@ def return_new_path(topath):
         topath: new folder name based on the availability in destination folder (string)
     """
     if exists(topath):
-        i = 2
+        i = 1
         while True:
             if not exists(topath + ' (' + str(i) + ')'):
                 return topath + ' (' + str(i) + ')'
@@ -1431,7 +1431,7 @@ def generate_dataset_locally(soda_json_structure):
             shutil.rmtree(original_dataset_path)
             rename(datasetpath, original_dataset_path)
 
-        open_file(join(dataset_absolute_path, dataset_name))
+        open_file(join(dataset_absolute_path, datasetpath))
         return datasetpath
 
 
@@ -1943,9 +1943,9 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
         index += 1
 
         if index < len(folderpath):
-            return recursive_check_and_create_bf_file_path(folderpath, index, bfsd["folders"][folder])
+            return recursive_check_and_create_bf_file_path(folderpath, index, current_folder_structure["folders"][folder])
         else:
-            return bfsd["folders"][folder]["path"]
+            return current_folder_structure["folders"][folder]["path"]
 
     # Check for any files that have been moved and verify paths before moving
     def recursive_check_moved_files(folder):
@@ -1982,9 +1982,14 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     def recursive_folder_delete(folder):
         for item in list(folder["folders"]):
             if folder["folders"][item]["type"] == "bf":
+                if "moved" in folder["folders"][item]['action']:
+                    file = bf.get(folder["folders"][item]['path'])
+                    if file is not None:
+                        file.delete()
                 if "deleted" in folder["folders"][item]['action']:
                     file = bf.get(folder["folders"][item]['path'])
-                    file.delete()
+                    if file is not None:
+                        file.delete()
                     del folder["folders"][item]
                 else:
                     recursive_folder_delete(folder["folders"][item])
@@ -1998,8 +2003,9 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
         for item in list(folder["folders"]):
             if "renamed" in folder["folders"][item]['action'] and folder["folders"][item]["type"] == "bf":
                 file = bf.get(folder["folders"][item]["path"])
-                file.name = item
-                file.update()
+                if file is not None:
+                    file.name = item
+                    file.update()
         else:
             recursive_file_rename(folder["folders"][item])
 
@@ -2118,7 +2124,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     relative_path = generate_relative_path(my_relative_path, folder_key)
 
                     if existing_folder_option == "skip":
-                        if folder_key in my_bf_existing_folders_name:
+                        if folder_key not in my_tracking_folder["folders"].keys():
                             continue
 
                     tracking_folder = my_tracking_folder["folders"][folder_key]
@@ -2335,7 +2341,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             #upload
             main_curate_progress_message = "Uploading files in " + str(relative_path)
             bf_folder.upload(*list_upload, display_progress=True)
-            #bf_folder.update()
+            bf_folder.update()
             progress_percentage_array[-1]["completed-size"] = total_size
 
             #rename to final name

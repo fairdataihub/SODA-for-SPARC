@@ -99,25 +99,24 @@ const fill_info_details = () => {
   {
     add_card_detail("Current account", sodaJSONObj["bf-account-selected"]["account-name"]);
     add_card_detail("Current dataset", sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
-    metadataFile_present = ""
-    for (file in sodaJSONObj["metadata-files"])
-    {
-      if (file.indexOf("-DELETED") === -1)
-      {
-        metadataFile_present += file + "<br>";
-      }
+    if (manifestFileCheck.checked){
+      add_card_detail("Manifest files", "Auto generated", 2, "pulse-manifest-checkbox", true);
     }
-    if (metadataFile_present === "")
-    {
-      metadataFile_present = "None";
+    else{
+      add_card_detail("Manifest files", "Not requested", 2, "pulse-manifest-checkbox", true);
     }
-    //add_card_detail("Metadata files", metadataFile_present);
   }
   if (sodaJSONObj["starting-point"]["type"] === "local" || sodaJSONObj["starting-point"]["type"] === "new")
   {
     if ($('input[name="generate-1"]:checked')[0].id === "generate-local-existing")
     {
       add_card_detail("Current dataset location", sodaJSONObj["starting-point"]["local-path"], 1, "Question-generate-dataset", true);
+      if (manifestFileCheck.checked){
+        add_card_detail("Manifest files", "Auto generated", 2, "pulse-manifest-checkbox", true);
+      }
+      else{
+        add_card_detail("Manifest files", "Not requested", 2, "pulse-manifest-checkbox", true);
+      }
     }
     else if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop")
     {
@@ -127,6 +126,12 @@ const fill_info_details = () => {
       }
       add_card_detail("New dataset location", $("#input-destination-generate-dataset-locally")[0].placeholder, 1, "input-destination-generate-dataset-locally", true);
       add_card_detail("New dataset name", $("#inputNewNameDataset").val().trim(), 1, "inputNewNameDataset", true);
+      if (manifestFileCheck.checked){
+        add_card_detail("Manifest files", "Auto generated", 2, "pulse-manifest-checkbox", true);
+      }
+      else{
+        add_card_detail("Manifest files", "Not requested", 2, "pulse-manifest-checkbox", true);
+      }
     }
     else if ( $('input[name="generate-1"]:checked')[0].id === "generate-upload-BF")
     {
@@ -182,20 +187,13 @@ const fill_info_details = () => {
       } else {
         add_card_detail("New Dataset name ", $("#inputNewNameDataset").val().trim(), 1, "inputNewNameDataset", true);
       }
-    }
-    metadataFile_present = ""
-    for (file in sodaJSONObj["metadata-files"])
-    {
-      if (file.indexOf("-DELETED") === -1)
-      {
-        metadataFile_present += file + "<br>";
+      if (manifestFileCheck.checked){
+        add_card_detail("Manifest files", "Auto generated", 2, "pulse-manifest-checkbox", true);
+      }
+      else{
+        add_card_detail("Manifest files", "Not requested", 2, "pulse-manifest-checkbox", true);
       }
     }
-    if (metadataFile_present === "")
-    {
-      metadataFile_present = "None";
-    }
-    //add_card_detail("Metadata files", metadataFile_present);
   }
 };
 
@@ -443,6 +441,7 @@ function nextPrev(n) {
     }
     // Display the correct tab:
     showParentTab(currentTab, n);
+    //console.log(JSON.stringify(sodaJSONObj["dataset-structure"]))
   }
 }
 
