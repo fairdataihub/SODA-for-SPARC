@@ -1431,7 +1431,7 @@ def generate_dataset_locally(soda_json_structure):
             shutil.rmtree(original_dataset_path)
             rename(datasetpath, original_dataset_path)
 
-        open_file(join(dataset_absolute_path, dataset_name))
+        open_file(join(dataset_absolute_path, datasetpath))
         return datasetpath
         
 
