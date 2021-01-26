@@ -262,7 +262,7 @@ def create_folder_level_manifest(jsonpath, jsondescription):
 def return_new_path(topath):
     """
     This function checks if a folder already exists and in such cases,
-    appends (2) or (3) etc. to the folder name
+    appends (1) or (2) etc. to the folder name
 
     Args:
         topath: path where the folder is supposed to be created (string)
@@ -270,7 +270,7 @@ def return_new_path(topath):
         topath: new folder name based on the availability in destination folder (string)
     """
     if exists(topath):
-        i = 2
+        i = 1
         while True:
             if not exists(topath + ' (' + str(i) + ')'):
                 return topath + ' (' + str(i) + ')'
