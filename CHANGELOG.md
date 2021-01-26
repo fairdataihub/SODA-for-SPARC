@@ -18,5 +18,6 @@ All notable changes to SODA will be documented in this file.
 ## v3.0.2 - To be released
 
 ### Bug fixes:
-- When uploading a local dataset to an existing Blackfynn folder, the 'skip' folders option now correctly uplaods files that were not meant to be skipped
+- When uploading a local dataset to an existing Blackfynn folder, the 'skip' folders option now correctly uploads files that were not meant to be skipped.
 - Creating a new local folder as your dataset destination now renames the generated folder correctly if a duplicate folder has to be created.
+- Squashed a bug where files uploaded to Blackfynn were sometimes not renamed.
