@@ -2124,7 +2124,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     relative_path = generate_relative_path(my_relative_path, folder_key)
 
                     if existing_folder_option == "skip":
-                        if folder_key in my_tracking_folder["folders"].keys():
+                        if folder_key not in my_tracking_folder["folders"].keys():
                             continue
 
                     tracking_folder = my_tracking_folder["folders"][folder_key]
@@ -2341,7 +2341,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             #upload
             main_curate_progress_message = "Uploading files in " + str(relative_path)
             bf_folder.upload(*list_upload, display_progress=True)
-            #bf_folder.update()
+            bf_folder.update()
             progress_percentage_array[-1]["completed-size"] = total_size
 
             #rename to final name
