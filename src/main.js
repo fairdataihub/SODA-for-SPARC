@@ -258,15 +258,15 @@ ipcMain.on('resize-window', (event, dir) => {
 ipcMain.on("track-event", (event, category, action, label, value) => {
   if (label == undefined && value == undefined)
   {
-    trackEvent(category, action);
+    //trackEvent(category, action);
   }
   else if (label != undefined && value == undefined)
   {
-    trackEvent(category, action, label);
+    //trackEvent(category, action, label);
   }
   else
   {
-    trackEvent(category, action, label, value);
+    //trackEvent(category, action, label, value);
   }
 });
 
