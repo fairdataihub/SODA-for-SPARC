@@ -236,7 +236,7 @@ const add_card_detail = (card_left, card_right, parent_tab = -1, element_id = ""
     card_right;
   if (parent_tab === -1) {
     new_card_element += "</p></div>";
-  } else { 
+  } else {
     new_card_element += link_item + "</p></div>";
   }
   $(parent_element).append(new_card_element);
@@ -1627,6 +1627,9 @@ function updateJSONStructureGenerate(progress = false) {
           localDestination = "";
         }
         var newDatasetName = $("#inputNewNameDataset").val().trim();
+        if (progress == false) {
+          delete sodaJSONObj["starting-point"]["local-path"];
+        }
         sodaJSONObj["generate-dataset"] = {
           destination: "local",
           path: localDestination,
@@ -1740,7 +1743,7 @@ function updateJSONStructureGenerate(progress = false) {
       }
     }
     if (progress == true) {
-      sodaJSONObj["starting-point"]["type"] == starting_point;
+      sodaJSONObj["starting-point"]["type"] = starting_point;
     }
   }
 }
@@ -1885,6 +1888,9 @@ function wipeOutCurateProgress() {
   $('.para-metadata-file-status').text("");
   // set back Please continue para element
   $("#para-continue-prepare-new-getting-started").text("");
+  $("#para-continue-bf-dataset-getting-started").text("");
+  $("#para-continue-location-dataset-getting-started").text("");
+
   // un-show all divs from Generate dataset step
   $($('#Question-generate-dataset').siblings()).removeClass('show');
 

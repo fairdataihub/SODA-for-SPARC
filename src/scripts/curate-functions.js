@@ -166,7 +166,7 @@ function importGenerateDatasetStep(object) {
       $("#generate-local-desktop").prop("checked", true);
       $($("#generate-local-desktop").parents()[2]).click();
       // Step 2: if generate locally, name and path
-      $("#input-destination-generate-dataset-locally").val(
+      $("#input-destination-generate-dataset-locally").prop("placeholder", 
         sodaJSONObj["generate-dataset"]["path"]
       );
       $("#btn-confirm-local-destination").click();
@@ -721,7 +721,7 @@ function showHideDropdownButtons(category, action) {
     }
 }
 
-function create_child_node(oldFormatNode, nodeName, type, ext, openedState, selectedState, selectedOriginalLocation, viewOptions) {
+function create_child_node(oldFormatNode, nodeName, type, ext, openedState, selectedState, disabledState, selectedOriginalLocation, viewOptions) {
   /*
   oldFormatNode: node in the format under "dataset-structure" key in SODA object
   nodeName: text to show for each node (name)
@@ -731,7 +731,7 @@ function create_child_node(oldFormatNode, nodeName, type, ext, openedState, sele
   selectedOrginalLocation: current folder of selected items
   viewOptions: preview or moveItems
   */
-  var newFormatNode = {"text": nodeName, "state": {"opened": openedState, "selected": selectedState}, "children": [], "type": type + ext}
+  var newFormatNode = {"text": nodeName, "state": {"opened": openedState, "selected": selectedState, "disabled": disabledState}, "children": [], "type": type + ext}
   if (viewOptions === "moveItems") {
   } else {
     selectedOriginalLocation = "";
@@ -742,11 +742,11 @@ function create_child_node(oldFormatNode, nodeName, type, ext, openedState, sele
         if (key === selectedOriginalLocation) {
           newFormatNode.state.selected = true;
           newFormatNode.state.opened = true;
-          var new_node = create_child_node(value, key, "folder", "", true, true, selectedOriginalLocation, viewOptions);
+          var new_node = create_child_node(value, key, "folder", "", true, true, true, selectedOriginalLocation, viewOptions);
         } else {
           // newFormatNode.state.selected = false;
           // newFormatNode.state.opened = false;
-          var new_node = create_child_node(value, key, "folder", "", false, false, selectedOriginalLocation, viewOptions);
+          var new_node = create_child_node(value, key, "folder", "", false, false, false, selectedOriginalLocation, viewOptions);
         }
         newFormatNode["children"].push(new_node);
       }
@@ -754,11 +754,11 @@ function create_child_node(oldFormatNode, nodeName, type, ext, openedState, sele
       if (key === selectedOriginalLocation) {
         newFormatNode.state.selected = true;
         newFormatNode.state.opened = true;
-        var new_node = create_child_node(value, key, "folder", "", true, true, selectedOriginalLocation, viewOptions);
+        var new_node = create_child_node(value, key, "folder", "", true, true, true, selectedOriginalLocation, viewOptions);
       } else {
         // newFormatNode.state.selected = false;
         // newFormatNode.state.opened = false;
-        var new_node = create_child_node(value, key, "folder", "", false, false, selectedOriginalLocation, viewOptions);
+        var new_node = create_child_node(value, key, "folder", "", false, false, false, selectedOriginalLocation, viewOptions);
       }
       newFormatNode["children"].push(new_node);
     }
@@ -811,7 +811,7 @@ function recursiveExpandNodes(object) {
 // var selected = false;
 var selectedPath;
 var selectedNode;
-var jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, true, "", "moveItems");
+var jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, true, true, "", "moveItems");
 var jstreeInstance = document.getElementById('data');
 $(document).ready(function() {
   $('#data').jstree({
@@ -899,7 +899,7 @@ async function moveItems(ev, category) {
       delete datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"];
     }
   }
-  jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, true, selectedOrginalLocation, "moveItems");
+  jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, true, true, selectedOrginalLocation, "moveItems");
   // Note: somehow, html element "#data" was destroyed after closing the Swal popup.
   // Creating the element again after it was destroyed.
   if (!(jstreeInstance)) {
@@ -1192,7 +1192,7 @@ function showTreeViewPreview() {
       }
     }
   }
-  var jsTreePreviewData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, "", "preview");
+  var jsTreePreviewData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, false, "", "preview");
   $(jstreePreview).jstree(true).settings.core.data = jsTreePreviewData;
   $(jstreePreview).jstree(true).refresh();
 }
