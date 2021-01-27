@@ -948,7 +948,7 @@
   left: 0;
   right: 0;
   transform: scaleY(0);
-  background: #fdfdfda6;
+  background: #fdfdfde5;
   transform-origin: 50%;
   transition-property: transform;
   transition-duration: 0.2s;

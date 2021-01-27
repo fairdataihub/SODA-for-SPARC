@@ -210,8 +210,7 @@ const traverse_back = (amount, element = "", pulse_animation = false) => {
         .getElementById(element)
         .scrollIntoView({
           behavior: "smooth",
-          block: "center",
-          inline: "center",
+          block: "center"
         });
         if (pulse_animation == true) {
           $("#" + element).addClass("pulse-blue");
