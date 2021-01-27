@@ -1597,7 +1597,9 @@ function updateJSONStructureGenerate(progress = false) {
     var newDatasetName = require("path").basename(
       sodaJSONObj["starting-point"]["local-path"]
     );
-    delete sodaJSONObj["starting-point"]["local-path"];
+    if (progress == false) {
+      delete sodaJSONObj["starting-point"]["local-path"];
+    }
     sodaJSONObj["generate-dataset"] = {
       destination: "local",
       path: localDestination,

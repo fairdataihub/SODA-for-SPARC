@@ -766,37 +766,39 @@ function create_child_node(oldFormatNode, nodeName, type, ext, openedState, sele
       newFormatNode["children"].push(new_node);
     }
   }
-  for (const [key, value] of Object.entries(oldFormatNode["files"])) {
-    if (
-      [
-        ".png",
-        ".PNG",
-        ".xls",
-        ".xlsx",
-        ".pdf",
-        ".txt",
-        ".jpeg",
-        ".JPEG",
-        ".csv",
-        ".CSV",
-        ".DOC",
-        ".DOCX",
-        ".doc",
-        ".docx",
-      ].includes(path.parse(key).ext)
-    ) {
-      nodeType = "file " + path.parse(key).ext.slice(1);
-    } else {
-      nodeType = "file other";
-    }
-    if ("action" in oldFormatNode["files"][key]) {
-      if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
-        var new_node = { text: key, state: { disabled: true }, type: nodeType };
+  if ("files" in oldFormatNode) {
+    for (const [key, value] of Object.entries(oldFormatNode["files"])) {
+      if (
+        [
+          ".png",
+          ".PNG",
+          ".xls",
+          ".xlsx",
+          ".pdf",
+          ".txt",
+          ".jpeg",
+          ".JPEG",
+          ".csv",
+          ".CSV",
+          ".DOC",
+          ".DOCX",
+          ".doc",
+          ".docx",
+        ].includes(path.parse(key).ext)
+      ) {
+        nodeType = "file " + path.parse(key).ext.slice(1);
+      } else {
+        nodeType = "file other";
+      }
+      if ("action" in oldFormatNode["files"][key]) {
+        if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
+          var new_node = { text: key, state: { disabled: true }, type: nodeType };
+          newFormatNode["children"].push(new_node);
+        }
+      } else {
+        var new_node = { text: key, state: { disabled: true  }, type: nodeType };
         newFormatNode["children"].push(new_node);
       }
-    } else {
-      var new_node = { text: key, state: { disabled: true  }, type: nodeType };
-      newFormatNode["children"].push(new_node);
     }
   }
   return newFormatNode;
