@@ -1204,8 +1204,32 @@ reset_ui = () => {
   document.getElementById("nextBtn").disabled = true;
 };
 
-var populate_existing_folders = (datasetStructureJSONObj) => {
+var populate_existing_folders = (dataset_folders) => {
   // currently handled by old function
+  if ("files" in dataset_folders) {
+    for (let file in dataset_folders["files"]) {
+      if ("action" in dataset_folders["files"][file]) {
+        continue;
+      }
+      else
+      {
+        dataset_folders["files"][file]["action"] = ["existing"]
+      }
+    }
+  }
+  if ("folders" in dataset_folders) 
+  {
+    for (let folder in dataset_folders["folders"]) {
+      if ("action" in dataset_folders["folders"][folder]) {
+      }
+      else
+      {
+        dataset_folders["folders"][folder]["action"] = ["existing"]
+      }
+      populate_existing_folders(dataset_folders["folders"][folder]);
+    }
+  }
+  return;
 }
 
 var populate_existing_metadata = (datasetStructureJSONObj) => {

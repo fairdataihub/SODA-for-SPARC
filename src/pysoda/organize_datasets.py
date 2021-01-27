@@ -621,7 +621,6 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                         dataset_folder["files"][file_name] = {
                             "type": "bf","action": ["existing"], "path": item.id, "timestamp": timestamp}
 
-
     def recursive_manifest_info_import(my_folder, my_relative_path, manifest_df):
 
         if "files" in my_folder.keys():
