@@ -964,18 +964,20 @@
 .card-left{
   color:#808080;
   font-size: 15px;
-  width: 175px;
-  text-align: right;
+  width: 30%;
+  text-align: left;
 }
 
 .card-right{
+  width: 70%;
   color:#000;
   font-weight: 600;
   margin-left: 8px;
   font-size: 15px;
   display: flex;
   justify-content: space-between;
-  word-break: break-word
+  word-break: break-word;
+  text-align: left;
 }
 
 .jump-back{
