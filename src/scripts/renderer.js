@@ -5562,89 +5562,121 @@ function changeStepOrganize(step) {
 
 var newDSName;
 function generateDataset(button) {
-  document.getElementById("para-organize-datasets-success").style.display = "none"
-  document.getElementById("para-organize-datasets-error").style.display = "none"
-  if (button.id==="btn-generate-locally") {
+  document.getElementById("para-organize-datasets-success").style.display =
+    "none";
+  document.getElementById("para-organize-datasets-error").style.display =
+    "none";
+  if (button.id === "btn-generate-locally") {
     $("#btn-generate-BF").removeClass("active");
     $(button).toggleClass("active");
     bootbox.prompt({
-      title: 'Generate dataset locally',
-      message: 'Enter a name for the dataset:',
+      title: "Generate dataset locally",
+      message: "Enter a name for the dataset:",
       buttons: {
         cancel: {
-              label: '<i class="fa fa-times"></i> Cancel'
-          },
-          confirm: {
-              label: '<i class="fa fa-check"></i> Confirm and Choose location',
-              className: 'btn-success'
-          }
+          label: '<i class="fa fa-times"></i> Cancel',
+        },
+        confirm: {
+          label: '<i class="fa fa-check"></i> Confirm and Choose location',
+          className: "btn-success",
+        },
       },
       centerVertical: true,
       callback: function (r) {
-        if(r !== null && r.trim() !== ""){
-          newDSName = r.trim()
-          ipcRenderer.send('open-file-dialog-newdataset')
-          }
+        if (r !== null && r.trim() !== "") {
+          newDSName = r.trim();
+          ipcRenderer.send("open-file-dialog-newdataset");
         }
-      })
-    } else {
-        $("#btn-generate-locally").removeClass("active");
-        $(button).toggleClass("active");
-    }
-}
-
-ipcRenderer.on('selected-new-dataset', (event, filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null){
-      document.getElementById("para-organize-datasets-loading").style.display = "block"
-      document.getElementById("para-organize-datasets-loading").innerHTML = "<span>Please wait...</span>"
-      client.invoke("api_generate_dataset_locally", "create new", filepath[0], newDSName, datasetStructureJSONObj, (error, res) => {
-        document.getElementById("para-organize-datasets-loading").style.display = "none"
-        if(error) {
-          log.error(error)
-          console.error(error)
-          document.getElementById("para-organize-datasets-success").style.display = "none"
-          document.getElementById("para-organize-datasets-error").style.display = "block"
-          document.getElementById("para-organize-datasets-error").innerHTML = "<span> " + error + "</span>";
-        } else {
-          document.getElementById("para-organize-datasets-error").style.display = "none"
-          document.getElementById("para-organize-datasets-success").style.display = "block"
-          document.getElementById("para-organize-datasets-success").innerHTML = "<span>Generated successfully!</span>";
-        }
-    })
+      },
+    });
+  } else {
+    $("#btn-generate-locally").removeClass("active");
+    $(button).toggleClass("active");
   }
 }
-})
+
+ipcRenderer.on("selected-new-dataset", (event, filepath) => {
+  if (filepath.length > 0) {
+    if (filepath != null) {
+      document.getElementById("para-organize-datasets-loading").style.display =
+        "block";
+      document.getElementById("para-organize-datasets-loading").innerHTML =
+        "<span>Please wait...</span>";
+      client.invoke(
+        "api_generate_dataset_locally",
+        "create new",
+        filepath[0],
+        newDSName,
+        datasetStructureJSONObj,
+        (error, res) => {
+          document.getElementById(
+            "para-organize-datasets-loading"
+          ).style.display = "none";
+          if (error) {
+            log.error(error);
+            console.error(error);
+            document.getElementById(
+              "para-organize-datasets-success"
+            ).style.display = "none";
+            document.getElementById(
+              "para-organize-datasets-error"
+            ).style.display = "block";
+            document.getElementById("para-organize-datasets-error").innerHTML =
+              "<span> " + error + "</span>";
+          } else {
+            document.getElementById(
+              "para-organize-datasets-error"
+            ).style.display = "none";
+            document.getElementById(
+              "para-organize-datasets-success"
+            ).style.display = "block";
+            document.getElementById(
+              "para-organize-datasets-success"
+            ).innerHTML = "<span>Generated successfully!</span>";
+          }
+        }
+      );
+    }
+  }
+});
 
 
 //////////// FILE BROWSERS to import existing files and folders /////////////////////
-organizeDSaddFiles.addEventListener("click", function() {
-   ipcRenderer.send('open-files-organize-datasets-dialog')
- })
- ipcRenderer.on('selected-files-organize-datasets', (event, path) => {
-   var filtered = getGlobalPath(organizeDSglobalPath)
-   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
-   path = path.filter(file_path => fs.statSync(file_path).isFile())
-   addFilesfunction(path, myPath, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
- })
+organizeDSaddFiles.addEventListener("click", function () {
+  ipcRenderer.send("open-files-organize-datasets-dialog");
+});
+ 
+ ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
+   var filtered = getGlobalPath(organizeDSglobalPath);
+   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+   path = path.filter((file_path) => fs.statSync(file_path).isFile());
+   addFilesfunction(
+     path,
+     myPath,
+     organizeDSglobalPath,
+     "#items",
+     ".single-item",
+     datasetStructureJSONObj
+   );
+ });
 
-organizeDSaddFolders.addEventListener("click", function() {
-  ipcRenderer.send('open-folders-organize-datasets-dialog')
-})
-ipcRenderer.on('selected-folders-organize-datasets', (event, path) => {
-  var filtered = getGlobalPath(organizeDSglobalPath)
-  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
-  addFoldersfunction(path, myPath)
-})
+organizeDSaddFolders.addEventListener("click", function () {
+  ipcRenderer.send("open-folders-organize-datasets-dialog");
+});
+
+ipcRenderer.on("selected-folders-organize-datasets", (event, path) => {
+  var filtered = getGlobalPath(organizeDSglobalPath);
+  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+  addFoldersfunction(path, myPath);
+});
 
 function addFoldersfunction(folderArray, currentLocation) {
-
   var uiFolders = {};
   var importedFolders = {};
 
   if (JSON.stringify(currentLocation["folders"]) !== "{}") {
     for (var folder in currentLocation["folders"]) {
-      uiFolders[folder] = 1
+      uiFolders[folder] = 1;
     }
   }
 
@@ -5652,37 +5684,65 @@ function addFoldersfunction(folderArray, currentLocation) {
   if (slashCount === 1) {
     bootbox.alert({
       message: "Other non-SPARC folders cannot be added to this dataset level!",
-      centerVertical: true
-    })
+      centerVertical: true,
+    });
   } else {
-      // check for duplicates/folders with the same name
-      for (var i=0; i<folderArray.length;i++) {
-          var j = 1;
-          var originalFolderName = path.basename(folderArray[i]);
-          var renamedFolderName = originalFolderName;
-          while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
-            renamedFolderName = `${originalFolderName} (${j})`;
-            j++;
-          }
-          importedFolders[renamedFolderName] = {"path": folderArray[i], "original-basename": originalFolderName};
-        }
-        if (Object.keys(importedFolders).length > 0) {
-          for (var element in importedFolders) {
-            currentLocation["folders"][element] = {"type": "local", "path": importedFolders[element]["path"], "folders": {}, "files": {}, "action": ["new"]}
-            populateJSONObjFolder(currentLocation["folders"][element], importedFolders[element]["path"]);
-            // check if a folder has to be renamed due to duplicate reason
-            if (element !== importedFolders[element]["original-basename"]) {
-              currentLocation["folders"][element]["action"].push('renamed');
-            }
-            var appendString = '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+element+'</div></div>'
-            $('#items').html(appendString)
-            listItems(currentLocation, '#items')
-            getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-            hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-            hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-          }
-        }
+    // check for duplicates/folders with the same name
+    for (var i = 0; i < folderArray.length; i++) {
+      var j = 1;
+      var originalFolderName = path.basename(folderArray[i]);
+      var renamedFolderName = originalFolderName;
+      while (
+        renamedFolderName in uiFolders ||
+        renamedFolderName in importedFolders
+      ) {
+        renamedFolderName = `${originalFolderName} (${j})`;
+        j++;
       }
+      importedFolders[renamedFolderName] = {
+        path: folderArray[i],
+        "original-basename": originalFolderName,
+      };
+    }
+    if (Object.keys(importedFolders).length > 0) {
+      for (var element in importedFolders) {
+        currentLocation["folders"][element] = {
+          type: "local",
+          path: importedFolders[element]["path"],
+          folders: {},
+          files: {},
+          action: ["new"],
+        };
+        populateJSONObjFolder(
+          currentLocation["folders"][element],
+          importedFolders[element]["path"]
+        );
+        // check if a folder has to be renamed due to duplicate reason
+        if (element !== importedFolders[element]["original-basename"]) {
+          currentLocation["folders"][element]["action"].push("renamed");
+        }
+        var appendString =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder" oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+          element +
+          "</div></div>";
+        $("#items").html(appendString);
+        listItems(currentLocation, "#items");
+        getInFolder(
+          ".single-item",
+          "#items",
+          organizeDSglobalPath,
+          datasetStructureJSONObj
+        );
+        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+        hideMenu(
+          "high-level-folder",
+          menuFolder,
+          menuHighLevelFolders,
+          menuFile
+        );
+      }
+    }
+  }
 }
 
 //// Step 3. Organize dataset: Add files or folders with drag&drop
@@ -5692,8 +5752,8 @@ function allowDrop(ev) {
 
 function drop(ev) {
   // get global path
-  var currentPath = organizeDSglobalPath.value
-  var jsonPathArray = currentPath.split("/")
+  var currentPath = organizeDSglobalPath.value;
+  var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.slice(1).filter(function (el) {
     return el != "";
   });
@@ -5706,23 +5766,23 @@ function drop(ev) {
   var uiFolders = {};
 
   for (var file in myPath["files"]) {
-    uiFiles[path.parse(file).name] = 1
+    uiFiles[path.parse(file).name] = 1;
   }
   for (var folder in myPath["folders"]) {
-    uiFolders[path.parse(folder).name] = 1
+    uiFolders[path.parse(folder).name] = 1;
   }
 
-  for (var i=0; i<ev.dataTransfer.files.length;i++) {
+  for (var i = 0; i < ev.dataTransfer.files.length; i++) {
     /// Get all the file information
-    var itemPath = ev.dataTransfer.files[i].path
-    var itemName = ev.dataTransfer.files[i].name
-    var duplicate = false
-    var statsObj = fs.statSync(itemPath)
+    var itemPath = ev.dataTransfer.files[i].path;
+    var itemName = ev.dataTransfer.files[i].name;
+    var duplicate = false;
+    var statsObj = fs.statSync(itemPath);
     // check for duplicate or files with the same name
-    for (var j=0; j<ev.target.children.length;j++) {
+    for (var j = 0; j < ev.target.children.length; j++) {
       if (itemName === ev.target.children[j].innerText) {
-        duplicate = true
-        break
+        duplicate = true;
+        break;
       }
     }
     /// check for File duplicate
@@ -5730,98 +5790,156 @@ function drop(ev) {
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
         bootbox.alert({
-          message: "<p>SPARC metadata files can be imported in the next step!</p>",
-          centerVertical: true
-        })
-        break
+          message:
+            "<p>SPARC metadata files can be imported in the next step!</p>",
+          centerVertical: true,
+        });
+        break;
       } else {
-          if (JSON.stringify(myPath["files"]) === "{}"  && JSON.stringify(importedFiles) === "{}") {
-            importedFiles[path.parse(itemPath).name] = {"path": itemPath, "basename":path.parse(itemPath).base}
-          } else {
-              for (var objectKey in myPath["files"]) {
-                if (objectKey !== undefined) {
-                  var nonAllowedDuplicate = false;
-                  if (itemPath === myPath["files"][objectKey]["path"]) {
-                    nonAllowedDuplicateFiles.push(itemPath);
-                    nonAllowedDuplicate = true;
-                    break
-                  }
-                }
-              }
-              if (!nonAllowedDuplicate) {
-                var j = 1;
-                var fileBaseName = itemName;
-                var originalFileNameWithoutExt = path.parse(itemName).name;
-                var fileNameWithoutExt = originalFileNameWithoutExt;
-                while (fileNameWithoutExt in uiFiles || fileNameWithoutExt in importedFiles) {
-                  fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
-                  j++;
-                }
-                importedFiles[fileNameWithoutExt] = {"path": itemPath, "basename": fileNameWithoutExt + path.parse(itemName).ext};
+        if (
+          JSON.stringify(myPath["files"]) === "{}" &&
+          JSON.stringify(importedFiles) === "{}"
+        ) {
+          importedFiles[path.parse(itemPath).name] = {
+            path: itemPath,
+            basename: path.parse(itemPath).base,
+          };
+        } else {
+          for (var objectKey in myPath["files"]) {
+            if (objectKey !== undefined) {
+              var nonAllowedDuplicate = false;
+              if (itemPath === myPath["files"][objectKey]["path"]) {
+                nonAllowedDuplicateFiles.push(itemPath);
+                nonAllowedDuplicate = true;
+                break;
               }
             }
           }
+          if (!nonAllowedDuplicate) {
+            var j = 1;
+            var fileBaseName = itemName;
+            var originalFileNameWithoutExt = path.parse(itemName).name;
+            var fileNameWithoutExt = originalFileNameWithoutExt;
+            while (
+              fileNameWithoutExt in uiFiles ||
+              fileNameWithoutExt in importedFiles
+            ) {
+              fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
+              j++;
+            }
+            importedFiles[fileNameWithoutExt] = {
+              path: itemPath,
+              basename: fileNameWithoutExt + path.parse(itemName).ext,
+            };
+          }
+        }
+      }
     } else if (statsObj.isDirectory()) {
       /// drop a folder
       var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
       if (slashCount === 1) {
         bootbox.alert({
-          message: "Other non-SPARC folders cannot be added to this dataset level!",
-          centerVertical: true
-        })
+          message:
+            "Other non-SPARC folders cannot be added to this dataset level!",
+          centerVertical: true,
+        });
       } else {
-          var j = 1;
-          var originalFolderName = itemName;
-          var renamedFolderName = originalFolderName;
-          while (renamedFolderName in uiFolders || renamedFolderName in importedFolders) {
-            renamedFolderName = `${originalFolderName} (${j})`;
-            j++;
-          }
-          importedFolders[renamedFolderName] = {"path": itemPath, "original-basename": originalFolderName};
+        var j = 1;
+        var originalFolderName = itemName;
+        var renamedFolderName = originalFolderName;
+        while (
+          renamedFolderName in uiFolders ||
+          renamedFolderName in importedFolders
+        ) {
+          renamedFolderName = `${originalFolderName} (${j})`;
+          j++;
         }
+        importedFolders[renamedFolderName] = {
+          path: itemPath,
+          "original-basename": originalFolderName,
+        };
       }
     }
+  }
   if (nonAllowedDuplicateFiles.length > 0) {
-    var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles)
+    var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
     bootbox.alert({
-      message: 'The following files are already imported into the current location of your dataset: <p><ul>'+listElements+'</ul></p>',
-      centerVertical: true
-    })
+      message:
+        "The following files are already imported into the current location of your dataset: <p><ul>" +
+        listElements +
+        "</ul></p>",
+      centerVertical: true,
+    });
   }
   // // now append to UI files and folders
   if (Object.keys(importedFiles).length > 0) {
     for (var element in importedFiles) {
-      myPath["files"][importedFiles[element]["basename"]] = {"path": importedFiles[element]["path"], "type": "local", "description":"", "additional-metadata":"", "action":["new"]}
+      myPath["files"][importedFiles[element]["basename"]] = {
+        path: importedFiles[element]["path"],
+        type: "local",
+        description: "",
+        "additional-metadata": "",
+        action: ["new"],
+      };
       // append "renamed" to "action" key if file is auto-renamed by UI
-      var originalName = path.parse(myPath["files"][importedFiles[element]["basename"]]["path"]).name;
+      var originalName = path.parse(
+        myPath["files"][importedFiles[element]["basename"]]["path"]
+      ).name;
       if (element !== originalName) {
-        myPath["files"][importedFiles[element]["basename"]]["action"].push('renamed');
+        myPath["files"][importedFiles[element]["basename"]]["action"].push(
+          "renamed"
+        );
       }
-      var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+importedFiles[element]["basename"]+'</div></div>'
+      var appendString =
+        '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+        importedFiles[element]["basename"] +
+        "</div></div>";
       $(appendString).appendTo(ev.target);
-      listItems(myPath, '#items')
-      getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-      }
+      listItems(myPath, "#items");
+      getInFolder(
+        ".single-item",
+        "#items",
+        organizeDSglobalPath,
+        datasetStructureJSONObj
+      );
+      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
     }
-    if (Object.keys(importedFolders).length > 0) {
-      for (var element in importedFolders) {
-        myPath["folders"][element] = {"type": "local", "path": importedFolders[element]["path"], "folders": {}, "files": {}, "action": ["new"]}
-        // append "renamed" to "action" key if file is auto-renamed by UI
-        var originalName = path.parse(myPath["folders"][element]["path"]).name;
-        if (element !== originalName) {
-          myPath["folders"][element]["action"].push('renamed');
-        }
-        populateJSONObjFolder(myPath["folders"][element], importedFolders[element]["path"]);
-        var appendString = '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">'+element+'</div></div>'
-        $(appendString).appendTo(ev.target);
-        listItems(myPath, '#items')
-        getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
-        hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-        hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-        }
+  }
+  if (Object.keys(importedFolders).length > 0) {
+    for (var element in importedFolders) {
+      myPath["folders"][element] = {
+        type: "local",
+        path: importedFolders[element]["path"],
+        folders: {},
+        files: {},
+        action: ["new"],
+      };
+      // append "renamed" to "action" key if file is auto-renamed by UI
+      var originalName = path.parse(myPath["folders"][element]["path"]).name;
+      if (element !== originalName) {
+        myPath["folders"][element]["action"].push("renamed");
       }
+      populateJSONObjFolder(
+        myPath["folders"][element],
+        importedFolders[element]["path"]
+      );
+      var appendString =
+        '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+        element +
+        "</div></div>";
+      $(appendString).appendTo(ev.target);
+      listItems(myPath, "#items");
+      getInFolder(
+        ".single-item",
+        "#items",
+        organizeDSglobalPath,
+        datasetStructureJSONObj
+      );
+      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+    }
+  }
 }
 
 // SAVE FILE ORG
@@ -5861,9 +5979,9 @@ function showmenu(ev, category, deleted = false) {
       $(menuFolder)
         .children("#folder-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
-        $(menuFolder).children("#folder-rename").hide();
-        $(menuFolder).children("#folder-move").hide();
-        $(menuFolder).children("#folder-description").hide();
+      $(menuFolder).children("#folder-rename").hide();
+      $(menuFolder).children("#folder-move").hide();
+      $(menuFolder).children("#folder-description").hide();
     } else {
       if ($(".selected-item").length > 2) {
         $(menuFolder)
@@ -5894,9 +6012,9 @@ function showmenu(ev, category, deleted = false) {
       $(menuHighLevelFolders)
         .children("#folder-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
-        $(menuHighLevelFolders).children("#folder-rename").hide();
-        $(menuHighLevelFolders).children("#folder-move").hide();
-        $(menuHighLevelFolders).children("#tooltip-folders").show();
+      $(menuHighLevelFolders).children("#folder-rename").hide();
+      $(menuHighLevelFolders).children("#folder-move").hide();
+      $(menuHighLevelFolders).children("#tooltip-folders").show();
     } else {
       if ($(".selected-item").length > 2) {
         $(menuHighLevelFolders)
@@ -5908,8 +6026,8 @@ function showmenu(ev, category, deleted = false) {
         $(menuHighLevelFolders).children("#tooltip-folders").show();
       } else {
         $(menuHighLevelFolders)
-        .children("#folder-delete")
-        .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
+          .children("#folder-delete")
+          .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
         $(menuHighLevelFolders).children("#folder-delete").show();
         $(menuHighLevelFolders).children("#folder-rename").hide();
         $(menuHighLevelFolders).children("#folder-move").hide();
@@ -5925,9 +6043,9 @@ function showmenu(ev, category, deleted = false) {
       $(menuFile)
         .children("#file-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
-        $(menuFile).children("#file-rename").hide();
-        $(menuFile).children("#file-move").hide();
-        $(menuFile).children("#file-description").hide();
+      $(menuFile).children("#file-rename").hide();
+      $(menuFile).children("#file-move").hide();
+      $(menuFile).children("#file-description").hide();
     } else {
       if ($(".selected-item").length > 2) {
         $(menuFile)
@@ -5957,63 +6075,107 @@ function showmenu(ev, category, deleted = false) {
 
 /// options for regular sub-folders
 function folderContextMenu(event) {
-  $(".menu.reg-folder li").unbind().click(function(){
-    if ($(this).attr('id') === "folder-rename") {
-        var itemDivElements = document.getElementById("items").children
-        renameFolder(event, organizeDSglobalPath, itemDivElements, datasetStructureJSONObj, '#items', '.single-item')
-      } else if ($(this).attr('id') === "folder-delete") {
-        delFolder(event, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
-      } else if ($(this).attr('id') === "folder-move") {
+  $(".menu.reg-folder li")
+    .unbind()
+    .click(function () {
+      if ($(this).attr("id") === "folder-rename") {
+        var itemDivElements = document.getElementById("items").children;
+        renameFolder(
+          event,
+          organizeDSglobalPath,
+          itemDivElements,
+          datasetStructureJSONObj,
+          "#items",
+          ".single-item"
+        );
+      } else if ($(this).attr("id") === "folder-delete") {
+        delFolder(
+          event,
+          organizeDSglobalPath,
+          "#items",
+          ".single-item",
+          datasetStructureJSONObj
+        );
+      } else if ($(this).attr("id") === "folder-move") {
         moveItems(event, "folders");
       }
-     // Hide it AFTER the action was triggered
-     hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-     hideFullName()
- });
+      // Hide it AFTER the action was triggered
+      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+      hideFullName();
+    });
 
- /// options for high-level folders
- $(".menu.high-level-folder li").unbind().click(function(){
-   if ($(this).attr('id') === "folder-rename") {
-     var itemDivElements = document.getElementById("items").children
-      renameFolder(event, organizeDSglobalPath, itemDivElements, datasetStructureJSONObj, '#items', '.single-item')
-     } else if ($(this).attr('id') === "folder-delete") {
-       delFolder(event, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
-     } else if ($(this).attr('id') === "tooltip-folders") {
-       showTooltips(event)
-     }
-    // Hide it AFTER the action was triggered
-    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-    hideFullName()
-
-});
-/// hide both menus after an option is clicked
-  hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-  hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-  hideFullName()
+  /// options for high-level folders
+  $(".menu.high-level-folder li")
+    .unbind()
+    .click(function () {
+      if ($(this).attr("id") === "folder-rename") {
+        var itemDivElements = document.getElementById("items").children;
+        renameFolder(
+          event,
+          organizeDSglobalPath,
+          itemDivElements,
+          datasetStructureJSONObj,
+          "#items",
+          ".single-item"
+        );
+      } else if ($(this).attr("id") === "folder-delete") {
+        delFolder(
+          event,
+          organizeDSglobalPath,
+          "#items",
+          ".single-item",
+          datasetStructureJSONObj
+        );
+      } else if ($(this).attr("id") === "tooltip-folders") {
+        showTooltips(event);
+      }
+      // Hide it AFTER the action was triggered
+      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+      hideFullName();
+    });
+  /// hide both menus after an option is clicked
+  hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+  hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+  hideFullName();
 }
 
 //////// options for files
 function fileContextMenu(event) {
-  if ($(".div-display-details.file").hasClass('show')) {
-    $(".div-display-details.file").removeClass('show')
+  if ($(".div-display-details.file").hasClass("show")) {
+    $(".div-display-details.file").removeClass("show");
   }
-  $(".menu.file li").unbind().click(function(){
-    if ($(this).attr('id') === "file-rename") {
-        var itemDivElements = document.getElementById("items").children
-        renameFolder(event, organizeDSglobalPath, itemDivElements, datasetStructureJSONObj, '#items', '.single-item')
-      } else if ($(this).attr('id') === "file-delete") {
-        delFolder(event, organizeDSglobalPath, '#items', '.single-item', datasetStructureJSONObj)
-      } else if ($(this).attr('id') === "file-move") {
+  $(".menu.file li")
+    .unbind()
+    .click(function () {
+      if ($(this).attr("id") === "file-rename") {
+        var itemDivElements = document.getElementById("items").children;
+        renameFolder(
+          event,
+          organizeDSglobalPath,
+          itemDivElements,
+          datasetStructureJSONObj,
+          "#items",
+          ".single-item"
+        );
+      } else if ($(this).attr("id") === "file-delete") {
+        delFolder(
+          event,
+          organizeDSglobalPath,
+          "#items",
+          ".single-item",
+          datasetStructureJSONObj
+        );
+      } else if ($(this).attr("id") === "file-move") {
         moveItems(event, "files");
-      } else if ($(this).attr('id') === "file-description") {
-        manageDesc(event)
+      } else if ($(this).attr("id") === "file-description") {
+        manageDesc(event);
       }
-     // Hide it AFTER the action was triggered
-     hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
- });
- hideMenu("file", menuFolder, menuHighLevelFolders, menuFile)
+      // Hide it AFTER the action was triggered
+      hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
+    });
+  hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
 }
 
 // Trigger action when the contexmenu is about to be shown
@@ -6125,12 +6287,12 @@ const select_items = (items, event, isDragging) => {
       }
     }
     */
-   $(".selected-item").removeClass("selected-item");
-   $(".ds-selected").addClass(selected_class);
-   $(".ds-selected").each((index, element) => {
+    $(".selected-item").removeClass("selected-item");
+    $(".ds-selected").addClass(selected_class);
+    $(".ds-selected").each((index, element) => {
       target_element = $(element).children()[0];
       $(target_element).addClass(selected_class);
-   })
+    });
   });
 };
 
@@ -6146,11 +6308,9 @@ $(document).bind("click", function (event) {
   // Handle clearing selection when clicked outside.
   // Currently only handles clicks inside the folder holder area
   if (event.target.classList[0] === "div-organize-items") {
-    if (drag_event_fired)
-    {
+    if (drag_event_fired) {
       drag_event_fired = false;
-    }
-    else{
+    } else {
       $(".selected-item").removeClass("selected-item");
     }
   }
@@ -6205,21 +6365,25 @@ function sortObjByKeys(object) {
   const orderedFiles = {};
   /// sort the files in objects
   if (object.hasOwnProperty("files")) {
-    Object.keys(object["files"]).sort().forEach(function(key) {
-      orderedFiles[key] = object["files"][key]
-    });
+    Object.keys(object["files"])
+      .sort()
+      .forEach(function (key) {
+        orderedFiles[key] = object["files"][key];
+      });
   }
   if (object.hasOwnProperty("folders")) {
-    Object.keys(object["folders"]).sort().forEach(function(key) {
-      orderedFolders[key] = object["folders"][key]
-    });
+    Object.keys(object["folders"])
+      .sort()
+      .forEach(function (key) {
+        orderedFolders[key] = object["folders"][key];
+      });
   }
   const orderedObject = {
-    "folders": orderedFolders,
-    "files": orderedFiles,
-    "type": ""
-  }
-  return orderedObject
+    folders: orderedFolders,
+    files: orderedFiles,
+    type: "",
+  };
+  return orderedObject;
 }
 
 function listItems(jsonObj, uiItem) {
@@ -6240,30 +6404,35 @@ function listItems(jsonObj, uiItem) {
     cloud_item = "";
     deleted_folder = false;
 
-    if ("action" in sortedObj["folders"][item])
-    {
-      if (sortedObj["folders"][item]["action"].includes("deleted") || sortedObj["folders"][item]["action"].includes("recursive_deleted")) {
+    if ("action" in sortedObj["folders"][item]) {
+      if (
+        sortedObj["folders"][item]["action"].includes("deleted") ||
+        sortedObj["folders"][item]["action"].includes("recursive_deleted")
+      ) {
         emptyFolder += " deleted_folder";
         deleted_folder = true;
-        if (sortedObj["folders"][item]["action"].includes("recursive_deleted")){
-          emptyFolder += " recursive_deleted_file"
+        if (
+          sortedObj["folders"][item]["action"].includes("recursive_deleted")
+        ) {
+          emptyFolder += " recursive_deleted_file";
         }
       }
     }
 
-    if (sortedObj["folders"][item]["type"] == "bf"){
+    if (sortedObj["folders"][item]["type"] == "bf") {
       cloud_item = " blackfynn_folder";
-      if (deleted_folder)
-      {
-        cloud_item = " blackfynn_folder_deleted"
+      if (deleted_folder) {
+        cloud_item = " blackfynn_folder_deleted";
       }
     }
 
-    if (sortedObj["folders"][item]["type"] == "local" && sortedObj["folders"][item]["action"].includes("existing")){
+    if (
+      sortedObj["folders"][item]["type"] == "local" &&
+      sortedObj["folders"][item]["action"].includes("existing")
+    ) {
       cloud_item = " local_folder";
-      if (deleted_folder)
-      {
-        cloud_item = " local_folder_deleted"
+      if (deleted_folder) {
+        cloud_item = " local_folder_deleted";
       }
     }
 
@@ -6271,7 +6440,9 @@ function listItems(jsonObj, uiItem) {
       appendString +
       '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
       emptyFolder +
-      '"></h1><div class="folder_desc' + cloud_item + '">' +
+      '"></h1><div class="folder_desc' +
+      cloud_item +
+      '">' +
       item +
       "</div></div>";
   }
@@ -6281,16 +6452,13 @@ function listItems(jsonObj, uiItem) {
       if ("path" in sortedObj["files"][item]) {
         var extension = path.extname(sortedObj["files"][item]["path"]).slice(1);
       } else {
-        var extension = "other"
+        var extension = "other";
       }
       if (sortedObj["files"][item]["type"] == "bf") {
-        if (sortedObj["files"][item]["action"].includes("deleted"))
-        {
+        if (sortedObj["files"][item]["action"].includes("deleted")) {
           original_file_name = item.substring(0, item.lastIndexOf("-"));
           extension = original_file_name.split(".").pop();
-        }
-        else
-        {
+        } else {
           extension = item.split(".").pop();
         }
       }
@@ -6319,30 +6487,32 @@ function listItems(jsonObj, uiItem) {
     deleted_file = false;
 
     if ("action" in sortedObj["files"][item]) {
-      if (sortedObj["files"][item]["action"].includes("deleted") || sortedObj["files"][item]["action"].includes("recursive_deleted")) {
+      if (
+        sortedObj["files"][item]["action"].includes("deleted") ||
+        sortedObj["files"][item]["action"].includes("recursive_deleted")
+      ) {
         extension += " deleted_file";
         deleted_file = true;
-        if (sortedObj["files"][item]["action"].includes("recursive_deleted"))
-        {
-          extension += " recursive_deleted_file"
+        if (sortedObj["files"][item]["action"].includes("recursive_deleted")) {
+          extension += " recursive_deleted_file";
         }
       }
     }
 
-
-    if (sortedObj["files"][item]["type"] == "bf"){
+    if (sortedObj["files"][item]["type"] == "bf") {
       cloud_item = " blackfynn_file";
-      if (deleted_file)
-      {
-        cloud_item = " blackfynn_file_deleted"
+      if (deleted_file) {
+        cloud_item = " blackfynn_file_deleted";
       }
     }
 
-    if (sortedObj["files"][item]["type"] == "local" && sortedObj["files"][item]["action"].includes("existing")){
+    if (
+      sortedObj["files"][item]["type"] == "local" &&
+      sortedObj["files"][item]["action"].includes("existing")
+    ) {
       cloud_item = " local_file";
-      if (deleted_file)
-      {
-        cloud_item = " local_file_deleted"
+      if (deleted_file) {
+        cloud_item = " local_file_deleted";
       }
     }
 
@@ -6350,7 +6520,9 @@ function listItems(jsonObj, uiItem) {
       appendString +
       '<div class="single-item"><h1 class="myFile ' +
       extension +
-      '" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc' + cloud_item + '">' +
+      '" oncontextmenu="fileContextMenu(this)" style="margin-bottom: 10px""></h1><div class="folder_desc' +
+      cloud_item +
+      '">' +
       item +
       "</div></div>";
   }
@@ -6377,64 +6549,79 @@ function listItems(jsonObj, uiItem) {
 }
 
 function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
-  $(singleUIItem).dblclick(function(){
-    if($(this).children("h1").hasClass("myFol")) {
-      var folderName = this.innerText
-      var appendString = ''
-      currentLocation.value = currentLocation.value + folderName + "/"
+  $(singleUIItem).dblclick(function () {
+    if ($(this).children("h1").hasClass("myFol")) {
+      var folderName = this.innerText;
+      var appendString = "";
+      currentLocation.value = currentLocation.value + folderName + "/";
 
-      var currentPath = currentLocation.value
-      var jsonPathArray = currentPath.split("/")
+      var currentPath = currentLocation.value;
+      var jsonPathArray = currentPath.split("/");
       var filtered = jsonPathArray.slice(1).filter(function (el) {
         return el.trim() != "";
       });
-      var myPath = getRecursivePath(filtered, globalObj)
-      var appendString = loadFileFolder(myPath)
+      var myPath = getRecursivePath(filtered, globalObj);
+      var appendString = loadFileFolder(myPath);
 
-      $(uiItem).empty()
-      $(uiItem).html(appendString)
+      $(uiItem).empty();
+      $(uiItem).html(appendString);
 
       // reconstruct folders and files (child elements after emptying the Div)
-      listItems(myPath, uiItem)
-      getInFolder(singleUIItem, uiItem, currentLocation, globalObj)
+      listItems(myPath, uiItem);
+      getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
     }
-  })
+  });
 }
 
-
-
 function sliceStringByValue(string, endingValue) {
-  var newString = string.slice(string.indexOf(endingValue) + 1)
-  return newString
+  var newString = string.slice(string.indexOf(endingValue) + 1);
+  return newString;
 }
 
 var fileNameForEdit;
 ///// Option to manage description for files
 function manageDesc(ev) {
-  var fileName = ev.parentElement.innerText
+  var fileName = ev.parentElement.innerText;
   /// get current location of files in JSON object
-  var filtered = getGlobalPath(organizeDSglobalPath)
-  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
+  var filtered = getGlobalPath(organizeDSglobalPath);
+  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   //// load existing metadata/description
-  loadDetailsContextMenu(fileName, myPath, 'textarea-file-description', 'textarea-file-metadata', 'para-local-path-file')
-  $("#button-confirm-display-details-file").html('Confirm');
-  showDetailsFile()
-  hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile)
-  hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile)
-  fileNameForEdit = fileName
+  loadDetailsContextMenu(
+    fileName,
+    myPath,
+    "textarea-file-description",
+    "textarea-file-metadata",
+    "para-local-path-file"
+  );
+  $("#button-confirm-display-details-file").html("Confirm");
+  showDetailsFile();
+  hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+  hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+  fileNameForEdit = fileName;
 }
 
 function updateFileDetails(ev) {
   var fileName = fileNameForEdit;
   var filtered = getGlobalPath(organizeDSglobalPath);
-  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj)
-  triggerManageDetailsPrompts(ev, fileName, myPath, 'textarea-file-description', 'textarea-file-metadata')
+  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
+  triggerManageDetailsPrompts(
+    ev,
+    fileName,
+    myPath,
+    "textarea-file-description",
+    "textarea-file-metadata"
+  );
   /// list Items again with new updated JSON structure
-  listItems(myPath, '#items')
-  getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj);
+  listItems(myPath, "#items");
+  getInFolder(
+    ".single-item",
+    "#items",
+    organizeDSglobalPath,
+    datasetStructureJSONObj
+  );
   // find checkboxes here and uncheck them
-  for (var ele of $($(ev).siblings().find('input:checkbox'))) {
-    document.getElementById(ele.id).checked = false
+  for (var ele of $($(ev).siblings().find("input:checkbox"))) {
+    document.getElementById(ele.id).checked = false;
   }
   // close the display
   showDetailsFile();
@@ -6442,34 +6629,35 @@ function updateFileDetails(ev) {
 
 function addDetailsForFile(ev) {
   var checked = false;
-  for (var ele of $($(ev).siblings()).find('input:checkbox')) {
-    if ($(ele).prop('checked')) {
-      checked = true
-      break
+  for (var ele of $($(ev).siblings()).find("input:checkbox")) {
+    if ($(ele).prop("checked")) {
+      checked = true;
+      break;
     }
   }
   /// if at least 1 checkbox is checked, then confirm with users
   if (checked) {
     bootbox.confirm({
       title: "Adding additional metadata for files",
-      message: "If you check any checkboxes above, metadata will be modified for all files in the folder. Would you like to continue?",
+      message:
+        "If you check any checkboxes above, metadata will be modified for all files in the folder. Would you like to continue?",
       centerVertical: true,
       button: {
         ok: {
-          label: 'Yes',
-          className: 'btn-primary'
+          label: "Yes",
+          className: "btn-primary",
+        },
+      },
+      callback: function (r) {
+        if (r !== null && r === true) {
+          updateFileDetails(ev);
+          $("#button-confirm-display-details-file").html("Added");
         }
       },
-      callback: function(r) {
-        if (r!==null && r === true) {
-          updateFileDetails(ev);
-          $("#button-confirm-display-details-file").html('Added')
-        }
-      }
-    })
+    });
   } else {
-      updateFileDetails(ev)
-      $("#button-confirm-display-details-file").html('Added')
+    updateFileDetails(ev);
+    $("#button-confirm-display-details-file").html("Added");
   }
 }
 
@@ -6493,98 +6681,122 @@ function addDetailsForFile(ev) {
 //   // document.getElementById('para-new-name-dataset-message').innerHTML = ""
 // })
 
-$("#inputNewNameDataset").keyup(function() {
-  $('#Question-generate-dataset-generate-div').removeClass("show");
-  $('#Question-generate-dataset-generate-div').removeClass("test2");
-  $('#Question-generate-dataset-generate-div').removeClass("prev");
+$("#inputNewNameDataset").keyup(function () {
+  $("#Question-generate-dataset-generate-div").removeClass("show");
+  $("#Question-generate-dataset-generate-div").removeClass("test2");
+  $("#Question-generate-dataset-generate-div").removeClass("prev");
   $("#Question-generate-dataset-generate-div").hide();
   $("#Question-generate-dataset-generate-div").children().hide();
   var newName = $("#inputNewNameDataset").val().trim();
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
-      document.getElementById('div-confirm-inputNewNameDataset').style.display = "none";
-      $('#btn-confirm-new-dataset-name').hide();
-      document.getElementById('para-new-name-dataset-message').innerHTML = "Error: A Blackfynn dataset name cannot contain any of the following characters: \/:*?'<>."
+      document.getElementById("div-confirm-inputNewNameDataset").style.display =
+        "none";
+      $("#btn-confirm-new-dataset-name").hide();
+      document.getElementById("para-new-name-dataset-message").innerHTML =
+        "Error: A Blackfynn dataset name cannot contain any of the following characters: /:*?'<>.";
       $("#nextBtn").prop("disabled", true);
-      $("#Question-generate-dataset-generate-div-old").removeClass("show")
+      $("#Question-generate-dataset-generate-div-old").removeClass("show");
     } else {
-      document.getElementById('div-confirm-inputNewNameDataset').style.display = "flex";
-      $('#btn-confirm-new-dataset-name').show();
+      document.getElementById("div-confirm-inputNewNameDataset").style.display =
+        "flex";
+      $("#btn-confirm-new-dataset-name").show();
       $("#Question-generate-dataset-generate-div").show();
       $("#Question-generate-dataset-generate-div").children().show();
       // $('#div-confirm-inputNewNameDataset button').click();
       // $("#nextBtn").prop("disabled", false);
-      $("#Question-generate-dataset-generate-div-old").addClass("show")
-      document.getElementById('para-new-name-dataset-message').innerHTML = "";
+      $("#Question-generate-dataset-generate-div-old").addClass("show");
+      document.getElementById("para-new-name-dataset-message").innerHTML = "";
     }
-  }
-  else{
+  } else {
     $("#nextBtn").prop("disabled", true);
   }
 });
 
 //// Select to choose a local dataset (getting started)
-document.getElementById("input-destination-getting-started-locally").addEventListener("click", function() {
-  $("#Question-getting-started-locally-destination").nextAll().removeClass('show');
-  $("#Question-getting-started-locally-destination").nextAll().removeClass('test2');
-  $("#Question-getting-started-locally-destination").nextAll().removeClass('prev');
-  document.getElementById("input-destination-getting-started-locally").placeholder = "Browse here";
-  $("#para-continue-location-dataset-getting-started").text("");
-  document.getElementById("nextBtn").disabled = true;
-  ipcRenderer.send('open-file-dialog-local-destination-curate');
-})
+document
+  .getElementById("input-destination-getting-started-locally")
+  .addEventListener("click", function () {
+    $("#Question-getting-started-locally-destination")
+      .nextAll()
+      .removeClass("show");
+    $("#Question-getting-started-locally-destination")
+      .nextAll()
+      .removeClass("test2");
+    $("#Question-getting-started-locally-destination")
+      .nextAll()
+      .removeClass("prev");
+    document.getElementById(
+      "input-destination-getting-started-locally"
+    ).placeholder = "Browse here";
+    $("#para-continue-location-dataset-getting-started").text("");
+    document.getElementById("nextBtn").disabled = true;
+    ipcRenderer.send("open-file-dialog-local-destination-curate");
+  });
 
-ipcRenderer.on('selected-local-destination-datasetCurate', (event, filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null){
-      sodaJSONObj["starting-point"]["local-path"] = "";
-      document.getElementById("input-destination-getting-started-locally").placeholder = filepath[0];
-      if (sodaJSONObj["starting-point"]["type"] === "local" && sodaJSONObj["starting-point"]["local-path"] == "")
-      {
-        valid_dataset = verify_sparc_folder(document.getElementById("input-destination-getting-started-locally").placeholder);
-        sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+ipcRenderer.on(
+  "selected-local-destination-datasetCurate",
+  (event, filepath) => {
+    if (filepath.length > 0) {
+      if (filepath != null) {
+        sodaJSONObj["starting-point"]["local-path"] = "";
+        document.getElementById(
+          "input-destination-getting-started-locally"
+        ).placeholder = filepath[0];
+        if (
+          sodaJSONObj["starting-point"]["type"] === "local" &&
+          sodaJSONObj["starting-point"]["local-path"] == ""
+        ) {
+          valid_dataset = verify_sparc_folder(
+            document.getElementById("input-destination-getting-started-locally")
+              .placeholder
+          );
+          sodaJSONObj["starting-point"]["local-path"] = filepath[0];
           create_json_object(sodaJSONObj);
           datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
           populate_existing_folders(datasetStructureJSONObj);
           populate_existing_metadata(sodaJSONObj);
-        if (valid_dataset == true)
-        {
-          $("#nextBtn").prop("disabled", false);
-        }
-        else
-        {
-          var bootboxDialog = bootbox.confirm({
-            message: "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
-            buttons: {
-              confirm: {
-                label: "Yes",
-                className: "btn-success",
+          if (valid_dataset == true) {
+            $("#nextBtn").prop("disabled", false);
+          } else {
+            var bootboxDialog = bootbox.confirm({
+              message:
+                "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+              buttons: {
+                confirm: {
+                  label: "Yes",
+                  className: "btn-success",
+                },
+                cancel: {
+                  label: "Cancel",
+                  className: "btn-danger",
+                },
               },
-              cancel: {
-                label: "Cancel",
-                className: "btn-danger",
+              centerVertical: true,
+              callback: function (result) {
+                if (result) {
+                  $("#nextBtn").prop("disabled", false);
+                  $("#para-continue-location-dataset-getting-started").text(
+                    "Please continue below."
+                  );
+                } else {
+                  document.getElementById(
+                    "input-destination-getting-started-locally"
+                  ).placeholder = "Browse here";
+                  sodaJSONObj["starting-point"]["local-path"] = "";
+                  $("#para-continue-location-dataset-getting-started").text("");
+                }
               },
-            },
-            centerVertical: true,
-            callback: function (result) {
-              if (result) {
-                $("#nextBtn").prop("disabled", false);
-                $("#para-continue-location-dataset-getting-started").text("Please continue below.")
-              } else {
-                document.getElementById("input-destination-getting-started-locally").placeholder = "Browse here";
-                sodaJSONObj["starting-point"]["local-path"] = "";
-                $("#para-continue-location-dataset-getting-started").text("")
-              }
-            },
-          });
+            });
+          }
         }
       }
+    } else {
+      document.getElementById("nextBtn").disabled = true;
+      $("#para-continue-location-dataset-getting-started").text("");
     }
-  } else {
-    document.getElementById("nextBtn").disabled = true;
-    $("#para-continue-location-dataset-getting-started").text("");
   }
-})
+);
 
 //// Select to choose a local dataset (generate dataset)
 document.getElementById("input-destination-generate-dataset-locally").addEventListener("click", function() {
@@ -6595,44 +6807,56 @@ document.getElementById("input-destination-generate-dataset-locally").addEventLi
   ipcRenderer.send('open-file-dialog-local-destination-curate-generate');
 })
 
-ipcRenderer.on('selected-local-destination-datasetCurate-generate', (event, filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null){
-      $("#div-confirm-destination-locally").css("display", "flex");
-      $("#div-confirm-destination-locally button").show();
-      document.getElementById("input-destination-generate-dataset-locally").placeholder = filepath[0];
-      document.getElementById("nextBtn").disabled = true;
+ipcRenderer.on(
+  "selected-local-destination-datasetCurate-generate",
+  (event, filepath) => {
+    if (filepath.length > 0) {
+      if (filepath != null) {
+        $("#div-confirm-destination-locally").css("display", "flex");
+        $("#div-confirm-destination-locally button").show();
+        document.getElementById(
+          "input-destination-generate-dataset-locally"
+        ).placeholder = filepath[0];
+        document.getElementById("nextBtn").disabled = true;
+      } else {
+        $("#div-confirm-destination-locally").css("display", "none");
+        $("#div-confirm-destination-locally button").hide();
+        document.getElementById(
+          "input-destination-generate-dataset-locally"
+        ).placeholder = "Browse here";
+      }
     } else {
       $("#div-confirm-destination-locally").css("display", "none");
       $("#div-confirm-destination-locally button").hide();
-      document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
+      document.getElementById(
+        "input-destination-generate-dataset-locally"
+      ).placeholder = "Browse here";
     }
-  } else {
-    $("#div-confirm-destination-locally").css("display", "none");
-    $("#div-confirm-destination-locally button").hide();
-    document.getElementById("input-destination-generate-dataset-locally").placeholder = "Browse here";
   }
-})
+);
 
-document.getElementById("button-generate-comeback").addEventListener('click', function() {
-  document.getElementById('generate-dataset-progress-tab').style.display = "none";
-  document.getElementById('div-vertical-progress-bar').style.display = "flex";
-  document.getElementById('prevBtn').style.display = "inline";
-  document.getElementById('nextBtn').style.display = "inline";
-  showParentTab(currentTab, 1)
-})
+document
+  .getElementById("button-generate-comeback")
+  .addEventListener("click", function () {
+    document.getElementById("generate-dataset-progress-tab").style.display =
+      "none";
+    document.getElementById("div-vertical-progress-bar").style.display = "flex";
+    document.getElementById("prevBtn").style.display = "inline";
+    document.getElementById("nextBtn").style.display = "inline";
+    showParentTab(currentTab, 1);
+  });
 
 // function to hide the sidebar and disable the sidebar expand button
 function forceActionSidebar(action) {
   if (action === "hide") {
-    if (!$('#main-nav').hasClass('active')) {
-      $('#sidebarCollapse').click();
+    if (!$("#main-nav").hasClass("active")) {
+      $("#sidebarCollapse").click();
     }
-    $('#sidebarCollapse').prop("disabled", true)
+    $("#sidebarCollapse").prop("disabled", true);
   } else {
-      $('#sidebarCollapse').toggleClass('active');
-      $('#main-nav').toggleClass('active');
-      $('#sidebarCollapse').prop("disabled", false)
+    $("#sidebarCollapse").toggleClass("active");
+    $("#main-nav").toggleClass("active");
+    $("#sidebarCollapse").prop("disabled", false);
   }
 }
 

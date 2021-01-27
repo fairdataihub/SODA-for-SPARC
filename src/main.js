@@ -95,59 +95,60 @@ let mainWindow = null
 let user_restart_confirmed = false;
 let updatechecked = false;
 
-function initialize () {
-  makeSingleInstance()
+function initialize() {
+  makeSingleInstance();
 
-  loadDemos()
-  function createWindow () {
-
+  loadDemos();
+  function createWindow() {
     mainWindow.webContents.openDevTools();
 
-    mainWindow.webContents.once('dom-ready', () => {
-      if (updatechecked == false)
-      {
+    mainWindow.webContents.once("dom-ready", () => {
+      if (updatechecked == false) {
         autoUpdater.checkForUpdatesAndNotify();
       }
     });
 
-    mainWindow.on('close', (e) => {
+    mainWindow.on("close", (e) => {
       if (!user_restart_confirmed) {
         if (app.showExitPrompt) {
-          e.preventDefault() // Prevents the window from closing
-          dialog.showMessageBox(BrowserWindow.getFocusedWindow(), {
-            type: 'question',
-            buttons: ['Yes', 'No'],
-            title: 'Confirm',
-            message: 'Any running proccess will be stopped. Are you sure you want to quit?'
-          }, function (response) {
-            if (response === 0) { // Runs the following if 'Yes' is clicked
-              quit_app();
+          e.preventDefault(); // Prevents the window from closing
+          dialog.showMessageBox(
+            BrowserWindow.getFocusedWindow(),
+            {
+              type: "question",
+              buttons: ["Yes", "No"],
+              title: "Confirm",
+              message:
+                "Any running proccess will be stopped. Are you sure you want to quit?",
+            },
+            function (response) {
+              if (response === 0) {
+                // Runs the following if 'Yes' is clicked
+                quit_app();
+              }
             }
-          })
+          );
         }
-      }
-      else {
-        var first_launch = nodeStorage.getItem('firstlaunch');
-        nodeStorage.setItem('firstlaunch', true);
+      } else {
+        var first_launch = nodeStorage.getItem("firstlaunch");
+        nodeStorage.setItem("firstlaunch", true);
         exitPyProc();
         app.exit();
       }
-    })
-
+    });
   }
 
   const quit_app = () => {
-    app.showExitPrompt = false
-    mainWindow.close()
+    app.showExitPrompt = false;
+    mainWindow.close();
     /// feedback form iframe prevents closing gracefully
     /// so force close
     if (!mainWindow.closed) {
-      mainWindow.destroy()
+      mainWindow.destroy();
     }
-  }
+  };
 
-
-  app.on('ready', () => {
+  app.on("ready", () => {
     const windowOptions = {
       minWidth: 1080,
       minHeight: 680,
@@ -155,68 +156,76 @@ function initialize () {
       height: 720,
       center: true,
       show: false,
-      icon: __dirname + '/assets/menu-icon/soda_icon.png',
+      icon: __dirname + "/assets/menu-icon/soda_icon.png",
       webPreferences: {
         nodeIntegration: true,
-        enableRemoteModule: true
-      }
-    }
+        enableRemoteModule: true,
+      },
+    };
 
-    mainWindow = new BrowserWindow(windowOptions)
-    mainWindow.loadURL(path.join('file://', __dirname, '/index.html'))
+    mainWindow = new BrowserWindow(windowOptions);
+    mainWindow.loadURL(path.join("file://", __dirname, "/index.html"));
 
-    const splash = new BrowserWindow({ width: 220, height: 190, frame: false, alwaysOnTop: true, transparent: true });
-    splash.loadURL(path.join('file://', __dirname, '/splash-screen.html'));
+    const splash = new BrowserWindow({
+      width: 220,
+      height: 190,
+      frame: false,
+      alwaysOnTop: true,
+      transparent: true,
+    });
+    splash.loadURL(path.join("file://", __dirname, "/splash-screen.html"));
     //
     // // if main window is ready to show, then destroy the splash window and show up the main window
-    mainWindow.once('ready-to-show', () => {
-    setTimeout(function(){
+    mainWindow.once("ready-to-show", () => {
+      setTimeout(function () {
         splash.close();
         mainWindow.maximize();
         mainWindow.show();
         createWindow();
-        var first_launch = nodeStorage.getItem('firstlaunch');
-        if (first_launch == true || first_launch == undefined)
-        {
+        var first_launch = nodeStorage.getItem("firstlaunch");
+        if (first_launch == true || first_launch == undefined) {
           mainWindow.reload();
           mainWindow.focus();
-          nodeStorage.setItem('firstlaunch', false);
+          nodeStorage.setItem("firstlaunch", false);
         }
         autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
       }, 5000);
     });
-  })
+  });
 
-  app.on('ready', () => {
+  app.on("ready", () => {
     //createWindow()
-    trackEvent('Success', 'App Launched - OS',  os.platform() + "-" + os.release());
-    trackEvent('Success', 'App Launched - SODA',  app.getVersion());
-  })
+    trackEvent(
+      "Success",
+      "App Launched - OS",
+      os.platform() + "-" + os.release()
+    );
+    trackEvent("Success", "App Launched - SODA", app.getVersion());
+  });
 
-  app.on('window-all-closed', () => {
+  app.on("window-all-closed", () => {
     // if (process.platform !== 'darwin') {
-      app.quit()
+    app.quit();
     // }
-  })
+  });
 }
 
 // Make this app a single instance app.
 const gotTheLock = app.requestSingleInstanceLock()
 
-function makeSingleInstance () {
-  if (process.mas) return
+function makeSingleInstance() {
+  if (process.mas) return;
 
   if (!gotTheLock) {
-    app.quit()
+    app.quit();
   } else {
-
-    app.on('second-instance', () => {
+    app.on("second-instance", () => {
       if (mainWindow) {
-        if (mainWindow.isMinimized()) mainWindow.restore()
-        mainWindow.focus()
+        if (mainWindow.isMinimized()) mainWindow.restore();
+        mainWindow.focus();
       }
-    })
+    });
   }
 }
 
@@ -229,26 +238,28 @@ showSaveImageAs prompts the users where they want to save the image.
 contextMenu()
 
 // Require each JS file in the main-process dir
-function loadDemos () {
-  const files = glob.sync(path.join(__dirname, 'main-process/**/*.js'))
-  files.forEach((file) => { require(file) })
+function loadDemos() {
+  const files = glob.sync(path.join(__dirname, "main-process/**/*.js"));
+  files.forEach((file) => {
+    require(file);
+  });
 }
 
 initialize()
 
 
-ipcMain.on('resize-window', (event, dir) => {
-  var x = mainWindow.getSize()[0]
-  var y = mainWindow.getSize()[1]
-  if (dir === 'up'){
-    x = x+1
-    y = y+1
+ipcMain.on("resize-window", (event, dir) => {
+  var x = mainWindow.getSize()[0];
+  var y = mainWindow.getSize()[1];
+  if (dir === "up") {
+    x = x + 1;
+    y = y + 1;
   } else {
-    x = x-1
-    y = y-1
+    x = x - 1;
+    y = y - 1;
   }
-  mainWindow.setSize(x, y)
-})
+  mainWindow.setSize(x, y);
+});
 
 // Google analytics tracking function
 // To use, category and action is required. Label and value can be left out
@@ -275,20 +286,35 @@ ipcMain.on("app_version", (event) => {
 });
 
 autoUpdater.on("update-available", () => {
-  trackEvent("App Update", "Update Requested", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
-  log.info('update_available');
+  trackEvent(
+    "App Update",
+    "Update Requested",
+    "User OS",
+    os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion()
+  );
+  log.info("update_available");
   mainWindow.webContents.send("update_available");
 });
 
 autoUpdater.on("update-downloaded", () => {
-  trackEvent("App Update", "Update Downloaded", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
-  log.info('update_downloaded');
+  trackEvent(
+    "App Update",
+    "Update Downloaded",
+    "User OS",
+    os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion()
+  );
+  log.info("update_downloaded");
   mainWindow.webContents.send("update_downloaded");
 });
 
 ipcMain.on("restart_app", () => {
   user_restart_confirmed = true;
-  trackEvent("App Update", "App Restarted", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
-  log.info('quitAndInstall');
+  trackEvent(
+    "App Update",
+    "App Restarted",
+    "User OS",
+    os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion()
+  );
+  log.info("quitAndInstall");
   autoUpdater.quitAndInstall();
 });
