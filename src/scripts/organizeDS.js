@@ -440,13 +440,13 @@ function renameFolder(
               storedValue = myPath[type][currentName];
               delete myPath[type][currentName];
               myPath[type][returnedName] = storedValue;
-              if (
-                "action" in myPath[type][returnedName] &&
-                !myPath[type][returnedName]["action"].includes("renamed")
-              ) {
-                myPath[type][returnedName]["action"].push("renamed");
+              if ("action" in myPath[type][returnedName]) {
+                if (!myPath[type][returnedName]["action"].includes("renamed")) {
+                  myPath[type][returnedName]["action"].push("renamed");
+                }
               } else {
-                myPath[type][returnedName]["action"] = ["new", "renamed"];
+                myPath[type][returnedName]["action"] = [];
+                myPath[type][returnedName]["action"].push("renamed");
               }
               /// list items again with updated JSON obj
               listItems(myPath, uiItem);
