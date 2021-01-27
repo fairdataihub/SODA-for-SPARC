@@ -166,7 +166,10 @@ function importGenerateDatasetStep(object) {
       $("#generate-local-desktop").prop("checked", true);
       $($("#generate-local-desktop").parents()[2]).click();
       // Step 2: if generate locally, name and path
-      $("#input-destination-generate-dataset-locally").prop("placeholder", 
+      $("#input-destination-generate-dataset-locally").prop("placeholder",
+        sodaJSONObj["generate-dataset"]["path"]
+      );
+      $("#input-destination-generate-dataset-locally").val(
         sodaJSONObj["generate-dataset"]["path"]
       );
       $("#btn-confirm-local-destination").click();
