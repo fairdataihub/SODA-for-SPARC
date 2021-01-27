@@ -6001,7 +6001,6 @@ function showmenu(ev, category, deleted = false) {
           .html('<i class="fas fa-external-link-alt"></i> Move');
         $(menuFolder).children("#folder-move").show();
         $(menuFolder).children("#folder-rename").show();
-        $(menuFolder).children("#folder-move").show();
         $(menuFolder).children("#folder-description").show();
       }
     }

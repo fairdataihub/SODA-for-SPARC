@@ -236,7 +236,7 @@ const add_card_detail = (card_left, card_right, parent_tab = -1, element_id = ""
     card_right;
   if (parent_tab === -1) {
     new_card_element += "</p></div>";
-  } else {
+  } else { 
     new_card_element += link_item + "</p></div>";
   }
   $(parent_element).append(new_card_element);
