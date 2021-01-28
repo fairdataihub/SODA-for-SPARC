@@ -1,5 +1,5 @@
 //// option to show tool-tips for high-level folders
-function showTooltips(ev) {
+const showTooltips = (ev) => {
   var folderName = ev.parentElement.innerText;
   bootbox.alert({
     message: highLevelFolderToolTip[folderName],
@@ -10,7 +10,7 @@ function showTooltips(ev) {
     },
     centerVertical: true,
   });
-}
+};
 
 const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
   if ("files" in dataset_folder) {
@@ -71,13 +71,13 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
 };
 
 ///////// Option to delete folders or files
-function delFolder(
+const delFolder = (
   ev,
   organizeCurrentLocation,
   uiItem,
   singleUIItem,
   inputGlobal
-) {
+) => {
   var itemToDelete = ev.parentElement.innerText;
   var promptVar;
   var type; // renaming files or folders
@@ -132,7 +132,7 @@ function delFolder(
         " will be renamed.",
       onEscape: true,
       centerVertical: true,
-      callback: function (result) {
+      callback: (result) => {
         if (result !== null && result === true) {
           /// get current location of folders or files
           let itemToRestore = itemToDelete;
@@ -202,47 +202,48 @@ function delFolder(
         message: "Are you sure you want to delete these " + type + "?",
         onEscape: true,
         centerVertical: true,
-        callback: function (result) {
+        callback: (result) => {
           if (result !== null && result === true) {
             /// get current location of folders or files
             var filtered = getGlobalPath(organizeCurrentLocation);
             var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
 
-            $("div.single-item.selected-item > .folder_desc").each(function (
-              index,
-              current_element
-            ) {
-              itemToDelete = $(current_element).text();
-              if (itemToDelete in myPath["files"]) {
-                type = "files";
-              } else if (itemToDelete in myPath["folders"]) {
-                type = "folders";
-              }
-              if (
-                myPath[type][itemToDelete]["type"] === "bf" ||
-                (myPath[type][itemToDelete]["type"] === "local" &&
-                  myPath[type][itemToDelete]["action"].includes("existing"))
-              ) {
-                if (type === "folders") {
-                  recursive_mark_sub_files_deleted(
-                    myPath[type][itemToDelete],
-                    "delete"
-                  );
+            $("div.single-item.selected-item > .folder_desc").each(
+              (index, current_element) => {
+                itemToDelete = $(current_element).text();
+                if (itemToDelete in myPath["files"]) {
+                  type = "files";
+                } else if (itemToDelete in myPath["folders"]) {
+                  type = "folders";
                 }
+                if (
+                  myPath[type][itemToDelete]["type"] === "bf" ||
+                  (myPath[type][itemToDelete]["type"] === "local" &&
+                    myPath[type][itemToDelete]["action"].includes("existing"))
+                ) {
+                  if (type === "folders") {
+                    recursive_mark_sub_files_deleted(
+                      myPath[type][itemToDelete],
+                      "delete"
+                    );
+                  }
 
-                if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
-                  myPath[type][itemToDelete]["action"] = [];
-                  myPath[type][itemToDelete]["action"].push("existing");
-                  myPath[type][itemToDelete]["action"].push("deleted");
-                  let itemToDelete_new_key = itemToDelete + "-DELETED";
-                  myPath[type][itemToDelete_new_key] =
-                    myPath[type][itemToDelete];
+                  if (
+                    !myPath[type][itemToDelete]["action"].includes("deleted")
+                  ) {
+                    myPath[type][itemToDelete]["action"] = [];
+                    myPath[type][itemToDelete]["action"].push("existing");
+                    myPath[type][itemToDelete]["action"].push("deleted");
+                    let itemToDelete_new_key = itemToDelete + "-DELETED";
+                    myPath[type][itemToDelete_new_key] =
+                      myPath[type][itemToDelete];
+                    delete myPath[type][itemToDelete];
+                  }
+                } else {
                   delete myPath[type][itemToDelete];
                 }
-              } else {
-                delete myPath[type][itemToDelete];
               }
-            });
+            );
 
             // update UI with updated jsonobj
             listItems(myPath, uiItem);
@@ -261,7 +262,7 @@ function delFolder(
         message: "Are you sure you want to delete this " + promptVar + "?",
         onEscape: true,
         centerVertical: true,
-        callback: function (result) {
+        callback: (result) => {
           if (result !== null && result === true) {
             /// get current location of folders or files
             var filtered = getGlobalPath(organizeCurrentLocation);
@@ -303,10 +304,10 @@ function delFolder(
       });
     }
   }
-}
+};
 
 // helper function to rename files/folders
-function checkValidRenameInput(
+const checkValidRenameInput = (
   event,
   input,
   type,
@@ -314,7 +315,7 @@ function checkValidRenameInput(
   newName,
   itemElement,
   myBootboxDialog
-) {
+) => {
   var duplicate = false;
   // if renaming a file
   if (type === "files") {
@@ -364,17 +365,17 @@ function checkValidRenameInput(
     }
   }
   return newName;
-}
+};
 
 ///// Option to rename a folder and files
-function renameFolder(
+const renameFolder = (
   event1,
   organizeCurrentLocation,
   itemElement,
   inputGlobal,
   uiItem,
   singleUIItem
-) {
+) => {
   var promptVar;
   var type; // renaming files or folders
   var newName;
@@ -421,7 +422,7 @@ function renameFolder(
         confirm: {
           label: '<i class="fa fa-check"></i> Save',
           className: "btn-success",
-          callback: function () {
+          callback: () => {
             var returnedName = checkValidRenameInput(
               event1,
               $("#input-new-name-renamed").val().trim(),
@@ -471,18 +472,18 @@ function renameFolder(
       centerVertical: true,
     });
   }
-}
+};
 
-function getGlobalPath(path) {
+const getGlobalPath = (path) => {
   var currentPath = path.value.trim();
   var jsonPathArray = currentPath.split("/");
-  var filtered = jsonPathArray.filter(function (el) {
+  var filtered = jsonPathArray.filter((el) => {
     return el != "";
   });
   return filtered;
-}
+};
 
-function loadFileFolder(myPath) {
+const loadFileFolder = (myPath) => {
   var appendString = "";
   var sortedObj = sortObjByKeys(myPath);
 
@@ -543,9 +544,9 @@ function loadFileFolder(myPath) {
   }
 
   return appendString;
-}
+};
 
-function getRecursivePath(filteredList, inputObj) {
+const getRecursivePath = (filteredList, inputObj) => {
   var myPath = inputObj;
   for (var item of filteredList) {
     if (item.trim() !== "") {
@@ -553,10 +554,10 @@ function getRecursivePath(filteredList, inputObj) {
     }
   }
   return myPath;
-}
+};
 
 /// check if an array contains another array
-function checkSubArrayBool(parentArray, childArray) {
+const checkSubArrayBool = (parentArray, childArray) => {
   var bool = true;
   for (var element of childArray) {
     if (!parentArray.includes(element)) {
@@ -565,24 +566,24 @@ function checkSubArrayBool(parentArray, childArray) {
     }
   }
   return bool;
-}
+};
 
-function showItemsAsListBootbox(arrayOfItems) {
+const showItemsAsListBootbox = (arrayOfItems) => {
   var htmlElement = "";
   for (var element of arrayOfItems) {
     htmlElement = htmlElement + "<li>" + element + "</li>";
   }
   return htmlElement;
-}
+};
 
-function addFilesfunction(
+const addFilesfunction = (
   fileArray,
   currentLocation,
   organizeCurrentLocation,
   uiItem,
   singleUIItem,
   globalPathValue
-) {
+) => {
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
   var regularFiles = {};
@@ -688,17 +689,17 @@ function addFilesfunction(
       centerVertical: true,
     });
   }
-}
+};
 
 ///// function to load details to show in display once
 ///// users click Show details
-function loadDetailsContextMenu(
+const loadDetailsContextMenu = (
   fileName,
   filePath,
   textareaID1,
   textareaID2,
   paraLocalPath
-) {
+) => {
   if ("description" in filePath["files"][fileName]) {
     document.getElementById(textareaID1).value =
       filePath["files"][fileName]["description"];
@@ -727,17 +728,17 @@ function loadDetailsContextMenu(
     document.getElementById(paraLocalPath).innerHTML =
       filePath["files"][fileName]["path"];
   }
-}
+};
 
 //path_label = document.querySelector("#organize-dataset-tab > div > div > div > div.div-display-details.file > div:nth-child(2) > label");
 
-function triggerManageDetailsPrompts(
+const triggerManageDetailsPrompts = (
   ev,
   fileName,
   filePath,
   textareaID1,
   textareaID2
-) {
+) => {
   filePath["files"][fileName]["additional-metadata"] = document
     .getElementById(textareaID2)
     .value.trim();
@@ -760,4 +761,4 @@ function triggerManageDetailsPrompts(
     }
   }
   // $(this).html("Done <i class='fas fa-check'></i>");
-}
+};

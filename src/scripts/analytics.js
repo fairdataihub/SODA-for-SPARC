@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === "development") {
   console.log("Development App");
 }
 
-function trackEvent(category, action, label, value) {
+const trackEvent = (category, action, label, value) => {
   usr
     .event({
       ec: category,
@@ -37,6 +37,6 @@ function trackEvent(category, action, label, value) {
       ev: value,
     })
     .send();
-}
+};
 
 module.exports = { trackEvent };

@@ -11,9 +11,24 @@ var allParentStepsJSON = {
 };
 
 var currentTab = 0; // Current tab is set to be the first tab (0)
-showParentTab(0, 1);
 
-function showParentTab(tabNow, nextOrPrev) {
+const fixStepIndicator = (n) => {
+  // This function removes the "is-current" class of all steps...
+  var i,
+    x = document.getElementsByClassName("vertical-progress-bar-step");
+  for (i = 0; i < x.length; i++) {
+    x[i].className = x[i].className.replace(" is-current", "");
+  }
+  //... and adds the "active" class to the current step:
+  x[n].className += " is-current";
+};
+
+const fixStepDone = (n) => {
+  var x = document.getElementsByClassName("vertical-progress-bar-step");
+  $(x[n]).addClass("done");
+};
+
+const showParentTab = (tabNow, nextOrPrev) => {
   document.getElementById("nextBtn").disabled = true;
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
@@ -32,11 +47,11 @@ function showParentTab(tabNow, nextOrPrev) {
   }
 
   $(x[tabNow]).addClass("tab-active");
-  setTimeout(function () {
+  setTimeout(() => {
     $(x[tabNow]).css("overflow", "auto");
   }, 1500);
 
-  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter(function (element) {
+  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter((element) => {
     return ![tabNow].includes(element);
   });
 
@@ -96,7 +111,9 @@ function showParentTab(tabNow, nextOrPrev) {
     //$("#preview-dataset-structure-btn").show();
     fill_info_details();
   }
-}
+};
+
+showParentTab(0, 1);
 
 const fill_info_details = () => {
   $(".card-container").remove();
@@ -395,7 +412,7 @@ const add_card_detail = (
 };
 
 // helper function to delete empty keys from objects
-function deleteEmptyKeysFromObject(object) {
+const deleteEmptyKeysFromObject = (object) => {
   for (var key in object) {
     if (
       object[key] === null ||
@@ -406,9 +423,9 @@ function deleteEmptyKeysFromObject(object) {
       delete object[key];
     }
   }
-}
+};
 
-function checkHighLevelFoldersInput() {
+const checkHighLevelFoldersInput = () => {
   document.getElementById("nextBtn").disabled = true;
   var optionCards = document.getElementsByClassName(
     "option-card high-level-folders"
@@ -424,10 +441,10 @@ function checkHighLevelFoldersInput() {
     document.getElementById("nextBtn").disabled = false;
   }
   return checked;
-}
+};
 
 // function associated with the Back/Continue buttons
-function nextPrev(n) {
+const nextPrev = (n) => {
   var x = document.getElementsByClassName("parent-tabs");
   // update JSON structure
   updateOverallJSONStructure(x[currentTab].id);
@@ -477,7 +494,7 @@ function nextPrev(n) {
         },
       },
       centerVertical: true,
-      callback: function (result) {
+      callback: (result) => {
         if (result !== null && result === true) {
           // Hide the current tab:
           $(x[currentTab]).removeClass("tab-active");
@@ -522,7 +539,7 @@ function nextPrev(n) {
           },
         },
         centerVertical: true,
-        callback: function (result) {
+        callback: (result) => {
           if (result !== null && result === true) {
             // Hide the current tab:
             $(x[currentTab]).removeClass("tab-active");
@@ -607,26 +624,10 @@ function nextPrev(n) {
     showParentTab(currentTab, n);
     //console.log(JSON.stringify(sodaJSONObj["dataset-structure"]))
   }
-}
-
-function fixStepIndicator(n) {
-  // This function removes the "is-current" class of all steps...
-  var i,
-    x = document.getElementsByClassName("vertical-progress-bar-step");
-  for (i = 0; i < x.length; i++) {
-    x[i].className = x[i].className.replace(" is-current", "");
-  }
-  //... and adds the "active" class to the current step:
-  x[n].className += " is-current";
-}
-
-function fixStepDone(n) {
-  var x = document.getElementsByClassName("vertical-progress-bar-step");
-  $(x[n]).addClass("done");
-}
+};
 
 //// High level folders check mark effect
-$(".option-card.high-level-folders").click(function () {
+$(".option-card.high-level-folders").click(() => {
   $(this).toggleClass("checked");
   if ($(this).hasClass("checked")) {
     $(this).children()[0].children[1].children[0].checked = true;
@@ -638,7 +639,7 @@ $(".option-card.high-level-folders").click(function () {
 
 var globalGettingStarted1stQuestionBool = false;
 
-$(".folder-input-check").click(function () {
+$(".folder-input-check").click(() => {
   var parentCard = $(this).parents()[2];
   $(parentCard).toggleClass("checked");
   if ($(this).checked) {
@@ -651,7 +652,7 @@ $(".folder-input-check").click(function () {
 });
 
 // function associated with metadata files (show individual metadata file upload div on button click)
-function showSubTab(section, tab, input) {
+const showSubTab = (section, tab, input) => {
   var tabArray;
   if (section === "metadata") {
     tabArray = [
@@ -664,7 +665,7 @@ function showSubTab(section, tab, input) {
       "div-manifest-metadata-file",
     ];
   }
-  var inActiveTabArray = tabArray.filter(function (element) {
+  var inActiveTabArray = tabArray.filter((element) => {
     return ![tab].includes(element);
   });
   for (var id of inActiveTabArray) {
@@ -672,11 +673,11 @@ function showSubTab(section, tab, input) {
   }
   document.getElementById(input).checked = true;
   document.getElementById(tab).style.display = "block";
-}
+};
 
 // function to check if certain high level folders already chosen and have files/sub-folders
 // then disable the option (users cannot un-choose)
-function highLevelFoldersDisableOptions() {
+const highLevelFoldersDisableOptions = () => {
   var highLevelFolderOptions = datasetStructureJSONObj["folders"];
   if (highLevelFolderOptions) {
     for (var folder of highLevelFolders) {
@@ -697,10 +698,10 @@ function highLevelFoldersDisableOptions() {
       }
     }
   }
-}
+};
 
 // // High level folders check mark effect
-$(".folder-input-check").click(function () {
+$(".folder-input-check").click(() => {
   var highLevelFolderCard = $(this).parents()[2];
   $(highLevelFolderCard).toggleClass("checked");
   if ($(this).checked) {
@@ -719,7 +720,7 @@ $(".folder-input-check").click(function () {
 
 // raise warning before wiping out existing sodaJSONObj
 // show warning message
-function raiseWarningGettingStarted(ev) {
+const raiseWarningGettingStarted = (ev) => {
   return new Promise((resolve) => {
     if (
       !(
@@ -748,7 +749,7 @@ function raiseWarningGettingStarted(ev) {
           },
         },
         centerVertical: true,
-        callback: function (result) {
+        callback: (result) => {
           if (result) {
             globalGettingStarted1stQuestionBool = true;
             resolve(globalGettingStarted1stQuestionBool);
@@ -763,16 +764,16 @@ function raiseWarningGettingStarted(ev) {
       resolve(globalGettingStarted1stQuestionBool);
     }
   });
-}
+};
 
 var divList = [];
-async function transitionSubQuestions(
+const transitionSubQuestions = async (
   ev,
   currentDiv,
   parentDiv,
   button,
   category
-) {
+) => {
   if (currentDiv === "Question-getting-started-1") {
     globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
     if (globalGettingStarted1stQuestionBool) {
@@ -899,7 +900,7 @@ async function transitionSubQuestions(
       datasetStructureJSONObj = { folders: {}, files: {} };
       sodaJSONObj["metadata-files"] = {};
       reset_ui();
-      setTimeout(function () {
+      setTimeout(() => {
         document.getElementById("nextBtn").disabled = false;
         $("#para-continue-prepare-new-getting-started").text(
           "Please continue below."
@@ -954,7 +955,7 @@ async function transitionSubQuestions(
       $("#nextBtn").prop("disabled", true);
     }
   }
-}
+};
 
 // Create the dataset structure for sodaJSONObj
 create_json_object = (sodaJSONObj) => {
@@ -1227,13 +1228,13 @@ const verify_sparc_folder = (root_folder_path) => {
 };
 
 // function similar to transitionSubQuestions, but for buttons
-async function transitionSubQuestionsButton(
+const transitionSubQuestionsButton = async (
   ev,
   currentDiv,
   parentDiv,
   button,
   category
-) {
+) => {
   /*
     ev: the button being clicked
     currentDiv: current option-card (question)
@@ -1401,17 +1402,17 @@ async function transitionSubQuestionsButton(
       $("#nextBtn").prop("disabled", true);
     }
   }
-}
+};
 
 reset_ui = () => {
-  $(".option-card.high-level-folders").each(function (i, obj) {
+  $(".option-card.high-level-folders").each((i, obj) => {
     $(obj).removeClass("checked");
     $(obj).removeClass("disabled");
   });
-  $(".metadata-button.button-generate-dataset").each(function (i, obj) {
+  $(".metadata-button.button-generate-dataset").each((i, obj) => {
     $(obj).removeClass("done");
   });
-  $(".button-individual-metadata.remove").each(function (i, obj) {
+  $(".button-individual-metadata.remove").each((i, obj) => {
     $(obj).click();
   });
 
@@ -1592,7 +1593,7 @@ var populate_existing_metadata = (datasetStructureJSONObj) => {
   }
 };
 
-function obtainDivsbyCategory(category) {
+const obtainDivsbyCategory = (category) => {
   var individualQuestions = document.getElementsByClassName(
     "individual-question"
   );
@@ -1607,10 +1608,10 @@ function obtainDivsbyCategory(category) {
     }
   }
   return categoryQuestionList;
-}
+};
 
 // Hide showing divs when users click on different option
-function hidePrevDivs(currentDiv, category) {
+const hidePrevDivs = (currentDiv, category) => {
   var individualQuestions = document.getElementsByClassName(category);
   // hide all other div siblings
   for (var i = 0; i < individualQuestions.length; i++) {
@@ -1665,19 +1666,19 @@ function hidePrevDivs(currentDiv, category) {
       break;
     }
   }
-}
+};
 
-function updateJSONStructureGettingStarted() {
+const updateJSONStructureGettingStarted = () => {
   document.getElementById("input-global-path").value = "My_dataset_folder/";
-}
+};
 
 // function to populate metadata files
-function populateMetadataObject(
+const populateMetadataObject = (
   optionList,
   metadataFilePath,
   metadataFile,
   object
-) {
+) => {
   if (!("metadata-files" in object)) {
     object["metadata-files"] = {};
   }
@@ -1720,11 +1721,11 @@ function populateMetadataObject(
       }
     }
   }
-}
+};
 
 /// function to populate/reload Organize dataset UI when users move around between tabs and make changes
 // (to high-level folders)
-function populateOrganizeDatasetUI(currentLocation, datasetFolder) {
+const populateOrganizeDatasetUI = (currentLocation, datasetFolder) => {
   var baseName = path.basename(datasetFolder);
   currentLocation = {
     type: "local",
@@ -1770,14 +1771,14 @@ function populateOrganizeDatasetUI(currentLocation, datasetFolder) {
     hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   });
-}
+};
 
 ////////////////////// Functions to update JSON object after each step //////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Step 3: Dataset structure
 
-function updateJSONStructureDSstructure() {
+const updateJSONStructureDSstructure = () => {
   sodaJSONObj["dataset-structure"] = datasetStructureJSONObj;
   // check if dataset-structure key is empty (no high-level folders are included)
   if (
@@ -1786,11 +1787,11 @@ function updateJSONStructureDSstructure() {
   ) {
     delete sodaJSONObj["dataset-structure"];
   }
-}
+};
 
 // Step 4: Metadata files
 /// function to obtain metadata file paths from UI and then populate JSON obj
-function updateJSONStructureMetadataFiles() {
+const updateJSONStructureMetadataFiles = () => {
   var submissionFilePath = document.getElementById("para-submission-file-path")
     .innerHTML;
   var dsDescriptionFilePath = document.getElementById(
@@ -1852,11 +1853,11 @@ function updateJSONStructureMetadataFiles() {
   if (JSON.stringify(sodaJSONObj["metadata-files"]) === "{}") {
     delete sodaJSONObj["metadata-files"];
   }
-}
+};
 
 // Step 5: Manifest file
 // update JSON object with manifest file information
-function updateJSONStructureManifest() {
+const updateJSONStructureManifest = () => {
   if (manifestFileCheck.checked) {
     if ("manifest-files" in sodaJSONObj) {
       // cj this might need to be changed
@@ -1867,7 +1868,7 @@ function updateJSONStructureManifest() {
   } else {
     delete sodaJSONObj["manifest-files"];
   }
-}
+};
 
 const recursive_remove_local_deleted_files = (dataset_folder) => {
   if ("files" in dataset_folder) {
@@ -1915,7 +1916,7 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
 
 // Step 6: Generate dataset
 // update JSON object after users finish Generate dataset step
-function updateJSONStructureGenerate(progress = false) {
+const updateJSONStructureGenerate = (progress = false) => {
   let starting_point = sodaJSONObj["starting-point"]["type"];
   if (sodaJSONObj["starting-point"]["type"] == "bf") {
     sodaJSONObj["generate-dataset"] = {
@@ -2081,10 +2082,10 @@ function updateJSONStructureGenerate(progress = false) {
       sodaJSONObj["starting-point"]["type"] = starting_point;
     }
   }
-}
+};
 
 // function to call when users click on Continue at each step
-function updateOverallJSONStructure(id) {
+const updateOverallJSONStructure = (id) => {
   if (id === allParentStepsJSON["high-level-folders"]) {
     document.getElementById("input-global-path").value = "My_dataset_folder/";
     var optionCards = document.getElementsByClassName(
@@ -2147,11 +2148,11 @@ function updateOverallJSONStructure(id) {
   } else if (id === allParentStepsJSON["organize-dataset"]) {
     updateJSONStructureDSstructure();
   }
-}
+};
 //////////////////////////////// END OF Functions to update JSON object //////////////////////////////////////////
 
 var generateExitButtonBool = false;
-function raiseWarningExit() {
+const raiseWarningExit = () => {
   // function associated with the Exit button (Step 6: Generate dataset -> Generate div)
   return new Promise((resolve) => {
     bootbox.confirm({
@@ -2168,7 +2169,7 @@ function raiseWarningExit() {
         },
       },
       centerVertical: true,
-      callback: function (result) {
+      callback: (result) => {
         if (result) {
           generateExitButtonBool = true;
           resolve(generateExitButtonBool);
@@ -2179,9 +2180,9 @@ function raiseWarningExit() {
       },
     });
   });
-}
+};
 
-async function exitCurate(resetProgressTabs) {
+const exitCurate = async (resetProgressTabs) => {
   $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
@@ -2206,9 +2207,9 @@ async function exitCurate(resetProgressTabs) {
   } else {
     wipeOutCurateProgress();
   }
-}
+};
 
-function wipeOutCurateProgress() {
+const wipeOutCurateProgress = () => {
   // set SODA json object back
   sodaJSONObj = {
     "starting-point": { type: "" },
@@ -2243,12 +2244,12 @@ function wipeOutCurateProgress() {
   datasetStructureJSONObj = { folders: {}, files: {} };
   // uncheck auto-generated manifest checkbox
   $("#generate-manifest-curate").prop("checked", false);
-}
+};
 
 // once users click on option card: Organize dataset
 document
   .getElementById("button-section-organize-dataset")
-  .addEventListener("click", function () {
+  .addEventListener("click", () => {
     $(".vertical-progress-bar").css("display", "flex");
     document.getElementById("generate-dataset-progress-tab").style.display =
       "none";
@@ -2258,7 +2259,7 @@ document
     showParentTab(currentTab, 1);
   });
 
-function hideNextDivs(currentDiv) {
+const hideNextDivs = (currentDiv) => {
   // make currentDiv current class
   $("#" + currentDiv).removeClass("prev");
   $("#" + currentDiv).removeClass("test2");
@@ -2266,18 +2267,18 @@ function hideNextDivs(currentDiv) {
   $($("#" + currentDiv).nextAll()).removeClass("prev");
   $($("#" + currentDiv).nextAll()).removeClass("show");
   $($("#" + currentDiv).nextAll()).removeClass("test2");
-}
+};
 
 // save progress up until step 5 for now
-function updateJSONObjectProgress() {
+const updateJSONObjectProgress = () => {
   updateJSONStructureGettingStarted();
   updateJSONStructureMetadataFiles();
   updateJSONStructureManifest();
   updateJSONStructureDSstructure();
   updateJSONStructureGenerate(true);
-}
+};
 
-function saveSODAJSONProgress(progressFileName) {
+const saveSODAJSONProgress = (progressFileName) => {
   try {
     fs.mkdirSync(progressFilePath, { recursive: true });
   } catch (error) {
@@ -2311,10 +2312,10 @@ function saveSODAJSONProgress(progressFileName) {
       "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved progress.",
     centerVertical: true,
   });
-}
+};
 
 // function to save Progress
-function saveOrganizeProgressPrompt() {
+const saveOrganizeProgressPrompt = () => {
   // check if "save-progress" key is in JSON object
   // if yes, keep saving to that file
   if ("save-progress" in sodaJSONObj) {
@@ -2326,7 +2327,7 @@ function saveOrganizeProgressPrompt() {
       title: "Saving progress as...",
       message: "Enter a name for your progress below:",
       centerVertical: true,
-      callback: function (result) {
+      callback: (result) => {
         if (result !== null && result !== "") {
           sodaJSONObj["save-progress"] = result.trim();
           saveSODAJSONProgress(result.trim());
@@ -2334,4 +2335,4 @@ function saveOrganizeProgressPrompt() {
       },
     });
   }
-}
+};

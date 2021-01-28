@@ -1,6 +1,6 @@
 var metadataFile = "";
 
-$(".button-individual-metadata.remove").click(function () {
+$(".button-individual-metadata.remove").click(() => {
   var metadataFileStatus = $($(this).parents()[1]).find(
     ".para-metadata-file-status"
   );
@@ -9,7 +9,7 @@ $(".button-individual-metadata.remove").click(function () {
   $($(this).parents()[1]).find(".div-metadata-go-back").css("display", "flex");
 });
 
-$(".metadata-button").click(function () {
+$(".metadata-button").click(() => {
   metadataFile = $(this);
   $(".div-organize-generate-dataset.metadata").addClass("hide");
   var target = $(this).attr("data-next");
@@ -19,7 +19,7 @@ $(".metadata-button").click(function () {
   document.getElementById("prevBtn").style.display = "none";
 });
 
-function confirmMetadataFilePath(ev) {
+const confirmMetadataFilePath = (ev) => {
   $($(ev).parents()[1]).removeClass("show");
   $(".div-organize-generate-dataset.metadata").removeClass("hide");
   document.getElementById("nextBtn").style.display = "inline";
@@ -45,11 +45,9 @@ function confirmMetadataFilePath(ev) {
     $(metadataFile).removeClass("done");
     $(metadataFileStatus).text("");
   }
-}
-// $(".button-individual-metadata.confirm").click(function() {
-// })
+};
 
-$(".button-individual-metadata.go-back").click(function () {
+$(".button-individual-metadata.go-back").click(() => {
   var metadataFileStatus = $($(this).parents()[1]).find(
     ".para-metadata-file-status"
   );
@@ -75,7 +73,7 @@ $(".button-individual-metadata.go-back").click(function () {
   }
 });
 
-function dropHandler(ev, paraElement, metadataFile) {
+const dropHandler = (ev, paraElement, metadataFile) => {
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
   document.getElementById(paraElement).innerHTML = "";
@@ -104,14 +102,14 @@ function dropHandler(ev, paraElement, metadataFile) {
         "<span style='color:red'>Please only drag and drop a file!</span>";
     }
   }
-}
+};
 
 ////////////////// IMPORT EXISTING PROGRESS FILES ////////////////////////////////
 const progressFileDropdown = document.getElementById("progress-files-dropdown");
 
 /////////////////////////////// Helpers function for Import progress function /////////////////////////////
 // function to load SODA with progress file
-function progressFileParse(ev) {
+const progressFileParse = (ev) => {
   var fileName = $(ev).val();
   if (fileName !== "Select") {
     var filePath = path.join(progressFilePath, fileName);
@@ -129,37 +127,37 @@ function progressFileParse(ev) {
   } else {
     return {};
   }
-}
+};
 
-function importManifest(object) {
+const importManifest = (object) => {
   if ("manifest-files" in object) {
     manifestFileCheck.checked = true;
   } else {
     manifestFileCheck.checked = false;
   }
-}
+};
 
-function importMetadataFilesProgress(object) {
+const importMetadataFilesProgress = (object) => {
   populateMetadataProgress(false, "", "");
   if ("metadata-files" in object) {
     var metadataFileArray = Object.keys(object["metadata-files"]);
-    metadataFileArray.forEach(function (element) {
+    metadataFileArray.forEach((element) => {
       var fullPath = object["metadata-files"][element]["path"];
       populateMetadataProgress(true, path.parse(element).name, fullPath);
     });
   }
-}
+};
 
-function importDatasetStructure(object) {
+const importDatasetStructure = (object) => {
   if ("dataset-structure" in object) {
     datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
     highLevelFoldersDisableOptions();
   } else {
     datasetStructureJSONObj = { folders: {}, files: {}, type: "" };
   }
-}
+};
 
-function importGenerateDatasetStep(object) {
+const importGenerateDatasetStep = (object) => {
   if ("generate-dataset" in sodaJSONObj) {
     // Step 1: Where to generate the dataset
     if (sodaJSONObj["generate-dataset"]["destination"] === "local") {
@@ -216,7 +214,7 @@ function importGenerateDatasetStep(object) {
           $($("#generate-BF-dataset-options-existing").parents()[2]).click();
           var bfDatasetSelected =
             sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-          setTimeout(function () {
+          setTimeout(() => {
             $("#current-bf-dataset-generate").text(bfDatasetSelected);
             $("#button-confirm-bf-dataset").click();
             // Step 4: Handle existing files and folders
@@ -263,14 +261,14 @@ function importGenerateDatasetStep(object) {
       ).children()[0]
     ).toggleClass("non-selected");
   }
-}
+};
 
 // check metadata files
-function populateMetadataProgress(
+const populateMetadataProgress = (
   populateBoolean,
   metadataFileName,
   localPath
-) {
+) => {
   var metadataButtonsArray = $(".metadata-button.button-generate-dataset");
   var correspondingMetadataParaElement = {
     submission: ["para-submission-file-path", metadataButtonsArray[0]],
@@ -308,10 +306,10 @@ function populateMetadataProgress(
       $(paraElement[1]).removeClass("done");
     }
   }
-}
+};
 
 //////////////////////// Main Import progress function
-function loadProgressFile(ev) {
+const loadProgressFile = (ev) => {
   document.getElementById("para-progress-file-status").innerHTML = "";
   document.getElementById("nextBtn").disabled = true;
   document.getElementById("div-progress-file-loader").style.display = "block";
@@ -319,7 +317,7 @@ function loadProgressFile(ev) {
   var jsonContent = progressFileParse(ev);
   if (JSON.stringify(jsonContent) !== "{}") {
     sodaJSONObj = jsonContent;
-    setTimeout(function () {
+    setTimeout(() => {
       sodaJSONObj = jsonContent;
       importManifest(sodaJSONObj);
       importMetadataFilesProgress(sodaJSONObj);
@@ -334,7 +332,7 @@ function loadProgressFile(ev) {
   } else {
     sodaJSONObj =
       '{"starting-point":"new","dataset-structure":{},"metadata-files":{}}';
-    setTimeout(function () {
+    setTimeout(() => {
       importManifest(sodaJSONObj);
       importMetadataFilesProgress(sodaJSONObj);
       importDatasetStructure(sodaJSONObj);
@@ -344,7 +342,7 @@ function loadProgressFile(ev) {
       document.getElementById("para-progress-file-status").innerHTML = "";
     }, 500);
   }
-}
+};
 
 function removeOptions(selectbox) {
   var i;
@@ -362,7 +360,7 @@ function addOption(selectbox, text, value) {
 }
 
 // function to load Progress dropdown
-function importOrganizeProgressPrompt() {
+const importOrganizeProgressPrompt = () => {
   document.getElementById("para-progress-file-status").innerHTML = "";
   removeOptions(progressFileDropdown);
   addOption(progressFileDropdown, "Select", "Select");
@@ -380,11 +378,11 @@ function importOrganizeProgressPrompt() {
     document.getElementById("para-progress-file-status").innerHTML =
       "<span style='color:var(--color)'>There is no existing progress to load. Please choose one of the other options above!</span>";
   }
-}
+};
 
 importOrganizeProgressPrompt();
 
-async function openDropdownPrompt(dropdown) {
+const openDropdownPrompt = async (dropdown) => {
   // if users edit current account
   if (dropdown === "bf") {
     var resolveMessage = "";
@@ -411,7 +409,7 @@ async function openDropdownPrompt(dropdown) {
       inputValue: defaultBfAccount,
       reverseButtons: true,
       footer: footerMessage,
-      didOpen: function (ele) {
+      didOpen: (ele) => {
         $(ele).find(".swal2-select").attr("id", "bfaccountdropdown");
         $("#bfaccountdropdown").removeClass("swal2-select");
         $("#bfaccountdropdown").addClass("w-100");
@@ -569,9 +567,9 @@ async function openDropdownPrompt(dropdown) {
       showHideDropdownButtons("dataset", "show");
     }
   }
-}
+};
 
-$("#select-permission-list-2").change(function (e) {
+$("#select-permission-list-2").change((e) => {
   $("#div-filter-datasets-progress-2").css("display", "block");
   // var datasetPermission = $("#select-permission-list-2").val();
   var bfacct = $("#current-bf-account").text();
@@ -587,7 +585,7 @@ $("#select-permission-list-2").change(function (e) {
   }
 });
 
-function checkPrevDivForConfirmButton(category) {
+const checkPrevDivForConfirmButton = (category) => {
   if (category === "account") {
     if (!$("#Question-generate-dataset-BF-account").hasClass("prev")) {
       $("#div-bf-account-btns").css("display", "flex");
@@ -625,9 +623,9 @@ function checkPrevDivForConfirmButton(category) {
       $("#button-confirm-bf-dataset-getting-started").hide();
     }
   }
-}
+};
 
-function tempDatasetListsSync() {
+const tempDatasetListsSync = () => {
   $("#bfdatasetlist_renamedataset").val(defaultBfDataset);
   currentDatasetDropdowns = [
     bfDatasetListMetadata,
@@ -652,16 +650,16 @@ function tempDatasetListsSync() {
   renameDatasetlistChange();
   postCurationListChange();
   showDatasetDescription();
-}
+};
 
-function updateDatasetList(bfaccount) {
+const updateDatasetList = (bfaccount) => {
   $("#div-filter-datasets-progress-2").css("display", "block");
   removeOptions(curateDatasetDropdown);
   addOption(curateDatasetDropdown, "Select dataset", "Select dataset");
   initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
   var filteredDatasets = [];
   // waiting for dataset list to load first before initiating BF dataset dropdown list
-  setTimeout(function () {
+  setTimeout(() => {
     var myPermission = $(datasetPermissionDiv)
       .find("#select-permission-list-2")
       .val();
@@ -676,7 +674,7 @@ function updateDatasetList(bfaccount) {
         }
       }
     }
-    filteredDatasets.sort(function (a, b) {
+    filteredDatasets.sort((a, b) => {
       return a.toLowerCase().localeCompare(b.toLowerCase());
     });
 
@@ -696,10 +694,10 @@ function updateDatasetList(bfaccount) {
       myPermission.toLowerCase() +
       " permissions were loaded successfully below.";
   }, 3000);
-}
+};
 
 /// helper function to refresh live search dropdowns per dataset permission on change event
-function initializeBootstrapSelect(dropdown, action) {
+const initializeBootstrapSelect = (dropdown, action) => {
   if (action === "disabled") {
     $(dropdown).attr("disabled", true);
     $(".dropdown.bootstrap-select button").addClass("disabled");
@@ -712,10 +710,10 @@ function initializeBootstrapSelect(dropdown, action) {
     $(".dropdown.bootstrap-select button").removeClass("disabled");
     $(".dropdown.bootstrap-select").removeClass("disabled");
   }
-}
+};
 
 // function to show dataset or account Confirm buttons
-function showHideDropdownButtons(category, action) {
+const showHideDropdownButtons = (category, action) => {
   if (category === "dataset") {
     if (action === "show") {
       // btn under Step 6
@@ -755,9 +753,9 @@ function showHideDropdownButtons(category, action) {
       $("#div-bf-account-btns-getting-started button").hide();
     }
   }
-}
+};
 
-function create_child_node(
+const create_child_node = (
   oldFormatNode,
   nodeName,
   type,
@@ -767,7 +765,7 @@ function create_child_node(
   disabledState,
   selectedOriginalLocation,
   viewOptions
-) {
+) => {
   /*
   oldFormatNode: node in the format under "dataset-structure" key in SODA object
   nodeName: text to show for each node (name)
@@ -898,15 +896,15 @@ function create_child_node(
     }
   }
   return newFormatNode;
-}
+};
 
-function recursiveExpandNodes(object) {
+const recursiveExpandNodes = (object) => {
   // var newFormatNode = {"text": nodeName,
   // "state": {"opened": openedState, "selected": selectedState},
   // "children": [], "type": type + ext}
   if (object.state.selected) {
   }
-}
+};
 
 // var selected = false;
 var selectedPath;
@@ -923,7 +921,7 @@ var jsTreeData = create_child_node(
   "moveItems"
 );
 var jstreeInstance = document.getElementById("data");
-$(document).ready(function () {
+$(document).ready(() => {
   $("#data").jstree({
     core: {
       check_callback: true,
@@ -990,7 +988,7 @@ $(document).ready(function () {
   });
 });
 
-async function moveItems(ev, category) {
+const moveItems = async (ev, category) => {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedOrginalLocation = filtered[filtered.length - 1];
@@ -1115,9 +1113,9 @@ async function moveItems(ev, category) {
       }
     });
   }
-}
+};
 
-function moveItemsHelper(item, destination, category) {
+const moveItemsHelper = (item, destination, category) => {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedNodeList = destination.split("/").slice(1);
@@ -1196,10 +1194,10 @@ function moveItemsHelper(item, destination, category) {
     organizeDSglobalPath,
     datasetStructureJSONObj
   );
-}
+};
 
 // helper functions to add "moved" to leaf nodes a.k.a files
-function addMovedRecursively(object) {
+const addMovedRecursively = (object) => {
   Object.keys(object["files"]).forEach((key) => {
     var file = object["files"][key];
     if ("action" in file) {
@@ -1232,9 +1230,9 @@ function addMovedRecursively(object) {
       addMovedRecursively(folder);
     }
   });
-}
+};
 
-$(jstreeInstance).on("changed.jstree", function (e, data) {
+$(jstreeInstance).on("changed.jstree", (e, data) => {
   if (data.node) {
     selectedNode = data.node.text;
     selectedPath = data.instance.get_path(data.node, "/");
@@ -1242,16 +1240,16 @@ $(jstreeInstance).on("changed.jstree", function (e, data) {
   }
 });
 
-$(jstreeInstance).on("open_node.jstree", function (event, data) {
+$(jstreeInstance).on("open_node.jstree", (event, data) => {
   data.instance.set_type(data.node, "folder open");
 });
 
-$(jstreeInstance).on("close_node.jstree", function (event, data) {
+$(jstreeInstance).on("close_node.jstree", (event, data) => {
   data.instance.set_type(data.node, "folder closed");
 });
 
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
-$(document).ready(function () {
+$(document).ready(() => {
   $(jstreePreview).jstree({
     core: {
       check_callback: true,
@@ -1317,15 +1315,15 @@ $(document).ready(function () {
   });
 });
 
-$(jstreePreview).on("open_node.jstree", function (event, data) {
+$(jstreePreview).on("open_node.jstree", (event, data) => {
   data.instance.set_type(data.node, "folder open");
 });
 
-$(jstreePreview).on("close_node.jstree", function (event, data) {
+$(jstreePreview).on("close_node.jstree", (event, data) => {
   data.instance.set_type(data.node, "folder closed");
 });
 
-function showTreeViewPreview() {
+const showTreeViewPreview = () => {
   datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
   if (manifestFileCheck.checked) {
     for (var key in datasetStructureJSONObj["folders"]) {
@@ -1353,4 +1351,4 @@ function showTreeViewPreview() {
   );
   $(jstreePreview).jstree(true).settings.core.data = jsTreePreviewData;
   $(jstreePreview).jstree(true).refresh();
-}
+};
