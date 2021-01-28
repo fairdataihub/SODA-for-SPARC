@@ -1,4 +1,4 @@
-"use strict";
+// "use strict";
 
 //////////////////////////////////
 // Import required modules
@@ -1196,7 +1196,8 @@ const deleteOptionByValue = (dropdown, value) => {
 };
 
 deleteAwardBtn.addEventListener("click", () => {
-  award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+  var award =
+    presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
   if (award === "Select") {
     document.getElementById("para-delete-award-status").innerHTML =
       "<span style='color: red;'>Please select an award number to delete</span>";
@@ -1206,7 +1207,7 @@ deleteAwardBtn.addEventListener("click", () => {
 });
 ipcRenderer.on("warning-delete-award-selection", (event, index) => {
   if (index === 0) {
-    award =
+    var award =
       presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
     var milestoneJson = parseJson(milestonePath);
     var awardsJson = parseJson(awardPath);
@@ -1467,7 +1468,8 @@ function changeAwardInput() {
   // addOption(document.getElementById('selected-milestone'), "Select an option", "Select")
   // addOption(document.getElementById('selected-milestone'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
 
-  award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
+  var award =
+    presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
   var informationJson = parseJson(milestonePath);
 
   var completionDateArray = [];

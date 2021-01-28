@@ -1,4 +1,4 @@
-"use strict";
+// "use strict";
 
 //// option to show tool-tips for high-level folders
 const showTooltips = (ev) => {
