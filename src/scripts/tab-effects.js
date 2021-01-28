@@ -70,6 +70,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
 
   if (tabNow == 0) {
     document.getElementById("prevBtn").style.display = "none";
+    // disable continue button if none of the options in step 1 have been clicked
     if ($('input[name="getting-started-1"]:checked').length === 1) {
       document.getElementById("nextBtn").disabled = false;
     } else if ($('input[name="getting-started-1"]:checked').length === 0) {
@@ -78,12 +79,12 @@ const showParentTab = (tabNow, nextOrPrev) => {
   } else if (tabNow == 1) {
     checkHighLevelFoldersInput();
     highLevelFoldersDisableOptions();
-  } else if (tabNow == 5) {
-    //document.getElementById("nextBtn").disabled = true;
   } else {
     document.getElementById("nextBtn").disabled = false;
   }
   if (tabNow == 5) {
+    // Disable the continue button if a destination has not been selected
+    // Used when traversing back and forth between tabs
     if (
       $("#inputNewNameDataset").val() !== "" ||
       $("#Question-generate-dataset-existing-files-options")
@@ -102,6 +103,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == x.length - 1) {
+    // If in step 6, show the generate button and the preview tab
     document.getElementById("nextBtn").style.display = "none";
     showTreeViewPreview();
     $("#Question-preview-dataset-details").show();
@@ -113,9 +115,12 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 };
 
+// default run on start
 showParentTab(0, 1);
 
+// function to fill the card details in the preview tab of step 7
 const fill_info_details = () => {
+  // Blank slate
   $(".card-container").remove();
   if (sodaJSONObj["starting-point"]["type"] === "bf") {
     add_card_detail(
@@ -148,6 +153,7 @@ const fill_info_details = () => {
     sodaJSONObj["starting-point"]["type"] === "local" ||
     sodaJSONObj["starting-point"]["type"] === "new"
   ) {
+    // replace existing dataset when starting from local
     if (
       $('input[name="generate-1"]:checked')[0].id === "generate-local-existing"
     ) {
@@ -365,10 +371,17 @@ const fill_info_details = () => {
   }
 };
 
+// called when edit button is clicked
+// amount => how many times the back button is clicked
+// element => element to scroll to in the page
+// pulse_animation => whether to pulse the element
 const traverse_back = (amount, element = "", pulse_animation = false) => {
   for (i = 0; i < amount; i++) {
     nextPrev(-1);
   }
+
+  // wait 550 milliseconds to allow for the scroll tab animation to finish
+  // add the pulse class after scrolling to element
   if (element != "") {
     setTimeout(() => {
       document.getElementById(element).scrollIntoView({
@@ -380,11 +393,20 @@ const traverse_back = (amount, element = "", pulse_animation = false) => {
       }
     }, 550);
   }
+
+  // remove pulse class after 4 seconds
+  // pulse animation lasts 2 seconds => 2 pulses
   setTimeout(() => {
     $(".pulse-blue").removeClass("pulse-blue");
   }, 4000);
 };
 
+// Add a new item to the card container
+// card_left => left side text
+// card_right => right side text
+// parent_tab => how many times to click back
+// element_id => element to scroll to
+// pulse => show pulse animation
 const add_card_detail = (
   card_left,
   card_right,
@@ -397,17 +419,21 @@ const add_card_detail = (
   temp = ', "' + element_id + '", ' + pulse + ")";
   link_item += temp;
   link_item += "'></i>";
+
   let parent_element = $("#div-preview-dataset-details");
+
   let new_card_element =
     "<div class='card-container'><h5 class='card-left'>" +
     card_left +
     ":</h5><p class='card-right'>" +
     card_right;
+
   if (parent_tab === -1) {
     new_card_element += "</p></div>";
   } else {
     new_card_element += link_item + "</p></div>";
   }
+
   $(parent_element).append(new_card_element);
 };
 
