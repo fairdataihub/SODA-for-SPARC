@@ -3,107 +3,129 @@
   <section id="manage_submit-section" class="section js-section u-category-windows">
 
     <header class="section-header">
-       <div class="section-wrapper">
-         <h1>
-           <svg style="margin-right: 10px; margin-bottom:-3px;" width="22px" height="22px" viewBox="0 0 16 16" class="bi bi-server" fill=var(--color-teal) xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" d="M1.333 2.667C1.333 1.194 4.318 0 8 0s6.667 1.194 6.667 2.667V4C14.665 5.474 11.68 6.667 8 6.667 4.318 6.667 1.333 5.473 1.333 4V2.667zm0 3.667v3C1.333 10.805 4.318 12 8 12c3.68 0 6.665-1.193 6.667-2.665V6.334c-.43.32-.931.58-1.458.79C11.81 7.684 9.967 8 8 8c-1.967 0-3.81-.317-5.21-.876a6.508 6.508 0 0 1-1.457-.79zm13.334 5.334c-.43.319-.931.578-1.458.789-1.4.56-3.242.876-5.209.876-1.967 0-3.81-.316-5.21-.876a6.51 6.51 0 0 1-1.457-.79v1.666C1.333 14.806 4.318 16 8 16s6.667-1.194 6.667-2.667v-1.665z"/>
+      <div class="section-wrapper">
+        <h1>
+          <svg style="margin-right: 10px; margin-bottom:-3px;" width="22px" height="22px" viewBox="0 0 16 16"
+            class="bi bi-server" fill=var(--color-teal) xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+              d="M1.333 2.667C1.333 1.194 4.318 0 8 0s6.667 1.194 6.667 2.667V4C14.665 5.474 11.68 6.667 8 6.667 4.318 6.667 1.333 5.473 1.333 4V2.667zm0 3.667v3C1.333 10.805 4.318 12 8 12c3.68 0 6.665-1.193 6.667-2.665V6.334c-.43.32-.931.58-1.458.79C11.81 7.684 9.967 8 8 8c-1.967 0-3.81-.317-5.21-.876a6.508 6.508 0 0 1-1.457-.79zm13.334 5.334c-.43.319-.931.578-1.458.789-1.4.56-3.242.876-5.209.876-1.967 0-3.81-.316-5.21-.876a6.51 6.51 0 0 1-1.457-.79v1.666C1.333 14.806 4.318 16 8 16s6.667-1.194 6.667-2.667v-1.665z" />
           </svg>
-           Manage Datasets
-         </h1>
-         <h3>
-           This interface provides a convenient window to accomplish all required curation steps on your Blackfynn datasets.
-           <br>
-           <br>
-         </h3>
+          Manage Datasets
+        </h1>
+        <h3>
+          This interface provides a convenient window to accomplish all required curation steps on your Blackfynn
+          datasets.
+          <br>
+          <br>
+        </h3>
 
-         </h3>
-       </div>
-     </header>
+        </h3>
+      </div>
+    </header>
 
-     <div class="demo">
-        <div class="demo-wrapper">
-          <button id="button-new-window-login-demo-toggle" class="js-container-target demo-toggle-button">Connect to your Blackfynn account
-            <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Blackfynn-account" >
-              <img class="nav-video" src="assets/img/documentation-icon.png">
-            </a>
-            <div class="demo-meta u-avoid-clicks"> Connect your Blackfynn account with SODA </div>
-          </button>
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button id="button-new-window-login-demo-toggle" class="js-container-target demo-toggle-button">Connect to your
+          Blackfynn account
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link"
+            href="https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Blackfynn-account">
+            <img class="nav-video" src="assets/img/documentation-icon.png">
+          </a>
+          <div class="demo-meta u-avoid-clicks"> Connect your Blackfynn account with SODA </div>
+        </button>
 
-          <div class="demo-box">
-            <form id = 'blackfynn-account'>
-              <div style = "padding:10px 0px">
+        <div class="demo-box">
+          <form id='blackfynn-account'>
+            <div style="padding:10px 0px">
               <input class="input-switch" id="addAccount" type="radio" name="tabs" checked>
               <label class="label-switch" for="addAccount">Add new account</label>
               <input class="input-switch" id="selectAccount" type="radio" name="tabs">
               <label class="label-switch" for="selectAccount">Select existing account</label>
             </div>
-            </form>
+          </form>
 
-            <br><br><br>
-            <div id="div-add-account" class="datasetsaveoption" style="margin-left:20px">
-              <h5> Generate <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients"> API key and secret</a> from your Blackfynn account and enter below
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients" style="color:white;"> Blackfynn Help page</a>
+          <br><br><br>
+          <div id="div-add-account" class="datasetsaveoption" style="margin-left:20px">
+            <h5> Generate <a
+                href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients"> API
+                key and secret</a> from your Blackfynn account and enter below
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">Please checkout the dedicated <a
+                    href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients"
+                    style="color:white;"> Blackfynn Help page</a>
                   for generating API key and secret and setting up your Blackfynn account in SODA during your first use.
                   <br><br>
-                  The account will then be remembered by SODA for all subsequent uses and be accessible under the "Select existing account" tab.
-                  </span>
-                </div>
-              </h5> <br>
+                  The account will then be remembered by SODA for all subsequent uses and be accessible under the
+                  "Select existing account" tab.
+                </span>
+              </div>
+            </h5> <br>
 
-              <div class="form-container"><font color="black"> Key name: </font> </div>
-              <div class="demo-controls">
-                <input class="form-container-input-bf" id="bf-key-name" style="width:80%;" />
+            <div class="form-container">
+              <font color="black"> Key name: </font>
+            </div>
+            <div class="demo-controls">
+              <input class="form-container-input-bf" id="bf-key-name" style="width:80%;" />
+            </div>
+            <div class="form-container">
+              <font color="black"> API Key: </font>
+            </div>
+            <div class="demo-controls">
+              <input class="form-container-input-bf" id="bf-key" style="width:80%;" />
+            </div>
+            <div class="form-container">
+              <font color="black"> API Secret: </font>
+            </div>
+            <div class="demo-controls">
+              <input class="form-container-input-bf" id="bf-secret" style="width:80%;" />
+            </div>
+            <p></p>
+            <div class="demo-controls">
+              <button class="demo-button" id="add-bf-account"> Add Account </button>
+            </div>
+            <p id="para-add-account-status"></p>
+          </div>
+
+          <div id="div-select-account" class="datasetsaveoption" style="margin-left:20px">
+            <h5> Select previously added account
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">
+                  Previously added account(s) will be displayed in this drop-down list. Default account (last selected
+                  account before app closed) will be loaded automatically at start if available.
+                  <br><br>
+                  Click on "Switch Account" and select one from the drop-down list for changing to another account (in
+                  case multiple ones are connected with SODA).
+                  <br><br>
+                  To remove an account from the list, you would have to delete the associated API key from the Blackfynn
+                  webpage (under "My Settings").
+                </span>
               </div>
-              <div class="form-container"><font color="black"> API Key: </font> </div>
-              <div class="demo-controls">
-                <input class="form-container-input-bf" id="bf-key" style="width:80%;" />
-              </div>
-              <div class="form-container"><font color="black"> API Secret: </font> </div>
-              <div class="demo-controls">
-                <input class="form-container-input-bf" id="bf-secret" style="width:80%;"  />
-              </div>
+            </h5>
+            <div class="demo-controls">
+              <select class="my-dropdown" style="width:100%;" id="bfaccountlist">
+                <option> Loading... </option>
+              </select>
               <p></p>
-              <div class="demo-controls">
-                <button class="demo-button" id="add-bf-account"> Add Account </button>
-              </div>
-              <p id="para-add-account-status"></p>
+              <!-- <button id="button-check-bf-account-details" style="height:38px;width:180px" class="demo-button"> Switch Account </button> -->
             </div>
 
-            <div id="div-select-account" class="datasetsaveoption" style="margin-left:20px">
-              <h5> Select previously added account
-               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">
-                    Previously added account(s) will be displayed in this drop-down list. Default account (last selected account before app closed) will be loaded automatically at start if available.
-                    <br><br>
-                    Click on "Switch Account" and select one from the drop-down list for changing to another account (in case multiple ones are connected with SODA).
-                    <br><br>
-                    To remove an account from the list, you would have to delete the associated API key from the Blackfynn webpage (under "My Settings").
-                  </span>
-                </div>
-              </h5>
-              <div class="demo-controls">
-                <select class="my-dropdown" style="width:100%;" id="bfaccountlist">
-                  <option> Loading... </option>
-                </select>
-                <p></p>
-                <!-- <button id="button-check-bf-account-details" style="height:38px;width:180px" class="demo-button"> Switch Account </button> -->
-              </div>
-
-              <div id="div-bf-account-load-progress" class="progressdiv">
-                <div class="indeterminatebar"></div>
-              </div>
-              <p id='para-select-account-status'> <p>
+            <div id="div-bf-account-load-progress" class="progressdiv">
+              <div class="indeterminatebar"></div>
+            </div>
+            <p id='para-select-account-status'>
+            <p>
 
             <div style="display:none" id="div-permission-list">
               <h5> Select permissions for filtering dataset lists
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                   <span class="tooltiptext">
-                    You will see multiple dropdown lists throughout the SODA interface listing you Blackfynn datasets. You can filter those lists based on your permissions on the dataset.
+                    You will see multiple dropdown lists throughout the SODA interface listing you Blackfynn datasets.
+                    You can filter those lists based on your permissions on the dataset.
                     <br><br>
                     The default filter is "All" that shows you all the datasets for which you have permissions.
                     <br><br>
-                    See our <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> on Blackfynn permissions for more information.
+                    See our <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions"
+                      style="color:white;"> documentation</a> on Blackfynn permissions for more information.
                   </span>
                 </div>
               </h5>
@@ -129,561 +151,628 @@
       </div>
 
 
-     <div class="demo">
-       <div class="demo-wrapper">
-         <button id="button-new-window-create-demo-toggle" class="js-container-target demo-toggle-button"> Handle datasets
-           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Handle-datasets" >
-             <img class="nav-video" src="assets/img/documentation-icon.png">
-           </a>
-           <div class="demo-meta u-avoid-clicks"> Create a new dataset or rename an existing one
-           </div>
-         </button>
-         <div class="demo-box">
+      <div class="demo">
+        <div class="demo-wrapper">
+          <button id="button-new-window-create-demo-toggle" class="js-container-target demo-toggle-button"> Handle
+            datasets
+            <a style="padding:0px 0px 0px 10px" class="github-wiki-link"
+              href="https://github.com/bvhpatel/SODA/wiki/Handle-datasets">
+              <img class="nav-video" src="assets/img/documentation-icon.png">
+            </a>
+            <div class="demo-meta u-avoid-clicks"> Create a new dataset or rename an existing one
+            </div>
+          </button>
+          <div class="demo-box">
 
-           <form id = 'blackfynn-new-dataset-form'>
-             <div style = "padding:10px 0px">
-               <input class="input-switch" id="createDataset" type="radio" name="tabs" checked></input>
-               <label class="label-switch" for="createDataset">Create empty dataset </label>
-               <input class="input-switch" id="renameDataset" type="radio" name="tabs"></input>
-               <label class="label-switch" for="renameDataset">Rename existing dataset</label>
-             </div>
-           </form>
+            <form id='blackfynn-new-dataset-form'>
+              <div style="padding:10px 0px">
+                <input class="input-switch" id="createDataset" type="radio" name="tabs" checked></input>
+                <label class="label-switch" for="createDataset">Create empty dataset </label>
+                <input class="input-switch" id="renameDataset" type="radio" name="tabs"></input>
+                <label class="label-switch" for="renameDataset">Rename existing dataset</label>
+              </div>
+            </form>
 
-           <br><br><br>
-           <div id="div-create-dataset" class="datasetsaveoption" style="margin-left:20px">
+            <br><br><br>
+            <div id="div-create-dataset" class="datasetsaveoption" style="margin-left:20px">
 
-             <h5> Enter name:
-               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                 <span class="tooltiptext">Enter desired name for your new dataset. This is the field that will be displayed in public as the title of the dataset. Please make sure that your dataset title is different than your other dataset titles and that it is relatively informative.
-                 </span>
-               </div>
-             </h5>
-             <div class="demo-controls" style="width:80%;">
-               <input id="bf-new-dataset-name" class="demo-response" > </input>
-             </div>
+              <h5> Enter name:
+                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext">Enter desired name for your new dataset. This is the field that will be
+                    displayed in public as the title of the dataset. Please make sure that your dataset title is
+                    different than your other dataset titles and that it is relatively informative.
+                  </span>
+                </div>
+              </h5>
+              <div class="demo-controls" style="width:80%;">
+                <input id="bf-new-dataset-name" class="demo-response"> </input>
+              </div>
 
-             <h5> </h5>
-             <div class="demo-controls">
-               <button id="button-create-bf-new-dataset" class="demo-button"> Create </button>
-               <p id='para-add-new-dataset-status' style="margin-top:-5px"></p>
-             </div>
+              <h5> </h5>
+              <div class="demo-controls">
+                <button id="button-create-bf-new-dataset" class="demo-button"> Create </button>
+                <p id='para-add-new-dataset-status' style="margin-top:-5px"></p>
+              </div>
 
-           </div>
+            </div>
 
-           <div id="div-rename-dataset" class="datasetsaveoption" style="margin-left:20px">
-             <h5> Select Blackfynn dataset
-               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-               <span class="tooltiptext">
-               Note: You must have "owner" or "manager" permissions on the dataset to change its name. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
-               </span>
-             </div>
-             </h5>
-             <div class="demo-controls" style="margin-top: 20px">
-               <select class="my-dropdown" style="width:80%" id="bfdatasetlist_renamedataset">
-                 <option> Select dataset </option>
-               </select>
-               <!-- <p></p> -->
-               <button id="button-refresh-dataset-renamedataset-list" class="demo-button" style="height:38px;width:180px;padding:0 0; display:none"> Refresh List </button>
-             </div>
+            <div id="div-rename-dataset" class="datasetsaveoption" style="margin-left:20px">
+              <h5> Select Blackfynn dataset
+                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext">
+                    Note: You must have "owner" or "manager" permissions on the dataset to change its name. See feature
+                    "Manage dataset permissions" of SODA and our associated <a
+                      href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;">
+                      documentation</a> for more information.
+                  </span>
+                </div>
+              </h5>
+              <div class="demo-controls" style="margin-top: 20px">
+                <select class="my-dropdown" style="width:80%" id="bfdatasetlist_renamedataset">
+                  <option> Select dataset </option>
+                </select>
+                <!-- <p></p> -->
+                <button id="button-refresh-dataset-renamedataset-list" class="demo-button"
+                  style="height:38px;width:180px;padding:0 0; display:none"> Refresh List </button>
+              </div>
 
-             <h5> Enter new name: </h5>
-             <div class="demo-controls" style="width:80%;">
-               <input id="bf-rename-dataset-name" class="demo-response"> </input>
-             </div>
+              <h5> Enter new name: </h5>
+              <div class="demo-controls" style="width:80%;">
+                <input id="bf-rename-dataset-name" class="demo-response"> </input>
+              </div>
 
-             <h5> </h5>
-             <div class="demo-controls">
-               <button id="button-rename-dataset" class="demo-button"> Rename </button>
-               <p id='para-rename-dataset-status' style="margin-top:-5px"></p>
-             </div>
+              <h5> </h5>
+              <div class="demo-controls">
+                <button id="button-rename-dataset" class="demo-button"> Rename </button>
+                <p id='para-rename-dataset-status' style="margin-top:-5px"></p>
+              </div>
 
-           </div>
+            </div>
 
-         <p></p>
-         </div>
-       </div>
-     </div>
+            <p></p>
+          </div>
+        </div>
+      </div>
 
-     <div class="demo">
-       <div class="demo-wrapper">
-         <button id="button-new-window-metadata-demo-toggle" class="js-container-target demo-toggle-button"> Add metadata to dataset
-           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Add-metadata-to-dataset" >
-             <img class="nav-video" src="assets/img/documentation-icon.png">
-           </a>
-           <div class="demo-meta u-avoid-clicks"> Add subtitle, description, banner image, and license to your dataset
-           </div>
-         </button>
-         <div class="demo-box">
-           <h5> Select Blackfynn dataset
-             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-               <span class="tooltiptext">Select the Blackfynn dataset for which you wish to add/edit metadata (sorted alphabetically).
-               <br><br>
-               Subtitle, description, banner image and license are mandatory SPARC metadata.
-               <br><br>
-               Note: You must have "owner" or "manager" permissions on the dataset to edit metadata. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
-               </span>
-             </div>
-           </h5>
-           <div class="demo-controls" style="margin-top: 15px">
-             <select class="my-dropdown" style="width:80%" id="bfdatasetlist_metadata">
-               <option> Select dataset </option>
-             </select>
+      <div class="demo">
+        <div class="demo-wrapper">
+          <button id="button-new-window-metadata-demo-toggle" class="js-container-target demo-toggle-button"> Add
+            metadata to dataset
+            <a style="padding:0px 0px 0px 10px" class="github-wiki-link"
+              href="https://github.com/bvhpatel/SODA/wiki/Add-metadata-to-dataset">
+              <img class="nav-video" src="assets/img/documentation-icon.png">
+            </a>
+            <div class="demo-meta u-avoid-clicks"> Add subtitle, description, banner image, and license to your dataset
+            </div>
+          </button>
+          <div class="demo-box">
+            <h5> Select Blackfynn dataset
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">Select the Blackfynn dataset for which you wish to add/edit metadata (sorted
+                  alphabetically).
+                  <br><br>
+                  Subtitle, description, banner image and license are mandatory SPARC metadata.
+                  <br><br>
+                  Note: You must have "owner" or "manager" permissions on the dataset to edit metadata. See feature
+                  "Manage dataset permissions" of SODA and our associated <a
+                    href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;">
+                    documentation</a> for more information.
+                </span>
+              </div>
+            </h5>
+            <div class="demo-controls" style="margin-top: 15px">
+              <select class="my-dropdown" style="width:80%" id="bfdatasetlist_metadata">
+                <option> Select dataset </option>
+              </select>
 
-           </div>
-           <button id="button-refresh-dataset-list-metadata" class="demo-button" style="width:150px;height:38px;display:none" > Refresh List </button>
+            </div>
+            <button id="button-refresh-dataset-list-metadata" class="demo-button"
+              style="width:150px;height:38px;display:none"> Refresh List </button>
 
-           <p></p>
-           <h5> Add metadata </h5>
-           <p></p>
-           <form id = 'bf-add-metadata-form'>
-             <div style = "padding:10px 0px" class="switch-field">
-               <input class="input-switch" id="add-edit-subtitle" name="blackfynn-add-metadata" type="radio" />
-               <label for="add-edit-subtitle" class="label-switch"> Add/edit subtitle </label>
+            <p></p>
+            <h5> Add metadata </h5>
+            <p></p>
+            <form id='bf-add-metadata-form'>
+              <div style="padding:10px 0px" class="switch-field">
+                <input class="input-switch" id="add-edit-subtitle" name="blackfynn-add-metadata" type="radio" />
+                <label for="add-edit-subtitle" class="label-switch"> Add/edit subtitle </label>
 
-               <input class="input-switch" id="add-edit-description" name="blackfynn-add-metadata" type="radio" />
-               <label for="add-edit-description" class="label-switch"> Add/edit description </label>
+                <input class="input-switch" id="add-edit-description" name="blackfynn-add-metadata" type="radio" />
+                <label for="add-edit-description" class="label-switch"> Add/edit description </label>
 
-               <input class="input-switch" id="add-edit-banner" name="blackfynn-add-metadata" type="radio" />
-               <label for="add-edit-banner" class="label-switch"> Upload a banner image </label>
+                <input class="input-switch" id="add-edit-banner" name="blackfynn-add-metadata" type="radio" />
+                <label for="add-edit-banner" class="label-switch"> Upload a banner image </label>
 
-               <input class="input-switch" id="add-edit-license" name="blackfynn-add-metadata" type="radio" />
-               <label for="add-edit-license" class="label-switch"> Assign a license </label>
+                <input class="input-switch" id="add-edit-license" name="blackfynn-add-metadata" type="radio" />
+                <label for="add-edit-license" class="label-switch"> Assign a license </label>
 
-             </div>
-           </form>
+              </div>
+            </form>
 
-           <h5> </h5>
-           <div id=div-bf-current-metadata-progress class="progressdiv">
-             <div class="indeterminatebar"></div>
-           </div>
-           <p></p>
+            <h5> </h5>
+            <div id=div-bf-current-metadata-progress class="progressdiv">
+              <div class="indeterminatebar"></div>
+            </div>
+            <p></p>
 
-           <p style="margin-top:-10px"></p>
-           <div id="div-add-edit-subtitle" class="datasetsaveoption">
-             <h5> Enter subtitle (any existing subtitle will be displayed):
-               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                 <span class="tooltiptext">Add two or three sentences (limit of 256 characters) that describe the content of your dataset such that it is possible to differentiate it from other datasets. This field will become the short description visible immediately under the title of your dataset once it is published.
-                 </span>
-               </div>
-             </h5>
-             <div class="demo-controls">
-               <textarea id="bf-dataset-subtitle" class="demo-response" rows="4" maxlength="256"> </textarea>
-             </div>
-             <div>
-               <p><span id="para-char-count-metadata"> 256 characters left </span></p>
-             </div>
-             <h5> </h5>
-             <div class="demo-controls">
-               <button id="button-add-subtitle" class="demo-button"> Add subtitle </button>
-               <p id = "para-dataset-subtitle-status"  style="padding: 0 0; margin: 0 0"> </p>
-             </div>
-           </div>
+            <p style="margin-top:-10px"></p>
+            <div id="div-add-edit-subtitle" class="datasetsaveoption">
+              <h5> Enter subtitle (any existing subtitle will be displayed):
+                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext">Add two or three sentences (limit of 256 characters) that describe the
+                    content of your dataset such that it is possible to differentiate it from other datasets. This field
+                    will become the short description visible immediately under the title of your dataset once it is
+                    published.
+                  </span>
+                </div>
+              </h5>
+              <div class="demo-controls">
+                <textarea id="bf-dataset-subtitle" class="demo-response" rows="4" maxlength="256"> </textarea>
+              </div>
+              <div>
+                <p><span id="para-char-count-metadata"> 256 characters left </span></p>
+              </div>
+              <h5> </h5>
+              <div class="demo-controls">
+                <button id="button-add-subtitle" class="demo-button"> Add subtitle </button>
+                <p id="para-dataset-subtitle-status" style="padding: 0 0; margin: 0 0"> </p>
+              </div>
+            </div>
 
-           <div id="div-add-edit-description" class="datasetsaveoption">
-             <h5> Enter description below (any existing description will be displayed)
-               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                 <span class="tooltiptext">Provide a detailed description of your dataset. This description will be highly visible on the SPARC data portal once your dataset is published.
-                 </span>
-               </div>
-             </h5>
-             <div id="editorSection">
-             </div>
-             <h5> </h5>
-             <div class="demo-controls">
-               <button id="button-add-description" class="demo-button"> Add description </button>
-               <p id = "para-dataset-description-status"  style="padding: 0 0; margin: 0 0"> </p>
-             </div>
-           </div>
+            <div id="div-add-edit-description" class="datasetsaveoption">
+              <h5> Enter description below (any existing description will be displayed)
+                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext">Provide a detailed description of your dataset. This description will be
+                    highly visible on the SPARC data portal once your dataset is published.
+                  </span>
+                </div>
+              </h5>
+              <div id="editorSection">
+              </div>
+              <h5> </h5>
+              <div class="demo-controls">
+                <button id="button-add-description" class="demo-button"> Add description </button>
+                <p id="para-dataset-description-status" style="padding: 0 0; margin: 0 0"> </p>
+              </div>
+            </div>
 
-           <div id="div-add-edit-banner" class="datasetsaveoption">
+            <div id="div-add-edit-banner" class="datasetsaveoption">
 
-             <h5> Current banner image of selected dataset </h5>
-             <div id='div-current-banner-img' class="demo-controls" style="color:black">
-               <p id='para-current-banner-img'> None </p>
-               <img id='current-banner-img'/>
-             </div>
+              <h5> Current banner image of selected dataset </h5>
+              <div id='div-current-banner-img' class="demo-controls" style="color:black">
+                <p id='para-current-banner-img'> None </p>
+                <img id='current-banner-img' />
+              </div>
 
-             <p> </p>
-             <h5> Add/edit banner image
-               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                 <span class="tooltiptext">This image will be associated with the dataset and used as a thumbnail once the dataset is published.
-                 <br><br>
-                 This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly recommended. The final image size must not exceed 5MB as per Blackfynn's restriction.
-                 </span>
-               </div>
-             </h5>
+              <p> </p>
+              <h5> Add/edit banner image
+                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext">This image will be associated with the dataset and used as a thumbnail once
+                    the dataset is published.
+                    <br><br>
+                    This interface will help you make sure the uploaded image is square as per SPARC dataset
+                    requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly
+                    recommended. The final image size must not exceed 5MB as per Blackfynn's restriction.
+                  </span>
+                </div>
+              </h5>
 
-             <p></p>
-             <hr>
-             <div style="margin-left: 300px">
+              <p></p>
+              <hr>
+              <div style="margin-left: 300px">
 
-               <div style="float: left; width: 250px; margin-left: -300px;">
-                 <button id="button-import-banner-image" class="demo-button"> Import image </button>
-                 <p id = "para-path-image" style="margin-top:0em"> </p>
-                 <p></p>
-                 <form>
-                   <div class="container-cropped-image">
-                     <div class="banner-image-size" style="width:160px;text-align: center;"><span class="crop-image-text">Cropped dimensions: </span></div>
-                     <input class="banner-image-size input" style="width:70px;text-align: center" id="form-banner-height" type="text" readonly="readonly" size="7">
-                     <div class="banner-image-size" style="width:30px; text-align: center;"><span class="crop-image-text">px</span></div>
-                   </div>
-                 </form>
-                 <br>
-                 <p></p>
-                 <p></p>
-                 <button type="button" id="save-banner-image" class="demo-button"> Upload </button>
-                 <p id = "para-dataset-banner-image-status"  style="padding: 0 0; margin: 0 0"> </p>
-               </div>
+                <div style="float: left; width: 250px; margin-left: -300px;">
+                  <button id="button-import-banner-image" class="demo-button"> Import image </button>
+                  <p id="para-path-image" style="margin-top:0em"> </p>
+                  <p></p>
+                  <form>
+                    <div class="container-cropped-image">
+                      <div class="banner-image-size" style="width:160px;text-align: center;"><span
+                          class="crop-image-text">Cropped dimensions: </span></div>
+                      <input class="banner-image-size input" style="width:70px;text-align: center"
+                        id="form-banner-height" type="text" readonly="readonly" size="7">
+                      <div class="banner-image-size" style="width:30px; text-align: center;"><span
+                          class="crop-image-text">px</span></div>
+                    </div>
+                  </form>
+                  <br>
+                  <p></p>
+                  <p></p>
+                  <button type="button" id="save-banner-image" class="demo-button"> Upload </button>
+                  <p id="para-dataset-banner-image-status" style="padding: 0 0; margin: 0 0"> </p>
+                </div>
 
-               <div class="banner-image" style="border: 1px solid black; ">
+                <div class="banner-image" style="border: 1px solid black; ">
 
-                 <div id='div-img-container-holder' class='img-container'>
-                   Imported image will be shown here. <br>You will be able to crop it before uploading.
-                 </div>
+                  <div id='div-img-container-holder' class='img-container'>
+                    Imported image will be shown here. <br>You will be able to crop it before uploading.
+                  </div>
 
-                 <div id= 'div-img-container' class='img-container' style="display:none">
-                   <img id="image-banner" class='banner-img' width="100%" height:'auto'>
-                 </div>
+                  <div id='div-img-container' class='img-container' style="display:none">
+                    <img id="image-banner" class='banner-img' width="100%" height:'auto'>
+                  </div>
 
-               </div>
+                </div>
 
-               <div id="cleared"></div>
-             </div>
+                <div id="cleared"></div>
+              </div>
 
-             <h5> </h5>
-             <hr>
+              <h5> </h5>
+              <hr>
 
-           </div>
+            </div>
 
 
-           <div id="div-add-edit-license" class="datasetsaveoption">
+            <div id="div-add-edit-license" class="datasetsaveoption">
 
-             <!-- <div class="demo-controls">
+              <!-- <div class="demo-controls">
                <p id = "para-dataset-license-current"> None </p>
              </div> -->
 
-             <h5>
-               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                 <span class="tooltiptext">
-                 As per SPARC rules, you must assign the Creative Commons Attribution (CC-BY) license to all your SPARC datasets.
-                 </span>
-               </div>
-             </h5>
+              <h5>
+                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext">
+                    As per SPARC rules, you must assign the Creative Commons Attribution (CC-BY) license to all your
+                    SPARC datasets.
+                  </span>
+                </div>
+              </h5>
 
-             <div class="demo-controls" style="margin-top:-30px">
-               <div style="width: 200px; float: left;">
-                 <h5> Click to assign license </h5>
-                 <br>
-                 <button id="button-add-license" class="demo-button" style="width: 300px"> Assign Creative Commons Attribution (CC-BY) license
-                 </button>
-               </div>
-               <div style="margin-left: 220px;margin-top:-30px">
-                 <h5> Current License
-                 </h5>
-                 <p id = "para-dataset-license-current"> None </p>
-               </div>
-             </div>
+              <div class="demo-controls" style="margin-top:-30px">
+                <div style="width: 200px; float: left;">
+                  <h5> Click to assign license </h5>
+                  <br>
+                  <button id="button-add-license" class="demo-button" style="width: 300px"> Assign Creative Commons
+                    Attribution (CC-BY) license
+                  </button>
+                </div>
+                <div style="margin-left: 220px;margin-top:-30px">
+                  <h5> Current License
+                  </h5>
+                  <p id="para-dataset-license-current"> None </p>
+                </div>
+              </div>
 
-             <br>
-             <div class="demo-controls">
-               <p id = "para-dataset-license-status"  style="padding: 0 0; margin: 0 0"> </p>
-             </div>
+              <br>
+              <div class="demo-controls">
+                <p id="para-dataset-license-status" style="padding: 0 0; margin: 0 0"> </p>
+              </div>
 
-           </div>
+            </div>
 
-           <p></p>
-         </div>
+            <p></p>
+          </div>
 
-       </div>
-     </div>
+        </div>
+      </div>
 
-     <div class="demo">
-       <div class="demo-wrapper">
-         <button id="button-new-window-permission-demo-toggle" class="js-container-target demo-toggle-button"> Manage dataset permissions
-           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" >
-             <img class="nav-video" src="assets/img/documentation-icon.png">
-           </a>
-           <div class="demo-meta u-avoid-clicks"> Make PI owner, give access to others for collaborating, and share with Curation Team for review </div>
-         </button>
-         <div class="demo-box">
-           <h5> Select Blackfynn dataset
-             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-               <span class="tooltiptext">
-                 Select the Blackfynn dataset you wish to see/edit permissions (sorted alphabetically).
-               <br><br>
-               Note: You must have "owner" or "manager" permissions on the dataset to manage permissions. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
-               </span>
-             </div>
-           </h5>
-           <div class="demo-controls" style="margin-top: 15px">
-             <select class="my-dropdown" style="width:80%;" id="bfdatasetlist_permission">
-               <option> Select dataset </option>
-             </select>
-             <!-- <p></p> -->
-             <button id="button-refresh-dataset-list-permission" class="demo-button" style="width:150px;height:38px;display:none"> Refresh List </button>
-           </div>
-           <p></p>
-           <h5> Current permissions
-             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-               <span class="tooltiptext">Name of user (First name, Last name) and their current permissions ("viewer", "manager", "editor", "owner",) will be shown here for the selected dataset.
-               </span>
-             </div>
-           </h5>
-           <div id=div-bf-current-permission-progress class="progressdiv">
-             <div class="indeterminatebar"></div>
-           </div>
-           <div class="demo-controls">
+      <div class="demo">
+        <div class="demo-wrapper">
+          <button id="button-new-window-permission-demo-toggle" class="js-container-target demo-toggle-button"> Manage
+            dataset permissions
+            <a style="padding:0px 0px 0px 10px" class="github-wiki-link"
+              href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions">
+              <img class="nav-video" src="assets/img/documentation-icon.png">
+            </a>
+            <div class="demo-meta u-avoid-clicks"> Make PI owner, give access to others for collaborating, and share
+              with Curation Team for review </div>
+          </button>
+          <div class="demo-box">
+            <h5> Select Blackfynn dataset
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">
+                  Select the Blackfynn dataset you wish to see/edit permissions (sorted alphabetically).
+                  <br><br>
+                  Note: You must have "owner" or "manager" permissions on the dataset to manage permissions. See feature
+                  "Manage dataset permissions" of SODA and our associated <a
+                    href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;">
+                    documentation</a> for more information.
+                </span>
+              </div>
+            </h5>
+            <div class="demo-controls" style="margin-top: 15px">
+              <select class="my-dropdown" style="width:80%;" id="bfdatasetlist_permission">
+                <option> Select dataset </option>
+              </select>
+              <!-- <p></p> -->
+              <button id="button-refresh-dataset-list-permission" class="demo-button"
+                style="width:150px;height:38px;display:none"> Refresh List </button>
+            </div>
+            <p></p>
+            <h5> Current permissions
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">Name of user (First name, Last name) and their current permissions ("viewer",
+                  "manager", "editor", "owner",) will be shown here for the selected dataset.
+                </span>
+              </div>
+            </h5>
+            <div id=div-bf-current-permission-progress class="progressdiv">
+              <div class="indeterminatebar"></div>
+            </div>
+            <div class="demo-controls">
 
-             <p id = "para-dataset-permission-current"> None </p>
-           </div>
-
-
-           <h5> Change permissions
-             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-               <span class="tooltiptext">
-               SPARC curation rules require to set the PI of the SPARC award as "owner" of the dataset before it is shared with the Curation Team for review. This is to ensures that the PI is the only person who can publish the dataset.
-               <br>
-               <br>
-               Giving permissions to other members and/or team is only necessary if you need them to contribute to the dataset.
-               <br>
-               <br>
-               See our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide.
-               </span>
-             </div>
-           </h5>
-           <p></p>
-           <form id = 'blackfynn-permission-form'>
-             <div style = "padding:10px 0px" class="switch-field">
-               <input class="input-switch" id="pi-owner" name="blackfynn-permission-sharing" type="radio"/>
-               <label for="pi-owner" class="label-switch"> Make PI owner of dataset</label>
-
-               <input class="input-switch" id="user-permission" name="blackfynn-permission-sharing" type="radio"/>
-               <label for="user-permission" class="label-switch"> Add/edit member permissions  </label>
-
-               <input class="input-switch" id="team-permission" name="blackfynn-permission-sharing" type="radio"/>
-               <label for="team-permission" class="label-switch"> Add/edit team permissions </label>
+              <p id="para-dataset-permission-current"> None </p>
+            </div>
 
 
-             </div>
-           </form>
+            <h5> Change permissions
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">
+                  SPARC curation rules require to set the PI of the SPARC award as "owner" of the dataset before it is
+                  shared with the Curation Team for review. This is to ensures that the PI is the only person who can
+                  publish the dataset.
+                  <br>
+                  <br>
+                  Giving permissions to other members and/or team is only necessary if you need them to contribute to
+                  the dataset.
+                  <br>
+                  <br>
+                  See our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions"
+                    style="color:white;"> documentation</a> to learn more about the meaning of the different roles and
+                  what type of permissions they provide.
+                </span>
+              </div>
+            </h5>
+            <p></p>
+            <form id='blackfynn-permission-form'>
+              <div style="padding:10px 0px" class="switch-field">
+                <input class="input-switch" id="pi-owner" name="blackfynn-permission-sharing" type="radio" />
+                <label for="pi-owner" class="label-switch"> Make PI owner of dataset</label>
 
-         <p></p>
-           <div id="div-bf-pi-owner" class="datasetsaveoption">
-               <h5>
-               </h5>
-               <div class="demo-controls">
-                 <select class="my-dropdown" style="width:60%;padding: 8px 12px;height: 38px;" id="bf_list_users_pi">
-                   <option> Select PI </option>
-                 </select>
-               </div>
+                <input class="input-switch" id="user-permission" name="blackfynn-permission-sharing" type="radio" />
+                <label for="user-permission" class="label-switch"> Add/edit member permissions </label>
 
-               <h5>  </h5>
-               <div class="demo-controls">
-                 <button id="button-add-permission-pi" class="demo-button" style="width: 250px"> Make PI owner </button>
-                 <p id = "para-dataset-permission-status-pi" style="margin: 0 0; padding: 0 0"> </p>
-               </div>
-           </div>
-
-           <div id="div-bf-user-permission" class="datasetsaveoption">
-               <h5>
-               </h5>
-               <div class="demo-controls">
-                 <select class="my-dropdown" style="width:60%;padding: 8px 12px;height: 38px;" id="bf_list_users">
-                   <option> Select user </option>
-                 </select>
-               </div>
-
-               <h5>  </h5>
-               <div class="demo-controls">
-                 <select class="my-dropdown" id="bf_list_roles">
-                   <option> Select role </option>
-                   <option> viewer </option>
-                   <option> manager </option>
-                   <option> editor </option>
-                   <option> owner </option>
-                   <option> remove current permissions </option>
-                 </select>
-               </div>
-
-               <h5>  </h5>
-               <div class="demo-controls">
-                 <button id="button-add-permission" class="demo-button" style="width: 250px"> Add permission for user </button>
-                 <p id = "para-dataset-permission-status" style="padding: 0 0; margin: 0 0"> </p>
-               </div>
-           </div>
-
-           <div id="div-bf-team-permission" class="datasetsaveoption">
-             <h5>
-             </h5>
-             <div class="demo-controls">
-               <select class="my-dropdown" style="width:60%;padding: 8px 12px;height: 38px;" id="bf_list_teams">
-                 <option> Select team </option>
-               </select>
-             </div>
-
-             <h5>  </h5>
-             <div class="demo-controls">
-               <select class="my-dropdown" id="bf_list_roles_team">
-                 <option> Select role </option>
-                 <option> viewer </option>
-                 <option> manager </option>
-                 <option> editor </option>
-                 <option> remove current permissions </option>
-               </select>
-             </div>
-
-             <h5>  </h5>
-             <div class="demo-controls">
-               <button id="button-add-permission-team" class="demo-button" style="width: 250px"> Add permission for team </button>
-               <p id = "para-dataset-permission-status-team"  style="padding: 0 0; margin: 0 0"> </p>
-             </div>
-           </div>
+                <input class="input-switch" id="team-permission" name="blackfynn-permission-sharing" type="radio" />
+                <label for="team-permission" class="label-switch"> Add/edit team permissions </label>
 
 
+              </div>
+            </form>
 
-         <p></p>
-         </div>
-       </div>
-     </div>
+            <p></p>
+            <div id="div-bf-pi-owner" class="datasetsaveoption">
+              <h5>
+              </h5>
+              <div class="demo-controls">
+                <select class="my-dropdown" style="width:60%;padding: 8px 12px;height: 38px;" id="bf_list_users_pi">
+                  <option> Select PI </option>
+                </select>
+              </div>
 
+              <h5> </h5>
+              <div class="demo-controls">
+                <button id="button-add-permission-pi" class="demo-button" style="width: 250px"> Make PI owner </button>
+                <p id="para-dataset-permission-status-pi" style="margin: 0 0; padding: 0 0"> </p>
+              </div>
+            </div>
 
-                           <!-- Upload local dataset -->
+            <div id="div-bf-user-permission" class="datasetsaveoption">
+              <h5>
+              </h5>
+              <div class="demo-controls">
+                <select class="my-dropdown" style="width:60%;padding: 8px 12px;height: 38px;" id="bf_list_users">
+                  <option> Select user </option>
+                </select>
+              </div>
 
-     <div class="demo">
-       <div class="demo-wrapper">
-         <button id="button-new-window-submit-demo-toggle" class="js-container-target demo-toggle-button"> Upload local dataset
-           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Upload-local-dataset" >
-             <img class="nav-video" src="assets/img/documentation-icon.png">
-           </a>
-           <div class="demo-meta u-avoid-clicks"> Upload a locally stored dataset to a Blackfynn dataset </div>
-         </button>
-         <div class="demo-box">
-           <p> </p>
+              <h5> </h5>
+              <div class="demo-controls">
+                <select class="my-dropdown" id="bf_list_roles">
+                  <option> Select role </option>
+                  <option> viewer </option>
+                  <option> manager </option>
+                  <option> editor </option>
+                  <option> owner </option>
+                  <option> remove current permissions </option>
+                </select>
+              </div>
 
-           <h5> Select local dataset to submit
-           </h5>
+              <h5> </h5>
+              <div class="demo-controls">
+                <button id="button-add-permission" class="demo-button" style="width: 250px"> Add permission for user
+                </button>
+                <p id="para-dataset-permission-status" style="padding: 0 0; margin: 0 0"> </p>
+              </div>
+            </div>
 
-           <div class="container-milestone-upload" style="display:flex;">
-             <input class="milestone-upload-text" id="selected-local-dataset-submit" style="width:80%;text-align:center;height:40px" type="text" readonly placeholder="Select a folder">
-             <!-- <button id="button-import-local-ds-submit" type="button" style="width:15%;height:40px" class="button-milestone-upload"><b>Confirm</b></button> -->
-             <p id="para-info-local-submit" style="float:right;margin-top:0;margin-left:7px;padding: 2 2;width:20%;text-align:left;"></p>
-           </div>
+            <div id="div-bf-team-permission" class="datasetsaveoption">
+              <h5>
+              </h5>
+              <div class="demo-controls">
+                <select class="my-dropdown" style="width:60%;padding: 8px 12px;height: 38px;" id="bf_list_teams">
+                  <option> Select team </option>
+                </select>
+              </div>
 
-           <p></p>
+              <h5> </h5>
+              <div class="demo-controls">
+                <select class="my-dropdown" id="bf_list_roles_team">
+                  <option> Select role </option>
+                  <option> viewer </option>
+                  <option> manager </option>
+                  <option> editor </option>
+                  <option> remove current permissions </option>
+                </select>
+              </div>
 
-           <h5> Select Blackfynn dataset for uploading
-             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-               <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically).
-               <br> <br>
-               Note: You must have "owner", "manager" or "editor" permissions on the dataset to upload. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
-               </span>
-             </div>
-           </h5>
-           <div class="demo-controls" style="margin-top: 15px;width:100%">
-             <select class="my-dropdown" style="width:80%;" id="bfdatasetlist">
-               <option> Select dataset </option>
-             </select>
-           </div>
-
-           <button id="button-refresh-dataset-list" style="height:38px;width:150px;display:none" class="demo-button"> Refresh List </button>
-
-           <p></p>
-           <div>
-             <h5> Upload
-               <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                 <span class="tooltiptext">
-                 Click on "Upload dataset" to push all the files/folders from the selected local folder into the selected Blackfynn dataset. Local folder structure will be preserved. The progress bar located below will provide a live update on the upload.
-                 </span>
-               </div>
-             </h5>
-             <div>
-             <button id="button-submit-dataset" class="demo-button"> Upload dataset </button>
-             <p id='para-please-wait-manage-dataset'></p>
-             </div>
-             <p id='para-progress-bar-error-status'> <p>
-             <div id="div-progress-submit">
-             <h5> Progress </h5>
-             <progress class=progresstrack id=progress-bar-upload-bf max="100" value="0"></progress>
-             <p id='para-progress-bar-status'> <p>
-             </div>
-           </div>
-         </div>
-       </div>
-     </div>
-
-
-                       <!-- View and change dataset status -->
-
-     <div class="demo">
-       <div class="demo-wrapper">
-         <button id="button-new-window-dataset-status-demo-toggle" class="js-container-target demo-toggle-button"> View and change dataset status
-           <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/View-and-change-dataset-status" >
-             <img class="nav-video" src="assets/img/documentation-icon.png">
-           </a>
-           <div class="demo-meta u-avoid-clicks"> Modify and track the status of your dataset as it moves through the curation process </div>
-         </button>
-         <div class="demo-box">
-
-           <h5> Select Blackfynn dataset
-             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-               <span class="tooltiptext">
-               The status of a dataset is used to allow easy communication between SPARC investigators and the SPARC Dataset Curation Team regarding the progress of a dataset through the curation process. In the SPARC consortium organization, there are 12 status options that each SPARC Dataset will go through one by one during the submission and curation process. Each status indicates which team is responsible for the step.
-               <br><br>
-               Select the Blackfynn dataset for which you wish to change the status (sorted alphabetically).
-               <br><br>
-               Note: You must have "owner" or "manager" permissions on the dataset to change dataset status. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
-               </span>
-             </div>
-           </h5>
-
-           <br/>
-
-           <div class="demo-controls" style="margin-top: 15px">
-             <select class="my-dropdown" style="width:80%" id="bfdatasetlist_dataset_status">
-               <option> Select dataset </option>
-             </select>
-             <p></p>
-             <button id="button-refresh-dataset-status" style="width:150px;height:38px;display:none" class="demo-button"> Refresh List </button>
-           </div>
-
-           <div id=div-bf-current-dataset-status-progress class="progressdiv">
-             <div class="indeterminatebar"></div>
-           </div>
-
-           <h5> View/change status
-             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-               <span class="tooltiptext">
-               To find out more about dataset status, please visit <a href="https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd" style="color:white;"> docs.sparc.science </a>.
-               </span>
-             </div>
-           </h5>
-           <br/>
-           <div class="demo-controls">
-             <select class="my-dropdown" style="width:80%" id="bf_list_dataset_status">
-               <option>  </option>
-             </select>
-           </div>
-
-            <p id = "para-dataset-status-status"> </p>
-
-         </div>
-       </div>
-     </div>
+              <h5> </h5>
+              <div class="demo-controls">
+                <button id="button-add-permission-team" class="demo-button" style="width: 250px"> Add permission for
+                  team </button>
+                <p id="para-dataset-permission-status-team" style="padding: 0 0; margin: 0 0"> </p>
+              </div>
+            </div>
 
 
 
-
-     <script type="text/javascript">
-       require('./renderer-process/native-ui/dialogs/open-file')
-       require('./renderer-process/native-ui/dialogs/save')
-       require('./renderer-process/manage_submit/blackfynn_account')
-     </script>
-
-     <script src="node_modules/cropperjs/dist/cropper.js"></script>
-
-     <script src="node_modules/jquery/dist/jquery.js"></script>
-     <script>window.$ = window.jQuery = require('jquery');</script>
+            <p></p>
+          </div>
+        </div>
+      </div>
 
 
-   </section>
- </template>
+      <!-- Upload local dataset -->
+
+      <div class="demo">
+        <div class="demo-wrapper">
+          <button id="button-new-window-submit-demo-toggle" class="js-container-target demo-toggle-button"> Upload local
+            dataset
+            <a style="padding:0px 0px 0px 10px" class="github-wiki-link"
+              href="https://github.com/bvhpatel/SODA/wiki/Upload-local-dataset">
+              <img class="nav-video" src="assets/img/documentation-icon.png">
+            </a>
+            <div class="demo-meta u-avoid-clicks"> Upload a locally stored dataset to a Blackfynn dataset </div>
+          </button>
+          <div class="demo-box">
+            <p> </p>
+
+            <h5> Select local dataset to submit
+            </h5>
+
+            <div class="container-milestone-upload" style="display:flex;">
+              <input class="milestone-upload-text" id="selected-local-dataset-submit"
+                style="width:80%;text-align:center;height:40px" type="text" readonly placeholder="Select a folder">
+              <!-- <button id="button-import-local-ds-submit" type="button" style="width:15%;height:40px" class="button-milestone-upload"><b>Confirm</b></button> -->
+              <p id="para-info-local-submit"
+                style="float:right;margin-top:0;margin-left:7px;padding: 2 2;width:20%;text-align:left;"></p>
+            </div>
+
+            <p></p>
+
+            <h5> Select Blackfynn dataset for uploading
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">Select the target dataset on your Blackfynn account (sorted alphabetically).
+                  <br> <br>
+                  Note: You must have "owner", "manager" or "editor" permissions on the dataset to upload. See feature
+                  "Manage dataset permissions" of SODA and our associated <a
+                    href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;">
+                    documentation</a> for more information.
+                </span>
+              </div>
+            </h5>
+            <div class="demo-controls" style="margin-top: 15px;width:100%">
+              <select class="my-dropdown" style="width:80%;" id="bfdatasetlist">
+                <option> Select dataset </option>
+              </select>
+            </div>
+
+            <button id="button-refresh-dataset-list" style="height:38px;width:150px;display:none" class="demo-button">
+              Refresh List </button>
+
+            <p></p>
+            <div>
+              <h5> Upload
+                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext">
+                    Click on "Upload dataset" to push all the files/folders from the selected local folder into the
+                    selected Blackfynn dataset. Local folder structure will be preserved. The progress bar located below
+                    will provide a live update on the upload.
+                  </span>
+                </div>
+              </h5>
+              <div>
+                <button id="button-submit-dataset" class="demo-button"> Upload dataset </button>
+                <p id='para-please-wait-manage-dataset'></p>
+              </div>
+              <p id='para-progress-bar-error-status'>
+              <p>
+              <div id="div-progress-submit">
+                <h5> Progress </h5>
+                <progress class=progresstrack id=progress-bar-upload-bf max="100" value="0"></progress>
+                <p id='para-progress-bar-status'>
+                <p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- View and change dataset status -->
+
+      <div class="demo">
+        <div class="demo-wrapper">
+          <button id="button-new-window-dataset-status-demo-toggle" class="js-container-target demo-toggle-button"> View
+            and change dataset status
+            <a style="padding:0px 0px 0px 10px" class="github-wiki-link"
+              href="https://github.com/bvhpatel/SODA/wiki/View-and-change-dataset-status">
+              <img class="nav-video" src="assets/img/documentation-icon.png">
+            </a>
+            <div class="demo-meta u-avoid-clicks"> Modify and track the status of your dataset as it moves through the
+              curation process </div>
+          </button>
+          <div class="demo-box">
+
+            <h5> Select Blackfynn dataset
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">
+                  The status of a dataset is used to allow easy communication between SPARC investigators and the SPARC
+                  Dataset Curation Team regarding the progress of a dataset through the curation process. In the SPARC
+                  consortium organization, there are 12 status options that each SPARC Dataset will go through one by
+                  one during the submission and curation process. Each status indicates which team is responsible for
+                  the step.
+                  <br><br>
+                  Select the Blackfynn dataset for which you wish to change the status (sorted alphabetically).
+                  <br><br>
+                  Note: You must have "owner" or "manager" permissions on the dataset to change dataset status. See
+                  feature "Manage dataset permissions" of SODA and our associated <a
+                    href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;">
+                    documentation</a> for more information.
+                </span>
+              </div>
+            </h5>
+
+            <br />
+
+            <div class="demo-controls" style="margin-top: 15px">
+              <select class="my-dropdown" style="width:80%" id="bfdatasetlist_dataset_status">
+                <option> Select dataset </option>
+              </select>
+              <p></p>
+              <button id="button-refresh-dataset-status" style="width:150px;height:38px;display:none"
+                class="demo-button"> Refresh List </button>
+            </div>
+
+            <div id=div-bf-current-dataset-status-progress class="progressdiv">
+              <div class="indeterminatebar"></div>
+            </div>
+
+            <h5> View/change status
+              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext">
+                  To find out more about dataset status, please visit <a
+                    href="https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd" style="color:white;"> docs.sparc.science
+                  </a>.
+                </span>
+              </div>
+            </h5>
+            <br />
+            <div class="demo-controls">
+              <select class="my-dropdown" style="width:80%" id="bf_list_dataset_status">
+                <option> </option>
+              </select>
+            </div>
+
+            <p id="para-dataset-status-status"> </p>
+
+          </div>
+        </div>
+      </div>
+
+
+
+
+      <script type="text/javascript">
+        require('./renderer-process/native-ui/dialogs/open-file')
+        require('./renderer-process/native-ui/dialogs/save')
+        require('./renderer-process/manage_submit/blackfynn_account')
+      </script>
+
+      <script src="node_modules/cropperjs/dist/cropper.js"></script>
+
+      <script src="node_modules/jquery/dist/jquery.js"></script>
+      <script>window.$ = window.jQuery = require('jquery');</script>
+
+
+  </section>
+</template>
