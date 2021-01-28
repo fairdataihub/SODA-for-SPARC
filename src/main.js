@@ -1,97 +1,97 @@
-const {app, BrowserWindow, dialog} = require('electron')
-app.showExitPrompt = true
-const path = require('path')
-const glob = require('glob')
-const os = require("os")
-const contextMenu = require('electron-context-menu');
-const log  = require("electron-log");
-require('v8-compile-cache')
-const {ipcMain} = require('electron')
+const { app, BrowserWindow, dialog } = require("electron");
+app.showExitPrompt = true;
+const path = require("path");
+const glob = require("glob");
+const os = require("os");
+const contextMenu = require("electron-context-menu");
+const log = require("electron-log");
+require("v8-compile-cache");
+const { ipcMain } = require("electron");
 const { autoUpdater } = require("electron-updater");
-const { JSONStorage } = require('node-localstorage');
-const { trackEvent } = require('./scripts/analytics');
-const { fstat } = require('fs');
+const { JSONStorage } = require("node-localstorage");
+const { trackEvent } = require("./scripts/analytics");
+const { fstat } = require("fs");
 
-log.transports.console.level = false
+log.transports.console.level = false;
 global.trackEvent = trackEvent;
-const nodeStorage = new JSONStorage(app.getPath('userData'));
+const nodeStorage = new JSONStorage(app.getPath("userData"));
 /*************************************************************
  * Python Process
  *************************************************************/
 
-const PY_DIST_FOLDER = 'pysodadist'
-const PY_FOLDER = 'pysoda'
-const PY_MODULE = 'api' // without .py suffix
+const PY_DIST_FOLDER = "pysodadist";
+const PY_FOLDER = "pysoda";
+const PY_MODULE = "api"; // without .py suffix
 
-let pyProc = null
-let pyPort = null
+let pyProc = null;
+let pyPort = null;
 
 const guessPackaged = () => {
-  const fullPath = path.join(__dirname, PY_DIST_FOLDER)
-  return require('fs').existsSync(fullPath)
-}
+  const fullPath = path.join(__dirname, PY_DIST_FOLDER);
+  return require("fs").existsSync(fullPath);
+};
 
 const getScriptPath = () => {
   if (!guessPackaged()) {
-    return path.join(__dirname, PY_FOLDER, PY_MODULE + '.py')
+    return path.join(__dirname, PY_FOLDER, PY_MODULE + ".py");
   }
-  if (process.platform === 'win32') {
-    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + '.exe')
+  if (process.platform === "win32") {
+    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + ".exe");
   }
 
-    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
-}
+  return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
+};
 
 const selectPort = () => {
-  pyPort = 4242
-  return pyPort
-}
+  pyPort = 4242;
+  return pyPort;
+};
 
 const createPyProc = () => {
-  let script = getScriptPath()
-  let port = '' + selectPort()
+  let script = getScriptPath();
+  let port = "" + selectPort();
 
   log.info(script);
-  if (require('fs').existsSync(script))
-  {
+  if (require("fs").existsSync(script)) {
     log.info("file exists");
-  }
-  else
-  {
+  } else {
     log.info("file does not exist");
   }
   if (guessPackaged()) {
     log.info("execFile");
-    pyProc = require('child_process').execFile(script, [port], { stdio: 'ignore' })
+    pyProc = require("child_process").execFile(script, [port], {
+      stdio: "ignore",
+    });
   } else {
     log.info("spawn");
-    pyProc = require('child_process').spawn('python', [script, port], { stdio: 'ignore' })
+    pyProc = require("child_process").spawn("python", [script, port], {
+      stdio: "ignore",
+    });
   }
 
   log.info(pyProc);
   if (pyProc != null) {
-    console.log('child process success on port ' + port)
-    log.info('child process success on port ' + port)
+    console.log("child process success on port " + port);
+    log.info("child process success on port " + port);
   } else {
-    console.error('child process failed to start on port' + port)
+    console.error("child process failed to start on port" + port);
   }
-}
+};
 
 const exitPyProc = () => {
-  pyProc.kill()
-  pyProc = null
-  pyPort = null
-}
+  pyProc.kill();
+  pyProc = null;
+  pyPort = null;
+};
 
-app.on('ready', createPyProc)
-app.on('will-quit', exitPyProc)
-
+app.on("ready", createPyProc);
+app.on("will-quit", exitPyProc);
 
 /*************************************************************
  * Main app window
  *************************************************************/
 
-let mainWindow = null
+let mainWindow = null;
 let user_restart_confirmed = false;
 let updatechecked = false;
 
@@ -212,7 +212,7 @@ function initialize() {
 }
 
 // Make this app a single instance app.
-const gotTheLock = app.requestSingleInstanceLock()
+const gotTheLock = app.requestSingleInstanceLock();
 
 function makeSingleInstance() {
   if (process.mas) return;
@@ -235,7 +235,7 @@ If you check your download folder, you'll see it there.
 See: https://github.com/nteract/nteract/issues/1655
 showSaveImageAs prompts the users where they want to save the image.
 */
-contextMenu()
+contextMenu();
 
 // Require each JS file in the main-process dir
 function loadDemos() {
@@ -245,8 +245,7 @@ function loadDemos() {
   });
 }
 
-initialize()
-
+initialize();
 
 ipcMain.on("resize-window", (event, dir) => {
   var x = mainWindow.getSize()[0];
@@ -267,16 +266,11 @@ ipcMain.on("resize-window", (event, dir) => {
 //ipcRenderer.send('track-event', "App Backend", "Python Connection Established");
 //ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
 ipcMain.on("track-event", (event, category, action, label, value) => {
-  if (label == undefined && value == undefined)
-  {
+  if (label == undefined && value == undefined) {
     //trackEvent(category, action);
-  }
-  else if (label != undefined && value == undefined)
-  {
+  } else if (label != undefined && value == undefined) {
     //trackEvent(category, action, label);
-  }
-  else
-  {
+  } else {
     //trackEvent(category, action, label, value);
   }
 });

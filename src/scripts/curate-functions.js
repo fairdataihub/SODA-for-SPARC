@@ -1,4 +1,4 @@
-var metadataFile = '';
+var metadataFile = "";
 
 $(".button-individual-metadata.remove").click(function () {
   var metadataFileStatus = $($(this).parents()[1]).find(
@@ -107,7 +107,7 @@ function dropHandler(ev, paraElement, metadataFile) {
 }
 
 ////////////////// IMPORT EXISTING PROGRESS FILES ////////////////////////////////
-const progressFileDropdown = document.getElementById('progress-files-dropdown');
+const progressFileDropdown = document.getElementById("progress-files-dropdown");
 
 /////////////////////////////// Helpers function for Import progress function /////////////////////////////
 // function to load SODA with progress file
@@ -166,7 +166,8 @@ function importGenerateDatasetStep(object) {
       $("#generate-local-desktop").prop("checked", true);
       $($("#generate-local-desktop").parents()[2]).click();
       // Step 2: if generate locally, name and path
-      $("#input-destination-generate-dataset-locally").prop("placeholder",
+      $("#input-destination-generate-dataset-locally").prop(
+        "placeholder",
         sodaJSONObj["generate-dataset"]["path"]
       );
       $("#input-destination-generate-dataset-locally").val(
@@ -189,17 +190,21 @@ function importGenerateDatasetStep(object) {
           sodaJSONObj["bf-account-selected"]["account-name"];
         $("#current-bf-account-generate").text(bfAccountSelected);
         $("#para-account-detail-curate").html("");
-        client.invoke("api_bf_account_details", bfAccountSelected, (error, res) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
-            showHideDropdownButtons("account", "hide");
-          } else {
-            $("#para-account-detail-curate").html(res);
-            updateBfAccountList();
-            // checkPrevDivForConfirmButton("account");
+        client.invoke(
+          "api_bf_account_details",
+          bfAccountSelected,
+          (error, res) => {
+            if (error) {
+              log.error(error);
+              console.error(error);
+              showHideDropdownButtons("account", "hide");
+            } else {
+              $("#para-account-detail-curate").html(res);
+              updateBfAccountList();
+              // checkPrevDivForConfirmButton("account");
+            }
           }
-        });
+        );
         // $("#div-bf-account-btns").css("display", "flex");
         $("#btn-bf-account").trigger("click");
         // Step 3: choose to generate on an existing or new dataset
@@ -210,14 +215,14 @@ function importGenerateDatasetStep(object) {
           $("#generate-BF-dataset-options-existing").prop("checked", true);
           $($("#generate-BF-dataset-options-existing").parents()[2]).click();
           var bfDatasetSelected =
-          sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+            sodaJSONObj["bf-dataset-selected"]["dataset-name"];
           setTimeout(function () {
             $("#current-bf-dataset-generate").text(bfDatasetSelected);
             $("#button-confirm-bf-dataset").click();
             // Step 4: Handle existing files and folders
             if ("if-existing" in sodaJSONObj["generate-dataset"]) {
               var existingFolderOption =
-              sodaJSONObj["generate-dataset"]["if-existing"];
+                sodaJSONObj["generate-dataset"]["if-existing"];
               $("#existing-folders-" + existingFolderOption).prop(
                 "checked",
                 true
@@ -228,11 +233,8 @@ function importGenerateDatasetStep(object) {
             }
             if ("if-existing-files" in sodaJSONObj["generate-dataset"]) {
               var existingFileOption =
-              sodaJSONObj["generate-dataset"]["if-existing-files"];
-              $("#existing-files-" + existingFileOption).prop(
-                "checked",
-                true
-              );
+                sodaJSONObj["generate-dataset"]["if-existing-files"];
+              $("#existing-files-" + existingFileOption).prop("checked", true);
               $(
                 $("#existing-files-" + existingFileOption).parents()[2]
               ).click();
@@ -245,8 +247,8 @@ function importGenerateDatasetStep(object) {
             sodaJSONObj["generate-dataset"]["dataset-name"]
           );
           $("#inputNewNameDataset").keyup();
-          }
         }
+      }
     }
   } else {
     // the block of code below reverts all the checks to option cards if applicable
@@ -310,73 +312,77 @@ function populateMetadataProgress(
 
 //////////////////////// Main Import progress function
 function loadProgressFile(ev) {
-  document.getElementById('para-progress-file-status').innerHTML = "";
-  document.getElementById('nextBtn').disabled = true;
-  document.getElementById('div-progress-file-loader').style.display = "block";
+  document.getElementById("para-progress-file-status").innerHTML = "";
+  document.getElementById("nextBtn").disabled = true;
+  document.getElementById("div-progress-file-loader").style.display = "block";
   // create loading effect
   var jsonContent = progressFileParse(ev);
   if (JSON.stringify(jsonContent) !== "{}") {
     sodaJSONObj = jsonContent;
-    setTimeout(function() {
+    setTimeout(function () {
       sodaJSONObj = jsonContent;
-      importManifest(sodaJSONObj)
-      importMetadataFilesProgress(sodaJSONObj)
-      importDatasetStructure(sodaJSONObj)
-      importGenerateDatasetStep(sodaJSONObj)
-      document.getElementById('div-progress-file-loader').style.display = "none"
-      document.getElementById('nextBtn').disabled = false;
-      document.getElementById('para-progress-file-status').innerHTML = "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>"
-    }, 1300)
+      importManifest(sodaJSONObj);
+      importMetadataFilesProgress(sodaJSONObj);
+      importDatasetStructure(sodaJSONObj);
+      importGenerateDatasetStep(sodaJSONObj);
+      document.getElementById("div-progress-file-loader").style.display =
+        "none";
+      document.getElementById("nextBtn").disabled = false;
+      document.getElementById("para-progress-file-status").innerHTML =
+        "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+    }, 1300);
   } else {
-      sodaJSONObj = '{"starting-point":"new","dataset-structure":{},"metadata-files":{}}';
-      setTimeout(function() {
-        importManifest(sodaJSONObj)
-        importMetadataFilesProgress(sodaJSONObj)
-        importDatasetStructure(sodaJSONObj)
-        importGenerateDatasetStep(sodaJSONObj)
-        document.getElementById('div-progress-file-loader').style.display = "none"
-        document.getElementById('para-progress-file-status').innerHTML = ""
-      }, 500)
-    }
+    sodaJSONObj =
+      '{"starting-point":"new","dataset-structure":{},"metadata-files":{}}';
+    setTimeout(function () {
+      importManifest(sodaJSONObj);
+      importMetadataFilesProgress(sodaJSONObj);
+      importDatasetStructure(sodaJSONObj);
+      importGenerateDatasetStep(sodaJSONObj);
+      document.getElementById("div-progress-file-loader").style.display =
+        "none";
+      document.getElementById("para-progress-file-status").innerHTML = "";
+    }, 500);
+  }
 }
 
-function removeOptions(selectbox)
-{
-    var i;
-    for(i = selectbox.options.length - 1 ; i >= 0 ; i--)
-    {
-        selectbox.remove(i);
-    }
+function removeOptions(selectbox) {
+  var i;
+  for (i = selectbox.options.length - 1; i >= 0; i--) {
+    selectbox.remove(i);
+  }
 }
 
 // Function to add options to dropdown list
 function addOption(selectbox, text, value) {
-    var opt = document.createElement("OPTION");
-    opt.text = text;
-    opt.value = value;
-    selectbox.options.add(opt);
+  var opt = document.createElement("OPTION");
+  opt.text = text;
+  opt.value = value;
+  selectbox.options.add(opt);
 }
 
 // function to load Progress dropdown
 function importOrganizeProgressPrompt() {
-  document.getElementById('para-progress-file-status').innerHTML = ""
+  document.getElementById("para-progress-file-status").innerHTML = "";
   removeOptions(progressFileDropdown);
-  addOption(progressFileDropdown, "Select", "Select")
+  addOption(progressFileDropdown, "Select", "Select");
   if (fs.existsSync(progressFilePath)) {
     var fileNames = fs.readdirSync(progressFilePath);
     if (fileNames.length > 0) {
       fileNames.forEach((item, i) => {
-        addOption(progressFileDropdown, path.parse(item).name, item)
+        addOption(progressFileDropdown, path.parse(item).name, item);
       });
     } else {
-      document.getElementById('para-progress-file-status').innerHTML = "<span style='color:var(--color)'>There is no existing progress to load. Please choose one of the other options above!</span>"
+      document.getElementById("para-progress-file-status").innerHTML =
+        "<span style='color:var(--color)'>There is no existing progress to load. Please choose one of the other options above!</span>";
     }
   } else {
-    document.getElementById('para-progress-file-status').innerHTML = "<span style='color:var(--color)'>There is no existing progress to load. Please choose one of the other options above!</span>"
+    document.getElementById("para-progress-file-status").innerHTML =
+      "<span style='color:var(--color)'>There is no existing progress to load. Please choose one of the other options above!</span>";
   }
 }
 
-importOrganizeProgressPrompt()
+importOrganizeProgressPrompt();
 
 async function openDropdownPrompt(dropdown) {
   // if users edit current account
@@ -386,7 +392,8 @@ async function openDropdownPrompt(dropdown) {
       if (Object.keys(bfAccountOptions).length === 1) {
         footerMessage = "No existing accounts to load. Please add an account.";
       } else {
-        footerMessage = "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Blackfynn-account'>Need help?</a>";
+        footerMessage =
+          "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Blackfynn-account'>Need help?</a>";
       }
     } else {
       footerMessage = bfAccountOptionsStatus;
@@ -416,7 +423,7 @@ async function openDropdownPrompt(dropdown) {
       inputValidator: (value) => {
         value = $("#bfaccountdropdown").val();
         return new Promise((resolve) => {
-          if ((value) && (value !== "Select")) {
+          if (value && value !== "Select") {
             bfacct = $("#bfaccountdropdown").val();
             resolve();
           } else {
@@ -441,7 +448,10 @@ async function openDropdownPrompt(dropdown) {
         $("#current-bf-dataset-generate").text("None");
         defaultBfDataset = "Select dataset";
         tempDatasetListsSync();
-        $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "none");
+        $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
+          "display",
+          "none"
+        );
         $("#button-confirm-bf-dataset-getting-started").hide();
 
         $("#para-account-detail-curate").html("");
@@ -454,7 +464,8 @@ async function openDropdownPrompt(dropdown) {
             Swal.fire({
               icon: "error",
               text: error,
-              footer: "<a href='https://help.blackfynn.com/en/articles/1488536-creating-an-api-key-for-the-blackfynn-clients'>Why do I have this issue?</a>",
+              footer:
+                "<a href='https://help.blackfynn.com/en/articles/1488536-creating-an-api-key-for-the-blackfynn-clients'>Why do I have this issue?</a>",
             });
             showHideDropdownButtons("account", "hide");
           } else {
@@ -464,15 +475,18 @@ async function openDropdownPrompt(dropdown) {
             updateBfAccountList();
             client.invoke("api_bf_dataset_account", bfacct, (error, result) => {
               if (error) {
-                log.error(error)
-                console.log(error)
-                var emessage = error
-                document.getElementById("para-filter-datasets-status-2").innerHTML = "<span style='color: red'>" + emessage + "</span>"
+                log.error(error);
+                console.log(error);
+                var emessage = error;
+                document.getElementById(
+                  "para-filter-datasets-status-2"
+                ).innerHTML =
+                  "<span style='color: red'>" + emessage + "</span>";
               } else {
                 datasetList = [];
                 datasetList = result;
               }
-            })
+            });
             showHideDropdownButtons("account", "hide");
             // checkPrevDivForConfirmButton("account");
           }
@@ -488,16 +502,25 @@ async function openDropdownPrompt(dropdown) {
     var bfDataset = "";
     // if users edit Current dataset
     datasetPermissionDiv.style.display = "block";
-    $(datasetPermissionDiv).find('#curatebfdatasetlist')
-    .find('option')
-    .empty()
-    .append('<option value="Select dataset">Select dataset</option>')
-    .val('Select dataset');
-    $(datasetPermissionDiv).find('#div-filter-datasets-progress-2').css("display", "block");
+    $(datasetPermissionDiv)
+      .find("#curatebfdatasetlist")
+      .find("option")
+      .empty()
+      .append('<option value="Select dataset">Select dataset</option>')
+      .val("Select dataset");
+    $(datasetPermissionDiv)
+      .find("#div-filter-datasets-progress-2")
+      .css("display", "block");
     $(datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
     $("#para-continue-bf-dataset-getting-started").text("");
-    $(datasetPermissionDiv).find("#select-permission-list-2").val("All").trigger("change");
-    $(datasetPermissionDiv).find("#curatebfdatasetlist").val("Select dataset").trigger("change");
+    $(datasetPermissionDiv)
+      .find("#select-permission-list-2")
+      .val("All")
+      .trigger("change");
+    $(datasetPermissionDiv)
+      .find("#curatebfdatasetlist")
+      .val("Select dataset")
+      .trigger("change");
     initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
     const { value: bfDS } = await Swal.fire({
       title:
@@ -555,7 +578,9 @@ $("#select-permission-list-2").change(function (e) {
   if (bfacct === "None") {
     document.getElementById("para-filter-datasets-status-2").innerHTML =
       "<span style='color:red'>Please select a Blackfynn account first!</span>";
-    $(datasetPermissionDiv).find('#div-filter-datasets-progress-2').css("display", "none");
+    $(datasetPermissionDiv)
+      .find("#div-filter-datasets-progress-2")
+      .css("display", "none");
   } else {
     $("#curatebfdatasetlist").selectpicker();
     updateDatasetList(bfacct);
@@ -637,7 +662,9 @@ function updateDatasetList(bfaccount) {
   var filteredDatasets = [];
   // waiting for dataset list to load first before initiating BF dataset dropdown list
   setTimeout(function () {
-    var myPermission = $(datasetPermissionDiv).find("#select-permission-list-2").val();
+    var myPermission = $(datasetPermissionDiv)
+      .find("#select-permission-list-2")
+      .val();
     if (myPermission.toLowerCase() === "all") {
       for (var i = 0; i < datasetList.length; i++) {
         filteredDatasets.push(datasetList[i].name);
@@ -692,39 +719,55 @@ function showHideDropdownButtons(category, action) {
   if (category === "dataset") {
     if (action === "show") {
       // btn under Step 6
-      $($('#button-confirm-bf-dataset').parents()[0]).css("display", "flex");
-      $('#button-confirm-bf-dataset').show();
+      $($("#button-confirm-bf-dataset").parents()[0]).css("display", "flex");
+      $("#button-confirm-bf-dataset").show();
       // btn under Step 1
-      $($('#button-confirm-bf-dataset-getting-started').parents()[0]).css("display", "flex");
-      $('#button-confirm-bf-dataset-getting-started').show();
+      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
+        "display",
+        "flex"
+      );
+      $("#button-confirm-bf-dataset-getting-started").show();
     } else {
       // btn under Step 6
-      $($('#button-confirm-bf-dataset').parents()[0]).css("display", "none");
-      $('#button-confirm-bf-dataset').hide();
+      $($("#button-confirm-bf-dataset").parents()[0]).css("display", "none");
+      $("#button-confirm-bf-dataset").hide();
       // btn under Step 1
-      $($('#button-confirm-bf-dataset-getting-started').parents()[0]).css("display", "none");
-      $('#button-confirm-bf-dataset-getting-started').hide();
+      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
+        "display",
+        "none"
+      );
+      $("#button-confirm-bf-dataset-getting-started").hide();
     }
   } else if (category === "account") {
-      if (action === "show") {
-        // btn under Step 6
-        $("#div-bf-account-btns").css("display", "flex");
-        $('#div-bf-account-btns button').show();
-        // btn under Step 1
-        $("#div-bf-account-btns-getting-started").css("display", "flex");
-        $('#div-bf-account-btns-getting-started button').show();
-      } else {
-        // btn under Step 6
-        $("#div-bf-account-btns").css("display", "none");
-        $('#div-bf-account-btns button').hide();
-        // btn under Step 1
-        $("#div-bf-account-btns-getting-started").css("display", "none");
-        $('#div-bf-account-btns-getting-started button').hide();
-      }
+    if (action === "show") {
+      // btn under Step 6
+      $("#div-bf-account-btns").css("display", "flex");
+      $("#div-bf-account-btns button").show();
+      // btn under Step 1
+      $("#div-bf-account-btns-getting-started").css("display", "flex");
+      $("#div-bf-account-btns-getting-started button").show();
+    } else {
+      // btn under Step 6
+      $("#div-bf-account-btns").css("display", "none");
+      $("#div-bf-account-btns button").hide();
+      // btn under Step 1
+      $("#div-bf-account-btns-getting-started").css("display", "none");
+      $("#div-bf-account-btns-getting-started button").hide();
     }
+  }
 }
 
-function create_child_node(oldFormatNode, nodeName, type, ext, openedState, selectedState, disabledState, selectedOriginalLocation, viewOptions) {
+function create_child_node(
+  oldFormatNode,
+  nodeName,
+  type,
+  ext,
+  openedState,
+  selectedState,
+  disabledState,
+  selectedOriginalLocation,
+  viewOptions
+) {
   /*
   oldFormatNode: node in the format under "dataset-structure" key in SODA object
   nodeName: text to show for each node (name)
@@ -734,22 +777,51 @@ function create_child_node(oldFormatNode, nodeName, type, ext, openedState, sele
   selectedOrginalLocation: current folder of selected items
   viewOptions: preview or moveItems
   */
-  var newFormatNode = {"text": nodeName, "state": {"opened": openedState, "selected": selectedState, "disabled": disabledState}, "children": [], "type": type + ext}
+  var newFormatNode = {
+    text: nodeName,
+    state: {
+      opened: openedState,
+      selected: selectedState,
+      disabled: disabledState,
+    },
+    children: [],
+    type: type + ext,
+  };
   if (viewOptions === "moveItems") {
   } else {
     selectedOriginalLocation = "";
   }
   for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
-    if ('action' in oldFormatNode["folders"][key]) {
-      if (!(oldFormatNode["folders"][key]["action"].includes("deleted"))) {
+    if ("action" in oldFormatNode["folders"][key]) {
+      if (!oldFormatNode["folders"][key]["action"].includes("deleted")) {
         if (key === selectedOriginalLocation) {
           newFormatNode.state.selected = true;
           newFormatNode.state.opened = true;
-          var new_node = create_child_node(value, key, "folder", "", true, true, true, selectedOriginalLocation, viewOptions);
+          var new_node = create_child_node(
+            value,
+            key,
+            "folder",
+            "",
+            true,
+            true,
+            true,
+            selectedOriginalLocation,
+            viewOptions
+          );
         } else {
           // newFormatNode.state.selected = false;
           // newFormatNode.state.opened = false;
-          var new_node = create_child_node(value, key, "folder", "", false, false, false, selectedOriginalLocation, viewOptions);
+          var new_node = create_child_node(
+            value,
+            key,
+            "folder",
+            "",
+            false,
+            false,
+            false,
+            selectedOriginalLocation,
+            viewOptions
+          );
         }
         newFormatNode["children"].push(new_node);
       }
@@ -757,11 +829,31 @@ function create_child_node(oldFormatNode, nodeName, type, ext, openedState, sele
       if (key === selectedOriginalLocation) {
         newFormatNode.state.selected = true;
         newFormatNode.state.opened = true;
-        var new_node = create_child_node(value, key, "folder", "", true, true, true, selectedOriginalLocation, viewOptions);
+        var new_node = create_child_node(
+          value,
+          key,
+          "folder",
+          "",
+          true,
+          true,
+          true,
+          selectedOriginalLocation,
+          viewOptions
+        );
       } else {
         // newFormatNode.state.selected = false;
         // newFormatNode.state.opened = false;
-        var new_node = create_child_node(value, key, "folder", "", false, false, false, selectedOriginalLocation, viewOptions);
+        var new_node = create_child_node(
+          value,
+          key,
+          "folder",
+          "",
+          false,
+          false,
+          false,
+          selectedOriginalLocation,
+          viewOptions
+        );
       }
       newFormatNode["children"].push(new_node);
     }
@@ -792,11 +884,15 @@ function create_child_node(oldFormatNode, nodeName, type, ext, openedState, sele
       }
       if ("action" in oldFormatNode["files"][key]) {
         if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
-          var new_node = { text: key, state: { disabled: true }, type: nodeType };
+          var new_node = {
+            text: key,
+            state: { disabled: true },
+            type: nodeType,
+          };
           newFormatNode["children"].push(new_node);
         }
       } else {
-        var new_node = { text: key, state: { disabled: true  }, type: nodeType };
+        var new_node = { text: key, state: { disabled: true }, type: nodeType };
         newFormatNode["children"].push(new_node);
       }
     }
@@ -806,83 +902,92 @@ function create_child_node(oldFormatNode, nodeName, type, ext, openedState, sele
 
 function recursiveExpandNodes(object) {
   // var newFormatNode = {"text": nodeName,
-                      // "state": {"opened": openedState, "selected": selectedState},
-                      // "children": [], "type": type + ext}
+  // "state": {"opened": openedState, "selected": selectedState},
+  // "children": [], "type": type + ext}
   if (object.state.selected) {
-
   }
 }
 
 // var selected = false;
 var selectedPath;
 var selectedNode;
-var jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, true, true, "", "moveItems");
-var jstreeInstance = document.getElementById('data');
-$(document).ready(function() {
-  $('#data').jstree({
-  "core" : {
-    "check_callback" : true,
-    "data": {},
-    "expand_selected_onload" : true
-  },
-  "plugins": ["types", "changed"],
-  "types" : {
-    'folder' : {
-      'icon' : 'fas fa-folder fa-fw'
+var jsTreeData = create_child_node(
+  datasetStructureJSONObj,
+  "My_dataset_folder",
+  "folder",
+  "",
+  true,
+  true,
+  true,
+  "",
+  "moveItems"
+);
+var jstreeInstance = document.getElementById("data");
+$(document).ready(function () {
+  $("#data").jstree({
+    core: {
+      check_callback: true,
+      data: {},
+      expand_selected_onload: true,
     },
-    'folder open' : {
-      'icon' : 'fas fa-folder-open fa-fw'
+    plugins: ["types", "changed"],
+    types: {
+      folder: {
+        icon: "fas fa-folder fa-fw",
+      },
+      "folder open": {
+        icon: "fas fa-folder-open fa-fw",
+      },
+      "folder closed": {
+        icon: "fas fa-folder fa-fw",
+      },
+      "file xlsx": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file xls": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file png": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file PNG": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file pdf": {
+        icon: "./assets/img/pdf-file.png",
+      },
+      "file txt": {
+        icon: "./assets/img/txt-file.png",
+      },
+      "file csv": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file CSV": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file DOC": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file DOCX": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file docx": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file doc": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file jpeg": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file JPEG": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file other": {
+        icon: "./assets/img/other-file.png",
+      },
     },
-    'folder closed' : {
-      'icon' : 'fas fa-folder fa-fw'
-    },
-    'file xlsx': {
-      'icon' : './assets/img/excel-file.png'
-    },
-    'file xls': {
-      'icon' : './assets/img/excel-file.png'
-    },
-    'file png': {
-      'icon' : './assets/img/png-file.png'
-    },
-    'file PNG': {
-      'icon' : './assets/img/png-file.png'
-    },
-    'file pdf': {
-      'icon' : './assets/img/pdf-file.png'
-    },
-    'file txt': {
-      'icon' : './assets/img/txt-file.png'
-    },
-    'file csv': {
-      'icon' : './assets/img/csv-file.png'
-    },
-    'file CSV': {
-      'icon' : './assets/img/csv-file.png'
-    },
-    'file DOC': {
-      'icon' : './assets/img/doc-file.png'
-    },
-    'file DOCX': {
-      'icon' : './assets/img/doc-file.png'
-    },
-    'file docx': {
-      'icon' : './assets/img/doc-file.png'
-    },
-    'file doc': {
-      'icon' : './assets/img/doc-file.png'
-    },
-    'file jpeg': {
-      'icon' : './assets/img/jpeg-file.png'
-    },
-    'file JPEG': {
-      'icon' : './assets/img/jpeg-file.png'
-    },
-    'file other': {
-      'icon' : './assets/img/other-file.png'
-    }
-  }
-})
+  });
 });
 
 async function moveItems(ev, category) {
@@ -899,17 +1004,34 @@ async function moveItems(ev, category) {
     datasetStructureJSONObj["files"] = {};
   }
   for (var highLevelFol in datasetStructureJSONObj["folders"]) {
-    if ("manifest.xlsx" in datasetStructureJSONObj["folders"][highLevelFol]["files"]
-    && datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"]["forTreeview"]) {
-      delete datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"];
+    if (
+      "manifest.xlsx" in
+        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+      datasetStructureJSONObj["folders"][highLevelFol]["files"][
+        "manifest.xlsx"
+      ]["forTreeview"]
+    ) {
+      delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
+        "manifest.xlsx"
+      ];
     }
   }
-  jsTreeData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, true, true, selectedOrginalLocation, "moveItems");
+  jsTreeData = create_child_node(
+    datasetStructureJSONObj,
+    "My_dataset_folder",
+    "folder",
+    "",
+    true,
+    true,
+    true,
+    selectedOrginalLocation,
+    "moveItems"
+  );
   // Note: somehow, html element "#data" was destroyed after closing the Swal popup.
   // Creating the element again after it was destroyed.
-  if (!(jstreeInstance)) {
+  if (!jstreeInstance) {
     $("#items").prepend('<div id="data"></div>');
-    jstreeInstance = document.getElementById('data');
+    jstreeInstance = document.getElementById("data");
   } else {
     jstreeInstance.style.display = "block";
   }
@@ -921,7 +1043,8 @@ async function moveItems(ev, category) {
   // first, convert datasetStructureJSONObj to jsTree's json structure
   // show swal2 with jstree in here
   const { value: folderDestination } = await Swal.fire({
-    title: "<h3 style='margin-bottom:20px !important'>Please choose a folder destination:</h3>",
+    title:
+      "<h3 style='margin-bottom:20px !important'>Please choose a folder destination:</h3>",
     html: jstreeInstance,
     showCloseButton: true,
     showCancelButton: true,
@@ -931,48 +1054,54 @@ async function moveItems(ev, category) {
     preConfirm: () => {
       Swal.resetValidationMessage();
       if (!selectedPath) {
-        Swal.showValidationMessage("Please select a folder destination!")
-        return undefined
+        Swal.showValidationMessage("Please select a folder destination!");
+        return undefined;
       } else {
-          if (selectedNode === "My_dataset_folder") {
-            Swal.showValidationMessage("Items cannot be moved to this level of the dataset!");
-            return undefined
-          } else {
-              return selectedPath
-            }
-          }
-    }
-  })
+        if (selectedNode === "My_dataset_folder") {
+          Swal.showValidationMessage(
+            "Items cannot be moved to this level of the dataset!"
+          );
+          return undefined;
+        } else {
+          return selectedPath;
+        }
+      }
+    },
+  });
   if (folderDestination) {
     Swal.fire({
-      title: "Are you sure you want to move selected item(s) to: " + selectedPath + "?",
+      title:
+        "Are you sure you want to move selected item(s) to: " +
+        selectedPath +
+        "?",
       showCancelButton: true,
-      confirmButtonText: "Yes"
+      confirmButtonText: "Yes",
     }).then((result) => {
-        if (result.isConfirmed) {
-          // loading effect
-          Swal.fire(
-            {
-              title: 'Moving items...',
-              timer: 1500,
-              timerProgressBar: true,
-              allowEscapeKey: false,
-              showConfirmButton: false
-            });
+      if (result.isConfirmed) {
+        // loading effect
+        Swal.fire({
+          title: "Moving items...",
+          timer: 1500,
+          timerProgressBar: true,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+        });
         // action to move and delete here
         // multiple files/folders
         if ($("div.single-item.selected-item").toArray().length > 1) {
-          $("div.single-item.selected-item").toArray().forEach(element => {
-            let itemToMove = element.textContent;
-            var itemType;
-            if ($(element.firstElementChild).hasClass("myFile")) {
-              itemType = "files";
-            } else if ($(element.firstElementChild).hasClass("myFol")) {
-              itemType = "folders";
-            }
-            moveItemsHelper(itemToMove, selectedPath, itemType);
-          })
-        // only 1 file/folder
+          $("div.single-item.selected-item")
+            .toArray()
+            .forEach((element) => {
+              let itemToMove = element.textContent;
+              var itemType;
+              if ($(element.firstElementChild).hasClass("myFile")) {
+                itemType = "files";
+              } else if ($(element.firstElementChild).hasClass("myFol")) {
+                itemType = "folders";
+              }
+              moveItemsHelper(itemToMove, selectedPath, itemType);
+            });
+          // only 1 file/folder
         } else {
           let itemToMove = ev.parentElement.textContent;
           var itemType;
@@ -983,23 +1112,26 @@ async function moveItems(ev, category) {
           }
           moveItemsHelper(itemToMove, selectedPath, itemType);
         }
-        }
-      })
-    }
+      }
+    });
+  }
 }
 
 function moveItemsHelper(item, destination, category) {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedNodeList = destination.split("/").slice(1);
-  var destinationPath = getRecursivePath(selectedNodeList, datasetStructureJSONObj);
+  var destinationPath = getRecursivePath(
+    selectedNodeList,
+    datasetStructureJSONObj
+  );
 
   // handle duplicates in destination folder
   if (category === "files") {
     var uiFilesWithoutExtension = {};
     if (JSON.stringify(destinationPath["files"]) !== "{}") {
       for (var file in destinationPath["files"]) {
-        uiFilesWithoutExtension[path.parse(file).name] = 1
+        uiFilesWithoutExtension[path.parse(file).name] = 1;
       }
     }
     var fileBaseName = path.basename(item);
@@ -1011,7 +1143,7 @@ function moveItemsHelper(item, destination, category) {
       j++;
     }
     if ("action" in myPath[category][item]) {
-      if (!(myPath[category][item]["action"].includes("moved"))) {
+      if (!myPath[category][item]["action"].includes("moved")) {
         myPath[category][item]["action"].push("moved");
       }
       if (fileNameWithoutExt !== originalFileNameWithoutExt) {
@@ -1021,165 +1153,172 @@ function moveItemsHelper(item, destination, category) {
       myPath[category][item]["action"] = ["moved"];
       if (fileNameWithoutExt !== originalFileNameWithoutExt) {
         myPath[category][item]["action"].push("renamed");
-        }
       }
-    destinationPath[category][fileNameWithoutExt + path.parse(fileBaseName).ext] = myPath[category][item];
-    } else if (category === "folders") {
-      var uiFolders = {};
-      if (JSON.stringify(destinationPath["folders"]) !== "{}") {
-        for (var folder in destinationPath["folders"]) {
-          uiFolders[folder] = 1
-        }
-      }
-      var originalFolderName = path.basename(item);
-      var renamedFolderName = originalFolderName;
-      var j = 1;
-      while (renamedFolderName in uiFolders) {
-        renamedFolderName = `${originalFolderName} (${j})`;
-        j++;
-      }
-      if ("action" in myPath[category][item]) {
-        myPath[category][item]["action"].push("moved");
-        addMovedRecursively(myPath[category][item]);
-        if (renamedFolderName !== originalFolderName) {
-          myPath[category][item]["action"].push("renamed");
-        }
-      } else {
-        myPath[category][item]["action"] = ["moved"];
-        addMovedRecursively(myPath[category][item]);
-        if (renamedFolderName !== originalFolderName) {
-          myPath[category][item]["action"].push("renamed");
-          }
-        }
-      destinationPath[category][renamedFolderName] = myPath[category][item];
     }
+    destinationPath[category][
+      fileNameWithoutExt + path.parse(fileBaseName).ext
+    ] = myPath[category][item];
+  } else if (category === "folders") {
+    var uiFolders = {};
+    if (JSON.stringify(destinationPath["folders"]) !== "{}") {
+      for (var folder in destinationPath["folders"]) {
+        uiFolders[folder] = 1;
+      }
+    }
+    var originalFolderName = path.basename(item);
+    var renamedFolderName = originalFolderName;
+    var j = 1;
+    while (renamedFolderName in uiFolders) {
+      renamedFolderName = `${originalFolderName} (${j})`;
+      j++;
+    }
+    if ("action" in myPath[category][item]) {
+      myPath[category][item]["action"].push("moved");
+      addMovedRecursively(myPath[category][item]);
+      if (renamedFolderName !== originalFolderName) {
+        myPath[category][item]["action"].push("renamed");
+      }
+    } else {
+      myPath[category][item]["action"] = ["moved"];
+      addMovedRecursively(myPath[category][item]);
+      if (renamedFolderName !== originalFolderName) {
+        myPath[category][item]["action"].push("renamed");
+      }
+    }
+    destinationPath[category][renamedFolderName] = myPath[category][item];
+  }
   //delete item from the original location
   delete myPath[category][item];
-  listItems(myPath, '#items');
-  getInFolder('.single-item', '#items', organizeDSglobalPath, datasetStructureJSONObj)
+  listItems(myPath, "#items");
+  getInFolder(
+    ".single-item",
+    "#items",
+    organizeDSglobalPath,
+    datasetStructureJSONObj
+  );
 }
 
 // helper functions to add "moved" to leaf nodes a.k.a files
 function addMovedRecursively(object) {
-  Object.keys(object["files"]).forEach(key => {
+  Object.keys(object["files"]).forEach((key) => {
     var file = object["files"][key];
     if ("action" in file) {
-      if (!(file["action"].includes("moved"))) {
+      if (!file["action"].includes("moved")) {
         file["action"].push("moved");
       }
     } else {
-      file["action"] = ["moved"]
+      file["action"] = ["moved"];
     }
-  })
-  Object.keys(object["folders"]).forEach(key => {
+  });
+  Object.keys(object["folders"]).forEach((key) => {
     var folder = object["folders"][key];
     if ("action" in folder) {
       folder["action"].push("moved");
     } else {
-      folder["action"] = ["moved"]
+      folder["action"] = ["moved"];
     }
     if (Object.keys(folder["files"]).length > 0) {
-      Object.keys(folder["files"]).forEach(ele => {
+      Object.keys(folder["files"]).forEach((ele) => {
         if ("action" in folder["files"][ele]) {
-          if (!(folder["files"][ele]["action"].includes("moved"))) {
+          if (!folder["files"][ele]["action"].includes("moved")) {
             folder["files"][ele]["action"].push("moved");
           }
         } else {
-          folder["files"][ele]["action"] = ["moved"]
+          folder["files"][ele]["action"] = ["moved"];
         }
-      })
+      });
     }
     if (Object.keys(folder["folders"]).length > 0) {
-      addMovedRecursively(folder)
+      addMovedRecursively(folder);
     }
-  })
+  });
 }
 
 $(jstreeInstance).on("changed.jstree", function (e, data) {
   if (data.node) {
     selectedNode = data.node.text;
-    selectedPath = data.instance.get_path(data.node,'/');
-    var parentNode = $(jstreeInstance).jstree('get_selected');
+    selectedPath = data.instance.get_path(data.node, "/");
+    var parentNode = $(jstreeInstance).jstree("get_selected");
   }
-})
+});
 
-$(jstreeInstance).on('open_node.jstree', function (event, data) {
-    data.instance.set_type(data.node,'folder open');
+$(jstreeInstance).on("open_node.jstree", function (event, data) {
+  data.instance.set_type(data.node, "folder open");
 });
 
 $(jstreeInstance).on("close_node.jstree", function (event, data) {
   data.instance.set_type(data.node, "folder closed");
 });
 
-var jstreePreview = document.getElementById('div-dataset-tree-preview');
-$(document).ready(function() {
+var jstreePreview = document.getElementById("div-dataset-tree-preview");
+$(document).ready(function () {
   $(jstreePreview).jstree({
-  "core" : {
-    "check_callback" : true,
-    "data": {}
-  },
-  "plugins": ["types"],
-  "types" : {
-    'folder' : {
-      'icon' : 'fas fa-folder fa-fw'
+    core: {
+      check_callback: true,
+      data: {},
     },
-    'folder open' : {
-      'icon' : 'fas fa-folder-open fa-fw'
+    plugins: ["types"],
+    types: {
+      folder: {
+        icon: "fas fa-folder fa-fw",
+      },
+      "folder open": {
+        icon: "fas fa-folder-open fa-fw",
+      },
+      "folder closed": {
+        icon: "fas fa-folder fa-fw",
+      },
+      "file xlsx": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file xls": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file png": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file PNG": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file pdf": {
+        icon: "./assets/img/pdf-file.png",
+      },
+      "file txt": {
+        icon: "./assets/img/txt-file.png",
+      },
+      "file csv": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file CSV": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file DOC": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file DOCX": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file docx": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file doc": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file jpeg": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file JPEG": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file other": {
+        icon: "./assets/img/other-file.png",
+      },
     },
-    'folder closed' : {
-      'icon' : 'fas fa-folder fa-fw'
-    },
-    'file xlsx': {
-      'icon' : './assets/img/excel-file.png'
-    },
-    'file xls': {
-      'icon' : './assets/img/excel-file.png'
-    },
-    'file png': {
-      'icon' : './assets/img/png-file.png'
-    },
-    'file PNG': {
-      'icon' : './assets/img/png-file.png'
-    },
-    'file pdf': {
-      'icon' : './assets/img/pdf-file.png'
-    },
-    'file txt': {
-      'icon' : './assets/img/txt-file.png'
-    },
-    'file csv': {
-      'icon' : './assets/img/csv-file.png'
-    },
-    'file CSV': {
-      'icon' : './assets/img/csv-file.png'
-    },
-    'file DOC': {
-      'icon' : './assets/img/doc-file.png'
-    },
-    'file DOCX': {
-      'icon' : './assets/img/doc-file.png'
-    },
-    'file docx': {
-      'icon' : './assets/img/doc-file.png'
-    },
-    'file doc': {
-      'icon' : './assets/img/doc-file.png'
-    },
-    'file jpeg': {
-      'icon' : './assets/img/jpeg-file.png'
-    },
-    'file JPEG': {
-      'icon' : './assets/img/jpeg-file.png'
-    },
-    'file other': {
-      'icon' : './assets/img/other-file.png'
-    }
-  }
-  })
-})
+  });
+});
 
-$(jstreePreview).on('open_node.jstree', function (event, data) {
-    data.instance.set_type(data.node,'folder open');
+$(jstreePreview).on("open_node.jstree", function (event, data) {
+  data.instance.set_type(data.node, "folder open");
 });
 
 $(jstreePreview).on("close_node.jstree", function (event, data) {
@@ -1191,13 +1330,27 @@ function showTreeViewPreview() {
   if (manifestFileCheck.checked) {
     for (var key in datasetStructureJSONObj["folders"]) {
       if (highLevelFolders.includes(key)) {
-        if (!("manifest.xlsx" in datasetStructureJSONObj["folders"][key]["files"])) {
-          datasetStructureJSONObj["folders"][key]["files"]["manifest.xlsx"] = {"forTreeview": true};
+        if (
+          !("manifest.xlsx" in datasetStructureJSONObj["folders"][key]["files"])
+        ) {
+          datasetStructureJSONObj["folders"][key]["files"]["manifest.xlsx"] = {
+            forTreeview: true,
+          };
         }
       }
     }
   }
-  var jsTreePreviewData = create_child_node(datasetStructureJSONObj, "My_dataset_folder", "folder", "", true, false, false, "", "preview");
+  var jsTreePreviewData = create_child_node(
+    datasetStructureJSONObj,
+    "My_dataset_folder",
+    "folder",
+    "",
+    true,
+    false,
+    false,
+    "",
+    "preview"
+  );
   $(jstreePreview).jstree(true).settings.core.data = jsTreePreviewData;
   $(jstreePreview).jstree(true).refresh();
 }

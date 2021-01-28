@@ -49,7 +49,9 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
               "recursive_deleted"
             )
           ) {
-            dataset_folder["folders"][folder]["action"].push("recursive_deleted");
+            dataset_folder["folders"][folder]["action"].push(
+              "recursive_deleted"
+            );
           }
         } else if (mode === "restore") {
           if (
@@ -137,9 +139,11 @@ function delFolder(
           var filtered = getGlobalPath(organizeCurrentLocation);
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
 
-          if (type === "folders")
-          {
-            recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "restore");
+          if (type === "folders") {
+            recursive_mark_sub_files_deleted(
+              myPath[type][itemToDelete],
+              "restore"
+            );
           }
 
           // update Json object with the restored object
@@ -219,9 +223,11 @@ function delFolder(
                 (myPath[type][itemToDelete]["type"] === "local" &&
                   myPath[type][itemToDelete]["action"].includes("existing"))
               ) {
-                if (type === "folders")
-                {
-                  recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "delete");
+                if (type === "folders") {
+                  recursive_mark_sub_files_deleted(
+                    myPath[type][itemToDelete],
+                    "delete"
+                  );
                 }
 
                 if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
@@ -266,10 +272,11 @@ function delFolder(
               (myPath[type][itemToDelete]["type"] === "local" &&
                 myPath[type][itemToDelete]["action"].includes("existing"))
             ) {
-
-              if (type === "folders")
-              {
-                recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "delete");
+              if (type === "folders") {
+                recursive_mark_sub_files_deleted(
+                  myPath[type][itemToDelete],
+                  "delete"
+                );
               }
 
               if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
@@ -467,12 +474,12 @@ function renameFolder(
 }
 
 function getGlobalPath(path) {
-  var currentPath = path.value.trim()
-  var jsonPathArray = currentPath.split("/")
+  var currentPath = path.value.trim();
+  var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.filter(function (el) {
     return el != "";
   });
-  return filtered
+  return filtered;
 }
 
 function loadFileFolder(myPath) {
@@ -502,7 +509,7 @@ function loadFileFolder(myPath) {
     if (sortedObj["files"][item].length !== 1) {
       if ("path" in sortedObj["files"][item]) {
         var extension = path.extname(sortedObj["files"][item]["path"]);
-        extension = extension.slice(1);;
+        extension = extension.slice(1);
       } else {
         var extension = "other";
       }
@@ -724,20 +731,33 @@ function loadDetailsContextMenu(
 
 //path_label = document.querySelector("#organize-dataset-tab > div > div > div > div.div-display-details.file > div:nth-child(2) > label");
 
-
-function triggerManageDetailsPrompts(ev, fileName, filePath, textareaID1, textareaID2) {
-  filePath["files"][fileName]["additional-metadata"] = document.getElementById(textareaID2).value.trim();
-  filePath["files"][fileName]["description"] = document.getElementById(textareaID1).value.trim();
+function triggerManageDetailsPrompts(
+  ev,
+  fileName,
+  filePath,
+  textareaID1,
+  textareaID2
+) {
+  filePath["files"][fileName]["additional-metadata"] = document
+    .getElementById(textareaID2)
+    .value.trim();
+  filePath["files"][fileName]["description"] = document
+    .getElementById(textareaID1)
+    .value.trim();
   // check for "Apply to all files"
   if (document.getElementById("input-add-file-metadata").checked) {
     for (var file in filePath["files"]) {
-        filePath["files"][file]["additional-metadata"] = document.getElementById(textareaID2).value.trim();
-      }
+      filePath["files"][file]["additional-metadata"] = document
+        .getElementById(textareaID2)
+        .value.trim();
     }
+  }
   if (document.getElementById("input-add-file-description").checked) {
     for (var file in filePath["files"]) {
-        filePath["files"][file]["description"] = document.getElementById(textareaID1).value.trim();
-      }
+      filePath["files"][file]["description"] = document
+        .getElementById(textareaID1)
+        .value.trim();
     }
-   // $(this).html("Done <i class='fas fa-check'></i>");
-};
+  }
+  // $(this).html("Done <i class='fas fa-check'></i>");
+}
