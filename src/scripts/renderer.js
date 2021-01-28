@@ -6865,6 +6865,8 @@ const addBFAccountInsideBootbox = (myBootboxDialog) => {
             $("#para-account-detail-curate").html(res);
             $("#current-bf-account").text(keyname);
             $("#current-bf-account-generate").text(keyname);
+            $("#current-bf-dataset").text("None");
+            $("#current-bf-dataset-generate").text("None");
             $("#para-account-detail-curate-generate").html(res);
             showHideDropdownButtons("account", "show");
           }
