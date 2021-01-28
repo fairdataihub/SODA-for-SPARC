@@ -64,7 +64,7 @@
   "license": "MIT",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",
-    "@sweetalert2/theme-bulma": "^4.0.1",
+    "@sweetalert2/theme-bulma": "^4.0.2",
     "@toast-ui/editor": "^2.5.1",
     "@yaireo/tagify": "^3.22.1",
     "airtable": "^0.8.1",
@@ -91,7 +91,7 @@
     "pdfkit": "^0.11.0",
     "remove-markdown": "^0.3.0",
     "spur-template": "^1.1.0",
-    "sweetalert2": "^10.13.0",
+    "sweetalert2": "^10.13.3",
     "universal-analytics": "^0.4.23",
     "uuid": "^8.3.1",
     "v8-compile-cache": "^2.2.0",
