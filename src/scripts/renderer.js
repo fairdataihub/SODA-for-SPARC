@@ -1451,7 +1451,7 @@ bfRefreshAirtableStatusBtn.addEventListener("click", () => {
 ///////////////// //////////////// //////////////// ////////////////
 ///////////////////////Submission file //////////////// ////////////////
 
-const changeAwardInput = () => {
+function changeAwardInput(){
   document.getElementById("selected-milestone-date").value = "";
   document.getElementById("input-milestone-date").value = "";
   actionEnterNewDate("none");
@@ -1512,7 +1512,7 @@ descriptionDateInput.addEventListener("change", () => {
 
 const submissionDateInput = document.getElementById("input-milestone-date");
 
-const actionEnterNewDate = (action) => {
+function actionEnterNewDate(action) {
   document.getElementById(
     "div-submission-enter-different-date-1"
   ).style.display = action;
@@ -1631,14 +1631,7 @@ const getParentDatasets = () => {
   return parentDatasets;
 };
 
-const clearCurrentConInfo = () => {
-  document.getElementById("input-con-ID").value = "";
-  document.getElementById("input-con-role").value = "";
-  document.getElementById("input-con-affiliation").value = "";
-  contactPerson.checked = false;
-};
-
-const changeAwardInputDsDescription = () => {
+function changeAwardInputDsDescription() {
   clearCurrentConInfo();
   /// delete old table
   while (currentConTable.rows.length > 1) {
@@ -1691,6 +1684,13 @@ const changeAwardInputDsDescription = () => {
         }
       };
   }
+};
+
+function clearCurrentConInfo() {
+  document.getElementById("input-con-ID").value = "";
+  document.getElementById("input-con-role").value = "";
+  document.getElementById("input-con-affiliation").value = "";
+  contactPerson.checked = false;
 };
 
 //////////////////////// Current Contributor(s) /////////////////////
@@ -5696,7 +5696,7 @@ datasetPermissionList.addEventListener("change", (e) => {
 
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
-const loadDefaultAccount = () => {
+function loadDefaultAccount() {
   client.invoke("api_bf_default_account_load", (error, res) => {
     if (error) {
       log.error(error);
@@ -5735,7 +5735,7 @@ const loadDefaultAccount = () => {
   });
 };
 
-const updateBfAccountList = () => {
+function updateBfAccountList() {
   bfSelectAccountStatus.innerHTML = "Loading existing accounts...";
   bfAccountLoadProgress.style.display = "block";
   datasetPermissionList.disabled = true;
