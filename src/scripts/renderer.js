@@ -3658,7 +3658,7 @@ bfAddAccountBtn.addEventListener("click", () => {
         bfAddAccountStatus.innerHTML =
           res + smileyCan + ". Please select your account!";
         bfAccountLoadProgress.style.display = "block";
-        // updateBfAccountList();
+        updateBfAccountList();
         // updateAllBfAccountList(curateBFaccountList);
         keyName.value = "";
         key.value = "";
