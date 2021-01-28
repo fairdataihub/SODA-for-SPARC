@@ -1,3 +1,5 @@
+"use strict";
+
 //// option to show tool-tips for high-level folders
 const showTooltips = (ev) => {
   var folderName = ev.parentElement.innerText;
@@ -78,9 +80,9 @@ const delFolder = (
   singleUIItem,
   inputGlobal
 ) => {
-  var itemToDelete = ev.parentElement.innerText;
-  var promptVar;
-  var type; // renaming files or folders
+  let itemToDelete = ev.parentElement.innerText;
+  let promptVar;
+  let type; // renaming files or folders
 
   if (ev.classList.value.includes("myFile")) {
     promptVar = "file";

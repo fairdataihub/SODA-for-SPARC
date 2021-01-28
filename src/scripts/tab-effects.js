@@ -1,3 +1,5 @@
+"use strict";
+
 const { relative } = require("path");
 
 // JSON object of all the tabs
@@ -366,7 +368,7 @@ const fill_info_details = () => {
 };
 
 const traverse_back = (amount, element = "", pulse_animation = false) => {
-  for (i = 0; i < amount; i++) {
+  for (let i = 0; i < amount; i++) {
     nextPrev(-1);
   }
   if (element != "") {
@@ -397,17 +399,20 @@ const add_card_detail = (
   temp = ', "' + element_id + '", ' + pulse + ")";
   link_item += temp;
   link_item += "'></i>";
+
   let parent_element = $("#div-preview-dataset-details");
   let new_card_element =
     "<div class='card-container'><h5 class='card-left'>" +
     card_left +
     ":</h5><p class='card-right'>" +
     card_right;
+
   if (parent_tab === -1) {
     new_card_element += "</p></div>";
   } else {
     new_card_element += link_item + "</p></div>";
   }
+
   $(parent_element).append(new_card_element);
 };
 
@@ -880,6 +885,7 @@ const transitionSubQuestions = async (
   document.getElementById(parentDiv).scrollTop = document.getElementById(
     parentDiv
   ).scrollHeight;
+
   // when we hit the last question under Step 1, hide and disable Next button
   if (ev.getAttribute("data-next") === "Question-getting-started-final") {
     $("#progress-files-dropdown").val("Select");
@@ -913,6 +919,7 @@ const transitionSubQuestions = async (
       // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
       $("#Question-getting-started-existing-BF-account").show();
       $("#Question-getting-started-existing-BF-account").children().show();
+
       if (sodaJSONObj["dataset-structure"] != {}) {
         reset_ui();
         $("#nextBtn").prop("disabled", false);
@@ -959,7 +966,7 @@ const transitionSubQuestions = async (
 };
 
 // Create the dataset structure for sodaJSONObj
-create_json_object = (sodaJSONObj) => {
+const create_json_object = (sodaJSONObj) => {
   high_level_metadata_sparc = [
     "submission.xlsx",
     "submission.csv",
@@ -976,16 +983,19 @@ create_json_object = (sodaJSONObj) => {
     "README.txt",
     "CHANGES.txt",
   ];
+
   let root_folder_path = $("#input-destination-getting-started-locally").attr(
     "placeholder"
   );
   sodaJSONObj["dataset-structure"] = { folders: {} };
   let stats = "";
+
   // Get high level folders and metadata files first
   fs.readdirSync(root_folder_path).forEach((file) => {
     full_current_path = path.join(root_folder_path, file);
     stats = fs.statSync(full_current_path);
     if (stats.isDirectory()) {
+      // include only high level folders
       if (highLevelFolders.includes(file)) {
         sodaJSONObj["dataset-structure"]["folders"][file] = {
           folders: {},
@@ -997,6 +1007,7 @@ create_json_object = (sodaJSONObj) => {
       }
     }
     if (stats.isFile()) {
+      // only import valid metadata files
       if (high_level_metadata_sparc.includes(file)) {
         sodaJSONObj["metadata-files"][file] = {
           path: full_current_path,
@@ -1012,14 +1023,18 @@ create_json_object = (sodaJSONObj) => {
   for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
     sodaJSONObj["starting-point"][folder] = {};
     sodaJSONObj["starting-point"][folder]["path"] = "";
+
     temp_file_path_xlsx = path.join(root_folder_path, folder, "manifest.xlsx");
     temp_file_path_csv = path.join(root_folder_path, folder, "manifest.csv");
+
     if (fs.existsSync(temp_file_path_xlsx)) {
+      // if excel manifest file exists
       sodaJSONObj["starting-point"][folder]["path"] = temp_file_path_xlsx;
       sodaJSONObj["starting-point"][folder]["manifest"] = excelToJson({
         sourceFile: sodaJSONObj["starting-point"][folder]["path"],
       })["Sheet1"];
     } else if (fs.existsSync(temp_file_path_csv)) {
+      // if csv manifest file exists
       sodaJSONObj["starting-point"][folder]["path"] = temp_file_path_csv;
       sodaJSONObj["starting-point"][folder][
         "manifest"
@@ -1027,6 +1042,8 @@ create_json_object = (sodaJSONObj) => {
         .parseSubArray(";", ",")
         .getJsonFromCsv(sodaJSONObj["starting-point"][folder]["path"]);
     }
+
+    // create the dataset-structure recursively
     recursive_structure_create(
       sodaJSONObj["dataset-structure"]["folders"][folder],
       folder,
@@ -1038,14 +1055,15 @@ create_json_object = (sodaJSONObj) => {
 // replace any duplicate file names
 // Modify for consistency with blackfynn naming when the update their system
 const check_file_name_for_blackfynn_duplicate = (dataset_folder, file) => {
-  file_name = path.parse(file).name;
-  file_extension = path.parse(file).ext;
   let i = 1;
   let projected_number = "";
+
+  let file_name = path.parse(file).name;
+  let file_extension = path.parse(file).ext;
+
   for (item in dataset_folder) {
     if (item != file) {
-      item_name = path.parse(item).name;
-      item_extension = path.parse(item).ext;
+      let item_name = path.parse(item).name;
       if (file_name + projected_number == item_name) {
         projected_number = ` (${i})`;
         i += 1;
@@ -1405,7 +1423,7 @@ const transitionSubQuestionsButton = async (
   }
 };
 
-reset_ui = () => {
+const reset_ui = () => {
   $(".option-card.high-level-folders").each((i, obj) => {
     $(obj).removeClass("checked");
     $(obj).removeClass("disabled");

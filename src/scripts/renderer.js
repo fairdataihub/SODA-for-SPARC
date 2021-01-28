@@ -1,3 +1,5 @@
+"use strict";
+
 //////////////////////////////////
 // Import required modules
 //////////////////////////////////
@@ -824,7 +826,7 @@ addAirtableKeyBtn.addEventListener("click", () => {
 loadAwardData();
 
 /////////////////////// Download Metadata Templates ////////////////////////////
-templateArray = [
+var templateArray = [
   "submission.xlsx",
   "dataset_description.xlsx",
   "subjects.xlsx",
@@ -1027,8 +1029,7 @@ function parseJson(path) {
   }
   try {
     var content = fs.readFileSync(path);
-    contentJson = JSON.parse(content);
-    return contentJson;
+    return JSON.parse(content);
   } catch (error) {
     log.error(error);
     console.log(error);
@@ -1186,7 +1187,7 @@ addAwardBtn.addEventListener("click", () => {
 
 /////// Delete an Award///////////
 const deleteOptionByValue = (dropdown, value) => {
-  for (var i = 0; i < dropdown.length; i++) {
+  for (let i = 0; i < dropdown.length; i++) {
     if (dropdown.options[i].value === value) {
       dropdown.remove(i);
     }
@@ -1451,7 +1452,7 @@ bfRefreshAirtableStatusBtn.addEventListener("click", () => {
 ///////////////// //////////////// //////////////// ////////////////
 ///////////////////////Submission file //////////////// ////////////////
 
-function changeAwardInput(){
+function changeAwardInput() {
   document.getElementById("selected-milestone-date").value = "";
   document.getElementById("input-milestone-date").value = "";
   actionEnterNewDate("none");
@@ -1499,7 +1500,7 @@ function changeAwardInput(){
     );
   }
   descriptionDateInput.value = completionDateArray[1];
-};
+}
 
 descriptionDateInput.addEventListener("change", () => {
   document.getElementById("input-milestone-date").value = "";
@@ -1522,7 +1523,7 @@ function actionEnterNewDate(action) {
   document.getElementById(
     "div-submission-enter-different-date-3"
   ).style.display = action;
-};
+}
 
 /////// Populate Submission file fields from presaved information
 presavedAwardArray2.addEventListener("change", changeAwardInput);
@@ -1684,14 +1685,14 @@ function changeAwardInputDsDescription() {
         }
       };
   }
-};
+}
 
 function clearCurrentConInfo() {
   document.getElementById("input-con-ID").value = "";
   document.getElementById("input-con-role").value = "";
   document.getElementById("input-con-affiliation").value = "";
   contactPerson.checked = false;
-};
+}
 
 //////////////////////// Current Contributor(s) /////////////////////
 
@@ -2239,13 +2240,13 @@ const grabConInfoEntries = () => {
   }
   /// other funding sources
   var otherFunding = otherFundingTagify.value;
-  for (var i = 0; i < otherFunding.length; i++) {
+  for (let i = 0; i < otherFunding.length; i++) {
     fundingArray.push(otherFunding[i].value);
   }
   /// grab entries from contributor table
   var rowcountCon = currentConTable.rows.length;
   var currentConInfo = [];
-  for (i = 1; i < rowcountCon; i++) {
+  for (let i = 1; i < rowcountCon; i++) {
     var conRoleInfo = currentConTable.rows[i].cells[3].innerHTML;
     var conAffliationInfo = currentConTable.rows[i].cells[2].innerHTML;
     var myCurrentCon = {
@@ -2268,7 +2269,7 @@ const grabProtocolSection = () => {
   /// Additional link description
   var rowcountLink = document.getElementById("table-addl-links").rows.length;
   var addlLinkInfo = [];
-  for (i = 1; i < rowcountLink; i++) {
+  for (let i = 1; i < rowcountLink; i++) {
     var addlLink = {
       "link type": document.getElementById("table-addl-links").rows[i].cells[0]
         .innerHTML,
@@ -2283,7 +2284,7 @@ const grabProtocolSection = () => {
   var originatingDOIArray = [];
   var protocolArray = [];
   var additionalLinkArray = [];
-  for (var i = 0; i < addlLinkInfo.length; i++) {
+  for (let i = 0; i < addlLinkInfo.length; i++) {
     if (addlLinkInfo[i]["link type"] === "Originating Article DOI") {
       originatingDOIArray.push(addlLinkInfo[i]);
     } else if (addlLinkInfo[i]["link type"] === "Protocol URL or DOI*") {
@@ -5733,7 +5734,7 @@ function loadDefaultAccount() {
       }
     }
   });
-};
+}
 
 function updateBfAccountList() {
   bfSelectAccountStatus.innerHTML = "Loading existing accounts...";
@@ -5781,7 +5782,7 @@ function updateBfAccountList() {
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
   });
-};
+}
 
 const showCurrentDOI = () => {
   currentDOI.value = "Please wait...";

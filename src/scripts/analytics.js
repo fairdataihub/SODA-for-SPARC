@@ -1,3 +1,5 @@
+"use strict";
+
 const electron = require("electron");
 const ua = require("universal-analytics");
 const { v4: uuid } = require("uuid");
