@@ -562,6 +562,7 @@ const nextPrev = (n) => {
     x[currentTab].id === "preview-dataset-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
+    // skip to step 5 from step 7 if on an existing blackfynn dataset
     $(x[currentTab]).removeClass("tab-active");
 
     currentTab = currentTab - 2;
@@ -571,7 +572,7 @@ const nextPrev = (n) => {
     x[currentTab].id === "manifest-file-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
-    // cj -skip step 6
+    // skip to step 7 from step 5 if on an existing blackfynn dataset
     $(x[currentTab]).removeClass("tab-active");
     if (n == -1) {
       currentTab = currentTab + n;
@@ -626,7 +627,7 @@ const nextPrev = (n) => {
   }
 };
 
-//// High level folders check mark effect
+//// High level folders check mark effectv
 $(".option-card.high-level-folders").click(() => {
   $(this).toggleClass("checked");
   if ($(this).hasClass("checked")) {
