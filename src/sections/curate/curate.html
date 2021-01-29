@@ -21,9 +21,9 @@
     </h3>
     <div class="div-organize-generate-dataset" style="flex-direction:row">
       <button class="button-generate-dataset" data-section="organize" id="button-section-organize-dataset">
-        <h5 data-section="organize" style="font-family:'Raleway', sans-serif;color:#585858;font-size:17px">Organize dataset</h5>
-        <i data-section="organize" class="fas fa-sitemap" style="font-size: 58px;color:var(--tagify-dd-color-primary);"></i>
-        <p data-section="organize"> Generate your SPARC format dataset</p>
+        <h5 style="font-family:'Raleway', sans-serif;color:#585858;font-size:17px">Organize dataset</h5>
+        <i class="fas fa-sitemap" style="font-size: 58px;color:var(--tagify-dd-color-primary);"></i>
+        <p> Generate your SPARC format dataset</p>
       </button>
       <button class="button-generate-dataset" data-section="validate" style="background: #f6f6f6;pointer-events: none;" id="button-section-validate-dataset">
         <h5 style="font-family:'Raleway', sans-serif;color:#585858;font-size:17px">Validate dataset</h5>
@@ -123,7 +123,7 @@
       </a>
     </h3>
 
-    <div class="individual-question getting-started show" id="Question-getting-started-1">
+    <div class="individual-question getting-started" id="Question-getting-started-1">
         <div class="ui form" style="width:100%">
         <div class="grouped fields">
           <label style="font-size:17px;text-align:center;color:var(--color-bg-plum)">Let's get started. What would you like to do?
@@ -1427,6 +1427,10 @@
  <script>
    $('.button-display-details').click(function() {
      $(this).parent().toggleClass('show')
+   });
+
+   $(".button-generate-dataset i").bind("click", function () {
+     $($(this).parents()[0]).click();
    });
    </script>
 
