@@ -8114,12 +8114,16 @@ function addDetailsForFile(ev) {
 // })
 
 $("#inputNewNameDataset").keyup(function () {
+  var newName = $("#inputNewNameDataset").val().trim();
+
   $("#Question-generate-dataset-generate-div").removeClass("show");
   $("#Question-generate-dataset-generate-div").removeClass("test2");
   $("#Question-generate-dataset-generate-div").removeClass("prev");
   $("#Question-generate-dataset-generate-div").hide();
   $("#Question-generate-dataset-generate-div").children().hide();
-  var newName = $("#inputNewNameDataset").val().trim();
+  $("#para-continue-name-dataset-generate").hide();
+  $("#para-continue-name-dataset-generate").text("");
+  
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
       document.getElementById("div-confirm-inputNewNameDataset").style.display =
@@ -8135,8 +8139,7 @@ $("#inputNewNameDataset").keyup(function () {
       $("#btn-confirm-new-dataset-name").show();
       $("#Question-generate-dataset-generate-div").show();
       $("#Question-generate-dataset-generate-div").children().show();
-      // $('#div-confirm-inputNewNameDataset button').click();
-      // $("#nextBtn").prop("disabled", false);
+
       $("#Question-generate-dataset-generate-div-old").addClass("show");
       document.getElementById("para-new-name-dataset-message").innerHTML = "";
     }
@@ -8189,6 +8192,9 @@ ipcRenderer.on(
           populate_existing_folders(datasetStructureJSONObj);
           populate_existing_metadata(sodaJSONObj);
           if (valid_dataset == true) {
+            $("#para-continue-location-dataset-getting-started").text(
+              "Please continue below."
+            );
             $("#nextBtn").prop("disabled", false);
           } else {
             var bootboxDialog = bootbox.confirm({
@@ -8205,7 +8211,7 @@ ipcRenderer.on(
                 },
               },
               centerVertical: true,
-              callback: function (result) {
+              callback: (result) => {
                 if (result) {
                   $("#nextBtn").prop("disabled", false);
                   $("#para-continue-location-dataset-getting-started").text(
