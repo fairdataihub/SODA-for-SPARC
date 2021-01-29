@@ -470,6 +470,16 @@ async function openDropdownPrompt(dropdown) {
           allowEscapeKey: false,
           showConfirmButton: false,
         });
+        $("#Question-getting-started-BF-account")
+          .nextAll()
+          .removeClass("show")
+          .removeClass("prev")
+          .removeClass("test2")
+        $("#Question-generate-dataset-BF-account")
+          .nextAll()
+          .removeClass("show")
+          .removeClass("prev")
+          .removeClass("test2")
         $("#current-bf-account").text("");
         $("#current-bf-account-generate").text("");
         $("#current-bf-dataset").text("None");

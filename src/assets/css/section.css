@@ -13,7 +13,7 @@
   padding-left: 30px;
   box-sizing: border-box;
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: auto;
   color: var(--color-accent);
   background-color: var(--color-section);
   /* Hide */
