@@ -14,7 +14,7 @@ var currentTab = 0; // Current tab is set to be the first tab (0)
 // showParentTab(0, 1);
 
 function showParentTab(tabNow, nextOrPrev) {
-  document.getElementById("nextBtn").disabled = true;
+  $("#nextBtn").prop("disabled", true);
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
     document.getElementById("save-progress-btn").style.display = "block";
@@ -56,15 +56,15 @@ function showParentTab(tabNow, nextOrPrev) {
   document.getElementById("nextBtn").innerHTML = "Continue";
 
   if (nextOrPrev === -1) {
-    document.getElementById("nextBtn").disabled = false;
+    $("#nextBtn").prop("disabled", false);
   }
 
   if (tabNow == 0) {
     document.getElementById("prevBtn").style.display = "none";
     if ($('input[name="getting-started-1"]:checked').length === 1) {
-      document.getElementById("nextBtn").disabled = false;
+      $("#nextBtn").prop("disabled", false);
     } else if ($('input[name="getting-started-1"]:checked').length === 0) {
-      document.getElementById("nextBtn").disabled = true;
+      $("#nextBtn").prop("disabled", true);
     }
   } else if (tabNow == 1) {
     checkHighLevelFoldersInput();
@@ -72,7 +72,7 @@ function showParentTab(tabNow, nextOrPrev) {
   } else if (tabNow == 5) {
     //document.getElementById("nextBtn").disabled = true;
   } else {
-    document.getElementById("nextBtn").disabled = false;
+    $("#nextBtn").prop("disabled", false);
   }
   if (tabNow == 5) {
     if (
@@ -86,9 +86,9 @@ function showParentTab(tabNow, nextOrPrev) {
       $("#input-destination-generate-dataset-locally")[0].placeholder !==
         "Browse here"
     ) {
-      document.getElementById("nextBtn").disabled = false;
+      $("#nextBtn").prop("disabled", false);
     } else {
-      document.getElementById("nextBtn").disabled = true;
+      $("#nextBtn").prop("disabled", true);
     }
   }
 
@@ -108,17 +108,17 @@ const fill_info_details = () => {
   $(".card-container").remove();
   if (sodaJSONObj["starting-point"]["type"] === "bf") {
     add_card_detail(
-      "Current account",
+      "Blackfynn account",
       sodaJSONObj["bf-account-selected"]["account-name"]
     );
     add_card_detail(
-      "Current dataset",
+      "Dataset name",
       sodaJSONObj["bf-dataset-selected"]["dataset-name"]
     );
     if (manifestFileCheck.checked) {
       add_card_detail(
         "Manifest files",
-        "Auto generated",
+        "Requested from SODA",
         1,
         "pulse-manifest-checkbox",
         true
@@ -150,7 +150,7 @@ const fill_info_details = () => {
       if (manifestFileCheck.checked) {
         add_card_detail(
           "Manifest files",
-          "Auto generated",
+          "Requested from SODA",
           2,
           "pulse-manifest-checkbox",
           true
@@ -190,7 +190,7 @@ const fill_info_details = () => {
       if (manifestFileCheck.checked) {
         add_card_detail(
           "Manifest files",
-          "Auto generated",
+          "Requested from SODA",
           2,
           "pulse-manifest-checkbox",
           true
@@ -222,7 +222,7 @@ const fill_info_details = () => {
         true
       );
       add_card_detail(
-        "Current account",
+        "Blackfynn account",
         $("#current-bf-account-generate").text(),
         1,
         "Question-generate-dataset-BF-account",
@@ -297,7 +297,7 @@ const fill_info_details = () => {
         ) {
           add_card_detail(
             "For existing files",
-            "Create duplicates",
+            "Create a duplicate",
             1,
             "Question-generate-dataset-existing-files-options",
             true
@@ -336,7 +336,7 @@ const fill_info_details = () => {
       if (manifestFileCheck.checked) {
         add_card_detail(
           "Manifest files",
-          "Auto generated",
+          "Requested from SODA",
           2,
           "pulse-manifest-checkbox",
           true
@@ -359,6 +359,10 @@ const traverse_back = (amount, element = "", pulse_animation = false) => {
     nextPrev(-1);
   }
   if (element != "") {
+    if (element === "Question-generate-dataset-existing-folders-options") {
+      $("#button-confirm-bf-dataset").click();
+      $("nextBtn").prop("disabled", true);
+    }
     setTimeout(() => {
       document.getElementById(element).scrollIntoView({
         behavior: "smooth",
@@ -415,7 +419,7 @@ function deleteEmptyKeysFromObject(object) {
 }
 
 function checkHighLevelFoldersInput() {
-  document.getElementById("nextBtn").disabled = true;
+  $("#nextBtn").prop("disabled", true);
   var optionCards = document.getElementsByClassName(
     "option-card high-level-folders"
   );
@@ -427,7 +431,7 @@ function checkHighLevelFoldersInput() {
     }
   }
   if (checked) {
-    document.getElementById("nextBtn").disabled = false;
+    $("#nextBtn").prop("disabled", false);
   }
   return checked;
 }
@@ -880,6 +884,8 @@ async function transitionSubQuestions(
     $(ev).hide();
   }
 
+  
+
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(
     parentDiv
@@ -906,7 +912,7 @@ async function transitionSubQuestions(
       sodaJSONObj["metadata-files"] = {};
       reset_ui();
       setTimeout(function () {
-        document.getElementById("nextBtn").disabled = false;
+        $("#nextBtn").prop("disabled", false);
         $("#para-continue-prepare-new-getting-started").text(
           "Please continue below."
         );
@@ -930,8 +936,32 @@ async function transitionSubQuestions(
     ev.getAttribute("data-next") ===
     "Question-generate-dataset-generate-div-old"
   ) {
+    if (
+      $("#generate-local-existing").is(":checked") &&
+      currentDiv === "Question-generate-dataset"
+    ) {
+      let starting_point = sodaJSONObj["starting-point"]["local-path"];
+      bootbox.alert({
+        message: `The following local folder '${starting_point}' will be modified as instructed.`,
+        centerVertical: true,
+      });
+      $("#para-continue-replace-local-generate").show();
+      $("#para-continue-replace-local-generate").text("Please continue below.");
+    } else {
+      if (currentDiv === "Question-generate-dataset-existing-files-options") {
+        $("#para-continue-existing-files-generate").show();
+        $("#para-continue-existing-files-generate").text(
+          "Please continue below."
+        );
+      } else {
+        $("#para-continue-existing-files-generate").hide();
+        $("#para-continue-existing-files-generate").text("");
+      }
+    }
     $("#nextBtn").prop("disabled", false);
   } else {
+    $("#para-continue-replace-local-generate").hide();
+    $("#para-continue-replace-local-generate").text("");
     $("#nextBtn").prop("disabled", true);
   }
 
@@ -1328,6 +1358,7 @@ async function transitionSubQuestionsButton(
 
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute("data-next"));
+  hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!target.classList.contains("show")) {
     target.classList.add("show");
@@ -1344,6 +1375,7 @@ async function transitionSubQuestionsButton(
     // append to parentDiv
     document.getElementById(parentDiv).appendChild(target);
   }
+
 
   // if buttons: Add account and Confirm account were hidden, show them again here
   if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-account") {
@@ -1377,6 +1409,17 @@ async function transitionSubQuestionsButton(
     }
     $(ev).hide();
   }
+
+  if ((ev).getAttribute("id") === "btn-confirm-new-dataset-name")
+  {
+    $("#para-continue-name-dataset-generate").show();
+    $("#para-continue-name-dataset-generate").text("Please continue below.");
+  }
+  else
+  {
+    $("#para-continue-name-dataset-generate").text("");
+  }
+
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(
     parentDiv
@@ -1432,7 +1475,7 @@ reset_ui = () => {
   $("#Question-getting-started-existing-BF-account").children().hide();
   $("#Question-getting-started-existing-BF-dataset").hide();
   $("#Question-getting-started-existing-BF-dataset").children().hide();
-  document.getElementById("nextBtn").disabled = true;
+  $("#nextBtn").prop("disabled", true);
 };
 
 var populate_existing_folders = (dataset_folders) => {
