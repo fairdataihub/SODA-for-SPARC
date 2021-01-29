@@ -34,7 +34,7 @@ function showParentTab(tabNow, nextOrPrev) {
   $(x[tabNow]).addClass("tab-active");
   setTimeout(function () {
     $(x[tabNow]).css("overflow", "auto");
-  }, 1500);
+  }, 1200);
 
   var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter(function (element) {
     return ![tabNow].includes(element);
@@ -71,9 +71,11 @@ function showParentTab(tabNow, nextOrPrev) {
   if (tabNow == 5) {
     if (
       $("#inputNewNameDataset").val() !== "" ||
-      $("#Question-generate-dataset-existing-files-options")
+      ($("#Question-generate-dataset-existing-files-options")
         .find(".option-card")
-        .hasClass("checked") ||
+        .hasClass("checked") && $("#Question-generate-dataset-existing-folders-options")
+        .find(".option-card")
+        .hasClass("checked"))||
       $("#generate-dataset-replace-existing")
         .find(".option-card")
         .hasClass("checked") ||
@@ -356,14 +358,14 @@ const fill_info_details = () => {
 };
 
 const traverse_back = (amount, element = "", pulse_animation = false) => {
+  if (element === "Question-generate-dataset-existing-folders-options") {
+    $("#button-confirm-bf-dataset").click();
+    $("nextBtn").prop("disabled", true);
+  }
   for (i = 0; i < amount; i++) {
     nextPrev(-1);
   }
   if (element != "") {
-    if (element === "Question-generate-dataset-existing-folders-options") {
-      $("#button-confirm-bf-dataset").click();
-      $("nextBtn").prop("disabled", true);
-    }
     setTimeout(() => {
       document.getElementById(element).scrollIntoView({
         behavior: "smooth",
