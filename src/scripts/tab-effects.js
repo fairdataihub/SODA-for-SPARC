@@ -88,17 +88,18 @@ function showParentTab(tabNow, nextOrPrev) {
 
   if (tabNow == x.length - 1) {
     document.getElementById("nextBtn").style.display = "none";
-    showTreeViewPreview();
+    let dataset_name = fill_info_details();
+    showTreeViewPreview(dataset_name);
     $("#Question-preview-dataset-details").show();
     $("#Question-preview-dataset-details").children().show();
     $("#Question-generate-dataset-generate-div").show();
     $("#Question-generate-dataset-generate-div").children().show();
     //$("#preview-dataset-structure-btn").show();
-    fill_info_details();
   }
 }
 
 const fill_info_details = () => {
+  let new_dataset_name = "My_dataset_folder";
   $(".card-container").remove();
   if (sodaJSONObj["starting-point"]["type"] === "bf") {
     add_card_detail(
@@ -109,6 +110,7 @@ const fill_info_details = () => {
       "Dataset name",
       sodaJSONObj["bf-dataset-selected"]["dataset-name"]
     );
+    new_dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     if (manifestFileCheck.checked) {
       add_card_detail(
         "Manifest files",
@@ -141,6 +143,7 @@ const fill_info_details = () => {
         "Question-generate-dataset",
         true
       );
+      new_dataset_name = require('path').basename(sodaJSONObj["starting-point"]["local-path"]);
       if (manifestFileCheck.checked) {
         add_card_detail(
           "Manifest files",
@@ -181,6 +184,7 @@ const fill_info_details = () => {
         "inputNewNameDataset",
         true
       );
+      new_dataset_name = $("#inputNewNameDataset").val().trim();
       if (manifestFileCheck.checked) {
         add_card_detail(
           "Manifest files",
@@ -240,6 +244,7 @@ const fill_info_details = () => {
           "Question-generate-dataset-BF-dataset",
           true
         );
+        new_dataset_name = $("#current-bf-dataset-generate").text();
         if (
           $('input[name="generate-5"]:checked')[0].id ===
           "existing-folders-duplicate"
@@ -326,6 +331,7 @@ const fill_info_details = () => {
           "inputNewNameDataset",
           true
         );
+        new_dataset_name = $("#inputNewNameDataset").val().trim();
       }
       if (manifestFileCheck.checked) {
         add_card_detail(
@@ -346,6 +352,7 @@ const fill_info_details = () => {
       }
     }
   }
+  return new_dataset_name;
 };
 
 const traverse_back = (amount, element = "", pulse_animation = false) => {
@@ -1967,9 +1974,9 @@ function updateJSONStructureGenerate(progress = false) {
     var newDatasetName = require("path").basename(
       sodaJSONObj["starting-point"]["local-path"]
     );
-    if (progress == false) {
-      delete sodaJSONObj["starting-point"]["local-path"];
-    }
+    // if (progress == false) {
+    //   delete sodaJSONObj["starting-point"]["local-path"];
+    // }
     sodaJSONObj["generate-dataset"] = {
       destination: "local",
       path: localDestination,
@@ -1999,9 +2006,9 @@ function updateJSONStructureGenerate(progress = false) {
           localDestination = "";
         }
         var newDatasetName = $("#inputNewNameDataset").val().trim();
-        if (progress == false) {
-          delete sodaJSONObj["starting-point"]["local-path"];
-        }
+        // if (progress == false) {
+        //   delete sodaJSONObj["starting-point"]["local-path"];
+        // }
         sodaJSONObj["generate-dataset"] = {
           destination: "local",
           path: localDestination,

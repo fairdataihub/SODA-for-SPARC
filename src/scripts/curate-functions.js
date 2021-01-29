@@ -1363,7 +1363,7 @@ $(jstreePreview).on("close_node.jstree", function (event, data) {
   data.instance.set_type(data.node, "folder closed");
 });
 
-function showTreeViewPreview() {
+function showTreeViewPreview(new_dataset_name) {
   datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
   if (manifestFileCheck.checked) {
     for (var key in datasetStructureJSONObj["folders"]) {
@@ -1380,7 +1380,7 @@ function showTreeViewPreview() {
   }
   var jsTreePreviewData = create_child_node(
     datasetStructureJSONObj,
-    "My_dataset_folder",
+    new_dataset_name,
     "folder",
     "",
     true,

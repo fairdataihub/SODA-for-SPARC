@@ -8290,6 +8290,10 @@ document
     document.getElementById("prevBtn").style.display = "inline";
     document.getElementById("nextBtn").style.display = "inline";
     showParentTab(currentTab, 1);
+    if (sodaJSONObj["starting-point"]["type"] == "new" && "local-path" in sodaJSONObj["starting-point"])
+    {
+      sodaJSONObj["starting-point"]["type"] = "local";
+    }
   });
 
 // function to hide the sidebar and disable the sidebar expand button
