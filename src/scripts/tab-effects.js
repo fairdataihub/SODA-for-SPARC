@@ -26,14 +26,8 @@ function showParentTab(tabNow, nextOrPrev) {
   var x = document.getElementsByClassName("parent-tabs");
   fixStepIndicator(tabNow);
   if (tabNow === 0) {
-    if ($("#curate-section").hasClass("is-shown")) {
-      $("#Question-getting-started-1").css("display", "none");
-    } else {
-      $("#Question-getting-started-1").css("display", "flex");
-    }
     fixStepDone(tabNow);
   } else {
-    $("#Question-getting-started-1").css("display", "flex");
     fixStepDone(tabNow - 1);
   }
 
@@ -884,8 +878,6 @@ async function transitionSubQuestions(
     $(ev).hide();
   }
 
-  
-
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(
     parentDiv
@@ -1376,7 +1368,6 @@ async function transitionSubQuestionsButton(
     document.getElementById(parentDiv).appendChild(target);
   }
 
-
   // if buttons: Add account and Confirm account were hidden, show them again here
   if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-account") {
     $("#" + ev.getAttribute("data-next") + " button").show();
@@ -1410,13 +1401,10 @@ async function transitionSubQuestionsButton(
     $(ev).hide();
   }
 
-  if ((ev).getAttribute("id") === "btn-confirm-new-dataset-name")
-  {
+  if (ev.getAttribute("id") === "btn-confirm-new-dataset-name") {
     $("#para-continue-name-dataset-generate").show();
     $("#para-continue-name-dataset-generate").text("Please continue below.");
-  }
-  else
-  {
+  } else {
     $("#para-continue-name-dataset-generate").text("");
   }
 
@@ -2301,11 +2289,6 @@ document
     $(".vertical-progress-bar").css("display", "flex");
     document.getElementById("generate-dataset-progress-tab").style.display =
       "none";
-    // if (currentTab === 0 && $("#curate-section").hasClass("is-shown")) {
-    if (!$("#getting-started-tab").hasClass("tab-active")) {
-      $("#getting-started-tab").addClass("tab-active");
-      $("#Question-getting-started-1").addClass("show");
-    }
     showParentTab(currentTab, 1);
   });
 
@@ -2374,7 +2357,7 @@ function saveOrganizeProgressPrompt() {
     // if no, ask users what to name it, and create file
   } else {
     bootbox.prompt({
-      title: "Saving progress as...",
+      tite: "Saving progress as...",
       message: "Enter a name for your progress below:",
       centerVertical: true,
       callback: function (result) {
@@ -2386,7 +2369,3 @@ function saveOrganizeProgressPrompt() {
     });
   }
 }
-
-$($("#prepare-dataset-a")[0]).bind("click", function () {
-  $("#Question-getting-started-1").css("display", "none");
-});
