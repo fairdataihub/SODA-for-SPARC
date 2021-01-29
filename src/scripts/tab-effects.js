@@ -1,5 +1,3 @@
-// "use strict";
-
 const { relative } = require("path");
 
 // JSON object of all the tabs
@@ -13,24 +11,9 @@ var allParentStepsJSON = {
 };
 
 var currentTab = 0; // Current tab is set to be the first tab (0)
+showParentTab(0, 1);
 
-const fixStepIndicator = (n) => {
-  // This function removes the "is-current" class of all steps...
-  var i,
-    x = document.getElementsByClassName("vertical-progress-bar-step");
-  for (i = 0; i < x.length; i++) {
-    x[i].className = x[i].className.replace(" is-current", "");
-  }
-  //... and adds the "active" class to the current step:
-  x[n].className += " is-current";
-};
-
-const fixStepDone = (n) => {
-  var x = document.getElementsByClassName("vertical-progress-bar-step");
-  $(x[n]).addClass("done");
-};
-
-const showParentTab = (tabNow, nextOrPrev) => {
+function showParentTab(tabNow, nextOrPrev) {
   document.getElementById("nextBtn").disabled = true;
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
@@ -49,11 +32,11 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   $(x[tabNow]).addClass("tab-active");
-  setTimeout(() => {
+  setTimeout(function () {
     $(x[tabNow]).css("overflow", "auto");
   }, 1500);
 
-  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter((element) => {
+  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter(function (element) {
     return ![tabNow].includes(element);
   });
 
@@ -113,9 +96,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
     //$("#preview-dataset-structure-btn").show();
     fill_info_details();
   }
-};
-
-showParentTab(0, 1);
+}
 
 const fill_info_details = () => {
   $(".card-container").remove();
@@ -132,7 +113,7 @@ const fill_info_details = () => {
       add_card_detail(
         "Manifest files",
         "Auto generated",
-        2,
+        1,
         "pulse-manifest-checkbox",
         true
       );
@@ -140,7 +121,7 @@ const fill_info_details = () => {
       add_card_detail(
         "Manifest files",
         "Not requested",
-        2,
+        1,
         "pulse-manifest-checkbox",
         true
       );
@@ -368,7 +349,7 @@ const fill_info_details = () => {
 };
 
 const traverse_back = (amount, element = "", pulse_animation = false) => {
-  for (let i = 0; i < amount; i++) {
+  for (i = 0; i < amount; i++) {
     nextPrev(-1);
   }
   if (element != "") {
@@ -399,25 +380,22 @@ const add_card_detail = (
   temp = ', "' + element_id + '", ' + pulse + ")";
   link_item += temp;
   link_item += "'></i>";
-
   let parent_element = $("#div-preview-dataset-details");
   let new_card_element =
     "<div class='card-container'><h5 class='card-left'>" +
     card_left +
     ":</h5><p class='card-right'>" +
     card_right;
-
   if (parent_tab === -1) {
     new_card_element += "</p></div>";
   } else {
     new_card_element += link_item + "</p></div>";
   }
-
   $(parent_element).append(new_card_element);
 };
 
 // helper function to delete empty keys from objects
-const deleteEmptyKeysFromObject = (object) => {
+function deleteEmptyKeysFromObject(object) {
   for (var key in object) {
     if (
       object[key] === null ||
@@ -428,9 +406,9 @@ const deleteEmptyKeysFromObject = (object) => {
       delete object[key];
     }
   }
-};
+}
 
-const checkHighLevelFoldersInput = () => {
+function checkHighLevelFoldersInput() {
   document.getElementById("nextBtn").disabled = true;
   var optionCards = document.getElementsByClassName(
     "option-card high-level-folders"
@@ -446,10 +424,10 @@ const checkHighLevelFoldersInput = () => {
     document.getElementById("nextBtn").disabled = false;
   }
   return checked;
-};
+}
 
 // function associated with the Back/Continue buttons
-const nextPrev = (n) => {
+function nextPrev(n) {
   var x = document.getElementsByClassName("parent-tabs");
   // update JSON structure
   updateOverallJSONStructure(x[currentTab].id);
@@ -499,7 +477,7 @@ const nextPrev = (n) => {
         },
       },
       centerVertical: true,
-      callback: (result) => {
+      callback: function (result) {
         if (result !== null && result === true) {
           // Hide the current tab:
           $(x[currentTab]).removeClass("tab-active");
@@ -544,7 +522,7 @@ const nextPrev = (n) => {
           },
         },
         centerVertical: true,
-        callback: (result) => {
+        callback: function (result) {
           if (result !== null && result === true) {
             // Hide the current tab:
             $(x[currentTab]).removeClass("tab-active");
@@ -567,7 +545,6 @@ const nextPrev = (n) => {
     x[currentTab].id === "preview-dataset-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
-    // skip to step 5 from step 7 if on an existing blackfynn dataset
     $(x[currentTab]).removeClass("tab-active");
 
     currentTab = currentTab - 2;
@@ -577,7 +554,7 @@ const nextPrev = (n) => {
     x[currentTab].id === "manifest-file-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
-    // skip to step 7 from step 5 if on an existing blackfynn dataset
+    // cj -skip step 6
     $(x[currentTab]).removeClass("tab-active");
     if (n == -1) {
       currentTab = currentTab + n;
@@ -630,10 +607,26 @@ const nextPrev = (n) => {
     showParentTab(currentTab, n);
     //console.log(JSON.stringify(sodaJSONObj["dataset-structure"]))
   }
-};
+}
 
-//// High level folders check mark effectv
-$(".option-card.high-level-folders").click(() => {
+function fixStepIndicator(n) {
+  // This function removes the "is-current" class of all steps...
+  var i,
+    x = document.getElementsByClassName("vertical-progress-bar-step");
+  for (i = 0; i < x.length; i++) {
+    x[i].className = x[i].className.replace(" is-current", "");
+  }
+  //... and adds the "active" class to the current step:
+  x[n].className += " is-current";
+}
+
+function fixStepDone(n) {
+  var x = document.getElementsByClassName("vertical-progress-bar-step");
+  $(x[n]).addClass("done");
+}
+
+//// High level folders check mark effect
+$(".option-card.high-level-folders").click(function () {
   $(this).toggleClass("checked");
   if ($(this).hasClass("checked")) {
     $(this).children()[0].children[1].children[0].checked = true;
@@ -645,7 +638,7 @@ $(".option-card.high-level-folders").click(() => {
 
 var globalGettingStarted1stQuestionBool = false;
 
-$(".folder-input-check").click(() => {
+$(".folder-input-check").click(function () {
   var parentCard = $(this).parents()[2];
   $(parentCard).toggleClass("checked");
   if ($(this).checked) {
@@ -658,7 +651,7 @@ $(".folder-input-check").click(() => {
 });
 
 // function associated with metadata files (show individual metadata file upload div on button click)
-const showSubTab = (section, tab, input) => {
+function showSubTab(section, tab, input) {
   var tabArray;
   if (section === "metadata") {
     tabArray = [
@@ -671,7 +664,7 @@ const showSubTab = (section, tab, input) => {
       "div-manifest-metadata-file",
     ];
   }
-  var inActiveTabArray = tabArray.filter((element) => {
+  var inActiveTabArray = tabArray.filter(function (element) {
     return ![tab].includes(element);
   });
   for (var id of inActiveTabArray) {
@@ -679,11 +672,11 @@ const showSubTab = (section, tab, input) => {
   }
   document.getElementById(input).checked = true;
   document.getElementById(tab).style.display = "block";
-};
+}
 
 // function to check if certain high level folders already chosen and have files/sub-folders
 // then disable the option (users cannot un-choose)
-const highLevelFoldersDisableOptions = () => {
+function highLevelFoldersDisableOptions() {
   var highLevelFolderOptions = datasetStructureJSONObj["folders"];
   if (highLevelFolderOptions) {
     for (var folder of highLevelFolders) {
@@ -704,10 +697,10 @@ const highLevelFoldersDisableOptions = () => {
       }
     }
   }
-};
+}
 
 // // High level folders check mark effect
-$(".folder-input-check").click(() => {
+$(".folder-input-check").click(function () {
   var highLevelFolderCard = $(this).parents()[2];
   $(highLevelFolderCard).toggleClass("checked");
   if ($(this).checked) {
@@ -726,7 +719,7 @@ $(".folder-input-check").click(() => {
 
 // raise warning before wiping out existing sodaJSONObj
 // show warning message
-const raiseWarningGettingStarted = (ev) => {
+function raiseWarningGettingStarted(ev) {
   return new Promise((resolve) => {
     if (
       !(
@@ -755,7 +748,7 @@ const raiseWarningGettingStarted = (ev) => {
           },
         },
         centerVertical: true,
-        callback: (result) => {
+        callback: function (result) {
           if (result) {
             globalGettingStarted1stQuestionBool = true;
             resolve(globalGettingStarted1stQuestionBool);
@@ -770,16 +763,16 @@ const raiseWarningGettingStarted = (ev) => {
       resolve(globalGettingStarted1stQuestionBool);
     }
   });
-};
+}
 
 var divList = [];
-const transitionSubQuestions = async (
+async function transitionSubQuestions(
   ev,
   currentDiv,
   parentDiv,
   button,
   category
-) => {
+) {
   if (currentDiv === "Question-getting-started-1") {
     globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
     if (globalGettingStarted1stQuestionBool) {
@@ -885,7 +878,6 @@ const transitionSubQuestions = async (
   document.getElementById(parentDiv).scrollTop = document.getElementById(
     parentDiv
   ).scrollHeight;
-
   // when we hit the last question under Step 1, hide and disable Next button
   if (ev.getAttribute("data-next") === "Question-getting-started-final") {
     $("#progress-files-dropdown").val("Select");
@@ -907,7 +899,7 @@ const transitionSubQuestions = async (
       datasetStructureJSONObj = { folders: {}, files: {} };
       sodaJSONObj["metadata-files"] = {};
       reset_ui();
-      setTimeout(() => {
+      setTimeout(function () {
         document.getElementById("nextBtn").disabled = false;
         $("#para-continue-prepare-new-getting-started").text(
           "Please continue below."
@@ -919,7 +911,6 @@ const transitionSubQuestions = async (
       // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
       $("#Question-getting-started-existing-BF-account").show();
       $("#Question-getting-started-existing-BF-account").children().show();
-
       if (sodaJSONObj["dataset-structure"] != {}) {
         reset_ui();
         $("#nextBtn").prop("disabled", false);
@@ -963,10 +954,10 @@ const transitionSubQuestions = async (
       $("#nextBtn").prop("disabled", true);
     }
   }
-};
+}
 
 // Create the dataset structure for sodaJSONObj
-const create_json_object = (sodaJSONObj) => {
+create_json_object = (sodaJSONObj) => {
   high_level_metadata_sparc = [
     "submission.xlsx",
     "submission.csv",
@@ -983,19 +974,16 @@ const create_json_object = (sodaJSONObj) => {
     "README.txt",
     "CHANGES.txt",
   ];
-
   let root_folder_path = $("#input-destination-getting-started-locally").attr(
     "placeholder"
   );
   sodaJSONObj["dataset-structure"] = { folders: {} };
   let stats = "";
-
   // Get high level folders and metadata files first
   fs.readdirSync(root_folder_path).forEach((file) => {
     full_current_path = path.join(root_folder_path, file);
     stats = fs.statSync(full_current_path);
     if (stats.isDirectory()) {
-      // include only high level folders
       if (highLevelFolders.includes(file)) {
         sodaJSONObj["dataset-structure"]["folders"][file] = {
           folders: {},
@@ -1007,7 +995,6 @@ const create_json_object = (sodaJSONObj) => {
       }
     }
     if (stats.isFile()) {
-      // only import valid metadata files
       if (high_level_metadata_sparc.includes(file)) {
         sodaJSONObj["metadata-files"][file] = {
           path: full_current_path,
@@ -1023,18 +1010,14 @@ const create_json_object = (sodaJSONObj) => {
   for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
     sodaJSONObj["starting-point"][folder] = {};
     sodaJSONObj["starting-point"][folder]["path"] = "";
-
     temp_file_path_xlsx = path.join(root_folder_path, folder, "manifest.xlsx");
     temp_file_path_csv = path.join(root_folder_path, folder, "manifest.csv");
-
     if (fs.existsSync(temp_file_path_xlsx)) {
-      // if excel manifest file exists
       sodaJSONObj["starting-point"][folder]["path"] = temp_file_path_xlsx;
       sodaJSONObj["starting-point"][folder]["manifest"] = excelToJson({
         sourceFile: sodaJSONObj["starting-point"][folder]["path"],
       })["Sheet1"];
     } else if (fs.existsSync(temp_file_path_csv)) {
-      // if csv manifest file exists
       sodaJSONObj["starting-point"][folder]["path"] = temp_file_path_csv;
       sodaJSONObj["starting-point"][folder][
         "manifest"
@@ -1042,8 +1025,6 @@ const create_json_object = (sodaJSONObj) => {
         .parseSubArray(";", ",")
         .getJsonFromCsv(sodaJSONObj["starting-point"][folder]["path"]);
     }
-
-    // create the dataset-structure recursively
     recursive_structure_create(
       sodaJSONObj["dataset-structure"]["folders"][folder],
       folder,
@@ -1055,15 +1036,14 @@ const create_json_object = (sodaJSONObj) => {
 // replace any duplicate file names
 // Modify for consistency with blackfynn naming when the update their system
 const check_file_name_for_blackfynn_duplicate = (dataset_folder, file) => {
+  file_name = path.parse(file).name;
+  file_extension = path.parse(file).ext;
   let i = 1;
   let projected_number = "";
-
-  let file_name = path.parse(file).name;
-  let file_extension = path.parse(file).ext;
-
   for (item in dataset_folder) {
     if (item != file) {
-      let item_name = path.parse(item).name;
+      item_name = path.parse(item).name;
+      item_extension = path.parse(item).ext;
       if (file_name + projected_number == item_name) {
         projected_number = ` (${i})`;
         i += 1;
@@ -1247,13 +1227,13 @@ const verify_sparc_folder = (root_folder_path) => {
 };
 
 // function similar to transitionSubQuestions, but for buttons
-const transitionSubQuestionsButton = async (
+async function transitionSubQuestionsButton(
   ev,
   currentDiv,
   parentDiv,
   button,
   category
-) => {
+) {
   /*
     ev: the button being clicked
     currentDiv: current option-card (question)
@@ -1421,17 +1401,17 @@ const transitionSubQuestionsButton = async (
       $("#nextBtn").prop("disabled", true);
     }
   }
-};
+}
 
-const reset_ui = () => {
-  $(".option-card.high-level-folders").each((i, obj) => {
+reset_ui = () => {
+  $(".option-card.high-level-folders").each(function (i, obj) {
     $(obj).removeClass("checked");
     $(obj).removeClass("disabled");
   });
-  $(".metadata-button.button-generate-dataset").each((i, obj) => {
+  $(".metadata-button.button-generate-dataset").each(function (i, obj) {
     $(obj).removeClass("done");
   });
-  $(".button-individual-metadata.remove").each((i, obj) => {
+  $(".button-individual-metadata.remove").each(function (i, obj) {
     $(obj).click();
   });
 
@@ -1612,7 +1592,7 @@ var populate_existing_metadata = (datasetStructureJSONObj) => {
   }
 };
 
-const obtainDivsbyCategory = (category) => {
+function obtainDivsbyCategory(category) {
   var individualQuestions = document.getElementsByClassName(
     "individual-question"
   );
@@ -1627,10 +1607,10 @@ const obtainDivsbyCategory = (category) => {
     }
   }
   return categoryQuestionList;
-};
+}
 
 // Hide showing divs when users click on different option
-const hidePrevDivs = (currentDiv, category) => {
+function hidePrevDivs(currentDiv, category) {
   var individualQuestions = document.getElementsByClassName(category);
   // hide all other div siblings
   for (var i = 0; i < individualQuestions.length; i++) {
@@ -1685,19 +1665,19 @@ const hidePrevDivs = (currentDiv, category) => {
       break;
     }
   }
-};
+}
 
-const updateJSONStructureGettingStarted = () => {
+function updateJSONStructureGettingStarted() {
   document.getElementById("input-global-path").value = "My_dataset_folder/";
-};
+}
 
 // function to populate metadata files
-const populateMetadataObject = (
+function populateMetadataObject(
   optionList,
   metadataFilePath,
   metadataFile,
   object
-) => {
+) {
   if (!("metadata-files" in object)) {
     object["metadata-files"] = {};
   }
@@ -1740,11 +1720,11 @@ const populateMetadataObject = (
       }
     }
   }
-};
+}
 
 /// function to populate/reload Organize dataset UI when users move around between tabs and make changes
 // (to high-level folders)
-const populateOrganizeDatasetUI = (currentLocation, datasetFolder) => {
+function populateOrganizeDatasetUI(currentLocation, datasetFolder) {
   var baseName = path.basename(datasetFolder);
   currentLocation = {
     type: "local",
@@ -1790,14 +1770,14 @@ const populateOrganizeDatasetUI = (currentLocation, datasetFolder) => {
     hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   });
-};
+}
 
 ////////////////////// Functions to update JSON object after each step //////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Step 3: Dataset structure
 
-const updateJSONStructureDSstructure = () => {
+function updateJSONStructureDSstructure() {
   sodaJSONObj["dataset-structure"] = datasetStructureJSONObj;
   // check if dataset-structure key is empty (no high-level folders are included)
   if (
@@ -1806,11 +1786,11 @@ const updateJSONStructureDSstructure = () => {
   ) {
     delete sodaJSONObj["dataset-structure"];
   }
-};
+}
 
 // Step 4: Metadata files
 /// function to obtain metadata file paths from UI and then populate JSON obj
-const updateJSONStructureMetadataFiles = () => {
+function updateJSONStructureMetadataFiles() {
   var submissionFilePath = document.getElementById("para-submission-file-path")
     .innerHTML;
   var dsDescriptionFilePath = document.getElementById(
@@ -1872,11 +1852,11 @@ const updateJSONStructureMetadataFiles = () => {
   if (JSON.stringify(sodaJSONObj["metadata-files"]) === "{}") {
     delete sodaJSONObj["metadata-files"];
   }
-};
+}
 
 // Step 5: Manifest file
 // update JSON object with manifest file information
-const updateJSONStructureManifest = () => {
+function updateJSONStructureManifest() {
   if (manifestFileCheck.checked) {
     if ("manifest-files" in sodaJSONObj) {
       // cj this might need to be changed
@@ -1887,7 +1867,7 @@ const updateJSONStructureManifest = () => {
   } else {
     delete sodaJSONObj["manifest-files"];
   }
-};
+}
 
 const recursive_remove_local_deleted_files = (dataset_folder) => {
   if ("files" in dataset_folder) {
@@ -1935,7 +1915,7 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
 
 // Step 6: Generate dataset
 // update JSON object after users finish Generate dataset step
-const updateJSONStructureGenerate = (progress = false) => {
+function updateJSONStructureGenerate(progress = false) {
   let starting_point = sodaJSONObj["starting-point"]["type"];
   if (sodaJSONObj["starting-point"]["type"] == "bf") {
     sodaJSONObj["generate-dataset"] = {
@@ -2101,10 +2081,10 @@ const updateJSONStructureGenerate = (progress = false) => {
       sodaJSONObj["starting-point"]["type"] = starting_point;
     }
   }
-};
+}
 
 // function to call when users click on Continue at each step
-const updateOverallJSONStructure = (id) => {
+function updateOverallJSONStructure(id) {
   if (id === allParentStepsJSON["high-level-folders"]) {
     document.getElementById("input-global-path").value = "My_dataset_folder/";
     var optionCards = document.getElementsByClassName(
@@ -2167,11 +2147,11 @@ const updateOverallJSONStructure = (id) => {
   } else if (id === allParentStepsJSON["organize-dataset"]) {
     updateJSONStructureDSstructure();
   }
-};
+}
 //////////////////////////////// END OF Functions to update JSON object //////////////////////////////////////////
 
 var generateExitButtonBool = false;
-const raiseWarningExit = () => {
+function raiseWarningExit() {
   // function associated with the Exit button (Step 6: Generate dataset -> Generate div)
   return new Promise((resolve) => {
     bootbox.confirm({
@@ -2188,7 +2168,7 @@ const raiseWarningExit = () => {
         },
       },
       centerVertical: true,
-      callback: (result) => {
+      callback: function (result) {
         if (result) {
           generateExitButtonBool = true;
           resolve(generateExitButtonBool);
@@ -2199,9 +2179,9 @@ const raiseWarningExit = () => {
       },
     });
   });
-};
+}
 
-const exitCurate = async (resetProgressTabs) => {
+async function exitCurate(resetProgressTabs) {
   $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
@@ -2226,9 +2206,9 @@ const exitCurate = async (resetProgressTabs) => {
   } else {
     wipeOutCurateProgress();
   }
-};
+}
 
-const wipeOutCurateProgress = () => {
+function wipeOutCurateProgress() {
   // set SODA json object back
   sodaJSONObj = {
     "starting-point": { type: "" },
@@ -2263,12 +2243,12 @@ const wipeOutCurateProgress = () => {
   datasetStructureJSONObj = { folders: {}, files: {} };
   // uncheck auto-generated manifest checkbox
   $("#generate-manifest-curate").prop("checked", false);
-};
+}
 
 // once users click on option card: Organize dataset
 document
   .getElementById("button-section-organize-dataset")
-  .addEventListener("click", () => {
+  .addEventListener("click", function () {
     $(".vertical-progress-bar").css("display", "flex");
     document.getElementById("generate-dataset-progress-tab").style.display =
       "none";
@@ -2278,7 +2258,7 @@ document
     showParentTab(currentTab, 1);
   });
 
-const hideNextDivs = (currentDiv) => {
+function hideNextDivs(currentDiv) {
   // make currentDiv current class
   $("#" + currentDiv).removeClass("prev");
   $("#" + currentDiv).removeClass("test2");
@@ -2286,18 +2266,18 @@ const hideNextDivs = (currentDiv) => {
   $($("#" + currentDiv).nextAll()).removeClass("prev");
   $($("#" + currentDiv).nextAll()).removeClass("show");
   $($("#" + currentDiv).nextAll()).removeClass("test2");
-};
+}
 
 // save progress up until step 5 for now
-const updateJSONObjectProgress = () => {
+function updateJSONObjectProgress() {
   updateJSONStructureGettingStarted();
   updateJSONStructureMetadataFiles();
   updateJSONStructureManifest();
   updateJSONStructureDSstructure();
   updateJSONStructureGenerate(true);
-};
+}
 
-const saveSODAJSONProgress = (progressFileName) => {
+function saveSODAJSONProgress(progressFileName) {
   try {
     fs.mkdirSync(progressFilePath, { recursive: true });
   } catch (error) {
@@ -2331,10 +2311,10 @@ const saveSODAJSONProgress = (progressFileName) => {
       "<i style='margin-right: 5px !important' class='fas fa-check'></i>Successfully saved progress.",
     centerVertical: true,
   });
-};
+}
 
 // function to save Progress
-const saveOrganizeProgressPrompt = () => {
+function saveOrganizeProgressPrompt() {
   // check if "save-progress" key is in JSON object
   // if yes, keep saving to that file
   if ("save-progress" in sodaJSONObj) {
@@ -2346,7 +2326,7 @@ const saveOrganizeProgressPrompt = () => {
       title: "Saving progress as...",
       message: "Enter a name for your progress below:",
       centerVertical: true,
-      callback: (result) => {
+      callback: function (result) {
         if (result !== null && result !== "") {
           sodaJSONObj["save-progress"] = result.trim();
           saveSODAJSONProgress(result.trim());
@@ -2354,4 +2334,4 @@ const saveOrganizeProgressPrompt = () => {
       },
     });
   }
-};
+}

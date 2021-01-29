@@ -5,16 +5,13 @@
     <header class="section-header">
       <div class="section-wrapper">
         <h1>
-          <svg style="margin-right: 10px; margin-bottom:-3px;" width="22px" height="22px" viewBox="0 0 16 16"
-            class="bi bi-share-fill" fill=var(--color-teal) xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd"
-              d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z" />
+          <svg style="margin-right: 10px; margin-bottom:-3px;" width="22px" height="22px" viewBox="0 0 16 16" class="bi bi-share-fill" fill=var(--color-teal) xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"/>
           </svg>
           Disseminate Dataset
         </h1>
         <h3>
-          This interface provides a convenient window to complete tasks required once your dataset has been organized
-          and uploaded on Blackfynn.
+          This interface provides a convenient window to complete tasks required once your dataset has been organized and uploaded on Blackfynn.
           <br>
           <br>
         </h3>
@@ -26,14 +23,17 @@
     <div class="demo" style="display:none">
       <div class="demo-wrapper">
         <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button"> Reserve DOI
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link"
-            href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps">
+          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps" >
             <img class="nav-video" src="assets/img/documentation-icon.png">
           </a>
           <div class="demo-meta u-avoid-clicks"> Reserve DOI </div>
         </button>
 
+
+
         <div class="demo-box">
+
+
           <div id="div-reserve-doi" style="margin-left:20px">
 
             <h5> Select Blackfynn dataset </h5>
@@ -64,19 +64,13 @@
                 <h5>
                   <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                     <span class="tooltiptext">
-                      A Digital Object Identifier (DOI), is a string of numbers, letters and symbols used to permanently
-                      identify your dataset on the web.
+                      A Digital Object Identifier (DOI), is a string of numbers, letters and symbols used to permanently identify your dataset on the web.
                       <br><br>
-                      The Blackfynn platform uses DataCite to help locate, identify, manage, and cite your research
-                      data.
+                      The Blackfynn platform uses DataCite to help locate, identify, manage, and cite your research data.
                       <br><br>
-                      A DOI can optionally be reserved prior to publication. Otherwise, it will be reserved
-                      automatically when you publish the dataset.
+                      A DOI can optionally be reserved prior to publication. Otherwise, it will be reserved automatically when you publish the dataset.
                       <br><br>
-                      Note: You must have "owner" or "manager" permissions on the dataset to view/reserve a DOI. See
-                      feature "Manage dataset permissions" of SODA and our associated <a
-                        href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;">
-                        documentation</a> for more information.
+                      Note: You must have "owner" or "manager" permissions on the dataset to view/reserve a DOI. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
                     </span>
                   </div>
                 </h5>
@@ -93,211 +87,181 @@
     </div>
 
 
-    <div class="demo">
-      <div class="demo-wrapper">
-        <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button"> Share with
-          Curation team
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link"
-            href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps">
-            <img class="nav-video" src="assets/img/documentation-icon.png">
-          </a>
-          <div class="demo-meta u-avoid-clicks"> Share your dataset with the Curation team for review </div>
-        </button>
+  <div class="demo">
+    <div class="demo-wrapper">
+      <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button"> Share with Curation team
+        <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps" >
+          <img class="nav-video" src="assets/img/documentation-icon.png">
+        </a>
+        <div class="demo-meta u-avoid-clicks"> Share your dataset with the Curation team for review </div>
+      </button>
 
 
-        <div class="demo-box">
+      <div class="demo-box">
 
-          <h5> Select Blackfynn dataset
+        <h5> Select Blackfynn dataset
 
-          </h5>
-          <div class="demo-controls" style="margin-top: 15px">
-            <select class="my-dropdown" style="width:80%" id="bfdatasetlist-postcuration-curation">
-              <option> Select dataset </option>
-            </select>
-          </div>
-
-          <div id="div-bf-post-curation-progress-curation" class="progressdiv">
-            <div class="indeterminatebar"></div>
-          </div>
-
-          <br>
-          <h5> Share:
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">
-                Sharing with the SPARC Curation Team will assign them "manager" role, which is necessary for them to
-                access your dataset when it is ready to be reviewed, and set the dataset status to "03. Ready for
-                Curation" thus adding the dataset to the Curation Team's queue for review. It is then highly recommended
-                to not make any changes to your dataset.
-                <br><br>
-                Note: You must have "owner" or "manager" permissions on the dataset to share with the SPARC consortium.
-                See feature "Manage dataset permissions" of SODA and our associated <a
-                  href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;">
-                  documentation</a> for more information.
-              </span>
-            </div>
-          </h5>
-
-          <div id="div-bf-share-curation-team">
-            <div class="demo-controls">
-              <button id="button-add-permission-curation-team" class="demo-button" style="width: 250px"> Share with
-                Curation Team </button>
-              <br>
-              <p id="para-dataset-permission-status-curation-team" style="padding: 0 0; margin: 0 0"> </p>
-            </div>
-          </div>
-
+        </h5>
+        <div class="demo-controls" style="margin-top: 15px">
+          <select class="my-dropdown" style="width:80%" id="bfdatasetlist-postcuration-curation">
+            <option> Select dataset </option>
+          </select>
         </div>
-      </div>
-    </div>
 
+        <div id="div-bf-post-curation-progress-curation" class="progressdiv">
+          <div class="indeterminatebar"></div>
+        </div>
 
-    <div class="demo">
-      <div class="demo-wrapper">
-        <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button"> Share with
-          SPARC Consortium
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link"
-            href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps">
-            <img class="nav-video" src="assets/img/documentation-icon.png">
-          </a>
-          <div class="demo-meta u-avoid-clicks"> Share your dataset as embargoed dataset with the SPARC Consortium
+        <br>
+        <h5> Share:
+          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+            <span class="tooltiptext">
+              Sharing with the SPARC Curation Team will assign them "manager" role, which is necessary for them to access your dataset when it is ready to be reviewed, and set the dataset status to "03. Ready for Curation" thus adding the dataset to the Curation Team's queue for review. It is then highly recommended to not make any changes to your dataset.
+              <br><br>
+              Note: You must have "owner" or "manager" permissions on the dataset to share with the SPARC consortium. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+            </span>
           </div>
-        </button>
+        </h5>
 
-        <div class="demo-box">
-
-
-          <!-- <div id="div-post-curation-display-2"> -->
-          <h5> Select Blackfynn dataset </h5>
-          <div class="demo-controls" style="margin-top: 15px">
-            <select class="my-dropdown" style="width:80%" id="bfdatasetlist-postcuration-consortium">
-              <option> Select dataset </option>
-            </select>
-          </div>
-
-          <div id="div-bf-post-curation-progress-consortium" class="progressdiv">
-            <div class="indeterminatebar"></div>
-          </div>
-
-          <br>
-          <h5> Share:
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">
-                Once your dataset is approved by the Curation Team, it is ready to be shared with the SPARC Consortium
-                as embargoed dataset. Sharing will give "viewer" permissions to any SPARC investigator who has signed
-                the SPARC Non-disclosure form and will allow them to see your data.
-                <br><br>
-                Note: You must have "owner" or "manager" permissions on the dataset to share with the SPARC consortium.
-                See feature "Manage dataset permissions" of SODA and our associated <a
-                  href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;">
-                  documentation</a> for more information.
-              </span>
-            </div>
-          </h5>
+        <div id="div-bf-share-curation-team">
           <div class="demo-controls">
-            <button id="button-share-consortium" class="demo-button" style="width: 250px"> Share with SPARC Consortium
-            </button>
-
-            <p id='para-share-consortium-status' style="padding: 0 0; margin: 0 0"></p>
-
-
+            <button id="button-add-permission-curation-team" class="demo-button" style="width: 250px"> Share with Curation Team </button>
+            <br>
+            <p id = "para-dataset-permission-status-curation-team"  style="padding: 0 0; margin: 0 0"> </p>
           </div>
-
-
         </div>
+
       </div>
     </div>
+  </div>
 
 
-    <div class="demo">
-      <div class="demo-wrapper">
-        <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button"> Submit
-          dataset for pre-publishing review
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link"
-            href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps">
-            <img class="nav-video" src="assets/img/documentation-icon.png">
-          </a>
-          <div class="demo-meta u-avoid-clicks"> Submit your dataset to the Curation Team for a final review before it
-            is made public </div>
+  <div class="demo">
+    <div class="demo-wrapper">
+      <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button"> Share with SPARC Consortium
+        <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps" >
+          <img class="nav-video" src="assets/img/documentation-icon.png">
+        </a>
+        <div class="demo-meta u-avoid-clicks"> Share your dataset as embargoed dataset with the SPARC Consortium  </div>
+      </button>
+
+      <div class="demo-box">
+
+
+    <!-- <div id="div-post-curation-display-2"> -->
+      <h5> Select Blackfynn dataset </h5>
+      <div class="demo-controls" style="margin-top: 15px">
+        <select class="my-dropdown" style="width:80%" id="bfdatasetlist-postcuration-consortium">
+          <option> Select dataset </option>
+        </select>
+      </div>
+
+      <div id="div-bf-post-curation-progress-consortium" class="progressdiv">
+        <div class="indeterminatebar"></div>
+      </div>
+
+      <br>
+        <h5> Share:
+          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+            <span class="tooltiptext">
+              Once your dataset is approved by the Curation Team, it is ready to be shared with the SPARC Consortium as embargoed dataset. Sharing will give "viewer" permissions to any SPARC investigator who has signed the SPARC Non-disclosure form and will allow them to see your data.
+              <br><br>
+              Note: You must have "owner" or "manager" permissions on the dataset to share with the SPARC consortium. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+            </span>
+          </div>
+        </h5>
+      <div class="demo-controls">
+        <button id="button-share-consortium" class="demo-button" style="width: 250px"> Share with SPARC Consortium
         </button>
 
-        <div class="demo-box">
+        <p id='para-share-consortium-status'  style="padding: 0 0; margin: 0 0"></p>
 
-          <!--           <div id="div-post-curation-display">
+
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+
+<div class="demo">
+  <div class="demo-wrapper">
+    <button id="button-new-window-annotate-demo-toggle" class="js-container-target demo-toggle-button">  Submit dataset for pre-publishing review
+      <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps" >
+        <img class="nav-video" src="assets/img/documentation-icon.png">
+      </a>
+      <div class="demo-meta u-avoid-clicks"> Submit your dataset to the Curation Team for a final review before it is made public </div>
+    </button>
+
+    <div class="demo-box">
+
+<!--           <div id="div-post-curation-display">
         <p>Coming soon... </p>
       </div> -->
 
-          <div id="div-publish-dataset">
+      <div id="div-publish-dataset">
 
-            <!-- <div id="div-post-curation-display-2"> -->
-            <h5> Select Blackfynn dataset </h5>
-            <div class="demo-controls" style="margin-top: 15px">
-              <select class="my-dropdown" style="width:80%" id="bfdatasetlist-postcuration-publish">
-                <option> Select dataset </option>
-              </select>
+        <!-- <div id="div-post-curation-display-2"> -->
+          <h5> Select Blackfynn dataset </h5>
+          <div class="demo-controls" style="margin-top: 15px">
+            <select class="my-dropdown" style="width:80%" id="bfdatasetlist-postcuration-publish">
+              <option value="Select dataset"> Select dataset </option>
+            </select>
+          </div>
+
+          <div id="div-bf-post-curation-progress-publish" class="progressdiv">
+            <div class="indeterminatebar"></div>
+          </div>
+
+        <br>
+
+          <div style = "width:100%, padding-top:-60px">
+          <h5>
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">
+                One year after the dataset completion date (as per the Data Deliverables document) or right after publishing results from the dataset, whichever comes first, you must publish your dataset to Blackfynn Discover, which populates the public SPARC Data Portal.
+                <br><br>
+                As per the SPARC publishing process, you must submit your dataset for review to the Curation Team who will make a final check of your dataset and accept or reject the publication request (and inform you).
+                <br><br>
+                To do so, simply select your dataset and click on "Submit for review". The dataset could also be withdrawn from review by clicking on "Withdraw from review".
+                <br><br>
+                Note: You must be dataset "owner" and have your ORCID linked on Blackfynn in order to submit for review. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+              </span>
             </div>
+          </h5>
+          </div>
 
-            <div id="div-bf-post-curation-progress-publish" class="progressdiv">
-              <div class="indeterminatebar"></div>
-            </div>
+          <div  style="display: flex; position: relative;">
 
-            <br>
-
-            <div style="width:100%; padding-top:-60px">
-              <h5>
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">
-                    One year after the dataset completion date (as per the Data Deliverables document) or right after
-                    publishing results from the dataset, whichever comes first, you must publish your dataset to
-                    Blackfynn Discover, which populates the public SPARC Data Portal.
-                    <br><br>
-                    As per the SPARC publishing process, you must submit your dataset for review to the Curation Team
-                    who will make a final check of your dataset and accept or reject the publication request (and inform
-                    you).
-                    <br><br>
-                    To do so, simply select your dataset and click on "Submit for review". The dataset could also be
-                    withdrawn from review by clicking on "Withdraw from review".
-                    <br><br>
-                    Note: You must be dataset "owner" and have your ORCID linked on Blackfynn in order to submit for
-                    review. See feature "Manage dataset permissions" of SODA and our associated <a
-                      href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;">
-                      documentation</a> for more information.
-                  </span>
-                </div>
-              </h5>
-            </div>
-
-            <div style="display: flex; position: relative;">
-
-              <div style="width: 400px;">
-                <h5> </h5>
-                <h5> Click to submit or withdraw </h5>
-                <button id="button-submit-review-dataset" class="demo-button" style="width: 250px"> Submit for review
-                </button>
-                <!-- <br>
+            <div style="width: 400px;">
+              <h5> </h5>
+              <h5> Click to submit or withdraw </h5>
+              <button id="button-submit-review-dataset" class="demo-button" style="width: 250px"> Submit for review
+              </button>
+              <!-- <br>
               <h5> </h5>
               <button id="button-refresh-publishing-status" class="demo-button" style="width: 250px"> Refresh review status </button> -->
-                <br>
-                <h5> </h5>
-                <button id="button-withdraw-review-dataset" class="demo-button" style="width: 250px"> Withdraw from
-                  review </button>
-              </div>
-
-              <div style="flex-grow: 1">
-                <h5> Review status (<button id="button-refresh-publishing-status" style="font-size: 10; border: none">
-                    Refresh </button>):
-                </h5>
-                <p id='para-review-dataset-info'> </p>
-              </div>
-
+              <br>
+              <h5> </h5>
+              <button id="button-withdraw-review-dataset" class="demo-button" style="width: 250px"> Withdraw from review </button>
             </div>
 
-            <p id='para-publish-dataset-status'> </p>
+            <div style="flex-grow: 1">
+              <h5> Review status (<button id="button-refresh-publishing-status" style="font-size: 10; border: none"> Refresh </button>):
+              </h5>
+              <p id='para-review-dataset-info'> </p>
+            </div>
 
           </div>
 
+        <p id='para-publish-dataset-status'> </p>
 
-        </div>
       </div>
+
+
+  </div>
+</div>
 
 
   </section>
