@@ -100,7 +100,7 @@ function initialize() {
 
   loadDemos();
   function createWindow() {
-    mainWindow.webContents.openDevTools();
+    //mainWindow.webContents.openDevTools();
 
     mainWindow.webContents.once("dom-ready", () => {
       if (updatechecked == false) {
@@ -179,7 +179,7 @@ function initialize() {
     mainWindow.once("ready-to-show", () => {
       setTimeout(function () {
         splash.close();
-        mainWindow.maximize();
+        //mainWindow.maximize();
         mainWindow.show();
         createWindow();
         var first_launch = nodeStorage.getItem("firstlaunch");
