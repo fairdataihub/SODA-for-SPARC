@@ -1430,8 +1430,9 @@ def generate_dataset_locally(soda_json_structure):
             original_dataset_path = join(dataset_absolute_path, dataset_name)
             shutil.rmtree(original_dataset_path)
             rename(datasetpath, original_dataset_path)
-
-        open_file(join(dataset_absolute_path, datasetpath))
+            open_file(join(dataset_absolute_path, original_dataset_path))
+        else:
+            open_file(join(dataset_absolute_path, datasetpath))
         return datasetpath
 
 
