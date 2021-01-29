@@ -5447,7 +5447,7 @@ function selectOptionColor(mylist) {
 
 function showAccountDetails(loadProgress) {
   /// load and get permission for account
-  client.invokedataset;
+  client.invoke(
   "api_bf_account_details",
     bfAccountList.options[bfAccountList.selectedIndex].text,
     (error, res) => {
@@ -5495,7 +5495,8 @@ function showAccountDetails(loadProgress) {
           }
         );
       }
-    };
+    }
+  );
 }
 
 ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
@@ -6949,12 +6950,16 @@ function showDefaultBFAccount() {
               $("#current-bf-account").text("None");
               $("#current-bf-account-generate").text("None");
               $("#para-account-detail-curate-generate").html("None");
+              bfSelectAccountStatus.innerHTML = "<span style='color:red'>"+error+"</span>";
+              $("#div-bf-account-load-progress").css("display", "none");
               showHideDropdownButtons("account", "hide");
             } else {
               $("#para-account-detail-curate").html(res);
               $("#current-bf-account").text(defaultBfAccount);
               $("#current-bf-account-generate").text(defaultBfAccount);
               $("#para-account-detail-curate-generate").html(res);
+              bfSelectAccountStatus.innerHTML = res;
+              $("#div-bf-account-load-progress").css("display", "none");
               showHideDropdownButtons("account", "show");
             }
           }
@@ -8123,7 +8128,7 @@ $("#inputNewNameDataset").keyup(function () {
   $("#Question-generate-dataset-generate-div").children().hide();
   $("#para-continue-name-dataset-generate").hide();
   $("#para-continue-name-dataset-generate").text("");
-  
+
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
       document.getElementById("div-confirm-inputNewNameDataset").style.display =
