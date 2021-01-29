@@ -11,7 +11,7 @@ var allParentStepsJSON = {
 };
 
 var currentTab = 0; // Current tab is set to be the first tab (0)
-showParentTab(0, 1);
+// showParentTab(0, 1);
 
 function showParentTab(tabNow, nextOrPrev) {
   document.getElementById("nextBtn").disabled = true;
@@ -26,8 +26,14 @@ function showParentTab(tabNow, nextOrPrev) {
   var x = document.getElementsByClassName("parent-tabs");
   fixStepIndicator(tabNow);
   if (tabNow === 0) {
+    if ($("#curate-section").hasClass("is-shown")) {
+      $("#Question-getting-started-1").css("display", "none");
+    } else {
+      $("#Question-getting-started-1").css("display", "flex");
+    }
     fixStepDone(tabNow);
   } else {
+    $("#Question-getting-started-1").css("display", "flex");
     fixStepDone(tabNow - 1);
   }
 
@@ -2252,8 +2258,10 @@ document
     $(".vertical-progress-bar").css("display", "flex");
     document.getElementById("generate-dataset-progress-tab").style.display =
       "none";
+    // if (currentTab === 0 && $("#curate-section").hasClass("is-shown")) {
     if (!$("#getting-started-tab").hasClass("tab-active")) {
       $("#getting-started-tab").addClass("tab-active");
+      $("#Question-getting-started-1").addClass("show");
     }
     showParentTab(currentTab, 1);
   });
@@ -2335,3 +2343,7 @@ function saveOrganizeProgressPrompt() {
     });
   }
 }
+
+$($("#prepare-dataset-a")[0]).bind("click", function () {
+  $("#Question-getting-started-1").css("display", "none");
+});
