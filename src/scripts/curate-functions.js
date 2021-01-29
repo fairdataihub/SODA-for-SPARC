@@ -251,17 +251,20 @@ function importGenerateDatasetStep(object) {
       }
     }
   } else {
-    // the block of code below reverts all the checks to option cards if applicable
-    exitCurate();
-    $("#previous-progress").prop("checked", true);
-    $($("#previous-progress").parents()[2]).addClass("checked");
-    $(
+    if ("save-progress" in sodaJSONObj) {
+      // the block of code below reverts all the checks to option cards if applicable
+      $("#previous-progress").prop("checked", true);
+      $($("#previous-progress").parents()[2]).addClass("checked");
       $(
         $(
-          $("#div-getting-started-previous-progress").parents()[0]
-        ).siblings()[0]
-      ).children()[0]
-    ).toggleClass("non-selected");
+          $(
+            $("#div-getting-started-previous-progress").parents()[0]
+          ).siblings()[0]
+        ).children()[0]
+      ).toggleClass("non-selected");
+    } else {
+      exitCurate();
+    }
   }
 }
 
