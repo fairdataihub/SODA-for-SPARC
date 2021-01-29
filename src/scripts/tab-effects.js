@@ -2366,13 +2366,14 @@ function saveOrganizeProgressPrompt() {
     // if no, ask users what to name it, and create file
   } else {
     bootbox.prompt({
-      tite: "Saving progress as...",
+      title: "Saving progress as...",
       message: "Enter a name for your progress below:",
       centerVertical: true,
       callback: function (result) {
         if (result !== null && result !== "") {
           sodaJSONObj["save-progress"] = result.trim();
           saveSODAJSONProgress(result.trim());
+          addOption(progressFileDropdown, result.trim(), result.trim() + ".json")
         }
       },
     });
