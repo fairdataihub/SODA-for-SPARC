@@ -331,7 +331,7 @@ function checkValidRenameInput(
       }
     }
     if (duplicate) {
-      $(myBootboxDialog).find(".modal-footer span").text("");
+      $(myBootboxDialog).find(".modal-footer span").remove();
       myBootboxDialog
         .find(".modal-footer")
         .prepend(
@@ -352,7 +352,7 @@ function checkValidRenameInput(
       }
     }
     if (duplicate) {
-      $(myBootboxDialog).find(".modal-footer span").text("");
+      $(myBootboxDialog).find(".modal-footer span").remove();
       myBootboxDialog
         .find(".modal-footer")
         .prepend(
