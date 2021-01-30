@@ -23,7 +23,7 @@ const Sidebar = ({ isOpen, toggle }) => {
                     <SidebarLink to='features' onClick={toggle} smooth='true'>Features</SidebarLink>
                     <SidebarLink to='downloads' onClick={toggle} smooth='true'>SODA for SPARC</SidebarLink>
                     <SidebarLink to='team' onClick={toggle} smooth='true'>Our Team</SidebarLink>
-                    <SidebarLinkD to='about' onClick={toggle}>Documentation</SidebarLinkD>
+                    <SidebarLinkD to='/documentation' onClick={toggle}>Documentation</SidebarLinkD>
                 </SidebarMenu>
                 <SideBtnWrap>
                     <SidebarRoute href="https://github.com/bvhpatel/SODA" target="_blank">GitHub</SidebarRoute>

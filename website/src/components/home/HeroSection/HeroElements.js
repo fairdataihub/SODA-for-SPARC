@@ -137,6 +137,10 @@ export const ImageRt = styled.img`
 
 export const ButtonR = styled(LinkR)`
     text-decoration: none;
+
+    @media screen and (max-width: 818px) {
+        display: none;
+    }
 `;
 
 export const ButtonS = styled(LinkS)`

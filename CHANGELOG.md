@@ -14,3 +14,10 @@ All notable changes to SODA will be documented in this file.
 
 ### Major bug fixes:
 - Updated Airtable SPARC's table name to reflect the change initiated by SPARC. Prior to the fix, SODA could not connect to SPARC award data sheet, thus raising an error when users utilize the Prepare metadata feature.
+
+## v3.0.2 - To be released
+
+### Bug fixes:
+- When uploading a local dataset to an existing Blackfynn folder, the 'skip' folders option now correctly uploads files that were not meant to be skipped.
+- Creating a new local folder as your dataset destination now renames the generated folder correctly if a duplicate folder has to be created.
+- Squashed a bug where files uploaded to Blackfynn were sometimes not renamed.
