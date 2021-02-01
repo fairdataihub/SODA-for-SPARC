@@ -349,20 +349,20 @@ function loadProgressFile(ev) {
   }
 }
 
-function removeOptions(selectbox) {
-  var i;
-  for (i = selectbox.options.length - 1; i >= 0; i--) {
-    selectbox.remove(i);
-  }
-}
-
-// Function to add options to dropdown list
-function addOption(selectbox, text, value) {
-  var opt = document.createElement("OPTION");
-  opt.text = text;
-  opt.value = value;
-  selectbox.options.add(opt);
-}
+// function removeOptions(selectbox) {
+//   var i;
+//   for (i = selectbox.options.length - 1; i >= 0; i--) {
+//     selectbox.remove(i);
+//   }
+// }
+//
+// // Function to add options to dropdown list
+// function addOption(selectbox, text, value) {
+//   var opt = document.createElement("OPTION");
+//   opt.text = text;
+//   opt.value = value;
+//   selectbox.options.add(opt);
+// }
 
 // function to load Progress dropdown
 function importOrganizeProgressPrompt() {
