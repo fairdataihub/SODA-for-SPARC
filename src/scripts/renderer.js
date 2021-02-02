@@ -79,7 +79,7 @@ log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
 //check user's internet connection and connect to default Blackfynn account //
-require("dns").resolve("www.google.com", (err) => {
+require("dns").resolve("www.google.com", function (err) {
   if (err) {
     console.error("No internet connection");
     log.error("No internet connection");
@@ -575,7 +575,7 @@ const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">';
 
 // Sidebar Navigation //
 var open = false;
-const openSidebar = (buttonElement) => {
+function openSidebar(buttonElement) {
   if (!open) {
     ipcRenderer.send("resize-window", "up");
     document.getElementById("main-nav").style.width = "250px";
@@ -589,7 +589,7 @@ const openSidebar = (buttonElement) => {
     buttonSidebarIcon.style.display = "block";
     open = false;
   }
-};
+}
 
 // Assign dragable area in the code to allow for dragging and selecting items//
 let drag_event_fired = false;
@@ -745,7 +745,7 @@ var completenessInput = document.getElementById("ds-completeness"),
 /////// Load SPARC airtable data
 var airtableHostname = "api.airtable.com";
 
-const sendHTTPsRequestAirtable = (options, varSuccess) => {
+function sendHTTPsRequestAirtable(options, varSuccess) {
   https.get(options, (res) => {
     if (res.statusCode === 200) {
       varSuccess = true;
@@ -760,10 +760,10 @@ const sendHTTPsRequestAirtable = (options, varSuccess) => {
     });
     return res;
   });
-};
+}
 
 ///// Upon clicking "Connect" to Airtable
-addAirtableKeyBtn.addEventListener("click", () => {
+addAirtableKeyBtn.addEventListener("click", function () {
   document.getElementById("para-add-airtable-key").innerHTML = "";
   var apiKeyInput = document.getElementById("airtable-api-key").value;
   var keyName = document.getElementById("airtable-key-name").value;
@@ -832,7 +832,7 @@ templateArray = [
   "manifest.xlsx",
   "DataDeliverablesDocument-template.docx",
 ];
-const downloadTemplates = (templateItem, destinationFolder) => {
+function downloadTemplates(templateItem, destinationFolder) {
   var templatePath = path.join(__dirname, "file_templates", templateItem);
   var destinationPath = path.join(destinationFolder, templateItem);
   if (fs.existsSync(destinationPath)) {
@@ -847,7 +847,7 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       "Successfully saved file " + templateItem + " to " + destinationFolder;
     ipcRenderer.send("open-info-metadata-file-donwloaded", emessage);
   }
-};
+}
 
 downloadSubmission.addEventListener("click", (event) => {
   ipcRenderer.send("open-folder-dialog-save-metadata", templateArray[0]);
@@ -899,7 +899,7 @@ var milestoneTagify = new Tagify(milestoneInput, {
 //// when users click on Import
 document
   .getElementById("button-import-milestone")
-  .addEventListener("click", () => {
+  .addEventListener("click", function () {
     document.getElementById("para-milestone-document-info-long").style.display =
       "none";
     document.getElementById("para-milestone-document-info").innerHTML = "";
@@ -986,7 +986,7 @@ document
 
 document
   .getElementById("input-milestone-select")
-  .addEventListener("click", () => {
+  .addEventListener("click", function () {
     document.getElementById("para-milestone-document-info-long").style.display =
       "none";
     ipcRenderer.send("open-file-dialog-milestone-doc");
@@ -1001,7 +1001,7 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
   }
 });
 
-presavedAwardArray1.addEventListener("change", () => {
+presavedAwardArray1.addEventListener("change", function () {
   if (presavedAwardArray1.value === "Select") {
     document.getElementById(
       "div-show-milestone-info-no-existing"
@@ -1037,14 +1037,14 @@ function parseJson(path) {
 }
 
 // function to make directory if metadata path does not exist
-const createMetadataDir = () => {
+function createMetadataDir() {
   try {
     fs.mkdirSync(metadataPath, { recursive: true });
   } catch (error) {
     log.error(error);
     console.log(error);
   }
-};
+}
 
 createMetadataDir();
 
@@ -1073,7 +1073,7 @@ function loadAwards() {
 loadAwards();
 
 /// function to grab row index
-const getRowIndex = (table) => {
+function getRowIndex(table) {
   var rowcount = table.rows.length;
   if (rowcount === 2) {
     // start at 1 to skip the header
@@ -1083,7 +1083,7 @@ const getRowIndex = (table) => {
     var rowIndex = rowcount - 1;
   }
   return rowIndex;
-};
+}
 
 //// initiate a tagify Award list
 var awardArrayTagify = new Tagify(awardInputField, {
@@ -1105,7 +1105,7 @@ var awardArrayTagify = new Tagify(awardInputField, {
 // })
 
 // Save grant information
-addAwardBtn.addEventListener("click", () => {
+addAwardBtn.addEventListener("click", function () {
   var tagifyArray = awardArrayTagify.value;
   if (tagifyArray.length === 0) {
     document.getElementById("para-save-award-info").innerHTML =
@@ -1185,16 +1185,16 @@ addAwardBtn.addEventListener("click", () => {
 });
 
 /////// Delete an Award///////////
-const deleteOptionByValue = (dropdown, value) => {
+function deleteOptionByValue(dropdown, value) {
   for (var i = 0; i < dropdown.length; i++) {
     if (dropdown.options[i].value === value) {
       dropdown.remove(i);
     }
   }
   return null;
-};
+}
 
-deleteAwardBtn.addEventListener("click", () => {
+deleteAwardBtn.addEventListener("click", function () {
   award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
   if (award === "Select") {
     document.getElementById("para-delete-award-status").innerHTML =
@@ -1244,15 +1244,15 @@ ipcRenderer.on("warning-delete-award-selection", (event, index) => {
 });
 
 //// function to make a selected award the default award
-const makeDefaultAward = (award) => {
+function makeDefaultAward(award) {
   var defaultObj = {};
   var defaultObj = parseJson(defaultAwardPath);
   defaultObj["default"] = award;
   fs.writeFileSync(defaultAwardPath, JSON.stringify(defaultObj));
-};
+}
 
 /// When SODA launches, load default award
-const loadDefaultAward = () => {
+function loadDefaultAward() {
   var award;
   var defaultObj = parseJson(defaultAwardPath);
   try {
@@ -1263,7 +1263,7 @@ const loadDefaultAward = () => {
     console.log(error);
     return "";
   }
-};
+}
 
 var defaultAward = loadDefaultAward();
 loadMilestoneInfo(defaultAward);
@@ -1367,7 +1367,7 @@ function loadMilestoneInfo(awardNumber) {
 
 ///// Load Milestone info
 /// check if no award is selected, then show no current milestones.
-presavedAwardArray1.addEventListener("change", () => {
+presavedAwardArray1.addEventListener("change", function () {
   var currentAward = presavedAwardArray1.value;
   loadMilestoneInfo(currentAward);
 });
@@ -1402,7 +1402,7 @@ function loadAwardData() {
       })
       .eachPage(
         function page(records, fetchNextPage) {
-          records.forEach((record) => {
+          records.forEach(function (record) {
             if (record.get("Project_title") !== undefined) {
               item = record
                 .get("SPARC_Award_#")
@@ -1451,7 +1451,7 @@ bfRefreshAirtableStatusBtn.addEventListener("click", () => {
 ///////////////// //////////////// //////////////// ////////////////
 ///////////////////////Submission file //////////////// ////////////////
 
-const changeAwardInput = () => {
+function changeAwardInput() {
   document.getElementById("selected-milestone-date").value = "";
   document.getElementById("input-milestone-date").value = "";
   actionEnterNewDate("none");
@@ -1499,9 +1499,9 @@ const changeAwardInput = () => {
     );
   }
   descriptionDateInput.value = completionDateArray[1];
-};
+}
 
-descriptionDateInput.addEventListener("change", () => {
+descriptionDateInput.addEventListener("change", function () {
   document.getElementById("input-milestone-date").value = "";
   if (descriptionDateInput.value === "Enter a date") {
     actionEnterNewDate("flex");
@@ -1512,7 +1512,7 @@ descriptionDateInput.addEventListener("change", () => {
 
 const submissionDateInput = document.getElementById("input-milestone-date");
 
-const actionEnterNewDate = (action) => {
+function actionEnterNewDate(action) {
   document.getElementById(
     "div-submission-enter-different-date-1"
   ).style.display = action;
@@ -1522,7 +1522,7 @@ const actionEnterNewDate = (action) => {
   document.getElementById(
     "div-submission-enter-different-date-3"
   ).style.display = action;
-};
+}
 
 /////// Populate Submission file fields from presaved information
 presavedAwardArray2.addEventListener("change", changeAwardInput);
@@ -1617,7 +1617,7 @@ ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
 //////////////// //////////////// //////////////// ////////////////
 
 //// get datasets and append that to option list for parent datasets
-const getParentDatasets = () => {
+function getParentDatasets() {
   var parentDatasets = [];
   for (
     var i = 1, n = datasetDescriptionFileDataset.options.length;
@@ -1629,16 +1629,16 @@ const getParentDatasets = () => {
     }
   }
   return parentDatasets;
-};
+}
 
-const clearCurrentConInfo = () => {
+function clearCurrentConInfo() {
   document.getElementById("input-con-ID").value = "";
   document.getElementById("input-con-role").value = "";
   document.getElementById("input-con-affiliation").value = "";
   contactPerson.checked = false;
-};
+}
 
-const changeAwardInputDsDescription = () => {
+function changeAwardInputDsDescription() {
   clearCurrentConInfo();
   /// delete old table
   while (currentConTable.rows.length > 1) {
@@ -1671,7 +1671,7 @@ const changeAwardInputDsDescription = () => {
       })
       .eachPage(function page(records, fetchNextPage) {
         var awardValArray = [];
-        records.forEach((record) => {
+        records.forEach(function (record) {
           var firstName = record.get("First_name");
           var lastName = record.get("Last_name");
           var fullName = lastName.concat(", ", firstName);
@@ -1691,19 +1691,19 @@ const changeAwardInputDsDescription = () => {
         }
       };
   }
-};
+}
 
 //////////////////////// Current Contributor(s) /////////////////////
 
-const delete_current_con = (no) => {
+function delete_current_con(no) {
   document.getElementById("row-current-name" + no + "").outerHTML = "";
-};
+}
 
-const delete_link = (no) => {
+function delete_link(no) {
   document.getElementById("row-current-link" + no + "").outerHTML = "";
-};
+}
 
-const createCurrentConTable = (table) => {
+function createCurrentConTable(table) {
   var conVal =
     dsContributorArray.options[dsContributorArray.selectedIndex].value;
   var name;
@@ -1836,10 +1836,10 @@ const createCurrentConTable = (table) => {
         "<span style='color: red;'>Contributor already added!</span>";
     }
   }
-};
+}
 
 //////////////////////// Article(s) and Protocol(s) /////////////////////
-const createAdditionalLinksTable = () => {
+function createAdditionalLinksTable() {
   document.getElementById("para-save-link-status").innerHTML = "";
   var linkTable = document.getElementById("table-addl-links");
   var linkType = document.getElementById("select-misc-link").value;
@@ -1904,35 +1904,37 @@ const createAdditionalLinksTable = () => {
     document.getElementById("para-save-link-status").innerHTML =
       "<span style='color: red;'>Please specify a link to add!</span>";
   }
-};
+}
 
 //// when link type is changed, clear other values
-document.getElementById("select-misc-link").addEventListener("change", () => {
-  document.getElementById("input-misc-links").value = "";
-  document.getElementById("input-misc-link-description").value = "";
-});
+document
+  .getElementById("select-misc-link")
+  .addEventListener("change", function () {
+    document.getElementById("input-misc-links").value = "";
+    document.getElementById("input-misc-link-description").value = "";
+  });
 
 //// function to leave fields empty if no data is found on Airtable
-const leaveFieldsEmpty = (field, element) => {
+function leaveFieldsEmpty(field, element) {
   if (field !== undefined) {
     element.value = field;
   } else {
     element.value = "";
   }
-};
+}
 
 /// Create tags input for multi-answer fields
-const createTagsInput = (field) => {
+function createTagsInput(field) {
   return new Tagify(field);
-};
+}
 
 //// When users click on adding description for each additional link
-addAdditionalLinkBtn.addEventListener("click", () => {
+addAdditionalLinkBtn.addEventListener("click", function () {
   createAdditionalLinksTable();
 });
 
 //// When users click on "Add" to current contributors table
-addCurrentContributorsBtn.addEventListener("click", () => {
+addCurrentContributorsBtn.addEventListener("click", function () {
   document.getElementById("para-save-contributor-status").innerHTML = "";
   if (
     dsContributorArray.options[dsContributorArray.selectedIndex].value ===
@@ -1945,7 +1947,7 @@ addCurrentContributorsBtn.addEventListener("click", () => {
   }
 });
 
-$(currentConTable).mousedown((e) => {
+$(currentConTable).mousedown(function (e) {
   var tr = $(e.target).closest("tr"),
     sy = e.pageY,
     drag;
@@ -1957,7 +1959,7 @@ $(currentConTable).mousedown((e) => {
   function move(e) {
     if (!drag && Math.abs(e.pageY - sy) < 10) return;
     drag = true;
-    tr.siblings().each(() => {
+    tr.siblings().each(function () {
       var s = $(this),
         i = s.index(),
         y = s.offset().top;
@@ -1985,7 +1987,7 @@ $(currentConTable).mousedown((e) => {
 dsAwardArray.addEventListener("change", changeAwardInputDsDescription);
 
 /// Auto populate once a contributor is selected
-dsContributorArray.addEventListener("change", (e) => {
+dsContributorArray.addEventListener("change", function (e) {
   ///clear old entries once a contributor option is changed
   document.getElementById("para-save-contributor-status").innerHTML = "";
   document.getElementById("input-con-ID").value = "";
@@ -2033,7 +2035,7 @@ dsContributorArray.addEventListener("change", (e) => {
       })
       .eachPage(function page(records, fetchNextPage) {
         var conInfoObj = {};
-        records.forEach((record) => {
+        records.forEach(function (record) {
           conInfoObj["ID"] = record.get("ORCID");
           conInfoObj["Role"] = record.get("Dataset_contributor_roles_for_SODA");
           conInfoObj["Affiliation"] = record.get("Institution");
@@ -2110,7 +2112,7 @@ dsContributorArray.addEventListener("change", (e) => {
 });
 
 ///// grab datalist name and auto-load current description
-const showDatasetDescription = () => {
+function showDatasetDescription() {
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
   var selectedBfDataset =
@@ -2137,9 +2139,9 @@ const showDatasetDescription = () => {
     );
     document.getElementById("ds-description").disabled = false;
   }
-};
+}
 
-const emptyDSInfoEntries = () => {
+function emptyDSInfoEntries() {
   var fieldSatisfied = true;
   var inforObj = grabDSInfoEntries();
   var emptyFieldArray = [];
@@ -2161,9 +2163,9 @@ const emptyDSInfoEntries = () => {
     }
   }
   return [fieldSatisfied, emptyFieldArray];
-};
+}
 
-const emptyLinkInfo = () => {
+function emptyLinkInfo() {
   var tableCurrentLinks = document.getElementById("table-addl-links");
   var fieldSatisfied = false;
   for (var i = 0; i < tableCurrentLinks.rows.length; i++) {
@@ -2174,18 +2176,17 @@ const emptyLinkInfo = () => {
     }
   }
   return fieldSatisfied;
-};
+}
 
-const emptyInfoEntries = (element) => {
+function emptyInfoEntries(element) {
   var fieldSatisfied = true;
   // var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
   if (element === "Select") {
     fieldSatisfied = false;
   }
   return fieldSatisfied;
-};
-
-const contactPersonCheck = () => {
+}
+function contactPersonCheck() {
   var contactPersonExists = false;
   var rowcount = currentConTable.rows.length;
   for (var i = 0; i < rowcount; i++) {
@@ -2195,9 +2196,9 @@ const contactPersonCheck = () => {
     }
   }
   return contactPersonExists;
-};
+}
 
-const grabDSInfoEntries = () => {
+function grabDSInfoEntries() {
   var rawName =
     datasetDescriptionFileDataset.options[
       datasetDescriptionFileDataset.selectedIndex
@@ -2222,9 +2223,9 @@ const grabDSInfoEntries = () => {
     "number of samples": samplesNo,
     "number of subjects": subjectsNo,
   };
-};
+}
 
-const grabConInfoEntries = () => {
+function grabConInfoEntries() {
   var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
   var acknowledgment = document
     .getElementById("ds-description-acknowledgments")
@@ -2261,9 +2262,9 @@ const grabConInfoEntries = () => {
   contributorObj["acknowledgment"] = acknowledgment;
   contributorObj["contributors"] = currentConInfo;
   return contributorObj;
-};
+}
 
-const grabProtocolSection = () => {
+function grabProtocolSection() {
   var miscObj = {};
   /// Additional link description
   var rowcountLink = document.getElementById("table-addl-links").rows.length;
@@ -2296,9 +2297,9 @@ const grabProtocolSection = () => {
   miscObj["Protocol URL or DOI*"] = protocolArray;
   miscObj["Additional Link"] = additionalLinkArray;
   return miscObj;
-};
+}
 
-const grabCompletenessInfo = () => {
+function grabCompletenessInfo() {
   var completeness = completenessTagify.value;
   var parentDS = parentDSTagify.value;
   var completeDSTitle = document.getElementById("input-completeds-title").value;
@@ -2321,10 +2322,10 @@ const grabCompletenessInfo = () => {
     optionalSectionObj["completeDSTitle"] = completeDSTitle;
   }
   return optionalSectionObj;
-};
+}
 
 //// upon choosing a dataset, populate current description
-datasetDescriptionFileDataset.addEventListener("change", () => {
+datasetDescriptionFileDataset.addEventListener("change", function () {
   document.getElementById("ds-description").disabled = true;
   document.getElementById("ds-description").innerHTML = "Loading...";
   syncDatasetDropdownOption(datasetDescriptionFileDataset);
@@ -2332,7 +2333,7 @@ datasetDescriptionFileDataset.addEventListener("change", () => {
 });
 
 /// detect empty required fields and raise a warning
-const detectEmptyRequiredFields = (funding) => {
+function detectEmptyRequiredFields(funding) {
   /// dataset info
   var dsContent = emptyDSInfoEntries();
   var dsSatisfied = dsContent[0];
@@ -2378,7 +2379,7 @@ const detectEmptyRequiredFields = (funding) => {
     }
   }
   return [allFieldsSatisfied, errorMessage];
-};
+}
 
 /////////////// Generate ds description file ///////////////////
 ////////////////////////////////////////////////////////////////
@@ -2713,13 +2714,13 @@ const tuiInstance = new Editor({
 });
 
 // Character count for subtitle //
-const countCharacters = (textelement, pelement) => {
+function countCharacters(textelement, pelement) {
   var textEntered = textelement.value;
   var counter = 256 - textEntered.length;
   pelement.innerHTML = counter + " characters remaining";
-};
+}
 
-bfDatasetSubtitle.addEventListener("keyup", () => {
+bfDatasetSubtitle.addEventListener("keyup", function () {
   countCharacters(bfDatasetSubtitle, bfDatasetSubtitleCharCount);
 });
 
@@ -2727,7 +2728,7 @@ bfDatasetSubtitle.addEventListener("keyup", () => {
 // Prepare Dataset
 //////////////////////////////////
 
-const disablePrepareDatasetButtons = () => {
+function disablePrepareDatasetButtons() {
   selectSaveFileOrganizationBtn.disabled = true;
   selectImportFileOrganizationBtn.disabled = true;
   clearTableBtn.disabled = true;
@@ -2735,9 +2736,9 @@ const disablePrepareDatasetButtons = () => {
   selectPreviewMetadataBtn.disabled = true;
   selectSaveFileOrganizationMetadataBtn.disabled = true;
   curateDatasetBtn.disabled = true;
-};
+}
 
-const enablePrepareDatasetButtons = () => {
+function enablePrepareDatasetButtons() {
   selectSaveFileOrganizationBtn.disabled = false;
   selectImportFileOrganizationBtn.disabled = false;
   clearTableBtn.disabled = false;
@@ -2745,7 +2746,7 @@ const enablePrepareDatasetButtons = () => {
   selectPreviewMetadataBtn.disabled = false;
   selectSaveFileOrganizationMetadataBtn.disabled = false;
   curateDatasetBtn.disabled = false;
-};
+}
 
 // Action when user click on "Save" file organization button //
 selectSaveFileOrganizationBtn.addEventListener("click", (event) => {
@@ -2954,7 +2955,7 @@ selectPreviewMetadataBtn.addEventListener("click", () => {
 });
 
 //// Select to generate a local dataset
-selectnewDatasetBtn.addEventListener("click", () => {
+selectnewDatasetBtn.addEventListener("click", function () {
   ipcRenderer.send("open-file-dialog-newdataset");
 });
 ipcRenderer.on("selected-new-dataset", (event, filepath) => {
@@ -2966,7 +2967,7 @@ ipcRenderer.on("selected-new-dataset", (event, filepath) => {
   }
 });
 
-importnewDatasetBtn.addEventListener("click", () => {
+importnewDatasetBtn.addEventListener("click", function () {
   var filepath = document.getElementById("selected-new-dataset").placeholder;
   if (filepath === "Select destination") {
     document.getElementById("para-info-new-dataset").innerHTML =
@@ -3108,7 +3109,8 @@ curateDatasetBtn.addEventListener("click", () => {
 
   // Progress tracking function
   var countDone = 0;
-  var timerProgress = setInterval(() => {
+  var timerProgress = setInterval(progressfunction, 1000);
+  function progressfunction() {
     curateDatasetBtn.disabled = true;
     disableform(curationForm);
     client.invoke("api_curate_dataset_progress", (error, res) => {
@@ -3185,16 +3187,13 @@ curateDatasetBtn.addEventListener("click", () => {
         enableform(curationForm);
       }
     }
-  }, 1000);
-
-  //var timerProgress = setInterval(progressfunction, 1000);
-  //function progressfunction() {}
+  }
 });
 
 ////////////////// Validate current datasets ////////////////////////////////
 
 //// when users click on "Preview", show preview dataset in explorer
-previewCurrentDsValidate.addEventListener("click", () => {
+previewCurrentDsValidate.addEventListener("click", function () {
   document.getElementById("para-preview-current-ds").innerHTML = "";
   document.getElementById("para-preview-current-ds").innerHTML =
     "Please wait...";
@@ -3235,17 +3234,17 @@ previewCurrentDsValidate.addEventListener("click", () => {
 });
 
 /////// Convert table content into json format for transferring to Python
-const grabCurrentDSValidator = () => {
+function grabCurrentDSValidator() {
   var jsonvect = tableToJsonWithDescription(tableNotOrganized);
   var jsonpath = jsonvect[0];
   var jsondescription = jsonvect[1];
   var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
   jsonpath["main"] = jsonpathMetadata["metadata"];
   return [jsonpath, jsondescription];
-};
+}
 
 //// Check for empty JSON object and remove then
-const checkJSONObj = (jsonObj) => {
+function checkJSONObj(jsonObj) {
   var empty = true;
   for (var key of Object.keys(jsonObj)) {
     if (jsonObj[key].length !== 0) {
@@ -3255,7 +3254,7 @@ const checkJSONObj = (jsonObj) => {
     }
   }
   return [empty, jsonObj];
-};
+}
 
 ///////// Clicking on Validate current DS
 var checkCategory0 = "High-level folder structure";
@@ -3275,7 +3274,7 @@ var checkCategories = [
   checkCategory6,
 ];
 
-validateCurrentDSBtn.addEventListener("click", () => {
+validateCurrentDSBtn.addEventListener("click", function () {
   document.getElementById("div-validation-report-current").style.display =
     "none";
   document.getElementById("para-preview-current-ds").innerHTML = "";
@@ -3320,7 +3319,7 @@ validateCurrentDSBtn.addEventListener("click", () => {
   }
 });
 
-const localValidator = (validatorInput) => {
+function localValidator(validatorInput) {
   var messageDisplay = "";
   client.invoke("api_validate_dataset", validatorInput, (error, res) => {
     if (error) {
@@ -3349,9 +3348,9 @@ const localValidator = (validatorInput) => {
       validateSODAProgressBar.style.display = "none";
     }
   });
-};
+}
 ///// Generate pdf validator file
-currentDatasetReportBtn.addEventListener("click", () => {
+currentDatasetReportBtn.addEventListener("click", function () {
   document.getElementById("para-generate-report-current-ds").innerHTML = "";
   ipcRenderer.send("save-file-dialog-validator-current");
 });
@@ -3391,7 +3390,7 @@ ipcRenderer.on("selected-savedvalidatorcurrent", (event, filepath) => {
 //// when users click on Import local dataset
 document
   .getElementById("input-local-ds-select")
-  .addEventListener("click", () => {
+  .addEventListener("click", function () {
     document.getElementById("para-generate-report-local-ds").innerHTML = "";
     document.getElementById("div-report-local").style.display = "none";
     ipcRenderer.send("open-file-dialog-validate-local-ds");
@@ -3412,7 +3411,7 @@ ipcRenderer.on("selected-validate-local-dataset", (event, filepath) => {
   }
 });
 
-validateLocalDSBtn.addEventListener("click", () => {
+validateLocalDSBtn.addEventListener("click", function () {
   document.getElementById("para-local-ds-info").innerHTML = "";
   document.getElementById("para-generate-report-local-ds").innerHTML = "";
   var datasetPath = document.getElementById("input-local-ds-select")
@@ -3455,7 +3454,7 @@ validateLocalDSBtn.addEventListener("click", () => {
   }
 });
 
-const validateMessageTransform = (inString, classSelection, colorSelection) => {
+function validateMessageTransform(inString, classSelection, colorSelection) {
   //outString = inString.split("--").join("<br>")
   outString = inString.split("--");
   var msg =
@@ -3482,9 +3481,9 @@ const validateMessageTransform = (inString, classSelection, colorSelection) => {
     msg += "</ul>";
   }
   return msg;
-};
+}
 
-const errorMessageGenerator = (resitem, category, messageDisplay) => {
+function errorMessageGenerator(resitem, category, messageDisplay) {
   if (resitem[category]) {
     var messageCategory = resitem[category];
     if (messageCategory.length > 0) {
@@ -3509,9 +3508,9 @@ const errorMessageGenerator = (resitem, category, messageDisplay) => {
     }
   }
   return messageDisplay;
-};
+}
 
-const errorMessageCategory = (resitem, checkCategory, messageDisplay) => {
+function errorMessageCategory(resitem, checkCategory, messageDisplay) {
   messageDisplay += "<b>" + checkCategory + "</b>";
   messageDisplay += "<ul class='validatelist' id='" + checkCategory + "'>";
   var category = "fatal";
@@ -3522,10 +3521,10 @@ const errorMessageCategory = (resitem, checkCategory, messageDisplay) => {
   messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
   messageDisplay += "</ul>";
   return messageDisplay;
-};
+}
 
 ///// Generate pdf report for local validator report
-localDatasetReportBtn.addEventListener("click", () => {
+localDatasetReportBtn.addEventListener("click", function () {
   document.getElementById("para-generate-report-local-ds").innerHTML = "";
   ipcRenderer.send("save-file-dialog-validator-local");
 });
@@ -3571,7 +3570,7 @@ ipcRenderer.on("selected-savedvalidatorlocal", (event, filepath) => {
 /// Add all BF accounts to the dropdown list, and then choose by default one option ('global' account)
 const curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
 
-const updateDatasetCurate = (datasetDropdown, bfaccountDropdown) => {
+function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
   client.invoke(
     "api_bf_dataset_account",
     bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text,
@@ -3588,10 +3587,10 @@ const updateDatasetCurate = (datasetDropdown, bfaccountDropdown) => {
       }
     }
   );
-};
+}
 
 //// De-populate dataset dropdowns to clear options for CURATE
-const populateDatasetDropdownCurate = (datasetDropdown, datasetlist) => {
+function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
   removeOptions(datasetDropdown);
 
   /// making the first option: "Select" disabled
@@ -3606,7 +3605,7 @@ const populateDatasetDropdownCurate = (datasetDropdown, datasetlist) => {
     option.value = myitemselect;
     datasetDropdown.appendChild(option);
   }
-};
+}
 ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
 //
@@ -3658,7 +3657,7 @@ bfAddAccountBtn.addEventListener("click", () => {
         bfAddAccountStatus.innerHTML =
           res + smileyCan + ". Please select your account!";
         bfAccountLoadProgress.style.display = "block";
-        // updateBfAccountList();
+        updateBfAccountList();
         // updateAllBfAccountList(curateBFaccountList);
         keyName.value = "";
         key.value = "";
@@ -3698,6 +3697,7 @@ bfAccountList.addEventListener("change", () => {
     defaultBfAccount = myitemselect;
     $("#current-bf-account").text(defaultBfAccount);
     $("#current-bf-account-generate").text(defaultBfAccount);
+    // updateDatasetList(defaultBfAccount);
     showAccountDetails(bfAccountLoadProgress);
     showHideDropdownButtons("account", "show");
   }
@@ -3910,7 +3910,8 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
   );
 
   var countDone = 0;
-  var timerProgress = setInterval(() => {
+  var timerProgress = setInterval(progressfunction, 1000);
+  function progressfunction() {
     client.invoke("api_submit_dataset_progress", (error, res) => {
       if (error) {
         var emessage = userError(error);
@@ -3980,10 +3981,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
         pathSubmitDataset.disabled = false;
       }
     }
-  }, 1000);
-
-  //var timerProgress = setInterval(progressfunction, 1000);
-  //function progressfunction() {}
+  }
 });
 
 // Change selected dataset from dropdown lists //
@@ -4008,7 +4006,7 @@ bfUploadDatasetList.addEventListener("change", () => {
   showDatasetDescription();
 });
 
-selectLocalDsSubmit.addEventListener("click", () => {
+selectLocalDsSubmit.addEventListener("click", function () {
   ipcRenderer.send("open-file-dialog-submit-dataset");
 });
 ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
@@ -4048,13 +4046,13 @@ bfDatasetListRenameDataset.addEventListener("change", () => {
   bfRenameDatasetStatus.innerHTML = "";
 });
 
-const renameDatasetlistChange = () => {
+function renameDatasetlistChange() {
   if (bfDatasetListRenameDataset.value === "Select dataset") {
     renameDatasetName.value = "";
   } else {
     renameDatasetName.value = bfDatasetListRenameDataset.value;
   }
-};
+}
 
 // Add metadata to Blackfynn dataset
 bfDatasetListMetadata.addEventListener("change", () => {
@@ -4076,7 +4074,7 @@ bfDatasetListMetadata.addEventListener("change", () => {
   showDatasetDescription();
 });
 
-const metadataDatasetlistChange = () => {
+function metadataDatasetlistChange() {
   bfCurrentMetadataProgress.style.display = "block";
   datasetSubtitleStatus.innerHTML = "";
   datasetLicenseStatus.innerHTML = "";
@@ -4087,7 +4085,7 @@ const metadataDatasetlistChange = () => {
   showCurrentDescription();
   showCurrentLicense();
   showCurrentBannerImage();
-};
+}
 
 // Manage dataset permission
 bfDatasetListPermission.addEventListener("change", () => {
@@ -4105,12 +4103,12 @@ bfDatasetListPermission.addEventListener("change", () => {
   syncDatasetDropdownOption(bfDatasetListPermission);
 });
 
-const permissionDatasetlistChange = () => {
+function permissionDatasetlistChange() {
   bfCurrentPermissionProgress.style.display = "block";
   showCurrentPermission();
-};
+}
 
-const syncDatasetDropdownOption = (dropdown) => {
+function syncDatasetDropdownOption(dropdown) {
   var value;
 
   // sync dataset under Organize dataset
@@ -4171,7 +4169,7 @@ const syncDatasetDropdownOption = (dropdown) => {
     datasetStatusListChange();
     showDatasetDescription();
   }
-};
+}
 
 // Change dataset status
 bfDatasetListDatasetStatus.addEventListener("change", () => {
@@ -4193,10 +4191,10 @@ bfDatasetListDatasetStatus.addEventListener("change", () => {
   showDatasetDescription();
 });
 
-const datasetStatusListChange = () => {
+function datasetStatusListChange() {
   bfCurrentDatasetStatusProgress.style.display = "block";
   showCurrentDatasetStatus();
-};
+}
 
 // Post-curation
 bfDatasetListPostCurationCuration.addEventListener("change", () => {
@@ -4233,12 +4231,12 @@ bfDatasetListPostCurationConsortium.addEventListener("change", () => {
   postCurationListChange();
 });
 
-const postCurationListChange = () => {
+function postCurationListChange() {
   reserveDOIStatus.innerHTML = "";
   publishDatasetStatus.innerHTML = "";
   //showCurrentDOI()
   showPublishingStatus();
-};
+}
 
 // Change dataset status option change
 bfListDatasetStatus.addEventListener("change", () => {
@@ -4385,22 +4383,19 @@ var cropOptions = {
   // preview: '.preview',
   viewMode: 1,
   responsive: true,
-  crop: (e) => {
+  crop: function (e) {
     var data = e.detail;
     formBannerHeight.value = Math.round(data.height);
     // formBannerWidth.value = Math.round(data.width)
   },
 };
-
 var imageExtension;
 var myCropper = new Cropper(bfViewImportedImage, cropOptions);
-
 // Action when user click on "Import image" button for banner image
 bfImportBannerImageBtn.addEventListener("click", (event) => {
   datasetBannerImageStatus.innerHTML = "";
   ipcRenderer.send("open-file-dialog-import-banner-image");
 });
-
 ipcRenderer.on("selected-banner-image", (event, path) => {
   if (path.length > 0) {
     document.getElementById("div-img-container-holder").style.display = "none";
@@ -4413,7 +4408,7 @@ ipcRenderer.on("selected-banner-image", (event, path) => {
   }
 });
 
-const uploadBannerImage = () => {
+function uploadBannerImage() {
   bfCurrentMetadataProgress.style.display = "block";
   datasetBannerImageStatus.innerHTML = "Please wait...";
   disableform(bfMetadataForm);
@@ -4429,7 +4424,7 @@ const uploadBannerImage = () => {
   }
   var imagePath = path.join(imageFolder, "banner-image-SODA." + imageExtension);
   var croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
-  imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {
+  imageDataURI.outputFile(croppedImageDataURI, imagePath).then(function () {
     if (fs.statSync(imagePath)["size"] < 5 * 1024 * 1024) {
       var selectedBfAccount =
         bfAccountList.options[bfAccountList.selectedIndex].text;
@@ -4476,7 +4471,7 @@ const uploadBannerImage = () => {
         "</span>";
     }
   });
-};
+}
 
 bfSaveBannerImageBtn.addEventListener("click", (event) => {
   datasetBannerImageStatus.innerHTML = "";
@@ -4701,7 +4696,7 @@ ipcRenderer.on("warning-share-with-curation-team-selection", (event, index) => {
   }
 });
 
-const shareWithCurationTeam = () => {
+function shareWithCurationTeam() {
   datasetPermissionStatusCurationTeam.innerHTML = "Please wait...";
   bfPostCurationProgressCuration.style.display = "block";
   // disableform(bfPermissionForm)
@@ -4771,7 +4766,7 @@ const shareWithCurationTeam = () => {
       }
     }
   );
-};
+}
 
 // Share with Consortium
 bfShareConsortiumBtn.addEventListener("click", () => {
@@ -4785,7 +4780,7 @@ ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
   }
 });
 
-const shareWithConsortium = () => {
+function shareWithConsortium() {
   shareConsortiumStatus.innerHTML = "Please wait...";
   bfPostCurationProgressConsortium.style.display = "block";
   // disableform(bfPostCurationForm)
@@ -4845,7 +4840,7 @@ const shareWithConsortium = () => {
       }
     }
   );
-};
+}
 
 // // Reserve DOI
 // bfReserveDOIBtn.addEventListener('click', () => {
@@ -4890,7 +4885,7 @@ bfSubmitReviewDatasetBtn.addEventListener("click", () => {
   }
 });
 
-const submitReviewDatasetCheck = (res) => {
+function submitReviewDatasetCheck(res) {
   var reviewstatus = res[0];
   var publishingStatus = res[1];
   if (publishingStatus === "PUBLISH_IN_PROGRESS") {
@@ -4908,7 +4903,7 @@ const submitReviewDatasetCheck = (res) => {
   } else {
     ipcRenderer.send("warning-publish-dataset");
   }
-};
+}
 
 ipcRenderer.on("warning-publish-dataset-selection", (event, index) => {
   if (index === 0) {
@@ -4922,7 +4917,7 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   }
 });
 
-const submitReviewDataset = () => {
+function submitReviewDataset() {
   // disableform(bfPostCurationForm)
   bfSubmitReviewDatasetBtn.disabled = true;
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
@@ -4959,7 +4954,7 @@ const submitReviewDataset = () => {
       }
     }
   );
-};
+}
 
 //Withdraw dataset from review
 bfWithdrawReviewDatasetBtn.addEventListener("click", () => {
@@ -4977,7 +4972,7 @@ bfWithdrawReviewDatasetBtn.addEventListener("click", () => {
   }
 });
 
-const withdrawDatasetCheck = (res) => {
+function withdrawDatasetCheck(res) {
   var reviewstatus = res[0];
   if (reviewstatus !== "requested") {
     emessage = "Your dataset is not currently under review";
@@ -4986,7 +4981,7 @@ const withdrawDatasetCheck = (res) => {
   } else {
     ipcRenderer.send("warning-withdraw-dataset");
   }
-};
+}
 
 ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
   if (index === 0) {
@@ -4994,7 +4989,7 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
   }
 });
 
-const withdrawReviewDataset = () => {
+function withdrawReviewDataset() {
   bfSubmitReviewDatasetBtn.disabled = true;
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
   bfWithdrawReviewDatasetBtn.disabled = true;
@@ -5028,7 +5023,7 @@ const withdrawReviewDataset = () => {
       }
     }
   );
-};
+}
 
 // Refresh publishing dataset status
 bfRefreshPublishingDatasetStatusBtn.addEventListener("click", () => {
@@ -5059,37 +5054,37 @@ function removeOptions(selectbox) {
   }
 }
 
-const disableform = (formId) => {
+function disableform(formId) {
   var f = formId.elements;
   for (var i = 0; i < f.length; i++) f[i].disabled = true;
-};
+}
 
-const enableform = (formId) => {
+function enableform(formId) {
   var f = formId.elements;
   for (var i = 0; i < f.length; i++) f[i].disabled = false;
-};
+}
 
-const clearStrings = () => {
+function clearStrings() {
   document.getElementById("para-save-file-organization-status").innerHTML = "";
   document.getElementById(
     "para-preview-organization-status-metadata"
   ).innerHTML = "";
   document.getElementById("para-selected-dataset").innerHTML = "";
-};
+}
 
-const clearPermissionsStrings = () => {
+function clearPermissionsStrings() {
   document.getElementById("para-save-file-organization-status").innerHTML = "";
   document.getElementById("para-selected-dataset").innerHTML = "";
-};
+}
 
-const userError = (error) => {
+function userError(error) {
   var myerror = error.message;
   return myerror;
-};
+}
 
 // Manage Datasets //
 
-const refreshBfDatasetList = (bfdstlist, bfAccountList) => {
+function refreshBfDatasetList(bfdstlist, bfAccountList) {
   removeOptions(bfdstlist);
   var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text;
   if (accountSelected === "Select") {
@@ -5116,13 +5111,13 @@ const refreshBfDatasetList = (bfdstlist, bfAccountList) => {
       }
     );
   }
-};
+}
 
-const refreshAllBfDatasetLists = () => {
+function refreshAllBfDatasetLists() {
   refreshDatasetList();
-};
+}
 
-const showCurrentSubtitle = () => {
+function showCurrentSubtitle() {
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
   var selectedBfDataset =
@@ -5146,9 +5141,9 @@ const showCurrentSubtitle = () => {
       }
     );
   }
-};
+}
 
-const showCurrentDescription = () => {
+function showCurrentDescription() {
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
   var selectedBfDataset =
@@ -5171,9 +5166,9 @@ const showCurrentDescription = () => {
       }
     );
   }
-};
+}
 
-const showCurrentBannerImage = () => {
+function showCurrentBannerImage() {
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
   var selectedBfDataset =
@@ -5208,9 +5203,9 @@ const showCurrentBannerImage = () => {
       }
     );
   }
-};
+}
 
-const showCurrentLicense = () => {
+function showCurrentLicense() {
   currentDatasetLicense.innerHTML = "Please wait...";
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
@@ -5236,9 +5231,9 @@ const showCurrentLicense = () => {
       }
     );
   }
-};
+}
 
-const refreshBfUsersList = () => {
+function refreshBfUsersList() {
   var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text;
 
   removeOptions(bfListUsers);
@@ -5269,9 +5264,9 @@ const refreshBfUsersList = () => {
       }
     });
   }
-};
+}
 
-const refreshBfTeamsList = (teamList) => {
+function refreshBfTeamsList(teamList) {
   removeOptions(teamList);
   var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text;
   var optionTeam = document.createElement("option");
@@ -5297,9 +5292,9 @@ const refreshBfTeamsList = (teamList) => {
       }
     );
   }
-};
+}
 
-const showCurrentPermission = () => {
+function showCurrentPermission() {
   currentDatasetPermission.innerHTML = "Please wait...";
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
@@ -5330,14 +5325,14 @@ const showCurrentPermission = () => {
       }
     );
   }
-};
+}
 
-const addPermissionUser = (
+function addPermissionUser(
   selectedBfAccount,
   selectedBfDataset,
   selectedUser,
   selectedRole
-) => {
+) {
   client.invoke(
     "api_bf_add_permission",
     selectedBfAccount,
@@ -5396,9 +5391,9 @@ const addPermissionUser = (
       }
     }
   );
-};
+}
 
-const showCurrentDatasetStatus = (callback) => {
+function showCurrentDatasetStatus(callback) {
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
   var selectedBfDataset =
@@ -5444,16 +5439,16 @@ const showCurrentDatasetStatus = (callback) => {
       }
     );
   }
-};
+}
 
-const selectOptionColor = (mylist) => {
+function selectOptionColor(mylist) {
   mylist.style.color = mylist.options[mylist.selectedIndex].style.color;
-};
+}
 
-const showAccountDetails = (loadProgress) => {
+function showAccountDetails(loadProgress) {
   /// load and get permission for account
   client.invoke(
-    "api_bf_account_details",
+  "api_bf_account_details",
     bfAccountList.options[bfAccountList.selectedIndex].text,
     (error, res) => {
       if (error) {
@@ -5502,12 +5497,12 @@ const showAccountDetails = (loadProgress) => {
       }
     }
   );
-};
+}
 
 ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-const getDatasetList = () => {
+function getDatasetList() {
   client.invoke(
     "api_bf_account_details",
     bfAccountList.options[bfAccountList.selectedIndex].text,
@@ -5522,32 +5517,32 @@ const getDatasetList = () => {
       }
     }
   );
-};
+}
 
 /// rename datasets in place without calling Python
-const renameDatasetInList = (oldName, newName) => {
+function renameDatasetInList(oldName, newName) {
   for (var i = 0; i < datasetList.length; i++) {
     if (datasetList[i].name === oldName) {
       datasetList[i].name = newName;
     }
   }
-};
+}
 
 /// add new datasets to dataset List without calling Python to retrieve new list from Blackfynn
-const addNewDatasetToList = (newDataset) => {
+function addNewDatasetToList(newDataset) {
   datasetList.push({ name: newDataset, role: "owner" });
-};
+}
 
 /// change PI owner status to manager
-const changeDatasetRolePI = (selectedDataset) => {
+function changeDatasetRolePI(selectedDataset) {
   for (var i = 0; i < datasetList.length; i++) {
     if (datasetList[i].name === selectedDataset) {
       datasetList[i].role = "manager";
     }
   }
-};
+}
 
-const refreshDatasetList = () => {
+function refreshDatasetList() {
   var datasetPermission =
     datasetPermissionList.options[datasetPermissionList.selectedIndex].text;
 
@@ -5564,7 +5559,7 @@ const refreshDatasetList = () => {
     }
   }
 
-  filteredDatasets.sort((a, b) => {
+  filteredDatasets.sort(function (a, b) {
     return a.toLowerCase().localeCompare(b.toLowerCase());
   });
 
@@ -5572,9 +5567,9 @@ const refreshDatasetList = () => {
   parentDSTagify.settings.whitelist = getParentDatasets();
 
   return filteredDatasets.length;
-};
+}
 
-const refreshDatasetListChooseOption = (dropdown, selectedDataset) => {
+function refreshDatasetListChooseOption(dropdown, selectedDataset) {
   datasetPermissionList.selectedIndex = 0;
   document.getElementById("para-filter-datasets-status").innerHTML = "";
 
@@ -5586,19 +5581,19 @@ const refreshDatasetListChooseOption = (dropdown, selectedDataset) => {
   }
   populateDatasetDropdowns(filteredDatasets);
   selectOptionDropdown(dropdown, selectedDataset);
-};
+}
 
-const selectOptionDropdown = (dropdown, selectedDataset) => {
+function selectOptionDropdown(dropdown, selectedDataset) {
   var dropdownString = dropdown + " option";
-  $(dropdownString).each(() => {
+  $(dropdownString).each(function () {
     if ($(this).text() == selectedDataset) {
       $(this).prop("selected", true);
     }
   });
-};
+}
 
 //// De-populate dataset dropdowns to clear options
-const clearDatasetDropdowns = () => {
+function clearDatasetDropdowns() {
   for (let list of [
     bfDatasetList,
     bfDatasetListMetadata,
@@ -5617,10 +5612,10 @@ const clearDatasetDropdowns = () => {
     addOption(list, "Select dataset", "Select dataset");
     list.options[0].disabled = true;
   }
-};
+}
 
 /// populate the dropdowns with refreshed dataset list
-const populateDatasetDropdowns = (mylist) => {
+function populateDatasetDropdowns(mylist) {
   clearDatasetDropdowns();
   for (myitem in mylist) {
     var myitemselect = mylist[myitem];
@@ -5656,9 +5651,9 @@ const populateDatasetDropdowns = (mylist) => {
     postCurationListChange();
     datasetStatusListChange();
   }
-};
+}
 
-datasetPermissionList.addEventListener("change", (e) => {
+datasetPermissionList.addEventListener("change", function (e) {
   var datasetPermission =
     datasetPermissionList.options[datasetPermissionList.selectedIndex].text;
 
@@ -5696,7 +5691,7 @@ datasetPermissionList.addEventListener("change", (e) => {
 
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
-const loadDefaultAccount = () => {
+function loadDefaultAccount() {
   client.invoke("api_bf_default_account_load", (error, res) => {
     if (error) {
       log.error(error);
@@ -5733,9 +5728,9 @@ const loadDefaultAccount = () => {
       }
     }
   });
-};
+}
 
-const updateBfAccountList = () => {
+function updateBfAccountList() {
   bfSelectAccountStatus.innerHTML = "Loading existing accounts...";
   bfAccountLoadProgress.style.display = "block";
   datasetPermissionList.disabled = true;
@@ -5781,9 +5776,9 @@ const updateBfAccountList = () => {
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
   });
-};
+}
 
-const showCurrentDOI = () => {
+function showCurrentDOI() {
   currentDOI.value = "Please wait...";
   reserveDOIStatus.innerHTML = "";
   bfPostCurationProgressDOI.style.display = "block";
@@ -5817,9 +5812,9 @@ const showCurrentDOI = () => {
       }
     );
   }
-};
+}
 
-const showPublishingStatus = (callback) => {
+function showPublishingStatus(callback) {
   reviewDatasetInfo.innerHTML = "Please wait...";
   if (callback == "noClear") {
     var nothing;
@@ -5876,9 +5871,9 @@ const showPublishingStatus = (callback) => {
       }
     );
   }
-};
+}
 
-const publishStatusOutputConversion = (res) => {
+function publishStatusOutputConversion(res) {
   var reviewStatus = res[0];
   var publishStatus = res[1];
 
@@ -5908,11 +5903,11 @@ const publishStatusOutputConversion = (res) => {
   // }
 
   return outputMessage;
-};
+}
 
 // Organize Dataset //
 
-const checkFolderStruture = (pathDatasetFolder) => {
+function checkFolderStruture(pathDatasetFolder) {
   var files = fs.readdirSync(pathDatasetFolder);
   var folders = [];
   if (files.length < 1) {
@@ -5937,9 +5932,9 @@ const checkFolderStruture = (pathDatasetFolder) => {
     }
     return true;
   }
-};
+}
 
-const organizedFolderToJson = (pathDatasetVal) => {
+function organizedFolderToJson(pathDatasetVal) {
   var jsonvar = {};
   var contentDataset = fs.readdirSync(pathDatasetVal);
   var listPathFilesinDataset = [];
@@ -5960,9 +5955,9 @@ const organizedFolderToJson = (pathDatasetVal) => {
   }
   jsonvar["main"] = listPathFilesinDataset;
   return jsonvar;
-};
+}
 
-const jsonToTableOrganized = (table, jsonvar) => {
+function jsonToTableOrganized(table, jsonvar) {
   var keyvect = Object.keys(jsonvar);
   for (var j = 0; j < keyvect.length; j++) {
     let SPARCfolder = keyvect[j];
@@ -6017,9 +6012,9 @@ const jsonToTableOrganized = (table, jsonvar) => {
     }
   }
   return table;
-};
+}
 
-const tableToJsonWithDescriptionOrganized = (table) => {
+function tableToJsonWithDescriptionOrganized(table) {
   var jsonvar = {};
   var jsonvardescription = {};
 
@@ -6047,10 +6042,10 @@ const tableToJsonWithDescriptionOrganized = (table) => {
   jsonvardescription[keyval + "_description"] = descriptionList;
 
   return [jsonvar, jsonvardescription];
-};
+}
 
 // Dataset not organized
-const insertFileToTable = (table, pathlist, SPARCfolder) => {
+function insertFileToTable(table, pathlist, SPARCfolder) {
   var i;
   var rowcount = document.getElementById(SPARCfolder).rowIndex;
   var jsonvar = tableToJson(table);
@@ -6133,9 +6128,9 @@ const insertFileToTable = (table, pathlist, SPARCfolder) => {
     }
     return table;
   }
-};
+}
 
-const insertFileToMetadataTable = (table, pathlist) => {
+function insertFileToMetadataTable(table, pathlist) {
   var i;
   var rowcount = 0;
   var jsonvar = tableToJsonMetadata(table);
@@ -6189,9 +6184,9 @@ const insertFileToMetadataTable = (table, pathlist) => {
     }
   }
   return table;
-};
+}
 
-const tableToJson = (table) => {
+function tableToJson(table) {
   var jsonvar = {};
   var pathlist = new Array();
   var keyval = "code";
@@ -6208,9 +6203,9 @@ const tableToJson = (table) => {
   }
   jsonvar[keyval] = pathlist;
   return jsonvar;
-};
+}
 
-const tableToJsonMetadata = (table) => {
+function tableToJsonMetadata(table) {
   var jsonvar = {};
   var pathlist = new Array();
   var keyval = "metadata";
@@ -6222,9 +6217,9 @@ const tableToJsonMetadata = (table) => {
   }
   jsonvar[keyval] = pathlist;
   return jsonvar;
-};
+}
 
-const jsonToTableMetadata = (table, jsonvar) => {
+function jsonToTableMetadata(table, jsonvar) {
   var rowcount = 0;
   var jsontable = tableToJsonMetadata(table);
   var emessage = "";
@@ -6265,9 +6260,9 @@ const jsonToTableMetadata = (table, jsonvar) => {
     }
   }
   return table;
-};
+}
 
-const jsonToTableWithDescription = (table, jsonvar) => {
+function jsonToTableWithDescription(table, jsonvar) {
   var keyvect = Object.keys(jsonvar);
   var tableheaders = sparcFolderNames.slice();
   for (var j = 0; j < tableheaders.length; j++) {
@@ -6343,9 +6338,9 @@ const jsonToTableWithDescription = (table, jsonvar) => {
     }
   }
   return table;
-};
+}
 
-const tableToJsonWithDescription = (table) => {
+function tableToJsonWithDescription(table) {
   var jsonvar = {};
   var jsonvardescription = {};
 
@@ -6378,9 +6373,9 @@ const tableToJsonWithDescription = (table) => {
   jsonvardescription[keyval + "_description"] = descriptionList;
 
   return [jsonvar, jsonvardescription];
-};
+}
 
-const dropAddToTable = (e, myID) => {
+function dropAddToTable(e, myID) {
   e.target.style.backgroundColor = "";
   var rowcount = document.getElementById(myID).rowIndex;
   var i = 0;
@@ -6463,7 +6458,7 @@ const dropAddToTable = (e, myID) => {
       i = i + 1;
     }
   }
-};
+}
 
 const allowedMedataFiles = [
   "submission.xlsx",
@@ -6482,7 +6477,7 @@ const allowedMedataFiles = [
   "CHANGES.txt",
 ];
 
-const dropAddToTableMetadata = (e, myID) => {
+function dropAddToTableMetadata(e, myID) {
   //e.target.style.color = 'inherit';
   e.target.style.backgroundColor = "";
   var rowcount = document.getElementById(myID).rowIndex;
@@ -6550,9 +6545,9 @@ const dropAddToTableMetadata = (e, myID) => {
       i = i + 1;
     }
   }
-};
+}
 
-const clearTable = (table) => {
+function clearTable(table) {
   var keyvect = sparcFolderNames.slice();
   clearStrings();
   for (var j = 0; j < keyvect.length; j++) {
@@ -6584,7 +6579,7 @@ const clearTable = (table) => {
     }
   }
   return table;
-};
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -6635,7 +6630,7 @@ getInFolder(
 var sodaJSONObj = {};
 
 /// back button Curate
-organizeDSbackButton.addEventListener("click", () => {
+organizeDSbackButton.addEventListener("click", function () {
   // var currentPath = organizeDSglobalPath.value.trim()
   // if (currentPath !== "/") {
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
@@ -6672,7 +6667,7 @@ organizeDSbackButton.addEventListener("click", () => {
 });
 
 // Add folder button
-organizeDSaddNewFolder.addEventListener("click", (event) => {
+organizeDSaddNewFolder.addEventListener("click", function (event) {
   event.preventDefault();
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount !== 1) {
@@ -6682,7 +6677,7 @@ organizeDSaddNewFolder.addEventListener("click", (event) => {
       title: "Add new folder...",
       message: "Enter a name below:",
       centerVertical: true,
-      callback: (result) => {
+      callback: function (result) {
         if (result !== null && result !== "") {
           newFolderName = result.trim();
           // check for duplicate or files with the same name
@@ -6711,7 +6706,7 @@ organizeDSaddNewFolder.addEventListener("click", (event) => {
             /// update datasetStructureJSONObj
             var currentPath = organizeDSglobalPath.value;
             var jsonPathArray = currentPath.split("/");
-            var filtered = jsonPathArray.slice(1).filter((el) => {
+            var filtered = jsonPathArray.slice(1).filter(function (el) {
               return el != "";
             });
 
@@ -6753,7 +6748,7 @@ organizeDSaddNewFolder.addEventListener("click", (event) => {
 
 // ///////////////////////////////////////////////////////////////////////////
 // recursively populate json object
-const populateJSONObjFolder = (jsonObject, folderPath) => {
+function populateJSONObjFolder(jsonObject, folderPath) {
   var myitems = fs.readdirSync(folderPath);
   myitems.forEach((element) => {
     var statsObj = fs.statSync(path.join(folderPath, element));
@@ -6776,16 +6771,16 @@ const populateJSONObjFolder = (jsonObject, folderPath) => {
       };
     }
   });
-};
+}
 
-const hideFullName = () => {
+function hideFullName() {
   fullNameValue.style.display = "none";
   fullNameValue.style.top = "-250%";
   fullNameValue.style.left = "-250%";
-};
+}
 
 //// HOVER FOR FULL NAME (FOLDERS WITH WRAPPED NAME IN UI)
-const showFullName = (ev, element, text) => {
+function showFullName(ev, element, text) {
   /// check if the full name of the folder is overflowing or not, if so, show full name on hover
   var isOverflowing =
     element.clientWidth < element.scrollWidth ||
@@ -6797,17 +6792,26 @@ const showFullName = (ev, element, text) => {
     fullNameValue.innerHTML = text;
     $(".hoverFullName").css({ top: mouseY, left: mouseX }).fadeIn("slow");
   }
-};
+}
 
 /// hover over a function for full name
-const hoverForFullName = (ev) => {
+function hoverForFullName(ev) {
   var fullPath = ev.innerText;
   // ev.children[1] is the child element folder_desc of div.single-item,
   // which we will put through the overflowing check in showFullName function
   showFullName(event, ev.children[1], fullPath);
-};
+}
 
-document.addEventListener("onmouseover", (e) => {
+// // If the document is clicked somewhere
+// document.addEventListener('onmouseover', function(e){
+//   if (e.target.classList.value !== "myFile") {
+//     hideFullPath()
+//   } else {
+//     hoverForPath(e)
+//   }
+// });
+
+document.addEventListener("onmouseover", function (e) {
   if (e.target.classList.value === "fas fa-folder") {
     hoverForFullName(e);
   } else {
@@ -6816,15 +6820,15 @@ document.addEventListener("onmouseover", (e) => {
 });
 
 // if a file/folder is clicked -> show details in right "sidebar"
-const showDetailsFile = () => {
+function showDetailsFile() {
   $(".div-display-details.file").toggleClass("show");
   // $(".div-display-details.folders").hide()
-};
+}
 
 var bfAddAccountBootboxMessage =
   "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='text' /></div></div></form>";
 
-const addBFAccountInsideBootbox = (myBootboxDialog) => {
+function addBFAccountInsideBootbox(myBootboxDialog) {
   var keyname = $("#bootbox-key-name").val();
   var apiKey = $("#bootbox-api-key").val();
   var apiSecret = $("#bootbox-api-secret").val();
@@ -6865,6 +6869,8 @@ const addBFAccountInsideBootbox = (myBootboxDialog) => {
             $("#para-account-detail-curate").html(res);
             $("#current-bf-account").text(keyname);
             $("#current-bf-account-generate").text(keyname);
+            $("#current-bf-dataset").text("None");
+            $("#current-bf-dataset-generate").text("None");
             $("#para-account-detail-curate-generate").html(res);
             showHideDropdownButtons("account", "show");
           }
@@ -6877,9 +6883,9 @@ const addBFAccountInsideBootbox = (myBootboxDialog) => {
       }
     }
   );
-};
+}
 
-const showBFAddAccountBootbox = () => {
+function showBFAddAccountBootbox() {
   var bootb = bootbox.dialog({
     title:
       "Please specify a key name and enter your Blackfynn API key and secret below:",
@@ -6891,7 +6897,7 @@ const showBFAddAccountBootbox = () => {
       confirm: {
         label: "Add",
         className: "btn btn-primary bootbox-add-bf-class",
-        callback: () => {
+        callback: function () {
           addBFAccountInsideBootbox(bootb);
           return false;
         },
@@ -6900,11 +6906,13 @@ const showBFAddAccountBootbox = () => {
     size: "medium",
     centerVertical: true,
   });
-};
+}
+
+retrieveBFAccounts();
 
 // this function is called in the beginning to load bf accounts to a list
 // which will be fed as dropdown options
-const retrieveBFAccounts = () => {
+function retrieveBFAccounts() {
   bfAccountOptions = [];
   bfAccountOptionsStatus = "";
   client.invoke("api_bf_account_list", (error, res) => {
@@ -6920,11 +6928,9 @@ const retrieveBFAccounts = () => {
     }
   });
   return [bfAccountOptions, bfAccountOptionsStatus];
-};
+}
 
-retrieveBFAccounts();
-
-const showDefaultBFAccount = () => {
+function showDefaultBFAccount() {
   client.invoke("api_bf_default_account_load", (error, res) => {
     if (error) {
       log.error(error);
@@ -6944,12 +6950,16 @@ const showDefaultBFAccount = () => {
               $("#current-bf-account").text("None");
               $("#current-bf-account-generate").text("None");
               $("#para-account-detail-curate-generate").html("None");
+              bfSelectAccountStatus.innerHTML = "<span style='color:red'>"+error+"</span>";
+              $("#div-bf-account-load-progress").css("display", "none");
               showHideDropdownButtons("account", "hide");
             } else {
               $("#para-account-detail-curate").html(res);
               $("#current-bf-account").text(defaultBfAccount);
               $("#current-bf-account-generate").text(defaultBfAccount);
               $("#para-account-detail-curate-generate").html(res);
+              bfSelectAccountStatus.innerHTML = res;
+              $("#div-bf-account-load-progress").css("display", "none");
               showHideDropdownButtons("account", "show");
             }
           }
@@ -6957,10 +6967,10 @@ const showDefaultBFAccount = () => {
       }
     }
   });
-};
+}
 
 ////// function to trigger action for each context menu option
-const hideMenu = (category, menu1, menu2, menu3) => {
+function hideMenu(category, menu1, menu2, menu3) {
   if (category === "folder") {
     menu1.style.display = "none";
     menu1.style.top = "-200%";
@@ -6974,9 +6984,9 @@ const hideMenu = (category, menu1, menu2, menu3) => {
     menu3.style.top = "-210%";
     menu3.style.left = "-210%";
   }
-};
+}
 
-const changeStepOrganize = (step) => {
+function changeStepOrganize(step) {
   if (step.id === "button-organize-prev") {
     document.getElementById("div-step-1-organize").style.display = "block";
     document.getElementById("div-step-2-organize").style.display = "none";
@@ -6992,11 +7002,10 @@ const changeStepOrganize = (step) => {
     organizePrevStepBtn.style.display = "block";
     organizeNextStepBtn.style.display = "none";
   }
-};
+}
 
 var newDSName;
-
-const generateDataset = (button) => {
+function generateDataset(button) {
   document.getElementById("para-organize-datasets-success").style.display =
     "none";
   document.getElementById("para-organize-datasets-error").style.display =
@@ -7017,7 +7026,7 @@ const generateDataset = (button) => {
         },
       },
       centerVertical: true,
-      callback: (r) => {
+      callback: function (r) {
         if (r !== null && r.trim() !== "") {
           newDSName = r.trim();
           ipcRenderer.send("open-file-dialog-newdataset");
@@ -7028,7 +7037,7 @@ const generateDataset = (button) => {
     $("#btn-generate-locally").removeClass("active");
     $(button).toggleClass("active");
   }
-};
+}
 
 ipcRenderer.on("selected-new-dataset", (event, filepath) => {
   if (filepath.length > 0) {
@@ -7076,7 +7085,7 @@ ipcRenderer.on("selected-new-dataset", (event, filepath) => {
 });
 
 //////////// FILE BROWSERS to import existing files and folders /////////////////////
-organizeDSaddFiles.addEventListener("click", () => {
+organizeDSaddFiles.addEventListener("click", function () {
   ipcRenderer.send("open-files-organize-datasets-dialog");
 });
 
@@ -7094,7 +7103,7 @@ ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
   );
 });
 
-organizeDSaddFolders.addEventListener("click", () => {
+organizeDSaddFolders.addEventListener("click", function () {
   ipcRenderer.send("open-folders-organize-datasets-dialog");
 });
 
@@ -7104,7 +7113,7 @@ ipcRenderer.on("selected-folders-organize-datasets", (event, path) => {
   addFoldersfunction(path, myPath);
 });
 
-const addFoldersfunction = (folderArray, currentLocation) => {
+function addFoldersfunction(folderArray, currentLocation) {
   var uiFolders = {};
   var importedFolders = {};
 
@@ -7177,18 +7186,18 @@ const addFoldersfunction = (folderArray, currentLocation) => {
       }
     }
   }
-};
+}
 
 //// Step 3. Organize dataset: Add files or folders with drag&drop
-const allowDrop = (ev) => {
+function allowDrop(ev) {
   ev.preventDefault();
-};
+}
 
-const drop = (ev) => {
+function drop(ev) {
   // get global path
   var currentPath = organizeDSglobalPath.value;
   var jsonPathArray = currentPath.split("/");
-  var filtered = jsonPathArray.slice(1).filter((el) => {
+  var filtered = jsonPathArray.slice(1).filter(function (el) {
     return el != "";
   });
   var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
@@ -7374,7 +7383,7 @@ const drop = (ev) => {
       hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
     }
   }
-};
+}
 
 // SAVE FILE ORG
 ipcRenderer.on("save-file-organization-dialog", (event) => {
@@ -7392,7 +7401,7 @@ ipcRenderer.on("save-file-organization-dialog", (event) => {
 //////////////////////////////////////////////////////////////////////////////
 
 //// helper functions for hiding/showing context menus
-const showmenu = (ev, category, deleted = false) => {
+function showmenu(ev, category, deleted = false) {
   //stop the real right click menu
   ev.preventDefault();
   var mouseX;
@@ -7500,13 +7509,13 @@ const showmenu = (ev, category, deleted = false) => {
     menuFile.style.display = "block";
     $(".menu.file").css({ top: mouseY, left: mouseX }).fadeIn("slow");
   }
-};
+}
 
 /// options for regular sub-folders
-const folderContextMenu = (event) => {
+function folderContextMenu(event) {
   $(".menu.reg-folder li")
     .unbind()
-    .click(() => {
+    .click(function () {
       if ($(this).attr("id") === "folder-rename") {
         var itemDivElements = document.getElementById("items").children;
         renameFolder(
@@ -7537,7 +7546,7 @@ const folderContextMenu = (event) => {
   /// options for high-level folders
   $(".menu.high-level-folder li")
     .unbind()
-    .click(() => {
+    .click(function () {
       if ($(this).attr("id") === "folder-rename") {
         var itemDivElements = document.getElementById("items").children;
         renameFolder(
@@ -7568,16 +7577,16 @@ const folderContextMenu = (event) => {
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   hideFullName();
-};
+}
 
 //////// options for files
-const fileContextMenu = (event) => {
+function fileContextMenu(event) {
   if ($(".div-display-details.file").hasClass("show")) {
     $(".div-display-details.file").removeClass("show");
   }
   $(".menu.file li")
     .unbind()
-    .click(() => {
+    .click(function () {
       if ($(this).attr("id") === "file-rename") {
         var itemDivElements = document.getElementById("items").children;
         renameFolder(
@@ -7605,10 +7614,10 @@ const fileContextMenu = (event) => {
       hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
     });
   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
-};
+}
 
 // Trigger action when the contexmenu is about to be shown
-$(document).bind("contextmenu", (event) => {
+$(document).bind("contextmenu", function (event) {
   // Avoid the real one
   event.preventDefault();
 
@@ -7700,6 +7709,22 @@ const select_items = (items, event, isDragging) => {
       }
     }
 
+    /*
+    if (selected_class != "") {
+      if (event.ctrlKey) {
+        if ($(target_element).hasClass(selected_class)) {
+          $(target_element).removeClass(selected_class);
+          $(parent_element).removeClass(selected_class);
+        } else {
+          $(target_element).addClass(selected_class);
+          $(parent_element).addClass(selected_class);
+        }
+      } else {
+        $(target_element).addClass(selected_class);
+        $(parent_element).addClass(selected_class);
+      }
+    }
+    */
     $(".selected-item").removeClass("selected-item");
     $(".ds-selected").addClass(selected_class);
     $(".ds-selected").each((index, element) => {
@@ -7709,7 +7734,7 @@ const select_items = (items, event, isDragging) => {
   });
 };
 
-$(document).bind("click", (event) => {
+$(document).bind("click", function (event) {
   // If there is weird right click menu behaviour, check the hideMenu block
   //
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
@@ -7727,6 +7752,49 @@ $(document).bind("click", (event) => {
       $(".selected-item").removeClass("selected-item");
     }
   }
+
+  let selected_class = "";
+  let target_element = null;
+  let parent_element = null;
+
+  // Assign target(folder/file) and parent elements
+  //
+  /*
+  if (
+    event.target.classList[0] === "myFile" ||
+    event.target.classList[0] === "myFol"
+  ) {
+    selected_class = "selected-item";
+    target_element = event.target;
+    parent_element = $(target_element).parent();
+  } else if (event.target.classList[0] === "single-item") {
+    parent_element = event.target;
+    target_element = $(parent_element).children()[0];
+    if (
+      $(target_element).hasClass("myFol") ||
+      $(target_element).hasClass("myFile")
+    ) {
+      selected_class = "selected-item";
+    }
+  }
+
+  // Add selected-item class to the elements.
+  // Handle ctrl selection - Follows linux native os behaviour
+  /*if (selected_class != "") {
+    if (event.ctrlKey) {
+      if ($(target_element).hasClass(selected_class)) {
+        $(target_element).removeClass(selected_class);
+        $(parent_element).removeClass(selected_class);
+      } else {
+        $(target_element).addClass(selected_class);
+        $(parent_element).addClass(selected_class);
+      }
+    } else {
+      $(".selected-item").removeClass(selected_class);
+      $(target_element).addClass(selected_class);
+      $(parent_element).addClass(selected_class);
+    }
+  }*/
 });
 
 // sort JSON objects by keys alphabetically (folder by folder, file by file)
@@ -7737,14 +7805,14 @@ function sortObjByKeys(object) {
   if (object.hasOwnProperty("files")) {
     Object.keys(object["files"])
       .sort()
-      .forEach((key) => {
+      .forEach(function (key) {
         orderedFiles[key] = object["files"][key];
       });
   }
   if (object.hasOwnProperty("folders")) {
     Object.keys(object["folders"])
       .sort()
-      .forEach((key) => {
+      .forEach(function (key) {
         orderedFolders[key] = object["folders"][key];
       });
   }
@@ -7919,7 +7987,7 @@ function listItems(jsonObj, uiItem) {
 }
 
 function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
-  $(singleUIItem).dblclick(() => {
+  $(singleUIItem).dblclick(function () {
     if ($(this).children("h1").hasClass("myFol")) {
       var folderName = this.innerText;
       var appendString = "";
@@ -7927,7 +7995,7 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
 
       var currentPath = currentLocation.value;
       var jsonPathArray = currentPath.split("/");
-      var filtered = jsonPathArray.slice(1).filter((el) => {
+      var filtered = jsonPathArray.slice(1).filter(function (el) {
         return el.trim() != "";
       });
       var myPath = getRecursivePath(filtered, globalObj);
@@ -7943,14 +8011,14 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
   });
 }
 
-const sliceStringByValue = (string, endingValue) => {
+function sliceStringByValue(string, endingValue) {
   var newString = string.slice(string.indexOf(endingValue) + 1);
   return newString;
-};
+}
 
 var fileNameForEdit;
 ///// Option to manage description for files
-const manageDesc = (ev) => {
+function manageDesc(ev) {
   var fileName = ev.parentElement.innerText;
   /// get current location of files in JSON object
   var filtered = getGlobalPath(organizeDSglobalPath);
@@ -7968,9 +8036,9 @@ const manageDesc = (ev) => {
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   fileNameForEdit = fileName;
-};
+}
 
-const updateFileDetails = (ev) => {
+function updateFileDetails(ev) {
   var fileName = fileNameForEdit;
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
@@ -7995,9 +8063,9 @@ const updateFileDetails = (ev) => {
   }
   // close the display
   showDetailsFile();
-};
+}
 
-const addDetailsForFile = (ev) => {
+function addDetailsForFile(ev) {
   var checked = false;
   for (var ele of $($(ev).siblings()).find("input:checkbox")) {
     if ($(ele).prop("checked")) {
@@ -8018,7 +8086,7 @@ const addDetailsForFile = (ev) => {
           className: "btn-primary",
         },
       },
-      callback: (r) => {
+      callback: function (r) {
         if (r !== null && r === true) {
           updateFileDetails(ev);
           $("#button-confirm-display-details-file").html("Added");
@@ -8029,15 +8097,38 @@ const addDetailsForFile = (ev) => {
     updateFileDetails(ev);
     $("#button-confirm-display-details-file").html("Added");
   }
-};
+}
 
-$("#inputNewNameDataset").keyup(() => {
+//// Select to choose a local dataset
+// document.getElementById("location-new-dataset").addEventListener("click", function() {
+//   document.getElementById("location-new-dataset").placeholder = "Browse here"
+//   ipcRenderer.send('open-file-dialog-newdataset-curate');
+// })
+//
+// ipcRenderer.on('selected-new-datasetCurate', (event, filepath) => {
+//   if (filepath.length > 0) {
+//     if (filepath != null){
+//       document.getElementById("location-new-dataset").placeholder = filepath[0];
+//       document.getElementById("div-confirm-location-new-dataset").style.display = "flex";
+//     }
+//   }
+// })
+
+// document.getElementById('inputNewNameDataset').addEventListener('keydown', function() {
+//   // document.getElementById('para-new-name-dataset-message').innerHTML = ""
+// })
+
+$("#inputNewNameDataset").keyup(function () {
+  var newName = $("#inputNewNameDataset").val().trim();
+
   $("#Question-generate-dataset-generate-div").removeClass("show");
   $("#Question-generate-dataset-generate-div").removeClass("test2");
   $("#Question-generate-dataset-generate-div").removeClass("prev");
   $("#Question-generate-dataset-generate-div").hide();
   $("#Question-generate-dataset-generate-div").children().hide();
-  var newName = $("#inputNewNameDataset").val().trim();
+  $("#para-continue-name-dataset-generate").hide();
+  $("#para-continue-name-dataset-generate").text("");
+
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
       document.getElementById("div-confirm-inputNewNameDataset").style.display =
@@ -8053,8 +8144,7 @@ $("#inputNewNameDataset").keyup(() => {
       $("#btn-confirm-new-dataset-name").show();
       $("#Question-generate-dataset-generate-div").show();
       $("#Question-generate-dataset-generate-div").children().show();
-      // $('#div-confirm-inputNewNameDataset button').click();
-      // $("#nextBtn").prop("disabled", false);
+
       $("#Question-generate-dataset-generate-div-old").addClass("show");
       document.getElementById("para-new-name-dataset-message").innerHTML = "";
     }
@@ -8066,7 +8156,7 @@ $("#inputNewNameDataset").keyup(() => {
 //// Select to choose a local dataset (getting started)
 document
   .getElementById("input-destination-getting-started-locally")
-  .addEventListener("click", () => {
+  .addEventListener("click", function () {
     $("#Question-getting-started-locally-destination")
       .nextAll()
       .removeClass("show");
@@ -8107,6 +8197,9 @@ ipcRenderer.on(
           populate_existing_folders(datasetStructureJSONObj);
           populate_existing_metadata(sodaJSONObj);
           if (valid_dataset == true) {
+            $("#para-continue-location-dataset-getting-started").text(
+              "Please continue below."
+            );
             $("#nextBtn").prop("disabled", false);
           } else {
             var bootboxDialog = bootbox.confirm({
@@ -8151,7 +8244,7 @@ ipcRenderer.on(
 //// Select to choose a local dataset (generate dataset)
 document
   .getElementById("input-destination-generate-dataset-locally")
-  .addEventListener("click", () => {
+  .addEventListener("click", function () {
     $("#Question-generate-dataset-locally-destination")
       .nextAll()
       .removeClass("show");
@@ -8195,17 +8288,21 @@ ipcRenderer.on(
 
 document
   .getElementById("button-generate-comeback")
-  .addEventListener("click", () => {
+  .addEventListener("click", function () {
     document.getElementById("generate-dataset-progress-tab").style.display =
       "none";
     document.getElementById("div-vertical-progress-bar").style.display = "flex";
     document.getElementById("prevBtn").style.display = "inline";
     document.getElementById("nextBtn").style.display = "inline";
     showParentTab(currentTab, 1);
+    if (sodaJSONObj["starting-point"]["type"] == "new" && "local-path" in sodaJSONObj["starting-point"])
+    {
+      sodaJSONObj["starting-point"]["type"] = "local";
+    }
   });
 
 // function to hide the sidebar and disable the sidebar expand button
-const forceActionSidebar = (action) => {
+function forceActionSidebar(action) {
   if (action === "hide") {
     if (!$("#main-nav").hasClass("active")) {
       $("#sidebarCollapse").click();
@@ -8216,124 +8313,134 @@ const forceActionSidebar = (action) => {
     $("#main-nav").toggleClass("active");
     $("#sidebarCollapse").prop("disabled", false);
   }
-};
+}
 
 /// MAIN CURATE NEW ///
 
 const progressBarNewCurate = document.getElementById("progress-bar-new-curate");
 
-document.getElementById("button-generate").addEventListener("click", () => {
-  $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
-  document.getElementById("prevBtn").style.display = "none";
-  document.getElementById("div-vertical-progress-bar").style.display = "none";
-  document.getElementById("div-generate-comeback").style.display = "none";
-  document.getElementById("generate-dataset-progress-tab").style.display =
-    "flex";
-  forceActionSidebar("hide");
+document
+  .getElementById("button-generate")
+  .addEventListener("click", function () {
+    $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
+    document.getElementById("prevBtn").style.display = "none";
+    document.getElementById("div-vertical-progress-bar").style.display = "none";
+    document.getElementById("div-generate-comeback").style.display = "none";
+    document.getElementById("generate-dataset-progress-tab").style.display =
+      "flex";
+    forceActionSidebar("hide");
 
-  // updateJSON structure after Generate dataset tab
-  updateJSONStructureGenerate();
-  if (sodaJSONObj["starting-point"]["type"] === "local") {
-    sodaJSONObj["starting-point"]["type"] = "new";
-  }
-
-  //  from here you can modify
-  document.getElementById("para-please-wait-new-curate").innerHTML =
-    "Please wait...";
-  document.getElementById(
-    "para-new-curate-progress-bar-error-status"
-  ).innerHTML = "";
-  document.getElementById("para-new-curate-progress-bar-status").innerHTML = "";
-  document.getElementById("div-new-curate-progress").style.display = "none";
-
-  progressBarNewCurate.value = 0;
-
-  // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
-  if ("files" in sodaJSONObj["dataset-structure"]) {
-    sodaJSONObj["dataset-structure"]["files"] = {};
-  }
-  // delete manifest files added for treeview
-  for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
-    if (
-      "manifest.xlsx" in
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
-      sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
-      ]["forTreeview"]
-    ) {
-      delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
-        "manifest.xlsx"
-      ];
+    // updateJSON structure after Generate dataset tab
+    updateJSONStructureGenerate();
+    if (sodaJSONObj["starting-point"]["type"] === "local") {
+      sodaJSONObj["starting-point"]["type"] = "new";
     }
-  }
 
-  client.invoke("api_check_empty_files_folders", sodaJSONObj, (error, res) => {
-    if (error) {
-      var emessage = userError(error);
-      document.getElementById(
-        "para-new-curate-progress-bar-error-status"
-      ).innerHTML = "<span style='color: red;'> Error: " + emessage + "</span>";
-      document.getElementById("para-please-wait-new-curate").innerHTML = "";
-      console.error(error);
-    } else {
-      document.getElementById("para-please-wait-new-curate").innerHTML =
-        "Please wait...";
-      log.info("Continue with curate");
-      var message = "";
-      error_files = res[0];
-      error_folders = res[1];
+    //  from here you can modify
+    document.getElementById("para-please-wait-new-curate").innerHTML =
+      "Please wait...";
+    document.getElementById(
+      "para-new-curate-progress-bar-error-status"
+    ).innerHTML = "";
+    document.getElementById("para-new-curate-progress-bar-status").innerHTML =
+      "";
+    document.getElementById("div-new-curate-progress").style.display = "none";
 
-      if (error_files.length > 0) {
-        var error_message_files = backend_to_frontend_warning_message(
-          error_files
-        );
-        message += error_message_files;
-      }
+    progressBarNewCurate.value = 0;
 
-      if (error_folders.length > 0) {
-        var error_message_folders = backend_to_frontend_warning_message(
-          error_folders
-        );
-        message += error_message_folders;
-      }
-
-      if (message) {
-        message += "Would you like to continue?";
-        var bootboxDialog = bootbox.confirm({
-          message: message,
-          buttons: {
-            confirm: {
-              label: "Yes",
-              className: "btn-success",
-            },
-            cancel: {
-              label: "No",
-              className: "btn-danger",
-            },
-          },
-          centerVertical: true,
-          callback: (result) => {
-            if (result) {
-              console.log("Continue");
-              initiate_generate();
-            } else {
-              console.log("Stop");
-              // then show the sidebar again
-              forceActionSidebar("show");
-              document.getElementById("para-please-wait-new-curate").innerHTML =
-                "Return to make changes";
-              document.getElementById("div-generate-comeback").style.display =
-                "flex";
-            }
-          },
-        });
-        // ipcRenderer.send('warning-empty-files-folders-generate', message)
-      } else {
-        initiate_generate();
+    // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
+    if ("files" in sodaJSONObj["dataset-structure"]) {
+      sodaJSONObj["dataset-structure"]["files"] = {};
+    }
+    // delete manifest files added for treeview
+    for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+      if (
+        "manifest.xlsx" in
+          sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
+          "manifest.xlsx"
+        ]["forTreeview"]
+      ) {
+        delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol][
+          "files"
+        ]["manifest.xlsx"];
       }
     }
+
+    client.invoke(
+      "api_check_empty_files_folders",
+      sodaJSONObj,
+      (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          document.getElementById(
+            "para-new-curate-progress-bar-error-status"
+          ).innerHTML =
+            "<span style='color: red;'> Error: " + emessage + "</span>";
+          document.getElementById("para-please-wait-new-curate").innerHTML = "";
+          console.error(error);
+        } else {
+          document.getElementById("para-please-wait-new-curate").innerHTML =
+            "Please wait...";
+          log.info("Continue with curate");
+          var message = "";
+          error_files = res[0];
+          error_folders = res[1];
+
+          if (error_files.length > 0) {
+            var error_message_files = backend_to_frontend_warning_message(
+              error_files
+            );
+            message += error_message_files;
+          }
+
+          if (error_folders.length > 0) {
+            var error_message_folders = backend_to_frontend_warning_message(
+              error_folders
+            );
+            message += error_message_folders;
+          }
+
+          if (message) {
+            message += "Would you like to continue?";
+            var bootboxDialog = bootbox.confirm({
+              message: message,
+              buttons: {
+                confirm: {
+                  label: "Yes",
+                  className: "btn-success",
+                },
+                cancel: {
+                  label: "No",
+                  className: "btn-danger",
+                },
+              },
+              centerVertical: true,
+              callback: function (result) {
+                if (result) {
+                  console.log("Continue");
+                  initiate_generate();
+                } else {
+                  console.log("Stop");
+                  // then show the sidebar again
+                  forceActionSidebar("show");
+                  document.getElementById(
+                    "para-please-wait-new-curate"
+                  ).innerHTML = "Return to make changes";
+                  document.getElementById(
+                    "div-generate-comeback"
+                  ).style.display = "flex";
+                }
+              },
+            });
+            // ipcRenderer.send('warning-empty-files-folders-generate', message)
+          } else {
+            initiate_generate();
+          }
+        }
+      }
+    );
   });
-});
 
 // ipcRenderer.on('warning-empty-files-folders-generate-selection', (event, index) => {
 //   if (index === 0) {
@@ -8353,7 +8460,7 @@ const divGenerateProgressBar = document.getElementById(
 );
 const generateProgressBar = document.getElementById("progress-bar-new-curate");
 
-const initiate_generate = () => {
+function initiate_generate() {
   // Initiate curation by calling Python funtion
   var main_curate_status = "Solving";
   document.getElementById("para-new-curate-progress-bar-status").innerHTML =
@@ -8413,7 +8520,8 @@ const initiate_generate = () => {
 
   // Progress tracking function for main curate
   var countDone = 0;
-  var timerProgress = setInterval(() => {
+  var timerProgress = setInterval(main_progressfunction, 1000);
+  function main_progressfunction() {
     client.invoke("api_main_curate_function_progress", (error, res) => {
       if (error) {
         var emessage = userError(error);
@@ -8510,13 +8618,10 @@ const initiate_generate = () => {
         clearInterval(timerProgress);
       }
     }
-  }, 1000);
+  }
+}
 
-  //var timerProgress = setInterval(main_progressfunction, 1000);
-  //function main_progressfunction() {}
-};
-
-const backend_to_frontend_warning_message = (error_array) => {
+function backend_to_frontend_warning_message(error_array) {
   if (error_array.length > 1) {
     var warning_message = error_array[0] + "<ul>";
   } else {
@@ -8528,11 +8633,11 @@ const backend_to_frontend_warning_message = (error_array) => {
   }
   var final_message = warning_message + "</ul>";
   return final_message;
-};
+}
 
 var forbidden_characters_bf = '/:*?"<>';
 
-const check_forbidden_characters_bf = (my_string) => {
+function check_forbidden_characters_bf(my_string) {
   // Args:
   // my_string: string with characters (string)
   // Returns:
@@ -8542,29 +8647,30 @@ const check_forbidden_characters_bf = (my_string) => {
   for (var i = 0; i < forbidden_characters_bf.length; i++) {
     if (my_string.indexOf(forbidden_characters_bf[i]) > -1) {
       return true;
+      break;
     }
   }
   return check;
-};
+}
 
 var metadataIndividualFile = "";
 var metadataAllowedExtensions = [];
 var metadataParaElement = "";
 
-const importMetadataFiles = (ev, metadataFile, extentionList, paraEle) => {
+function importMetadataFiles(ev, metadataFile, extentionList, paraEle) {
   document.getElementById(paraEle).innerHTML = "";
   metadataIndividualFile = metadataFile;
   metadataAllowedExtensions = extentionList;
   metadataParaElement = paraEle;
   ipcRenderer.send("open-file-dialog-metadata-curate");
-};
+}
 
-const importBlackfynnMetadataFiles = (
+function importBlackfynnMetadataFiles(
   ev,
   metadataFile,
   extensionList,
   paraEle
-) => {
+) {
   extensionList.forEach((file_type) => {
     file_name = metadataFile + file_type;
     if (
@@ -8596,7 +8702,7 @@ const importBlackfynnMetadataFiles = (
     }
   });
   populate_existing_metadata(sodaJSONObj);
-};
+}
 
 ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   if (mypath.length > 0) {
@@ -8630,7 +8736,23 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   }
 });
 
-const bf_request_and_populate_dataset = (sodaJSONObj) => {
+/*
+document
+  .getElementById("button-preview-dataset")
+  .addEventListener("click", function () {
+    client.invoke("api_preview_dataset", sodaJSONObj, (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+      } else {
+        console.log(res);
+      }
+    });
+  });
+*/
+
+var bf_request_and_populate_dataset = (sodaJSONObj) => {
   return new Promise((resolve, reject) => {
     client.invoke(
       "api_bf_get_dataset_files_folders",
