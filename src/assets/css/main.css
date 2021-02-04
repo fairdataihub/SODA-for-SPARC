@@ -340,7 +340,7 @@ button[disabled] {
   font-weight: bold;
   pointer-events: none;
 }
-/* 
+/*
 .dropdown-item:hover {
   background-color: #F0F0F0 !important;
 } */
@@ -571,8 +571,8 @@ button[disabled] {
   /* box-shadow: 0 0 3px 0px rgba(39,212,212,1); */
   /* color: #fff; */
   outline: none;
-  border: 1px solid #20b2aa;
-  box-shadow: 0px 0px 3px 0px #20b2aa;
+  border: 1px solid var(--color-light-green);
+  box-shadow: 0px 0px 3px 0px var(--color-light-green);
   /* transition: border 0.5s ease-in-out; */
   /* background: #fff; */
 }
