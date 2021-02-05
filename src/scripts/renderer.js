@@ -79,7 +79,7 @@ log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
 //check user's internet connection and connect to default Blackfynn account //
-require("dns").resolve("www.google.com", function (err) {
+require("dns").resolve("www.google.com", (err) => {
   if (err) {
     console.error("No internet connection");
     log.error("No internet connection");
@@ -575,21 +575,21 @@ const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">';
 
 // Sidebar Navigation //
 var open = false;
-function openSidebar(buttonElement) {
+const openSidebar = (buttonElement) => {
   if (!open) {
     ipcRenderer.send("resize-window", "up");
-    document.getElementById("main-nav").style.width = "250px";
-    document.getElementById("SODA-logo").style.display = "block";
-    buttonSidebarIcon.style.display = "none";
+    $("#main-nav").css("width", "250px");
+    $("#SODA-logo").css("display", "block");
+    $(buttonSidebarIcon).css("display", "none");
     open = true;
   } else {
     ipcRenderer.send("resize-window", "down");
-    document.getElementById("main-nav").style.width = "70px";
-    document.getElementById("SODA-logo").style.display = "none";
-    buttonSidebarIcon.style.display = "block";
+    $("#main-nav").css("width", "70px");
+    $("#SODA-logo").css("display", "block");
+    $(buttonSidebarIcon).css("display", "none");
     open = false;
   }
-}
+};
 
 // Assign dragable area in the code to allow for dragging and selecting items//
 let drag_event_fired = false;
@@ -613,34 +613,36 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
 document
   .getElementById("button-organize-next-step")
   .addEventListener("click", (event) => {
-    document.getElementById("button-specfy-dataset-demo-toggle").click();
+    $("#button-specfy-dataset-demo-toggle").click();
     if (
       getComputedStyle(document.getElementById("div-specify-metadata"), null)
         .display === "none"
     ) {
-      document.getElementById("button-specify-metadata-demo-toggle").click();
+      $("#button-specify-metadata-demo-toggle").click();
     }
   });
+
 document
   .getElementById("button-specify-metadata-next-step")
   .addEventListener("click", (event) => {
-    document.getElementById("button-specify-metadata-demo-toggle").click();
+    $("#button-specify-metadata-demo-toggle").click();
     if (
       getComputedStyle(document.getElementById("div-validate-dataset"), null)
         .display === "none"
     ) {
-      document.getElementById("button-validate-dataset-demo-toggle").click();
+      $("#button-validate-dataset-demo-toggle").click();
     }
   });
+  
 document
   .getElementById("button-validate-dataset-next-step")
   .addEventListener("click", (event) => {
-    document.getElementById("button-validate-dataset-demo-toggle").click();
+    $("#button-validate-dataset-demo-toggle").click();
     if (
       getComputedStyle(document.getElementById("div-generate-dataset"), null)
         .display === "none"
     ) {
-      document.getElementById("button-generate-dataset-demo-toggle").click();
+      $("#button-generate-dataset-demo-toggle").click();
     }
   });
 
@@ -662,13 +664,13 @@ var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
 
 // initiate Tagify input fields for Dataset description file
-var keywordInput = document.getElementById("ds-keywords"),
+var keywordInput = $("#ds-keywords"),
   keywordTagify = new Tagify(keywordInput, {
     duplicates: false,
     maxTags: 5,
   });
 
-var otherFundingInput = document.getElementById("ds-other-funding"),
+var otherFundingInput = $("#ds-other-funding"),
   otherFundingTagify = new Tagify(otherFundingInput, {
     duplicates: false,
   });
@@ -745,7 +747,7 @@ var completenessInput = document.getElementById("ds-completeness"),
 /////// Load SPARC airtable data
 var airtableHostname = "api.airtable.com";
 
-function sendHTTPsRequestAirtable(options, varSuccess) {
+const sendHTTPsRequestAirtable = (options, varSuccess) => {
   https.get(options, (res) => {
     if (res.statusCode === 200) {
       varSuccess = true;
@@ -760,10 +762,10 @@ function sendHTTPsRequestAirtable(options, varSuccess) {
     });
     return res;
   });
-}
+};
 
 ///// Upon clicking "Connect" to Airtable
-addAirtableKeyBtn.addEventListener("click", function () {
+addAirtableKeyBtn.addEventListener("click", () => {
   document.getElementById("para-add-airtable-key").innerHTML = "";
   var apiKeyInput = document.getElementById("airtable-api-key").value;
   var keyName = document.getElementById("airtable-key-name").value;
@@ -7709,22 +7711,6 @@ const select_items = (items, event, isDragging) => {
       }
     }
 
-    /*
-    if (selected_class != "") {
-      if (event.ctrlKey) {
-        if ($(target_element).hasClass(selected_class)) {
-          $(target_element).removeClass(selected_class);
-          $(parent_element).removeClass(selected_class);
-        } else {
-          $(target_element).addClass(selected_class);
-          $(parent_element).addClass(selected_class);
-        }
-      } else {
-        $(target_element).addClass(selected_class);
-        $(parent_element).addClass(selected_class);
-      }
-    }
-    */
     $(".selected-item").removeClass("selected-item");
     $(".ds-selected").addClass(selected_class);
     $(".ds-selected").each((index, element) => {
@@ -7734,7 +7720,7 @@ const select_items = (items, event, isDragging) => {
   });
 };
 
-$(document).bind("click", function (event) {
+$(document).bind("click", (event) => {
   // If there is weird right click menu behaviour, check the hideMenu block
   //
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
@@ -7752,49 +7738,6 @@ $(document).bind("click", function (event) {
       $(".selected-item").removeClass("selected-item");
     }
   }
-
-  let selected_class = "";
-  let target_element = null;
-  let parent_element = null;
-
-  // Assign target(folder/file) and parent elements
-  //
-  /*
-  if (
-    event.target.classList[0] === "myFile" ||
-    event.target.classList[0] === "myFol"
-  ) {
-    selected_class = "selected-item";
-    target_element = event.target;
-    parent_element = $(target_element).parent();
-  } else if (event.target.classList[0] === "single-item") {
-    parent_element = event.target;
-    target_element = $(parent_element).children()[0];
-    if (
-      $(target_element).hasClass("myFol") ||
-      $(target_element).hasClass("myFile")
-    ) {
-      selected_class = "selected-item";
-    }
-  }
-
-  // Add selected-item class to the elements.
-  // Handle ctrl selection - Follows linux native os behaviour
-  /*if (selected_class != "") {
-    if (event.ctrlKey) {
-      if ($(target_element).hasClass(selected_class)) {
-        $(target_element).removeClass(selected_class);
-        $(parent_element).removeClass(selected_class);
-      } else {
-        $(target_element).addClass(selected_class);
-        $(parent_element).addClass(selected_class);
-      }
-    } else {
-      $(".selected-item").removeClass(selected_class);
-      $(target_element).addClass(selected_class);
-      $(parent_element).addClass(selected_class);
-    }
-  }*/
 });
 
 // sort JSON objects by keys alphabetically (folder by folder, file by file)
