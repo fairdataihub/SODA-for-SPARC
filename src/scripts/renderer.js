@@ -664,13 +664,13 @@ var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
 
 // initiate Tagify input fields for Dataset description file
-var keywordInput = $("#ds-keywords"),
+var keywordInput = document.getElementById("ds-keywords"),
   keywordTagify = new Tagify(keywordInput, {
     duplicates: false,
     maxTags: 5,
   });
 
-var otherFundingInput = $("#ds-other-funding"),
+var otherFundingInput = document.getElementById("ds-other-funding"),
   otherFundingTagify = new Tagify(otherFundingInput, {
     duplicates: false,
   });
@@ -747,7 +747,7 @@ var completenessInput = document.getElementById("ds-completeness"),
 /////// Load SPARC airtable data
 var airtableHostname = "api.airtable.com";
 
-const sendHTTPsRequestAirtable = (options, varSuccess) => {
+function sendHTTPsRequestAirtable(options, varSuccess) {
   https.get(options, (res) => {
     if (res.statusCode === 200) {
       varSuccess = true;
@@ -762,7 +762,7 @@ const sendHTTPsRequestAirtable = (options, varSuccess) => {
     });
     return res;
   });
-};
+}
 
 ///// Upon clicking "Connect" to Airtable
 addAirtableKeyBtn.addEventListener("click", () => {
@@ -834,7 +834,8 @@ templateArray = [
   "manifest.xlsx",
   "DataDeliverablesDocument-template.docx",
 ];
-function downloadTemplates(templateItem, destinationFolder) {
+
+const downloadTemplates = (templateItem, destinationFolder) => {
   var templatePath = path.join(__dirname, "file_templates", templateItem);
   var destinationPath = path.join(destinationFolder, templateItem);
   if (fs.existsSync(destinationPath)) {
@@ -849,7 +850,7 @@ function downloadTemplates(templateItem, destinationFolder) {
       "Successfully saved file " + templateItem + " to " + destinationFolder;
     ipcRenderer.send("open-info-metadata-file-donwloaded", emessage);
   }
-}
+};
 
 downloadSubmission.addEventListener("click", (event) => {
   ipcRenderer.send("open-folder-dialog-save-metadata", templateArray[0]);
@@ -903,7 +904,7 @@ document
   .getElementById("button-import-milestone")
   .addEventListener("click", function () {
     document.getElementById("para-milestone-document-info-long").style.display =
-      "none";
+      "none"; 
     document.getElementById("para-milestone-document-info").innerHTML = "";
     var filepath = document.getElementById("input-milestone-select")
       .placeholder;

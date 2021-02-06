@@ -100,7 +100,7 @@ function initialize() {
 
   loadDemos();
   function createWindow() {
-    //mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     mainWindow.webContents.once("dom-ready", () => {
       if (updatechecked == false) {

@@ -105,7 +105,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
     $("#Question-generate-dataset-generate-div").children().show();
     //$("#preview-dataset-structure-btn").show();
   }
-}
+};
 
 // function to fill the card details in the preview tab of step 7
 const fill_info_details = () => {
@@ -154,7 +154,9 @@ const fill_info_details = () => {
         "Question-generate-dataset",
         true
       );
-      new_dataset_name = require('path').basename(sodaJSONObj["starting-point"]["local-path"]);
+      new_dataset_name = require("path").basename(
+        sodaJSONObj["starting-point"]["local-path"]
+      );
       if (manifestFileCheck.checked) {
         add_card_detail(
           "Manifest files",
@@ -2256,7 +2258,7 @@ function raiseWarningExit() {
   });
 }
 
-async function exitCurate(resetProgressTabs, start_over = false) {
+const exitCurate = async (resetProgressTabs, start_over = false) => {
   $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
@@ -2284,9 +2286,9 @@ async function exitCurate(resetProgressTabs, start_over = false) {
   } else {
     wipeOutCurateProgress();
   }
-}
+};
 
-function wipeOutCurateProgress() {
+const wipeOutCurateProgress = () => {
   // set SODA json object back
   sodaJSONObj = {
     "starting-point": { type: "" },
@@ -2301,11 +2303,14 @@ function wipeOutCurateProgress() {
   $(".metadata-button.button-generate-dataset").removeClass("done");
   $("#organize-section input:checkbox").prop("checked", false);
   $("#organize-section input:radio").prop("checked", false);
+
   // set back local destination for folders to empty
   $("#input-destination-generate-dataset-locally").val("");
   $("#input-destination-getting-started-locally").val("");
+
   // set metadata file paths to empty
   $(".para-metadata-file-status").text("");
+
   // set back Please continue para element
   $("#para-continue-prepare-new-getting-started").text("");
   $("#para-continue-bf-dataset-getting-started").text("");
@@ -2317,40 +2322,42 @@ function wipeOutCurateProgress() {
   $(".generate-dataset").removeClass("prev");
   $(".generate-dataset").removeClass("show");
   $(".generate-dataset").removeClass("test2");
+
   // reset dataset structure JSON
   datasetStructureJSONObj = { folders: {}, files: {} };
+
   // uncheck auto-generated manifest checkbox
   $("#generate-manifest-curate").prop("checked", false);
-}
+};
 
 // once users click on option card: Organize dataset
 document
   .getElementById("button-section-organize-dataset")
-  .addEventListener("click", function () {
+  .addEventListener("click", () => {
     $(".vertical-progress-bar").css("display", "flex");
     document.getElementById("generate-dataset-progress-tab").style.display =
       "none";
     showParentTab(currentTab, 1);
   });
 
-function hideNextDivs(currentDiv) {
+const hideNextDivs = (currentDiv) => {
   // make currentDiv current class
-  $("#" + currentDiv).removeClass("prev");
-  $("#" + currentDiv).removeClass("test2");
+  $(`#${currentDiv}`).removeClass("prev");
+  $(`#${currentDiv}`).removeClass("test2");
   // hide subsequent divs
-  $($("#" + currentDiv).nextAll()).removeClass("prev");
-  $($("#" + currentDiv).nextAll()).removeClass("show");
-  $($("#" + currentDiv).nextAll()).removeClass("test2");
-}
+  $($(`#${currentDiv}`).nextAll()).removeClass("prev");
+  $($(`#${currentDiv}`).nextAll()).removeClass("show");
+  $($(`#${currentDiv}`).nextAll()).removeClass("test2");
+};
 
 // save progress up until step 5 for now
-function updateJSONObjectProgress() {
+const updateJSONObjectProgress = () => {
   updateJSONStructureGettingStarted();
   updateJSONStructureMetadataFiles();
   updateJSONStructureManifest();
   updateJSONStructureDSstructure();
   updateJSONStructureGenerate(true);
-}
+};
 
 const saveSODAJSONProgress = (progressFileName) => {
   try {
@@ -2419,3 +2426,23 @@ const saveOrganizeProgressPrompt = () => {
 $("#start-over-btn").click(() => {
   exitCurate(true, true);
 });
+
+const description_text = {
+  manage_dataset_section:
+    "This interface provides a convenient window to accomplish all required curation steps on your Blackfynn datasets.",
+  prepare_metadata_section:
+    "This interface will help you in preparing the SPARC metadata files for your dataset",
+  prepare_dataset_section:
+    "This interface will help you in organizing your dataset and upload it to Blackfynn.",
+  disseminate_dataset_section:
+    "This interface provides a convenient window to complete tasks required once your dataset has been organized and uploaded on Blackfynn.",
+};
+
+$("input:radio[name=main_tabs]").click(function () {
+  let option = $(this).val();
+  $("#tab-info-text").text(description_text[option]);
+  $(".main_tabs_section").hide();
+  $(`#${option}`).show();
+});
+
+$("#manage_dataset_tab").click();

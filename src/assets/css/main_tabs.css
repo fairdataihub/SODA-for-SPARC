@@ -1,0 +1,88 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:400,600,700");
+@import url("https://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css");
+
+.tab-input {
+  display: none;
+}
+
+.tab-label {
+  display: inline-block;
+  margin: 0 0 -1px;
+  width: 24%;
+  min-width: 210px;
+  font-weight: 600;
+  font-size: 17px;
+  padding: 10px 9px;
+  text-align: center;
+  color: #bbb;
+  border: 1px solid transparent;
+}
+
+.tab-label:before {
+  font-family: fontawesome;
+  font-weight: normal;
+  margin-right: 10px;
+}
+
+.tab-label[for="manage_dataset_tab"]:before {
+  content: "\f1c0";
+  color: #bbb;
+}
+.tab-label[for="prepare_metadata_tab"]:before {
+  content: "\f15c";
+  color: #bbb;
+}
+.tab-label[for="prepare_dataset_tab"]:before {
+  content: "\f07b";
+  color: #bbb;
+}
+.tab-label[for="disseminate_dataset_tab"]:before {
+  content: "\f1e0";
+  color: #bbb;
+}
+
+.tab-input:checked + .tab-label[for="manage_dataset_tab"]:before {
+  content: "\f1c0";
+  color: var(--color-bg-orange);
+}
+.tab-input:checked + .tab-label[for="prepare_metadata_tab"]:before {
+  content: "\f15c";
+  color: green;
+}
+.tab-input:checked + .tab-label[for="prepare_dataset_tab"]:before {
+  content: "\f07b";
+  color: var(--color-bg-plum);
+}
+.tab-input:checked + .tab-label[for="disseminate_dataset_tab"]:before {
+  content: "\f1e0";
+  color: var(--tagify-dd-color-primary);
+}
+
+.tab-label:hover {
+  color: #888;
+  background-color: lightblue;
+  cursor: pointer;
+}
+
+.tab-input:checked + .tab-label {
+  color: #555;
+  border: 1px solid #ddd;
+  border-top: 2px solid orange;
+  border-bottom: 1px solid #fff;
+}
+
+#tab-info-text {
+  color: rgb(77, 74, 74);
+  font-family: "Lato", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  padding-top: 20px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--color-border);
+  border-top: 1px solid #ddd;
+}
+
+.main_tabs_section{
+  display: none;
+  padding-top:40px;
+}
