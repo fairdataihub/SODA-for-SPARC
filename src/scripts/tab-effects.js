@@ -1480,7 +1480,7 @@ async function transitionSubQuestionsButton(
   }
 }
 
-reset_ui = () => {
+const reset_ui = () => {
   $(".option-card.high-level-folders").each(function (i, obj) {
     $(obj).removeClass("checked");
     $(obj).removeClass("disabled");
@@ -1506,7 +1506,7 @@ reset_ui = () => {
   $("#nextBtn").prop("disabled", true);
 };
 
-var populate_existing_folders = (dataset_folders) => {
+const populate_existing_folders = (dataset_folders) => {
   // currently handled by old function
   if ("files" in dataset_folders) {
     for (let file in dataset_folders["files"]) {
@@ -1529,7 +1529,7 @@ var populate_existing_folders = (dataset_folders) => {
   return;
 };
 
-var populate_existing_metadata = (datasetStructureJSONObj) => {
+const populate_existing_metadata = (datasetStructureJSONObj) => {
   let metadataobject = datasetStructureJSONObj["metadata-files"];
   if (metadataobject == null || metadataobject == undefined) {
     return;
@@ -1687,7 +1687,7 @@ function obtainDivsbyCategory(category) {
 }
 
 // Hide showing divs when users click on different option
-function hidePrevDivs(currentDiv, category) {
+const hidePrevDivs = (currentDiv, category) => {
   var individualQuestions = document.getElementsByClassName(category);
   // hide all other div siblings
   for (var i = 0; i < individualQuestions.length; i++) {
@@ -1695,35 +1695,29 @@ function hidePrevDivs(currentDiv, category) {
       if (
         !(currentDiv === "Question-generate-dataset-existing-folders-options")
       ) {
-        $("#" + currentDiv)
-          .nextAll()
-          .removeClass("show");
-        $("#" + currentDiv)
-          .nextAll()
-          .removeClass("prev");
-        $("#" + currentDiv)
-          .nextAll()
-          .removeClass("test2");
+        $(`#${currentDiv}`).nextAll().removeClass("show");
+        $(`#${currentDiv}`).nextAll().removeClass("prev");
+        $(`#${currentDiv}`).nextAll().removeClass("test2");
 
         // /// remove all checkmarks and previous data input
-        $("#" + currentDiv)
+        $(`#${currentDiv}`)
           .nextAll()
           .find(".option-card.radio-button")
           .removeClass("checked");
-        $("#" + currentDiv)
+        $(`#${currentDiv}`)
           .nextAll()
           .find(".option-card.radio-button")
           .removeClass("non-selected");
-        $("#" + currentDiv)
+        $(`#${currentDiv}`)
           .nextAll()
           .find(".folder-input-check")
           .prop("checked", false);
-        $("#" + currentDiv)
+        $(`#${currentDiv}`)
           .nextAll()
           .find("#curatebfdatasetlist")
           .prop("selectedIndex", 0);
 
-        var childElements2 = $("#" + currentDiv)
+        var childElements2 = $(`#${currentDiv}`)
           .nextAll()
           .find(".form-control");
 
@@ -1742,19 +1736,19 @@ function hidePrevDivs(currentDiv, category) {
       break;
     }
   }
-}
+};
 
-function updateJSONStructureGettingStarted() {
+const updateJSONStructureGettingStarted = () => {
   document.getElementById("input-global-path").value = "My_dataset_folder/";
-}
+};
 
 // function to populate metadata files
-function populateMetadataObject(
+const populateMetadataObject = (
   optionList,
   metadataFilePath,
   metadataFile,
   object
-) {
+) => {
   if (!("metadata-files" in object)) {
     object["metadata-files"] = {};
   }
@@ -1797,11 +1791,11 @@ function populateMetadataObject(
       }
     }
   }
-}
+};
 
 /// function to populate/reload Organize dataset UI when users move around between tabs and make changes
 // (to high-level folders)
-function populateOrganizeDatasetUI(currentLocation, datasetFolder) {
+const populateOrganizeDatasetUI = (currentLocation, datasetFolder) => {
   var baseName = path.basename(datasetFolder);
   currentLocation = {
     type: "local",
@@ -1847,14 +1841,14 @@ function populateOrganizeDatasetUI(currentLocation, datasetFolder) {
     hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   });
-}
+};
 
 ////////////////////// Functions to update JSON object after each step //////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Step 3: Dataset structure
 
-function updateJSONStructureDSstructure() {
+const updateJSONStructureDSstructure = () => {
   sodaJSONObj["dataset-structure"] = datasetStructureJSONObj;
   // check if dataset-structure key is empty (no high-level folders are included)
   if (
@@ -1863,11 +1857,11 @@ function updateJSONStructureDSstructure() {
   ) {
     delete sodaJSONObj["dataset-structure"];
   }
-}
+};
 
 // Step 4: Metadata files
 /// function to obtain metadata file paths from UI and then populate JSON obj
-function updateJSONStructureMetadataFiles() {
+const updateJSONStructureMetadataFiles = () => {
   var submissionFilePath = document.getElementById("para-submission-file-path")
     .innerHTML;
   var dsDescriptionFilePath = document.getElementById(
@@ -1929,11 +1923,11 @@ function updateJSONStructureMetadataFiles() {
   if (JSON.stringify(sodaJSONObj["metadata-files"]) === "{}") {
     delete sodaJSONObj["metadata-files"];
   }
-}
+};
 
 // Step 5: Manifest file
 // update JSON object with manifest file information
-function updateJSONStructureManifest() {
+const updateJSONStructureManifest = () => {
   if (manifestFileCheck.checked) {
     if ("manifest-files" in sodaJSONObj) {
       // cj this might need to be changed
@@ -1944,7 +1938,7 @@ function updateJSONStructureManifest() {
   } else {
     delete sodaJSONObj["manifest-files"];
   }
-}
+};
 
 const recursive_remove_local_deleted_files = (dataset_folder) => {
   if ("files" in dataset_folder) {
@@ -1992,7 +1986,7 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
 
 // Step 6: Generate dataset
 // update JSON object after users finish Generate dataset step
-function updateJSONStructureGenerate(progress = false) {
+const updateJSONStructureGenerate = (progress = false) => {
   let starting_point = sodaJSONObj["starting-point"]["type"];
   if (sodaJSONObj["starting-point"]["type"] == "bf") {
     sodaJSONObj["generate-dataset"] = {
@@ -2158,10 +2152,10 @@ function updateJSONStructureGenerate(progress = false) {
       sodaJSONObj["starting-point"]["type"] = starting_point;
     }
   }
-}
+};
 
 // function to call when users click on Continue at each step
-function updateOverallJSONStructure(id) {
+const updateOverallJSONStructure = (id) => {
   if (id === allParentStepsJSON["high-level-folders"]) {
     document.getElementById("input-global-path").value = "My_dataset_folder/";
     var optionCards = document.getElementsByClassName(
@@ -2224,7 +2218,7 @@ function updateOverallJSONStructure(id) {
   } else if (id === allParentStepsJSON["organize-dataset"]) {
     updateJSONStructureDSstructure();
   }
-}
+};
 //////////////////////////////// END OF Functions to update JSON object //////////////////////////////////////////
 
 var generateExitButtonBool = false;
@@ -2245,7 +2239,7 @@ function raiseWarningExit() {
         },
       },
       centerVertical: true,
-      callback: function (result) {
+      callback: (result) => {
         if (result) {
           generateExitButtonBool = true;
           resolve(generateExitButtonBool);
@@ -2440,8 +2434,8 @@ const description_text = {
 
 $("input:radio[name=main_tabs]").click(function () {
   let option = $(this).val();
-  $("#tab-info-text").text(description_text[option]);
-  $(".main_tabs_section").hide();
+  $("#tab_info_text").text(description_text[option]);
+  $(".main-tabs-section").hide();
   $(`#${option}`).show();
 });
 

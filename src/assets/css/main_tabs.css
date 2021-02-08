@@ -82,7 +82,11 @@
   border-top: 1px solid #ddd;
 }
 
-.main_tabs_section{
+.main-tabs-section{
   display: none;
   padding-top:40px;
+}
+
+.flex-content-container{
+  display: inline-flex;
 }

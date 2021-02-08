@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <template class="task-template">
-  <section id="main_tabs-section" class="section js-section u-category-windows">
+  <section id="main_tabs_section" class="section js-section u-category-windows">
     <header class="section-header">
       <div style="display: flex; flex-direction: row">
         <input
@@ -49,7 +49,7 @@
         >
       </div>
       <div class="tab-info">
-        <p id="tab-info-text">
+        <p id="tab_info_text">
           This interface provides a convenient window to accomplish all required
           curation steps on Blackfynn datasets.
         </p>
@@ -57,13 +57,14 @@
     </header>
 
     <div id="main_tabs">
-      <section class="main_tabs_section" id="manage_dataset_section">
+      <section class="main-tabs-section" id="manage_dataset_section">
         <div class="flex-main-container">
           <div class="flex-row-container">
             <div class="flex-content-container">
               <button
                 class="button-generate-dataset"
                 id="create_new_bf_dataset_btn"
+                data-section="create-new-bf-dataset"
               >
                 <svg
                   width="46"
@@ -82,6 +83,7 @@
               <button
                 class="button-generate-dataset"
                 id="rename_existing_bf_dataset_btn"
+                data-section="rename-existing-bf-dataset"
               >
                 <svg
                   width="52"
@@ -103,13 +105,14 @@
               </button>
             </div>
             <div class="flex-content-container">
-              <button class="button-generate-dataset" id="pi_dataset_owner_btn">
-                <i class="fas fa-star"></i>
+                <button class="button-generate-dataset" id="pi_dataset_owner_btn" data-section="pi-dataset-owner" >
+                <i class="fas fa-star" style="font-size: 39px;color: black;"></i>
                 <h2>Make PI owner of dataset</h2>
               </button>
               <button
                 class="button-generate-dataset"
                 id="add_edit_permissions_btn"
+                data-section="add-edit-permissions" 
               >
                 <svg
                   width="53"
@@ -128,7 +131,7 @@
             </div>
           </div>
           <div class="flex-row-container">
-            <button class="button-generate-dataset" id="add_edit_subtitle_btn">
+            <button class="button-generate-dataset" id="add_edit_subtitle_btn" data-section="add-edit-subtitle">
               <svg
                 width="48"
                 height="39"
@@ -145,7 +148,7 @@
             </button>
             <button
               class="button-generate-dataset"
-              id="add_edit_description_btn"
+              id="add_edit_description_btn" data-section="add-edit-description"
             >
               <svg
                 width="48"
@@ -175,7 +178,7 @@
             </button>
             <button
               class="button-generate-dataset"
-              id="upload_banner_image_btn"
+              id="upload_banner_image_btn" data-section="upload-banner-image"
             >
               <svg
                 width="43"
@@ -199,7 +202,7 @@
               </svg>
               <h2>Upload a banner image</h2>
             </button>
-            <button class="button-generate-dataset" id="assign_license_btn">
+            <button class="button-generate-dataset" id="assign_license_btn" data-section="assign-license">
               <svg
                 width="43"
                 height="45"
@@ -239,7 +242,7 @@
             <div class="flex-content-container">
               <button
                 class="button-generate-dataset"
-                id="upload_local_dataset_btn"
+                id="upload_local_dataset_btn" data-section="upload-local-dataset"
               >
                 <svg
                   width="58"
@@ -263,7 +266,7 @@
             <div class="flex-content-container">
               <button
                 class="button-generate-dataset"
-                id="view_change_dataset_status_btn"
+                id="view_change_dataset_status_btn" data-section="view-change-dataset-status"
               >
                 <svg
                   width="47"
@@ -292,7 +295,7 @@
         </div>
       </section>
 
-      <section class="main_tabs_section" id="prepare_metadata_section">
+      <section class="main-tabs-section" id="prepare_metadata_section">
         <p>
           Sed ut perspiciatis unde omnis iste natus error sit voluptatem
           accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae
@@ -305,7 +308,7 @@
           aliquam quaerat voluptatem.
         </p>
       </section>
-      <section class="main_tabs_section" id="prepare_dataset_section">
+      <section class="main-tabs-section" id="prepare_dataset_section">
         <p>
           voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum
           quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam
@@ -321,7 +324,7 @@
           aliquam quaerat voluptatem.
         </p>
       </section>
-      <section class="main_tabs_section" id="disseminate_dataset_section">
+      <section class="main-tabs-section" id="disseminate_dataset_section">
         <p>
           Sed ut perspiciatis unde omnis iste natus error sit voluptatem
           accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae
