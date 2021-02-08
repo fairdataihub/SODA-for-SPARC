@@ -110,6 +110,7 @@
               </div>
             </div>
             <div class="flex-content-container">
+<<<<<<< Updated upstream
               <div class="header-container">
                 <p class="content-header">Manage dataset permissions</p>
               </div>
@@ -118,6 +119,23 @@
                   class="content-button"
                   id="pi_dataset_owner_btn"
                   data-section="pi-dataset-owner"
+=======
+                <button class="button-generate-dataset" id="pi_dataset_owner_btn" data-section="pi-dataset-owner" >
+                <i class="fas fa-star" style="font-size: 39px;color: black;"></i>
+                <h2>Make PI owner of dataset</h2>
+              </button>
+              <button
+                class="button-generate-dataset"
+                id="add_edit_permissions_btn"
+                data-section="add-edit-permissions"
+              >
+                <svg
+                  width="53"
+                  height="48"
+                  viewBox="0 0 53 48"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+>>>>>>> Stashed changes
                 >
                   <svg
                     width="58"
@@ -515,6 +533,7 @@
           </div>
         </div>
       </section>
+<<<<<<< Updated upstream
 
       <section class="main-tabs-section" id="prepare_dataset_section">
         <div class="flex-main-container" id="prepare_dataset_main_container">
@@ -573,51 +592,111 @@
             </div>
           </div>
         </div>
-      </section>
-
-      <section class="main-tabs-section" id="disseminate_dataset_section">
+=======
+      <section class="main-tabs-section" id="prepare_dataset_section" style="padding-top:60px">
         <p>
-          Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-          accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae
-          ab illo inventore veritatis et quasi architecto beatae vitae dicta
-          sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
+          voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum
+          quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam
+          eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat
+          voluptatem. Sed ut perspiciatis unde omnis iste natus error sit
+          voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque
+          ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae
+          dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
           aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos
           qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui
           dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed
           quia non numquam eius modi tempora incidunt ut labore et dolore magnam
-          aliquam quaerat voluptatem. voluptatem sequi nesciunt. Neque porro
-          quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur,
-          adipisci velit, sed quia non numquam eius modi tempora incidunt ut
-          labore et dolore magnam aliquam quaerat voluptatem. voluptatem sequi
-          nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit
-          amet, consectetur, adipisci velit, sed quia non numquam eius modi
-          tempora incidunt ut labore et dolore magnam aliquam quaerat
-          voluptatem.
+          aliquam quaerat voluptatem.
         </p>
+>>>>>>> Stashed changes
+      </section>
+
+      <section class="main-tabs-section" id="disseminate_dataset_section">
+        <div class="parent-tabs tab-active" id="post-curation-tab">
+          <div class="individual-question post-curation show" id="Post-curation-question-1">
+              <div class="ui form" style="width:100%">
+                <div class="grouped fields">
+                  <label style="font-size:17px;text-align:center;color: #000">
+                  Please select one:</label>
+                  <div style="display:flex;flex-direction:row;justify-content:center">
+                    <div style="margin:15px 0;">
+                      <div class="option-card radio-button getting-started-1st-question" data-next="Post-curation-question-2" onclick="transitionSubQuestions(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
+                          <div class="card-head">
+                            <div class="folder-checkbox">
+                              <input class="folder-input-check" id="share-with-curation-team" name="post-curation-1" type="radio">
+                              <label for="share-with-curation-team"></label>
+                            </div>
+                          </div>
+                          <div class="card-body">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="var(--color-bg-orange)" class="bi bi-people" viewBox="0 0 16 16">
+                              <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
+                            </svg>
+                            <h2>Share with Curation Team</h2>
+                          </div>
+                        </div>
+                    </div>
+
+                    <div style="margin:15px 0;">
+                      <div class="option-card radio-button getting-started-1st-question" data-next="Post-curation-question-2" onclick="transitionSubQuestions(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
+                          <div class="card-head">
+                            <div class="folder-checkbox">
+                              <input class="folder-input-check" id="share-with-sparc-consortium" name="post-curation-1" type="radio">
+                              <label for="share-with-sparc-consortium"></label>
+                            </div>
+                          </div>
+                          <div class="card-body">
+                            <i class="fab fa-connectdevelop" style="color:green"></i>
+                            <h2>Share with SPARC Consortium </h2>
+                          </div>
+                      </div>
+                    </div>
+
+                    <div style="margin:15px 0;">
+                      <div class="option-card radio-button getting-started-1st-question"
+                      id="div-getting-started-existing-local" data-next="Post-curation-question-2" onclick="transitionSubQuestions(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
+                          <div class="card-head">
+                            <div class="folder-checkbox">
+                              <input class="folder-input-check" id="submit-pre-publishing" name="post-curation-1" type="radio">
+                              <label for="submit-pre-publishing"></label>
+                            </div>
+                          </div>
+                          <div class="card-body">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="var(--tagify-dd-color-primary)" class="bi bi-book" viewBox="0 0 16 16">
+                              <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
+                            </svg>
+                            <h2>Submit for pre-publishing review</h2>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+
+          <div class="individual-question post-curation" id="Post-curation-question-2">
+              <div class="ui form" style="width:100%">
+                <div class="grouped fields">
+                  <label style="font-size:17px;text-align:center;color: #000">
+                  Please select a dataset</label>
+                  <div class="field" style="margin:15px 0;width:450px">
+                    <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
+                      <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
+                        <div>
+                          <h5 style="color:#808080;font-size:15px">Current dataset:
+                          <span style="color:#000;font-weight:600;margin-left:8px;font-size:15px" id="current-bf-dataset">None</span></h5>
+                        </div>
+                        <svg class="svg-change-current-account" onclick="openDropdownPrompt('dataset')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                          <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
       </section>
     </div>
 
-    <div class="demo" style="display: none">
-      <div class="demo-wrapper">
-        <button
-          id="abutton-new-window-annotate-demo-toggle"
-          class="js-container-target demo-toggle-button"
-        >
-          Reserve DOI
-          <a
-            style="padding: 0px 0px 0px 10px"
-            class="github-wiki-link"
-            href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps"
-          >
-            <img class="nav-video" src="assets/img/documentation-icon.png" />
-          </a>
-          <div class="demo-meta u-avoid-clicks">Reserve DOI</div>
-        </button>
-      </div>
-    </div>
   </section>
 </template>
-
-<!--
-  button-create-bf-new-dataset - create_new_bf_dataset
--->
