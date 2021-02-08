@@ -87,7 +87,6 @@
   padding-top: 40px;
 }
 
-<<<<<<< Updated upstream
 .flex-main-container {
   margin: auto;
   overflow: auto;
@@ -176,8 +175,13 @@
 .button-container {
   display: flex;
   justify-content: center;
-=======
-.flex-content-container{
-  display: inline-flex;
->>>>>>> Stashed changes
+}
+
+.main-tabs {
+  display: none;
+}
+
+.main-tabs.show {
+  display: flex;
+  flex-direction: column;
 }
