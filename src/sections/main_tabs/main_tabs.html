@@ -87,7 +87,7 @@
                 <button
                   class="content-button"
                   id="rename_existing_bf_dataset_btn"
-                  data-section="rename-existing-bf-dataset"
+                  data-section="rename_existing_bf_dataset"
                 >
                   <svg
                     width="52"
@@ -823,7 +823,7 @@
     class="section js-section u-category-windows"
     style="padding-left: 15px; overflow-y: hidden"
   >
-    <div class="maian-tabs show" id="create_new_bf_dataset-tab">
+    <div class="main-tabs show" id="create_new_bf_dataset-tab">
       <header class="section-header">
         <div style="display: flex; flex-direction: row">
           <svg
@@ -841,7 +841,7 @@
           <h2>Manage Datasets - Create a new dataset</h2>
         </div>
         <div class="tab-info">
-          <p class="tab-info-p" style="margin-bottom: 2em;">
+          <p class="tab-info-p" style="margin-bottom: 2em">
             Enter desired name for your new dataset. This is the field that will
             be displayed in public as the title of the dataset. Please make sure
             that your dataset title is different than your other dataset titles
@@ -949,8 +949,8 @@
             >
               <button
                 id="create_empty_dataset"
-                onclick="transitionFreeFormMode(this, 'create_new_bf_dataset-section', 'create_empty_dataset_BF_account_tab', 'delete', 'individual-question manage-dataset')"
-                data-next="div-create-dataset"
+                onclick="transitionFreeFormMode(this, 'create_empty_dataset_BF_account_tab', 'create_new_bf_dataset-tab', 'delete', 'individual-question manage-dataset')"
+                data-next="div-create-new-empty-dataset"
                 style="
                   cursor: pointer;
                   border-radius: 8px;
@@ -971,7 +971,10 @@
         </div>
       </div>
 
-      <div class="individual-question manage-dataset" id="div-create-dataset">
+      <div
+        class="individual-question manage-dataset"
+        id="div-create-new-empty-dataset"
+      >
         <div class="ui form" style="width: 450px">
           <div class="grouped fields">
             <label
@@ -983,11 +986,14 @@
               "
               >What is the name of the new dataset?</label
             >
-            <div class="field" style="display:flex;justify-content: center;width: 100%;">
+            <div
+              class="field"
+              style="display: flex; justify-content: center; width: 100%"
+            >
               <input
                 type="text"
                 class="form-control"
-                style="background: #fff !important; width: 450px;"
+                style="background: #fff !important; width: 450px"
                 id="bf-new-dataset-name"
                 placeholder="Type here"
               />
@@ -1034,11 +1040,268 @@
         </div>
       </div>
 
+      <div
+        style="
+          border-top: 1px solid #f0f0f0;
+          padding: 10px;
+          padding-top: 15px;
+          height: 50px;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          width: 100%;
+          bottom: 20px;
+          position: absolute;
+        "
+      >
+        <div style="display: flex; flex-direction: row; width: 110px">
+          <button
+            type="button"
+            id="create-empty-dataset-back-btn"
+            class="transition-btn prev"
+            data-section="main_tabs"
+          >
+            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+          </button>
+        </div>
+      </div>
+
       <!--
         div-create-dataset - div-create-datasett
         bf-new-dataset-name - bf-new-dataset-namee
         para-add-new-dataset-status - para-add-new-dataset-statuss
         button-create-bf-new-dataset - button-create-bf-new-datasett
+      -->
+    </div>
+  </section>
+
+  <section
+    id="rename_existing_bf_dataset-section"
+    class="section js-section u-category-windows"
+    style="padding-left: 15px; overflow-y: hidden"
+  >
+    <div class="main-tabs show" id="rename_bf_dataset-tab">
+      <header class="section-header">
+        <div style="display: flex; flex-direction: row">
+          <svg
+            width="52"
+            height="59"
+            viewBox="0 0 52 59"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M46.7819 11.6562H44.1829V17.4916H46.7819V40.8332H44.1829V46.6686H46.7819C49.6486 46.6686 51.9799 44.0514 51.9799 40.8332V17.4916C51.9799 14.2763 49.646 11.6562 46.7819 11.6562ZM10.396 23.327H33.774V34.9978H10.396V23.327Z"
+              fill="black"
+            />
+            <path
+              d="M38.9849 46.6685V5.83539H46.7689V0H25.977V5.83539H33.7869V11.6562H5.19799C2.3313 11.6562 0 14.2734 0 17.4916V40.8331C0 44.0513 2.3313 46.6685 5.19799 46.6685H33.7869V52.5185H25.977V58.3539H46.7689V52.5185H38.9849V46.6685ZM5.19799 40.8331V17.4916H33.7869V40.8331H5.19799Z"
+              fill="black"
+            />
+          </svg>
+          <h2>Manage Datasets - Rename a dataset</h2>
+        </div>
+        <div class="tab-info">
+          <p class="tab-info-p" style="margin-bottom: 2em">
+            Some helpful text here
+          </p>
+        </div>
+      </header>
+
+      <div
+        class="individual-question manage-dataset show"
+        id="rename_dataset_BF_account_tab"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Which Blackfynn dataset would you like to rename?</label
+            >
+            <div class="field" style="margin: 15px 0; width: 450px">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    margin-bottom: 15px;
+                  "
+                >
+                  <div>
+                    <h5 style="color: #808080; font-size: 15px">
+                      Current dataset:
+                      <span
+                        class="bf-dataset-span"
+                        style="
+                          color: #000;
+                          font-weight: 600;
+                          margin-left: 8px;
+                          font-size: 15px;
+                        "
+                        >None</span
+                      >
+                    </h5>
+                  </div>
+                  <svg
+                    class="svg-change-current-account"
+                    onclick="openDropdownPrompt('dataset')"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    fill="#000"
+                    class="bi bi-pencil-fill"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div
+                style="
+                  display: none;
+                  flex-direction: row;
+                  justify-content: center;
+                  margin: 10px auto;
+                "
+              >
+                <button
+                  id="button-rename-dataset-confirm"
+                  onclick="transitionFreeFormMode(this, 'rename_dataset_BF_account_tab', 'rename_bf_dataset-tab', 'delete', 'individual-question manage-dataset')"
+                  data-next="Question-getting-started-final"
+                  style="
+                    display: none;
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 10px auto;
+                    width: 100px;
+                    height: 30px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    font-size: 13px;
+                  "
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question manage-dataset"
+        id="div-rename-bf-dataset"
+      >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                width: 100%;
+                text-align: center;
+              "
+              >What is the new name of the dataset?</label
+            >
+            <div
+              class="field"
+              style="display: flex; justify-content: center; width: 100%"
+            >
+              <input
+                type="text"
+                class="form-control"
+                style="background: #fff !important; width: 450px"
+                id="bf-rename-dataset-name"
+                placeholder="Type here"
+              />
+            </div>
+            <p
+              style="color: red; width: 440px"
+              id="para-new-name-dataset-message"
+            ></p>
+            <div
+              id="div-confirm-inputNewNameDataset"
+              style="
+                flex-direction: row;
+                justify-content: center;
+                margin: 0 auto;
+              "
+            >
+              <button
+                id="bf-rename-dataset"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 0 10px;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Rename
+              </button>
+            </div>
+            <p
+              id="para-rename-dataset-status"
+              style="
+                text-align: center;
+                font-weight: 600;
+                color: var(--color-light-green);
+              "
+            ></p>
+          </div>
+        </div>
+      </div>
+
+      <div
+        style="
+          border-top: 1px solid #f0f0f0;
+          padding: 10px;
+          padding-top: 15px;
+          height: 50px;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          width: 100%;
+          bottom: 20px;
+          position: absolute;
+        "
+      >
+        <div style="display: flex; flex-direction: row; width: 110px">
+          <button
+            type="button"
+            id="create-empty-dataset-back-btn"
+            class="transition-btn prev"
+            data-section="main_tabs"
+          >
+            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+          </button>
+        </div>
+      </div>
+
+      <!--
+        button-rename-dataset - button-rename-datasett
+        bf-rename-dataset-name - bf-rename-dataset-namee
+        para-rename-dataset-status - para-rename-dataset-statuss
       -->
     </div>
   </section>

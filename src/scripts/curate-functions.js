@@ -488,6 +488,7 @@ async function openDropdownPrompt(dropdown) {
         $("#create_empty_dataset_BF_account_span").text("");
         $("#current-bf-dataset").text("None");
         $("#current-bf-dataset-generate").text("None");
+        $(".bf-dataset-span").text("None");
         defaultBfDataset = "Select dataset";
         tempDatasetListsSync();
         $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
@@ -498,6 +499,7 @@ async function openDropdownPrompt(dropdown) {
 
         $("#para-account-detail-curate").html("");
         $("#current-bf-dataset").text("None");
+        $(".bf-dataset-span").text("None");
         showHideDropdownButtons("dataset", "hide");
         client.invoke("api_bf_account_details", bfacct, (error, res) => {
           if (error) {
@@ -593,6 +595,7 @@ async function openDropdownPrompt(dropdown) {
     if (bfDS) {
       $("#current-bf-dataset").text(bfDataset);
       $("#current-bf-dataset-generate").text(bfDataset);
+      $(".bf-dataset-span").text(bfDataset);
       defaultBfDataset = bfDataset;
       tempDatasetListsSync();
       $("#dataset-loaded-message").hide();

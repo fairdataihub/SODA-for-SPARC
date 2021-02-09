@@ -4120,6 +4120,7 @@ function syncDatasetDropdownOption(dropdown) {
   if (defaultBfDataset !== "Select dataset") {
     $("#current-bf-dataset").text(defaultBfDataset);
     $("#current-bf-dataset-generate").text(defaultBfDataset);
+    $(".bf-dataset-span").text(defaultBfDataset);
     showHideDropdownButtons("dataset", "show");
   }
 
@@ -6879,6 +6880,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
             $("#create_empty_dataset_BF_account_span").text(keyname);
             $("#current-bf-dataset").text("None");
             $("#current-bf-dataset-generate").text("None");
+            $(".bf-dataset-span").text("None");
             $("#para-account-detail-curate-generate").html(res);
             $("#para_create_empty_dataset_BF_account").html(res);
             
