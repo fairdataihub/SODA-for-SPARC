@@ -3700,6 +3700,7 @@ bfAccountList.addEventListener("change", () => {
     defaultBfAccount = myitemselect;
     $("#current-bf-account").text(defaultBfAccount);
     $("#current-bf-account-generate").text(defaultBfAccount);
+    $("#create_empty_dataset_BF_account_span").text(defaultBfAccount);
     // updateDatasetList(defaultBfAccount);
     showAccountDetails(bfAccountLoadProgress);
     showHideDropdownButtons("account", "show");
@@ -5465,6 +5466,7 @@ function showAccountDetails(loadProgress) {
         bfSelectAccountStatus.innerHTML = res;
         $("#para-account-detail-curate").html(res);
         $("#para-account-detail-curate-generate").html(res);
+        $("#para_create_empty_dataset_BF_account").html(res);
         bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML;
         loadProgress.style.display = "none";
         document.getElementById("div-permission-list").style.display = "block";
@@ -5709,6 +5711,8 @@ function loadDefaultAccount() {
         defaultBfAccount = myitemselect;
         $("#current-bf-account").text(myitemselect);
         $("#current-bf-account-generate").text(myitemselect);
+        $("#create_empty_dataset_BF_account_span").text(myitemselect);
+
         showAccountDetails(bfAccountLoadProgress);
         showHideDropdownButtons("account", "show");
         bfAccountLoadProgress.style.display = "block";
@@ -6872,9 +6876,12 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
             $("#para-account-detail-curate").html(res);
             $("#current-bf-account").text(keyname);
             $("#current-bf-account-generate").text(keyname);
+            $("#create_empty_dataset_BF_account_span").text(keyname);
             $("#current-bf-dataset").text("None");
             $("#current-bf-dataset-generate").text("None");
             $("#para-account-detail-curate-generate").html(res);
+            $("#para_create_empty_dataset_BF_account").html(res);
+            
             showHideDropdownButtons("account", "show");
           }
         });
@@ -6952,7 +6959,10 @@ function showDefaultBFAccount() {
               $("#para-account-detail-curate").html("None");
               $("#current-bf-account").text("None");
               $("#current-bf-account-generate").text("None");
+              $("#create_empty_dataset_BF_account_span").text("None");
               $("#para-account-detail-curate-generate").html("None");
+              $("#para_create_empty_dataset_BF_account").html("None");
+              
               bfSelectAccountStatus.innerHTML = "<span style='color:red'>"+error+"</span>";
               $("#div-bf-account-load-progress").css("display", "none");
               showHideDropdownButtons("account", "hide");
@@ -6960,7 +6970,10 @@ function showDefaultBFAccount() {
               $("#para-account-detail-curate").html(res);
               $("#current-bf-account").text(defaultBfAccount);
               $("#current-bf-account-generate").text(defaultBfAccount);
+              $("#create_empty_dataset_BF_account_span").text(defaultBfAccount);
               $("#para-account-detail-curate-generate").html(res);
+              $("#para_create_empty_dataset_BF_account").html(res);
+
               bfSelectAccountStatus.innerHTML = res;
               $("#div-bf-account-load-progress").css("display", "none");
               showHideDropdownButtons("account", "show");

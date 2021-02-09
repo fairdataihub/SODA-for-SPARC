@@ -2486,4 +2486,12 @@ $("input:radio[name=main_tabs]").click(function () {
   $(`#${option}`).show();
 });
 
+$(document).ready(() => {
+  $(".content-button").click(function() {
+    let section = $(this).data("section");
+    //$("#"+section+"-section").css("display", "block");
+    console.log("here");
+  })
+})
+
 $("#manage_dataset_tab").click();
