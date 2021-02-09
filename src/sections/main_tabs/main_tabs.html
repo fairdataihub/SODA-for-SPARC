@@ -658,7 +658,6 @@
                   <div style="margin: 15px 0">
                     <div
                       class="option-card radio-button getting-started-1st-question"
-                      id="div-getting-started-existing-local"
                       data-next="Post-curation-question-2"
                       onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')"
                     >
@@ -735,7 +734,7 @@
                               margin-left: 8px;
                               font-size: 15px;
                             "
-                            id="current-bf-dataset-post-curation"
+                            class="bf-dataset-span"
                             >None</span
                           >
                         </h5>
@@ -757,6 +756,7 @@
                     </div>
                   </div>
                   <div
+                    class="div-confirm-button"
                     style="
                       display: none;
                       flex-direction: row;
@@ -765,9 +765,8 @@
                     "
                   >
                     <button
-                      id="button-confirm-bf-dataset"
                       onclick="transitionFreeFormMode(this, 'Post-curation-question-2', 'post-curation-tab', 'delete', 'individual-question post-curation')"
-                      data-next="Question-post-curation-3"
+                      data-next="Post-curation-question-3"
                       style="
                         cursor: pointer;
                         border-radius: 8px;
@@ -795,21 +794,21 @@
           >
             <div class="ui form" style="width: 100%">
               <button
-                id="button-confirm-bf-dataset"
                 style="
                   cursor: pointer;
                   border-radius: 8px;
                   margin: 10px auto;
-                  width: 100px;
-                  height: 30px;
+                  width: 140px;
+                  height: 40px;
                   background: var(--color-light-green);
                   color: #fff;
                   font-weight: 600;
                   border: none;
-                  font-size: 13px;
+                  font-size: 15px;
                 "
               >
-                Share
+                <i class="fas fa-share" style="padding-right: 5px"></i>
+                Share now
               </button>
             </div>
           </div>
@@ -1117,7 +1116,7 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Blackfynn dataset would you like to rename?</label
             >
-            <div class="field" style="margin: 15px 0; width: 450px">
+            <div class="field" style="margin: auto; width: 450px">
               <div
                 style="
                   display: flex;
@@ -1170,6 +1169,7 @@
                 </div>
               </div>
               <div
+                class="div-confirm-button"
                 style="
                   display: none;
                   flex-direction: row;
@@ -1180,9 +1180,8 @@
                 <button
                   id="button-rename-dataset-confirm"
                   onclick="transitionFreeFormMode(this, 'rename_dataset_BF_account_tab', 'rename_bf_dataset-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="Question-getting-started-final"
+                  data-next="div-rename-bf-dataset"
                   style="
-                    display: none;
                     cursor: pointer;
                     border-radius: 8px;
                     margin: 10px auto;
@@ -1243,7 +1242,7 @@
               "
             >
               <button
-                id="bf-rename-dataset"
+                id="button-rename-dataset"
                 style="
                   cursor: pointer;
                   border-radius: 8px;

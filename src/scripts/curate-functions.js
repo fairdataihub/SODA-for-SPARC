@@ -1410,3 +1410,12 @@ function showTreeViewPreview(new_dataset_name) {
   $(jstreePreview).jstree(true).settings.core.data = jsTreePreviewData;
   $(jstreePreview).jstree(true).refresh();
 }
+
+// per change event of current dataset span text
+$('.bf-dataset-span').on('DOMSubtreeModified',function(){
+  if ($('.bf-dataset-span').text() === "None") {
+    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none")
+  } else {
+    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex")
+  }
+})
