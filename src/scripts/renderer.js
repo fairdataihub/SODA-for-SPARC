@@ -633,7 +633,7 @@ document
       $("#button-validate-dataset-demo-toggle").click();
     }
   });
-  
+
 document
   .getElementById("button-validate-dataset-next-step")
   .addEventListener("click", (event) => {
@@ -904,7 +904,7 @@ document
   .getElementById("button-import-milestone")
   .addEventListener("click", function () {
     document.getElementById("para-milestone-document-info-long").style.display =
-      "none"; 
+      "none";
     document.getElementById("para-milestone-document-info").innerHTML = "";
     var filepath = document.getElementById("input-milestone-select")
       .placeholder;
