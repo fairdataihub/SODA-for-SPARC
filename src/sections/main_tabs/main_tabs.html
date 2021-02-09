@@ -655,21 +655,22 @@
                     </div>
                   </div>
 
-                    <div style="margin:15px 0;">
-                      <div class="option-card radio-button getting-started-1st-question"
-                            data-next="Post-curation-question-2" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
-                          <div class="card-head">
-                            <div class="folder-checkbox">
-                              <input class="folder-input-check" id="submit-pre-publishing" name="post-curation-1" type="radio">
-                              <label for="submit-pre-publishing"></label>
-                            </div>
-                          </div>
-                          <div class="card-body">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="var(--tagify-dd-color-primary)" class="bi bi-book" viewBox="0 0 16 16">
-                              <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
-                            </svg>
-                            <h2>Submit for pre-publishing review</h2>
-                          </div>
+                  <div style="margin: 15px 0">
+                    <div
+                      class="option-card radio-button getting-started-1st-question"
+                      id="div-getting-started-existing-local"
+                      data-next="Post-curation-question-2"
+                      onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')"
+                    >
+                      <div class="card-head">
+                        <div class="folder-checkbox">
+                          <input
+                            class="folder-input-check"
+                            id="submit-pre-publishing"
+                            name="post-curation-1"
+                            type="radio"
+                          />
+                          <label for="submit-pre-publishing"></label>
                         </div>
                       </div>
                       <div class="card-body">
@@ -694,21 +695,50 @@
             </div>
           </div>
 
-          <div class="individual-question post-curation" id="Post-curation-question-2">
-              <div class="ui form" style="width:100%">
-                <div class="grouped fields">
-                  <label style="font-size:17px;text-align:center;color: #000">
-                  Please select a dataset</label>
-                  <div class="field" style="margin:15px 0;width:450px">
-                    <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
-                      <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
-                        <div>
-                          <h5 style="color:#808080;font-size:15px">Current dataset:
-                          <span style="color:#000;font-weight:600;margin-left:8px;font-size:15px" class="bf-dataset-span">None</span></h5>
-                        </div>
-                        <svg class="svg-change-current-account" onclick="openDropdownPrompt('dataset')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
-                          <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
-                        </svg>
+          <div
+            class="individual-question post-curation"
+            id="Post-curation-question-2"
+          >
+            <div class="ui form" style="width: 100%">
+              <div class="grouped fields">
+                <label style="font-size: 17px; text-align: center; color: #000">
+                  Please select a dataset</label
+                >
+                <div class="field" style="margin: 15px 0; width: 450px">
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: space-between;
+                      margin-top: 15px;
+                      height: auto;
+                      box-shadow: 0px 0px 10px #d5d5d5;
+                      padding: 15px 25px;
+                      border-radius: 5px;
+                    "
+                  >
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                        margin-bottom: 15px;
+                      "
+                    >
+                      <div>
+                        <h5 style="color: #808080; font-size: 15px">
+                          Current dataset:
+                          <span
+                            style="
+                              color: #000;
+                              font-weight: 600;
+                              margin-left: 8px;
+                              font-size: 15px;
+                            "
+                            id="current-bf-dataset-post-curation"
+                            >None</span
+                          >
+                        </h5>
                       </div>
                       <svg
                         class="svg-change-current-account"
@@ -725,22 +755,287 @@
                         />
                       </svg>
                     </div>
-                    <div class="div-confirm-button" style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
-                      <button onclick="transitionFreeFormMode(this, 'Post-curation-question-2', 'post-curation-tab', 'delete', 'individual-question post-curation')" data-next="Post-curation-question-3" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
-                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: none;
+                      flex-direction: row;
+                      justify-content: center;
+                      margin: 10px auto;
+                    "
+                  >
+                    <button
+                      id="button-confirm-bf-dataset"
+                      onclick="transitionFreeFormMode(this, 'Post-curation-question-2', 'post-curation-tab', 'delete', 'individual-question post-curation')"
+                      data-next="Question-post-curation-3"
+                      style="
+                        cursor: pointer;
+                        border-radius: 8px;
+                        margin: 10px auto;
+                        width: 100px;
+                        height: 30px;
+                        background: var(--color-light-green);
+                        color: #fff;
+                        font-weight: 600;
+                        border: none;
+                        font-size: 13px;
+                      "
+                    >
+                      Confirm
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-            <div class="individual-question post-curation" id="Post-curation-question-3">
-                <div class="ui form" style="width:100%">
-                  <button style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:15px">
-                    <i class="fas fa-share" style="padding-right:5px"></i>
-                    Share now</button>
+          <div
+            class="individual-question post-curation"
+            id="Post-curation-question-3"
+          >
+            <div class="ui form" style="width: 100%">
+              <button
+                id="button-confirm-bf-dataset"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Share
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section
+    id="create_new_bf_dataset-section"
+    class="section js-section u-category-windows"
+    style="padding-left: 15px; overflow-y: hidden"
+  >
+    <div class="main-tabs show" id="create_new_bf_dataset-tab">
+      <header class="section-header">
+        <div style="display: flex; flex-direction: row">
+          <svg
+            width="46"
+            height="52"
+            viewBox="0 0 46 52"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M17.8065 28.7678H2.54378C1.86913 28.7678 1.22211 29.0624 0.745056 29.5868C0.268004 30.1112 0 30.8224 0 31.564V48.3413C0 49.0829 0.268004 49.7941 0.745056 50.3185C1.22211 50.8429 1.86913 51.1375 2.54378 51.1375H17.8065C18.4811 51.1375 19.1281 50.8429 19.6052 50.3185C20.0822 49.7941 20.3502 49.0829 20.3502 48.3413V31.564C20.3502 30.8224 20.0822 30.1112 19.6052 29.5868C19.1281 29.0624 18.4811 28.7678 17.8065 28.7678ZM15.2627 45.5451H5.08756V34.3602H15.2627V45.5451ZM43.2442 0.805664H27.9816C27.3069 0.805664 26.6599 1.10026 26.1828 1.62466C25.7058 2.14905 25.4378 2.86027 25.4378 3.60188V20.3792C25.4378 21.1208 25.7058 21.832 26.1828 22.3564C26.6599 22.8808 27.3069 23.1754 27.9816 23.1754H43.2442C43.9189 23.1754 44.5659 22.8808 45.043 22.3564C45.52 21.832 45.788 21.1208 45.788 20.3792V3.60188C45.788 2.86027 45.52 2.14905 45.043 1.62466C44.5659 1.10026 43.9189 0.805664 43.2442 0.805664ZM40.7005 17.5829H30.5253V6.39809H40.7005V17.5829ZM43.2442 37.1564H38.1567V31.564C38.1567 30.8224 37.8887 30.1112 37.4116 29.5868C36.9346 29.0624 36.2876 28.7678 35.6129 28.7678C34.9383 28.7678 34.2912 29.0624 33.8142 29.5868C33.3371 30.1112 33.0691 30.8224 33.0691 31.564V37.1564H27.9816C27.3069 37.1564 26.6599 37.451 26.1828 37.9754C25.7058 38.4998 25.4378 39.211 25.4378 39.9526C25.4378 40.6942 25.7058 41.4055 26.1828 41.9299C26.6599 42.4543 27.3069 42.7489 27.9816 42.7489H33.0691V48.3413C33.0691 49.0829 33.3371 49.7941 33.8142 50.3185C34.2912 50.8429 34.9383 51.1375 35.6129 51.1375C36.2876 51.1375 36.9346 50.8429 37.4116 50.3185C37.8887 49.7941 38.1567 49.0829 38.1567 48.3413V42.7489H43.2442C43.9189 42.7489 44.5659 42.4543 45.043 41.9299C45.52 41.4055 45.788 40.6942 45.788 39.9526C45.788 39.211 45.52 38.4998 45.043 37.9754C44.5659 37.451 43.9189 37.1564 43.2442 37.1564ZM17.8065 0.805664H2.54378C1.86913 0.805664 1.22211 1.10026 0.745056 1.62466C0.268004 2.14905 0 2.86027 0 3.60188V20.3792C0 21.1208 0.268004 21.832 0.745056 22.3564C1.22211 22.8808 1.86913 23.1754 2.54378 23.1754H17.8065C18.4811 23.1754 19.1281 22.8808 19.6052 22.3564C20.0822 21.832 20.3502 21.1208 20.3502 20.3792V3.60188C20.3502 2.86027 20.0822 2.14905 19.6052 1.62466C19.1281 1.10026 18.4811 0.805664 17.8065 0.805664ZM15.2627 17.5829H5.08756V6.39809H15.2627V17.5829Z"
+              fill="black"
+            />
+          </svg>
+          <h2>Manage Datasets - Create a new dataset</h2>
+        </div>
+        <div class="tab-info">
+          <p class="tab-info-p" style="margin-bottom: 2em">
+            Enter desired name for your new dataset. This is the field that will
+            be displayed in public as the title of the dataset. Please make sure
+            that your dataset title is different than your other dataset titles
+            and that it is relatively informative.
+          </p>
+        </div>
+      </header>
+
+      <div
+        class="individual-question manage-dataset show"
+        id="create_empty_dataset_BF_account_tab"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                text-align: center;
+              "
+              >Is this your Blackfynn account?</label
+            >
+            <div class="field" style="margin: auto; width: 450px">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    margin-bottom: 15px;
+                  "
+                >
+                  <div>
+                    <h5 style="color: #808080; font-size: 15px">
+                      Current account:
+                      <span
+                        style="
+                          color: #000;
+                          font-weight: 600;
+                          margin-left: 8px;
+                          font-size: 15px;
+                        "
+                        id="create_empty_dataset_BF_account_span"
+                        >None</span
+                      >
+                    </h5>
+                  </div>
+                  <svg
+                    class="svg-change-current-account"
+                    onclick="openDropdownPrompt('bf')"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    fill="#000"
+                    class="bi bi-pencil-fill"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                    />
+                  </svg>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    margin-bottom: 15px;
+                  "
+                >
+                  <h5 style="color: #808080; font-size: 15px">
+                    Account details:
+                  </h5>
+                  <p
+                    style="
+                      color: #000;
+                      font-weight: 600;
+                      margin-left: 15px;
+                      font-size: 15px;
+                    "
+                    id="para_create_empty_dataset_BF_account"
+                  >
+                    None
+                  </p>
                 </div>
               </div>
+            </div>
+            <div
+              id="div-create_empty_dataset-account-btns"
+              style="
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+            >
+              <button
+                id="create_empty_dataset"
+                onclick="transitionFreeFormMode(this, 'create_empty_dataset_BF_account_tab', 'create_new_bf_dataset-tab', 'delete', 'individual-question manage-dataset')"
+                data-next="div-create-new-empty-dataset"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 0 10px;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question manage-dataset"
+        id="div-create-new-empty-dataset"
+      >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                width: 100%;
+                text-align: center;
+              "
+              >What is the name of the new dataset?</label
+            >
+            <div
+              class="field"
+              style="display: flex; justify-content: center; width: 100%"
+            >
+              <input
+                type="text"
+                class="form-control"
+                style="background: #fff !important; width: 450px"
+                id="bf-new-dataset-name"
+                placeholder="Type here"
+              />
+            </div>
+            <p
+              style="color: red; width: 440px"
+              id="para-new-name-dataset-message"
+            ></p>
+            <div
+              id="div-confirm-inputNewNameDataset"
+              style="
+                flex-direction: row;
+                justify-content: center;
+                margin: 0 auto;
+              "
+            >
+              <button
+                id="button-create-bf-new-dataset"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 0 10px;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Create
+              </button>
+            </div>
+            <p
+              id="para-add-new-dataset-status"
+              style="
+                text-align: center;
+                font-weight: 600;
+                color: var(--color-light-green);
+              "
+            ></p>
           </div>
         </div>
       </div>

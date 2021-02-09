@@ -682,7 +682,7 @@ $(".option-card.high-level-folders").click(function () {
 
 var globalGettingStarted1stQuestionBool = false;
 
-$(".parent-tabs.folder-input-check").click(function () {
+$(".folder-input-check").click(function () {
   var parentCard = $(this).parents()[2];
   $(parentCard).toggleClass("checked");
   if ($(this).checked) {
@@ -692,17 +692,6 @@ $(".parent-tabs.folder-input-check").click(function () {
     $(this).checked = true;
   }
   checkHighLevelFoldersInput();
-});
-
-$(".main-tabs.folder-input-check").click(function () {
-  var parentCard = $(this).parents()[2];
-  $(parentCard).toggleClass("checked");
-  if ($(this).checked) {
-    $(this).checked = false;
-    $(parentCard).removeClass("non-selected");
-  } else {
-    $(this).checked = true;
-  }
 });
 
 // function associated with metadata files (show individual metadata file upload div on button click)
@@ -754,8 +743,8 @@ function highLevelFoldersDisableOptions() {
   }
 }
 
-// // // High level folders check mark effect
-$(".parent-tabs, .folder-input-check").click(function () {
+// // High level folders check mark effect
+$(".folder-input-check").click(function () {
   var highLevelFolderCard = $(this).parents()[2];
   $(highLevelFolderCard).toggleClass("checked");
   if ($(this).checked) {
@@ -1372,7 +1361,6 @@ async function transitionSubQuestionsButton(
       $("#bf-dataset-spinner").css("visibility", "hidden");
       showHideDropdownButtons("dataset", "hide");
       $("#current-bf-dataset").text("None");
-      $(".bf-dataset-span").text("None");
       $(datasetPermissionDiv)
         .find("#curatebfdatasetlist")
         .val("Select dataset")
@@ -1515,7 +1503,7 @@ function transitionFreeFormMode(
 
       // first, handle target or the next div to show
       var target = document.getElementById(ev.getAttribute("data-next"));
-      hidePrevDivs(currentDiv, category);
+      // hidePrevDivs(currentDiv, category);
       // display the target tab (data-next tab)
       if (!$(target).hasClass("show")) {
         $(target).addClass("show");
@@ -1531,10 +1519,6 @@ function transitionFreeFormMode(
           $(ev).siblings().hide();
         }
         $(ev).hide();
-      } else {
-        if ($("bf-dataset-span").text() !== "None") {
-          $(target).children().find(".div-confirm-button button").show();
-        }
       }
       // auto-scroll to bottom of div
       document.getElementById(parentDiv).scrollTop = document.getElementById(
@@ -2353,10 +2337,10 @@ const wipeOutCurateProgress = () => {
     "metadata-files": {},
   };
   // uncheck all radio buttons and checkboxes
-  $(".parent-tabs.option-card").removeClass("checked");
-  $(".parent-tabs.option-card.radio-button").removeClass("non-selected");
-  $(".parent-tabs.option-card.high-level-folders").removeClass("disabled");
-  $(".parent-tabs.option-card.folder-input-check").prop("checked", false);
+  $(".option-card").removeClass("checked");
+  $(".option-card.radio-button").removeClass("non-selected");
+  $(".option-card.high-level-folders").removeClass("disabled");
+  $(".option-card, .folder-input-check").prop("checked", false);
   $(".metadata-button.button-generate-dataset").removeClass("done");
   $("#organize-section input:checkbox").prop("checked", false);
   $("#organize-section input:radio").prop("checked", false);
