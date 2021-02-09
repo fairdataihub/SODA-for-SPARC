@@ -1361,6 +1361,7 @@ async function transitionSubQuestionsButton(
       $("#bf-dataset-spinner").css("visibility", "hidden");
       showHideDropdownButtons("dataset", "hide");
       $("#current-bf-dataset").text("None");
+      $(".bf-dataset-span").text("None");
       $(datasetPermissionDiv)
         .find("#curatebfdatasetlist")
         .val("Select dataset")
@@ -1503,7 +1504,7 @@ function transitionFreeFormMode(
 
       // first, handle target or the next div to show
       var target = document.getElementById(ev.getAttribute("data-next"));
-      // hidePrevDivs(currentDiv, category);
+      hidePrevDivs(currentDiv, category);
       // display the target tab (data-next tab)
       if (!$(target).hasClass("show")) {
         $(target).addClass("show");
@@ -1519,6 +1520,10 @@ function transitionFreeFormMode(
           $(ev).siblings().hide();
         }
         $(ev).hide();
+      } else {
+        if ($("bf-dataset-span").text() !== "None") {
+          $(target).children().find(".div-confirm-button button").show();
+        }
       }
       // auto-scroll to bottom of div
       document.getElementById(parentDiv).scrollTop = document.getElementById(

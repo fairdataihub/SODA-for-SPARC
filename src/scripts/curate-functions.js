@@ -487,6 +487,7 @@ async function openDropdownPrompt(dropdown) {
         $("#current-bf-account-generate").text("");
         $("#current-bf-dataset").text("None");
         $("#current-bf-dataset-generate").text("None");
+        $(".bf-dataset-span").text("None");
         defaultBfDataset = "Select dataset";
         tempDatasetListsSync();
         $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
@@ -497,6 +498,7 @@ async function openDropdownPrompt(dropdown) {
 
         $("#para-account-detail-curate").html("");
         $("#current-bf-dataset").text("None");
+        $(".bf-dataset-span").text("None");
         showHideDropdownButtons("dataset", "hide");
         client.invoke("api_bf_account_details", bfacct, (error, res) => {
           if (error) {
@@ -591,6 +593,7 @@ async function openDropdownPrompt(dropdown) {
     if (bfDS) {
       $("#current-bf-dataset").text(bfDataset);
       $("#current-bf-dataset-generate").text(bfDataset);
+      $(".bf-dataset-span").text(bfDataset);
       defaultBfDataset = bfDataset;
       tempDatasetListsSync();
       $("#dataset-loaded-message").hide();
@@ -1405,3 +1408,12 @@ function showTreeViewPreview(new_dataset_name) {
   $(jstreePreview).jstree(true).settings.core.data = jsTreePreviewData;
   $(jstreePreview).jstree(true).refresh();
 }
+
+// per change event of current dataset span text
+$('.bf-dataset-span').on('DOMSubtreeModified',function(){
+  if ($('.bf-dataset-span').text() === "None") {
+    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none")
+  } else {
+    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex")
+  }
+})

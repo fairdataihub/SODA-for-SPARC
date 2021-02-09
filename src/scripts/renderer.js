@@ -633,7 +633,7 @@ document
       $("#button-validate-dataset-demo-toggle").click();
     }
   });
-  
+
 document
   .getElementById("button-validate-dataset-next-step")
   .addEventListener("click", (event) => {
@@ -904,7 +904,7 @@ document
   .getElementById("button-import-milestone")
   .addEventListener("click", function () {
     document.getElementById("para-milestone-document-info-long").style.display =
-      "none"; 
+      "none";
     document.getElementById("para-milestone-document-info").innerHTML = "";
     var filepath = document.getElementById("input-milestone-select")
       .placeholder;
@@ -4119,6 +4119,7 @@ function syncDatasetDropdownOption(dropdown) {
   if (defaultBfDataset !== "Select dataset") {
     $("#current-bf-dataset").text(defaultBfDataset);
     $("#current-bf-dataset-generate").text(defaultBfDataset);
+    $(".bf-dataset-span").text(defaultBfDataset);
     showHideDropdownButtons("dataset", "show");
   }
 
@@ -6874,6 +6875,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
             $("#current-bf-account-generate").text(keyname);
             $("#current-bf-dataset").text("None");
             $("#current-bf-dataset-generate").text("None");
+            $(".bf-dataset-span").text("None");
             $("#para-account-detail-curate-generate").html(res);
             showHideDropdownButtons("account", "show");
           }
