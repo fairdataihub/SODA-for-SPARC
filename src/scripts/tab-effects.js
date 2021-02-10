@@ -1513,6 +1513,10 @@ function transitionFreeFormMode(
         .find(".option-card.radio-button")
         .addClass("non-selected");
 
+      // empty para elements (TODO: will convert these para elements to a swal2 alert so we dont have to clear them out)
+      $(disseminateStatusMessage).text("");
+      $(disseminateStatusMessagePublish).text("");
+
       // first, handle target or the next div to show
       var target = document.getElementById(ev.getAttribute("data-next"));
       hidePrevDivs(currentDiv, category);

@@ -1413,7 +1413,8 @@ function showTreeViewPreview(new_dataset_name) {
 $('.bf-dataset-span').on('DOMSubtreeModified',function(){
   if ($('.bf-dataset-span').text() === "None") {
     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none")
+    $("#para-review-dataset-info-disseminate").text("None");
   } else {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex")
+    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex");
   }
 })

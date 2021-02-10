@@ -580,8 +580,9 @@
           <div class="individual-question post-curation show" id="Post-curation-question-1">
               <div class="ui form" style="width:100%">
                 <div class="grouped fields">
-                  <label style="font-size:17px;text-align:center;color: #000">
-                  Please select one:</label>
+                  <label style="font-size:16px;text-align:center;color: #000">
+                    How would you like to disseminate your dataset? <br>
+                  <span style="font-size:13px;text-align:center;color: #696969">Please select one:</span></label>
                   <div style="display:flex;flex-direction:row;justify-content:center">
                     <div style="margin:15px 0;">
                       <div class="option-card radio-button getting-started-1st-question" data-next="Post-curation-question-2" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
@@ -617,7 +618,7 @@
 
                     <div style="margin:15px 0;">
                       <div class="option-card radio-button getting-started-1st-question"
-                            data-next="Post-curation-question-2" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
+                            data-next="Post-curation-question-4" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
                           <div class="card-head">
                             <div class="folder-checkbox">
                               <input class="folder-input-check" id="submit-pre-publishing" name="post-curation-1" type="radio">
@@ -640,7 +641,7 @@
           <div class="individual-question post-curation" id="Post-curation-question-2">
               <div class="ui form" style="width:100%">
                 <div class="grouped fields">
-                  <label style="font-size:17px;text-align:center;color: #000">
+                  <label style="font-size:16px;text-align:center;color: #000">
                   Please select a dataset</label>
                   <div class="field" style="margin:15px 0;width:450px">
                     <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
@@ -662,9 +663,53 @@
               </div>
             </div>
 
-            <div class="individual-question post-curation" id="Post-curation-question-3">
+            <div class="individual-question post-curation" id="Post-curation-question-4">
                 <div class="ui form" style="width:100%">
-                  <button style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:15px">
+                  <div class="grouped fields">
+                    <label style="font-size:16px;text-align:center;color: #000">
+                    Please select a dataset</label>
+                    <div class="field" style="margin:15px 0;width:450px">
+                      <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
+                        <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
+                          <div>
+                            <h5 style="color:#808080;font-size:15px">Current dataset:
+                            <span style="color:#000;font-weight:600;margin-left:8px;font-size:15px" class="bf-dataset-span">None</span></h5>
+                          </div>
+                          <svg class="svg-change-current-account" onclick="openDropdownPrompt('dataset')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                          </svg>
+                        </div>
+                        <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
+                          <div>
+                            <h5 style="color:#808080;font-size:15px"> Review status:
+                              <span id='para-review-dataset-info-disseminate' style="color:#000;font-weight:600;margin-left:8px;font-size:15px">None</span>
+                            </h5>
+                          </div>
+                          <i class="fas fa-sync svg-change-current-account" id="button-refresh-publishing-status" style="color:#000"></i>
+                        </div>
+                      </div>
+                      <p id="para-disseminate-status-publish"></p>
+                      <div class="div-confirm-button" style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
+                        <!-- <div style="display: flex;
+                        flex-direction: row"> -->
+                          <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background:#fff;color:red;font-weight:600;border:1px solid red;font-size:14px">
+                            <i class="fas fa-ban" style="padding-right:5px"></i>
+                            Withdraw from review</button>
+                          <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px">
+                            <i class="fas fa-sign-in-alt" style="padding-right:5px"></i>
+                            Submit for review</button>
+                        <!-- </div> -->
+                        <!-- <button onclick="transitionFreeFormMode(this, 'Post-curation-question-4', 'post-curation-tab', 'delete', 'individual-question post-curation')" data-next="Post-curation-question-5" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button> -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            <div class="individual-question post-curation" id="Post-curation-question-3">
+                <div class="ui form" style="width:100%;display:flex;flex-direction:column;">
+                  <p id="para-disseminate-status"></p>
+                  <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:15px">
                     <i class="fas fa-share" style="padding-right:5px"></i>
                     Share now</button>
                 </div>
