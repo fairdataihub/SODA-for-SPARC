@@ -1156,7 +1156,7 @@
 .jstree-anchor:visited,
 .jstree-anchor:hover,
 .jstree-anchor:active {
-  color: var(--color-sidebar) !important;
+  color: var(--color-accent) !important;
 }
 
 .jstree-icon.jstree-themeicon.jstree-themeicon-custom {
