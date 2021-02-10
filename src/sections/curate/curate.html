@@ -8,7 +8,7 @@
   </head>
 
 <main class="dash-content main show" id="curate_main" style="grid-template-columns: 1% 84% 15%">
-<h1 style="color: #000;margin-bottom:0;">
+<h1 style="color: var(--color-sidebar);margin-bottom:0;">
   <svg style="margin-right: 20px; margin-bottom:-4px;" width="25px" height="25px" viewBox="0 0 16 16" class="bi bi-folder-plus" fill="black" xmlns="http://www.w3.org/2000/svg">
     <path fill-rule="evenodd" d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3zm-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139z"/>
   </svg>
@@ -41,8 +41,8 @@
 <section id="organize-section" class="section js-section u-category-windows" style="padding-left:15px;overflow-y: hidden">
 
 <main class="dash-content" id="organize_main" style="flex-direction:column;justify-content:space-between">
-  <h3 style="color: #000;margin-bottom:10px;margin-left:5px;padding-bottom: 10px"><i class="fas fa-sitemap" style="margin-right:10px;margin-bottom:5px;"></i>Organize dataset
-      <button id="start-over-btn" type="button" class="transition-btn" style="background-color: #fcae3f; color: #fff;font-weight:600;padding:5px;width:130px;margin-right:10px;right:10px;position:absolute;"><i class="fas fa-sync-alt" style="margin-right:10px"></i>Start over</button>
+  <h3 style="color: var(--color-sidebar);margin-bottom:10px;margin-left:5px"><i class="fas fa-sitemap" style="margin-right:10px;margin-bottom:5px;"></i>Organize dataset
+      <button id="start-over-btn" type="button" class="transition-btn" style="background-color: #fcae3f; color: #fff;font-weight:600;padding:5px;width:130px;margin-right:10px;right:10px;position:absolute;"><i class="fas fa-sync-alt" style="margin-right:10px"></i>Start over</button> 
   </h3>
 
 <!-- These are the main tab for each step -->
@@ -112,7 +112,7 @@
   <!-- 1. Getting started tab -->
   <div style="display: flex; justify-content: flex-start; flex-direction: column; width:100%; margin: 0 10px">
   <div class="parent-tabs condensed" id="getting-started-tab" style="overflow-y:auto;overflow-x:hidden;flex-direction:column;justify-content:flex-start;height:100%;">
-    <h3 id="getting-started-summary-message" class="question-title" style="color:#000;font-size:15px;text-align:center;margin-bottom:60px;font-weight:600">Step 1: Getting started
+    <h3 id="getting-started-summary-message" class="question-title" style="color:var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:60px;font-weight:600">Step 1: Getting started
       <a style="padding:0px 0px 0px 5px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-1-getting-started" >
         <img class="nav-video" src="assets/img/documentation-icon.png">
       </a>
@@ -121,8 +121,8 @@
     <div class="individual-question getting-started show" id="Question-getting-started-1">
         <div class="ui form" style="width:100%">
         <div class="grouped fields">
-          <label style="font-size:17px;text-align:center;color:#000">Let's get started. What would you like to do?
-
+          <label style="font-size:17px;text-align:center;color:var(--color-bg-plum)">Let's get started. What would you like to do?
+      
           <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
           <div style="display:flex;flex-direction:row;">
             <div style="margin:15px 0;">
@@ -219,7 +219,7 @@
     <div class="individual-question getting-started" id="Question-getting-started-previously-initiated-SODA">
       <div class="ui form" style="width:450px">
         <div class="grouped fields">
-          <label style="font-size:17px;color:#000;text-align:center;">Which dataset would you like to continue working on?
+          <label style="font-size:17px;color:var(--color-bg-plum);text-align:center;">Which dataset would you like to continue working on?
           <br><span style="color: #696969;font-size:13px">Please select one: </span></label>
           <div class="field" style="margin:15px 0;width:450px;">
             <select id="progress-files-dropdown" onchange="loadProgressFile(this)" name="progress file" class='ui selection dropdown' style="width:450px !important;border-radius:7px;padding:8px">
@@ -236,7 +236,7 @@
         <div class="individual-question getting-started" id="Question-getting-started-BF-account">
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
-              <label style="font-size:17px;color:#000;text-align:center">What is your Blackfynn account?</label>
+              <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">What is your Blackfynn account?</label>
               <div class="field" style="margin:5px 0;width:450px;">
                 <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
                   <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
@@ -264,7 +264,7 @@
         <div class="individual-question getting-started" id="Question-getting-started-BF-dataset">
             <div class="ui form" style="width:100%">
               <div class="grouped fields">
-                <label style="font-size:17px;color:#000;">Which existing Blackfynn dataset would you like to use?</label>
+                <label style="font-size:17px;color:var(--color-bg-plum);">Which existing Blackfynn dataset would you like to use?</label>
                 <div class="field" style="margin:15px 0;width:450px">
                   <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
                     <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
@@ -302,7 +302,7 @@
   <!-- 2. Specify high Level folders -->
   </div>
   <div class="parent-tabs" id="high-level-folders-tab" style="flex-direction:column;justify-content:flex-start;height:100%;margin-right:50px">
-    <h3 class="question-title" style="color: #000;font-size:15px;text-align:center;margin-bottom:50px;font-weight:600;">Step 2: Specify high-level folders
+    <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;margin-bottom:50px;font-weight:600;">Step 2: Specify high-level folders
       <a style="padding:0px 0px 0px 5px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-2-specify-high-level-folders" >
         <img class="nav-video" src="assets/img/documentation-icon.png">
       </a>
@@ -397,7 +397,7 @@
 
   <!-- 3. Organize dataset -->
   <div class="parent-tabs condensed" id="organize-dataset-tab" style="grid-template-rows: auto">
-    <h3 class="question-title" style="color: #000;font-size:15px;text-align:center; font-weight:600;padding-bottom:5px">Step 3: Structure dataset files
+    <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center; font-weight:600;padding-bottom:5px">Step 3: Structure dataset files
       <a style="padding:0px 0px 0px 5px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-3-structure-dataset-files" >
         <img class="nav-video" src="assets/img/documentation-icon.png">
       </a>
@@ -484,7 +484,7 @@
 
   <!-- 4. Metadata files -->
   <div class="parent-tabs condensed" id="metadata-files-tab" style="grid-template-rows: 10% 90%;">
-    <h3 class="question-title" style="color: #000;font-size:15px;text-align:center;font-weight:600;">Step 4: Specify high-level metadata files
+    <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;font-weight:600;">Step 4: Specify high-level metadata files
       <a style="padding:0px 0px 0px 5px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-4-specify-high-level-metadata-files" >
         <img class="nav-video" src="assets/img/documentation-icon.png">
       </a>
@@ -860,7 +860,7 @@
 
   <!-- 5. manifest file -->
   <div class="parent-tabs" id="manifest-file-tab" style="grid-template-rows: 10% 90%;">
-    <h3 class="question-title" style="color: #000;font-size:15px;text-align:center;font-weight:600;">Step 5: Request manifest files
+    <h3 class="question-title" style="color: var(--color-bg-plum);font-size:15px;text-align:center;font-weight:600;">Step 5: Request manifest files
       <a style="padding:0px 0px 0px 5px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-5-request-manifest-files" >
         <img class="nav-video" src="assets/img/documentation-icon.png">
       </a>
@@ -885,7 +885,7 @@
 
   <!-- 6. Generate dataset -->
   <div class="parent-tabs" id="generate-dataset-tab" style="overflow-y:scroll;">
-      <h3 class="question-title" style="color: #000;font-weight:600;font-size:15px;text-align:center;margin-bottom:70px">Step 6: Generate dataset options
+      <h3 class="question-title" style="color: var(--color-bg-plum);font-weight:600;font-size:15px;text-align:center;margin-bottom:70px">Step 6: Generate dataset options
         <a style="padding:0px 0px 0px 5px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-6-generate-dataset" >
           <img class="nav-video" src="assets/img/documentation-icon.png">
         </a>
@@ -894,7 +894,7 @@
         <div class="individual-question generate-dataset" id="Question-generate-dataset">
             <div class="ui form" style="width:100%">
             <div class="grouped fields">
-              <label style="font-size:17px;color:#000;text-align:center">Where would you like to generate your dataset?
+              <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Where would you like to generate your dataset?
               <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
 
               <div style="display:flex;flex-direction:row;">
@@ -952,7 +952,7 @@
         <div class="individual-question generate-dataset" id="Question-generate-dataset-BF-account">
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
-              <label style="font-size:17px;color:#000;text-align:center">What is your Blackfynn account?</label>
+              <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">What is your Blackfynn account?</label>
               <div class="field" style="margin:5px 0;width:450px;">
                 <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
                   <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
@@ -984,7 +984,7 @@
         <div class="individual-question generate-dataset" id="Question-generate-dataset-options">
             <div class="ui form" style="width:100%">
             <div class="grouped fields">
-              <label style="font-size:17px;color:#000;text-align:center">Which dataset would you like to generate on?
+              <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Which dataset would you like to generate on?
               <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
               <div style="display:flex;flex-direction:row;">
                 <div style="margin:15px 0;">
@@ -1030,7 +1030,7 @@
       <div class="individual-question generate-dataset" id="Question-generate-dataset-choose-ds-name">
         <div class="ui form" style="width:450px">
           <div class="grouped fields">
-            <label style="font-size:17px;color:#000;width:100%;text-align:center">What is the name of the new dataset?</label>
+            <label style="font-size:17px;color:var(--color-bg-plum);width:100%;text-align:center">What is the name of the new dataset?</label>
             <div class="field" style="margin:15px 0;">
               <input type="text" class="form-control" style="background: #fff !important;width:450px !important" id="inputNewNameDataset" placeholder="Type here">
             </div>
@@ -1046,7 +1046,7 @@
       <div class="individual-question generate-dataset" id="Question-generate-dataset-BF-dataset">
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
-              <label style="font-size:17px;color:#000;">Which existing Blackfynn dataset would you like to use?</label>
+              <label style="font-size:17px;color:var(--color-bg-plum);">Which existing Blackfynn dataset would you like to use?</label>
               <div class="field" style="margin:15px 0;width:450px">
                 <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
                   <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
@@ -1106,7 +1106,7 @@
       <div class="individual-question generate-dataset" id="Question-generate-dataset-existing-folders-options">
           <div class="ui form" style="width:100%">
           <div class="grouped fields">
-            <label style="font-size:17px;color:#000;text-align:center">How would you like to handle existing folders?
+            <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">How would you like to handle existing folders?
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style = "font-size: 12px">
                 Tell SODA how to handle folders specified during Step 3 that are already existing (same name, same relative location) on your Blackfynn dataset
@@ -1196,7 +1196,7 @@
     <div class="individual-question generate-dataset" id="Question-generate-dataset-existing-files-options">
         <div class="ui form" style="width:100%">
         <div class="grouped fields">
-          <label style="font-size:17px;color:#000;text-align:center">How would you like to handle existing files?
+          <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">How would you like to handle existing files?
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext" style = "font-size: 12px">
               Tell SODA how to handle files specified during Step 3 and metadata files specified during Step 4 that are already existing (same name, same relative location) on your Blackfynn dataset
@@ -1267,7 +1267,7 @@
       <div class="individual-question generate-dataset" id="Question-generate-dataset-locally-destination">
         <div class="ui form" style="width:450px">
           <div class="grouped fields">
-            <label style="font-size:17px;color:#000;text-align:center;">At which location should we generate the dataset?</label>
+            <label style="font-size:17px;color:var(--color-bg-plum);text-align:center;">At which location should we generate the dataset?</label>
             <div class="field" style="margin:15px 0;">
               <input class="form-control" style="width:450px !important" id="input-destination-generate-dataset-locally" type="text" readonly placeholder="Browse here">
             </div>
@@ -1282,7 +1282,7 @@
 
   <!-- 7. Preview dataset -->
   <div class="parent-tabs" id="preview-dataset-tab" style="overflow-y:scroll;">
-    <h3 class="question-title" style="color: #000;font-weight:600;font-size:15px;text-align:center;margin-bottom:40px">Step 7: Preview dataset
+    <h3 class="question-title" style="color: var(--color-bg-plum);font-weight:600;font-size:15px;text-align:center;margin-bottom:40px">Step 7: Preview dataset
       <a style="padding:0px 0px 0px 5px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset#step-7-preview-dataset" >
         <img class="nav-video" src="assets/img/documentation-icon.png">
       </a>
@@ -1292,7 +1292,7 @@
     <div class="individual-question generate-dataset" id="Question-preview-dataset-details" style="width:70%">
       <div class="ui form" style="width:100%">
         <div class="grouped fields">
-          <!-- <label style="font-size:17px;color:#000;text-align:center">Confirm details for dataset generation</label> -->
+          <!-- <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Confirm details for dataset generation</label> -->
           <div class="field" style="margin:5px 0;width:auto;">
             <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px" id="div-preview-dataset-details">
               <div style="margin-bottom: 10px;" id="div-dataset-preview">
@@ -1323,7 +1323,7 @@
     </div>
 
     <div class="individual-question generate-dataset" id="Question-generate-dataset-generate-div" style = "flex-direction:row;justify-content:center">
-      <button id="button-generate" style="cursor:pointer;border-radius: 8px;margin:5px; width: 120px;height:40px;background: #000;color:#fff;font-weight:600;border:none">Generate</button>
+      <button id="button-generate" style="cursor:pointer;border-radius: 8px;margin:5px; width: 120px;height:40px;background: var(--color-bg-plum);color:#fff;font-weight:600;border:none">Generate</button>
     </div>
 
   </div>
@@ -1381,7 +1381,7 @@
 <section id="validate-section" class="section js-section u-category-windows">
 
 <main class="dash-content main" id="validate_main">
-  <h5 class="dash-title" style="border-bottom:none;font-size:17px;color:#000"><i class="fas fa-chevron-right" style="margin-right:10px"></i>Validate dataset</h5>
+  <h5 class="dash-title" style="border-bottom:none;font-size:17px;color:var(--color-sidebar)"><i class="fas fa-chevron-right" style="margin-right:10px"></i>Validate dataset</h5>
    <div class="form-tabs tab-active"id="validate-tab">
      <h3 class="question-title">Upload <span style="color:var(--color-bg-plum)">your dataset</span>
        <br> below to <span style="color:var(--color-bg-plum)">validate</span></h3>
