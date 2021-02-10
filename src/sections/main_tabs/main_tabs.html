@@ -165,7 +165,7 @@
                 <button
                   class="content-button"
                   id="add_edit_subtitle_btn"
-                  data-section="add-edit-subtitle"
+                  data-section="add_edit_subtitle"
                 >
                   <svg
                     width="48"
@@ -1818,17 +1818,21 @@
               permissions:</label
             >
             <div class="field" style="display: flex; width: 500px">
-              <select class="my-dropdown" style="width:60%;padding: 8px 12px;height: 38px;" id="bf_list_users">
-                <option> Select user </option>
+              <select
+                class="my-dropdown"
+                style="width: 60%; padding: 8px 12px; height: 38px"
+                id="bf_list_users"
+              >
+                <option>Select user</option>
               </select>
 
               <select class="my-dropdown" id="bf_list_roles">
-                <option> Select role </option>
-                <option> viewer </option>
-                <option> manager </option>
-                <option> editor </option>
-                <option> owner </option>
-                <option> remove current permissions </option>
+                <option>Select role</option>
+                <option>viewer</option>
+                <option>manager</option>
+                <option>editor</option>
+                <option>owner</option>
+                <option>remove current permissions</option>
               </select>
 
               <div
@@ -1854,7 +1858,7 @@
                     font-size: 13px;
                   "
                 >
-                Add permission for user
+                  Add permission for user
                 </button>
               </div>
               <p
@@ -1887,16 +1891,20 @@
               permissions:</label
             >
             <div class="field" style="display: flex; width: 500px">
-              <select class="my-dropdown" style="width:60%;padding: 8px 12px;height: 38px;" id="bf_list_teams">
-                <option> Select team </option>
+              <select
+                class="my-dropdown"
+                style="width: 60%; padding: 8px 12px; height: 38px"
+                id="bf_list_teams"
+              >
+                <option>Select team</option>
               </select>
 
               <select class="my-dropdown" id="bf_list_roles_team">
-                <option> Select role </option>
-                <option> viewer </option>
-                <option> manager </option>
-                <option> editor </option>
-                <option> remove current permissions </option>
+                <option>Select role</option>
+                <option>viewer</option>
+                <option>manager</option>
+                <option>editor</option>
+                <option>remove current permissions</option>
               </select>
 
               <div
@@ -1922,7 +1930,7 @@
                     font-size: 13px;
                   "
                 >
-                Add permission for team
+                  Add permission for team
                 </button>
               </div>
               <p
@@ -1965,7 +1973,242 @@
       </div>
 
       <!--
-        
+        para-dataset-permission-status-team - para-dataset-permission-status-teamm
+        button-add-permission-team - button-add-permission-teamm
+        bf_list_roles_team - bf_list_roles_teamm
+        bf_list_teams - bf_list_teamss
+        para-dataset-permission-status - para-dataset-permission-statuss
+        button-add-permission - button-add-permissionn
+        bf_list_roles - bf_list_roless
+        bf_list_userss - bf_list_userss
+        para-dataset-permission-status-pi - para-dataset-permission-status-pii
+        button-add-permission-pi - button-add-permission-pii
+        bf_list_users_pi - bf_list_users_pii
+      -->
+    </div>
+  </section>
+
+  <section
+    id="add_edit_subtitle-section"
+    class="section js-section u-category-windows"
+    style="padding-left: 15px; overflow-y: hidden"
+  >
+    <div class="main-tabs show" id="add_edit_subtitle_parent-tab">
+      <header class="section-header">
+        <div style="display: flex; flex-direction: row">
+          <svg
+            width="48"
+            height="39"
+            viewBox="0 0 48 39"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M43.2 0H4.8C2.16 0 0 2.19375 0 4.875V34.125C0 36.8063 2.16 39 4.8 39H43.2C45.84 39 48 36.8063 48 34.125V4.875C48 2.19375 45.84 0 43.2 0ZM4.8 19.5H14.4V24.375H4.8V19.5ZM28.8 34.125H4.8V29.25H28.8V34.125ZM43.2 34.125H33.6V29.25H43.2V34.125ZM43.2 24.375H19.2V19.5H43.2V24.375Z"
+              fill="black"
+            />
+          </svg>
+          <h2>Manage Datasets - Add/edit subtitle</h2>
+        </div>
+        <div class="tab-info">
+          <p class="tab-info-p" style="margin-bottom: 2em">
+            Some helpful text here
+          </p>
+        </div>
+      </header>
+
+      <div
+        class="individual-question manage-dataset show"
+        id="add_edit_subtitle_tab"
+      >
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Which Blackfynn dataset would you like to work on?</label
+            >
+            <div class="field" style="margin: auto; width: 450px">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    margin-bottom: 15px;
+                  "
+                >
+                  <div>
+                    <h5 style="color: #808080; font-size: 15px">
+                      Current dataset:
+                      <span
+                        class="bf-dataset-span"
+                        style="
+                          color: #000;
+                          font-weight: 600;
+                          margin-left: 8px;
+                          font-size: 15px;
+                        "
+                        >None</span
+                      >
+                    </h5>
+                  </div>
+                  <svg
+                    class="svg-change-current-account"
+                    onclick="openDropdownPrompt('dataset')"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    fill="#000"
+                    class="bi bi-pencil-fill"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                    />
+                  </svg>
+                </div>
+                <div
+                  id="div-bf-current-metadata-progress"
+                  class="progressdiv synced-progress"
+                >
+                  <div class="indeterminatebar"></div>
+                </div>
+              </div>
+              <div
+                class="div-confirm-button"
+                style="
+                  display: none;
+                  flex-direction: row;
+                  justify-content: center;
+                  margin: 10px auto;
+                "
+              >
+                <button
+                  id="button_add_edit_subtitle_confirm"
+                  onclick="transitionFreeFormMode(this, 'add_edit_subtitle_tab', 'add_edit_subtitle_parent-tab', 'delete', 'individual-question manage-dataset')"
+                  data-next="div_add_edit_subtitle"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 10px auto;
+                    width: 100px;
+                    height: 30px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    font-size: 13px;
+                  "
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="individual-question manage-dataset"
+        id="div_add_edit_subtitle"
+      >
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                width: 100%;
+                text-align: center;
+              "
+              >Enter subtitle below(any existing subtitle will be displayed):</label
+            >
+            <div
+              class="field"
+              style="display: flex; justify-content: center; width: 100%"
+            >
+             <textarea id="bf-dataset-subtitle" class="demo-response" rows="4" maxlength="256"> </textarea>
+             <p><span id="para-char-count-metadata"> 256 characters left </span></p>
+            </div>
+            <div
+              id="div-button-add-subtitle"
+              style="
+                flex-direction: row;
+                justify-content: center;
+                margin: 0 auto;
+              "
+            >
+              <button
+                id="button-add-subtitle"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 0 10px;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+              Add subtitle
+              </button>
+            </div>
+            <p
+              id="para-dataset-subtitle-status"
+              style="
+                text-align: center;
+                font-weight: 600;
+                color: var(--color-light-green);
+              "
+            ></p>
+          </div>
+        </div>
+      </div>
+
+      <div
+        style="
+          border-top: 1px solid #f0f0f0;
+          padding: 10px;
+          padding-top: 15px;
+          height: 50px;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          width: 100%;
+          bottom: 20px;
+          position: absolute;
+        "
+      >
+        <div style="display: flex; flex-direction: row; width: 110px">
+          <button
+            type="button"
+            id="create-empty-dataset-back-btn"
+            class="transition-btn prev"
+            data-section="main_tabs"
+          >
+            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+          </button>
+        </div>
+      </div>
+
+      <!--
+        bf-dataset-subtitle - bf-dataset-subtitlee
+        para-char-count-metadata - para-char-count-metadataa
+        button-add-subtitle - button-add-subtitlee
+        para-dataset-subtitle-status - para-dataset-subtitle-statuss
       -->
     </div>
   </section>
