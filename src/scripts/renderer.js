@@ -451,8 +451,14 @@ const bfDatasetListPermission = document.querySelector(
 const currentDatasetPermission = document.querySelector(
   "#para-dataset-permission-current"
 );
+const currentAddEditDatasetPermission = document.querySelector(
+  "#para-add-edit-dataset-permission-current"
+);
 const bfCurrentPermissionProgress = document.querySelector(
   "#div-bf-current-permission-progress"
+);
+const bfAddEditCurrentPermissionProgress = document.querySelector(
+  "#div-bf-add-edit-current-permission-progress"
 );
 const bfListUsersPI = document.querySelector("#bf_list_users_pi");
 const bfAddPermissionPIBtn = document.getElementById(
@@ -3681,6 +3687,7 @@ bfAccountList.addEventListener("change", () => {
   bfSelectAccountStatus.innerHTML = "Loading account details...";
   bfAccountLoadProgress.style.display = "block";
   currentDatasetPermission.innerHTML = "";
+  currentAddEditDatasetPermission.innerHTML = "";
   datasetPermissionList.selectedIndex = 0;
 
   var selectedbfaccount =
@@ -3712,6 +3719,7 @@ bfAccountList.addEventListener("change", () => {
 // Refresh lists of bf datasets (in case user create it online) //
 bfRefreshDatasetBtn.addEventListener("click", () => {
   currentDatasetPermission.innerHTML = "";
+  currentAddEditDatasetPermission.innerHTML = "";
   // refreshAllBfDatasetLists()
 });
 bfUploadRefreshDatasetBtn.addEventListener("click", () => {
@@ -3767,6 +3775,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
           "'" +
           smileyCan;
         currentDatasetPermission.innerHTML = "";
+        currentAddEditDatasetPermission.innerHTML = "";
         bfCreateNewDatasetBtn.disabled = false;
         addNewDatasetToList(bfNewDatasetName.value);
         datasetPermissionList.selectedIndex = "0";
@@ -4095,6 +4104,7 @@ function metadataDatasetlistChange() {
 bfDatasetListPermission.addEventListener("change", () => {
   document.getElementById("para-dataset-permission-status").innerHTML = "";
   document.getElementById("para-dataset-permission-current").innerHTML = "";
+  document.getElementById("para-add-edit-dataset-permission-current").innerHTML = "";
   document.getElementById("para-dataset-permission-status-pi").innerHTML = "";
   document.getElementById("para-dataset-permission-status-team").innerHTML = "";
 
@@ -4109,6 +4119,7 @@ bfDatasetListPermission.addEventListener("change", () => {
 
 function permissionDatasetlistChange() {
   bfCurrentPermissionProgress.style.display = "block";
+  bfAddEditCurrentPermissionProgress.style.display = "block";
   showCurrentPermission();
 }
 
@@ -4560,6 +4571,7 @@ bfAddLicenseBtn.addEventListener("click", () => {
 bfAddPermissionPIBtn.addEventListener("click", () => {
   datasetPermissionStatusPI.innerHTML = "";
   bfCurrentPermissionProgress.style.display = "block";
+  bfAddEditCurrentPermissionProgress.style.display = "block";
   ipcRenderer.send("warning-add-permission-owner-PI");
 });
 ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
@@ -4587,6 +4599,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
           datasetPermissionStatusPI.innerHTML =
             "<span style='color: red;'> " + emessage + "</span>";
           bfCurrentPermissionProgress.style.display = "none";
+          bfAddEditCurrentPermissionProgress.style.display = "none";
           enableform(bfPermissionForm);
         } else {
           datasetPermissionStatusPI.innerHTML = res;
@@ -4603,6 +4616,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
     );
   } else {
     bfCurrentPermissionProgress.style.display = "none";
+    bfAddEditCurrentPermissionProgress.style.display = "none";
     enableform(bfPermissionForm);
   }
 });
@@ -4611,6 +4625,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
 bfAddPermissionBtn.addEventListener("click", () => {
   datasetPermissionStatus.innerHTML = "";
   bfCurrentPermissionProgress.style.display = "block";
+  bfAddEditCurrentPermissionProgress.style.display = "block";
   disableform(bfPermissionForm);
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
@@ -4648,6 +4663,7 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
     );
   } else {
     bfCurrentPermissionProgress.style.display = "none";
+    bfAddEditCurrentPermissionProgress.style.display = "none";
     enableform(bfPermissionForm);
   }
 });
@@ -4656,6 +4672,7 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
 bfAddPermissionTeamBtn.addEventListener("click", () => {
   datasetPermissionStatusTeam.innerHTML = "";
   bfCurrentPermissionProgress.style.display = "block";
+  bfAddEditCurrentPermissionProgress.style.display = "block";
   disableform(bfPermissionForm);
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
@@ -4679,6 +4696,7 @@ bfAddPermissionTeamBtn.addEventListener("click", () => {
         datasetPermissionStatusTeam.innerHTML =
           "<span style='color: red;'> " + emessage + "</span>";
         bfCurrentPermissionProgress.style.display = "none";
+        bfAddEditCurrentPermissionProgress.style.display = "none";
         enableform(bfPermissionForm);
       } else {
         datasetPermissionStatusTeam.innerHTML = res;
@@ -5301,6 +5319,7 @@ function refreshBfTeamsList(teamList) {
 
 function showCurrentPermission() {
   currentDatasetPermission.innerHTML = "Please wait...";
+  currentAddEditDatasetPermission.innerHTML = "Please wait...";
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
   var selectedBfDataset =
@@ -5308,7 +5327,9 @@ function showCurrentPermission() {
       .text;
   if (selectedBfDataset === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
+    currentAddEditDatasetPermission.innerHTML = "None";
     bfCurrentPermissionProgress.style.display = "none";
+    bfAddEditCurrentPermissionProgress.style.display = "none";
   } else {
     client.invoke(
       "api_bf_get_permission",
@@ -5319,13 +5340,16 @@ function showCurrentPermission() {
           log.error(error);
           console.error(error);
           bfCurrentPermissionProgress.style.display = "none";
+          bfAddEditCurrentPermissionProgress.style.display = "none";
         } else {
           var permissionList = "";
           for (var i in res) {
             permissionList = permissionList + res[i] + "<br>";
           }
           currentDatasetPermission.innerHTML = permissionList;
+          currentAddEditDatasetPermission.innerHTML = permissionList;
           bfCurrentPermissionProgress.style.display = "none";
+          bfAddEditCurrentPermissionProgress.style.display = "none";
         }
       }
     );
@@ -5352,6 +5376,7 @@ function addPermissionUser(
         datasetPermissionStatus.innerHTML =
           "<span style='color: red;'> " + emessage + "</span>";
         bfCurrentPermissionProgress.style.display = "none";
+        bfAddEditCurrentPermissionProgress.style.display = "none";
         enableform(bfPermissionForm);
       } else {
         datasetPermissionStatus.innerHTML = res;
