@@ -841,10 +841,7 @@
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
-            Enter desired name for your new dataset. This is the field that will
-            be displayed in public as the title of the dataset. Please make sure
-            that your dataset title is different than your other dataset titles
-            and that it is relatively informative.
+            Create a new empty dataset on Blackfynn.
           </p>
         </div>
       </header>
@@ -1011,20 +1008,21 @@
             >
               <button
                 id="button-create-bf-new-dataset"
+                class="content-action-button"
                 style="
                   cursor: pointer;
                   border-radius: 8px;
-                  margin: 0 10px;
-                  width: 100px;
+                  margin: 0 10px 13px 0;
+                  width: 140px;
                   height: 30px;
                   background: var(--color-light-green);
                   color: #fff;
                   font-weight: 600;
                   border: none;
-                  font-size: 13px;
+                  font-size: 14px;
                 "
               >
-                Create
+                Create dataset
               </button>
             </div>
             <p
@@ -1101,7 +1099,7 @@
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
-            Some helpful text here
+            Rename an existing dataset on Blackfynn.
           </p>
         </div>
       </header>
@@ -1229,7 +1227,7 @@
               />
             </div>
             <p
-              style="color: red; width: 440px"
+              style="color: red; width: 440px; padding-bottom: 5px"
               id="para-new-name-dataset-message"
             ></p>
             <div
@@ -1245,17 +1243,17 @@
                 style="
                   cursor: pointer;
                   border-radius: 8px;
-                  margin: 0 10px;
-                  width: 100px;
+                  margin: 0 10px 13px 0;
+                  width: 140px;
                   height: 30px;
                   background: var(--color-light-green);
                   color: #fff;
                   font-weight: 600;
                   border: none;
-                  font-size: 13px;
+                  font-size: 15px;
                 "
               >
-                Rename
+                Rename dataset
               </button>
             </div>
             <p
@@ -1294,13 +1292,13 @@
           </button>
         </div>
       </div>
-
-      <!--
-        button-rename-dataset - button-rename-datasett
-        bf-rename-dataset-name - bf-rename-dataset-namee
-        para-rename-dataset-status - para-rename-dataset-statuss
-      -->
     </div>
+
+    <!--
+      button-rename-dataset - button-rename-datasett
+      bf-rename-dataset-name - bf-rename-dataset-namee
+      para-rename-dataset-status - para-rename-dataset-statuss
+    -->
   </section>
 
   <section
@@ -1474,47 +1472,61 @@
               "
               >Change permissions:</label
             >
-            <div class="field" style="display: flex; width: 500px">
-              <select
-                class="my-dropdown"
-                style="width: 60%; padding: 8px 12px; height: 38px"
-                id="bf_list_users_pi"
-              >
-                <option>Select PI</option>
-              </select>
-
+            <div
+              class="field"
+              style="
+                display: flex;
+                width: 500px;
+                justify-content: space-between;
+                flex-direction: column;
+              "
+            >
               <div
-                id="div-button-add-permission-pi"
                 style="
+                  display: flex;
                   flex-direction: row;
                   justify-content: center;
-                  margin: 0 auto;
                 "
               >
-                <button
-                  id="button-add-permission-pi"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 0 10px;
-                    width: 125px;
-                    height: 35px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
+                <select
+                  class="my-dropdown"
+                  style="width: 60%; padding: 8px 12px; height: 38px"
+                  id="bf_list_users_pi"
                 >
-                  Make PI owner
-                </button>
+                  <option>Select PI</option>
+                </select>
+
+                <div
+                  id="div-button-add-permission-pi"
+                  style="flex-direction: row; justify-content: center"
+                >
+                  <button
+                    id="button-add-permission-pi"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 0 10px 0 20px;
+                      width: 140px;
+                      height: 35px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 14px;
+                    "
+                  >
+                    Make PI owner
+                  </button>
+                </div>
               </div>
+
               <p
                 id="para-dataset-permission-status-pi"
                 style="
                   text-align: center;
                   font-weight: 600;
                   color: var(--color-light-green);
+                  padding-top: 20px;
                 "
               ></p>
             </div>
@@ -1546,14 +1558,14 @@
           </button>
         </div>
       </div>
-
-      <!--
-        button-add-permission-pi - button-add-permission-pii
-        para-dataset-permission-status-pi - para-dataset-permission-status-pii
-        bf_list_users_pi - bf_list_users_pii
-        para-dataset-permission-current - para-dataset-permission-currentt
-      -->
     </div>
+
+    <!--
+      button-add-permission-pi - button-add-permission-pii
+      para-dataset-permission-status-pi - para-dataset-permission-status-pii
+      bf_list_users_pi - bf_list_users_pii
+      para-dataset-permission-current - para-dataset-permission-currentt
+    -->
   </section>
 
   <section
@@ -1580,7 +1592,8 @@
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
-            Some helpful text here
+            Give access to other for colloboration and share with curation team
+            for review.
           </p>
         </div>
       </header>
@@ -1814,58 +1827,77 @@
               >Please select the user for whom you want to modify
               permissions:</label
             >
-            <div class="field" style="display: flex; width: 500px">
-              <select
-                class="my-dropdown"
-                style="width: 60%; padding: 8px 12px; height: 38px"
-                id="bf_list_users"
-              >
-                <option>Select user</option>
-              </select>
-
-              <select class="my-dropdown" id="bf_list_roles">
-                <option>Select role</option>
-                <option>viewer</option>
-                <option>manager</option>
-                <option>editor</option>
-                <option>owner</option>
-                <option>remove current permissions</option>
-              </select>
-
+            <div
+              class="field"
+              style="display: flex; width: 500px; flex-direction: column"
+            >
               <div
-                id="div-button-add-permission"
                 style="
+                  display: flex;
                   flex-direction: row;
-                  justify-content: center;
-                  margin: 0 auto;
+                  justify-content: space-around;
+                  padding-bottom: 20px;
                 "
               >
-                <button
-                  id="button-add-permission"
+                <select
+                  class="my-dropdown"
+                  style="width: 60%; padding: 8px 12px; height: 38px"
+                  id="bf_list_users"
+                >
+                  <option>Select user</option>
+                </select>
+
+                <select
+                  class="my-dropdown"
+                  id="bf_list_roles"
+                  style="width: 30%; padding: 8px 12px; height: 38px"
+                >
+                  <option>Select role</option>
+                  <option>viewer</option>
+                  <option>manager</option>
+                  <option>editor</option>
+                  <option>owner</option>
+                  <option>remove current permissions</option>
+                </select>
+              </div>
+
+              <div style="display: flex; flex-direction: column">
+                <div
+                  id="div-button-add-permission"
                   style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 0 10px;
-                    width: 125px;
-                    height: 35px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 0 auto;
                   "
                 >
-                  Add permission for user
-                </button>
+                  <button
+                    id="button-add-permission"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 0 10px;
+                      width: 190px;
+                      height: 40px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 15px;
+                    "
+                  >
+                    Add permission for user
+                  </button>
+                </div>
+                <p
+                  id="para-dataset-permission-status"
+                  style="
+                    text-align: center;
+                    font-weight: 600;
+                    color: var(--color-light-green);
+                    padding-top: 20px;
+                  "
+                ></p>
               </div>
-              <p
-                id="para-dataset-permission-status"
-                style="
-                  text-align: center;
-                  font-weight: 600;
-                  color: var(--color-light-green);
-                "
-              ></p>
             </div>
           </div>
         </div>
@@ -1887,57 +1919,72 @@
               >Please select the team for whom you want to modify
               permissions:</label
             >
-            <div class="field" style="display: flex; width: 500px">
-              <select
-                class="my-dropdown"
-                style="width: 60%; padding: 8px 12px; height: 38px"
-                id="bf_list_teams"
-              >
-                <option>Select team</option>
-              </select>
-
-              <select class="my-dropdown" id="bf_list_roles_team">
-                <option>Select role</option>
-                <option>viewer</option>
-                <option>manager</option>
-                <option>editor</option>
-                <option>remove current permissions</option>
-              </select>
-
+            <div
+              class="field"
+              style="display: flex; width: 500px; flex-direction: column"
+            >
               <div
-                id="div-button-add-permission-team"
                 style="
+                  display: flex;
                   flex-direction: row;
-                  justify-content: center;
-                  margin: 0 auto;
+                  justify-content: space-around;
+                  padding-bottom: 20px;
                 "
               >
-                <button
-                  id="button-add-permission-team"
+                <select
+                  class="my-dropdown"
+                  style="width: 60%; padding: 8px 12px; height: 38px"
+                  id="bf_list_teams"
+                >
+                  <option>Select team</option>
+                </select>
+
+                <select class="my-dropdown" id="bf_list_roles_team">
+                  <option>Select role</option>
+                  <option>viewer</option>
+                  <option>manager</option>
+                  <option>editor</option>
+                  <option>remove current permissions</option>
+                </select>
+              </div>
+
+              <div style="display: flex; flex-direction: column">
+                <div
+                  id="div-button-add-permission-team"
                   style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 0 10px;
-                    width: 125px;
-                    height: 35px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 0 auto;
                   "
                 >
-                  Add permission for team
-                </button>
+                  <button
+                    id="button-add-permission-team"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 0 10px;
+                      width: 190px;
+                      height: 40px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 15px;
+                    "
+                  >
+                    Add permission for team
+                  </button>
+                </div>
+                <p
+                  id="para-dataset-permission-status-team"
+                  style="
+                    text-align: center;
+                    font-weight: 600;
+                    color: var(--color-light-green);
+                    padding-top: 20px;
+                  "
+                ></p>
               </div>
-              <p
-                id="para-dataset-permission-status-team"
-                style="
-                  text-align: center;
-                  font-weight: 600;
-                  color: var(--color-light-green);
-                "
-              ></p>
             </div>
           </div>
         </div>
@@ -2008,7 +2055,7 @@
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
-            Some helpful text here
+            Add a subtitle to your dataset on Blackfynn.
           </p>
         </div>
       </header>
@@ -2118,7 +2165,7 @@
         class="individual-question manage-dataset"
         id="div_add_edit_subtitle"
       >
-        <div class="ui form" style="width: 450px">
+        <div class="ui form" style="width: 500px">
           <div class="grouped fields">
             <label
               style="
@@ -2127,58 +2174,82 @@
                 width: 100%;
                 text-align: center;
               "
-              >Enter subtitle below(any existing subtitle will be
-              displayed):</label
-            >
+              >Enter subtitle below.<br />
+              <span style="color: #696969; font-size: 13px"
+                >Any existing subtitle will be displayed:
+              </span>
+            </label>
             <div
               class="field"
-              style="display: flex; justify-content: center; width: 100%"
-            >
-              <textarea
-                id="bf-dataset-subtitle"
-                class="demo-response"
-                rows="4"
-                maxlength="256"
-              >
-              </textarea>
-              <p>
-                <span id="para-char-count-metadata"> 256 characters left </span>
-              </p>
-            </div>
-            <div
-              id="div-button-add-subtitle"
               style="
-                flex-direction: row;
+                display: flex;
                 justify-content: center;
-                margin: 0 auto;
+                width: 450px;
+                flex-direction: column;
               "
             >
-              <button
-                id="button-add-subtitle"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 0 10px;
-                  width: 100px;
-                  height: 30px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 13px;
-                "
-              >
-                Add subtitle
-              </button>
+              <div style="width: 100%; position: relative">
+                <textarea
+                  id="bf-dataset-subtitle"
+                  class="demo-response"
+                  style="position: relative"
+                  rows="6"
+                  maxlength="256"
+                >
+                </textarea>
+                <p>
+                  <span
+                    id="para-char-count-metadata"
+                    style="
+                      position: absolute;
+                      bottom: 10px;
+                      right: 15px;
+                      color: rgb(117, 107, 107);
+                    "
+                  >
+                    256 characters left
+                  </span>
+                </p>
+              </div>
+              <div style="display: flex; flex-direction: row">
+                <div
+                  id="div-button-add-subtitle"
+                  style="
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 0 auto;
+                    padding-top: 20px;
+                  "
+                >
+                  <button
+                    id="button-add-subtitle"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 0 10px;
+                      width: 190px;
+                      height: 40px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 15px;
+                    "
+                  >
+                    Add subtitle to dataset
+                  </button>
+                </div>
+                <p
+                  id="para-dataset-subtitle-status"
+                  style="
+                    text-align: center;
+                    font-weight: 600;
+                    color: var(--color-light-green);
+                    padding-top: 20px;
+                  "
+                ></p>
+              </div>
             </div>
-            <p
-              id="para-dataset-subtitle-status"
-              style="
-                text-align: center;
-                font-weight: 600;
-                color: var(--color-light-green);
-              "
-            ></p>
           </div>
         </div>
       </div>
@@ -2363,7 +2434,7 @@
         class="individual-question manage-dataset"
         id="div_add_edit_description"
       >
-        <div class="ui form" style="width: 450px">
+        <div class="ui form" style="width: 500px">
           <div class="grouped fields">
             <label
               style="
@@ -2372,14 +2443,19 @@
                 width: 100%;
                 text-align: center;
               "
-              >Enter description below(any existing description will be
-              displayed):</label
-            >
+              >Enter description below: <br />
+              <span style="color: #696969; font-size: 13px"
+                >Any existing description will be displayed:
+              </span>
+            </label>
             <div
               class="field"
               style="display: flex; justify-content: center; width: 100%"
             >
-              <div id="editorSection"></div>
+              <div
+                style="margin-top: 10px; width: 500px"
+                id="editorSection"
+              ></div>
             </div>
             <div
               id="div-button-add-description"
@@ -2387,6 +2463,7 @@
                 flex-direction: row;
                 justify-content: center;
                 margin: 0 auto;
+                padding-top: 20px;
               "
             >
               <button
@@ -2395,13 +2472,13 @@
                   cursor: pointer;
                   border-radius: 8px;
                   margin: 0 10px;
-                  width: 100px;
-                  height: 30px;
+                  width: 200px;
+                  height: 40px;
                   background: var(--color-light-green);
                   color: #fff;
                   font-weight: 600;
                   border: none;
-                  font-size: 13px;
+                  font-size: 15px;
                 "
               >
                 Add description
@@ -2413,6 +2490,7 @@
                 text-align: center;
                 font-weight: 600;
                 color: var(--color-light-green);
+                padding-top: 20px;
               "
             ></p>
           </div>
@@ -2914,11 +2992,52 @@
             >
             <div
               class="field"
-              style="display: flex; justify-content: center; width: 100%"
+              style="
+                display: flex;
+                justify-content: center;
+                width: 100%;
+                flex-direction: column;
+              "
             >
-              <div>
-                <h5>Current License</h5>
-                <p id="para-dataset-license-current">None</p>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
+                  width: 450px;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: left;
+                    margin-bottom: 15px;
+                  "
+                >
+                  <div style="display: flex; flex-direction: row">
+                    <h5 style="color: #808080; font-size: 15px">
+                      Current License:
+                    </h5>
+                    <span
+                      class="bf-dataset-span"
+                      id="para-dataset-license-current"
+                      style="
+                        color: #000;
+                        font-weight: 600;
+                        margin-left: 8px;
+                        font-size: 15px;
+                        width: 70%;
+                      "
+                      >None</span
+                    >
+                  </div>
+                </div>
               </div>
 
               <div
@@ -2926,7 +3045,7 @@
                 style="
                   flex-direction: row;
                   justify-content: center;
-                  margin: 0 auto;
+                  margin: 25px auto;
                 "
               >
                 <button
@@ -2935,27 +3054,27 @@
                     cursor: pointer;
                     border-radius: 8px;
                     margin: 0 10px;
-                    width: 100px;
-                    height: 30px;
+                    width: 290px;
+                    height: 50px;
                     background: var(--color-light-green);
                     color: #fff;
                     font-weight: 600;
                     border: none;
-                    font-size: 13px;
+                    font-size: 15px;
                   "
                 >
-                  Click to assign Creative Commons Attribution (CC-BY) license
+                  Assign Creative Commons Attribution (CC-BY) license
                 </button>
               </div>
+              <p
+                id="para-dataset-license-status"
+                style="
+                  text-align: center;
+                  font-weight: 600;
+                  color: var(--color-light-green);
+                "
+              ></p>
             </div>
-            <p
-              id="para-dataset-license-status"
-              style="
-                text-align: center;
-                font-weight: 600;
-                color: var(--color-light-green);
-              "
-            ></p>
           </div>
         </div>
       </div>
@@ -3152,26 +3271,26 @@
                 text-align: left;
               "
             ></p>
+            <button
+              id="button_upload_local_folder_confirm"
+              onclick="transitionFreeFormMode(this, 'upload_local_dataset_div', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
+              data-next="upload_local_dataset_final_question_div"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px auto;
+                width: 100px;
+                height: 30px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 13px;
+              "
+            >
+              Confirm
+            </button>
           </div>
-          <button
-            id="button_upload_local_folder_confirm"
-            onclick="transitionFreeFormMode(this, 'upload_local_dataset_div', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
-            data-next="upload_local_dataset_final_question_div"
-            style="
-              cursor: pointer;
-              border-radius: 8px;
-              margin: 10px auto;
-              width: 100px;
-              height: 30px;
-              background: var(--color-light-green);
-              color: #fff;
-              font-weight: 600;
-              border: none;
-              font-size: 13px;
-            "
-          >
-            Confirm
-          </button>
         </div>
       </div>
 
@@ -3182,13 +3301,40 @@
         <div class="ui form" style="width: 500px">
           <div class="grouped fields">
             <div class="field" style="display: flex; width: 500px">
-              <button id="button-submit-dataset" class="demo-button">
+              <button
+                id="button-submit-dataset"
+                class="demo-button"
+                onclick="transitionFreeFormMode(this, 'upload_local_dataset_final_question_div', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
+                data-next="upload_local_dataset_progress_div"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
                 Upload dataset
               </button>
-              <p id="para-please-wait-manage-dataset"></p>
+            </div>
+          </div>
+        </div>
+      </div>
 
+      <div
+        class="individual-question manage-dataset"
+        id="upload_local_dataset_progress_div"
+      >
+        <div class="ui form" style="width: 500px">
+          <div class="grouped fields">
+            <div class="field" style="display: flex; width: 500px">
               <p id="para-progress-bar-error-status"></p>
-              <p></p>
+
               <div id="div-progress-submit">
                 <h5>Progress</h5>
                 <progress
@@ -3197,8 +3343,8 @@
                   max="100"
                   value="0"
                 ></progress>
+                <p id="para-please-wait-manage-dataset"></p>
                 <p id="para-progress-bar-status"></p>
-                <p></p>
               </div>
             </div>
           </div>
