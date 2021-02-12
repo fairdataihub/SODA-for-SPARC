@@ -2508,3 +2508,8 @@ $(document).ready(() => {
 })
 
 $("#manage_dataset_tab").click();
+
+$("input[type=radio][name=dataset_status_radio]").change(function () {
+  //console.log(this.id);
+  $("#bf_list_dataset_status").val(this.value).trigger("change");
+});

@@ -169,8 +169,6 @@ body.waiting * {
 }
 
 .demo-button {
-  align-self: flex-start;
-  margin-right: 1em;
   border: 2px solid;
   border-radius: 4px;
   font: inherit;
@@ -856,9 +854,7 @@ progress.progresstrack[value]::-webkit-progress-value {
   width: 270px;
   height: 35px;
   float:left;
-  background-color: #C0C0C0;
   color:black;
-  border: 1px solid #ced4da;
   border-radius: 6px;
 }
 

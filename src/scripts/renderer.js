@@ -639,7 +639,7 @@ document
       $("#button-validate-dataset-demo-toggle").click();
     }
   });
-  
+
 document
   .getElementById("button-validate-dataset-next-step")
   .addEventListener("click", (event) => {
@@ -910,7 +910,7 @@ document
   .getElementById("button-import-milestone")
   .addEventListener("click", function () {
     document.getElementById("para-milestone-document-info-long").style.display =
-      "none"; 
+      "none";
     document.getElementById("para-milestone-document-info").innerHTML = "";
     var filepath = document.getElementById("input-milestone-select")
       .placeholder;
@@ -4106,7 +4106,9 @@ function metadataDatasetlistChange() {
 bfDatasetListPermission.addEventListener("change", () => {
   document.getElementById("para-dataset-permission-status").innerHTML = "";
   document.getElementById("para-dataset-permission-current").innerHTML = "";
-  document.getElementById("para-add-edit-dataset-permission-current").innerHTML = "";
+  document.getElementById(
+    "para-add-edit-dataset-permission-current"
+  ).innerHTML = "";
   document.getElementById("para-dataset-permission-status-pi").innerHTML = "";
   document.getElementById("para-dataset-permission-status-team").innerHTML = "";
 
@@ -4257,7 +4259,7 @@ function postCurationListChange() {
 }
 
 // Change dataset status option change
-bfListDatasetStatus.addEventListener("change", () => {
+$(bfListDatasetStatus).on("change", () => {
   bfCurrentDatasetStatusProgress.style.display = "block";
   datasetStatusStatus.innerHTML = "Please wait...";
   selectOptionColor(bfListDatasetStatus);
@@ -4291,6 +4293,7 @@ bfListDatasetStatus.addEventListener("change", () => {
     }
   );
 });
+
 
 // Add subtitle //
 bfAddSubtitleBtn.addEventListener("click", () => {
@@ -5480,6 +5483,10 @@ function showCurrentDatasetStatus(callback) {
             bfListDatasetStatus.appendChild(option);
           }
           bfListDatasetStatus.value = res[1];
+          $(`input[name=dataset_status_radio][value=${res[1]}]`).prop(
+            "checked",
+            true
+          );
           selectOptionColor(bfListDatasetStatus);
           bfCurrentDatasetStatusProgress.style.display = "none";
           datasetStatusStatus.innerHTML = "";
@@ -5499,7 +5506,7 @@ function selectOptionColor(mylist) {
 function showAccountDetails(loadProgress) {
   /// load and get permission for account
   client.invoke(
-  "api_bf_account_details",
+    "api_bf_account_details",
     bfAccountList.options[bfAccountList.selectedIndex].text,
     (error, res) => {
       if (error) {
@@ -6929,7 +6936,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
             $(".bf-dataset-span").text("None");
             $("#para-account-detail-curate-generate").html(res);
             $("#para_create_empty_dataset_BF_account").html(res);
-            
+
             showHideDropdownButtons("account", "show");
           }
         });
@@ -7010,8 +7017,9 @@ function showDefaultBFAccount() {
               $("#create_empty_dataset_BF_account_span").text("None");
               $("#para-account-detail-curate-generate").html("None");
               $("#para_create_empty_dataset_BF_account").html("None");
-              
-              bfSelectAccountStatus.innerHTML = "<span style='color:red'>"+error+"</span>";
+
+              bfSelectAccountStatus.innerHTML =
+                "<span style='color:red'>" + error + "</span>";
               $("#div-bf-account-load-progress").css("display", "none");
               showHideDropdownButtons("account", "hide");
             } else {
@@ -8300,8 +8308,10 @@ document
     document.getElementById("prevBtn").style.display = "inline";
     document.getElementById("nextBtn").style.display = "inline";
     showParentTab(currentTab, 1);
-    if (sodaJSONObj["starting-point"]["type"] == "new" && "local-path" in sodaJSONObj["starting-point"])
-    {
+    if (
+      sodaJSONObj["starting-point"]["type"] == "new" &&
+      "local-path" in sodaJSONObj["starting-point"]
+    ) {
       sodaJSONObj["starting-point"]["type"] = "local";
     }
   });

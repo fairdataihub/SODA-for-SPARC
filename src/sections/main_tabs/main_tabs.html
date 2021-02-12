@@ -2,52 +2,54 @@
 <template class="task-template">
   <section id="main_tabs-section" class="section js-section u-category-windows">
     <header>
-      <div style="display: flex; flex-direction: row">
-        <input
-          class="tab-input"
-          id="manage_dataset_tab"
-          type="radio"
-          name="main_tabs"
-          value="manage_dataset_section"
-          checked
-        />
-        <label class="tab-label" for="manage_dataset_tab"
-          >Manage Datasets</label
-        >
+      <form action="#">
+        <div style="display: flex; flex-direction: row">
+          <input
+            class="tab-input"
+            id="manage_dataset_tab"
+            type="radio"
+            name="main_tabs"
+            value="manage_dataset_section"
+            checked
+          />
+          <label class="tab-label" for="manage_dataset_tab"
+            >Manage Datasets</label
+          >
 
-        <input
-          class="tab-input"
-          id="prepare_metadata_tab"
-          type="radio"
-          name="main_tabs"
-          value="prepare_metadata_section"
-        />
-        <label class="tab-label" for="prepare_metadata_tab"
-          >Prepare Metadata</label
-        >
+          <input
+            class="tab-input"
+            id="prepare_metadata_tab"
+            type="radio"
+            name="main_tabs"
+            value="prepare_metadata_section"
+          />
+          <label class="tab-label" for="prepare_metadata_tab"
+            >Prepare Metadata</label
+          >
 
-        <input
-          class="tab-input"
-          id="prepare_dataset_tab"
-          type="radio"
-          name="main_tabs"
-          value="prepare_dataset_section"
-        />
-        <label class="tab-label" for="prepare_dataset_tab"
-          >Prepare Dataset</label
-        >
+          <input
+            class="tab-input"
+            id="prepare_dataset_tab"
+            type="radio"
+            name="main_tabs"
+            value="prepare_dataset_section"
+          />
+          <label class="tab-label" for="prepare_dataset_tab"
+            >Prepare Dataset</label
+          >
 
-        <input
-          class="tab-input"
-          id="disseminate_dataset_tab"
-          type="radio"
-          name="main_tabs"
-          value="disseminate_dataset_section"
-        />
-        <label class="tab-label" for="disseminate_dataset_tab"
-          >Disseminate Dataset</label
-        >
-      </div>
+          <input
+            class="tab-input"
+            id="disseminate_dataset_tab"
+            type="radio"
+            name="main_tabs"
+            value="disseminate_dataset_section"
+          />
+          <label class="tab-label" for="disseminate_dataset_tab"
+            >Disseminate Dataset</label
+          >
+        </div>
+      </form>
       <div class="tab-info">
         <p id="tab_info_text">
           This interface provides a convenient window to accomplish all required
@@ -1939,7 +1941,11 @@
                   <option>Select team</option>
                 </select>
 
-                <select class="my-dropdown" id="bf_list_roles_team">
+                <select
+                  class="my-dropdown"
+                  id="bf_list_roles_team"
+                  style="width: 30%; padding: 8px 12px; height: 38px"
+                >
                   <option>Select role</option>
                   <option>viewer</option>
                   <option>manager</option>
@@ -2669,7 +2675,7 @@
       </div>
 
       <div class="individual-question manage-dataset" id="div_add_edit_banner">
-        <div class="ui form" style="width: 450px">
+        <div class="ui form" style="width: 550px">
           <div class="grouped fields">
             <label
               id="add_edit_banner_label"
@@ -2695,23 +2701,51 @@
                   box-shadow: 0px 0px 10px #d5d5d5;
                   padding: 15px 25px;
                   border-radius: 5px;
+                  width: 100%;
                 "
               >
-                <div
-                  id="div-current-banner-img"
-                  class="demo-controls"
-                  style="color: black"
-                >
-                  <p id="para-current-banner-img">None</p>
+                <div id="div-current-banner-img" style="color: black">
+                  <p
+                    style="text-align: center; height: 3em; margin: auto"
+                    id="para-current-banner-img"
+                  >
+                    None
+                  </p>
                   <img id="current-banner-img" />
                 </div>
 
-                <div id="div-editbanner-img">
-                  <div style="float: left; width: 250px; margin-left: -300px">
-                    <button id="button-import-banner-image" class="demo-button">
-                      Import image
-                    </button>
-                    <p id="para-path-image" style="margin-top: 0em"></p>
+                <div
+                  id="div-editbanner-img"
+                  style="display: flex; flex-direction: row"
+                >
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: center;
+                    "
+                  >
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        margin-bottom: 20px;
+                        width: 100%;
+                      "
+                    >
+                      <button
+                        id="button-import-banner-image"
+                        class="demo-button"
+                      >
+                        Import image
+                      </button>
+                      <p
+                        id="para-path-image"
+                        style="margin-top: 0.5em; text-align: center"
+                      ></p>
+                    </div>
                     <div class="container-cropped-image">
                       <div
                         class="banner-image-size"
@@ -2771,13 +2805,14 @@
                   cursor: pointer;
                   border-radius: 8px;
                   margin: 0 10px;
-                  width: 100px;
-                  height: 30px;
+                  width: 150px;
+                  height: 40px;
                   background: var(--color-light-green);
                   color: #fff;
                   font-weight: 600;
                   border: none;
-                  font-size: 13px;
+                  font-size: 15px;
+                  margin-top: 20px;
                 "
               >
                 Edit banner image
@@ -3250,7 +3285,7 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >What is the location of the dataset?</label
             >
-            <div class="field" style="margin: 15px 0">
+            <div class="field" style="margin: 15px 0; width: 100%">
               <input
                 class="form-control"
                 style="width: 450px !important"
@@ -3259,37 +3294,48 @@
                 readonly
                 placeholder="Select a folder"
               />
+              <p
+                id="para-info-local-submit"
+                style="
+                  float: right;
+                  margin-top: 0;
+                  margin-left: 7px;
+                  padding: 2 2;
+                  width: 20%;
+                  text-align: left;
+                "
+              ></p>
+              <div
+                class="div-confirm-button"
+                style="
+                  display: none;
+                  flex-direction: row;
+                  justify-content: center;
+                  margin: 10px auto;
+                  width: 100%;
+                "
+              >
+                <button
+                  id="button_upload_local_folder_confirm"
+                  onclick="transitionFreeFormMode(this, 'upload_local_dataset_div', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
+                  data-next="upload_local_dataset_final_question_div"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 10px auto;
+                    width: 100px;
+                    height: 30px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    font-size: 13px;
+                  "
+                >
+                  Confirm
+                </button>
+              </div>
             </div>
-            <p
-              id="para-info-local-submit"
-              style="
-                float: right;
-                margin-top: 0;
-                margin-left: 7px;
-                padding: 2 2;
-                width: 20%;
-                text-align: left;
-              "
-            ></p>
-            <button
-              id="button_upload_local_folder_confirm"
-              onclick="transitionFreeFormMode(this, 'upload_local_dataset_div', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
-              data-next="upload_local_dataset_final_question_div"
-              style="
-                cursor: pointer;
-                border-radius: 8px;
-                margin: 10px auto;
-                width: 100px;
-                height: 30px;
-                background: var(--color-light-green);
-                color: #fff;
-                font-weight: 600;
-                border: none;
-                font-size: 13px;
-              "
-            >
-              Confirm
-            </button>
           </div>
         </div>
       </div>
@@ -3310,13 +3356,13 @@
                   cursor: pointer;
                   border-radius: 8px;
                   margin: 10px auto;
-                  width: 100px;
-                  height: 30px;
+                  width: 140px;
+                  height: 40px;
                   background: var(--color-light-green);
                   color: #fff;
                   font-weight: 600;
                   border: none;
-                  font-size: 13px;
+                  font-size: 15px;
                 "
               >
                 Upload dataset
@@ -3332,10 +3378,13 @@
       >
         <div class="ui form" style="width: 500px">
           <div class="grouped fields">
-            <div class="field" style="display: flex; width: 500px">
+            <div
+              class="field"
+              style="display: flex; width: 500px; flex-direction: column"
+            >
               <p id="para-progress-bar-error-status"></p>
 
-              <div id="div-progress-submit">
+              <div id="div-progress-submit; width:100%">
                 <h5>Progress</h5>
                 <progress
                   class="progresstrack"
@@ -3349,6 +3398,31 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div
+      style="
+        border-top: 1px solid #f0f0f0;
+        padding: 10px;
+        padding-top: 15px;
+        height: 50px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        bottom: 20px;
+        position: absolute;
+      "
+    >
+      <div style="display: flex; flex-direction: row; width: 110px">
+        <button
+          type="button"
+          class="transition-btn prev"
+          data-section="main_tabs"
+        >
+          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+        </button>
       </div>
     </div>
 
@@ -3522,46 +3596,135 @@
               class="field"
               style="display: flex; justify-content: center; width: 100%"
             >
-              <select
-                class="my-dropdown"
-                style="width: 80%"
-                id="bf_list_dataset_status"
-              >
-                <option></option>
-              </select>
-            </div>
-            <div
-              id="div-button-add-description"
-              style="
-                flex-direction: row;
-                justify-content: center;
-                margin: 0 auto;
-              "
-            >
-              <button
-                id="button-add-description"
+              <div
                 style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 0 10px;
-                  width: 100px;
-                  height: 30px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 13px;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
                 "
               >
-                Add description
-              </button>
+                <form action="#">
+                  <div class="dataset-status-container"> 
+                    <ul>
+                    <li>
+                      <input
+                        type="radio"
+                        id="no_status_radio"
+                        value="NO_STATUS"
+                        name="dataset_status_radio"
+                      />
+                      <label for="no_status_radio">No Status</label>
+                      
+                      <div class="check"></div>
+                    </li>
+                    
+                    <li>
+                      <input
+                        type="radio"
+                        id="work_in_progress_radio"
+                        value="WORK_IN_PROGRESS"
+                        name="dataset_status_radio"
+                      />
+                      <label for="work_in_progress_radio"
+                        >Work in Progress</label
+                      >
+                      
+                      <div class="check"><div class="inside"></div></div>
+                    </li>
+                    
+                    <li>
+                      <input
+                        type="radio"
+                        id="in_review_radio"
+                        value="IN_REVIEW"
+                        name="dataset_status_radio"
+                      />
+                      <label for="in_review_radio">In Review</label>
+                      
+                      <div class="check"><div class="inside"></div></div>
+                    </li>
+
+                    <li>
+                      <input
+                        type="radio"
+                        id="completed_radio"
+                        value="COMPLETED"
+                        name="dataset_status_radio"
+                      />
+                      <label for="completed_radio">Completed</label>
+                      
+                      <div class="check"><div class="inside"></div></div>
+                    </li>
+                  </ul>
+                  </div>
+                  <!--<div class="dataset-status-radio">
+                    <div class="dataset-status-container">
+                      <div class="check"></div>
+                      <input
+                        type="radio"
+                        id="no_status_radio"
+                        value="NO_STATUS"
+                        name="dataset_status_radio"
+                      />
+                      <label for="no_status_radio">No Status</label>
+                    </div>
+                    <div class="dataset-status-container">
+                      <div class="check"><div class="inside"></div></div>
+                      <input
+                        type="radio"
+                        id="work_in_progress_radio"
+                        value="WORK_IN_PROGRESS"
+                        name="dataset_status_radio"
+                      />
+                      <label for="work_in_progress_radio"
+                        >Work in Progress</label
+                      >
+                    </div>
+                    <div class="dataset-status-container">
+                      <div class="check"><div class="inside"></div></div>
+                      <input
+                        type="radio"
+                        id="in_review_radio"
+                        value="IN_REVIEW"
+                        name="dataset_status_radio"
+                      />
+                      <label for="in_review_radio">In Review</label>
+                    </div>
+                    <div class="dataset-status-container">
+                      <div class="check"><div class="inside"></div></div>
+                      <input
+                        type="radio"
+                        id="completed_radio"
+                        value="COMPLETED"
+                        name="dataset_status_radio"
+                      />
+                      <label for="completed_radio">Completed</label>
+                    </div>
+                  </div>-->
+                </form>
+
+                <select
+                  class="my-dropdown"
+                  style="width: 80%; display: none"
+                  id="bf_list_dataset_status"
+                >
+                  <option></option>
+                </select>
+              </div>
             </div>
+
             <p
               id="para-dataset-status-status"
               style="
                 text-align: center;
                 font-weight: 600;
                 color: var(--color-light-green);
+                padding-top: 20px;
               "
             ></p>
           </div>
