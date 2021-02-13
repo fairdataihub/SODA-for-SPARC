@@ -2500,16 +2500,79 @@ $("input:radio[name=main_tabs]").click(function () {
 });
 
 $(document).ready(() => {
-  $(".content-button").click(function() {
+  $(".content-button").click(function () {
     let section = $(this).data("section");
     //$("#"+section+"-section").css("display", "block");
     console.log("here");
-  })
-})
+  });
+});
 
 $("#manage_dataset_tab").click();
 
 $("input[type=radio][name=dataset_status_radio]").change(function () {
   //console.log(this.id);
   $("#bf_list_dataset_status").val(this.value).trigger("change");
+});
+
+const getBase64 = async (url) => {
+  const axios = require("axios");
+  return axios
+    .get(url, {
+      responseType: "arraybuffer",
+    })
+    .then((response) =>
+      Buffer.from(response.data, "binary").toString("base64")
+    );
+};
+
+$("#edit_banner_image_button").click(async () => {
+  $("#edit_banner_image_modal").modal("show");
+  if ($("#para-current-banner-img").text() === "None") {
+    //Do nothing... regular import
+  } else {
+    let img_src = $("#current-banner-img").attr("src");
+    let img_base64 = await getBase64(img_src);
+
+    $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
+    $("#save-banner-image").css("visibility", "visible");
+    $("#div-img-container-holder").css("display", "none");
+    $("#div-img-container").css("display", "block");
+    $("#para-path-image").html("path");
+
+    let position = img_src.search("X-Amz-Security-Token");
+
+    if (position != -1) {
+      let new_img_src = img_src.substring(0, position - 1);
+      let new_position = new_img_src.lastIndexOf(".");
+
+      if (new_position != -1) {
+        imageExtension = new_img_src.substring(new_position + 1);
+        if (imageExtension == "png") {
+          $("#image-banner").attr("src", "data:image/png;base64," + img_base64);
+        } else if (imageExtension == "jpeg") {
+          $("#image-banner").attr(
+            "src",
+            "data:image/jpeg;base64," + img_base64
+          );
+        } else if (imageExtension == "jpg") {
+          $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
+        } else {
+          console.log(`An error happened: ${img_src}`);
+          return;
+        }
+      } else {
+        console.log(`An error happened: ${img_src}`);
+        return;
+      }
+    } else {
+      console.log(`An error happened: ${img_src}`);
+      return;
+    }
+
+    myCropper.destroy();
+    myCropper = new Cropper(
+      document.getElementById("image-banner"),
+      cropOptions
+    );
+  }
 });

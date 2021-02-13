@@ -4423,6 +4423,7 @@ bfImportBannerImageBtn.addEventListener("click", (event) => {
   datasetBannerImageStatus.innerHTML = "";
   ipcRenderer.send("open-file-dialog-import-banner-image");
 });
+
 ipcRenderer.on("selected-banner-image", (event, path) => {
   if (path.length > 0) {
     document.getElementById("div-img-container-holder").style.display = "none";
@@ -4432,6 +4433,13 @@ ipcRenderer.on("selected-banner-image", (event, path) => {
     bfViewImportedImage.src = path[0];
     myCropper.destroy();
     myCropper = new Cropper(bfViewImportedImage, cropOptions);
+    $("#save-banner-image").css("visibility", "visible");
+  } else {
+    if ($("#para-current-banner-img").text() === "None") {
+      $("#save-banner-image").css("visibility", "hidden");
+    } else {
+      $("#save-banner-image").css("visibility", "visible");
+    }
   }
 });
 
@@ -4452,7 +4460,7 @@ function uploadBannerImage() {
   }
   var imagePath = path.join(imageFolder, "banner-image-SODA." + imageExtension);
   var croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
-  imageDataURI.outputFile(croppedImageDataURI, imagePath).then(function () {
+  imageDataURI.outputFile(croppedImageDataURI, imagePath).then( () => {
     if (fs.statSync(imagePath)["size"] < 5 * 1024 * 1024) {
       var selectedBfAccount =
         bfAccountList.options[bfAccountList.selectedIndex].text;
@@ -4485,6 +4493,7 @@ function uploadBannerImage() {
             bfCurrentMetadataProgress.style.display = "none";
             $(".synced-progress").css("display", "none");
             enableform(bfMetadataForm);
+            $("#edit_banner_image_modal").modal("hide");
             ipcRenderer.send(
               "track-event",
               "Success",
@@ -5209,7 +5218,7 @@ function showCurrentDescription() {
   }
 }
 
-function showCurrentBannerImage() {
+const showCurrentBannerImage = () => {
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
   var selectedBfDataset =
@@ -5240,6 +5249,11 @@ function showCurrentBannerImage() {
           } else {
             document.getElementById("para-current-banner-img").innerHTML = "";
             bfCurrentBannerImg.src = res;
+            setTimeout(() => {
+              document
+                .getElementById("edit_banner_image_button")
+                .scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 300);
           }
           bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");
@@ -5247,7 +5261,7 @@ function showCurrentBannerImage() {
       }
     );
   }
-}
+};
 
 function showCurrentLicense() {
   currentDatasetLicense.innerHTML = "Please wait...";

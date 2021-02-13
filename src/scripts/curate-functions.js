@@ -1412,10 +1412,28 @@ function showTreeViewPreview(new_dataset_name) {
 }
 
 // per change event of current dataset span text
-$('.bf-dataset-span').on('DOMSubtreeModified',function(){
-  if ($('.bf-dataset-span').text() === "None") {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none")
+$(".bf-dataset-span").on("DOMSubtreeModified", function () {
+  let text = $(".bf-dataset-span:first").text();
+  if ($(".bf-dataset-span:first").text() === "None") {
+    $($(this).parents().find(".field").find(".div-confirm-button")).css(
+      "display",
+      "none"
+    );
   } else {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex")
+    $($(this).parents().find(".field").find(".div-confirm-button")).css(
+      "display",
+      "flex"
+    );
+    if ($($(this).parents().find(".field").find(".synced-progress")).length) {
+      if (
+        $($(this).parents().find(".field").find(".synced-progress")).css(
+          "display"
+        ) === "none"
+      ) {
+        $(".confirm-button").click();
+      }
+    } else {
+      $(".confirm-button").click();
+    }
   }
-})
+});
