@@ -608,6 +608,9 @@ button[disabled] {
 
 .file-templates-button svg{
   margin: 0 auto;
+  fill: var(--tagify-dd-color-primary);
+  width: 45px;
+  height: 45px;
 }
 
 .file-templates-button:hover,
