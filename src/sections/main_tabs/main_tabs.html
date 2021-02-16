@@ -2,52 +2,54 @@
 <template class="task-template">
   <section id="main_tabs-section" class="section js-section u-category-windows">
     <header>
-      <div style="display: flex; flex-direction: row">
-        <input
-          class="tab-input"
-          id="manage_dataset_tab"
-          type="radio"
-          name="main_tabs"
-          value="manage_dataset_section"
-          checked
-        />
-        <label class="tab-label" for="manage_dataset_tab"
-          >Manage Datasets</label
-        >
+      <form action="#">
+        <div style="display: flex; flex-direction: row">
+          <input
+            class="tab-input"
+            id="manage_dataset_tab"
+            type="radio"
+            name="main_tabs"
+            value="manage_dataset_section"
+            checked
+          />
+          <label class="tab-label" for="manage_dataset_tab"
+            >Manage Datasets</label
+          >
 
-        <input
-          class="tab-input"
-          id="prepare_metadata_tab"
-          type="radio"
-          name="main_tabs"
-          value="prepare_metadata_section"
-        />
-        <label class="tab-label" for="prepare_metadata_tab"
-          >Prepare Metadata</label
-        >
+          <input
+            class="tab-input"
+            id="prepare_metadata_tab"
+            type="radio"
+            name="main_tabs"
+            value="prepare_metadata_section"
+          />
+          <label class="tab-label" for="prepare_metadata_tab"
+            >Prepare Metadata</label
+          >
 
-        <input
-          class="tab-input"
-          id="prepare_dataset_tab"
-          type="radio"
-          name="main_tabs"
-          value="prepare_dataset_section"
-        />
-        <label class="tab-label" for="prepare_dataset_tab"
-          >Prepare Dataset</label
-        >
+          <input
+            class="tab-input"
+            id="prepare_dataset_tab"
+            type="radio"
+            name="main_tabs"
+            value="prepare_dataset_section"
+          />
+          <label class="tab-label" for="prepare_dataset_tab"
+            >Prepare Dataset</label
+          >
 
-        <input
-          class="tab-input"
-          id="disseminate_dataset_tab"
-          type="radio"
-          name="main_tabs"
-          value="disseminate_dataset_section"
-        />
-        <label class="tab-label" for="disseminate_dataset_tab"
-          >Disseminate Dataset</label
-        >
-      </div>
+          <input
+            class="tab-input"
+            id="disseminate_dataset_tab"
+            type="radio"
+            name="main_tabs"
+            value="disseminate_dataset_section"
+          />
+          <label class="tab-label" for="disseminate_dataset_tab"
+            >Disseminate Dataset</label
+          >
+        </div>
+      </form>
       <div class="tab-info">
         <p id="tab_info_text">
           This interface provides a convenient window to accomplish all required
@@ -575,150 +577,357 @@
         </div>
       </section>
 
-
       <section class="main-tabs-section" id="disseminate_dataset_section">
         <div class="main-tabs show" id="post-curation-tab">
-          <div class="individual-question post-curation show" id="Post-curation-question-1">
-              <div class="ui form" style="width:100%">
-                <div class="grouped fields">
-                  <label style="font-size:16px;text-align:center;color: #000">
-                    How would you like to disseminate your dataset? <br>
-                  <span style="font-size:13px;text-align:center;color: #696969">Please select one:</span></label>
-                  <div style="display:flex;flex-direction:row;justify-content:center">
-                    <div style="margin:15px 0;">
-                      <div class="option-card radio-button getting-started-1st-question" data-next="Post-curation-question-2" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
-                          <div class="card-head">
-                            <div class="folder-checkbox">
-                              <input class="folder-input-check" id="share-with-curation-team" name="post-curation-1" type="radio">
-                              <label for="share-with-curation-team"></label>
-                            </div>
-                          </div>
-                          <div class="card-body">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="var(--color-bg-orange)" class="bi bi-people" viewBox="0 0 16 16">
-                              <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
-                            </svg>
-                            <h2>Share with Curation Team</h2>
-                          </div>
-                        </div>
-                    </div>
-
-                    <div style="margin:15px 0;">
-                      <div class="option-card radio-button getting-started-1st-question" data-next="Post-curation-question-2" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
-                          <div class="card-head">
-                            <div class="folder-checkbox">
-                              <input class="folder-input-check" id="share-with-sparc-consortium" name="post-curation-1" type="radio">
-                              <label for="share-with-sparc-consortium"></label>
-                            </div>
-                          </div>
-                          <div class="card-body">
-                            <i class="fab fa-connectdevelop" style="color:green"></i>
-                            <h2>Share with SPARC Consortium </h2>
-                          </div>
-                      </div>
-                    </div>
-
-                    <div style="margin:15px 0;">
-                      <div class="option-card radio-button getting-started-1st-question"
-                            data-next="Post-curation-question-4" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
-                          <div class="card-head">
-                            <div class="folder-checkbox">
-                              <input class="folder-input-check" id="submit-pre-publishing" name="post-curation-1" type="radio">
-                              <label for="submit-pre-publishing"></label>
-                            </div>
-                          </div>
-                          <div class="card-body">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="var(--tagify-dd-color-primary)" class="bi bi-book" viewBox="0 0 16 16">
-                              <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
-                            </svg>
-                            <h2>Submit for pre-publishing review</h2>
-                          </div>
+          <div
+            class="individual-question post-curation show"
+            id="Post-curation-question-1"
+          >
+            <div class="ui form" style="width: 100%">
+              <div class="grouped fields">
+                <label style="font-size: 17px; text-align: center; color: #000">
+                  Please select one:</label
+                >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                  "
+                >
+                  <div style="margin: 15px 0">
+                    <div
+                      class="option-card radio-button getting-started-1st-question"
+                      data-next="Post-curation-question-2"
+                      onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')"
+                    >
+                      <div class="card-head">
+                        <div class="folder-checkbox">
+                          <input
+                            class="folder-input-check"
+                            id="share-with-curation-team"
+                            name="post-curation-1"
+                            type="radio"
+                          />
+                          <label for="share-with-curation-team"></label>
                         </div>
                       </div>
-                  </div>
-                </div>
-            </div>
-          </div>
-
-          <div class="individual-question post-curation" id="Post-curation-question-2">
-              <div class="ui form" style="width:100%">
-                <div class="grouped fields">
-                  <label style="font-size:16px;text-align:center;color: #000">
-                  Please select a dataset</label>
-                  <div class="field" style="margin:15px 0;width:450px">
-                    <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
-                      <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
-                        <div>
-                          <h5 style="color:#808080;font-size:15px">Current dataset:
-                          <span style="color:#000;font-weight:600;margin-left:8px;font-size:15px" class="bf-dataset-span">None</span></h5>
-                        </div>
-                        <svg class="svg-change-current-account" onclick="openDropdownPrompt('dataset')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
-                          <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                      <div class="card-body">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="40px"
+                          height="40px"
+                          fill="var(--color-bg-orange)"
+                          class="bi bi-people"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"
+                          />
                         </svg>
+                        <h2>Share with Curation Team</h2>
                       </div>
                     </div>
-                    <div class="div-confirm-button" style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
-                      <button onclick="transitionFreeFormMode(this, 'Post-curation-question-2', 'post-curation-tab', 'delete', 'individual-question post-curation')" data-next="Post-curation-question-3" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
+                  </div>
+
+                  <div style="margin: 15px 0">
+                    <div
+                      class="option-card radio-button getting-started-1st-question"
+                      data-next="Post-curation-question-2"
+                      onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')"
+                    >
+                      <div class="card-head">
+                        <div class="folder-checkbox">
+                          <input
+                            class="folder-input-check"
+                            id="share-with-sparc-consortium"
+                            name="post-curation-1"
+                            type="radio"
+                          />
+                          <label for="share-with-sparc-consortium"></label>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <i
+                          class="fab fa-connectdevelop"
+                          style="color: green"
+                        ></i>
+                        <h2>Share with SPARC Consortium</h2>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="margin: 15px 0">
+                    <div
+                      class="option-card radio-button getting-started-1st-question"
+                      data-next="Post-curation-question-2"
+                      onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')"
+                    >
+                      <div class="card-head">
+                        <div class="folder-checkbox">
+                          <input
+                            class="folder-input-check"
+                            id="submit-pre-publishing"
+                            name="post-curation-1"
+                            type="radio"
+                          />
+                          <label for="submit-pre-publishing"></label>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="40px"
+                          height="40px"
+                          fill="var(--tagify-dd-color-primary)"
+                          class="bi bi-book"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"
+                          />
+                        </svg>
+                        <h2>Submit for pre-publishing review</h2>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div class="individual-question post-curation" id="Post-curation-question-4">
-                <div class="ui form" style="width:100%">
-                  <div class="grouped fields">
-                    <label style="font-size:16px;text-align:center;color: #000">
-                    Review dataset information and status below: </label>
-                    <div class="field" style="margin:15px 0;width:450px">
-                      <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
-                        <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
-                          <div>
-                            <h5 style="color:#808080;font-size:15px">Current dataset:
-                            <span style="color:#000;font-weight:600;margin-left:8px;font-size:15px" class="bf-dataset-span">None</span></h5>
-                          </div>
-                          <svg class="svg-change-current-account" onclick="openDropdownPrompt('dataset')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
-                            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
-                          </svg>
-                        </div>
-                        <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
-                          <div>
-                            <h5 style="color:#808080;font-size:15px"> Review status:
-                              <span id='para-review-dataset-info-disseminate' style="color:#000;font-weight:600;margin-left:8px;font-size:15px">None</span>
-                            </h5>
-                          </div>
-                          <i class="fas fa-sync svg-change-current-account" id="button-refresh-publishing-status" style="color:#000"></i>
-                        </div>
+          <div
+            class="individual-question post-curation"
+            id="Post-curation-question-2"
+          >
+            <div class="ui form" style="width: 100%">
+              <div class="grouped fields">
+                <label style="font-size: 17px; text-align: center; color: #000">
+                  Please select a dataset</label
+                >
+                <div class="field" style="margin: 15px 0; width: 450px">
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: space-between;
+                      margin-top: 15px;
+                      height: auto;
+                      box-shadow: 0px 0px 10px #d5d5d5;
+                      padding: 15px 25px;
+                      border-radius: 5px;
+                    "
+                  >
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                        margin-bottom: 15px;
+                      "
+                    >
+                      <div>
+                        <h5 style="color: #808080; font-size: 15px">
+                          Current dataset:
+                          <span
+                            style="
+                              color: #000;
+                              font-weight: 600;
+                              margin-left: 8px;
+                              font-size: 15px;
+                            "
+                            class="bf-dataset-span"
+                            >None</span
+                          >
+                        </h5>
                       </div>
-                      <p id="para-disseminate-status-publish" style="text-align:center; margin-top:15px"></p>
-                      <div class="div-confirm-button" style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
-                        <!-- <div style="display: flex;
-                        flex-direction: row"> -->
-                          <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background:#fff;color:red;font-weight:600;border:1px solid red;font-size:14px">
-                            <i class="fas fa-ban" style="padding-right:5px"></i>
-                            Withdraw from review</button>
-                          <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px">
-                            <i class="fas fa-sign-in-alt" style="padding-right:5px"></i>
-                            Submit for review</button>
-                        <!-- </div> -->
-                        <!-- <button onclick="transitionFreeFormMode(this, 'Post-curation-question-4', 'post-curation-tab', 'delete', 'individual-question post-curation')" data-next="Post-curation-question-5" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button> -->
-                      </div>
+                      <svg
+                        class="svg-change-current-account"
+                        onclick="openDropdownPrompt('dataset')"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        class="bi bi-pencil-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
                     </div>
+                  </div>
+                  <div
+                    class="div-confirm-button"
+                    style="
+                      display: none;
+                      flex-direction: row;
+                      justify-content: center;
+                      margin: 10px auto;
+                    "
+                  >
+                    <button
+                      onclick="transitionFreeFormMode(this, 'Post-curation-question-2', 'post-curation-tab', 'delete', 'individual-question post-curation')"
+                      data-next="Post-curation-question-3"
+                      style="
+                        cursor: pointer;
+                        border-radius: 8px;
+                        margin: 10px auto;
+                        width: 100px;
+                        height: 30px;
+                        background: var(--color-light-green);
+                        color: #fff;
+                        font-weight: 600;
+                        border: none;
+                        font-size: 13px;
+                      "
+                    >
+                      Confirm
+                    </button>
                   </div>
                 </div>
               </div>
-
-            <div class="individual-question post-curation" id="Post-curation-question-3">
-                <div class="ui form" style="width:100%;display:flex;flex-direction:column;">
-                  <p id="para-disseminate-status"></p>
-                  <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:15px">
-                    <i class="fas fa-share" style="padding-right:5px"></i>
-                    Share now</button>
-                </div>
-              </div>
+            </div>
           </div>
 
-
+          <div
+            class="individual-question post-curation"
+            id="Post-curation-question-3"
+          >
+            <div class="ui form" style="width: 100%">
+              <button
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 140px;
+                  height: 40px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 15px;
+                "
+              >
+                <i class="fas fa-share" style="padding-right: 5px"></i>
+                Share now
+              </button>
+            </div>
+          </div>
+        </div>
       </section>
+    </div>
+  </section>
+
+
+  <section
+    id="download_metadata_templates-section"
+    class="section js-section u-category-windows"
+    style="padding-left: 15px; overflow-y: hidden"
+  >
+    <div class="main-tabs show" id="download_metadata_templates-tab">
+      <header class="section-header">
+        <div style="display: flex; flex-direction: row">
+          <svg
+            width="52"
+            height="59"
+            viewBox="0 0 52 59"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M46.7819 11.6562H44.1829V17.4916H46.7819V40.8332H44.1829V46.6686H46.7819C49.6486 46.6686 51.9799 44.0514 51.9799 40.8332V17.4916C51.9799 14.2763 49.646 11.6562 46.7819 11.6562ZM10.396 23.327H33.774V34.9978H10.396V23.327Z"
+              fill="black"
+            />
+            <path
+              d="M38.9849 46.6685V5.83539H46.7689V0H25.977V5.83539H33.7869V11.6562H5.19799C2.3313 11.6562 0 14.2734 0 17.4916V40.8331C0 44.0513 2.3313 46.6685 5.19799 46.6685H33.7869V52.5185H25.977V58.3539H46.7689V52.5185H38.9849V46.6685ZM5.19799 40.8331V17.4916H33.7869V40.8331H5.19799Z"
+              fill="black"
+            />
+          </svg>
+          <h2>Prepare metadata - Download templates</h2>
+        </div>
+        <div class="tab-info">
+          <p class="tab-info-p" style="margin-bottom: 2em">
+             Get the templates provided by the SPARC Curation Team to manually fill out metadata files
+          </p>
+        </div>
+      </header>
+
+      <div class="div-organize-generate-dataset">
+        <h3 class="question-title">
+          <span style="color: #696969;font-size:13px">Click below to download desired file templates.</span>
+        </h3>
+        <div style="margin-bottom:15px;">
+        <button class="file-templates-button" id="a-submission" href="#">
+          <svg xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" fill="var(--tagify-dd-color-primary)" class="bi bi-download" viewBox="0 0 16 16">
+            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+          </svg>
+          <p style="margin-top:30px;font-family:'Raleway', sans-serif">submission</p>
+        </button>
+
+        <button class="file-templates-button button-generate-dataset" id="a-description">
+          <svg xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" fill="var(--tagify-dd-color-primary)" class="bi bi-download" viewBox="0 0 16 16">
+            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+          </svg>
+          <p style="margin-top:30px;font-family:'Raleway', sans-serif">dataset_description</p>
+        </button>
+
+        <button class="file-templates-button button-generate-dataset" id="a-subjects">
+          <svg xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" fill="var(--tagify-dd-color-primary)" class="bi bi-download" viewBox="0 0 16 16">
+            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+          </svg>
+          <p style="margin-top:30px;font-family:'Raleway', sans-serif">subjects</p>
+        </button>
+      </div>
+        <div>
+        <button class="file-templates-button button-generate-dataset" id="a-samples">
+          <svg xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" fill="var(--tagify-dd-color-primary)" class="bi bi-download" viewBox="0 0 16 16">
+            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+          </svg>
+          <p style="margin-top:30px;font-family:'Raleway', sans-serif">samples</p>
+        </button>
+        <button class="file-templates-button button-generate-dataset" id="a-manifest">
+          <svg xmlns="http://www.w3.org/2000/svg" width="50px" height="50px" fill="var(--tagify-dd-color-primary)" class="bi bi-download" viewBox="0 0 16 16">
+            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+          </svg>
+          <p style="margin-top:30px;font-family:'Raleway', sans-serif">manifest</p>
+        </button>
+        </div>
+      </div>
+
+      <div
+        style="
+          border-top: 1px solid #f0f0f0;
+          padding: 10px;
+          padding-top: 15px;
+          height: 50px;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          width: 100%;
+          bottom: 20px;
+          position: absolute;
+        "
+      >
+        <div style="display: flex; flex-direction: row; width: 110px">
+          <button
+            type="button"
+            class="transition-btn prev"
+            data-section="main_tabs"
+          >
+            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
 
   <section
     id="create_new_bf_dataset-section"
@@ -744,10 +953,7 @@
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
-            Enter desired name for your new dataset. This is the field that will
-            be displayed in public as the title of the dataset. Please make sure
-            that your dataset title is different than your other dataset titles
-            and that it is relatively informative.
+            Create a new empty dataset on Blackfynn.
           </p>
         </div>
       </header>
@@ -914,20 +1120,21 @@
             >
               <button
                 id="button-create-bf-new-dataset"
+                class="content-action-button"
                 style="
                   cursor: pointer;
                   border-radius: 8px;
-                  margin: 0 10px;
-                  width: 100px;
+                  margin: 0 10px 13px 0;
+                  width: 140px;
                   height: 30px;
                   background: var(--color-light-green);
                   color: #fff;
                   font-weight: 600;
                   border: none;
-                  font-size: 13px;
+                  font-size: 14px;
                 "
               >
-                Create
+                Create dataset
               </button>
             </div>
             <p
@@ -1004,7 +1211,7 @@
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
-            Some helpful text here
+            Rename an existing dataset on Blackfynn.
           </p>
         </div>
       </header>
@@ -1083,6 +1290,7 @@
                   id="button-rename-dataset-confirm"
                   onclick="transitionFreeFormMode(this, 'rename_dataset_BF_account_tab', 'rename_bf_dataset-tab', 'delete', 'individual-question manage-dataset')"
                   data-next="div-rename-bf-dataset"
+                  class="confirm-button"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -1132,7 +1340,7 @@
               />
             </div>
             <p
-              style="color: red; width: 440px"
+              style="color: red; width: 440px; padding-bottom: 5px"
               id="para-new-name-dataset-message"
             ></p>
             <div
@@ -1148,17 +1356,17 @@
                 style="
                   cursor: pointer;
                   border-radius: 8px;
-                  margin: 0 10px;
-                  width: 100px;
+                  margin: 0 10px 13px 0;
+                  width: 140px;
                   height: 30px;
                   background: var(--color-light-green);
                   color: #fff;
                   font-weight: 600;
                   border: none;
-                  font-size: 13px;
+                  font-size: 15px;
                 "
               >
-                Rename
+                Rename dataset
               </button>
             </div>
             <p
@@ -1197,13 +1405,13 @@
           </button>
         </div>
       </div>
-
-      <!--
-        button-rename-dataset - button-rename-datasett
-        bf-rename-dataset-name - bf-rename-dataset-namee
-        para-rename-dataset-status - para-rename-dataset-statuss
-      -->
     </div>
+
+    <!--
+      button-rename-dataset - button-rename-datasett
+      bf-rename-dataset-name - bf-rename-dataset-namee
+      para-rename-dataset-status - para-rename-dataset-statuss
+    -->
   </section>
 
   <section
@@ -1341,6 +1549,7 @@
                   id="button_pi_dataset_owner_confirm"
                   onclick="transitionFreeFormMode(this, 'pi_dataset_owner_tab', 'pi_dataset_owner_parent-tab', 'delete', 'individual-question manage-dataset')"
                   data-next="div_make_pi_owner_permissions"
+                  class="confirm-button"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -1377,47 +1586,61 @@
               "
               >Change permissions:</label
             >
-            <div class="field" style="display: flex; width: 500px">
-              <select
-                class="my-dropdown"
-                style="width: 60%; padding: 8px 12px; height: 38px"
-                id="bf_list_users_pi"
-              >
-                <option>Select PI</option>
-              </select>
-
+            <div
+              class="field"
+              style="
+                display: flex;
+                width: 500px;
+                justify-content: space-between;
+                flex-direction: column;
+              "
+            >
               <div
-                id="div-button-add-permission-pi"
                 style="
+                  display: flex;
                   flex-direction: row;
                   justify-content: center;
-                  margin: 0 auto;
                 "
               >
-                <button
-                  id="button-add-permission-pi"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 0 10px;
-                    width: 125px;
-                    height: 35px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
+                <select
+                  class="my-dropdown"
+                  style="width: 60%; padding: 8px 12px; height: 38px"
+                  id="bf_list_users_pi"
                 >
-                  Make PI owner
-                </button>
+                  <option>Select PI</option>
+                </select>
+
+                <div
+                  id="div-button-add-permission-pi"
+                  style="flex-direction: row; justify-content: center"
+                >
+                  <button
+                    id="button-add-permission-pi"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 0 10px 0 20px;
+                      width: 140px;
+                      height: 35px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 14px;
+                    "
+                  >
+                    Make PI owner
+                  </button>
+                </div>
               </div>
+
               <p
                 id="para-dataset-permission-status-pi"
                 style="
                   text-align: center;
                   font-weight: 600;
                   color: var(--color-light-green);
+                  padding-top: 20px;
                 "
               ></p>
             </div>
@@ -1449,14 +1672,14 @@
           </button>
         </div>
       </div>
-
-      <!--
-        button-add-permission-pi - button-add-permission-pii
-        para-dataset-permission-status-pi - para-dataset-permission-status-pii
-        bf_list_users_pi - bf_list_users_pii
-        para-dataset-permission-current - para-dataset-permission-currentt
-      -->
     </div>
+
+    <!--
+      button-add-permission-pi - button-add-permission-pii
+      para-dataset-permission-status-pi - para-dataset-permission-status-pii
+      bf_list_users_pi - bf_list_users_pii
+      para-dataset-permission-current - para-dataset-permission-currentt
+    -->
   </section>
 
   <section
@@ -1483,7 +1706,8 @@
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
-            Some helpful text here
+            Give access to other for colloboration and share with curation team
+            for review.
           </p>
         </div>
       </header>
@@ -1590,6 +1814,7 @@
                   id="button_add_edit_permissions_confirm"
                   onclick="transitionFreeFormMode(this, 'add_edit_permissions_choice_tab', 'add_edit_permissions_parent-tab', 'delete', 'individual-question manage-dataset')"
                   data-next="add_edit_permissions_choice_div"
+                  class="confirm-button"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -1717,58 +1942,77 @@
               >Please select the user for whom you want to modify
               permissions:</label
             >
-            <div class="field" style="display: flex; width: 500px">
-              <select
-                class="my-dropdown"
-                style="width: 60%; padding: 8px 12px; height: 38px"
-                id="bf_list_users"
-              >
-                <option>Select user</option>
-              </select>
-
-              <select class="my-dropdown" id="bf_list_roles">
-                <option>Select role</option>
-                <option>viewer</option>
-                <option>manager</option>
-                <option>editor</option>
-                <option>owner</option>
-                <option>remove current permissions</option>
-              </select>
-
+            <div
+              class="field"
+              style="display: flex; width: 500px; flex-direction: column"
+            >
               <div
-                id="div-button-add-permission"
                 style="
+                  display: flex;
                   flex-direction: row;
-                  justify-content: center;
-                  margin: 0 auto;
+                  justify-content: space-around;
+                  padding-bottom: 20px;
                 "
               >
-                <button
-                  id="button-add-permission"
+                <select
+                  class="my-dropdown"
+                  style="width: 60%; padding: 8px 12px; height: 38px"
+                  id="bf_list_users"
+                >
+                  <option>Select user</option>
+                </select>
+
+                <select
+                  class="my-dropdown"
+                  id="bf_list_roles"
+                  style="width: 30%; padding: 8px 12px; height: 38px"
+                >
+                  <option>Select role</option>
+                  <option>viewer</option>
+                  <option>manager</option>
+                  <option>editor</option>
+                  <option>owner</option>
+                  <option>remove current permissions</option>
+                </select>
+              </div>
+
+              <div style="display: flex; flex-direction: column">
+                <div
+                  id="div-button-add-permission"
                   style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 0 10px;
-                    width: 125px;
-                    height: 35px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 0 auto;
                   "
                 >
-                  Add permission for user
-                </button>
+                  <button
+                    id="button-add-permission"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 0 10px;
+                      width: 190px;
+                      height: 40px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 15px;
+                    "
+                  >
+                    Add permission for user
+                  </button>
+                </div>
+                <p
+                  id="para-dataset-permission-status"
+                  style="
+                    text-align: center;
+                    font-weight: 600;
+                    color: var(--color-light-green);
+                    padding-top: 20px;
+                  "
+                ></p>
               </div>
-              <p
-                id="para-dataset-permission-status"
-                style="
-                  text-align: center;
-                  font-weight: 600;
-                  color: var(--color-light-green);
-                "
-              ></p>
             </div>
           </div>
         </div>
@@ -1790,57 +2034,76 @@
               >Please select the team for whom you want to modify
               permissions:</label
             >
-            <div class="field" style="display: flex; width: 500px">
-              <select
-                class="my-dropdown"
-                style="width: 60%; padding: 8px 12px; height: 38px"
-                id="bf_list_teams"
-              >
-                <option>Select team</option>
-              </select>
-
-              <select class="my-dropdown" id="bf_list_roles_team">
-                <option>Select role</option>
-                <option>viewer</option>
-                <option>manager</option>
-                <option>editor</option>
-                <option>remove current permissions</option>
-              </select>
-
+            <div
+              class="field"
+              style="display: flex; width: 500px; flex-direction: column"
+            >
               <div
-                id="div-button-add-permission-team"
                 style="
+                  display: flex;
                   flex-direction: row;
-                  justify-content: center;
-                  margin: 0 auto;
+                  justify-content: space-around;
+                  padding-bottom: 20px;
                 "
               >
-                <button
-                  id="button-add-permission-team"
+                <select
+                  class="my-dropdown"
+                  style="width: 60%; padding: 8px 12px; height: 38px"
+                  id="bf_list_teams"
+                >
+                  <option>Select team</option>
+                </select>
+
+                <select
+                  class="my-dropdown"
+                  id="bf_list_roles_team"
+                  style="width: 30%; padding: 8px 12px; height: 38px"
+                >
+                  <option>Select role</option>
+                  <option>viewer</option>
+                  <option>manager</option>
+                  <option>editor</option>
+                  <option>remove current permissions</option>
+                </select>
+              </div>
+
+              <div style="display: flex; flex-direction: column">
+                <div
+                  id="div-button-add-permission-team"
                   style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 0 10px;
-                    width: 125px;
-                    height: 35px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 0 auto;
                   "
                 >
-                  Add permission for team
-                </button>
+                  <button
+                    id="button-add-permission-team"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 0 10px;
+                      width: 190px;
+                      height: 40px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 15px;
+                    "
+                  >
+                    Add permission for team
+                  </button>
+                </div>
+                <p
+                  id="para-dataset-permission-status-team"
+                  style="
+                    text-align: center;
+                    font-weight: 600;
+                    color: var(--color-light-green);
+                    padding-top: 20px;
+                  "
+                ></p>
               </div>
-              <p
-                id="para-dataset-permission-status-team"
-                style="
-                  text-align: center;
-                  font-weight: 600;
-                  color: var(--color-light-green);
-                "
-              ></p>
             </div>
           </div>
         </div>
@@ -1911,7 +2174,7 @@
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
-            Some helpful text here
+            Add a subtitle to your dataset on Blackfynn.
           </p>
         </div>
       </header>
@@ -1996,6 +2259,7 @@
                   id="button_add_edit_subtitle_confirm"
                   onclick="transitionFreeFormMode(this, 'add_edit_subtitle_tab', 'add_edit_subtitle_parent-tab', 'delete', 'individual-question manage-dataset')"
                   data-next="div_add_edit_subtitle"
+                  class="confirm-button"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -2021,7 +2285,7 @@
         class="individual-question manage-dataset"
         id="div_add_edit_subtitle"
       >
-        <div class="ui form" style="width: 450px">
+        <div class="ui form" style="width: 500px">
           <div class="grouped fields">
             <label
               style="
@@ -2030,58 +2294,82 @@
                 width: 100%;
                 text-align: center;
               "
-              >Enter subtitle below(any existing subtitle will be
-              displayed):</label
-            >
+              >Enter subtitle below.<br />
+              <span style="color: #696969; font-size: 13px"
+                >Any existing subtitle will be displayed:
+              </span>
+            </label>
             <div
               class="field"
-              style="display: flex; justify-content: center; width: 100%"
-            >
-              <textarea
-                id="bf-dataset-subtitle"
-                class="demo-response"
-                rows="4"
-                maxlength="256"
-              >
-              </textarea>
-              <p>
-                <span id="para-char-count-metadata"> 256 characters left </span>
-              </p>
-            </div>
-            <div
-              id="div-button-add-subtitle"
               style="
-                flex-direction: row;
+                display: flex;
                 justify-content: center;
-                margin: 0 auto;
+                width: 450px;
+                flex-direction: column;
               "
             >
-              <button
-                id="button-add-subtitle"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 0 10px;
-                  width: 100px;
-                  height: 30px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 13px;
-                "
-              >
-                Add subtitle
-              </button>
+              <div style="width: 100%; position: relative">
+                <textarea
+                  id="bf-dataset-subtitle"
+                  class="demo-response"
+                  style="position: relative"
+                  rows="6"
+                  maxlength="256"
+                >
+                </textarea>
+                <p>
+                  <span
+                    id="para-char-count-metadata"
+                    style="
+                      position: absolute;
+                      bottom: 10px;
+                      right: 15px;
+                      color: rgb(117, 107, 107);
+                    "
+                  >
+                    256 characters left
+                  </span>
+                </p>
+              </div>
+              <div style="display: flex; flex-direction: row">
+                <div
+                  id="div-button-add-subtitle"
+                  style="
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 0 auto;
+                    padding-top: 20px;
+                  "
+                >
+                  <button
+                    id="button-add-subtitle"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 0 10px;
+                      width: 190px;
+                      height: 40px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 15px;
+                    "
+                  >
+                    Add subtitle to dataset
+                  </button>
+                </div>
+                <p
+                  id="para-dataset-subtitle-status"
+                  style="
+                    text-align: center;
+                    font-weight: 600;
+                    color: var(--color-light-green);
+                    padding-top: 20px;
+                  "
+                ></p>
+              </div>
             </div>
-            <p
-              id="para-dataset-subtitle-status"
-              style="
-                text-align: center;
-                font-weight: 600;
-                color: var(--color-light-green);
-              "
-            ></p>
           </div>
         </div>
       </div>
@@ -2241,6 +2529,7 @@
                   id="button_add_edit_description_confirm"
                   onclick="transitionFreeFormMode(this, 'add_edit_description_tab', 'add_edit_description_parent-tab', 'delete', 'individual-question manage-dataset')"
                   data-next="div_add_edit_description"
+                  class="confirm-button"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -2266,7 +2555,7 @@
         class="individual-question manage-dataset"
         id="div_add_edit_description"
       >
-        <div class="ui form" style="width: 450px">
+        <div class="ui form" style="width: 500px">
           <div class="grouped fields">
             <label
               style="
@@ -2275,14 +2564,19 @@
                 width: 100%;
                 text-align: center;
               "
-              >Enter description below(any existing description will be
-              displayed):</label
-            >
+              >Enter description below: <br />
+              <span style="color: #696969; font-size: 13px"
+                >Any existing description will be displayed:
+              </span>
+            </label>
             <div
               class="field"
               style="display: flex; justify-content: center; width: 100%"
             >
-              <div id="editorSection"></div>
+              <div
+                style="margin-top: 10px; width: 500px"
+                id="editorSection"
+              ></div>
             </div>
             <div
               id="div-button-add-description"
@@ -2290,6 +2584,7 @@
                 flex-direction: row;
                 justify-content: center;
                 margin: 0 auto;
+                padding-top: 20px;
               "
             >
               <button
@@ -2298,13 +2593,13 @@
                   cursor: pointer;
                   border-radius: 8px;
                   margin: 0 10px;
-                  width: 100px;
-                  height: 30px;
+                  width: 200px;
+                  height: 40px;
                   background: var(--color-light-green);
                   color: #fff;
                   font-weight: 600;
                   border: none;
-                  font-size: 13px;
+                  font-size: 15px;
                 "
               >
                 Add description
@@ -2316,6 +2611,7 @@
                 text-align: center;
                 font-weight: 600;
                 color: var(--color-light-green);
+                padding-top: 20px;
               "
             ></p>
           </div>
@@ -2358,9 +2654,13 @@
   <section
     id="add_edit_banner-section"
     class="section js-section u-category-windows"
-    style="padding-left: 15px; overflow-y: hidden"
+    style="padding-left: 15px"
   >
-    <div class="main-tabs show" id="add_edit_banner_parent-tab">
+    <div
+      class="main-tabs show"
+      id="add_edit_banner_parent-tabc"
+      style="display: flex; height: 100%; overflow-y: hidden"
+    >
       <header class="section-header">
         <div style="display: flex; flex-direction: row">
           <svg
@@ -2391,7 +2691,7 @@
           </p>
         </div>
       </header>
-
+<div id="add_edit_banner_parent-tab" style="overflow-y: auto; height: 75%;">
       <div
         class="individual-question manage-dataset show"
         id="add_edit_banner_tab"
@@ -2472,6 +2772,7 @@
                   id="button_add_edit_banner_confirm"
                   onclick="transitionFreeFormMode(this, 'add_edit_banner_tab', 'add_edit_banner_parent-tab', 'delete', 'individual-question manage-dataset')"
                   data-next="div_add_edit_banner"
+                  class="confirm-button"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -2493,9 +2794,15 @@
         </div>
       </div>
 
-      <div class="individual-question manage-dataset" id="div_add_edit_banner">
-        <div class="ui form" style="width: 450px">
-          <div class="grouped fields">
+      <div
+        class="individual-question manage-dataset"
+        id="div_add_edit_banner"
+      >
+        <div class="ui form" style="min-width: 450px">
+          <div
+            class="grouped fields"
+            style="display: flex; justify-content: center"
+          >
             <label
               id="add_edit_banner_label"
               style="
@@ -2508,77 +2815,26 @@
             >
             <div
               class="field"
-              style="display: flex; justify-content: center; width: 100%"
+              style="display: flex; justify-content: center; margin: auto"
             >
               <div
                 style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
                   margin-top: 15px;
                   height: auto;
                   box-shadow: 0px 0px 10px #d5d5d5;
                   padding: 15px 25px;
                   border-radius: 5px;
+                  min-width: 450px;
                 "
               >
-                <div
-                  id="div-current-banner-img"
-                  class="demo-controls"
-                  style="color: black"
-                >
-                  <p id="para-current-banner-img">None</p>
-                  <img id="current-banner-img" />
-                </div>
-
-                <div id="div-editbanner-img">
-                  <div style="float: left; width: 250px; margin-left: -300px">
-                    <button id="button-import-banner-image" class="demo-button">
-                      Import image
-                    </button>
-                    <p id="para-path-image" style="margin-top: 0em"></p>
-                    <div class="container-cropped-image">
-                      <div
-                        class="banner-image-size"
-                        style="width: 160px; text-align: center"
-                      >
-                        <span class="crop-image-text"
-                          >Cropped dimensions:
-                        </span>
-                      </div>
-                      <input
-                        class="banner-image-size input"
-                        style="
-                          width: 70px;
-                          text-align: center;
-                          pointer-events: none;
-                        "
-                        id="form-banner-height"
-                        type="text"
-                        readonly="readonly"
-                        size="7"
-                      />
-                      <div
-                        class="banner-image-size"
-                        style="width: 30px; text-align: center"
-                      >
-                        <span class="crop-image-text">px</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div id="div-img-container-holder" class="img-container">
-                    Imported image will be shown here. <br />You will be able to
-                    crop it before uploading.
-                  </div>
-
-                  <div
-                    id="div-img-container"
-                    class="img-container"
-                    style="display: none"
+                <div id="div-current-banner-img" style="color: black">
+                  <p
+                    style="text-align: center; height: 2m; margin: auto"
+                    id="para-current-banner-img"
                   >
-                    <img id="image-banner" class='banner-img' width="100%"
-                    height:'auto'>
-                  </div>
+                    None
+                  </p>
+                  <img id="current-banner-img" />
                 </div>
               </div>
             </div>
@@ -2591,47 +2847,41 @@
               "
             >
               <button
-                id="save-banner-image"
+                id="edit_banner_image_button"
                 style="
                   cursor: pointer;
                   border-radius: 8px;
                   margin: 0 10px;
-                  width: 100px;
-                  height: 30px;
+                  width: 150px;
+                  height: 40px;
                   background: var(--color-light-green);
                   color: #fff;
                   font-weight: 600;
                   border: none;
-                  font-size: 13px;
+                  font-size: 15px;
+                  margin-top: 20px;
                 "
               >
                 Edit banner image
               </button>
             </div>
-            <p
-              id="para-dataset-banner-image-status"
-              style="
-                text-align: center;
-                font-weight: 600;
-                color: var(--color-light-green);
-              "
-            ></p>
           </div>
         </div>
       </div>
+    </div>
 
       <div
         style="
           border-top: 1px solid #f0f0f0;
           padding: 10px;
           padding-top: 15px;
+          position:absolute;
           height: 50px;
           display: flex;
           flex-direction: row;
           justify-content: space-between;
           width: 100%;
-          bottom: 20px;
-          position: absolute;
+          bottom: 10px;
         "
       >
         <div style="display: flex; flex-direction: row; width: 110px">
@@ -2642,6 +2892,130 @@
           >
             <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
           </button>
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div
+        class="modal fade"
+        id="edit_banner_image_modal"
+        tabindex="-1"
+        role="dialog"
+        data-backdrop="false"
+        style="background-color: rgba(0, 0, 0, 0.5); width: 100%; height: 100%"
+      >
+        <div
+          class="modal-dialog modal-dialog-centered modal-lg"
+          role="document"
+        >
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="edit_banner_image_title">
+                Update banner image
+              </h4>
+              <button type="button" class="close" data-dismiss="modal">
+                <i
+                  style="color: red; font-size: 25px"
+                  class="far fa-window-close"
+                ></i>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div
+                id="div-editbanner-img"
+                style="display: flex; flex-direction: row"
+              >
+                <div id="div-img-container-holder" class="img-container">
+                  Imported image will be shown here. <br />You will be able to
+                  crop it before uploading.
+                </div>
+
+                <div
+                  id="div-img-container"
+                  class="img-container"
+                  style="display: none; flex-direction: column"
+                >
+                  <img id="image-banner" class='banner-img' width="100%"
+                  height:'auto'>
+                  <p
+                    id="para-path-image"
+                    style="margin-top: 0.5em; text-align: center; display: none"
+                  ></p>
+                </div>
+              </div>
+              <p
+                id="para-dataset-banner-image-status"
+                style="
+                  text-align: center;
+                  font-weight: 600;
+                  color: var(--color-light-green);
+                "
+              ></p>
+            </div>
+            <div
+              class="modal-footer"
+              style="display: flex; justify-content: space-between"
+            >
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: center;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    width: 100%;
+                  "
+                >
+                  <button
+                    id="button-import-banner-image"
+                    type="button"
+                    class="btn btn-primary"
+                    style="border-radius: 4px"
+                  >
+                    Import image
+                  </button>
+                </div>
+              </div>
+
+              <div class="container-cropped-image">
+                <div
+                  class="banner-image-size"
+                  style="width: 160px; text-align: center"
+                >
+                  <span class="crop-image-text">Cropped dimensions: </span>
+                </div>
+                <input
+                  class="banner-image-size input"
+                  style="width: 70px; text-align: center; pointer-events: none"
+                  id="form-banner-height"
+                  type="text"
+                  readonly="readonly"
+                  size="7"
+                />
+                <div
+                  class="banner-image-size"
+                  style="width: 30px; text-align: center"
+                >
+                  <span class="crop-image-text">px</span>
+                </div>
+              </div>
+
+              <button
+                id="save-banner-image"
+                type="button"
+                class="btn btn-primary"
+                style="border-radius: 4px; visibility: hidden"
+              >
+                Save changes
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -2782,6 +3156,7 @@
                   id="button_add_license_confirm"
                   onclick="transitionFreeFormMode(this, 'add_license_tab', 'add_license_parent-tab', 'delete', 'individual-question manage-dataset')"
                   data-next="div_add_license"
+                  class="confirm-button"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -2817,11 +3192,52 @@
             >
             <div
               class="field"
-              style="display: flex; justify-content: center; width: 100%"
+              style="
+                display: flex;
+                justify-content: center;
+                width: 100%;
+                flex-direction: column;
+              "
             >
-              <div>
-                <h5>Current License</h5>
-                <p id="para-dataset-license-current">None</p>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
+                  width: 450px;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: left;
+                    margin-bottom: 15px;
+                  "
+                >
+                  <div style="display: flex; flex-direction: row">
+                    <h5 style="color: #808080; font-size: 15px">
+                      Current License:
+                    </h5>
+                    <span
+                      class="bf-dataset-span"
+                      id="para-dataset-license-current"
+                      style="
+                        color: #000;
+                        font-weight: 600;
+                        margin-left: 8px;
+                        font-size: 15px;
+                        width: 70%;
+                      "
+                      >None</span
+                    >
+                  </div>
+                </div>
               </div>
 
               <div
@@ -2829,7 +3245,7 @@
                 style="
                   flex-direction: row;
                   justify-content: center;
-                  margin: 0 auto;
+                  margin: 25px auto;
                 "
               >
                 <button
@@ -2838,27 +3254,27 @@
                     cursor: pointer;
                     border-radius: 8px;
                     margin: 0 10px;
-                    width: 100px;
-                    height: 30px;
+                    width: 290px;
+                    height: 50px;
                     background: var(--color-light-green);
                     color: #fff;
                     font-weight: 600;
                     border: none;
-                    font-size: 13px;
+                    font-size: 15px;
                   "
                 >
-                  Click to assign Creative Commons Attribution (CC-BY) license
+                  Assign Creative Commons Attribution (CC-BY) license
                 </button>
               </div>
+              <p
+                id="para-dataset-license-status"
+                style="
+                  text-align: center;
+                  font-weight: 600;
+                  color: var(--color-light-green);
+                "
+              ></p>
             </div>
-            <p
-              id="para-dataset-license-status"
-              style="
-                text-align: center;
-                font-weight: 600;
-                color: var(--color-light-green);
-              "
-            ></p>
           </div>
         </div>
       </div>
@@ -3004,6 +3420,7 @@
                   id="button_upload_local_dataset_confirm"
                   onclick="transitionFreeFormMode(this, 'upload_local_dataset_tab', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
                   data-next="upload_local_dataset_div"
+                  class="confirm-button"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -3034,7 +3451,7 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >What is the location of the dataset?</label
             >
-            <div class="field" style="margin: 15px 0">
+            <div class="field" style="margin: 15px 0; width: 100%">
               <input
                 class="form-control"
                 style="width: 450px !important"
@@ -3043,38 +3460,49 @@
                 readonly
                 placeholder="Select a folder"
               />
+              <p
+                id="para-info-local-submit"
+                style="
+                  float: right;
+                  margin-top: 0;
+                  margin-left: 7px;
+                  padding: 2 2;
+                  width: 20%;
+                  text-align: left;
+                "
+              ></p>
+              <div
+                class="div-confirm-folder-button"
+                style="
+                  display: none;
+                  flex-direction: row;
+                  justify-content: center;
+                  margin: 10px auto;
+                  width: 100%;
+                "
+              >
+                <button
+                  id="button_upload_local_folder_confirm"
+                  onclick="transitionFreeFormMode(this, 'upload_local_dataset_div', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
+                  data-next="upload_local_dataset_final_question_div"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 10px auto;
+                    width: 100px;
+                    height: 30px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    font-size: 13px;
+                  "
+                >
+                  Confirm
+                </button>
+              </div>
             </div>
-            <p
-              id="para-info-local-submit"
-              style="
-                float: right;
-                margin-top: 0;
-                margin-left: 7px;
-                padding: 2 2;
-                width: 20%;
-                text-align: left;
-              "
-            ></p>
           </div>
-          <button
-            id="button_upload_local_folder_confirm"
-            onclick="transitionFreeFormMode(this, 'upload_local_dataset_div', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
-            data-next="upload_local_dataset_final_question_div"
-            style="
-              cursor: pointer;
-              border-radius: 8px;
-              margin: 10px auto;
-              width: 100px;
-              height: 30px;
-              background: var(--color-light-green);
-              color: #fff;
-              font-weight: 600;
-              border: none;
-              font-size: 13px;
-            "
-          >
-            Confirm
-          </button>
         </div>
       </div>
 
@@ -3085,14 +3513,44 @@
         <div class="ui form" style="width: 500px">
           <div class="grouped fields">
             <div class="field" style="display: flex; width: 500px">
-              <button id="button-submit-dataset" class="demo-button">
+              <button
+                id="button-submit-dataset"
+                class="demo-button"
+                onclick="transitionFreeFormMode(this, 'upload_local_dataset_final_question_div', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
+                data-next="upload_local_dataset_progress_div"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 140px;
+                  height: 40px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 15px;
+                "
+              >
                 Upload dataset
               </button>
-              <p id="para-please-wait-manage-dataset"></p>
+            </div>
+          </div>
+        </div>
+      </div>
 
+      <div
+        class="individual-question manage-dataset"
+        id="upload_local_dataset_progress_div"
+      >
+        <div class="ui form" style="width: 500px">
+          <div class="grouped fields">
+            <div
+              class="field"
+              style="display: flex; width: 500px; flex-direction: column"
+            >
               <p id="para-progress-bar-error-status"></p>
-              <p></p>
-              <div id="div-progress-submit">
+
+              <div id="div-progress-submit; width:100%">
                 <h5>Progress</h5>
                 <progress
                   class="progresstrack"
@@ -3100,12 +3558,37 @@
                   max="100"
                   value="0"
                 ></progress>
+                <p id="para-please-wait-manage-dataset"></p>
                 <p id="para-progress-bar-status"></p>
-                <p></p>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div
+      style="
+        border-top: 1px solid #f0f0f0;
+        padding: 10px;
+        padding-top: 15px;
+        height: 50px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        bottom: 20px;
+        position: absolute;
+      "
+    >
+      <div style="display: flex; flex-direction: row; width: 110px">
+        <button
+          type="button"
+          class="transition-btn prev"
+          data-section="main_tabs"
+        >
+          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+        </button>
       </div>
     </div>
 
@@ -3239,6 +3722,7 @@
                   id="button_view_change_dataset_status_confirm"
                   onclick="transitionFreeFormMode(this, 'view_change_dataset_status_tab', 'view_change_dataset_status_parent-tab', 'delete', 'individual-question manage-dataset')"
                   data-next="div_view_change_dataset_status"
+                  class="confirm-button"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -3279,46 +3763,135 @@
               class="field"
               style="display: flex; justify-content: center; width: 100%"
             >
-              <select
-                class="my-dropdown"
-                style="width: 80%"
-                id="bf_list_dataset_status"
-              >
-                <option></option>
-              </select>
-            </div>
-            <div
-              id="div-button-add-description"
-              style="
-                flex-direction: row;
-                justify-content: center;
-                margin: 0 auto;
-              "
-            >
-              <button
-                id="button-add-description"
+              <div
                 style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 0 10px;
-                  width: 100px;
-                  height: 30px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 13px;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
                 "
               >
-                Add description
-              </button>
+                <form action="#">
+                  <div class="dataset-status-container">
+                    <ul>
+                      <li>
+                        <input
+                          type="radio"
+                          id="no_status_radio"
+                          value="NO_STATUS"
+                          name="dataset_status_radio"
+                        />
+                        <label for="no_status_radio">No Status</label>
+
+                        <div class="check"></div>
+                      </li>
+
+                      <li>
+                        <input
+                          type="radio"
+                          id="work_in_progress_radio"
+                          value="WORK_IN_PROGRESS"
+                          name="dataset_status_radio"
+                        />
+                        <label for="work_in_progress_radio"
+                          >Work in Progress</label
+                        >
+
+                        <div class="check"><div class="inside"></div></div>
+                      </li>
+
+                      <li>
+                        <input
+                          type="radio"
+                          id="in_review_radio"
+                          value="IN_REVIEW"
+                          name="dataset_status_radio"
+                        />
+                        <label for="in_review_radio">In Review</label>
+
+                        <div class="check"><div class="inside"></div></div>
+                      </li>
+
+                      <li>
+                        <input
+                          type="radio"
+                          id="completed_radio"
+                          value="COMPLETED"
+                          name="dataset_status_radio"
+                        />
+                        <label for="completed_radio">Completed</label>
+
+                        <div class="check"><div class="inside"></div></div>
+                      </li>
+                    </ul>
+                  </div>
+                  <!--<div class="dataset-status-radio">
+                    <div class="dataset-status-container">
+                      <div class="check"></div>
+                      <input
+                        type="radio"
+                        id="no_status_radio"
+                        value="NO_STATUS"
+                        name="dataset_status_radio"
+                      />
+                      <label for="no_status_radio">No Status</label>
+                    </div>
+                    <div class="dataset-status-container">
+                      <div class="check"><div class="inside"></div></div>
+                      <input
+                        type="radio"
+                        id="work_in_progress_radio"
+                        value="WORK_IN_PROGRESS"
+                        name="dataset_status_radio"
+                      />
+                      <label for="work_in_progress_radio"
+                        >Work in Progress</label
+                      >
+                    </div>
+                    <div class="dataset-status-container">
+                      <div class="check"><div class="inside"></div></div>
+                      <input
+                        type="radio"
+                        id="in_review_radio"
+                        value="IN_REVIEW"
+                        name="dataset_status_radio"
+                      />
+                      <label for="in_review_radio">In Review</label>
+                    </div>
+                    <div class="dataset-status-container">
+                      <div class="check"><div class="inside"></div></div>
+                      <input
+                        type="radio"
+                        id="completed_radio"
+                        value="COMPLETED"
+                        name="dataset_status_radio"
+                      />
+                      <label for="completed_radio">Completed</label>
+                    </div>
+                  </div>-->
+                </form>
+
+                <select
+                  class="my-dropdown"
+                  style="width: 80%; display: none"
+                  id="bf_list_dataset_status"
+                >
+                  <option></option>
+                </select>
+              </div>
             </div>
+
             <p
               id="para-dataset-status-status"
               style="
                 text-align: center;
                 font-weight: 600;
                 color: var(--color-light-green);
+                padding-top: 20px;
               "
             ></p>
           </div>
