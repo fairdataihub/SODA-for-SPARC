@@ -5253,7 +5253,7 @@ const showCurrentBannerImage = () => {
               document
                 .getElementById("edit_banner_image_button")
                 .scrollIntoView({ behavior: "smooth", block: "center" });
-            }, 300);
+            }, 400);
           }
           bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");

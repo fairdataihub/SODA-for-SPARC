@@ -472,6 +472,11 @@ function checkHighLevelFoldersInput() {
 
 // function associated with the Back/Continue buttons
 function nextPrev(n) {
+  if (n == -1 && x[currentTab].id === "getting-started-tab")
+  {
+
+  }
+
   var x = document.getElementsByClassName("parent-tabs");
   // update JSON structure
   updateOverallJSONStructure(x[currentTab].id);
@@ -2558,14 +2563,43 @@ $("#edit_banner_image_button").click(async () => {
           $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
         } else {
           console.log(`An error happened: ${img_src}`);
+          bootbox.alert(
+            `An error occured when importing the image. Please try again later.`
+          );
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Importing Blackfynn Image",
+            img_src
+          );
+          re;
           return;
         }
       } else {
         console.log(`An error happened: ${img_src}`);
+        bootbox.alert(
+          `An error occured when importing the image. Please try again later.`
+        );
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Importing Blackfynn Image",
+          img_src
+        );
         return;
       }
     } else {
       console.log(`An error happened: ${img_src}`);
+      bootbox.alert(
+        `An error occured when importing the image. Please try again later.`
+      );
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Importing Blackfynn Image",
+        img_src
+      );
+      re;
       return;
     }
 
