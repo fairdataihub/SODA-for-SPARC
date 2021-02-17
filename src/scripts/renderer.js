@@ -639,7 +639,7 @@ document
       $("#button-validate-dataset-demo-toggle").click();
     }
   });
-  
+
 document
   .getElementById("button-validate-dataset-next-step")
   .addEventListener("click", (event) => {
@@ -910,7 +910,7 @@ document
   .getElementById("button-import-milestone")
   .addEventListener("click", function () {
     document.getElementById("para-milestone-document-info-long").style.display =
-      "none"; 
+      "none";
     document.getElementById("para-milestone-document-info").innerHTML = "";
     var filepath = document.getElementById("input-milestone-select")
       .placeholder;
@@ -4125,6 +4125,7 @@ function permissionDatasetlistChange() {
   showCurrentPermission();
 }
 
+
 function syncDatasetDropdownOption(dropdown) {
   var value;
 
@@ -4133,7 +4134,7 @@ function syncDatasetDropdownOption(dropdown) {
   if (defaultBfDataset !== "Select dataset") {
     $("#current-bf-dataset").text(defaultBfDataset);
     $("#current-bf-dataset-generate").text(defaultBfDataset);
-    $(".bf-dataset-span").text(defaultBfDataset);
+    $(".bf-dataset-span").html(defaultBfDataset);
     showHideDropdownButtons("dataset", "show");
   }
 
@@ -4994,11 +4995,8 @@ function submitReviewDataset() {
 
 //Withdraw dataset from review
 bfWithdrawReviewDatasetBtn.addEventListener("click", () => {
-  var selectedBfDataset =
-    bfDatasetListPostCurationPublish.options[
-      bfDatasetListPostCurationPublish.selectedIndex
-    ].text;
-  if (selectedBfDataset === "Select dataset") {
+  var selectedBfDataset = $(".bf-dataset-span").html();
+  if (selectedBfDataset === "None") {
     reviewDatasetInfo.innerHTML = "";
     emessage = "Please select a valid dataset";
     publishDatasetStatus.innerHTML =
@@ -5027,16 +5025,11 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
 
 function withdrawReviewDataset() {
   bfSubmitReviewDatasetBtn.disabled = true;
-  bfRefreshPublishingDatasetStatusBtn.disabled = true;
   bfWithdrawReviewDatasetBtn.disabled = true;
   publishDatasetStatus.innerHTML = "Please wait...";
   bfPostCurationProgressPublish.style.display = "block";
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
-  var selectedBfDataset =
-    bfDatasetListPostCurationPublish.options[
-      bfDatasetListPostCurationPublish.selectedIndex
-    ].text;
+  var selectedBfAccount = $("#current-bf-dataset").text();
+  var selectedBfDataset = $(".bf-dataset-span").html();
   client.invoke(
     "api_bf_withdraw_review_dataset",
     selectedBfAccount,
@@ -5048,7 +5041,7 @@ function withdrawReviewDataset() {
         var emessage = userError(error);
         publishDatasetStatus.innerHTML =
           "<span style='color: red;'> " + emessage + "</span>";
-        bfPostCurationProgressPublish.style.display = "none";
+        // bfPostCurationProgressPublish.style.display = "none";
         bfSubmitReviewDatasetBtn.disabled = false;
         bfRefreshPublishingDatasetStatusBtn.disabled = false;
         bfWithdrawReviewDatasetBtn.disabled = false;
@@ -5063,11 +5056,9 @@ function withdrawReviewDataset() {
 
 // Refresh publishing dataset status
 bfRefreshPublishingDatasetStatusBtn.addEventListener("click", () => {
-  var selectedBfDataset =
-    bfDatasetListPostCurationPublish.options[
-      bfDatasetListPostCurationPublish.selectedIndex
-    ].text;
-  if (selectedBfDataset === "Select dataset") {
+
+  var selectedBfDataset = $(".bf-dataset-span").html();
+  if (selectedBfDataset === "None") {
     reviewDatasetInfo.innerHTML = "";
     emessage = "Please select a valid dataset";
     publishDatasetStatus.innerHTML =
@@ -5875,22 +5866,10 @@ function showPublishingStatus(callback) {
   } else {
     publishDatasetStatus.innerHTML = "";
   }
-  bfPostCurationProgressPublish.style.display = "block";
-  bfSubmitReviewDatasetBtn.disabled = true;
-  bfRefreshPublishingDatasetStatusBtn.disabled = true;
-  bfWithdrawReviewDatasetBtn.disabled = true;
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
-  var selectedBfDataset =
-    bfDatasetListPostCurationPublish.options[
-      bfDatasetListPostCurationPublish.selectedIndex
-    ].text;
-  if (selectedBfDataset === "Select dataset") {
+  var selectedBfAccount = $("#current-bf-account").text();
+  var selectedBfDataset = $(".bf-dataset-span").html();
+  if (selectedBfDataset === "None") {
     reviewDatasetInfo.innerHTML = "";
-    bfPostCurationProgressPublish.style.display = "none";
-    bfSubmitReviewDatasetBtn.disabled = false;
-    bfRefreshPublishingDatasetStatusBtn.disabled = false;
-    bfWithdrawReviewDatasetBtn.disabled = false;
   } else {
     client.invoke(
       "api_bf_get_publishing_status",
@@ -5904,17 +5883,8 @@ function showPublishingStatus(callback) {
           var emessage = userError(error);
           publishDatasetStatus.innerHTML =
             "<span style='color: red;'> " + emessage + "</span>";
-          bfPostCurationProgressPublish.style.display = "none";
-          bfSubmitReviewDatasetBtn.disabled = false;
-          bfRefreshPublishingDatasetStatusBtn.disabled = false;
-          bfWithdrawReviewDatasetBtn.disabled = false;
         } else {
           reviewDatasetInfo.innerHTML = publishStatusOutputConversion(res);
-          bfPostCurationProgressPublish.style.display = "none";
-          bfSubmitReviewDatasetBtn.disabled = false;
-          bfRefreshPublishingDatasetStatusBtn.disabled = false;
-          bfWithdrawReviewDatasetBtn.disabled = false;
-
           if (
             callback === submitReviewDatasetCheck ||
             callback === withdrawDatasetCheck
@@ -6926,10 +6896,10 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
             $("#create_empty_dataset_BF_account_span").text(keyname);
             $("#current-bf-dataset").text("None");
             $("#current-bf-dataset-generate").text("None");
-            $(".bf-dataset-span").text("None");
+            $(".bf-dataset-span").html("None");
             $("#para-account-detail-curate-generate").html(res);
             $("#para_create_empty_dataset_BF_account").html(res);
-            
+
             showHideDropdownButtons("account", "show");
           }
         });
@@ -7010,7 +6980,7 @@ function showDefaultBFAccount() {
               $("#create_empty_dataset_BF_account_span").text("None");
               $("#para-account-detail-curate-generate").html("None");
               $("#para_create_empty_dataset_BF_account").html("None");
-              
+
               bfSelectAccountStatus.innerHTML = "<span style='color:red'>"+error+"</span>";
               $("#div-bf-account-load-progress").css("display", "none");
               showHideDropdownButtons("account", "hide");

@@ -1535,7 +1535,7 @@ function transitionFreeFormMode(
         }
         $(ev).hide();
       } else {
-        if ($("bf-dataset-span").text() !== "None") {
+        if ($("bf-dataset-span").html() !== "None") {
           $(target).children().find(".div-confirm-button button").show();
         }
       }
