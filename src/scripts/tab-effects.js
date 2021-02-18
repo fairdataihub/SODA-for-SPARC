@@ -56,7 +56,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 0) {
-    $("#prevBtn").css("display", "none");
+    //$("#prevBtn").css("display", "none");
 
     // disable continue button if none of the options in step 1 have been clicked
     if ($('input[name="getting-started-1"]:checked').length === 1) {
@@ -473,9 +473,6 @@ const checkHighLevelFoldersInput = () => {
 // function associated with the Back/Continue buttons
 const nextPrev = (n) => {
   var x = document.getElementsByClassName("parent-tabs");
-
-  $("#save-progress-btn").css("display", "none");
-  $("#start-over-btn").css("display", "none");
 
   if (n == -1 && x[currentTab].id === "getting-started-tab") {
     let event = new CustomEvent("custom-back", {
@@ -2414,6 +2411,8 @@ document
     $(".vertical-progress-bar").css("display", "flex");
     document.getElementById("generate-dataset-progress-tab").style.display =
       "none";
+      $("#save-progress-btn").css("display", "none");
+      $("#start-over-btn").css("display", "none");    
     showParentTab(currentTab, 1);
   });
 
