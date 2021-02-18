@@ -10,10 +10,19 @@ document.body.addEventListener("click", (event) => {
   }
 });
 
+document.body.addEventListener("custom-back", (e) => {
+  handleSectionTrigger(e);
+});
+
 function handleSectionTrigger(event) {
   hideAllSectionsAndDeselectButtons();
 
-  // Highlight clicked button and show view
+  if (event.detail.target) {
+    let previous_section = `${event.detail.target.dataset.section}-section`;
+    document.getElementById(previous_section).classList.add("is-shown");
+    return;
+  }
+
   event.target.classList.add("is-selected");
 
   // Display the current section

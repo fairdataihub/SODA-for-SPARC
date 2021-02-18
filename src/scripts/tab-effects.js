@@ -34,11 +34,11 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   $(x[tabNow]).addClass("tab-active");
-  setTimeout(function () {
+  setTimeout(() => {
     $(x[tabNow]).css("overflow", "auto");
   }, 1200);
 
-  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter(function (element) {
+  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter((element) => {
     return ![tabNow].includes(element);
   });
 
@@ -439,7 +439,7 @@ const add_card_detail = (
 };
 
 // helper function to delete empty keys from objects
-function deleteEmptyKeysFromObject(object) {
+const deleteEmptyKeysFromObject = (object) => {
   for (var key in object) {
     if (
       object[key] === null ||
@@ -450,9 +450,9 @@ function deleteEmptyKeysFromObject(object) {
       delete object[key];
     }
   }
-}
+};
 
-function checkHighLevelFoldersInput() {
+const checkHighLevelFoldersInput = () => {
   $("#nextBtn").prop("disabled", true);
   var optionCards = document.getElementsByClassName(
     "option-card high-level-folders"
@@ -468,16 +468,26 @@ function checkHighLevelFoldersInput() {
     $("#nextBtn").prop("disabled", false);
   }
   return checked;
-}
+};
 
 // function associated with the Back/Continue buttons
-function nextPrev(n) {
-  if (n == -1 && x[currentTab].id === "getting-started-tab")
-  {
+const nextPrev = (n) => {
+  var x = document.getElementsByClassName("parent-tabs");
 
+  $("#save-progress-btn").css("display", "none");
+  $("#start-over-btn").css("display", "none");
+
+  if (n == -1 && x[currentTab].id === "getting-started-tab") {
+    let event = new CustomEvent("custom-back", {
+      detail: {
+        target: { dataset: { section: "main_tabs" }, classList: ["someclass"] },
+      },
+    });
+    console.log(event);
+    document.body.dispatchEvent(event);
+    return;
   }
 
-  var x = document.getElementsByClassName("parent-tabs");
   // update JSON structure
   updateOverallJSONStructure(x[currentTab].id);
 
@@ -526,7 +536,7 @@ function nextPrev(n) {
         },
       },
       centerVertical: true,
-      callback: function (result) {
+      callback: (result) => {
         if (result !== null && result === true) {
           // Hide the current tab:
           $(x[currentTab]).removeClass("tab-active");
@@ -571,7 +581,7 @@ function nextPrev(n) {
           },
         },
         centerVertical: true,
-        callback: function (result) {
+        callback: (result) => {
           if (result !== null && result === true) {
             // Hide the current tab:
             $(x[currentTab]).removeClass("tab-active");
@@ -656,9 +666,9 @@ function nextPrev(n) {
     showParentTab(currentTab, n);
     //console.log(JSON.stringify(sodaJSONObj["dataset-structure"]))
   }
-}
+};
 
-function fixStepIndicator(n) {
+const fixStepIndicator = (n) => {
   // This function removes the "is-current" class of all steps...
   var i,
     x = document.getElementsByClassName("vertical-progress-bar-step");
@@ -667,12 +677,12 @@ function fixStepIndicator(n) {
   }
   //... and adds the "active" class to the current step:
   x[n].className += " is-current";
-}
+};
 
-function fixStepDone(n) {
+const fixStepDone = (n) => {
   var x = document.getElementsByClassName("vertical-progress-bar-step");
   $(x[n]).addClass("done");
-}
+};
 
 //// High level folders check mark effect
 $(".option-card.high-level-folders").click(function () {
@@ -724,7 +734,7 @@ function showSubTab(section, tab, input) {
       "div-manifest-metadata-file",
     ];
   }
-  var inActiveTabArray = tabArray.filter(function (element) {
+  var inActiveTabArray = tabArray.filter((element) => {
     return ![tab].includes(element);
   });
   for (var id of inActiveTabArray) {
@@ -736,7 +746,7 @@ function showSubTab(section, tab, input) {
 
 // function to check if certain high level folders already chosen and have files/sub-folders
 // then disable the option (users cannot un-choose)
-function highLevelFoldersDisableOptions() {
+const highLevelFoldersDisableOptions = () => {
   var highLevelFolderOptions = datasetStructureJSONObj["folders"];
   if (highLevelFolderOptions) {
     for (var folder of highLevelFolders) {
@@ -757,7 +767,7 @@ function highLevelFoldersDisableOptions() {
       }
     }
   }
-}
+};
 
 // // // High level folders check mark effect
 $(".parent-tabs, .folder-input-check").click(function () {
@@ -779,7 +789,7 @@ $(".parent-tabs, .folder-input-check").click(function () {
 
 // raise warning before wiping out existing sodaJSONObj
 // show warning message
-function raiseWarningGettingStarted(ev) {
+const raiseWarningGettingStarted = (ev) => {
   return new Promise((resolve) => {
     if (
       !(
@@ -823,7 +833,7 @@ function raiseWarningGettingStarted(ev) {
       resolve(globalGettingStarted1stQuestionBool);
     }
   });
-}
+};
 
 var divList = [];
 async function transitionSubQuestions(
@@ -1539,7 +1549,6 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     parentDiv
   ).scrollHeight;
 }
-
 
 const reset_ui = () => {
   $(".option-card.high-level-folders").each(function (i, obj) {
@@ -2392,6 +2401,15 @@ const wipeOutCurateProgress = () => {
 // once users click on option card: Organize dataset
 document
   .getElementById("button-section-organize-dataset")
+  .addEventListener("click", () => {
+    $(".vertical-progress-bar").css("display", "flex");
+    document.getElementById("generate-dataset-progress-tab").style.display =
+      "none";
+    showParentTab(currentTab, 1);
+  });
+
+document
+  .getElementById("organize_dataset_btn")
   .addEventListener("click", () => {
     $(".vertical-progress-bar").css("display", "flex");
     document.getElementById("generate-dataset-progress-tab").style.display =
