@@ -4023,12 +4023,58 @@ bfUploadDatasetList.addEventListener("change", () => {
 selectLocalDsSubmit.addEventListener("click", function () {
   ipcRenderer.send("open-file-dialog-submit-dataset");
 });
+
 ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
   if (filepath.length > 0) {
     if (filepath != null) {
-      document.getElementById("para-info-local-submit").innerHTML = "";
-      document.getElementById("selected-local-dataset-submit").placeholder =
-        filepath[0];
+      $("#para-info-local-submit").html("");
+      $("#selected-local-dataset-submit").attr("placeholder", `${filepath[0]}`);
+
+      valid_dataset = verify_sparc_folder(filepath[0]);
+      if (valid_dataset == true) {
+        $("#button_upload_local_folder_confirm").click();
+        $("#button-submit-dataset").addClass("pulse-blue");
+        // remove pulse class after 4 seconds
+        // pulse animation lasts 2 seconds => 2 pulses
+        setTimeout(() => {
+          $(".pulse-blue").removeClass("pulse-blue");
+        }, 4000);
+      } else {
+        var bootboxDialog = bootbox.confirm({
+          message:
+            "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+          buttons: {
+            confirm: {
+              label: "Yes",
+              className: "btn-success",
+            },
+            cancel: {
+              label: "Cancel",
+              className: "btn-danger",
+            },
+          },
+          centerVertical: true,
+          callback: (result) => {
+            if (result) {
+              $("#button_upload_local_folder_confirm").click();
+              $("#button-submit-dataset").addClass("pulse-blue");
+              // remove pulse class after 4 seconds
+              // pulse animation lasts 2 seconds => 2 pulses
+              setTimeout(() => {
+                $(".pulse-blue").removeClass("pulse-blue");
+              }, 4000);
+            } else {
+              document.getElementById(
+                "input-destination-getting-started-locally"
+              ).placeholder = "Browse here";
+              $("#selected-local-dataset-submit").attr(
+                "placeholder",
+                "Browse here"
+              );
+            }
+          },
+        });
+      }
     }
   }
 });
@@ -4088,7 +4134,7 @@ bfDatasetListMetadata.addEventListener("change", () => {
   showDatasetDescription();
 });
 
-function metadataDatasetlistChange() {
+const metadataDatasetlistChange = () => {
   bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
   datasetSubtitleStatus.innerHTML = "";
@@ -4121,13 +4167,13 @@ bfDatasetListPermission.addEventListener("change", () => {
   syncDatasetDropdownOption(bfDatasetListPermission);
 });
 
-function permissionDatasetlistChange() {
+const permissionDatasetlistChange = () => {
   bfCurrentPermissionProgress.style.display = "block";
   bfAddEditCurrentPermissionProgress.style.display = "block";
   showCurrentPermission();
 }
 
-function syncDatasetDropdownOption(dropdown) {
+const syncDatasetDropdownOption = (dropdown) => {
   var value;
 
   // sync dataset under Organize dataset
@@ -5286,7 +5332,16 @@ function showCurrentLicense() {
           $(".synced-progress").css("display", "none");
         } else {
           currentDatasetLicense.innerHTML = res;
-          bfCurrentMetadataProgress.style.display = "none";
+          if (res === "No license is currently assigned to this dataset")
+          {
+            $("#button-add-license").show()
+          }
+          else if (res === "Creative Commons Attribution")
+          {
+            $("#button-add-license").hide()
+            $("#para-dataset-license-status").html("You are all set. This dataset already has the correct license assigned.")
+          }
+          $(bfCurrentMetadataProgress).css("display", "none");
           $(".synced-progress").css("display", "none");
         }
       }
@@ -8144,6 +8199,24 @@ function addDetailsForFile(ev) {
 // document.getElementById('inputNewNameDataset').addEventListener('keydown', function() {
 //   // document.getElementById('para-new-name-dataset-message').innerHTML = ""
 // })
+
+$("#bf-rename-dataset-name").keyup(function () {
+  let newName = $("#bf-rename-dataset-name").val().trim();
+
+  if (newName !== "") {
+    if (check_forbidden_characters_bf(newName)) {
+      $("#para-rename-dataset-message").html(
+        "Error: A Blackfynn dataset name cannot contain any of the following characters: /:*?'<>."
+      );
+      $("#button-rename-dataset").hide();
+    } else {
+      $("#para-rename-dataset-message").html("");
+      $("#button-rename-dataset").show();
+    }
+  } else {
+    $("#button-rename-dataset").hide();
+  }
+});
 
 $("#inputNewNameDataset").keyup(function () {
   var newName = $("#inputNewNameDataset").val().trim();

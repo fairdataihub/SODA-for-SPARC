@@ -390,7 +390,7 @@ const traverse_back = (amount, element = "", pulse_animation = false) => {
         block: "center",
       });
       if (pulse_animation == true) {
-        $("#" + element).addClass("pulse-blue");
+        $(`#${element}`).addClass("pulse-blue");
       }
     }, 550);
   }
@@ -1789,13 +1789,16 @@ const hidePrevDivs = (currentDiv, category) => {
           .find(".form-control");
 
         for (var child of childElements2) {
-          if (child.id === "inputNewNameDataset") {
-            document.getElementById(child.id).value = "";
-            document.getElementById(child.id).placeholder = "Type here";
+          if (
+            child.id === "inputNewNameDataset" ||
+            child.id === "bf-rename-dataset-name"
+          ) {
+            $(`${child.id}`).val("");
+            $(`${child.id}`).attr("placeholder", "Type here");
           } else {
             if (document.getElementById(child.id)) {
-              document.getElementById(child.id).value = "";
-              document.getElementById(child.id).placeholder = "Browse here";
+              $(`${child.id}`).val("");
+              $(`${child.id}`).attr("placeholder", "Browse here");
             }
           }
         }
@@ -2511,7 +2514,7 @@ const description_text = {
   prepare_dataset_section:
     "This interface will help you in organizing your dataset and upload it to Blackfynn.",
   disseminate_dataset_section:
-    "This interface provides a convenient window to complete tasks required once your dataset has been organized and uploaded on Blackfynn.",
+    "This interface provides a convenient window to complete tasks required once your dataset has been organized and uploaded on Blackfynn."
 };
 
 $("input:radio[name=main_tabs]").click(function () {
@@ -2589,7 +2592,6 @@ $("#edit_banner_image_button").click(async () => {
             "Importing Blackfynn Image",
             img_src
           );
-          re;
           return;
         }
       } else {
@@ -2616,7 +2618,6 @@ $("#edit_banner_image_button").click(async () => {
         "Importing Blackfynn Image",
         img_src
       );
-      re;
       return;
     }
 
