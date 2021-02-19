@@ -405,7 +405,7 @@
                       fill="black"
                     />
                   </svg>
-                  <h2>Create submission</h2>
+                  <h2>Prepare submission</h2>
                 </button>
                 <button
                   class="content-button"
@@ -424,7 +424,7 @@
                       fill="black"
                     />
                   </svg>
-                  <h2>Create dataset_description</h2>
+                  <h2>Prepare dataset_description</h2>
                 </button>
               </div>
             </div>
@@ -453,7 +453,7 @@
                       fill="black"
                     />
                   </svg>
-                  <h2>Create subjects</h2>
+                  <h2>Prepare subjects</h2>
                 </button>
                 <button
                   class="content-button"
@@ -472,7 +472,7 @@
                       fill="black"
                     />
                   </svg>
-                  <h2>Create samples</h2>
+                  <h2>Prepare samples</h2>
                 </button>
                 <button
                   class="content-button"
@@ -491,7 +491,7 @@
                       fill="black"
                     />
                   </svg>
-                  <h2>Create README</h2>
+                  <h2>Prepare README</h2>
                 </button>
                 <button
                   class="content-button"
@@ -510,7 +510,7 @@
                       fill="black"
                     />
                   </svg>
-                  <h2>Create CHANGES</h2>
+                  <h2>Prepare CHANGES</h2>
                 </button>
               </div>
             </div>
@@ -1083,6 +1083,544 @@
         </div>
       </div>
 
+    </div>
+
+  </section>
+
+  <section
+    id="create_submission-section"
+    class="section js-section u-category-windows"
+    style="padding-left: 15px; overflow-y: hidden"
+  >
+    <div class="main-tabs show" id="create_submission-tab" style="height:calc(100% - 60px);overflow-y:auto;display:flex;flex-direction:column;">
+      <header class="section-header">
+        <div style="display: flex; flex-direction: row">
+          <svg
+            width="52"
+            height="59"
+            viewBox="0 0 52 59"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M46.7819 11.6562H44.1829V17.4916H46.7819V40.8332H44.1829V46.6686H46.7819C49.6486 46.6686 51.9799 44.0514 51.9799 40.8332V17.4916C51.9799 14.2763 49.646 11.6562 46.7819 11.6562ZM10.396 23.327H33.774V34.9978H10.396V23.327Z"
+              fill="black"
+            />
+            <path
+              d="M38.9849 46.6685V5.83539H46.7689V0H25.977V5.83539H33.7869V11.6562H5.19799C2.3313 11.6562 0 14.2734 0 17.4916V40.8331C0 44.0513 2.3313 46.6685 5.19799 46.6685H33.7869V52.5185H25.977V58.3539H46.7689V52.5185H38.9849V46.6685ZM5.19799 40.8331V17.4916H33.7869V40.8331H5.19799Z"
+              fill="black"
+            />
+          </svg>
+          <h2>Prepare metadata - Prepare submission file </h2>
+        </div>
+        <div class="tab-info">
+          <p class="tab-info-p" style="margin-bottom: 2em">
+              The submission file is mandatory for all SPARC datasets.
+          </p>
+        </div>
+      </header>
+
+      <div class="individual-question prepare-submission show" id="Question-prepare-submission-1" style="margin-top:20px">
+          <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:17px;color:var(--color-bg-plum);">1. Let's check your Airtable connection status:</label>
+
+              <!-- field that will show when AIrtable is not connected yet -->
+              <div class="field" style="width: 100%;display:none" id="div-field-not-connected">
+                <!-- <div id="checking-airtable-connection" class="ui active green inline loader" style="display:block;margin:10px auto"></div> -->
+                <p id="airtable-connection-status" style="font-weight:600;text-align: center;font-size:15px"><span style="color:#000">You are not connected to Airtable. </span><br><span style="color: #000">We recommend connecting SODA to your Airtable account, so SODA can auto-populate information for your metadata files at your convenience.<br><br>Would you like to connect to Airtable?</span></p>
+              </div>
+              <!-- field that will show when AIrtable is already connected -->
+              <div class="field" style="width: 100%;display:flex" id="div-field-already-connected">
+                <div style="width:100%;display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
+                  <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
+                    <div class="card-container">
+                      <div style="width:100%">
+                        <h5 class="card-left" style="float:left;width:30%">Airtable account:</h5>
+                        <h5 class="card-right" id="current-airtable-account" style="float:right;width:70%;margin-left:0;margin-top:0">None</h5>
+                      </div>
+                    </div>
+                    <svg class="svg-change-current-account" onclick="openDropdownPrompt('bf')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                    </svg>
+                  </div>
+                  <div style="display:flex; flex-direction:row;margin-bottom:15px;">
+                    <div style="display:flex; width: 100%; flex-direction:row; justify-content:space-between;margin-bottom:15px">
+                      <div class="card-container">
+                        <div style="width:100%">
+                          <h5 class="card-left" style="float:left;width:30%">User's awards:</h5>
+                          <h5 class="card-right" id="current-users-awards" style="float:right;width:70%;margin-left:0;margin-top:0;white-space: pre-line;">None</h5>
+                        </div>
+                      </div>
+                      <svg class="svg-change-current-account" onclick="openDropdownPrompt('bf')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                        <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- This is the button (Confirm) that will appear if users are already connected to Airtable -->
+              <div id="div-airtable-confirm-button" style="display: flex;flex-direction:row;justify-content:center;margin:10px auto">
+                <button onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')" data-next="Question-prepare-submission-3" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
+              </div>
+              <!-- this is the set of buttons that will appear if Airtable account is not connected -->
+              <div id="div-airtable-award-button" style="display: none;flex-direction:row;justify-content:center;margin:10px auto;margin-top:30px">
+                <button onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')" data-next="Question-prepare-submission-no-skip-1" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:35px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:14px;margin-right:20px">No, skip</button>
+                <button onclick="showAddAirtableAccountBootbox()" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:35px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px">Yes, let's connect</button>
+              </div>
+            </div>
+          </div>
+      </div>
+
+
+      <div class="individual-question prepare-submission" id="Question-prepare-submission-15">
+          <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:17px;color:var(--color-bg-plum);">2. Start typing below to search for your award(s):</label>
+              <div class="field" style="width: 100%;margin:15px">
+                <textarea id="input-grant-info" list="select-grant-info-list" style="width:90%;float:left;height:35px !important;padding:6px 8px;margin-top:15px"></textarea>
+              </div>
+              <div style="display:flex; flex-direction:row;margin:0 auto">
+                <button
+                    onclick="transitionFreeFormMode(this, 'Question-prepare-submission-2', 'create_submission-tab', '', 'individual-question prepare-submission')"
+                    data-next="Question-prepare-submission-3"
+                    style="cursor:pointer;border-radius: 8px;margin-right:10px; width: 100px;height:32px;background: #fff;color:var(--color-light-green);font-weight:600;border:1px solid var(--color-light-green);font-size:14px"><i class="fas fa-check" style="margin-right:5px"></i>Done</button>
+                <button id="button-add-award" style="cursor:pointer;border-radius: 8px; width: 100px;height:32px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px"><i class="fas fa-plus" style="margin-right:5px"></i>Add</button>
+              </div>
+              <p style="margin: 7px auto" id="para-save-award-info"></p>
+            </div>
+          </div>
+      </div>
+
+      <div class="individual-question prepare-submission" id="Question-prepare-submission-no-skip-1">
+          <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:17px;color:var(--color-bg-plum);">2. Enter your SPARC Award below: <br><span style="color: #696969;font-size:13px">E.g: A12345678</span></label>
+              <div class="field" style="width: 100%;margin:15px">
+                <textarea id="textarea-SPARC-award-raw-input" style="width:90%;float:left;height:35px !important;padding:6px 8px;margin-top:15px"></textarea>
+              </div>
+              <div style="display:flex; flex-direction:row;margin:0 auto">
+                <button
+                    onclick="transitionFreeFormMode(this, 'Question-prepare-submission-no-skip-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+                    data-next="Question-prepare-submission-no-skip-2"
+                    style="cursor:pointer;border-radius: 8px;margin-right:10px; width: 100px;height:30px;color: #fff;background:var(--color-light-green);font-weight:600;border:none;font-size:14px">
+                Confirm</button>
+              </div>
+            </div>
+          </div>
+      </div>
+
+
+      <div class="individual-question prepare-submission" id="Question-prepare-submission-3">
+          <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:17px;color:var(--color-bg-plum);">2. Select the SPARC award for your submission file:</label>
+              <div class="field" style="width: 100%;margin: 15px">
+                <!-- <div style="display: flex;"> -->
+                  <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:100%; height:35px;line-height:2;padding: 6px 8px; font-size:14px">
+                    <option value="Select">Select an option</option>
+                  </select>
+                  <!-- <br> -->
+                  <!-- <button id="button-delete-award" class="demo-button" style="height:35px;width:50px;padding:0;margin-left:7px;color:red"><i class="far fa-trash-alt"></i></button> -->
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 10px auto;
+                  "
+                >
+                  <button
+                    onclick="transitionFreeFormMode(this, 'Question-prepare-submission-3', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+                    data-next="Question-prepare-submission-DDD"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+
+
+      <div class="individual-question prepare-submission" id="Question-prepare-submission-DDD">
+          <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:17px;color:var(--color-bg-plum);">3. There is currently no existing milestone information for this award. Would you like to upload your Data Deliverables document?
+                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext">
+                  The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document (usually kept by the PI of the SPARC award or the award manager).
+                  <br>
+                  Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use.
+                  <br>
+                  Note that you can import a new Dataset Deliverable to replace an existing one.
+                  <br>
+                  Click <a href=# id="a-DDD" style="color:white;">here</a> to download a template of the Data Deliverables document to see the expected format. Most importantly, at least one table with these exact three hearders is expected: "Related milestone, aim, or task", "Description of data", "Expected date of completion".
+                  <br><br>
+                  </span>
+                </div>
+              </label>
+              <div style="display:flex; flex-direction:row;margin:0 auto;margin-top:30px" id="div-buttons-show-DDD">
+                <button onclick="transitionFreeFormMode(this, 'Question-prepare-submission-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')" data-next="Question-prepare-submission-no-skip-2" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:35px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:14px;margin-right:15px">No, skip</button>
+                <button onclick="showDDDUploadDiv()" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:35px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px">Yes, upload</button>
+              </div>
+              <div style="display:none; flex-direction:row;margin:0 15px;margin-top:30px" id="div-upload-DDD">
+                <div id="div-show-milestone-info-no-existing">
+                  <div class="container-milestone-upload" style="display:flex;">
+                    <input class="milestone-upload-text" id="input-milestone-select" style="width:85%;text-align:center;height:40px;border-radius:0" type="text" readonly placeholder="Select a file">
+                    <button id="button-import-milestone" type="button" style="width:15%;height:40px;background:var(--color-light-green)" class="button-milestone-upload"><b>Import</b></button>
+                  </div>
+                  <p id="para-milestone-document-info" style="margin-top:0;margin-left:7px;padding: 0 0;height:34px;width:300px;text-align:left;vertical-align:middle;"></p>
+                  <p id="para-milestone-document-info-long" style="display:none;margin-top:5px;margin-bottom:0;text-align:left;padding: 0 0"></p>
+                </div>
+                <div
+                style="
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+                "
+                >
+                <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-submission-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+                data-next="Question-prepare-submission-4"
+                style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px auto;
+                width: 100px;
+                height: 30px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 13px;
+                "
+                >
+                Confirm
+              </button>
+            </div>
+              </div>
+            </div>
+          </div>
+      </div>
+
+      <div class="individual-question prepare-submission" id="Question-prepare-submission-4">
+          <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:17px;color:var(--color-bg-plum);">3. Enter your milestones below: </label>
+              <div class="field" style="margin:15px 0;width:100%">
+                <textarea id="selected-milestone" class="form-container-textarea"></textarea>
+              </div>
+              <div style="margin:0 auto;text-decoration:underline">
+                <a>I want to re-upload my Data Deliverables Document</a>
+              </div>
+              <div
+              style="
+              display: flex;
+              flex-direction: row;
+              justify-content: center;
+              margin: 10px auto;
+              "
+              >
+              <button
+              onclick="transitionFreeFormMode(this, 'Question-prepare-submission-4', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+              data-next="Question-prepare-submission-6"
+              style="
+              cursor: pointer;
+              border-radius: 8px;
+              margin: 10px auto;
+              width: 100px;
+              height: 30px;
+              background: var(--color-light-green);
+              color: #fff;
+              font-weight: 600;
+              border: none;
+              font-size: 13px;
+              "
+              >
+              Confirm
+            </button>
+          </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="individual-question prepare-submission" id="Question-prepare-submission-no-skip-2">
+        <div class="ui form" style="width:100%">
+          <div class="grouped fields">
+            <label style="font-size:17px;color:var(--color-bg-plum);">3. Enter your milestones below: </label>
+            <div class="field" style="margin:15px 0;width:100%">
+              <textarea id="selected-milestone-raw" class="form-container-textarea"></textarea>
+            </div>
+            <div
+            style="
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            margin: 10px auto;
+            "
+            >
+            <button
+            onclick="transitionFreeFormMode(this, 'Question-prepare-submission-no-skip-2', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+            data-next="Question-prepare-submission-no-skip-3"
+            style="
+            cursor: pointer;
+            border-radius: 8px;
+            margin: 10px auto;
+            width: 100px;
+            height: 30px;
+            background: var(--color-light-green);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            font-size: 13px;
+            "
+            >
+            Confirm
+          </button>
+        </div>
+        </div>
+      </div>
+  </div>
+
+
+
+      <div class="individual-question prepare-submission" id="Question-prepare-submission-6">
+          <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:17px;color:var(--color-bg-plum);">4. What is the completion date for the milestone(s):</label>
+              <div class="field" style="margin:15px 0;width:100%">
+                <select class="my-dropdown-metadata" style="height:35px;line-height:2;padding: 6px 8px; font-size:14px" id="selected-milestone-date"></select>
+              </div>
+              <div
+              style="
+              display: flex;
+              flex-direction: row;
+              justify-content: center;
+              margin: 10px auto;
+              "
+              >
+              <button
+              onclick="transitionFreeFormMode(this, 'Question-prepare-submission-6', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+              data-next="Question-prepare-submission-7"
+              style="
+              cursor: pointer;
+              border-radius: 8px;
+              margin: 10px auto;
+              width: 100px;
+              height: 30px;
+              background: var(--color-light-green);
+              color: #fff;
+              font-weight: 600;
+              border: none;
+              font-size: 13px;
+              "
+              >
+              Confirm
+            </button>
+          </div>
+            </div>
+          </div>
+      </div>
+
+      <div class="individual-question prepare-submission" id="Question-prepare-submission-no-skip-3">
+          <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:17px;color:var(--color-bg-plum);">4. What is the completion date for your milestone(s)?</label>
+              <div class="field" style="width: 100%;margin:15px">
+                <input type="date" id="input-milestone-date-raw" style="font-family: inherit" class="form-control"></input>
+              </div>
+              <div style="display:flex; flex-direction:row;margin:0 auto">
+                <button
+                    onclick="transitionFreeFormMode(this, 'Question-prepare-submission-no-skip-3', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+                    data-next="Question-prepare-submission-7"
+                    style="cursor:pointer;border-radius: 8px;margin-right:10px; width: 100px;height:30px;color: #fff;background:var(--color-light-green);font-weight:600;border:none;font-size:14px">
+                Confirm</button>
+              </div>
+            </div>
+          </div>
+      </div>
+
+
+      <div class="individual-question prepare-submission" id="Question-prepare-submission-7">
+          <div class="ui form" style="width:100%">
+            <div class="grouped fields">
+              <label style="font-size:17px;color:var(--color-bg-plum);">7. Review and generate the file: </label>
+              <div class="field" style="margin:15px 0;width:100%">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    margin: 15px 0 30px 0;
+                    box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px
+                  "
+                >
+                <div style="display:flex; flex-direction: row; justify-content:space-between;margin-bottom:10px">
+                  <div>
+                    <h5 style="color: #808080; font-size: 15px">
+                      SPARC Award:
+                      <span
+                        class="bf-dataset-span"
+                        style="
+                          color: #000;
+                          font-weight: 600;
+                          margin-left: 8px;
+                          font-size: 15px;
+                        "
+                        >A4382593</span
+                      >
+                    </h5>
+                  </div>
+                  <svg
+                    class="svg-change-current-account"
+                    onclick="openDropdownPrompt('dataset')"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    fill="#000"
+                    class="bi bi-pencil-fill"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                    />
+                  </svg>
+                </div>
+                <div style="display:flex; flex-direction: row; justify-content:space-between;margin-bottom: 10px">
+                  <div>
+                    <h5 style="color: #808080; font-size: 15px">
+                      Milestone(s):
+                      <span
+                        class="bf-dataset-span"
+                        style="
+                          color: #000;
+                          font-weight: 600;
+                          margin-left: 8px;
+                          font-size: 15px;
+                        "
+                        >Milestone 1, Milestone 2</span
+                      >
+                    </h5>
+                  </div>
+                  <svg
+                    class="svg-change-current-account"
+                    onclick="openDropdownPrompt('dataset')"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    fill="#000"
+                    class="bi bi-pencil-fill"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                    />
+                  </svg>
+                </div>
+                <div style="display:flex; flex-direction: row; justify-content:space-between;margin-bottom: 10px">
+                  <div>
+                    <h5 style="color: #808080; font-size: 15px">
+                      Completion date:
+                      <span
+                        class="bf-dataset-span"
+                        style="
+                          color: #000;
+                          font-weight: 600;
+                          margin-left: 8px;
+                          font-size: 15px;
+                        "
+                        >09/02/2019</span
+                      >
+                    </h5>
+                  </div>
+                  <svg
+                    class="svg-change-current-account"
+                    onclick="openDropdownPrompt('dataset')"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    fill="#000"
+                    class="bi bi-pencil-fill"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                    />
+                  </svg>
+                </div>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 10px auto;
+                  "
+                >
+                  <button
+                    onclick="transitionFreeFormMode(this, 'Question-prepare-submission-6', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+                    data-next="Question-prepare-submission-7"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 120px;
+                      height: 35px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Generate
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+
+
+    </div>
+    <div
+    style="
+    border-top: 1px solid #f0f0f0;
+    padding: 10px;
+    padding-top: 15px;
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    bottom: 20px;
+    position: absolute;
+    "
+    >
+    <div style="display: flex; flex-direction: row; width: 110px">
+      <button
+      type="button"
+      class="transition-btn prev"
+      data-section="main_tabs"
+      >
+      <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+    </button>
+  </div>
     </div>
 
   </section>

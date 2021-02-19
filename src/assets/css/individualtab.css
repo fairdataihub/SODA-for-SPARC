@@ -507,8 +507,6 @@
 }
 
 .form-control {
-  /* width: 65% !important; */
-  /* margin: 0 auto !important; */
   height: 35px !important;
   background: #f5f5f5 !important;
   border-radius: 5px !important;
@@ -706,13 +704,14 @@
   /* transition: scale-display .3s; */
   transition: all 0.3s ease-out !important;
   margin: 0 auto;
-  margin-bottom: 30px;
+  margin-bottom: 10%;
+  width: calc(100% - 300px)
   /* border-top:1px solid var(--color-bg-plum) */
 }
 
 .individual-question.show {
   display: flex;
-  height: 50%;
+  /* height: 50%; */
 }
 
 .individual-question.show .ui.form .inline.fields .question-label {

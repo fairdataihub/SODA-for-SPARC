@@ -251,3 +251,69 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
     );
   }
 }
+
+function showDDDUploadDiv() {
+  $("#div-buttons-show-DDD").hide();
+  $("#div-upload-DDD").show();
+}
+
+var sparcAwards = [];
+
+function checkAirtableStatus() {
+  ///// config and load live data from Airtable
+  var airKeyContent = parseJson(airtableConfigPath);
+  if (Object.keys(airKeyContent).length === 0) {
+    changeAirtableDiv("div-field-already-connected", "div-field-not-connected", "div-airtable-confirm-button", "div-airtable-award-button")
+  } else {
+    var airKeyInput = airKeyContent["api-key"];
+    var airKeyName = airKeyContent["key-name"];
+    Airtable.configure({
+      endpointUrl: "https://" + airtableHostname,
+      apiKey: airKeyInput,
+    });
+    var base = Airtable.base("appiYd1Tz9Sv857GZ");
+    base("sparc_members")
+      .select({
+        view: "All members (ungrouped)",
+      })
+      .eachPage(
+        function page(records, fetchNextPage) {
+          records.forEach(function (record) {
+            if (record.get("Project_title") !== undefined) {
+              item = record
+                .get("SPARC_Award_#")
+                .concat(" (", record.get("Project_title"), ")");
+              sparcAwards.push(item);
+            }
+          }),
+            fetchNextPage();
+        },
+        function done(err) {
+          document.getElementById("div-awards-load-progress").style.display =
+            "none";
+          if (err) {
+            changeAirtableDiv("div-field-already-connected", "div-field-not-connected", "div-airtable-confirm-button", "div-airtable-award-button")
+            log.error(err);
+            console.log(err);
+            return;
+          } else {
+            // create set to remove duplicates
+            var awardSet = new Set(sparcAwards);
+            var resultArray = [...awardSet];
+            awardArrayTagify.settings.whitelist = resultArray;
+            $("#current-airtable-account").text(airKeyName);
+            changeAirtableDiv("div-field-not-connected", "div-field-already-connected", "div-airtable-award-button", "div-airtable-confirm-button")
+          }
+        }
+      );
+  }
+}
+
+checkAirtableStatus()
+
+function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
+  $("#"+divHide).hide();
+  $("#"+buttonHide).hide();
+  $("#"+divShow).show();
+  $("#"+buttonShow).show();
+}

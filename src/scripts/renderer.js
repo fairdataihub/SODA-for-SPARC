@@ -205,6 +205,8 @@ const addNewMilestoneBtn = document.getElementById(
 const saveInformationBtn = document.getElementById("button-save-milestone");
 
 // Prepare Submission File
+const airtableAccountBootboxMessage =
+  "<form><div class='form-group row'><label for='bootbox-airtable-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-airtable-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-airtable-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-airtable-key' type='text' class='form-control'/></div></div></form>";
 const presavedAwardArray2 = document.getElementById("presaved-award-list");
 const generateSubmissionBtn = document.getElementById("generate-submission");
 
@@ -1009,25 +1011,25 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
     }
   }
 });
-
-presavedAwardArray1.addEventListener("change", function () {
-  if (presavedAwardArray1.value === "Select") {
-    document.getElementById(
-      "div-show-milestone-info-no-existing"
-    ).style.display = "none";
-    document.getElementById("div-milestone-info").style.display = "none";
-    document.getElementById("div-show-current-milestones").style.display =
-      "none";
-  } else {
-    document.getElementById(
-      "div-show-milestone-info-no-existing"
-    ).style.display = "block";
-    document.getElementById("div-milestone-info").style.display = "block";
-    document.getElementById("div-show-current-milestones").style.display =
-      "block";
-    document.getElementById("para-delete-award-status").innerHTML = "";
-  }
-});
+//
+// presavedAwardArray1.addEventListener("change", function () {
+//   if (presavedAwardArray1.value === "Select") {
+//     document.getElementById(
+//       "div-show-milestone-info-no-existing"
+//     ).style.display = "none";
+//     document.getElementById("div-milestone-info").style.display = "none";
+//     document.getElementById("div-show-current-milestones").style.display =
+//       "none";
+//   } else {
+//     document.getElementById(
+//       "div-show-milestone-info-no-existing"
+//     ).style.display = "block";
+//     document.getElementById("div-milestone-info").style.display = "block";
+//     document.getElementById("div-show-current-milestones").style.display =
+//       "block";
+//     document.getElementById("para-delete-award-status").innerHTML = "";
+//   }
+// });
 
 // load and parse json file
 function parseJson(path) {
@@ -1072,12 +1074,15 @@ function loadAwards() {
   }
   var contents = fs.readFileSync(awardPath, "utf8");
   var awards = JSON.parse(contents);
+  var awardSpan = "";
   for (var key in awards) {
     // Add options to dropdown lists
     addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
     addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
     addOption(dsAwardArray, eval(JSON.stringify(awards[key])), key);
+    awardSpan = awardSpan + key + ", "
   }
+  $("#current-users-awards").text(awardSpan.slice(0, -1))
 }
 loadAwards();
 
@@ -1275,7 +1280,7 @@ function loadDefaultAward() {
 }
 
 var defaultAward = loadDefaultAward();
-loadMilestoneInfo(defaultAward);
+// loadMilestoneInfo(defaultAward);
 
 function loadMilestoneInfo(awardNumber) {
   document.getElementById("para-milestone-document-info").innerHTML = "";
@@ -1378,7 +1383,7 @@ function loadMilestoneInfo(awardNumber) {
 /// check if no award is selected, then show no current milestones.
 presavedAwardArray1.addEventListener("change", function () {
   var currentAward = presavedAwardArray1.value;
-  loadMilestoneInfo(currentAward);
+  // loadMilestoneInfo(currentAward);
 });
 
 // indicate to user that airtable records are being retrieved
@@ -6863,6 +6868,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
     apiSecret,
     (error, res) => {
       if (error) {
+        $(myBootboxDialog).find(".modal-footer span").remove();
         myBootboxDialog
           .find(".modal-footer")
           .prepend(
@@ -6934,6 +6940,101 @@ function showBFAddAccountBootbox() {
     size: "medium",
     centerVertical: true,
   });
+}
+
+
+function showAddAirtableAccountBootbox() {
+  var htmlTitle='<h4>Please specify a key name and enter your Blackfynn API key and secret below: <div class="tooltipnew"><img class="info" src="assets/img/info.png"><span class="tooltiptext">To obtain or re-generate your API key to connect to SODA during your first use, check out the dedicated <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a>. Note that the key will be stored locally on your computer and the SODA Team will not have access to it.</span></div></h4>';
+
+  var bootb = bootbox.dialog({
+    title: htmlTitle,
+    message: airtableAccountBootboxMessage,
+    buttons: {
+      cancel: {
+        label: "Cancel",
+      },
+      confirm: {
+        label: "Add",
+        className: "btn btn-primary bootbox-add-bf-class",
+        callback: function () {
+          addAirtableAccountInsideBootbox(bootb);
+          return false;
+        },
+      },
+    },
+    size: "medium",
+    centerVertical: true,
+  });
+}
+
+function addAirtableAccountInsideBootbox(myBootboxDialog) {
+  var keyname = $("#bootbox-airtable-key-name").val();
+  var apiKey = $("#bootbox-airtable-key").val();
+  if (keyname.length === 0 || apiKey.length === 0) {
+    var errorMessage = "<span style='color: red;'>Please fill in both required fields to add.</span>";
+    $(myBootboxDialog).find(".modal-footer span").remove();
+    myBootboxDialog
+      .find(".modal-footer")
+      .prepend(
+        "<span style='color:red;padding-right:10px;display:inline-block;'>" +
+          error +
+          "</span>"
+      );
+  } else {
+      // test connection
+      const optionsSparcTable = {
+        hostname: airtableHostname,
+        port: 443,
+        path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
+        headers: { Authorization: `Bearer ${apiKey}` },
+      };
+      var sparcTableSuccess;
+      https.get(optionsSparcTable, (res) => {
+        if (res.statusCode === 200) {
+          /// updating api key in SODA's storage
+          createMetadataDir();
+          var content = parseJson(airtableConfigPath);
+          content["api-key"] = apiKey;
+          content["key-name"] = keyName;
+          fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
+          $("#current-airtable-account").html(keyName)
+          $("#bootbox-airtable-key-name").val("");
+          $("#bootbox-airtable-key").val("");
+          loadAwardData();
+          myBootboxDialog.modal("hide");
+          bootbox.alert({
+            message: "Successfully connected!",
+            centerVertical: true,
+          });
+        } else if (res.statusCode === 403) {
+          $(myBootboxDialog).find(".modal-footer span").remove();
+          myBootboxDialog
+            .find(".modal-footer")
+            .prepend(
+              "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>"
+            );
+        } else {
+          log.error(res);
+          console.error(res);
+          $(myBootboxDialog).find(".modal-footer span").remove();
+          myBootboxDialog
+            .find(".modal-footer")
+            .prepend(
+              "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
+            );
+        };
+        res.on("error", (error) => {
+          log.error(error);
+          console.error(error);
+          $(myBootboxDialog).find(".modal-footer span").remove();
+          myBootboxDialog
+            .find(".modal-footer")
+            .prepend(
+              "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
+            );
+        });
+      })
+    }
 }
 
 retrieveBFAccounts();

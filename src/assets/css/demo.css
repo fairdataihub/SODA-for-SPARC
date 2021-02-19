@@ -706,7 +706,7 @@ progress.progresstrack[value]::-webkit-progress-value {
      -webkit-linear-gradient(left, hsl(339,90%,30%), hsl(190, 60%, 36%));
   border-radius: 2px;
   background-size: 35px 25px, 100% 100%, 100% 100%;
-  
+
 }
 
 /*https://codepen.io/holdencreative/pen/vEVbwv*/
