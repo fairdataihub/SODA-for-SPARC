@@ -2338,7 +2338,8 @@ const exitCurate = async (resetProgressTabs, start_over = false) => {
 
       currentTab = 0;
       wipeOutCurateProgress();
-      $("#prepare-dataset-a")[0].click();
+      //$("#prepare-dataset-a")[0].click();
+      $("#main_tabs_view").click();
       globalGettingStarted1stQuestionBool = false;
       if (start_over) {
         $("#button-section-organize-dataset").click();

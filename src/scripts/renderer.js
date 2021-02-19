@@ -3972,6 +3972,9 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
                   displaySize
                 ).toFixed(2) + " GB";
             }
+            document.getElementById(
+              "para-please-wait-manage-dataset"
+            ).innerHTML = "";
             document.getElementById("para-progress-bar-status").innerHTML =
               res[0] +
               "Progress: " +
@@ -4035,6 +4038,7 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
       valid_dataset = verify_sparc_folder(filepath[0]);
       if (valid_dataset == true) {
         $("#button_upload_local_folder_confirm").click();
+        $("#button-submit-dataset").show();
         $("#button-submit-dataset").addClass("pulse-blue");
         // remove pulse class after 4 seconds
         // pulse animation lasts 2 seconds => 2 pulses
@@ -4059,6 +4063,7 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
           callback: (result) => {
             if (result) {
               $("#button_upload_local_folder_confirm").click();
+              $("#button-submit-dataset").show();
               $("#button-submit-dataset").addClass("pulse-blue");
               // remove pulse class after 4 seconds
               // pulse animation lasts 2 seconds => 2 pulses
