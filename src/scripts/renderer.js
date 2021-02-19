@@ -3894,7 +3894,8 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
         document.getElementById("para-progress-bar-error-status").innerHTML =
           "<span style='color: red;'>" + emessage + sadCan + "</span>";
         document.getElementById("para-progress-bar-status").innerHTML = "";
-        progressUploadBf.style.display = "none";
+        //progressUploadBf.style.display = "none";
+        $("#div-progress-submit").css("display", "none");
         progressBarUploadBf.value = 0;
         err = true;
         log.error(error);
@@ -3939,7 +3940,8 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
         totalFileSize = res[3];
         var uploadedFileSize = res[4];
         if (submitprintstatus === "Uploading") {
-          progressUploadBf.style.display = "block";
+          //progressUploadBf.style.display = "block";
+          $("#div-progress-submit").css("display", "block");
           if (res[0].includes("Success: COMPLETED!")) {
             progressBarUploadBf.value = 100;
             document.getElementById(
