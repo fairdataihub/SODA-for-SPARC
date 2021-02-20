@@ -174,8 +174,6 @@ body.waiting * {
 }
 
 .demo-button {
-  align-self: flex-start;
-  margin-right: 1em;
   border: 2px solid;
   border-radius: 4px;
   font: inherit;
@@ -257,6 +255,9 @@ body.waiting * {
   outline: none;
   /* border-color: var(--color-border); */
   transform: scale(1.1);
+
+  /* background-color: white; */
+  /* color: hsla(190,60%,36%,1) */
 }
 
 .demo-input {
@@ -842,7 +843,7 @@ progress.progresstrack[value]::-webkit-progress-value {
 }
 
 #current-banner-img {
-  max-width: 50%;
+  max-width: 100%;
 }
 
 .banner-image {
@@ -883,9 +884,7 @@ progress.progresstrack[value]::-webkit-progress-value {
   width: 270px;
   height: 35px;
   float: left;
-  background-color: #c0c0c0;
   color: black;
-  border: 1px solid #ced4da;
   border-radius: 6px;
 }
 
@@ -917,7 +916,7 @@ progress.progresstrack[value]::-webkit-progress-value {
 
 #div-img-container-holder {
   color: black;
-  text-align: left;
+  text-align: center;
   font-size: 20px;
   font-weight: bold;
   vertical-align: middle;

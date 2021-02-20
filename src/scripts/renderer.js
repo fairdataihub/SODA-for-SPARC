@@ -3915,7 +3915,8 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
         document.getElementById("para-progress-bar-error-status").innerHTML =
           "<span style='color: red;'>" + emessage + sadCan + "</span>";
         document.getElementById("para-progress-bar-status").innerHTML = "";
-        progressUploadBf.style.display = "none";
+        //progressUploadBf.style.display = "none";
+        $("#div-progress-submit").css("display", "none");
         progressBarUploadBf.value = 0;
         err = true;
         log.error(error);
@@ -3960,7 +3961,8 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
         totalFileSize = res[3];
         var uploadedFileSize = res[4];
         if (submitprintstatus === "Uploading") {
-          progressUploadBf.style.display = "block";
+          //progressUploadBf.style.display = "block";
+          $("#div-progress-submit").css("display", "block");
           if (res[0].includes("Success: COMPLETED!")) {
             progressBarUploadBf.value = 100;
             document.getElementById(
@@ -3991,6 +3993,9 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
                   displaySize
                 ).toFixed(2) + " GB";
             }
+            document.getElementById(
+              "para-please-wait-manage-dataset"
+            ).innerHTML = "";
             document.getElementById("para-progress-bar-status").innerHTML =
               res[0] +
               "Progress: " +
@@ -4044,12 +4049,60 @@ bfUploadDatasetList.addEventListener("change", () => {
 selectLocalDsSubmit.addEventListener("click", function () {
   ipcRenderer.send("open-file-dialog-submit-dataset");
 });
+
 ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
   if (filepath.length > 0) {
     if (filepath != null) {
-      document.getElementById("para-info-local-submit").innerHTML = "";
-      document.getElementById("selected-local-dataset-submit").placeholder =
-        filepath[0];
+      $("#para-info-local-submit").html("");
+      $("#selected-local-dataset-submit").attr("placeholder", `${filepath[0]}`);
+
+      valid_dataset = verify_sparc_folder(filepath[0]);
+      if (valid_dataset == true) {
+        $("#button_upload_local_folder_confirm").click();
+        $("#button-submit-dataset").show();
+        $("#button-submit-dataset").addClass("pulse-blue");
+        // remove pulse class after 4 seconds
+        // pulse animation lasts 2 seconds => 2 pulses
+        setTimeout(() => {
+          $(".pulse-blue").removeClass("pulse-blue");
+        }, 4000);
+      } else {
+        var bootboxDialog = bootbox.confirm({
+          message:
+            "This folder does not seems to be a SPARC dataset folder. Are you sure you want to proceed?",
+          buttons: {
+            confirm: {
+              label: "Yes",
+              className: "btn-success",
+            },
+            cancel: {
+              label: "Cancel",
+              className: "btn-danger",
+            },
+          },
+          centerVertical: true,
+          callback: (result) => {
+            if (result) {
+              $("#button_upload_local_folder_confirm").click();
+              $("#button-submit-dataset").show();
+              $("#button-submit-dataset").addClass("pulse-blue");
+              // remove pulse class after 4 seconds
+              // pulse animation lasts 2 seconds => 2 pulses
+              setTimeout(() => {
+                $(".pulse-blue").removeClass("pulse-blue");
+              }, 4000);
+            } else {
+              document.getElementById(
+                "input-destination-getting-started-locally"
+              ).placeholder = "Browse here";
+              $("#selected-local-dataset-submit").attr(
+                "placeholder",
+                "Browse here"
+              );
+            }
+          },
+        });
+      }
     }
   }
 });
@@ -4109,7 +4162,7 @@ bfDatasetListMetadata.addEventListener("change", () => {
   showDatasetDescription();
 });
 
-function metadataDatasetlistChange() {
+const metadataDatasetlistChange = () => {
   bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
   datasetSubtitleStatus.innerHTML = "";
@@ -4142,13 +4195,13 @@ bfDatasetListPermission.addEventListener("change", () => {
   syncDatasetDropdownOption(bfDatasetListPermission);
 });
 
-function permissionDatasetlistChange() {
+const permissionDatasetlistChange = () => {
   bfCurrentPermissionProgress.style.display = "block";
   bfAddEditCurrentPermissionProgress.style.display = "block";
   showCurrentPermission();
 }
 
-function syncDatasetDropdownOption(dropdown) {
+const syncDatasetDropdownOption = (dropdown) => {
   var value;
 
   // sync dataset under Organize dataset
@@ -4280,7 +4333,7 @@ function postCurationListChange() {
 }
 
 // Change dataset status option change
-bfListDatasetStatus.addEventListener("change", () => {
+$(bfListDatasetStatus).on("change", () => {
   bfCurrentDatasetStatusProgress.style.display = "block";
   datasetStatusStatus.innerHTML = "Please wait...";
   selectOptionColor(bfListDatasetStatus);
@@ -4314,6 +4367,7 @@ bfListDatasetStatus.addEventListener("change", () => {
     }
   );
 });
+
 
 // Add subtitle //
 bfAddSubtitleBtn.addEventListener("click", () => {
@@ -4443,6 +4497,7 @@ bfImportBannerImageBtn.addEventListener("click", (event) => {
   datasetBannerImageStatus.innerHTML = "";
   ipcRenderer.send("open-file-dialog-import-banner-image");
 });
+
 ipcRenderer.on("selected-banner-image", (event, path) => {
   if (path.length > 0) {
     document.getElementById("div-img-container-holder").style.display = "none";
@@ -4452,6 +4507,13 @@ ipcRenderer.on("selected-banner-image", (event, path) => {
     bfViewImportedImage.src = path[0];
     myCropper.destroy();
     myCropper = new Cropper(bfViewImportedImage, cropOptions);
+    $("#save-banner-image").css("visibility", "visible");
+  } else {
+    if ($("#para-current-banner-img").text() === "None") {
+      $("#save-banner-image").css("visibility", "hidden");
+    } else {
+      $("#save-banner-image").css("visibility", "visible");
+    }
   }
 });
 
@@ -4472,7 +4534,7 @@ function uploadBannerImage() {
   }
   var imagePath = path.join(imageFolder, "banner-image-SODA." + imageExtension);
   var croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
-  imageDataURI.outputFile(croppedImageDataURI, imagePath).then(function () {
+  imageDataURI.outputFile(croppedImageDataURI, imagePath).then( () => {
     if (fs.statSync(imagePath)["size"] < 5 * 1024 * 1024) {
       var selectedBfAccount =
         bfAccountList.options[bfAccountList.selectedIndex].text;
@@ -4505,6 +4567,7 @@ function uploadBannerImage() {
             bfCurrentMetadataProgress.style.display = "none";
             $(".synced-progress").css("display", "none");
             enableform(bfMetadataForm);
+            $("#edit_banner_image_modal").modal("hide");
             ipcRenderer.send(
               "track-event",
               "Success",
@@ -5218,7 +5281,7 @@ function showCurrentDescription() {
   }
 }
 
-function showCurrentBannerImage() {
+const showCurrentBannerImage = () => {
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
   var selectedBfDataset =
@@ -5249,6 +5312,11 @@ function showCurrentBannerImage() {
           } else {
             document.getElementById("para-current-banner-img").innerHTML = "";
             bfCurrentBannerImg.src = res;
+            setTimeout(() => {
+              document
+                .getElementById("edit_banner_image_button")
+                .scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 400);
           }
           bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");
@@ -5256,7 +5324,7 @@ function showCurrentBannerImage() {
       }
     );
   }
-}
+};
 
 function showCurrentLicense() {
   currentDatasetLicense.innerHTML = "Please wait...";
@@ -5281,7 +5349,16 @@ function showCurrentLicense() {
           $(".synced-progress").css("display", "none");
         } else {
           currentDatasetLicense.innerHTML = res;
-          bfCurrentMetadataProgress.style.display = "none";
+          if (res === "No license is currently assigned to this dataset")
+          {
+            $("#button-add-license").show()
+          }
+          else if (res === "Creative Commons Attribution")
+          {
+            $("#button-add-license").hide()
+            $("#para-dataset-license-status").html("You are all set. This dataset already has the correct license assigned.")
+          }
+          $(bfCurrentMetadataProgress).css("display", "none");
           $(".synced-progress").css("display", "none");
         }
       }
@@ -5492,6 +5569,10 @@ function showCurrentDatasetStatus(callback) {
             bfListDatasetStatus.appendChild(option);
           }
           bfListDatasetStatus.value = res[1];
+          $(`input[name=dataset_status_radio][value=${res[1]}]`).prop(
+            "checked",
+            true
+          );
           selectOptionColor(bfListDatasetStatus);
           bfCurrentDatasetStatusProgress.style.display = "none";
           datasetStatusStatus.innerHTML = "";
@@ -8239,6 +8320,24 @@ function addDetailsForFile(ev) {
 // document.getElementById('inputNewNameDataset').addEventListener('keydown', function() {
 //   // document.getElementById('para-new-name-dataset-message').innerHTML = ""
 // })
+
+$("#bf-rename-dataset-name").keyup(function () {
+  let newName = $("#bf-rename-dataset-name").val().trim();
+
+  if (newName !== "") {
+    if (check_forbidden_characters_bf(newName)) {
+      $("#para-rename-dataset-message").html(
+        "Error: A Blackfynn dataset name cannot contain any of the following characters: /:*?'<>."
+      );
+      $("#button-rename-dataset").hide();
+    } else {
+      $("#para-rename-dataset-message").html("");
+      $("#button-rename-dataset").show();
+    }
+  } else {
+    $("#button-rename-dataset").hide();
+  }
+});
 
 $("#inputNewNameDataset").keyup(function () {
   var newName = $("#inputNewNameDataset").val().trim();

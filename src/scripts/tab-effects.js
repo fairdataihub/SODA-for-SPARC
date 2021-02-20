@@ -34,11 +34,11 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   $(x[tabNow]).addClass("tab-active");
-  setTimeout(function () {
+  setTimeout(() => {
     $(x[tabNow]).css("overflow", "auto");
   }, 1200);
 
-  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter(function (element) {
+  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter((element) => {
     return ![tabNow].includes(element);
   });
 
@@ -56,7 +56,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 0) {
-    $("#prevBtn").css("display", "none");
+    //$("#prevBtn").css("display", "none");
 
     // disable continue button if none of the options in step 1 have been clicked
     if ($('input[name="getting-started-1"]:checked').length === 1) {
@@ -390,7 +390,7 @@ const traverse_back = (amount, element = "", pulse_animation = false) => {
         block: "center",
       });
       if (pulse_animation == true) {
-        $("#" + element).addClass("pulse-blue");
+        $(`#${element}`).addClass("pulse-blue");
       }
     }, 550);
   }
@@ -439,7 +439,7 @@ const add_card_detail = (
 };
 
 // helper function to delete empty keys from objects
-function deleteEmptyKeysFromObject(object) {
+const deleteEmptyKeysFromObject = (object) => {
   for (var key in object) {
     if (
       object[key] === null ||
@@ -450,9 +450,9 @@ function deleteEmptyKeysFromObject(object) {
       delete object[key];
     }
   }
-}
+};
 
-function checkHighLevelFoldersInput() {
+const checkHighLevelFoldersInput = () => {
   $("#nextBtn").prop("disabled", true);
   var optionCards = document.getElementsByClassName(
     "option-card high-level-folders"
@@ -468,11 +468,23 @@ function checkHighLevelFoldersInput() {
     $("#nextBtn").prop("disabled", false);
   }
   return checked;
-}
+};
 
 // function associated with the Back/Continue buttons
-function nextPrev(n) {
+const nextPrev = (n) => {
   var x = document.getElementsByClassName("parent-tabs");
+
+  if (n == -1 && x[currentTab].id === "getting-started-tab") {
+    let event = new CustomEvent("custom-back", {
+      detail: {
+        target: { dataset: { section: "main_tabs" }, classList: ["someclass"] },
+      },
+    });
+    console.log(event);
+    document.body.dispatchEvent(event);
+    return;
+  }
+
   // update JSON structure
   updateOverallJSONStructure(x[currentTab].id);
 
@@ -521,7 +533,7 @@ function nextPrev(n) {
         },
       },
       centerVertical: true,
-      callback: function (result) {
+      callback: (result) => {
         if (result !== null && result === true) {
           // Hide the current tab:
           $(x[currentTab]).removeClass("tab-active");
@@ -566,7 +578,7 @@ function nextPrev(n) {
           },
         },
         centerVertical: true,
-        callback: function (result) {
+        callback: (result) => {
           if (result !== null && result === true) {
             // Hide the current tab:
             $(x[currentTab]).removeClass("tab-active");
@@ -651,9 +663,9 @@ function nextPrev(n) {
     showParentTab(currentTab, n);
     //console.log(JSON.stringify(sodaJSONObj["dataset-structure"]))
   }
-}
+};
 
-function fixStepIndicator(n) {
+const fixStepIndicator = (n) => {
   // This function removes the "is-current" class of all steps...
   var i,
     x = document.getElementsByClassName("vertical-progress-bar-step");
@@ -662,12 +674,12 @@ function fixStepIndicator(n) {
   }
   //... and adds the "active" class to the current step:
   x[n].className += " is-current";
-}
+};
 
-function fixStepDone(n) {
+const fixStepDone = (n) => {
   var x = document.getElementsByClassName("vertical-progress-bar-step");
   $(x[n]).addClass("done");
-}
+};
 
 //// High level folders check mark effect
 $(".option-card.high-level-folders").click(function () {
@@ -719,7 +731,7 @@ function showSubTab(section, tab, input) {
       "div-manifest-metadata-file",
     ];
   }
-  var inActiveTabArray = tabArray.filter(function (element) {
+  var inActiveTabArray = tabArray.filter((element) => {
     return ![tab].includes(element);
   });
   for (var id of inActiveTabArray) {
@@ -731,7 +743,7 @@ function showSubTab(section, tab, input) {
 
 // function to check if certain high level folders already chosen and have files/sub-folders
 // then disable the option (users cannot un-choose)
-function highLevelFoldersDisableOptions() {
+const highLevelFoldersDisableOptions = () => {
   var highLevelFolderOptions = datasetStructureJSONObj["folders"];
   if (highLevelFolderOptions) {
     for (var folder of highLevelFolders) {
@@ -752,7 +764,7 @@ function highLevelFoldersDisableOptions() {
       }
     }
   }
-}
+};
 
 // // // High level folders check mark effect
 $(".parent-tabs, .folder-input-check").click(function () {
@@ -774,7 +786,7 @@ $(".parent-tabs, .folder-input-check").click(function () {
 
 // raise warning before wiping out existing sodaJSONObj
 // show warning message
-function raiseWarningGettingStarted(ev) {
+const raiseWarningGettingStarted = (ev) => {
   return new Promise((resolve) => {
     if (
       !(
@@ -818,7 +830,7 @@ function raiseWarningGettingStarted(ev) {
       resolve(globalGettingStarted1stQuestionBool);
     }
   });
-}
+};
 
 var divList = [];
 async function transitionSubQuestions(
@@ -1781,13 +1793,16 @@ const hidePrevDivs = (currentDiv, category) => {
           .find(".form-control");
 
         for (var child of childElements2) {
-          if (child.id === "inputNewNameDataset") {
-            document.getElementById(child.id).value = "";
-            document.getElementById(child.id).placeholder = "Type here";
+          if (
+            child.id === "inputNewNameDataset" ||
+            child.id === "bf-rename-dataset-name"
+          ) {
+            $(`${child.id}`).val("");
+            $(`${child.id}`).attr("placeholder", "Type here");
           } else {
             if (document.getElementById(child.id)) {
-              document.getElementById(child.id).value = "";
-              document.getElementById(child.id).placeholder = "Browse here";
+              $(`${child.id}`).val("");
+              $(`${child.id}`).attr("placeholder", "Browse here");
             }
           }
         }
@@ -2327,7 +2342,8 @@ const exitCurate = async (resetProgressTabs, start_over = false) => {
 
       currentTab = 0;
       wipeOutCurateProgress();
-      $("#prepare-dataset-a")[0].click();
+      //$("#prepare-dataset-a")[0].click();
+      $("#main_tabs_view").click();
       globalGettingStarted1stQuestionBool = false;
       if (start_over) {
         $("#button-section-organize-dataset").click();
@@ -2394,6 +2410,17 @@ document
     $(".vertical-progress-bar").css("display", "flex");
     document.getElementById("generate-dataset-progress-tab").style.display =
       "none";
+    showParentTab(currentTab, 1);
+  });
+
+document
+  .getElementById("organize_dataset_btn")
+  .addEventListener("click", () => {
+    $(".vertical-progress-bar").css("display", "flex");
+    document.getElementById("generate-dataset-progress-tab").style.display =
+      "none";
+      $("#save-progress-btn").css("display", "none");
+      $("#start-over-btn").css("display", "none");
     showParentTab(currentTab, 1);
   });
 
@@ -2492,7 +2519,7 @@ const description_text = {
   prepare_dataset_section:
     "This interface will help you in organizing your dataset and upload it to Blackfynn.",
   disseminate_dataset_section:
-    "This interface provides a convenient window to complete tasks required once your dataset has been organized and uploaded on Blackfynn.",
+    "This interface provides a convenient window to complete tasks required once your dataset has been organized and uploaded on Blackfynn."
 };
 
 $("input:radio[name=main_tabs]").click(function () {
@@ -2511,3 +2538,98 @@ $(document).ready(() => {
 });
 
 $("#manage_dataset_tab").click();
+
+$("input[type=radio][name=dataset_status_radio]").change(function () {
+  //console.log(this.id);
+  $("#bf_list_dataset_status").val(this.value).trigger("change");
+});
+
+const getBase64 = async (url) => {
+  const axios = require("axios");
+  return axios
+    .get(url, {
+      responseType: "arraybuffer",
+    })
+    .then((response) =>
+      Buffer.from(response.data, "binary").toString("base64")
+    );
+};
+
+$("#edit_banner_image_button").click(async () => {
+  $("#edit_banner_image_modal").modal("show");
+  if ($("#para-current-banner-img").text() === "None") {
+    //Do nothing... regular import
+  } else {
+    let img_src = $("#current-banner-img").attr("src");
+    let img_base64 = await getBase64(img_src);
+
+    $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
+    $("#save-banner-image").css("visibility", "visible");
+    $("#div-img-container-holder").css("display", "none");
+    $("#div-img-container").css("display", "block");
+    $("#para-path-image").html("path");
+
+    let position = img_src.search("X-Amz-Security-Token");
+
+    if (position != -1) {
+      let new_img_src = img_src.substring(0, position - 1);
+      let new_position = new_img_src.lastIndexOf(".");
+
+      if (new_position != -1) {
+        imageExtension = new_img_src.substring(new_position + 1);
+        if (imageExtension == "png") {
+          $("#image-banner").attr("src", "data:image/png;base64," + img_base64);
+        } else if (imageExtension == "jpeg") {
+          $("#image-banner").attr(
+            "src",
+            "data:image/jpeg;base64," + img_base64
+          );
+        } else if (imageExtension == "jpg") {
+          $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
+        } else {
+          console.log(`An error happened: ${img_src}`);
+          bootbox.alert(
+            `An error occured when importing the image. Please try again later.`
+          );
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Importing Blackfynn Image",
+            img_src
+          );
+          return;
+        }
+      } else {
+        console.log(`An error happened: ${img_src}`);
+        bootbox.alert(
+          `An error occured when importing the image. Please try again later.`
+        );
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Importing Blackfynn Image",
+          img_src
+        );
+        return;
+      }
+    } else {
+      console.log(`An error happened: ${img_src}`);
+      bootbox.alert(
+        `An error occured when importing the image. Please try again later.`
+      );
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Importing Blackfynn Image",
+        img_src
+      );
+      return;
+    }
+
+    myCropper.destroy();
+    myCropper = new Cropper(
+      document.getElementById("image-banner"),
+      cropOptions
+    );
+  }
+});

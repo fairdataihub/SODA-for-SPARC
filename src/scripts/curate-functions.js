@@ -1424,5 +1424,16 @@ $(".bf-dataset-span").on("DOMSubtreeModified", function () {
       "display",
       "flex"
     );
+    if ($($(this).parents().find(".field").find(".synced-progress")).length) {
+      if (
+        $($(this).parents().find(".field").find(".synced-progress")).css(
+          "display"
+        ) === "none"
+      ) {
+        $(".confirm-button").click();
+      }
+    } else {
+      $(".confirm-button").click();
+    }
   }
 });

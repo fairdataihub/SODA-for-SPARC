@@ -77,6 +77,7 @@ document.querySelector("#add-edit-subtitle").addEventListener("click", () => {
   document.getElementById("para-dataset-license-status").innerHTML = "";
   showAddEditSubtitle();
 });
+
 document
   .querySelector("#add-edit-description")
   .addEventListener("click", () => {
@@ -86,6 +87,7 @@ document
     document.getElementById("para-dataset-license-status").innerHTML = "";
     showAddEditDescription();
   });
+
 document.querySelector("#add-edit-banner").addEventListener("click", () => {
   document.getElementById("para-dataset-subtitle-status").innerHTML = "";
   document.getElementById("para-dataset-description-status").innerHTML = "";
@@ -93,6 +95,7 @@ document.querySelector("#add-edit-banner").addEventListener("click", () => {
   document.getElementById("para-dataset-license-status").innerHTML = "";
   showAddEditBanner();
 });
+
 document.querySelector("#add-edit-license").addEventListener("click", () => {
   document.getElementById("para-dataset-subtitle-status").innerHTML = "";
   document.getElementById("para-dataset-description-status").innerHTML = "";
