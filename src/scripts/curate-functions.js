@@ -477,12 +477,12 @@ async function openDropdownPrompt(dropdown) {
           .nextAll()
           .removeClass("show")
           .removeClass("prev")
-          .removeClass("test2")
+          .removeClass("test2");
         $("#Question-generate-dataset-BF-account")
           .nextAll()
           .removeClass("show")
           .removeClass("prev")
-          .removeClass("test2")
+          .removeClass("test2");
         $("#current-bf-account").text("");
         $("#current-bf-account-generate").text("");
         $("#create_empty_dataset_BF_account_span").text("");
@@ -1412,11 +1412,17 @@ function showTreeViewPreview(new_dataset_name) {
 }
 
 // per change event of current dataset span text
-$('.bf-dataset-span').on('DOMSubtreeModified',function(){
-  if ($('.bf-dataset-span').html() === "None") {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none")
+$(".bf-dataset-span").on("DOMSubtreeModified", function () {
+  if ($(".bf-dataset-span").html() === "None") {
+    $($(this).parents().find(".field").find(".div-confirm-button")).css(
+      "display",
+      "none"
+    );
     $("#para-review-dataset-info-disseminate").text("None");
   } else {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex");
+    $($(this).parents().find(".field").find(".div-confirm-button")).css(
+      "display",
+      "flex"
+    );
   }
-})
+});

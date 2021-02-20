@@ -1491,60 +1491,53 @@ async function transitionSubQuestionsButton(
   }
 }
 
-function transitionFreeFormMode(
-    ev,
-    currentDiv,
-    parentDiv,
-    button,
-    category
-  ) {
-      $(ev).removeClass("non-selected");
-      $(ev).children().find(".folder-input-check").prop("checked", true);
-      $(ev).addClass("checked");
+function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
+  $(ev).removeClass("non-selected");
+  $(ev).children().find(".folder-input-check").prop("checked", true);
+  $(ev).addClass("checked");
 
-      // uncheck the other radio buttons
-      $($(ev).parents()[0])
-        .siblings()
-        .find(".option-card.radio-button")
-        .removeClass("checked");
-      $($(ev).parents()[0])
-        .siblings()
-        .find(".option-card.radio-button")
-        .addClass("non-selected");
+  // uncheck the other radio buttons
+  $($(ev).parents()[0])
+    .siblings()
+    .find(".option-card.radio-button")
+    .removeClass("checked");
+  $($(ev).parents()[0])
+    .siblings()
+    .find(".option-card.radio-button")
+    .addClass("non-selected");
 
-      // empty para elements (TODO: will convert these para elements to a swal2 alert so we dont have to clear them out)
-      $(disseminateStatusMessage).text("");
-      $(disseminateStatusMessagePublish).text("");
+  // empty para elements (TODO: will convert these para elements to a swal2 alert so we dont have to clear them out)
+  $(disseminateStatusMessage).text("");
+  $(disseminateStatusMessagePublish).text("");
 
-      // first, handle target or the next div to show
-      var target = document.getElementById(ev.getAttribute("data-next"));
-       hidePrevDivs(currentDiv, category);
-      // display the target tab (data-next tab)
-      if (!$(target).hasClass("show")) {
-        $(target).addClass("show");
-      }
+  // first, handle target or the next div to show
+  var target = document.getElementById(ev.getAttribute("data-next"));
+  hidePrevDivs(currentDiv, category);
+  // display the target tab (data-next tab)
+  if (!$(target).hasClass("show")) {
+    $(target).addClass("show");
+  }
 
-      // append to parentDiv
-      document.getElementById(parentDiv).appendChild(target);
+  // append to parentDiv
+  document.getElementById(parentDiv).appendChild(target);
 
-      document.getElementById(currentDiv).classList.add("prev");
-      // handle buttons (if buttons are confirm buttons -> delete after users confirm)
-      if (button === "delete") {
-        if ($(ev).siblings().length > 0) {
-          $(ev).siblings().hide();
-        }
-        $(ev).hide();
-      } else {
-        if ($("bf-dataset-span").html() !== "None") {
-          $(target).children().find(".div-confirm-button button").show();
-        }
-      }
-      // auto-scroll to bottom of div
-      document.getElementById(parentDiv).scrollTop = document.getElementById(
-        parentDiv
-      ).scrollHeight;
+  document.getElementById(currentDiv).classList.add("prev");
+  // handle buttons (if buttons are confirm buttons -> delete after users confirm)
+  if (button === "delete") {
+    if ($(ev).siblings().length > 0) {
+      $(ev).siblings().hide();
+    }
+    $(ev).hide();
+  } else {
+    if ($("bf-dataset-span").html() !== "None") {
+      $(target).children().find(".div-confirm-button button").show();
+    }
+  }
+  // auto-scroll to bottom of div
+  document.getElementById(parentDiv).scrollTop = document.getElementById(
+    parentDiv
+  ).scrollHeight;
 }
-
 
 const reset_ui = () => {
   $(".option-card.high-level-folders").each(function (i, obj) {
@@ -2510,11 +2503,11 @@ $("input:radio[name=main_tabs]").click(function () {
 });
 
 $(document).ready(() => {
-  $(".content-button").click(function() {
+  $(".content-button").click(function () {
     let section = $(this).data("section");
     //$("#"+section+"-section").css("display", "block");
     console.log("here");
-  })
-})
+  });
+});
 
 $("#manage_dataset_tab").click();
