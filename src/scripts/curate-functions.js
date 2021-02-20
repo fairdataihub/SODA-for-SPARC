@@ -343,6 +343,13 @@ let missing_dataset_files = [];
 let missing_metadata_files = [];
 function loadProgressFile(ev) {
   let return_option = "";
+  missing_dataset_files = [];
+  missing_metadata_files = [];
+
+  if ($(ev).val() === "Select") {
+    return;
+  }
+
   var jsonContent = progressFileParse(ev);
 
   $("#para-progress-file-status").html("");
@@ -360,10 +367,8 @@ function loadProgressFile(ev) {
       importDatasetStructure(sodaJSONObj);
       importGenerateDatasetStep(sodaJSONObj);
       if (missing_dataset_files.length > 0 || missing_metadata_files > 0) {
-        verify_missing_files();
-      }
-      else
-      {
+        verify_missing_files("pre-existing");
+      } else {
         document.getElementById("div-progress-file-loader").style.display =
           "none";
         document.getElementById("nextBtn").disabled = false;
@@ -380,9 +385,8 @@ function loadProgressFile(ev) {
       importDatasetStructure(sodaJSONObj);
       importGenerateDatasetStep(sodaJSONObj);
       if (missing_dataset_files.length > 0 || missing_metadata_files > 0) {
-        return_option = verify_missing_files();
-      }
-      else {
+        return_option = verify_missing_files("new");
+      } else {
         document.getElementById("div-progress-file-loader").style.display =
           "none";
         document.getElementById("para-progress-file-status").innerHTML = "";
@@ -391,10 +395,10 @@ function loadProgressFile(ev) {
   }
 }
 
-const verify_missing_files = () => {
+const verify_missing_files = (mode) => {
   let missing_files = missing_metadata_files.concat(missing_dataset_files);
-  let message_text =
-    "The following files have been moved or deleted since this progress file was saved. Would like SODA to ignore these files and continue? <br><ul>";
+  let message_text = ""
+  message_text = "The following files have been moved or deleted since this progress file was saved. Would you like SODA to ignore these files and continue? <br><br><ul>";
 
   for (let item in missing_files) {
     message_text += `<li>${missing_files[item]}</li>`;
@@ -418,10 +422,21 @@ const verify_missing_files = () => {
     callback: (result) => {
       if (result == true) {
         remove_missing_files();
-      }
-      else
-      {
-        exitCurate(true);
+        if (mode === "pre-existing") {
+          document.getElementById("div-progress-file-loader").style.display =
+            "none";
+          document.getElementById("nextBtn").disabled = false;
+          document.getElementById("para-progress-file-status").innerHTML =
+            "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+        } else if (mode === "new") {
+          document.getElementById("div-progress-file-loader").style.display =
+            "none";
+          document.getElementById("para-progress-file-status").innerHTML = "";
+        }
+      } else {
+        document.getElementById("div-progress-file-loader").style.display =
+        "none";
+        document.getElementById("para-progress-file-status").innerHTML = "";
       }
     },
   });
@@ -431,15 +446,21 @@ const remove_missing_files = () => {
   if (missing_metadata_files.length > 0) {
     for (let item_path in missing_metadata_files) {
       for (let item in sodaJSONObj["metadata-files"]) {
-        if (sodaJSONObj["metadata-files"][item]["path"] == item_path) {
+        if (
+          sodaJSONObj["metadata-files"][item]["path"] ==
+          missing_metadata_files[item_path]
+        ) {
           delete sodaJSONObj["metadata-files"][item];
         }
       }
     }
   }
   if (missing_dataset_files.length > 0) {
-    for (let item_path in missing_dataset_files) { 
-      recursive_remove_missing_file(item_path, sodaJSONObj["dataset-structure"]);
+    for (let item_path in missing_dataset_files) {
+      recursive_remove_missing_file(
+        missing_dataset_files[item_path],
+        sodaJSONObj["dataset-structure"]
+      );
     }
   }
 };
