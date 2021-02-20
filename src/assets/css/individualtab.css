@@ -687,6 +687,29 @@
   left: 25%;
   top: 25%;
 }
+
+.modal-title {
+  width: 100%
+}
+
+.tagify.form-control {
+  height: auto !important;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.tagify__tag {
+  max-width: 280px;
+}
+
+.tagify__tag>div>* {
+  white-space: pre !important;
+  display: block !important;
+}
+
+.tagify.form-control {
+  margin-top: 15px
+}
 /*
 .not-me:hover span:first-of-type {
   display: none;

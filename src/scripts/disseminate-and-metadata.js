@@ -317,3 +317,67 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
   $("#"+divShow).show();
   $("#"+buttonShow).show();
 }
+
+// Below is all the actions that show/hide Confirm buttons per the onclick/onchange/keyup... events
+// under Prepare metadata
+
+// 1A. Select SPARC award
+$("#select-presaved-grant-info-list").change(function() {
+  $("#Question-prepare-submission-3").nextAll().removeClass("show").removeClass("prev");
+  if ($("#select-presaved-grant-info-list").val() !== "Select") {
+    $("#div-confirm-select-SPARC-awards").show();
+    $($("#div-confirm-select-SPARC-awards").children()[0]).show();
+    var existingDDDBoolean = changeAwardInput();
+    if (existingDDDBoolean) {
+      $("#btn-confirm-select-SPARC-awards").attr("data-next", "Question-prepare-submission-4");
+    } else {
+      $("#btn-confirm-select-SPARC-awards").attr("data-next", "Question-prepare-submission-DDD");
+    }
+  } else {
+    $("#div-confirm-select-SPARC-awards").hide();
+    $($("#div-confirm-select-SPARC-awards").children()[0]).hide();
+  }
+});
+// 1B. Manually enter SPARC award
+$("#textarea-SPARC-award-raw-input").keyup(function() {
+  if ($("#textarea-SPARC-award-raw-input").val() !== "") {
+    $("#div-confirm-enter-SPARC-award").show();
+    $($("#div-confirm-enter-SPARC-award").children()[0]).show();
+  } else {
+    $("#div-confirm-enter-SPARC-award").hide();
+    $($("#div-confirm-enter-SPARC-award").children()[0]).hide();
+  }
+})
+
+// 3A. Select a completion date
+
+$("#selected-milestone-date").change(function() {
+  document.getElementById("input-milestone-date").value = "";
+  if ($("#selected-milestone-date").val() !== "") {
+    if (descriptionDateInput.value === "Enter a date") {
+      actionEnterNewDate("flex");
+    } else {
+      actionEnterNewDate("none");
+    }
+    $("#div-confirm-completion-date").show();
+    $($("#div-confirm-completion-date").children()[0]).show();
+  } else {
+    $("#div-confirm-completion-date").hide();
+  }
+});
+// 3B. Manually type a completion date
+$("#input-milestone-date-raw").change(function() {
+  if ($("#input-milestone-date-raw").val() !== "mm/dd/yyyy") {
+    $("#div-confirm-completion-date-raw").show();
+    $($("#div-confirm-completion-date-raw").children()[0]).show();
+  } else {
+    $("#div-confirm-completion-date-raw").hide();
+  }
+});
+$("#btn-cancel-DDD-import").click(function() {
+  $("#div-cancel-DDD-import").hide();
+  $("#div-upload-DDD").hide();
+  $("#div-buttons-show-DDD").show()
+})
+
+$("#a-SPARC-awards-not-listed").click(editSPARCAwardsBootbox)
