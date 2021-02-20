@@ -2322,11 +2322,12 @@ function raiseWarningExit() {
   });
 }
 
-const exitCurate = async (resetProgressTabs, start_over = false) => {
+const exitCurate = async (resetProgressTabs, start_over = false, ) => {
   $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
     var res = await raiseWarningExit();
+
     if (res) {
       $(".vertical-progress-bar-step").removeClass("is-current");
       $(".vertical-progress-bar-step").removeClass("done");
@@ -2342,7 +2343,7 @@ const exitCurate = async (resetProgressTabs, start_over = false) => {
       $("#main_tabs_view").click();
       globalGettingStarted1stQuestionBool = false;
       if (start_over) {
-        $("#button-section-organize-dataset").click();
+        $("#organize_dataset_btn").click();
       }
     } else {
       globalGettingStarted1stQuestionBool = false;
