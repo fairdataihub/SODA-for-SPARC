@@ -788,65 +788,6 @@ function sendHTTPsRequestAirtable(options, varSuccess) {
   });
 }
 
-///// Upon clicking "Connect" to Airtable
-addAirtableKeyBtn.addEventListener("click", () => {
-  document.getElementById("para-add-airtable-key").innerHTML = "";
-  var apiKeyInput = document.getElementById("airtable-api-key").value;
-  var keyName = document.getElementById("airtable-key-name").value;
-  if (apiKeyInput.length === 0 || keyName.length === 0) {
-    document.getElementById("para-add-airtable-key").innerHTML =
-      "<span style='color: red;'>Please fill in both required fields to add.</span>";
-  } else {
-    document.getElementById(
-      "div-airtable-connect-load-progress"
-    ).style.display = "block";
-    // test connection
-    const optionsSparcTable = {
-      hostname: airtableHostname,
-      port: 443,
-      path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
-      headers: { Authorization: `Bearer ${apiKeyInput}` },
-    };
-    var sparcTableSuccess;
-    https.get(optionsSparcTable, (res) => {
-      if (res.statusCode === 200) {
-        /// updating api key in SODA's storage
-        createMetadataDir();
-        var content = parseJson(airtableConfigPath);
-        content["api-key"] = apiKeyInput;
-        content["key-name"] = keyName;
-        fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-        document.getElementById("para-add-airtable-key").innerHTML =
-          "<span style='color: black;'>New Airtable key added successfully for account name: " +
-          keyName +
-          ".</span>";
-        document.getElementById("para-save-award-info").innerHTML = "";
-        document.getElementById("airtable-api-key").value = "";
-        document.getElementById("airtable-key-name").value = "";
-        loadAwardData();
-      } else if (res.statusCode === 403) {
-        document.getElementById("para-add-airtable-key").innerHTML =
-          "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>";
-      } else {
-        log.error(res);
-        console.error(res);
-        document.getElementById("para-add-airtable-key").innerHTML =
-          "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>";
-      }
-      document.getElementById(
-        "div-airtable-connect-load-progress"
-      ).style.display = "none";
-      document.getElementById("para-add-airtable-key").style.display = "block";
-      res.on("error", (error) => {
-        log.error(error);
-        console.error(error);
-        document.getElementById("para-add-airtable-key").innerHTML =
-          "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>";
-      });
-    });
-  }
-});
-
 loadAwardData();
 
 /////////////////////// Download Metadata Templates ////////////////////////////
@@ -1133,17 +1074,22 @@ function loadAwards() {
   var awards = JSON.parse(contents);
   var awardSpan = "";
   var awardList = [];
+  removeOptions(presavedAwardArray1);
+  removeOptions(presavedAwardArray2);
+  removeOptions(dsAwardArray);
   for (var key in awards) {
     // Add options to dropdown lists
     addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
     addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
     addOption(dsAwardArray, eval(JSON.stringify(awards[key])), key);
-    awardList.push(eval(JSON.stringify(awards[key])));
-    awardSpan = awardSpan + key + ", ";
+    awardList.push({"value": eval(JSON.stringify(awards[key])), "award-number": key});
+    awardSpan = awardSpan + eval(JSON.stringify(awards[key])) + "\n";
   }
+  existingSPARCAwardsTagify.removeAllTags();
   existingSPARCAwardsTagify.addTags(awardList);
-  $("#current-users-awards").text(awardSpan.slice(0, -1));
+  $("#current-users-awards").text(awardSpan.slice(0));
 }
+
 loadAwards();
 
 /// function to grab row index
@@ -1163,29 +1109,33 @@ function getRowIndex(table) {
 function addSPARCAwards() {
   var message = "";
   var tagifyArray = awardArrayTagify.value;
+  var spanMessage = "";
+  // create empty milestone json files for newly added award
+  createMetadataDir();
+  var awardsJson = {};
+  awardsJson = parseJson(awardPath);
   if (tagifyArray.length === 0) {
-    message = "<span style='color:red'>Please choose an award!</span>";
-  } else {
-    if (awardArrayTagify.length === 0) {
-      message = "<span style='color: red;'>Please choose an award key!</span>";
+    awardsJson = {};
+    for (var i=0; i< existingSPARCAwardsTagify.value.length; i++) {
+      spanMessage = spanMessage + existingSPARCAwardsTagify.value[i]["value"] + "\n";
+      awardsJson[existingSPARCAwardsTagify.value[i]["award-number"]] = existingSPARCAwardsTagify.value[i]["value"];
     }
+    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
+    $("#current-users-awards").text(spanMessage);
+  } else {
     var awardVal = [];
     for (var i = 0; i < tagifyArray.length; i++) {
       awardVal.push(tagifyArray[i].value);
     }
-
     var awardNoAray = [];
     for (var award of awardVal) {
       var awardNo = award.slice(0, award.indexOf(" ("));
       var keyValuePair = { "award-number": awardNo, "award-full-title": award };
       awardNoAray.push(keyValuePair);
     }
-    // create empty milestone json files for newly added award
-    createMetadataDir();
-    var awardsJson = {};
-    awardsJson = parseJson(awardPath);
     var duplicateList = [];
     var successfullyAddedList = [];
+    var newlyAddedAwards = [];
 
     for (var keyValuePair of awardNoAray) {
       if (keyValuePair["award-number"] in awardsJson) {
@@ -1206,13 +1156,11 @@ function addSPARCAwards() {
           keyValuePair["award-full-title"],
           keyValuePair["award-number"]
         );
-        existingSPARCAwardsTagify.addTags(keyValuePair["award-full-title"]);
-        awardsJson[keyValuePair["award-number"]] =
-          keyValuePair["award-full-title"];
+        newlyAddedAwards.push({"value": keyValuePair["award-full-title"], "award-number": keyValuePair["award-number"]})
         successfullyAddedList.push(keyValuePair["award-number"]);
       }
     }
-    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
+    existingSPARCAwardsTagify.addTags(newlyAddedAwards);
     if (duplicateList.length !== 0) {
       if (successfullyAddedList.length !== 0) {
         message =
@@ -1233,8 +1181,17 @@ function addSPARCAwards() {
         successfullyAddedList.join(", ") +
         ".</span>";
     }
+    $(".bootbox-add-airtable-class").text("Confirm");
     awardArrayTagify.removeAllTags();
+    awardsJson = {};
+    for (var i=0; i< existingSPARCAwardsTagify.value.length; i++) {
+      spanMessage = spanMessage + existingSPARCAwardsTagify.value[i]["value"] + "\n";
+      awardsJson[existingSPARCAwardsTagify.value[i]["award-number"]] = existingSPARCAwardsTagify.value[i]["value"];
+    }
+    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
+    $("#current-users-awards").text(spanMessage);
   }
+  loadAwards()
   return message;
 }
 
@@ -6955,12 +6912,12 @@ var bfAddAccountBootboxMessage =
   "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='text' /></div></div></form>";
 
 function addBFAccountInsideBootbox(myBootboxDialog) {
-  var keyname = $("#bootbox-key-name").val();
+  var name = $("#bootbox-key-name").val();
   var apiKey = $("#bootbox-api-key").val();
   var apiSecret = $("#bootbox-api-secret").val();
   client.invoke(
     "api_bf_add_account",
-    keyname,
+    name,
     apiKey,
     apiSecret,
     (error, res) => {
@@ -6979,9 +6936,9 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
         $("#bootbox-key-name").val("");
         $("#bootbox-api-key").val("");
         $("#bootbox-api-secret").val("");
-        bfAccountOptions[keyname] = keyname;
+        bfAccountOptions[name] = name;
         updateBfAccountList();
-        client.invoke("api_bf_account_details", keyname, (error, res) => {
+        client.invoke("api_bf_account_details", name, (error, res) => {
           if (error) {
             log.error(error);
             console.error(error);
@@ -6994,9 +6951,9 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
             showHideDropdownButtons("account", "hide");
           } else {
             $("#para-account-detail-curate").html(res);
-            $("#current-bf-account").text(keyname);
-            $("#current-bf-account-generate").text(keyname);
-            $("#create_empty_dataset_BF_account_span").text(keyname);
+            $("#current-bf-account").text(name);
+            $("#current-bf-account-generate").text(name);
+            $("#create_empty_dataset_BF_account_span").text(name);
             $("#current-bf-dataset").text("None");
             $("#current-bf-dataset-generate").text("None");
             $(".bf-dataset-span").html("None");
@@ -7052,7 +7009,7 @@ function showAddAirtableAccountBootbox() {
       },
       confirm: {
         label: "Add",
-        className: "btn btn-primary bootbox-add-bf-class",
+        className: "btn btn-primary bootbox-add-airtable-class",
         callback: function () {
           addAirtableAccountInsideBootbox(bootb);
           return false;
@@ -7065,9 +7022,9 @@ function showAddAirtableAccountBootbox() {
 }
 
 function addAirtableAccountInsideBootbox(myBootboxDialog) {
-  var keyname = $("#bootbox-airtable-key-name").val();
-  var apiKey = $("#bootbox-airtable-key").val();
-  if (keyname.length === 0 || apiKey.length === 0) {
+  var name = $("#bootbox-airtable-key-name").val();
+  var key = $("#bootbox-airtable-key").val();
+  if (name.length === 0 || key.length === 0) {
     var errorMessage =
       "<span style='color: red;'>Please fill in both required fields to add.</span>";
     $(myBootboxDialog).find(".modal-footer span").remove();
@@ -7084,7 +7041,7 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
       hostname: airtableHostname,
       port: 443,
       path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
-      headers: { Authorization: `Bearer ${apiKey}` },
+      headers: { Authorization: `Bearer ${key}` },
     };
     var sparcTableSuccess;
     https.get(optionsSparcTable, (res) => {
@@ -7092,10 +7049,10 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
         /// updating api key in SODA's storage
         createMetadataDir();
         var content = parseJson(airtableConfigPath);
-        content["api-key"] = apiKey;
-        content["key-name"] = keyName;
+        content["api-key"] = key;
+        content["key-name"] = name;
         fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-        $("#current-airtable-account").html(keyName);
+        $("#current-airtable-account").text(name);
         $("#bootbox-airtable-key-name").val("");
         $("#bootbox-airtable-key").val("");
         loadAwardData();
@@ -7135,6 +7092,14 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
   }
 }
 
+awardArrayTagify.on("add", function() {
+  if (awardArrayTagify.value.length > 0) {
+    $(".bootbox-add-airtable-class").text("Add")
+  } else {
+    $(".bootbox-add-airtable-class").text("Confirm")
+  }
+})
+
 function editSPARCAwardsBootbox() {
   $(sparcAwardEditMessage).css("display", "block");
   var editSPARCAwardsTitle =
@@ -7148,18 +7113,25 @@ function editSPARCAwardsBootbox() {
       },
       confirm: {
         label: "Confirm",
-        className: "btn btn-primary bootbox-add-bf-class",
-        // id: "button-add-award",
+        className: "btn btn-primary bootbox-add-airtable-class",
         callback: function () {
+          // $(bootb.find(".modal-footer button")[1]).attr('id', 'bootbox-add-awards');
           $(bootb).find(".modal-footer span").remove();
           var message = addSPARCAwards();
           bootb.find(".modal-footer").prepend(message);
-          return false;
+          if ($(".bootbox-add-airtable-class").text() == "Confirm" && $(bootb).find(".modal-footer span").text() == "") {
+            return true
+          } else {
+            return false;
+          }
         },
       },
     },
     size: "medium",
     centerVertical: true,
+    // callback: function() {
+    //   $(bootb.find(".modal-footer button")[1]).attr('id', 'bootbox-add-awards');
+    // };
   });
 }
 
