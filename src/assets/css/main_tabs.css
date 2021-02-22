@@ -226,7 +226,6 @@
   color: #565454;
   display: block;
   position: relative;
-  float: left;
 }
 
 .dataset-status-container ul li input[type=radio]{
