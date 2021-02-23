@@ -150,19 +150,21 @@
 }
 
 .content-button {
-  width: 160px;
-  height: 160px;
+  width: 130px;
+  height: 130px;
+  max-width: 160px;
+  max-height: 160px;
   border: none;
   background-color: #fff;
   font-size: 13px;
   font-weight: 600;
   border-radius: 5px;
-  padding-top: 10px;
+  padding-top: 5px;
   padding-bottom: 5px;
-  padding-right: 20px;
-  padding-left: 20px;
-  margin-right: 15px;
-  margin-left: 15px;
+  padding-right: 5px;
+  padding-left: 5px;
+  margin-right: 25px;
+  margin-left: 25px;
   color: var(--color-teal);
   opacity: 1;
   position: relative;
@@ -175,7 +177,7 @@
 
 .content-button p {
   color: #222c3c;
-  font-size: 13px;
+  font-size: 14px;
   margin-top: 25px;
   font-family: "Raleway", sans-serif;
   pointer-events: none;
@@ -192,9 +194,12 @@
 .content-button h2 {
   color: #000;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 14px;
   bottom: -1em;
+  font-family: "Raleway", sans-serif;
   pointer-events: none;
+  text-align: center;
+  margin-top: 1em;
 }
 
 .content-button svg {
