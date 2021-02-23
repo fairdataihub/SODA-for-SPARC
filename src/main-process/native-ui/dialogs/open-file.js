@@ -356,6 +356,20 @@ ipcMain.on("open-file-dialog-milestone-doc", (event) => {
     }
   );
 });
+ipcMain.on("open-file-dialog-milestone-doc-reupload", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openFile"],
+      filters: [{ name: "DOCX", extensions: ["docx"] }],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-milestonedocreupload", files);
+      }
+    }
+  );
+});
 
 ipcMain.on("open-file-dialog-newdataset", (event) => {
   dialog.showOpenDialog(

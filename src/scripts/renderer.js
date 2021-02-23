@@ -1010,24 +1010,6 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
   }
 });
 //
-// presavedAwardArray1.addEventListener("change", function () {
-//   if (presavedAwardArray1.value === "Select") {
-//     document.getElementById(
-//       "div-show-milestone-info-no-existing"
-//     ).style.display = "none";
-//     document.getElementById("div-milestone-info").style.display = "none";
-//     document.getElementById("div-show-current-milestones").style.display =
-//       "none";
-//   } else {
-//     document.getElementById(
-//       "div-show-milestone-info-no-existing"
-//     ).style.display = "block";
-//     document.getElementById("div-milestone-info").style.display = "block";
-//     document.getElementById("div-show-current-milestones").style.display =
-//       "block";
-//     document.getElementById("para-delete-award-status").innerHTML = "";
-//   }
-// });
 
 // load and parse json file
 function parseJson(path) {
@@ -1077,6 +1059,9 @@ function loadAwards() {
   removeOptions(presavedAwardArray1);
   removeOptions(presavedAwardArray2);
   removeOptions(dsAwardArray);
+  addOption(presavedAwardArray1, "Select an award", "Select");
+  addOption(presavedAwardArray2, "Select an award", "Select");
+  addOption(dsAwardArray, "Select an award", "Select");
   for (var key in awards) {
     // Add options to dropdown lists
     addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
@@ -1392,12 +1377,13 @@ function loadAwardData() {
   if (JSON.stringify(airKeyContent) !== "{}") {
     var airKeyInput = airKeyContent["api-key"];
     var airKeyName = airKeyContent["key-name"];
-    Airtable.configure({
-      endpointUrl: "https://" + airtableHostname,
-      apiKey: airKeyInput,
-    });
-    var base = Airtable.base("appiYd1Tz9Sv857GZ");
-    base("sparc_members")
+    if (airKeyInput !== "" && airKeyName !== "") {
+      Airtable.configure({
+        endpointUrl: "https://" + airtableHostname,
+        apiKey: airKeyInput,
+      });
+      var base = Airtable.base("appiYd1Tz9Sv857GZ");
+      base("sparc_members")
       .select({
         view: "All members (ungrouped)",
       })
@@ -1406,12 +1392,12 @@ function loadAwardData() {
           records.forEach(function (record) {
             if (record.get("Project_title") !== undefined) {
               item = record
-                .get("SPARC_Award_#")
-                .concat(" (", record.get("Project_title"), ")");
+              .get("SPARC_Award_#")
+              .concat(" (", record.get("Project_title"), ")");
               awardResultArray.push(item);
             }
           }),
-            fetchNextPage();
+          fetchNextPage();
         },
         function done(err) {
           if (err) {
@@ -1426,6 +1412,7 @@ function loadAwardData() {
           }
         }
       );
+    }
   }
 }
 
@@ -1515,90 +1502,90 @@ function actionEnterNewDate(action) {
 presavedAwardArray2.addEventListener("change", changeAwardInput);
 
 /// Generate submission file
-generateSubmissionBtn.addEventListener("click", (event) => {
-  document.getElementById("para-save-submission-status").innerHTML = "";
-  awardVal = document.getElementById("presaved-award-list").value;
-  milestoneVal = milestoneTagify1.value;
-  dateVal = document.getElementById("selected-milestone-date").value;
-
-  var missingDateBool =
-    dateVal === "Enter a date" && submissionDateInput.value === "";
-  if (
-    awardVal === "Select" ||
-    milestoneVal.length === 0 ||
-    dateVal === "" ||
-    missingDateBool
-  ) {
-    document.getElementById("para-save-submission-status").innerHTML =
-      "<span style='color: red;'>Please fill in all fields to generate!</span>";
-  } else {
-    ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
-  }
-});
-
-ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
-  if (dirpath.length > 0) {
-    var destinationPath = path.join(dirpath[0], filename);
-    if (fs.existsSync(destinationPath)) {
-      var emessage = "File " + filename + " already exists in " + dirpath[0];
-      ipcRenderer.send("open-error-metadata-file-exits", emessage);
-    } else {
-      var award =
-        presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
-      var milestoneValue = [];
-      for (var i = 0; i < milestoneVal.length; i++) {
-        milestoneValue.push(milestoneVal[i].value);
-      }
-      var date;
-      if (
-        document.getElementById("selected-milestone-date").value ===
-        "Enter a date"
-      ) {
-        date = document.getElementById("input-milestone-date").value;
-      } else {
-        date = document.getElementById("selected-milestone-date").value;
-      }
-      var json_arr = [];
-      json_arr.push({
-        award: award,
-        date: date,
-        milestone: milestoneValue[0],
-      });
-      if (milestoneValue.length > 0) {
-        for (var index = 1; index < milestoneValue.length; index++) {
-          json_arr.push({
-            award: "",
-            date: "",
-            milestone: milestoneValue[index],
-          });
-        }
-      }
-      json_str = JSON.stringify(json_arr);
-      if (dirpath != null) {
-        client.invoke(
-          "api_save_submission_file",
-          destinationPath,
-          json_str,
-          (error, res) => {
-            if (error) {
-              var emessage = userError(error);
-              log.error(error);
-              console.error(error);
-              document.getElementById("para-save-submission-status").innerHTML =
-                "<span style='color: red;'> " + emessage + "</span>";
-            } else {
-              document.getElementById("para-save-submission-status").innerHTML =
-                "<span style='color: black ;'>" +
-                "Done!" +
-                smileyCan +
-                "</span>";
-            }
-          }
-        );
-      }
-    }
-  }
-});
+// generateSubmissionBtn.addEventListener("click", (event) => {
+//   document.getElementById("para-save-submission-status").innerHTML = "";
+//   awardVal = document.getElementById("presaved-award-list").value;
+//   milestoneVal = milestoneTagify1.value;
+//   dateVal = document.getElementById("selected-milestone-date").value;
+//
+//   var missingDateBool =
+//     dateVal === "Enter a date" && submissionDateInput.value === "";
+//   if (
+//     awardVal === "Select" ||
+//     milestoneVal.length === 0 ||
+//     dateVal === "" ||
+//     missingDateBool
+//   ) {
+//     document.getElementById("para-save-submission-status").innerHTML =
+//       "<span style='color: red;'>Please fill in all fields to generate!</span>";
+//   } else {
+//     ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
+//   }
+// });
+//
+// ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
+//   if (dirpath.length > 0) {
+//     var destinationPath = path.join(dirpath[0], filename);
+//     if (fs.existsSync(destinationPath)) {
+//       var emessage = "File " + filename + " already exists in " + dirpath[0];
+//       ipcRenderer.send("open-error-metadata-file-exits", emessage);
+//     } else {
+//       var award =
+//         presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
+//       var milestoneValue = [];
+//       for (var i = 0; i < milestoneVal.length; i++) {
+//         milestoneValue.push(milestoneVal[i].value);
+//       }
+//       var date;
+//       if (
+//         document.getElementById("selected-milestone-date").value ===
+//         "Enter a date"
+//       ) {
+//         date = document.getElementById("input-milestone-date").value;
+//       } else {
+//         date = document.getElementById("selected-milestone-date").value;
+//       }
+//       var json_arr = [];
+//       json_arr.push({
+//         award: award,
+//         date: date,
+//         milestone: milestoneValue[0],
+//       });
+//       if (milestoneValue.length > 0) {
+//         for (var index = 1; index < milestoneValue.length; index++) {
+//           json_arr.push({
+//             award: "",
+//             date: "",
+//             milestone: milestoneValue[index],
+//           });
+//         }
+//       }
+//       json_str = JSON.stringify(json_arr);
+//       if (dirpath != null) {
+//         client.invoke(
+//           "api_save_submission_file",
+//           destinationPath,
+//           json_str,
+//           (error, res) => {
+//             if (error) {
+//               var emessage = userError(error);
+//               log.error(error);
+//               console.error(error);
+//               document.getElementById("para-save-submission-status").innerHTML =
+//                 "<span style='color: red;'> " + emessage + "</span>";
+//             } else {
+//               document.getElementById("para-save-submission-status").innerHTML =
+//                 "<span style='color: black ;'>" +
+//                 "Done!" +
+//                 smileyCan +
+//                 "</span>";
+//             }
+//           }
+//         );
+//       }
+//     }
+//   }
+// });
 
 //////////////// Dataset description file ///////////////////////
 //////////////// //////////////// //////////////// ////////////////

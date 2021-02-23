@@ -1340,7 +1340,7 @@
                 <textarea id="selected-milestone-1" class="form-container-textarea"></textarea>
               </div>
               <div style="margin:0 auto;text-decoration:underline">
-                <a>I want to re-upload my Data Deliverables Document</a>
+                <a href="#" id="reupload-DDD">I want to re-upload my Data Deliverables Document</a>
               </div>
               <div
               style="
@@ -1373,6 +1373,92 @@
           </div>
         </div>
     </div>
+
+    <div class="individual-question prepare-submission" id="Question-prepare-submission-reupload-DDD">
+      <div class="ui form" style="width:100%">
+        <div class="grouped fields">
+          <label style="font-size:17px;color:var(--color-bg-plum);">Please upload your Data Deliverables below:
+            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext">
+              The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document (usually kept by the PI of the SPARC award or the award manager).
+              <br>
+              Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use.
+              <br>
+              Note that you can import a new Dataset Deliverable to replace an existing one.
+              <br>
+              Click <a href=# id="a-DDD" style="color:white;">here</a> to download a template of the Data Deliverables document to see the expected format. Most importantly, at least one table with these exact three hearders is expected: "Related milestone, aim, or task", "Description of data", "Expected date of completion".
+              <br><br>
+              </span>
+            </div>
+          </label>
+          <div style="display:flex; flex-direction:row;margin:0 15px;margin-top:30px">
+            <div style="width:100%">
+              <div class="container-milestone-upload" style="display:flex;">
+                <input class="milestone-upload-text" id="input-milestone-select-reupload" style="width:85%;text-align:center;height:40px;border-radius:0" type="text" readonly placeholder="Select a file">
+                <button id="button-import-milestone-reupload" type="button" style="width:15%;height:40px;background:var(--color-light-green)" class="button-milestone-upload"><b>Import</b></button>
+              </div>
+              <p id="para-milestone-document-info-reupload" style="margin-top:15px;text-align:center;vertical-align:middle;"></p>
+              <p id="para-milestone-document-info-long-reupload" style="display:none;margin-top:5px;margin-bottom:0;text-align:left;padding: 0 0"></p>
+            </div>
+          </div>
+                <div
+                style="
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+                "
+                id="div-cancel-reupload-DDD"
+                >
+                <button
+                id="cancel-reupload-DDD"
+                style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px auto;
+                width: 100px;
+                height: 30px;
+                background: #fff;
+                color: red;
+                font-weight: 600;
+                border: 1px solid red;
+                font-size: 13px;
+                "
+                >
+                Cancel
+              </button>
+            </div>
+              <div
+              style="
+              display: none;
+              flex-direction: row;
+              justify-content: center;
+              margin: 10px auto;
+              "
+              id="div-confirm-DDD-reupload"
+              >
+              <button
+              onclick="transitionFreeFormMode(this, 'Question-prepare-submission-reupload-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
+              data-next="Question-prepare-submission-4"
+              style="
+              cursor: pointer;
+              border-radius: 8px;
+              margin: 10px auto;
+              width: 100px;
+              height: 30px;
+              background: var(--color-light-green);
+              color: #fff;
+              font-weight: 600;
+              border: none;
+              font-size: 13px;
+              "
+              >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+  </div>
 
     <div class="individual-question prepare-submission" id="Question-prepare-submission-no-skip-2">
         <div class="ui form" style="width:100%">
@@ -1431,7 +1517,7 @@
                 </div>
               </div>
               <div class="demo-controls" style='display:none;' id="div-submission-enter-different-date-3">
-                <input type="date" id="input-milestone-date" style="font-family: inherit" class="form-container-input-bf"></input>
+                <input type="date" id="input-milestone-date" required style="font-family: inherit" class="form-container-input-bf"></input>
               </div>
               <div
               style="
@@ -1503,7 +1589,7 @@
                     <h5 style="color: #808080; font-size: 15px">
                       SPARC Award:
                       <span
-                        class="bf-dataset-span"
+                        id="submission-SPARC-award-span"
                         style="
                           color: #000;
                           font-weight: 600;
@@ -1534,7 +1620,7 @@
                     <h5 style="color: #808080; font-size: 15px">
                       Milestone(s):
                       <span
-                        class="bf-dataset-span"
+                        id="submission-milestones-span"
                         style="
                           color: #000;
                           font-weight: 600;
@@ -1565,7 +1651,7 @@
                     <h5 style="color: #808080; font-size: 15px">
                       Completion date:
                       <span
-                        class="bf-dataset-span"
+                        id="submission-completion-date-span"
                         style="
                           color: #000;
                           font-weight: 600;
@@ -1601,8 +1687,7 @@
                   "
                 >
                   <button
-                    onclick="transitionFreeFormMode(this, 'Question-prepare-submission-6', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
-                    data-next="Question-prepare-submission-7"
+                    onclick="generateSubmissionFile()"
                     style="
                       cursor: pointer;
                       border-radius: 8px;
@@ -1619,6 +1704,7 @@
                     Generate
                   </button>
                 </div>
+                <p id='para-save-submission-status' style="text-align:center;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p>
               </div>
             </div>
           </div>

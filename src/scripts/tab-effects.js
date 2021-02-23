@@ -1522,6 +1522,20 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
   $(disseminateStatusMessage).text("");
   $(disseminateStatusMessagePublish).text("");
 
+  if (ev.getAttribute("data-next") == "Question-prepare-submission-7") {
+    var res = showPreviewSubmission();
+    var awardRes = res["awards"];
+    var dateRes = res["date"];
+    var milestonesRes = res["milestones"];
+    var milestoneValues = [];
+    $("#submission-SPARC-award-span").text(awardRes);
+    $("#submission-completion-date-span").text(dateRes);
+    milestonesRes.forEach((item, i) => {
+      milestoneValues.push(milestonesRes[i].value);
+    });
+    $("#submission-milestones-span").text(milestoneValues.join(", \n"));
+  }
+
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute("data-next"));
   hidePrevDivs(currentDiv, category);
