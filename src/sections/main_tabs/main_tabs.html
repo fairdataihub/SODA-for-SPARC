@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <template class="task-template">
-  <section id="main_tabs-section" class="section js-section u-category-windows">
+  <section
+    id="main_tabs-section"
+    class="section js-section u-category-windows"
+    style="padding-left: 5px"
+  >
     <header>
       <form action="#">
         <div style="display: flex; flex-direction: row">
@@ -12,7 +16,10 @@
             value="manage_dataset_section"
             checked
           />
-          <label class="tab-label" for="manage_dataset_tab"
+          <label
+            class="tab-label"
+            for="manage_dataset_tab"
+            style="border-left: transparent"
             >Manage Datasets</label
           >
 
@@ -529,22 +536,82 @@
                   data-section="organize"
                   style="width: 200px; height: 200px"
                 >
-                <h5 style="font-family:'Raleway', sans-serif;color:#585858;font-size:17px;pointer-events:none">Organize dataset</h5>
-                <i class="fas fa-sitemap" style="font-size: 58px;color:var(--tagify-dd-color-primary); pointer-events: none;"></i>
-                <p style="pointer-events:none; font-size: 14px; font-weight: 300;margin-top: 15px;"> Generate your SPARC format dataset</p>
+                  <h5
+                    style="
+                      font-family: 'Raleway', sans-serif;
+                      color: #585858;
+                      font-size: 17px;
+                      pointer-events: none;
+                    "
+                  >
+                    Organize dataset
+                  </h5>
+                  <i
+                    class="fas fa-sitemap"
+                    style="
+                      font-size: 58px;
+                      color: var(--tagify-dd-color-primary);
+                      pointer-events: none;
+                    "
+                  ></i>
+                  <p
+                    style="
+                      pointer-events: none;
+                      font-size: 14px;
+                      font-weight: 300;
+                      margin-top: 15px;
+                    "
+                  >
+                    Generate your SPARC format dataset
+                  </p>
                 </button>
                 <button
                   class="content-button"
                   id="validate_dataset_btn"
-                  style="pointer-events: none; background: #f6f6f6; width: 200px; height: 200px"
+                  style="
+                    pointer-events: none;
+                    background: #f6f6f6;
+                    width: 200px;
+                    height: 200px;
+                  "
                   data-section="validate_dataset"
                 >
-                <h5 style="font-family:'Raleway', sans-serif;color:#585858;font-size:17px">Validate dataset</h5>
-                <svg style="pointer-events: none;" width="50px" height="50px" viewBox="0 0 16 16" class="bi bi-clipboard-check" fill="#585858" xmlns="http://www.w3.org/2000/svg">
-                  <path fill-rule="evenodd" d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-                  <path fill-rule="evenodd" d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3zm4.354 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
-                </svg>
-                <p style="pointer-events:none; font-size: 14px; font-weight: 300;">Coming soon...</p>
+                  <h5
+                    style="
+                      font-family: 'Raleway', sans-serif;
+                      color: #585858;
+                      font-size: 17px;
+                    "
+                  >
+                    Validate dataset
+                  </h5>
+                  <svg
+                    style="pointer-events: none"
+                    width="50px"
+                    height="50px"
+                    viewBox="0 0 16 16"
+                    class="bi bi-clipboard-check"
+                    fill="#585858"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"
+                    />
+                    <path
+                      fill-rule="evenodd"
+                      d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3zm4.354 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"
+                    />
+                  </svg>
+                  <p
+                    style="
+                      pointer-events: none;
+                      font-size: 14px;
+                      font-weight: 300;
+                    "
+                  >
+                    Coming soon...
+                  </p>
                 </button>
               </div>
             </div>
@@ -1555,9 +1622,13 @@
   <section
     id="add_edit_permissions-section"
     class="section js-section u-category-windows"
-    style="padding-left: 15px; overflow-y: hidden"
+    style="padding-left: 15px"
   >
-    <div class="main-tabs show" id="add_edit_permissions_parent-tab">
+    <div
+      class="main-tabs show"
+      id="add_edit_permissions_parent-tabc"
+      style="display: flex; height: 100%; overflow-y: hidden"
+    >
       <header class="section-header">
         <div style="display: flex; flex-direction: row">
           <svg
@@ -1583,396 +1654,405 @@
       </header>
 
       <div
-        class="individual-question manage-dataset show"
-        id="add_edit_permissions_choice_tab"
+        id="add_edit_permissions_parent-tab"
+        style="overflow-y: auto; height: 75%"
       >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >Which Blackfynn dataset would you like to work on?</label
-            >
-            <div class="field" style="margin: auto; width: 500px">
+        <div
+          class="individual-question manage-dataset show"
+          id="add_edit_permissions_choice_tab"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Which Blackfynn dataset would you like to work on?</label
+              >
+              <div class="field" style="margin: auto; width: 500px">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                  "
+                >
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                      margin-bottom: 15px;
+                    "
+                  >
+                    <div>
+                      <h5 style="color: #808080; font-size: 15px">
+                        Current dataset:
+                        <span
+                          class="bf-dataset-span"
+                          style="
+                            color: #000;
+                            font-weight: 600;
+                            margin-left: 8px;
+                            font-size: 15px;
+                          "
+                          >None</span
+                        >
+                      </h5>
+                    </div>
+                    <svg
+                      class="svg-change-current-account"
+                      onclick="openDropdownPrompt('dataset')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      class="bi bi-pencil-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      margin-bottom: 15px;
+                    "
+                  >
+                    <h5 style="color: #808080; font-size: 15px">
+                      Current permissions:
+                    </h5>
+                    <div
+                      id="div-bf-add-edit-current-permission-progress"
+                      class="progressdiv"
+                    >
+                      <div class="indeterminatebar"></div>
+                    </div>
+                    <p
+                      style="
+                        color: #000;
+                        font-weight: 600;
+                        margin-left: 15px;
+                        font-size: 15px;
+                      "
+                      id="para-add-edit-dataset-permission-current"
+                    >
+                      None
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="div-confirm-button"
+                  style="
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 10px auto;
+                  "
+                >
+                  <button
+                    id="button_add_edit_permissions_confirm"
+                    onclick="transitionFreeFormMode(this, 'add_edit_permissions_choice_tab', 'add_edit_permissions_parent-tab', 'delete', 'individual-question manage-dataset')"
+                    data-next="add_edit_permissions_choice_div"
+                    class="confirm-button"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question manage-dataset"
+          id="add_edit_permissions_choice_div"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Do you want to edit user or team permissions?</label
+              >
               <div
                 style="
                   display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: space-between;
-                    margin-bottom: 15px;
-                  "
-                >
-                  <div>
-                    <h5 style="color: #808080; font-size: 15px">
-                      Current dataset:
-                      <span
-                        class="bf-dataset-span"
-                        style="
-                          color: #000;
-                          font-weight: 600;
-                          margin-left: 8px;
-                          font-size: 15px;
-                        "
-                        >None</span
-                      >
-                    </h5>
-                  </div>
-                  <svg
-                    class="svg-change-current-account"
-                    onclick="openDropdownPrompt('dataset')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    class="bi bi-pencil-fill"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
-                </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
-                  <h5 style="color: #808080; font-size: 15px">
-                    Current permissions:
-                  </h5>
-                  <div
-                    id="div-bf-add-edit-current-permission-progress"
-                    class="progressdiv"
-                  >
-                    <div class="indeterminatebar"></div>
-                  </div>
-                  <p
-                    style="
-                      color: #000;
-                      font-weight: 600;
-                      margin-left: 15px;
-                      font-size: 15px;
-                    "
-                    id="para-add-edit-dataset-permission-current"
-                  >
-                    None
-                  </p>
-                </div>
-              </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
                   flex-direction: row;
                   justify-content: center;
-                  margin: 10px auto;
                 "
               >
-                <button
-                  id="button_add_edit_permissions_confirm"
-                  onclick="transitionFreeFormMode(this, 'add_edit_permissions_choice_tab', 'add_edit_permissions_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="add_edit_permissions_choice_div"
-                  class="confirm-button"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="individual-question manage-dataset"
-        id="add_edit_permissions_choice_div"
-      >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >Do you want to edit user or team permissions?</label
-            >
-            <div
-              style="
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
-              "
-            >
-              <div style="margin: 15px 0">
-                <div
-                  class="option-card radio-button getting-started-1st-question"
-                  data-next="add_edit_user_permissions_div"
-                  onclick="transitionFreeFormMode(this, 'add_edit_permissions_choice_div', 'add_edit_permissions_parent-tab', '', 'individual-question manage-dataset')"
-                >
-                  <div class="card-head">
-                    <div class="folder-checkbox">
-                      <input
-                        class="folder-input-check"
-                        id="add_edit_user_permission"
-                        name="add_edit_permissions"
-                        type="radio"
-                      />
-                      <label for="add_edit_user_permission"></label>
+                <div style="margin: 15px 0">
+                  <div
+                    class="option-card radio-button getting-started-1st-question"
+                    data-next="add_edit_user_permissions_div"
+                    onclick="transitionFreeFormMode(this, 'add_edit_permissions_choice_div', 'add_edit_permissions_parent-tab', '', 'individual-question manage-dataset')"
+                  >
+                    <div class="card-head">
+                      <div class="folder-checkbox">
+                        <input
+                          class="folder-input-check"
+                          id="add_edit_user_permission"
+                          name="add_edit_permissions"
+                          type="radio"
+                        />
+                        <label for="add_edit_user_permission"></label>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="40"
+                        height="40"
+                        fill="var(--color-bg-orange)"
+                        class="bi bi-person"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"
+                        />
+                      </svg>
+                      <h2>Add/edit user permissions</h2>
                     </div>
                   </div>
-                  <div class="card-body">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="40"
-                      height="40"
-                      fill="var(--color-bg-orange)"
-                      class="bi bi-person"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"
-                      />
-                    </svg>
-                    <h2>Add/edit user permissions</h2>
-                  </div>
                 </div>
-              </div>
 
-              <div style="margin: 15px 0">
-                <div
-                  class="option-card radio-button getting-started-1st-question"
-                  data-next="add_edit_team_permissions_div"
-                  onclick="transitionFreeFormMode(this, 'add_edit_permissions_choice_div', 'add_edit_permissions_parent-tab', '', 'individual-question manage-dataset')"
-                >
-                  <div class="card-head">
-                    <div class="folder-checkbox">
-                      <input
-                        class="folder-input-check"
-                        id="add_edit_team_permission"
-                        name="add_edit_permissions"
-                        type="radio"
-                      />
-                      <label for="add_edit_team_permission"></label>
+                <div style="margin: 15px 0">
+                  <div
+                    class="option-card radio-button getting-started-1st-question"
+                    data-next="add_edit_team_permissions_div"
+                    onclick="transitionFreeFormMode(this, 'add_edit_permissions_choice_div', 'add_edit_permissions_parent-tab', '', 'individual-question manage-dataset')"
+                  >
+                    <div class="card-head">
+                      <div class="folder-checkbox">
+                        <input
+                          class="folder-input-check"
+                          id="add_edit_team_permission"
+                          name="add_edit_permissions"
+                          type="radio"
+                        />
+                        <label for="add_edit_team_permission"></label>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="40px"
+                        height="40px"
+                        fill="var(--color-bg-orange)"
+                        class="bi bi-people"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"
+                        />
+                      </svg>
+                      <h2>Add/edit team permissions</h2>
                     </div>
                   </div>
-                  <div class="card-body">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="40px"
-                      height="40px"
-                      fill="var(--color-bg-orange)"
-                      class="bi bi-people"
-                      viewBox="0 0 16 16"
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question manage-dataset"
+          id="add_edit_user_permissions_div"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 550px; display: flex; justify-content: center;">
+            <div class="grouped fields">
+              <label
+                style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
+                "
+                >Please select the user for whom you want to modify
+                permissions:</label
+              >
+              <div
+                class="field"
+                style="display: flex; width: 500px; flex-direction: column"
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-around;
+                    padding-bottom: 20px;
+                  "
+                >
+                  <select
+                    class="my-dropdown"
+                    style="width: 60%; padding: 8px 12px; height: 38px"
+                    id="bf_list_users"
+                  >
+                    <option>Select user</option>
+                  </select>
+
+                  <select
+                    class="my-dropdown"
+                    id="bf_list_roles"
+                    style="width: 35%; padding: 8px 12px; height: 38px"
+                  >
+                    <option>Select role</option>
+                    <option>viewer</option>
+                    <option>manager</option>
+                    <option>editor</option>
+                    <option>owner</option>
+                    <option>remove current permissions</option>
+                  </select>
+                </div>
+
+                <div style="display: flex; flex-direction: column">
+                  <div
+                    id="div-button-add-permission"
+                    style="
+                      flex-direction: row;
+                      justify-content: center;
+                      margin: 0 auto;
+                    "
+                  >
+                    <button
+                      id="button-add-permission"
+                      style="
+                        cursor: pointer;
+                        border-radius: 8px;
+                        margin: 0 10px;
+                        width: 190px;
+                        height: 40px;
+                        background: var(--color-light-green);
+                        color: #fff;
+                        font-weight: 600;
+                        border: none;
+                        font-size: 15px;
+                      "
                     >
-                      <path
-                        d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"
-                      />
-                    </svg>
-                    <h2>Add/edit team permissions</h2>
+                      Add permission for user
+                    </button>
                   </div>
+                  <p
+                    id="para-dataset-permission-status"
+                    style="
+                      text-align: center;
+                      font-weight: 600;
+                      color: var(--color-light-green);
+                      padding-top: 20px;
+                    "
+                  ></p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div
-        class="individual-question manage-dataset"
-        id="add_edit_user_permissions_div"
-      >
-        <div class="ui form" style="width: 550px">
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
-              >Please select the user for whom you want to modify
-              permissions:</label
-            >
-            <div
-              class="field"
-              style="display: flex; width: 500px; flex-direction: column"
-            >
-              <div
+        <div
+          class="individual-question manage-dataset"
+          id="add_edit_team_permissions_div"
+          style="height: auto"
+        >
+        <div class="ui form" style="width: 550px; display: flex; justify-content: center;">
+            <div class="grouped fields">
+              <label
                 style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: space-around;
-                  padding-bottom: 20px;
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
                 "
+                >Please select the team for whom you want to modify
+                permissions:</label
               >
-                <select
-                  class="my-dropdown"
-                  style="width: 60%; padding: 8px 12px; height: 38px"
-                  id="bf_list_users"
-                >
-                  <option>Select user</option>
-                </select>
-
-                <select
-                  class="my-dropdown"
-                  id="bf_list_roles"
-                  style="width: 35%; padding: 8px 12px; height: 38px"
-                >
-                  <option>Select role</option>
-                  <option>viewer</option>
-                  <option>manager</option>
-                  <option>editor</option>
-                  <option>owner</option>
-                  <option>remove current permissions</option>
-                </select>
-              </div>
-
-              <div style="display: flex; flex-direction: column">
+              <div
+                class="field"
+                style="display: flex; width: 550px; flex-direction: column"
+              >
                 <div
-                  id="div-button-add-permission"
                   style="
+                    display: flex;
                     flex-direction: row;
-                    justify-content: center;
-                    margin: 0 auto;
+                    justify-content: space-around;
+                    padding-bottom: 20px;
                   "
                 >
-                  <button
-                    id="button-add-permission"
+                  <select
+                    class="my-dropdown"
+                    style="width: 60%; padding: 8px 12px; height: 38px"
+                    id="bf_list_teams"
+                  >
+                    <option>Select team</option>
+                  </select>
+
+                  <select
+                    class="my-dropdown"
+                    id="bf_list_roles_team"
+                    style="width: 35%; padding: 8px 12px; height: 38px"
+                  >
+                    <option>Select role</option>
+                    <option>viewer</option>
+                    <option>manager</option>
+                    <option>editor</option>
+                    <option>remove current permissions</option>
+                  </select>
+                </div>
+
+                <div style="display: flex; flex-direction: column">
+                  <div
+                    id="div-button-add-permission-team"
                     style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      margin: 0 10px;
-                      width: 190px;
-                      height: 40px;
-                      background: var(--color-light-green);
-                      color: #fff;
-                      font-weight: 600;
-                      border: none;
-                      font-size: 15px;
+                      flex-direction: row;
+                      justify-content: center;
+                      margin: 0 auto;
                     "
                   >
-                    Add permission for user
-                  </button>
-                </div>
-                <p
-                  id="para-dataset-permission-status"
-                  style="
-                    text-align: center;
-                    font-weight: 600;
-                    color: var(--color-light-green);
-                    padding-top: 20px;
-                  "
-                ></p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="individual-question manage-dataset"
-        id="add_edit_team_permissions_div"
-      >
-        <div class="ui form" style="width: 500px">
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
-              >Please select the team for whom you want to modify
-              permissions:</label
-            >
-            <div
-              class="field"
-              style="display: flex; width: 550px; flex-direction: column"
-            >
-              <div
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: space-around;
-                  padding-bottom: 20px;
-                "
-              >
-                <select
-                  class="my-dropdown"
-                  style="width: 60%; padding: 8px 12px; height: 38px"
-                  id="bf_list_teams"
-                >
-                  <option>Select team</option>
-                </select>
-
-                <select
-                  class="my-dropdown"
-                  id="bf_list_roles_team"
-                  style="width: 35%; padding: 8px 12px; height: 38px"
-                >
-                  <option>Select role</option>
-                  <option>viewer</option>
-                  <option>manager</option>
-                  <option>editor</option>
-                  <option>remove current permissions</option>
-                </select>
-              </div>
-
-              <div style="display: flex; flex-direction: column">
-                <div
-                  id="div-button-add-permission-team"
-                  style="
-                    flex-direction: row;
-                    justify-content: center;
-                    margin: 0 auto;
-                  "
-                >
-                  <button
-                    id="button-add-permission-team"
+                    <button
+                      id="button-add-permission-team"
+                      style="
+                        cursor: pointer;
+                        border-radius: 8px;
+                        margin: 0 10px;
+                        width: 190px;
+                        height: 40px;
+                        background: var(--color-light-green);
+                        color: #fff;
+                        font-weight: 600;
+                        border: none;
+                        font-size: 15px;
+                      "
+                    >
+                      Add permission for team
+                    </button>
+                  </div>
+                  <p
+                    id="para-dataset-permission-status-team"
                     style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      margin: 0 10px;
-                      width: 190px;
-                      height: 40px;
-                      background: var(--color-light-green);
-                      color: #fff;
+                      text-align: center;
                       font-weight: 600;
-                      border: none;
-                      font-size: 15px;
+                      color: var(--color-light-green);
+                      padding-top: 20px;
                     "
-                  >
-                    Add permission for team
-                  </button>
+                  ></p>
                 </div>
-                <p
-                  id="para-dataset-permission-status-team"
-                  style="
-                    text-align: center;
-                    font-weight: 600;
-                    color: var(--color-light-green);
-                    padding-top: 20px;
-                  "
-                ></p>
               </div>
             </div>
           </div>
@@ -1988,8 +2068,9 @@
           display: flex;
           flex-direction: row;
           justify-content: space-between;
-          width: 100%;
+          width: 95%;
           bottom: 20px;
+          background-color: white;
           position: absolute;
         "
       >
@@ -2281,9 +2362,9 @@
   <section
     id="add_edit_description-section"
     class="section js-section u-category-windows"
-    style="padding-left: 15px; overflow-y: hidden"
+    style="padding-left: 15px;"
   >
-    <div class="main-tabs show" id="add_edit_description_parent-tab">
+    <div class="main-tabs show" id="add_edit_description_parent-tabc" style="display: flex; height: 100%; overflow-y: hidden">
       <header class="section-header">
         <div style="display: flex; flex-direction: row">
           <svg
@@ -2319,171 +2400,175 @@
         </div>
       </header>
 
-      <div
-        class="individual-question manage-dataset show"
-        id="add_edit_description_tab"
-      >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >Which Blackfynn dataset would you like to work on?</label
-            >
-            <div class="field" style="margin: auto; width: 450px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
+      <div id="add_edit_description_parent-tab" style="overflow-y: auto; height: 75%">
+        <div
+          class="individual-question manage-dataset show"
+          id="add_edit_description_tab"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Which Blackfynn dataset would you like to work on?</label
               >
+              <div class="field" style="margin: auto; width: 450px">
                 <div
                   style="
                     display: flex;
-                    flex-direction: row;
+                    flex-direction: column;
                     justify-content: space-between;
-                    margin-bottom: 15px;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
                   "
                 >
-                  <div>
-                    <h5 style="color: #808080; font-size: 15px">
-                      Current dataset:
-                      <span
-                        class="bf-dataset-span"
-                        style="
-                          color: #000;
-                          font-weight: 600;
-                          margin-left: 8px;
-                          font-size: 15px;
-                        "
-                        >None</span
-                      >
-                    </h5>
-                  </div>
-                  <svg
-                    class="svg-change-current-account"
-                    onclick="openDropdownPrompt('dataset')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    class="bi bi-pencil-fill"
-                    viewBox="0 0 16 16"
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                      margin-bottom: 15px;
+                    "
                   >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
+                    <div>
+                      <h5 style="color: #808080; font-size: 15px">
+                        Current dataset:
+                        <span
+                          class="bf-dataset-span"
+                          style="
+                            color: #000;
+                            font-weight: 600;
+                            margin-left: 8px;
+                            font-size: 15px;
+                          "
+                          >None</span
+                        >
+                      </h5>
+                    </div>
+                    <svg
+                      class="svg-change-current-account"
+                      onclick="openDropdownPrompt('dataset')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      class="bi bi-pencil-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                  </div>
+                  <div
+                    id="div-bf-current-metadata-progress-2"
+                    class="progressdiv synced-progress"
+                  >
+                    <div class="indeterminatebar"></div>
+                  </div>
                 </div>
                 <div
-                  id="div-bf-current-metadata-progress-2"
-                  class="progressdiv synced-progress"
-                >
-                  <div class="indeterminatebar"></div>
-                </div>
-              </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="button_add_edit_description_confirm"
-                  onclick="transitionFreeFormMode(this, 'add_edit_description_tab', 'add_edit_description_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div_add_edit_description"
-                  class="confirm-button"
+                  class="div-confirm-button"
                   style="
-                    cursor: pointer;
-                    border-radius: 8px;
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
                     margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
                   "
                 >
-                  Confirm
-                </button>
+                  <button
+                    id="button_add_edit_description_confirm"
+                    onclick="transitionFreeFormMode(this, 'add_edit_description_tab', 'add_edit_description_parent-tab', 'delete', 'individual-question manage-dataset')"
+                    data-next="div_add_edit_description"
+                    class="confirm-button"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Confirm
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div
-        class="individual-question manage-dataset"
-        id="div_add_edit_description"
-      >
-        <div class="ui form" style="width: 500px">
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
-              >Enter description below: <br />
-              <span style="color: #696969; font-size: 13px"
-                >Any existing description will be displayed:
-              </span>
-            </label>
-            <div
-              class="field"
-              style="display: flex; justify-content: center; width: 100%"
-            >
-              <div
-                style="margin-top: 10px; width: 500px"
-                id="editorSection"
-              ></div>
-            </div>
-            <div
-              id="div-button-add-description"
-              style="
-                flex-direction: row;
-                justify-content: center;
-                margin: 0 auto;
-                padding-top: 20px;
-              "
-            >
-              <button
-                id="button-add-description"
+        <div
+          class="individual-question manage-dataset"
+          id="div_add_edit_description"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 500px">
+            <div class="grouped fields">
+              <label
                 style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 0 10px;
-                  width: 200px;
-                  height: 40px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 15px;
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
+                "
+                >Enter description below: <br />
+                <span style="color: #696969; font-size: 13px"
+                  >Any existing description will be displayed:
+                </span>
+              </label>
+              <div
+                class="field"
+                style="display: flex; justify-content: center; width: 100%"
+              >
+                <div
+                  style="margin-top: 10px; width: 500px"
+                  id="editorSection"
+                ></div>
+              </div>
+              <div
+                id="div-button-add-description"
+                style="
+                  flex-direction: row;
+                  justify-content: center;
+                  margin: 0 auto;
+                  padding-top: 20px;
                 "
               >
-                Add description
-              </button>
+                <button
+                  id="button-add-description"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 0 10px;
+                    width: 200px;
+                    height: 40px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    font-size: 15px;
+                  "
+                >
+                  Add description
+                </button>
+              </div>
+              <p
+                id="para-dataset-description-status"
+                style="
+                  text-align: center;
+                  font-weight: 600;
+                  color: var(--color-light-green);
+                  padding-top: 20px;
+                "
+              ></p>
             </div>
-            <p
-              id="para-dataset-description-status"
-              style="
-                text-align: center;
-                font-weight: 600;
-                color: var(--color-light-green);
-                padding-top: 20px;
-              "
-            ></p>
           </div>
         </div>
       </div>
@@ -2497,8 +2582,9 @@
           display: flex;
           flex-direction: row;
           justify-content: space-between;
-          width: 100%;
+          width: 95%;
           bottom: 20px;
+          background-color: white;
           position: absolute;
         "
       >
@@ -2726,15 +2812,14 @@
                   style="
                     cursor: pointer;
                     border-radius: 8px;
-                    margin: 0 10px;
+                    margin: 20px 10px 30px 0;
                     width: 150px;
                     height: 40px;
                     background: var(--color-light-green);
                     color: #fff;
                     font-weight: 600;
-                    border: none;
                     font-size: 15px;
-                    margin-top: 20px;
+                    border: none;
                   "
                 >
                   Edit banner image
@@ -3102,7 +3187,6 @@
                       Current License:
                     </h5>
                     <span
-                      
                       id="para-dataset-license-current"
                       style="
                         color: #000;
@@ -3195,7 +3279,7 @@
     class="section js-section u-category-windows"
     style="padding-left: 15px; overflow-y: hidden"
   >
-    <div class="main-tabs show" id="upload_local_dataset_parent-tab">
+    <div class="main-tabs show" id="upload_local_dataset_parent-tabc" style="display: flex; height: 100%; overflow-y: hidden">
       <header class="section-header">
         <div style="display: flex; flex-direction: row">
           <svg
@@ -3223,220 +3307,226 @@
         </div>
       </header>
 
-      <div
-        class="individual-question manage-dataset show"
-        id="upload_local_dataset_tab"
-      >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >Which Blackfynn dataset would you like to work on?</label
-            >
-            <div class="field" style="margin: auto; width: 500px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
+      <div id="upload_local_dataset_parent-tab" style="overflow-y: auto; height: 75%"> 
+        <div
+          class="individual-question manage-dataset show"
+          id="upload_local_dataset_tab"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Which Blackfynn dataset would you like to work on?</label
               >
+              <div class="field" style="margin: auto; width: 500px">
                 <div
                   style="
                     display: flex;
-                    flex-direction: row;
+                    flex-direction: column;
                     justify-content: space-between;
-                    margin-bottom: 15px;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
                   "
                 >
-                  <div>
-                    <h5 style="color: #808080; font-size: 15px">
-                      Current dataset:
-                      <span
-                        class="bf-dataset-span"
-                        style="
-                          color: #000;
-                          font-weight: 600;
-                          margin-left: 8px;
-                          font-size: 15px;
-                        "
-                        >None</span
-                      >
-                    </h5>
-                  </div>
-                  <svg
-                    class="svg-change-current-account"
-                    onclick="openDropdownPrompt('dataset')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    class="bi bi-pencil-fill"
-                    viewBox="0 0 16 16"
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                      margin-bottom: 15px;
+                    "
                   >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
+                    <div>
+                      <h5 style="color: #808080; font-size: 15px">
+                        Current dataset:
+                        <span
+                          class="bf-dataset-span"
+                          style="
+                            color: #000;
+                            font-weight: 600;
+                            margin-left: 8px;
+                            font-size: 15px;
+                          "
+                          >None</span
+                        >
+                      </h5>
+                    </div>
+                    <svg
+                      class="svg-change-current-account"
+                      onclick="openDropdownPrompt('dataset')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      class="bi bi-pencil-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div
+                  class="div-confirm-button"
+                  style="
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 10px auto;
+                  "
+                >
+                  <button
+                    id="button_upload_local_dataset_confirm"
+                    onclick="transitionFreeFormMode(this, 'upload_local_dataset_tab', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
+                    data-next="upload_local_dataset_div"
+                    class="confirm-button"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Confirm
+                  </button>
                 </div>
               </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
+            </div>
+          </div>
+        </div>
+  
+        <div
+          class="individual-question manage-dataset"
+          id="upload_local_dataset_div"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields" style="display: flex;justify-content: center;">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >What is the location of the dataset?</label
               >
+              <div class="field" style="margin: 15px auto 10px auto; display: flex; justify-content: center; flex-direction: column;">
+                <input
+                  class="form-control"
+                  style="width: 450px !important"
+                  id="selected-local-dataset-submit"
+                  type="text"
+                  readonly
+                  placeholder="Select a folder"
+                />
+                <p
+                  id="para-info-local-submit"
+                  style="
+                    float: right;
+                    margin-top: 0;
+                    margin-left: 7px;
+                    padding: 2 2;
+                    width: 20%;
+                    text-align: left;
+                  "
+                ></p>
+                <div
+                  class="div-confirm-folder-button"
+                  style="
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 10px auto;
+                    width: 100%;
+                  "
+                >
+                  <button
+                    id="button_upload_local_folder_confirm"
+                    onclick="transitionFreeFormMode(this, 'upload_local_dataset_div', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
+                    data-next="upload_local_dataset_final_question_div"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div
+          class="individual-question manage-dataset"
+          id="upload_local_dataset_final_question_div"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 500px">
+            <div class="grouped fields">
+              <div class="field" style="display: flex; width: 500px; margin: auto">
                 <button
-                  id="button_upload_local_dataset_confirm"
-                  onclick="transitionFreeFormMode(this, 'upload_local_dataset_tab', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="upload_local_dataset_div"
-                  class="confirm-button"
+                  id="button-submit-dataset"
+                  class="demo-button"
+                  onclick="transitionFreeFormMode(this, 'upload_local_dataset_final_question_div', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
+                  data-next="upload_local_dataset_progress_div"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
                     margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
+                    width: 140px;
+                    height: 40px;
                     background: var(--color-light-green);
                     color: #fff;
                     font-weight: 600;
                     border: none;
-                    font-size: 13px;
+                    font-size: 15px;
                   "
                 >
-                  Confirm
+                  Upload dataset
                 </button>
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <div
-        class="individual-question manage-dataset"
-        id="upload_local_dataset_div"
-      >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >What is the location of the dataset?</label
-            >
-            <div class="field" style="margin: 15px 0; width: 100%">
-              <input
-                class="form-control"
-                style="width: 450px !important"
-                id="selected-local-dataset-submit"
-                type="text"
-                readonly
-                placeholder="Select a folder"
-              />
-              <p
-                id="para-info-local-submit"
-                style="
-                  float: right;
-                  margin-top: 0;
-                  margin-left: 7px;
-                  padding: 2 2;
-                  width: 20%;
-                  text-align: left;
-                "
-              ></p>
+  
+        <div
+          class="individual-question manage-dataset"
+          id="upload_local_dataset_progress_div"
+          style="height: auto; margin-bottom: 3em;"
+        >
+          <div class="ui form" style="width: 500px">
+            <div class="grouped fields">
               <div
-                class="div-confirm-folder-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                  width: 100%;
-                "
+                class="field"
+                style="display: flex; width: 500px; flex-direction: column; margin:auto;"
               >
-                <button
-                  id="button_upload_local_folder_confirm"
-                  onclick="transitionFreeFormMode(this, 'upload_local_dataset_div', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="upload_local_dataset_final_question_div"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="individual-question manage-dataset"
-        id="upload_local_dataset_final_question_div"
-      >
-        <div class="ui form" style="width: 500px">
-          <div class="grouped fields">
-            <div class="field" style="display: flex; width: 500px">
-              <button
-                id="button-submit-dataset"
-                class="demo-button"
-                onclick="transitionFreeFormMode(this, 'upload_local_dataset_final_question_div', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
-                data-next="upload_local_dataset_progress_div"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 10px auto;
-                  width: 140px;
-                  height: 40px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 15px;
-                "
-              >
-                Upload dataset
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="individual-question manage-dataset"
-        id="upload_local_dataset_progress_div"
-      >
-        <div class="ui form" style="width: 500px">
-          <div class="grouped fields">
-            <div
-              class="field"
-              style="display: flex; width: 500px; flex-direction: column"
-            >
-              <p id="para-progress-bar-error-status"></p>
-
-              <div id="div-progress-submit; width:100%">
-                <h5>Progress</h5>
-                <progress
-                  class="progresstrack"
-                  id="progress-bar-upload-bf"
-                  max="100"
-                  value="0"
-                ></progress>
-                <p id="para-please-wait-manage-dataset"></p>
-                <p id="para-progress-bar-status"></p>
+                <p id="para-progress-bar-error-status"></p>
+  
+                <div id="div-progress-submit; width:100%">
+                  <h5>Progress</h5>
+                  <progress
+                    class="progresstrack"
+                    id="progress-bar-upload-bf"
+                    max="100"
+                    value="0"
+                  ></progress>
+                  <p id="para-please-wait-manage-dataset"></p>
+                  <p id="para-progress-bar-status"></p>
+                </div>
               </div>
             </div>
           </div>
@@ -3453,9 +3543,10 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        width: 100%;
+        width: 95%;
         bottom: 20px;
         position: absolute;
+        background-color: white;
       "
     >
       <div style="display: flex; flex-direction: row; width: 110px">
@@ -3582,7 +3673,7 @@
                 <div
                   id="div-bf-current-dataset-status-progress"
                   class="progressdiv synced-progress"
-                  style="display: block;"
+                  style="display: block"
                 >
                   <div class="indeterminatebar"></div>
                 </div>
@@ -3655,58 +3746,59 @@
               >
                 <form action="#">
                   <div class="dataset-status-container">
-                    <ul id="dataset_status_ul">
-                    </ul>
+                    <ul id="dataset_status_ul" style="padding-left: 0px"></ul>
                   </div>
-                  <!--<li>
-                        <input
-                          type="radio"
-                          id="no_status_radio"
-                          value="NO_STATUS"
-                          name="dataset_status_radio"
-                        />
-                        <label for="no_status_radio">No Status</label>
+                  <!--
+                    <li>
+                      <input
+                        type="radio"
+                        id="no_status_radio"
+                        value="NO_STATUS"
+                        name="dataset_status_radio"
+                      />
+                      <label for="no_status_radio">No Status</label>
 
-                        <div class="check"></div>
-                      </li>
+                      <div class="check"></div>
+                    </li>
 
-                      <li>
-                        <input
-                          type="radio"
-                          id="work_in_progress_radio"
-                          value="WORK_IN_PROGRESS"
-                          name="dataset_status_radio"
-                        />
-                        <label for="work_in_progress_radio"
-                          >Work in Progress</label
-                        >
+                    <li>
+                      <input
+                        type="radio"
+                        id="work_in_progress_radio"
+                        value="WORK_IN_PROGRESS"
+                        name="dataset_status_radio"
+                      />
+                      <label for="work_in_progress_radio"
+                        >Work in Progress</label
+                      >
 
-                        <div class="check"><div class="inside"></div></div>
-                      </li>
+                      <div class="check"><div class="inside"></div></div>
+                    </li>
 
-                      <li>
-                        <input
-                          type="radio"
-                          id="in_review_radio"
-                          value="IN_REVIEW"
-                          name="dataset_status_radio"
-                        />
-                        <label for="in_review_radio">In Review</label>
+                    <li>
+                      <input
+                        type="radio"
+                        id="in_review_radio"
+                        value="IN_REVIEW"
+                        name="dataset_status_radio"
+                      />
+                      <label for="in_review_radio">In Review</label>
 
-                        <div class="check"><div class="inside"></div></div>
-                      </li>
+                      <div class="check"><div class="inside"></div></div>
+                    </li>
 
-                      <li>
-                        <input
-                          type="radio"
-                          id="completed_radio"
-                          value="COMPLETED"
-                          name="dataset_status_radio"
-                        />
-                        <label for="completed_radio">Completed</label>
+                    <li>
+                      <input
+                        type="radio"
+                        id="completed_radio"
+                        value="COMPLETED"
+                        name="dataset_status_radio"
+                      />
+                      <label for="completed_radio">Completed</label>
 
-                        <div class="check"><div class="inside"></div></div>
-                      </li>-->
+                      <div class="check"><div class="inside"></div></div>
+                    </li>
+                  -->
                 </form>
 
                 <select

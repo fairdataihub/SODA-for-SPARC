@@ -3906,10 +3906,18 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           "Manage Dataset - Upload Local Dataset",
           selectedbfdataset
         );
+        $("#upload_local_dataset_progress_div")[0].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
         bfSubmitDatasetBtn.disabled = false;
         pathSubmitDataset.disabled = false;
       } else {
         // document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
+        $("#upload_local_dataset_progress_div")[0].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
         log.info("Completed submit function");
         console.log("Completed submit function");
         console.log(res);
@@ -3927,6 +3935,10 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
   var countDone = 0;
   var timerProgress = setInterval(progressfunction, 1000);
   function progressfunction() {
+    $("#upload_local_dataset_progress_div")[0].scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
     client.invoke("api_submit_dataset_progress", (error, res) => {
       if (error) {
         var emessage = userError(error);

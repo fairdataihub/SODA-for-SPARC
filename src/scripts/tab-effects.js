@@ -2536,11 +2536,15 @@ $(document).ready(() => {
 
 $("#manage_dataset_tab").click();
 
+$("body").on("click", ".check", function () {
+  $(this).siblings( "input[name=dataset_status_radio]:radio").click();
+});
+
+
 $("body").on(
   "change",
   "input[type=radio][name=dataset_status_radio]",
   function () {
-    //console.log(this.id);
     $("#bf_list_dataset_status").val(this.value).trigger("change");
   }
 );
