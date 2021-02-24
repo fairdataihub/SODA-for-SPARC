@@ -3746,7 +3746,8 @@ bfRefreshDatasetRenameDatasetBtn.addEventListener("click", () => {
 bfCreateNewDatasetBtn.addEventListener("click", () => {
   bfCreateNewDatasetBtn.disabled = true;
   disableform(bfNewDatasetForm);
-  bfCreateNewDatasetStatus.innerHTML = "Adding...";
+  //bfCreateNewDatasetStatus.innerHTML = "Adding...";
+  $("#bf-create-new-dataset-spinner").css("visibility", "visible");
   var selectedbfaccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
   client.invoke(
@@ -3758,6 +3759,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
+        $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
         bfCreateNewDatasetStatus.innerHTML =
           "<span style='color: red;'> " + emessage + "</span>" + sadCan;
         bfCreateNewDatasetBtn.disabled = false;
@@ -3769,6 +3771,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
           bfNewDatasetName.value
         );
       } else {
+        $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
         bfCreateNewDatasetStatus.innerHTML =
           "Success: created dataset" +
           " '" +
