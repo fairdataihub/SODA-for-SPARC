@@ -19,6 +19,10 @@
   text-align: center;
   color: #999;
   border: 1px solid transparent;
+}		
+
+ .inside{		
+  pointer-events: none;
 }
 
 .tab-label:before {
@@ -206,7 +210,7 @@
   position: relative;
   font-weight: 300;
   font-size: 15px;
-  padding: 0px 10px 0px 10px;
+  padding: 0px 10px 0px 15px;
   margin: 0px 15px 0px 15px;
   height: 30px;
   cursor: pointer;
