@@ -266,6 +266,10 @@
 	color: var(--color-teal);
 }
 
+.popover-header{
+  margin-top: 0px;
+}
+
 ul li .check{
   display: block;
   position: absolute;
