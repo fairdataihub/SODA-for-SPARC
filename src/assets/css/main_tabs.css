@@ -19,6 +19,8 @@
   text-align: center;
   color: #999;
   border: 1px solid transparent;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }		
 
  .inside{		
@@ -29,16 +31,23 @@
   font-family: fontawesome;
   font-weight: normal;
   margin-right: 10px;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .tab-label:hover {
   cursor: pointer;
+  background-color: rgb(243, 243, 243);
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .tab-input:checked + .tab-label {
   color: #222;
   border-bottom: 5px solid #b80d49;
   margin-bottom: -5px;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 #tab_info_text {
@@ -52,6 +61,8 @@
   border-top: 1px solid #ddd;
   margin-right: 30px;
   margin-left: 25px;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .tab-info-p {
@@ -63,6 +74,8 @@
   padding-bottom: 13px;
   border-bottom: 1px solid var(--color-border);
   margin-bottom: 30px;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .section-header > div {
@@ -136,6 +149,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .content-button p {
@@ -146,11 +161,20 @@
   pointer-events: none;
 }
 
-.content-button:hover,
-.content-button:active,
-.content-button:focus {
+.content-button:hover
+ {
   outline: none;
   box-shadow: 0px 0px 10px 0px var(--color-light-green);
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+}
+
+.content-button:active,
+.content-button:focus{
+  border: 1px solid var(--color-light-green);
+  box-shadow: 0px 0px 3px 0px var(--color-light-green);
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .content-button h2 {
@@ -230,6 +254,7 @@
   margin: 0px 15px 0px 15px;
   height: 30px;
   cursor: pointer;
+  transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
 }
 

@@ -2732,7 +2732,8 @@
                 style="
                   display: flex;
                   width: 500px;
-                  justify-content: space-between;
+                  justify-content: center;
+                  align-items: center;
                   flex-direction: column;
                 "
               >
@@ -2774,7 +2775,15 @@
                     </button>
                   </div>
                 </div>
-    
+                
+                <div id="bf-add-permission-pi-spinner" class="spinner" style="visibility:hidden;margin-top: 10px;">
+                  <div class="rect1"></div>
+                  <div class="rect2"></div>
+                  <div class="rect3"></div>
+                  <div class="rect4"></div>
+                  <div class="rect5"></div>
+                </div>
+
                 <p
                   id="para-dataset-permission-status-pi"
                   style="
@@ -3123,6 +3132,7 @@
                   <div
                     id="div-button-add-permission"
                     style="
+                      display: flex;
                       flex-direction: row;
                       justify-content: center;
                       margin: 0 auto;
@@ -3145,6 +3155,13 @@
                     >
                       Add permission for user
                     </button>
+                    <div id="bf-add-permission-user-spinner" class="spinner" style="visibility:hidden;position: absolute;right:10px">
+                      <div class="rect1"></div>
+                      <div class="rect2"></div>
+                      <div class="rect3"></div>
+                      <div class="rect4"></div>
+                      <div class="rect5"></div>
+                    </div>
                   </div>
                   <p
                     id="para-dataset-permission-status"
@@ -3215,6 +3232,7 @@
                   <div
                     id="div-button-add-permission-team"
                     style="
+                      display: flex;
                       flex-direction: row;
                       justify-content: center;
                       margin: 0 auto;
@@ -3237,6 +3255,13 @@
                     >
                       Add permission for team
                     </button>
+                    <div id="bf-add-permission-team-spinner" class="spinner" style="visibility:hidden;position: absolute;right:10px">
+                      <div class="rect1"></div>
+                      <div class="rect2"></div>
+                      <div class="rect3"></div>
+                      <div class="rect4"></div>
+                      <div class="rect5"></div>
+                    </div>
                   </div>
                   <p
                     id="para-dataset-permission-status-team"
@@ -3278,7 +3303,6 @@
         bf_list_roles - bf_list_roless
         bf_list_userss - bf_list_userss
         para-dataset-permission-status-pi - para-dataset-permission-status-pii
-        button-add-permission-pi - button-add-permission-pii
         bf_list_users_pi - bf_list_users_pii
       -->
     </div>

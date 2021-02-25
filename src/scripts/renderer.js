@@ -4636,6 +4636,7 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
   ipcRenderer.send("warning-add-permission-owner-PI");
 });
 ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
+  $("#bf-add-permission-pi-spinner").css("visibility", "visible");
   datasetPermissionStatusPI.innerHTML = "";
   disableform(bfPermissionForm);
   var selectedBfAccount =
@@ -4654,6 +4655,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
       selectedRole,
       (error, res) => {
         if (error) {
+          $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
           log.error(error);
           console.error(error);
           var emessage = userError(error);
@@ -4663,6 +4665,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
           bfAddEditCurrentPermissionProgress.style.display = "none";
           enableform(bfPermissionForm);
         } else {
+          $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
           datasetPermissionStatusPI.innerHTML = res;
           showCurrentPermission();
           enableform(bfPermissionForm);
@@ -4684,6 +4687,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
 
 // Add permission for user //
 bfAddPermissionBtn.addEventListener("click", () => {
+  $("#bf-add-permission-user-spinner").css("visibility", "visible");
   datasetPermissionStatus.innerHTML = "";
   bfCurrentPermissionProgress.style.display = "block";
   bfAddEditCurrentPermissionProgress.style.display = "block";
@@ -4704,8 +4708,10 @@ bfAddPermissionBtn.addEventListener("click", () => {
       selectedUser,
       selectedRole
     );
+    $("#bf-add-permission-user-spinner").css("visibility", "hidden");
   }
 });
+
 ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
   datasetPermissionStatus.innerHTML = "";
   var selectedBfAccount =
@@ -4722,7 +4728,9 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
       selectedUser,
       selectedRole
     );
+    $("#bf-add-permission-user-spinner").css("visibility", "hidden");
   } else {
+    $("#bf-add-permission-user-spinner").css("visibility", "hidden");
     bfCurrentPermissionProgress.style.display = "none";
     bfAddEditCurrentPermissionProgress.style.display = "none";
     enableform(bfPermissionForm);
@@ -4731,6 +4739,7 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
 
 // Add permission for team
 bfAddPermissionTeamBtn.addEventListener("click", () => {
+  $("#bf-add-permission-team-spinner").css("visibility", "visible");
   datasetPermissionStatusTeam.innerHTML = "";
   bfCurrentPermissionProgress.style.display = "block";
   bfAddEditCurrentPermissionProgress.style.display = "block";
@@ -4754,12 +4763,14 @@ bfAddPermissionTeamBtn.addEventListener("click", () => {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
+        $("#bf-add-permission-team-spinner").css("visibility", "hidden");
         datasetPermissionStatusTeam.innerHTML =
           "<span style='color: red;'> " + emessage + "</span>";
         bfCurrentPermissionProgress.style.display = "none";
         bfAddEditCurrentPermissionProgress.style.display = "none";
         enableform(bfPermissionForm);
       } else {
+        $("#bf-add-permission-team-spinner").css("visibility", "hidden");
         datasetPermissionStatusTeam.innerHTML = res;
         showCurrentPermission();
         enableform(bfPermissionForm);
