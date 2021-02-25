@@ -507,8 +507,6 @@
 }
 
 .form-control {
-  /* width: 65% !important; */
-  /* margin: 0 auto !important; */
   height: 35px !important;
   background: #f5f5f5 !important;
   border-radius: 5px !important;
@@ -689,6 +687,29 @@
   left: 25%;
   top: 25%;
 }
+
+.modal-title {
+  width: 100%
+}
+
+.tagify.form-control {
+  height: auto !important;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.tagify__tag {
+  max-width: 280px;
+}
+
+.tagify__tag>div>* {
+  white-space: pre !important;
+  display: block !important;
+}
+
+.tagify.form-control {
+  margin-top: 15px
+}
 /*
 .not-me:hover span:first-of-type {
   display: none;
@@ -706,13 +727,14 @@
   /* transition: scale-display .3s; */
   transition: all 0.3s ease-out !important;
   margin: 0 auto;
-  margin-bottom: 30px;
+  margin-bottom: 10%;
+  width: calc(100% - 300px)
   /* border-top:1px solid var(--color-bg-plum) */
 }
 
 .individual-question.show {
   display: flex;
-  height: 50%;
+  /* height: 50%; */
 }
 
 .individual-question.show .ui.form .inline.fields .question-label {
@@ -919,6 +941,61 @@
 .ui.icon.button i {
   font-size: 16px;
   margin-left: 5px;
+}
+
+.div-individual-section {
+  display: none;
+}
+
+.div-individual-section.show {
+  display: flex;
+  flex-direction: column;
+  margin: 30px auto;
+}
+
+.prepare-dd-cards {
+  width: 180px;
+  height: 180px;
+  border: none;
+  background-color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 5px;
+  padding-top: 0;
+  padding-bottom: 5px;
+  padding-right: 20px;
+  padding-left: 20px;
+  margin-right: 30px;
+  color: var(--color-teal);
+  opacity: 1;
+  position: relative;
+  box-shadow: 0px 0px 10px #d5d5d5;
+}
+
+.prepare-dd-cards:hover,
+.prepare-dd-cards:active,
+.prepare-dd-cards:focus {
+  outline: none;
+  border: 1px solid var(--color-light-green);
+  box-shadow: 0px 0px 3px 0px var(--color-light-green);
+}
+.prepare-dd-cards p {
+  color: #000;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.prepare-dd-cards svg {
+  margin: 0 auto;
+}
+
+.prepare-dd-cards .prepare-dd-cards-main-icon {
+  display: block;
+}
+
+.prepare-dd-cards .bi.bi-check2 {
+  display: none;
 }
 
 .svg-change-current-account {
@@ -1156,7 +1233,7 @@
 .jstree-anchor:visited,
 .jstree-anchor:hover,
 .jstree-anchor:active {
-  color: var(--color-sidebar) !important;
+  color: var(--color-accent) !important;
 }
 
 .jstree-icon.jstree-themeicon.jstree-themeicon-custom {

@@ -617,18 +617,18 @@ async function openDropdownPrompt(dropdown) {
           .nextAll()
           .removeClass("show")
           .removeClass("prev")
-          .removeClass("test2")
+          .removeClass("test2");
         $("#Question-generate-dataset-BF-account")
           .nextAll()
           .removeClass("show")
           .removeClass("prev")
-          .removeClass("test2")
+          .removeClass("test2");
         $("#current-bf-account").text("");
         $("#current-bf-account-generate").text("");
         $("#create_empty_dataset_BF_account_span").text("");
         $("#current-bf-dataset").text("None");
         $("#current-bf-dataset-generate").text("None");
-        $(".bf-dataset-span").text("None");
+        $(".bf-dataset-span").html("None");
         defaultBfDataset = "Select dataset";
         tempDatasetListsSync();
         $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
@@ -639,7 +639,7 @@ async function openDropdownPrompt(dropdown) {
 
         $("#para-account-detail-curate").html("");
         $("#current-bf-dataset").text("None");
-        $(".bf-dataset-span").text("None");
+        $(".bf-dataset-span").html("None");
         showHideDropdownButtons("dataset", "hide");
         client.invoke("api_bf_account_details", bfacct, (error, res) => {
           if (error) {
@@ -735,7 +735,7 @@ async function openDropdownPrompt(dropdown) {
     if (bfDS) {
       $("#current-bf-dataset").text(bfDataset);
       $("#current-bf-dataset-generate").text(bfDataset);
-      $(".bf-dataset-span").text(bfDataset);
+      $(".bf-dataset-span").html(bfDataset);
       defaultBfDataset = bfDataset;
       tempDatasetListsSync();
       $("#dataset-loaded-message").hide();
@@ -987,9 +987,42 @@ function create_child_node(
   } else {
     selectedOriginalLocation = "";
   }
-  for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
-    if ("action" in oldFormatNode["folders"][key]) {
-      if (!oldFormatNode["folders"][key]["action"].includes("deleted")) {
+  if (oldFormatNode) {
+    for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
+      if ("action" in oldFormatNode["folders"][key]) {
+        if (!oldFormatNode["folders"][key]["action"].includes("deleted")) {
+          if (key === selectedOriginalLocation) {
+            newFormatNode.state.selected = true;
+            newFormatNode.state.opened = true;
+            var new_node = create_child_node(
+              value,
+              key,
+              "folder",
+              "",
+              true,
+              true,
+              true,
+              selectedOriginalLocation,
+              viewOptions
+            );
+          } else {
+            // newFormatNode.state.selected = false;
+            // newFormatNode.state.opened = false;
+            var new_node = create_child_node(
+              value,
+              key,
+              "folder",
+              "",
+              false,
+              false,
+              false,
+              selectedOriginalLocation,
+              viewOptions
+            );
+          }
+          newFormatNode["children"].push(new_node);
+        }
+      } else {
         if (key === selectedOriginalLocation) {
           newFormatNode.state.selected = true;
           newFormatNode.state.opened = true;
@@ -1021,75 +1054,44 @@ function create_child_node(
         }
         newFormatNode["children"].push(new_node);
       }
-    } else {
-      if (key === selectedOriginalLocation) {
-        newFormatNode.state.selected = true;
-        newFormatNode.state.opened = true;
-        var new_node = create_child_node(
-          value,
-          key,
-          "folder",
-          "",
-          true,
-          true,
-          true,
-          selectedOriginalLocation,
-          viewOptions
-        );
-      } else {
-        // newFormatNode.state.selected = false;
-        // newFormatNode.state.opened = false;
-        var new_node = create_child_node(
-          value,
-          key,
-          "folder",
-          "",
-          false,
-          false,
-          false,
-          selectedOriginalLocation,
-          viewOptions
-        );
-      }
-      newFormatNode["children"].push(new_node);
     }
-  }
-  if ("files" in oldFormatNode) {
-    for (const [key, value] of Object.entries(oldFormatNode["files"])) {
-      if (
-        [
-          ".png",
-          ".PNG",
-          ".xls",
-          ".xlsx",
-          ".pdf",
-          ".txt",
-          ".jpeg",
-          ".JPEG",
-          ".csv",
-          ".CSV",
-          ".DOC",
-          ".DOCX",
-          ".doc",
-          ".docx",
-        ].includes(path.parse(key).ext)
-      ) {
-        nodeType = "file " + path.parse(key).ext.slice(1);
-      } else {
-        nodeType = "file other";
-      }
-      if ("action" in oldFormatNode["files"][key]) {
-        if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
-          var new_node = {
-            text: key,
-            state: { disabled: true },
-            type: nodeType,
-          };
+    if ("files" in oldFormatNode) {
+      for (const [key, value] of Object.entries(oldFormatNode["files"])) {
+        if (
+          [
+            ".png",
+            ".PNG",
+            ".xls",
+            ".xlsx",
+            ".pdf",
+            ".txt",
+            ".jpeg",
+            ".JPEG",
+            ".csv",
+            ".CSV",
+            ".DOC",
+            ".DOCX",
+            ".doc",
+            ".docx",
+          ].includes(path.parse(key).ext)
+        ) {
+          nodeType = "file " + path.parse(key).ext.slice(1);
+        } else {
+          nodeType = "file other";
+        }
+        if ("action" in oldFormatNode["files"][key]) {
+          if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
+            var new_node = {
+              text: key,
+              state: { disabled: true },
+              type: nodeType,
+            };
+            newFormatNode["children"].push(new_node);
+          }
+        } else {
+          var new_node = { text: key, state: { disabled: true }, type: nodeType };
           newFormatNode["children"].push(new_node);
         }
-      } else {
-        var new_node = { text: key, state: { disabled: true }, type: nodeType };
-        newFormatNode["children"].push(new_node);
       }
     }
   }
@@ -1553,12 +1555,12 @@ function showTreeViewPreview(new_dataset_name) {
 
 // per change event of current dataset span text
 $(".bf-dataset-span").on("DOMSubtreeModified", function () {
-  let text = $(".bf-dataset-span:first").text();
-  if ($(".bf-dataset-span:first").text() === "None") {
+  if ($(".bf-dataset-span").html() === "None") {
     $($(this).parents().find(".field").find(".div-confirm-button")).css(
       "display",
       "none"
     );
+    $("#para-review-dataset-info-disseminate").text("None");
   } else {
     $($(this).parents().find(".field").find(".div-confirm-button")).css(
       "display",

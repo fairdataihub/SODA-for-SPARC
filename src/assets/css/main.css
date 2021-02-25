@@ -522,6 +522,7 @@ button[disabled] {
 .div-organize-generate-dataset.metadata div {
   display: flex;
   flex-direction: row;
+  justify-content: center;
 }
 
 .div-individual-metadata {
@@ -553,28 +554,12 @@ button[disabled] {
   box-shadow: 0px 0px 10px #d5d5d5;
 }
 
-.button-generate-dataset p {
-  color: #222c3c;
-  font-size: 13px;
-  margin-top: 25px;
-  font-family: "Raleway", sans-serif;
-}
-/*
-.button-generate-dataset .fas.fa-arrow-right {
-  opacity: 0;
-  transition: transform 0.4s ease-in-out;
-} */
-
 .button-generate-dataset:hover,
 .button-generate-dataset:active,
 .button-generate-dataset:focus {
-  /* box-shadow: 0 0 3px 0px rgba(39,212,212,1); */
-  /* color: #fff; */
   outline: none;
   border: 1px solid var(--color-light-green);
   box-shadow: 0px 0px 3px 0px var(--color-light-green);
-  /* transition: border 0.5s ease-in-out; */
-  /* background: #fff; */
 }
 .button-generate-dataset p {
   color: #000;
@@ -593,6 +578,39 @@ button[disabled] {
 
 .button-generate-dataset .bi.bi-check2 {
   display: none;
+}
+
+.file-templates-button {
+  width: 160px;
+  height: 160px;
+  border: none;
+  background-color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 5px;
+  padding-top: 0;
+  padding-bottom: 5px;
+  padding-right: 20px;
+  padding-left: 20px;
+  margin-right: 30px;
+  color: var(--color-teal);
+  opacity: 1;
+  position: relative;
+  box-shadow: 0px 0px 10px #d5d5d5;
+}
+
+.file-templates-button svg{
+  margin: 0 auto;
+  fill: var(--tagify-dd-color-primary);
+  width: 45px;
+  height: 45px;
+}
+
+.file-templates-button:hover,
+.file-templates-button:focus {
+  outline: none;
+  border: 1px solid var(--color-light-green);
+  box-shadow: 0px 0px 3px 0px var(--color-light-green);
 }
 
 .metadata-button.button-generate-dataset.done {

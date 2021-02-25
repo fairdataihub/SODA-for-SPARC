@@ -190,7 +190,7 @@ const bfRefreshAirtableStatusBtn = document.querySelector(
 
 // Save grant information
 const milestoneArray = document.getElementById("table-current-milestones");
-const awardInputField = document.getElementById("input-grant-info");
+// const awardInputField = document.getElementById("input-grant-info");
 const presavedAwardArray1 = document.getElementById(
   "select-presaved-grant-info-list"
 );
@@ -203,8 +203,26 @@ const addNewMilestoneBtn = document.getElementById(
   "button-default-save-milestone"
 );
 const saveInformationBtn = document.getElementById("button-save-milestone");
+const editSPARCAwardsTextbox = document.getElementById("input-grant-info");
+var sparcAwardEditMessage = $("#div-SPARC-edit-awards");
+
+//// initiate a tagify Award list
+const awardArrayTagify = new Tagify(editSPARCAwardsTextbox, {
+  delimiters: null,
+  enforceWhitelist: true,
+  whitelist: [],
+  duplicates: false,
+  dropdown: {
+    classname: "color-blue",
+    maxItems: Infinity,
+    enabled: 0,
+    closeOnSelect: true,
+  },
+});
 
 // Prepare Submission File
+const airtableAccountBootboxMessage =
+  "<form><div class='form-group row'><label for='bootbox-airtable-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-airtable-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-airtable-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-airtable-key' type='text' class='form-control'/></div></div></form>";
 const presavedAwardArray2 = document.getElementById("presaved-award-list");
 const generateSubmissionBtn = document.getElementById("generate-submission");
 
@@ -542,22 +560,22 @@ const shareConsortiumStatus = document.querySelector(
 const bfReserveDOIBtn = document.querySelector("#button-reserve-doi");
 const currentDOI = document.querySelector("#input-current-doi");
 const reserveDOIStatus = document.querySelector("#para-reserve-doi-status");
-
-const bfPublishDatasetBtn = document.querySelector("#button-publish-dataset");
-const bfSubmitReviewDatasetBtn = document.querySelector(
-  "#button-submit-review-dataset"
-);
-const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
-  "#button-refresh-publishing-status"
-);
-const bfWithdrawReviewDatasetBtn = document.querySelector(
-  "#button-withdraw-review-dataset"
-);
-const reviewDatasetInfo = document.querySelector("#para-review-dataset-info");
-const publishingStatus = document.querySelector("#input-publishing-status");
-const publishDatasetStatus = document.querySelector(
-  "#para-publish-dataset-status"
-);
+//
+// const bfPublishDatasetBtn = document.querySelector("#button-publish-dataset");
+// const bfSubmitReviewDatasetBtn = document.querySelector(
+//   "#button-submit-review-dataset-old"
+// );
+// const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
+//   "#button-refresh-publishing-status-old"
+// );
+// const bfWithdrawReviewDatasetBtn = document.querySelector(
+//   "#button-withdraw-review-dataset"
+// );
+// const reviewDatasetInfo = document.querySelector("#para-review-dataset-info");
+// const publishingStatus = document.querySelector("#input-publishing-status");
+// const publishDatasetStatus = document.querySelector(
+//   "#para-publish-dataset-status"
+// );
 
 //////////////////////////////////
 // Constant parameters
@@ -770,65 +788,6 @@ function sendHTTPsRequestAirtable(options, varSuccess) {
   });
 }
 
-///// Upon clicking "Connect" to Airtable
-addAirtableKeyBtn.addEventListener("click", () => {
-  document.getElementById("para-add-airtable-key").innerHTML = "";
-  var apiKeyInput = document.getElementById("airtable-api-key").value;
-  var keyName = document.getElementById("airtable-key-name").value;
-  if (apiKeyInput.length === 0 || keyName.length === 0) {
-    document.getElementById("para-add-airtable-key").innerHTML =
-      "<span style='color: red;'>Please fill in both required fields to add.</span>";
-  } else {
-    document.getElementById(
-      "div-airtable-connect-load-progress"
-    ).style.display = "block";
-    // test connection
-    const optionsSparcTable = {
-      hostname: airtableHostname,
-      port: 443,
-      path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
-      headers: { Authorization: `Bearer ${apiKeyInput}` },
-    };
-    var sparcTableSuccess;
-    https.get(optionsSparcTable, (res) => {
-      if (res.statusCode === 200) {
-        /// updating api key in SODA's storage
-        createMetadataDir();
-        var content = parseJson(airtableConfigPath);
-        content["api-key"] = apiKeyInput;
-        content["key-name"] = keyName;
-        fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-        document.getElementById("para-add-airtable-key").innerHTML =
-          "<span style='color: black;'>New Airtable key added successfully for account name: " +
-          keyName +
-          ".</span>";
-        document.getElementById("para-save-award-info").innerHTML = "";
-        document.getElementById("airtable-api-key").value = "";
-        document.getElementById("airtable-key-name").value = "";
-        loadAwardData();
-      } else if (res.statusCode === 403) {
-        document.getElementById("para-add-airtable-key").innerHTML =
-          "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>";
-      } else {
-        log.error(res);
-        console.error(res);
-        document.getElementById("para-add-airtable-key").innerHTML =
-          "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>";
-      }
-      document.getElementById(
-        "div-airtable-connect-load-progress"
-      ).style.display = "none";
-      document.getElementById("para-add-airtable-key").style.display = "block";
-      res.on("error", (error) => {
-        log.error(error);
-        console.error(error);
-        document.getElementById("para-add-airtable-key").innerHTML =
-          "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>";
-      });
-    });
-  }
-});
-
 loadAwardData();
 
 /////////////////////// Download Metadata Templates ////////////////////////////
@@ -893,8 +852,8 @@ ipcRenderer.on("selected-DDD-download-folder", (event, path, filename) => {
 
 ////////////////////////Import Milestone Info//////////////////////////////////
 const descriptionDateInput = document.getElementById("selected-milestone-date");
-const milestoneInput = document.getElementById("selected-milestone");
-var milestoneTagify = new Tagify(milestoneInput, {
+const milestoneInput1 = document.getElementById("selected-milestone-1");
+var milestoneTagify1 = new Tagify(milestoneInput1, {
   duplicates: false,
   delimiters: null,
   dropdown: {
@@ -903,6 +862,85 @@ var milestoneTagify = new Tagify(milestoneInput, {
     enabled: 0,
     closeOnSelect: true,
   },
+});
+
+milestoneTagify1.on("add", function () {
+  var buttonDiv = $($("#selected-milestone-1").parents()[1]).find(
+    ".div-confirm-enter-milestone"
+  );
+  if (milestoneTagify1.value.length !== 0) {
+    $(buttonDiv).show();
+    $($(buttonDiv).children()[0]).show();
+  } else {
+    $(buttonDiv).hide();
+    $("#Question-prepare-submission-4")
+      .nextAll()
+      .removeClass("show")
+      .removeClass("prev");
+  }
+});
+
+milestoneTagify1.on("remove", function () {
+  var buttonDiv = $($("#selected-milestone-1").parents()[1]).find(
+    ".div-confirm-enter-milestone"
+  );
+  if (milestoneTagify1.value.length !== 0) {
+    $(buttonDiv).show();
+    $($(buttonDiv).children()[0]).show();
+  } else {
+    $(buttonDiv).hide();
+    $("#Question-prepare-submission-4")
+      .nextAll()
+      .removeClass("show")
+      .removeClass("prev");
+  }
+});
+
+const milestoneInput2 = document.getElementById("selected-milestone-2");
+var milestoneTagify2 = new Tagify(milestoneInput2, {
+  duplicates: false,
+  delimiters: null,
+});
+
+milestoneTagify2.on("input", function () {
+  var buttonDiv = $($("#selected-milestone-2").parents()[1]).find(
+    ".div-confirm-enter-milestone"
+  );
+  if (milestoneTagify2.value.length !== 0) {
+    $(buttonDiv).show();
+    $($(buttonDiv).children()[0]).show();
+  } else {
+    $(buttonDiv).hide();
+    $("#Question-prepare-submission-no-skip-2").removeClass("prev");
+    $("#Question-prepare-submission-no-skip-2")
+      .nextAll()
+      .removeClass("show")
+      .removeClass("prev");
+  }
+});
+
+milestoneTagify2.on("remove", function () {
+  var buttonDiv = $($("#selected-milestone-2").parents()[1]).find(
+    ".div-confirm-enter-milestone"
+  );
+  if (milestoneTagify2.value.length !== 0) {
+    $(buttonDiv).show();
+    $($(buttonDiv).children()[0]).show();
+  } else {
+    $(buttonDiv).hide();
+    $("#Question-prepare-submission-no-skip-2")
+      .nextAll()
+      .removeClass("show")
+      .removeClass("prev");
+  }
+});
+
+const existingSPARCAwards = document.getElementById("input-existing-grants");
+const existingSPARCAwardsTagify = new Tagify(existingSPARCAwards, {
+  duplicates: false,
+  delimiters: null,
+  editTags: false,
+  whitelist: [],
 });
 
 //// when users click on Import
@@ -918,6 +956,7 @@ document
       document.getElementById("para-milestone-document-info").innerHTML =
         "<span style='color: red ;'>" +
         "Please select a data deliverables document first!</span>";
+      $("#div-confirm-DDD-import").hide();
     } else {
       var award =
         presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
@@ -932,6 +971,7 @@ document
           document.getElementById(
             "para-milestone-document-info-long"
           ).innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+          $("#div-confirm-DDD-import").hide();
         } else {
           milestoneObj = res;
           createMetadataDir();
@@ -941,53 +981,13 @@ document
           fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
           document.getElementById("para-milestone-document-info").innerHTML =
             "<span style='color: black ;'>" + "Imported!</span>";
-          //// after saving data to json file, load the table right after.
-          /// clear old table before loading new entries
-          while (milestoneArray.rows.length > 1) {
-            milestoneArray.deleteRow(1);
-          }
-          if (award in informationJson) {
-            document.getElementById("para-current-milestones").style.display =
-              "none";
-            /// check how many data description rows there are for each milestone (to set number of rowspans)
-
-            var rowIndex = 1;
-            var milestoneKey = Object.keys(milestoneObj);
-            for (var i = 0; i < milestoneKey.length; i++) {
-              var milestone = milestoneObj[milestoneKey[i]];
-              // var span = milestoneObj[milestoneKey[i]].length
-              for (var j = 0; j < milestone.length; j++) {
-                var description = milestone[j]["Description of data"];
-                var date = milestone[j]["Expected date of completion"];
-                var row = (milestoneArray.insertRow(rowIndex).outerHTML =
-                  "<tr id='row-milestone" +
-                  rowIndex +
-                  "'style='color: #000000;'><td id='name-row-milestone" +
-                  rowIndex +
-                  "'>" +
-                  milestoneKey[i] +
-                  "</td><td id='name-row-description" +
-                  rowIndex +
-                  "'>" +
-                  description +
-                  "</td><td id='name-row-date" +
-                  rowIndex +
-                  "'>" +
-                  date +
-                  "</td></tr>");
-              }
-              rowIndex++;
-            }
-            removeOptions(descriptionDateInput);
-            milestoneTagify.removeAllTags();
-            milestoneTagify.settings.whitelist = [];
-            document.getElementById("table-current-milestones").style.display =
-              "block";
-            document.getElementById("presaved-award-list").value = "Select";
-            document.getElementById("input-milestone-select").placeholder =
-              "Select a file";
-            return milestoneArray;
-          }
+          document.getElementById("input-milestone-select").placeholder =
+            "Select a file";
+          removeOptions(descriptionDateInput);
+          milestoneTagify1.removeAllTags();
+          milestoneTagify1.settings.whitelist = [];
+          $("#div-confirm-DDD-import").show();
+          $($("#div-confirm-DDD-import").children()[0]).show();
         }
       });
     }
@@ -1009,25 +1009,7 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
     }
   }
 });
-
-presavedAwardArray1.addEventListener("change", function () {
-  if (presavedAwardArray1.value === "Select") {
-    document.getElementById(
-      "div-show-milestone-info-no-existing"
-    ).style.display = "none";
-    document.getElementById("div-milestone-info").style.display = "none";
-    document.getElementById("div-show-current-milestones").style.display =
-      "none";
-  } else {
-    document.getElementById(
-      "div-show-milestone-info-no-existing"
-    ).style.display = "block";
-    document.getElementById("div-milestone-info").style.display = "block";
-    document.getElementById("div-show-current-milestones").style.display =
-      "block";
-    document.getElementById("para-delete-award-status").innerHTML = "";
-  }
-});
+//
 
 // load and parse json file
 function parseJson(path) {
@@ -1072,13 +1054,28 @@ function loadAwards() {
   }
   var contents = fs.readFileSync(awardPath, "utf8");
   var awards = JSON.parse(contents);
+  var awardSpan = "";
+  var awardList = [];
+  removeOptions(presavedAwardArray1);
+  removeOptions(presavedAwardArray2);
+  removeOptions(dsAwardArray);
+  addOption(presavedAwardArray1, "Select an award", "Select");
+  addOption(presavedAwardArray2, "Select an award", "Select");
+  addOption(dsAwardArray, "Select an award", "Select");
   for (var key in awards) {
     // Add options to dropdown lists
     addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
     addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
     addOption(dsAwardArray, eval(JSON.stringify(awards[key])), key);
+    awardList.push({"value": eval(JSON.stringify(awards[key])), "award-number": key});
+    awardSpan = awardSpan + eval(JSON.stringify(awards[key])) + "\n";
   }
+  existingSPARCAwardsTagify.removeAllTags();
+  existingSPARCAwardsTagify.addTags(awardList);
+  $("#current-users-awards").text(awardSpan.slice(0));
+  $("#current-users-awards-dd").text(awardSpan.slice(0));
 }
+
 loadAwards();
 
 /// function to grab row index
@@ -1094,55 +1091,38 @@ function getRowIndex(table) {
   return rowIndex;
 }
 
-//// initiate a tagify Award list
-var awardArrayTagify = new Tagify(awardInputField, {
-  delimiters: null,
-  enforceWhitelist: true,
-  whitelist: [],
-  duplicates: false,
-  dropdown: {
-    classname: "color-blue",
-    maxItems: Infinity,
-    enabled: 0,
-    closeOnSelect: true,
-  },
-});
-
-// /// clear p messages upon typing new awards
-// awardArrayTagify.on('input', e => {
-//   document.getElementById("para-save-award-info").innerHTML = "";
-// })
-
 // Save grant information
-addAwardBtn.addEventListener("click", function () {
+function addSPARCAwards() {
+  var message = "";
   var tagifyArray = awardArrayTagify.value;
+  var spanMessage = "";
+  // create empty milestone json files for newly added award
+  createMetadataDir();
+  var awardsJson = {};
+  awardsJson = parseJson(awardPath);
   if (tagifyArray.length === 0) {
-    document.getElementById("para-save-award-info").innerHTML =
-      "<span style='color:red'>Please choose an award!</span>";
-  } else {
-    document.getElementById("para-save-award-info").innerHTML =
-      "Please wait...";
-    if (awardArrayTagify.length === 0) {
-      document.getElementById("para-save-award-info").innerHTML =
-        "<span style='color: red;'>Please choose an award key!</span>";
+    awardsJson = {};
+    for (var i=0; i< existingSPARCAwardsTagify.value.length; i++) {
+      spanMessage = spanMessage + existingSPARCAwardsTagify.value[i]["value"] + "\n";
+      awardsJson[existingSPARCAwardsTagify.value[i]["award-number"]] = existingSPARCAwardsTagify.value[i]["value"];
     }
+    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
+    $("#current-users-awards").text(spanMessage);
+    $("#current-users-awards-dd").text(spanMessage);
+  } else {
     var awardVal = [];
     for (var i = 0; i < tagifyArray.length; i++) {
       awardVal.push(tagifyArray[i].value);
     }
-
     var awardNoAray = [];
     for (var award of awardVal) {
       var awardNo = award.slice(0, award.indexOf(" ("));
       var keyValuePair = { "award-number": awardNo, "award-full-title": award };
       awardNoAray.push(keyValuePair);
     }
-    // create empty milestone json files for newly added award
-    createMetadataDir();
-    var awardsJson = {};
-    awardsJson = parseJson(awardPath);
     var duplicateList = [];
     var successfullyAddedList = [];
+    var newlyAddedAwards = [];
 
     for (var keyValuePair of awardNoAray) {
       if (keyValuePair["award-number"] in awardsJson) {
@@ -1163,35 +1143,45 @@ addAwardBtn.addEventListener("click", function () {
           keyValuePair["award-full-title"],
           keyValuePair["award-number"]
         );
-        awardsJson[keyValuePair["award-number"]] =
-          keyValuePair["award-full-title"];
+        newlyAddedAwards.push({"value": keyValuePair["award-full-title"], "award-number": keyValuePair["award-number"]})
         successfullyAddedList.push(keyValuePair["award-number"]);
       }
     }
-    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
+    existingSPARCAwardsTagify.addTags(newlyAddedAwards);
     if (duplicateList.length !== 0) {
       if (successfullyAddedList.length !== 0) {
-        document.getElementById("para-save-award-info").innerHTML =
+        message =
           "<span style='color: red;'>Award(s) already added to your existing awards: " +
           duplicateList.join(", ") +
           "</span><br><span color='color:black'>Award(s) successfully added: " +
           successfullyAddedList.join(", ") +
           ".</span>";
       } else {
-        document.getElementById("para-save-award-info").innerHTML =
+        message =
           "<span style='color: red;'>Award(s) already added to your existing awards: " +
           duplicateList.join(", ") +
           ".</span>";
       }
     } else {
-      document.getElementById("para-save-award-info").innerHTML =
+      message =
         "<span color='color:black'>Award(s) successfully added: " +
         successfullyAddedList.join(", ") +
         ".</span>";
     }
+    $(".bootbox-add-airtable-class").text("Confirm");
     awardArrayTagify.removeAllTags();
+    awardsJson = {};
+    for (var i=0; i< existingSPARCAwardsTagify.value.length; i++) {
+      spanMessage = spanMessage + existingSPARCAwardsTagify.value[i]["value"] + "\n";
+      awardsJson[existingSPARCAwardsTagify.value[i]["award-number"]] = existingSPARCAwardsTagify.value[i]["value"];
+    }
+    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
+    $("#current-users-awards").text(spanMessage);
+    $("#current-users-awards-dd").text(spanMessage);
   }
-});
+  loadAwards()
+  return message;
+}
 
 /////// Delete an Award///////////
 function deleteOptionByValue(dropdown, value) {
@@ -1203,54 +1193,54 @@ function deleteOptionByValue(dropdown, value) {
   return null;
 }
 
-deleteAwardBtn.addEventListener("click", function () {
-  award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-  if (award === "Select") {
-    document.getElementById("para-delete-award-status").innerHTML =
-      "<span style='color: red;'>Please select an award number to delete</span>";
-  } else {
-    ipcRenderer.send("warning-delete-award");
-  }
-});
-ipcRenderer.on("warning-delete-award-selection", (event, index) => {
-  if (index === 0) {
-    award =
-      presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
-    var milestoneJson = parseJson(milestonePath);
-    var awardsJson = parseJson(awardPath);
-    var defaultedAwardJson = parseJson(defaultAwardPath);
-    // check if award is default award
-    if (award === defaultedAwardJson["default"]) {
-      delete defaultedAwardJson["default"];
-    }
-    // check if award is in list
-    if (award in awardsJson) {
-      delete awardsJson[award];
-    }
-    // check if award is in list of milestones
-    if (award in milestoneJson) {
-      delete milestoneJson[award];
-    }
-    fs.writeFileSync(defaultAwardPath, JSON.stringify(defaultedAwardJson));
-    fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
-    presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
-    fs.writeFileSync(milestonePath, JSON.stringify(milestoneJson));
-    // delete award in the next two award arrays
-    deleteOptionByValue(presavedAwardArray2, award);
-    deleteOptionByValue(dsAwardArray, award);
-    awardArrayTagify.removeAllTags();
-    document.getElementById(
-      "div-show-milestone-info-no-existing"
-    ).style.display = "none";
-    document.getElementById("div-show-current-milestones").style.display =
-      "none";
-    document.getElementById("para-delete-award-status").innerHTML =
-      "<span style='color: black'>Deleted award number: " +
-      award +
-      "!" +
-      "</span>";
-  }
-});
+// deleteAwardBtn.addEventListener("click", function () {
+//   award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+//   if (award === "Select") {
+//     document.getElementById("para-delete-award-status").innerHTML =
+//       "<span style='color: red;'>Please select an award number to delete</span>";
+//   } else {
+//     ipcRenderer.send("warning-delete-award");
+//   }
+// });
+// ipcRenderer.on("warning-delete-award-selection", (event, index) => {
+//   if (index === 0) {
+//     award =
+//       presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+//     var milestoneJson = parseJson(milestonePath);
+//     var awardsJson = parseJson(awardPath);
+//     var defaultedAwardJson = parseJson(defaultAwardPath);
+//     // check if award is default award
+//     if (award === defaultedAwardJson["default"]) {
+//       delete defaultedAwardJson["default"];
+//     }
+//     // check if award is in list
+//     if (award in awardsJson) {
+//       delete awardsJson[award];
+//     }
+//     // check if award is in list of milestones
+//     if (award in milestoneJson) {
+//       delete milestoneJson[award];
+//     }
+//     fs.writeFileSync(defaultAwardPath, JSON.stringify(defaultedAwardJson));
+//     fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
+//     presavedAwardArray1.remove(presavedAwardArray1.selectedIndex);
+//     fs.writeFileSync(milestonePath, JSON.stringify(milestoneJson));
+//     // delete award in the next two award arrays
+//     deleteOptionByValue(presavedAwardArray2, award);
+//     deleteOptionByValue(dsAwardArray, award);
+//     awardArrayTagify.removeAllTags();
+//     document.getElementById(
+//       "div-show-milestone-info-no-existing"
+//     ).style.display = "none";
+//     document.getElementById("div-show-current-milestones").style.display =
+//       "none";
+//     document.getElementById("para-delete-award-status").innerHTML =
+//       "<span style='color: black'>Deleted award number: " +
+//       award +
+//       "!" +
+//       "</span>";
+//   }
+// });
 
 //// function to make a selected award the default award
 function makeDefaultAward(award) {
@@ -1275,7 +1265,7 @@ function loadDefaultAward() {
 }
 
 var defaultAward = loadDefaultAward();
-loadMilestoneInfo(defaultAward);
+// loadMilestoneInfo(defaultAward);
 
 function loadMilestoneInfo(awardNumber) {
   document.getElementById("para-milestone-document-info").innerHTML = "";
@@ -1374,38 +1364,29 @@ function loadMilestoneInfo(awardNumber) {
   }
 }
 
-///// Load Milestone info
-/// check if no award is selected, then show no current milestones.
-presavedAwardArray1.addEventListener("change", function () {
-  var currentAward = presavedAwardArray1.value;
-  loadMilestoneInfo(currentAward);
-});
+// ///// Load Milestone info
+// /// check if no award is selected, then show no current milestones.
+// presavedAwardArray1.addEventListener("change", function () {
+//   var currentAward = presavedAwardArray1.value;
+//   // loadMilestoneInfo(currentAward);
+// });
 
 // indicate to user that airtable records are being retrieved
 function loadAwardData() {
-  document.getElementById("para-save-award-info").innerHTML = "";
-  document.getElementById("div-awards-load-progress").style.display = "block";
-  document.getElementById("para-add-airtable-key-status").innerHTML =
-    "Checking...";
   ///// Construct table from data
   var awardResultArray = [];
   ///// config and load live data from Airtable
   var airKeyContent = parseJson(airtableConfigPath);
-  if (Object.keys(airKeyContent).length === 0) {
-    document.getElementById("div-awards-load-progress").style.display = "none";
-    document.getElementById("para-add-airtable-key-status").innerHTML =
-      "<span style='color: red;'>Please add an API Key to connect to Airtable!</span>";
-    document.getElementById("para-save-award-info").innerHTML =
-      "<span style='color: red;'>No Airtable API key found! Please connect to Airtable first!</span>";
-  } else {
+  if (JSON.stringify(airKeyContent) !== "{}") {
     var airKeyInput = airKeyContent["api-key"];
     var airKeyName = airKeyContent["key-name"];
-    Airtable.configure({
-      endpointUrl: "https://" + airtableHostname,
-      apiKey: airKeyInput,
-    });
-    var base = Airtable.base("appiYd1Tz9Sv857GZ");
-    base("sparc_members")
+    if (airKeyInput !== "" && airKeyName !== "") {
+      Airtable.configure({
+        endpointUrl: "https://" + airtableHostname,
+        apiKey: airKeyInput,
+      });
+      var base = Airtable.base("appiYd1Tz9Sv857GZ");
+      base("sparc_members")
       .select({
         view: "All members (ungrouped)",
       })
@@ -1414,22 +1395,15 @@ function loadAwardData() {
           records.forEach(function (record) {
             if (record.get("Project_title") !== undefined) {
               item = record
-                .get("SPARC_Award_#")
-                .concat(" (", record.get("Project_title"), ")");
+              .get("SPARC_Award_#")
+              .concat(" (", record.get("Project_title"), ")");
               awardResultArray.push(item);
             }
           }),
-            fetchNextPage();
+          fetchNextPage();
         },
         function done(err) {
-          document.getElementById("div-awards-load-progress").style.display =
-            "none";
           if (err) {
-            document.getElementById("para-add-airtable-key-status").innerHTML =
-              "<span style='color: red;'>Failed to load awards from Airtable. To add new SPARC award(s), please try re-connecting to Airtable under the Connect to Airtable tab above.</span>";
-            document.getElementById(
-              "para-add-airtable-key-status"
-            ).style.display = "block";
             log.error(err);
             console.log(err);
             return;
@@ -1438,17 +1412,10 @@ function loadAwardData() {
             var awardSet = new Set(awardResultArray);
             var resultArray = [...awardSet];
             awardArrayTagify.settings.whitelist = resultArray;
-            document.getElementById("div-search-for-awards").style.display =
-              "block";
-            document.getElementById("para-add-airtable-key-status").innerHTML =
-              "<br><span style='color: black;'>Successfully connected to Airtable account " +
-              airKeyName +
-              "!" +
-              smileyCan +
-              "</span>";
           }
         }
       );
+    }
   }
 }
 
@@ -1461,21 +1428,18 @@ bfRefreshAirtableStatusBtn.addEventListener("click", () => {
 ///////////////////////Submission file //////////////// ////////////////
 
 function changeAwardInput() {
+  var ddBolean;
   document.getElementById("selected-milestone-date").value = "";
   document.getElementById("input-milestone-date").value = "";
   actionEnterNewDate("none");
   document.getElementById("para-save-submission-status").innerHTML = "";
-  milestoneTagify.removeAllTags();
-  milestoneTagify.settings.whitelist = [];
+  milestoneTagify1.removeAllTags();
+  milestoneTagify1.settings.whitelist = [];
   removeOptions(descriptionDateInput);
   addOption(descriptionDateInput, "Select an option", "Select");
-  descriptionDateInput.options[0].disabled = true;
+  // descriptionDateInput.options[0].disabled = true;
 
-  // removeOptions(document.getElementById("selected-milestone"))
-  // addOption(document.getElementById('selected-milestone'), "Select an option", "Select")
-  // addOption(document.getElementById('selected-milestone'), "Not specified in the Data Deliverables document", "Not specified in the Data Deliverables document")
-
-  award = presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
+  award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
   var informationJson = parseJson(milestonePath);
 
   var completionDateArray = [];
@@ -1484,6 +1448,7 @@ function changeAwardInput() {
 
   /// when DD is provided
   if (award in informationJson) {
+    ddBolean = true;
     var milestoneObj = informationJson[award];
     // Load milestone values once users choose an award number
     var milestoneKey = Object.keys(milestoneObj);
@@ -1498,8 +1463,10 @@ function changeAwardInput() {
       }
     }
     milestoneValueArray.push("Not specified in the Data Deliverables document");
+  } else {
+    ddBolean = false;
   }
-  milestoneTagify.settings.whitelist = milestoneValueArray;
+  milestoneTagify1.settings.whitelist = milestoneValueArray;
   for (var i = 0; i < completionDateArray.length; i++) {
     addOption(
       descriptionDateInput,
@@ -1507,17 +1474,18 @@ function changeAwardInput() {
       completionDateArray[i]
     );
   }
-  descriptionDateInput.value = completionDateArray[1];
+  // descriptionDateInput.value = completionDateArray[1];
+  return ddBolean;
 }
 
-descriptionDateInput.addEventListener("change", function () {
-  document.getElementById("input-milestone-date").value = "";
-  if (descriptionDateInput.value === "Enter a date") {
-    actionEnterNewDate("flex");
-  } else {
-    actionEnterNewDate("none");
-  }
-});
+// descriptionDateInput.addEventListener("change", function () {
+//   document.getElementById("input-milestone-date").value = "";
+//   if (descriptionDateInput.value === "Enter a date") {
+//     actionEnterNewDate("flex");
+//   } else {
+//     actionEnterNewDate("none");
+//   }
+// });
 
 const submissionDateInput = document.getElementById("input-milestone-date");
 
@@ -1537,90 +1505,90 @@ function actionEnterNewDate(action) {
 presavedAwardArray2.addEventListener("change", changeAwardInput);
 
 /// Generate submission file
-generateSubmissionBtn.addEventListener("click", (event) => {
-  document.getElementById("para-save-submission-status").innerHTML = "";
-  awardVal = document.getElementById("presaved-award-list").value;
-  milestoneVal = milestoneTagify.value;
-  dateVal = document.getElementById("selected-milestone-date").value;
-
-  var missingDateBool =
-    dateVal === "Enter a date" && submissionDateInput.value === "";
-  if (
-    awardVal === "Select" ||
-    milestoneVal.length === 0 ||
-    dateVal === "" ||
-    missingDateBool
-  ) {
-    document.getElementById("para-save-submission-status").innerHTML =
-      "<span style='color: red;'>Please fill in all fields to generate!</span>";
-  } else {
-    ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
-  }
-});
-
-ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
-  if (dirpath.length > 0) {
-    var destinationPath = path.join(dirpath[0], filename);
-    if (fs.existsSync(destinationPath)) {
-      var emessage = "File " + filename + " already exists in " + dirpath[0];
-      ipcRenderer.send("open-error-metadata-file-exits", emessage);
-    } else {
-      var award =
-        presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
-      var milestoneValue = [];
-      for (var i = 0; i < milestoneVal.length; i++) {
-        milestoneValue.push(milestoneVal[i].value);
-      }
-      var date;
-      if (
-        document.getElementById("selected-milestone-date").value ===
-        "Enter a date"
-      ) {
-        date = document.getElementById("input-milestone-date").value;
-      } else {
-        date = document.getElementById("selected-milestone-date").value;
-      }
-      var json_arr = [];
-      json_arr.push({
-        award: award,
-        date: date,
-        milestone: milestoneValue[0],
-      });
-      if (milestoneValue.length > 0) {
-        for (var index = 1; index < milestoneValue.length; index++) {
-          json_arr.push({
-            award: "",
-            date: "",
-            milestone: milestoneValue[index],
-          });
-        }
-      }
-      json_str = JSON.stringify(json_arr);
-      if (dirpath != null) {
-        client.invoke(
-          "api_save_submission_file",
-          destinationPath,
-          json_str,
-          (error, res) => {
-            if (error) {
-              var emessage = userError(error);
-              log.error(error);
-              console.error(error);
-              document.getElementById("para-save-submission-status").innerHTML =
-                "<span style='color: red;'> " + emessage + "</span>";
-            } else {
-              document.getElementById("para-save-submission-status").innerHTML =
-                "<span style='color: black ;'>" +
-                "Done!" +
-                smileyCan +
-                "</span>";
-            }
-          }
-        );
-      }
-    }
-  }
-});
+// generateSubmissionBtn.addEventListener("click", (event) => {
+//   document.getElementById("para-save-submission-status").innerHTML = "";
+//   awardVal = document.getElementById("presaved-award-list").value;
+//   milestoneVal = milestoneTagify1.value;
+//   dateVal = document.getElementById("selected-milestone-date").value;
+//
+//   var missingDateBool =
+//     dateVal === "Enter a date" && submissionDateInput.value === "";
+//   if (
+//     awardVal === "Select" ||
+//     milestoneVal.length === 0 ||
+//     dateVal === "" ||
+//     missingDateBool
+//   ) {
+//     document.getElementById("para-save-submission-status").innerHTML =
+//       "<span style='color: red;'>Please fill in all fields to generate!</span>";
+//   } else {
+//     ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
+//   }
+// });
+//
+// ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
+//   if (dirpath.length > 0) {
+//     var destinationPath = path.join(dirpath[0], filename);
+//     if (fs.existsSync(destinationPath)) {
+//       var emessage = "File " + filename + " already exists in " + dirpath[0];
+//       ipcRenderer.send("open-error-metadata-file-exits", emessage);
+//     } else {
+//       var award =
+//         presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
+//       var milestoneValue = [];
+//       for (var i = 0; i < milestoneVal.length; i++) {
+//         milestoneValue.push(milestoneVal[i].value);
+//       }
+//       var date;
+//       if (
+//         document.getElementById("selected-milestone-date").value ===
+//         "Enter a date"
+//       ) {
+//         date = document.getElementById("input-milestone-date").value;
+//       } else {
+//         date = document.getElementById("selected-milestone-date").value;
+//       }
+//       var json_arr = [];
+//       json_arr.push({
+//         award: award,
+//         date: date,
+//         milestone: milestoneValue[0],
+//       });
+//       if (milestoneValue.length > 0) {
+//         for (var index = 1; index < milestoneValue.length; index++) {
+//           json_arr.push({
+//             award: "",
+//             date: "",
+//             milestone: milestoneValue[index],
+//           });
+//         }
+//       }
+//       json_str = JSON.stringify(json_arr);
+//       if (dirpath != null) {
+//         client.invoke(
+//           "api_save_submission_file",
+//           destinationPath,
+//           json_str,
+//           (error, res) => {
+//             if (error) {
+//               var emessage = userError(error);
+//               log.error(error);
+//               console.error(error);
+//               document.getElementById("para-save-submission-status").innerHTML =
+//                 "<span style='color: red;'> " + emessage + "</span>";
+//             } else {
+//               document.getElementById("para-save-submission-status").innerHTML =
+//                 "<span style='color: black ;'>" +
+//                 "Done!" +
+//                 smileyCan +
+//                 "</span>";
+//             }
+//           }
+//         );
+//       }
+//     }
+//   }
+// });
 
 //////////////// Dataset description file ///////////////////////
 //////////////// //////////////// //////////////// ////////////////
@@ -1650,8 +1618,8 @@ function clearCurrentConInfo() {
 function changeAwardInputDsDescription() {
   clearCurrentConInfo();
   /// delete old table
-  while (currentConTable.rows.length > 1) {
-    currentConTable.deleteRow(1);
+  while (currentConTable.rows.length > 2) {
+    currentConTable.deleteRow(2);
   }
   removeOptions(dsContributorArray);
 
@@ -1659,7 +1627,7 @@ function changeAwardInputDsDescription() {
   currentContributortagify.removeAllTags();
 
   addOption(dsContributorArray, "Select", "Select an option");
-  descriptionDateInput.options[0].disabled = true;
+  // descriptionDateInput.options[0].disabled = true;
   addOption(
     dsContributorArray,
     "Other collaborators",
@@ -1936,35 +1904,34 @@ function leaveFieldsEmpty(field, element) {
 function createTagsInput(field) {
   return new Tagify(field);
 }
-
-//// When users click on adding description for each additional link
-addAdditionalLinkBtn.addEventListener("click", function () {
-  createAdditionalLinksTable();
-});
-
-//// When users click on "Add" to current contributors table
-addCurrentContributorsBtn.addEventListener("click", function () {
-  document.getElementById("para-save-contributor-status").innerHTML = "";
-  if (
-    dsContributorArray.options[dsContributorArray.selectedIndex].value ===
-    "Select an option"
-  ) {
-    document.getElementById("para-save-contributor-status").innerHTML =
-      "<span style='color:red'>Please choose a contributor!</span>";
-  } else {
-    createCurrentConTable(currentConTable);
-  }
-});
+//
+// //// When users click on adding description for each additional link
+// addAdditionalLinkBtn.addEventListener("click", function () {
+//   createAdditionalLinksTable();
+// });
+//
+// //// When users click on "Add" to current contributors table
+// addCurrentContributorsBtn.addEventListener("click", function () {
+//   document.getElementById("para-save-contributor-status").innerHTML = "";
+//   if (
+//     dsContributorArray.options[dsContributorArray.selectedIndex].value ===
+//     "Select an option"
+//   ) {
+//     document.getElementById("para-save-contributor-status").innerHTML =
+//       "<span style='color:red'>Please choose a contributor!</span>";
+//   } else {
+//     createCurrentConTable(currentConTable);
+//   }
+// });
 
 $(currentConTable).mousedown(function (e) {
+  var length = currentConTable.rows.length - 1
   var tr = $(e.target).closest("tr"),
     sy = e.pageY,
     drag;
   if ($(e.target).is("tr")) tr = $(e.target);
   var index = tr.index();
   $(tr).addClass("grabbed");
-  // var rowCount = $(currentConTable).length;
-  // if( $(currentConTable).length > 2 ) {
   function move(e) {
     if (!drag && Math.abs(e.pageY - sy) < 10) return;
     drag = true;
@@ -1974,16 +1941,17 @@ $(currentConTable).mousedown(function (e) {
         y = s.offset().top;
       if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
         if (i !== 0) {
-          if (i < tr.index()) s.insertAfter(tr);
-          else s.insertBefore(tr);
-          return false;
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) s.insertAfter(tr);
+            s.insertBefore(tr);
+            return false;
+          }
         }
       }
     });
   }
-  // }
   function up(e) {
-    if (drag && index != tr.index()) {
+    if (drag && index != tr.index() && tr.index() !== length) {
       drag = false;
     }
     $(document).unbind("mousemove", move).unbind("mouseup", up);
@@ -1998,7 +1966,7 @@ dsAwardArray.addEventListener("change", changeAwardInputDsDescription);
 /// Auto populate once a contributor is selected
 dsContributorArray.addEventListener("change", function (e) {
   ///clear old entries once a contributor option is changed
-  document.getElementById("para-save-contributor-status").innerHTML = "";
+  // document.getElementById("para-save-contributor-status").innerHTML = "";
   document.getElementById("input-con-ID").value = "";
 
   /// hide Other collaborators fields upon changing contributors
@@ -4203,7 +4171,7 @@ const syncDatasetDropdownOption = (dropdown) => {
   if (defaultBfDataset !== "Select dataset") {
     $("#current-bf-dataset").text(defaultBfDataset);
     $("#current-bf-dataset-generate").text(defaultBfDataset);
-    $(".bf-dataset-span").text(defaultBfDataset);
+    $(".bf-dataset-span").html(defaultBfDataset);
     showHideDropdownButtons("dataset", "show");
   }
 
@@ -4320,8 +4288,8 @@ bfDatasetListPostCurationConsortium.addEventListener("change", () => {
 });
 
 function postCurationListChange() {
-  reserveDOIStatus.innerHTML = "";
-  publishDatasetStatus.innerHTML = "";
+  // reserveDOIStatus.innerHTML = "";
+  // publishDatasetStatus.innerHTML = "";
   //showCurrentDOI()
   showPublishingStatus();
 }
@@ -4985,21 +4953,21 @@ function shareWithConsortium() {
 //   })
 // })
 
-// Publish dataset
-bfSubmitReviewDatasetBtn.addEventListener("click", () => {
-  var selectedBfDataset =
-    bfDatasetListPostCurationPublish.options[
-      bfDatasetListPostCurationPublish.selectedIndex
-    ].text;
-  if (selectedBfDataset === "Select dataset") {
-    reviewDatasetInfo.innerHTML = "";
-    emessage = "Please select a valid dataset";
-    publishDatasetStatus.innerHTML =
-      "<span style='color: red;'> " + emessage + "</span>";
-  } else {
-    showPublishingStatus(submitReviewDatasetCheck);
-  }
-});
+// // Publish dataset
+// bfSubmitReviewDatasetBtn.addEventListener("click", () => {
+//   var selectedBfDataset =
+//     bfDatasetListPostCurationPublish.options[
+//       bfDatasetListPostCurationPublish.selectedIndex
+//     ].text;
+//   if (selectedBfDataset === "Select dataset") {
+//     reviewDatasetInfo.innerHTML = "";
+//     emessage = "Please select a valid dataset";
+//     publishDatasetStatus.innerHTML =
+//       "<span style='color: red;'> " + emessage + "</span>";
+//   } else {
+//     showPublishingStatus(submitReviewDatasetCheck);
+//   }
+// });
 
 function submitReviewDatasetCheck(res) {
   var reviewstatus = res[0];
@@ -5007,13 +4975,13 @@ function submitReviewDatasetCheck(res) {
   if (publishingStatus === "PUBLISH_IN_PROGRESS") {
     emessage =
       "Your dataset is currently being published. Please wait until it is completed.";
-    publishDatasetStatus.innerHTML =
-      "<span style='color: red;'> " + emessage + "</span>";
+    // publishDatasetStatus.innerHTML =
+    //   "<span style='color: red;'> " + emessage + "</span>";
   } else if (reviewstatus === "requested") {
     emessage =
       "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.";
-    publishDatasetStatus.innerHTML =
-      "<span style='color: red;'> " + emessage + "</span>";
+    // publishDatasetStatus.innerHTML =
+    //   "<span style='color: red;'> " + emessage + "</span>";
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
     ipcRenderer.send("warning-publish-dataset-again");
   } else {
@@ -5035,11 +5003,11 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
 
 function submitReviewDataset() {
   // disableform(bfPostCurationForm)
-  bfSubmitReviewDatasetBtn.disabled = true;
-  bfRefreshPublishingDatasetStatusBtn.disabled = true;
-  bfWithdrawReviewDatasetBtn.disabled = true;
-  publishDatasetStatus.innerHTML = "Please wait...";
-  bfPostCurationProgressPublish.style.display = "block";
+  // bfSubmitReviewDatasetBtn.disabled = true;
+  // bfRefreshPublishingDatasetStatusBtn.disabled = true;
+  // bfWithdrawReviewDatasetBtn.disabled = true;
+  // // publishDatasetStatus.innerHTML = "Please wait...";
+  // bfPostCurationProgressPublish.style.display = "block";
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
   var selectedBfDataset =
@@ -5055,16 +5023,16 @@ function submitReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        publishDatasetStatus.innerHTML =
-          "<span style='color: red;'> " + emessage + "</span>";
+        // publishDatasetStatus.innerHTML =
+        //   "<span style='color: red;'> " + emessage + "</span>";
         bfPostCurationProgressPublish.style.display = "none";
         // enableform(bfPostCurationForm)
         bfSubmitReviewDatasetBtn.disabled = false;
         bfRefreshPublishingDatasetStatusBtn.disabled = false;
         bfWithdrawReviewDatasetBtn.disabled = false;
       } else {
-        publishDatasetStatus.innerHTML =
-          "Success: Dataset has been submitted for review to the Publishers within your organization";
+        // publishDatasetStatus.innerHTML =
+        //   "Success: Dataset has been submitted for review to the Publishers within your organization";
         bfPostCurationProgressPublish.style.display = "none";
         showPublishingStatus("noClear");
       }
@@ -5072,28 +5040,25 @@ function submitReviewDataset() {
   );
 }
 
-//Withdraw dataset from review
-bfWithdrawReviewDatasetBtn.addEventListener("click", () => {
-  var selectedBfDataset =
-    bfDatasetListPostCurationPublish.options[
-      bfDatasetListPostCurationPublish.selectedIndex
-    ].text;
-  if (selectedBfDataset === "Select dataset") {
-    reviewDatasetInfo.innerHTML = "";
-    emessage = "Please select a valid dataset";
-    publishDatasetStatus.innerHTML =
-      "<span style='color: red;'> " + emessage + "</span>";
-  } else {
-    showPublishingStatus(withdrawDatasetCheck);
-  }
-});
+// //Withdraw dataset from review
+// bfWithdrawReviewDatasetBtn.addEventListener("click", () => {
+//   var selectedBfDataset = $(".bf-dataset-span").html();
+//   if (selectedBfDataset === "None") {
+//     reviewDatasetInfo.innerHTML = "";
+//     emessage = "Please select a valid dataset";
+//     publishDatasetStatus.innerHTML =
+//       "<span style='color: red;'> " + emessage + "</span>";
+//   } else {
+//     showPublishingStatus(withdrawDatasetCheck);
+//   }
+// });
 
 function withdrawDatasetCheck(res) {
   var reviewstatus = res[0];
   if (reviewstatus !== "requested") {
     emessage = "Your dataset is not currently under review";
-    publishDatasetStatus.innerHTML =
-      "<span style='color: red;'> " + emessage + "</span>";
+    // publishDatasetStatus.innerHTML =
+    //   "<span style='color: red;'> " + emessage + "</span>";
   } else {
     ipcRenderer.send("warning-withdraw-dataset");
   }
@@ -5106,17 +5071,12 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
 });
 
 function withdrawReviewDataset() {
-  bfSubmitReviewDatasetBtn.disabled = true;
-  bfRefreshPublishingDatasetStatusBtn.disabled = true;
-  bfWithdrawReviewDatasetBtn.disabled = true;
-  publishDatasetStatus.innerHTML = "Please wait...";
-  bfPostCurationProgressPublish.style.display = "block";
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
-  var selectedBfDataset =
-    bfDatasetListPostCurationPublish.options[
-      bfDatasetListPostCurationPublish.selectedIndex
-    ].text;
+  // bfSubmitReviewDatasetBtn.disabled = true;
+  // bfWithdrawReviewDatasetBtn.disabled = true;
+  // publishDatasetStatus.innerHTML = "Please wait...";
+  // bfPostCurationProgressPublish.style.display = "block";
+  var selectedBfAccount = $("#current-bf-dataset").text();
+  var selectedBfDataset = $(".bf-dataset-span").html();
   client.invoke(
     "api_bf_withdraw_review_dataset",
     selectedBfAccount,
@@ -5126,15 +5086,15 @@ function withdrawReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        publishDatasetStatus.innerHTML =
-          "<span style='color: red;'> " + emessage + "</span>";
-        bfPostCurationProgressPublish.style.display = "none";
-        bfSubmitReviewDatasetBtn.disabled = false;
-        bfRefreshPublishingDatasetStatusBtn.disabled = false;
-        bfWithdrawReviewDatasetBtn.disabled = false;
+        // publishDatasetStatus.innerHTML =
+        //   "<span style='color: red;'> " + emessage + "</span>";
+        // bfPostCurationProgressPublish.style.display = "none";
+        // bfSubmitReviewDatasetBtn.disabled = false;
+        // bfRefreshPublishingDatasetStatusBtn.disabled = false;
+        // bfWithdrawReviewDatasetBtn.disabled = false;
       } else {
-        publishDatasetStatus.innerHTML =
-          "Success: Dataset has been withdrawn from review";
+        // publishDatasetStatus.innerHTML =
+        //   "Success: Dataset has been withdrawn from review";
         showPublishingStatus("noClear");
       }
     }
@@ -5142,20 +5102,17 @@ function withdrawReviewDataset() {
 }
 
 // Refresh publishing dataset status
-bfRefreshPublishingDatasetStatusBtn.addEventListener("click", () => {
-  var selectedBfDataset =
-    bfDatasetListPostCurationPublish.options[
-      bfDatasetListPostCurationPublish.selectedIndex
-    ].text;
-  if (selectedBfDataset === "Select dataset") {
-    reviewDatasetInfo.innerHTML = "";
-    emessage = "Please select a valid dataset";
-    publishDatasetStatus.innerHTML =
-      "<span style='color: red;'> " + emessage + "</span>";
-  } else {
-    showPublishingStatus();
-  }
-});
+// bfRefreshPublishingDatasetStatusBtn.addEventListener("click", () => {
+//   var selectedBfDataset = $(".bf-dataset-span").html();
+//   if (selectedBfDataset === "None") {
+//     reviewDatasetInfo.innerHTML = "";
+//     emessage = "Please select a valid dataset";
+//     publishDatasetStatus.innerHTML =
+//       "<span style='color: red;'> " + emessage + "</span>";
+//   } else {
+//     showPublishingStatus();
+//   }
+// });
 
 //////////////////////////////////
 // Helper functions
@@ -5981,28 +5938,16 @@ function showCurrentDOI() {
 }
 
 function showPublishingStatus(callback) {
-  reviewDatasetInfo.innerHTML = "Please wait...";
+  // reviewDatasetInfo.innerHTML = "Please wait...";
   if (callback == "noClear") {
     var nothing;
   } else {
-    publishDatasetStatus.innerHTML = "";
+    // publishDatasetStatus.innerHTML = "";
   }
-  bfPostCurationProgressPublish.style.display = "block";
-  bfSubmitReviewDatasetBtn.disabled = true;
-  bfRefreshPublishingDatasetStatusBtn.disabled = true;
-  bfWithdrawReviewDatasetBtn.disabled = true;
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
-  var selectedBfDataset =
-    bfDatasetListPostCurationPublish.options[
-      bfDatasetListPostCurationPublish.selectedIndex
-    ].text;
-  if (selectedBfDataset === "Select dataset") {
-    reviewDatasetInfo.innerHTML = "";
-    bfPostCurationProgressPublish.style.display = "none";
-    bfSubmitReviewDatasetBtn.disabled = false;
-    bfRefreshPublishingDatasetStatusBtn.disabled = false;
-    bfWithdrawReviewDatasetBtn.disabled = false;
+  var selectedBfAccount = $("#current-bf-account").text();
+  var selectedBfDataset = $(".bf-dataset-span").html();
+  if (selectedBfDataset === "None") {
+    // reviewDatasetInfo.innerHTML = "";
   } else {
     client.invoke(
       "api_bf_get_publishing_status",
@@ -6012,21 +5957,12 @@ function showPublishingStatus(callback) {
         if (error) {
           log.error(error);
           console.error(error);
-          reviewDatasetInfo.innerHTML = "";
+          // reviewDatasetInfo.innerHTML = "";
           var emessage = userError(error);
           publishDatasetStatus.innerHTML =
             "<span style='color: red;'> " + emessage + "</span>";
-          bfPostCurationProgressPublish.style.display = "none";
-          bfSubmitReviewDatasetBtn.disabled = false;
-          bfRefreshPublishingDatasetStatusBtn.disabled = false;
-          bfWithdrawReviewDatasetBtn.disabled = false;
         } else {
-          reviewDatasetInfo.innerHTML = publishStatusOutputConversion(res);
-          bfPostCurationProgressPublish.style.display = "none";
-          bfSubmitReviewDatasetBtn.disabled = false;
-          bfRefreshPublishingDatasetStatusBtn.disabled = false;
-          bfWithdrawReviewDatasetBtn.disabled = false;
-
+          // reviewDatasetInfo.innerHTML = publishStatusOutputConversion(res);
           if (
             callback === submitReviewDatasetCheck ||
             callback === withdrawDatasetCheck
@@ -6995,16 +6931,17 @@ var bfAddAccountBootboxMessage =
   "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='text' /></div></div></form>";
 
 function addBFAccountInsideBootbox(myBootboxDialog) {
-  var keyname = $("#bootbox-key-name").val();
+  var name = $("#bootbox-key-name").val();
   var apiKey = $("#bootbox-api-key").val();
   var apiSecret = $("#bootbox-api-secret").val();
   client.invoke(
     "api_bf_add_account",
-    keyname,
+    name,
     apiKey,
     apiSecret,
     (error, res) => {
       if (error) {
+        $(myBootboxDialog).find(".modal-footer span").remove();
         myBootboxDialog
           .find(".modal-footer")
           .prepend(
@@ -7018,9 +6955,9 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
         $("#bootbox-key-name").val("");
         $("#bootbox-api-key").val("");
         $("#bootbox-api-secret").val("");
-        bfAccountOptions[keyname] = keyname;
+        bfAccountOptions[name] = name;
         updateBfAccountList();
-        client.invoke("api_bf_account_details", keyname, (error, res) => {
+        client.invoke("api_bf_account_details", name, (error, res) => {
           if (error) {
             log.error(error);
             console.error(error);
@@ -7033,12 +6970,12 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
             showHideDropdownButtons("account", "hide");
           } else {
             $("#para-account-detail-curate").html(res);
-            $("#current-bf-account").text(keyname);
-            $("#current-bf-account-generate").text(keyname);
-            $("#create_empty_dataset_BF_account_span").text(keyname);
+            $("#current-bf-account").text(name);
+            $("#current-bf-account-generate").text(name);
+            $("#create_empty_dataset_BF_account_span").text(name);
             $("#current-bf-dataset").text("None");
             $("#current-bf-dataset-generate").text("None");
-            $(".bf-dataset-span").text("None");
+            $(".bf-dataset-span").html("None");
             $("#para-account-detail-curate-generate").html(res);
             $("#para_create_empty_dataset_BF_account").html(res);
 
@@ -7075,6 +7012,146 @@ function showBFAddAccountBootbox() {
     },
     size: "medium",
     centerVertical: true,
+  });
+}
+
+function showAddAirtableAccountBootbox() {
+  var htmlTitle =
+    '<h4>Please specify a key name and enter your Airtable API key below: <div class="tooltipnew"><img class="info" src="assets/img/info.png"><span class="tooltiptext">To obtain or re-generate your API key to connect to SODA during your first use, check out the dedicated <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a>. Note that the key will be stored locally on your computer and the SODA Team will not have access to it.</span></div></h4>';
+
+  var bootb = bootbox.dialog({
+    title: htmlTitle,
+    message: airtableAccountBootboxMessage,
+    buttons: {
+      cancel: {
+        label: "Cancel",
+      },
+      confirm: {
+        label: "Add",
+        className: "btn btn-primary bootbox-add-airtable-class",
+        callback: function () {
+          addAirtableAccountInsideBootbox(bootb);
+          return false;
+        },
+      },
+    },
+    size: "medium",
+    centerVertical: true,
+  });
+}
+
+function addAirtableAccountInsideBootbox(myBootboxDialog) {
+  var name = $("#bootbox-airtable-key-name").val();
+  var key = $("#bootbox-airtable-key").val();
+  if (name.length === 0 || key.length === 0) {
+    var errorMessage =
+      "<span style='color: red;'>Please fill in both required fields to add.</span>";
+    $(myBootboxDialog).find(".modal-footer span").remove();
+    myBootboxDialog
+      .find(".modal-footer")
+      .prepend(
+        "<span style='color:red;padding-right:10px;display:inline-block;'>" +
+          error +
+          "</span>"
+      );
+  } else {
+    // test connection
+    const optionsSparcTable = {
+      hostname: airtableHostname,
+      port: 443,
+      path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
+      headers: { Authorization: `Bearer ${key}` },
+    };
+    var sparcTableSuccess;
+    https.get(optionsSparcTable, (res) => {
+      if (res.statusCode === 200) {
+        /// updating api key in SODA's storage
+        createMetadataDir();
+        var content = parseJson(airtableConfigPath);
+        content["api-key"] = key;
+        content["key-name"] = name;
+        fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
+        $("#current-airtable-account").text(name);
+        $("#current-airtable-account-dd").text(name);
+        $("#bootbox-airtable-key-name").val("");
+        $("#bootbox-airtable-key").val("");
+        loadAwardData();
+        myBootboxDialog.modal("hide");
+        bootbox.alert({
+          message: "Successfully connected!",
+          centerVertical: true,
+        });
+      } else if (res.statusCode === 403) {
+        $(myBootboxDialog).find(".modal-footer span").remove();
+        myBootboxDialog
+          .find(".modal-footer")
+          .prepend(
+            "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>"
+          );
+      } else {
+        log.error(res);
+        console.error(res);
+        $(myBootboxDialog).find(".modal-footer span").remove();
+        myBootboxDialog
+          .find(".modal-footer")
+          .prepend(
+            "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
+          );
+      }
+      res.on("error", (error) => {
+        log.error(error);
+        console.error(error);
+        $(myBootboxDialog).find(".modal-footer span").remove();
+        myBootboxDialog
+          .find(".modal-footer")
+          .prepend(
+            "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
+          );
+      });
+    });
+  }
+}
+
+awardArrayTagify.on("add", function() {
+  if (awardArrayTagify.value.length > 0) {
+    $(".bootbox-add-airtable-class").text("Add")
+  } else {
+    $(".bootbox-add-airtable-class").text("Confirm")
+  }
+})
+
+function editSPARCAwardsBootbox() {
+  $(sparcAwardEditMessage).css("display", "block");
+  var editSPARCAwardsTitle =
+    '<h3 style="float:left"> Add/Edit your SPARC award(s): </h3><div style="padding-top:5px" class="tooltipnew"><img class="info" src="assets/img/info.png"><span class="tooltiptext">The list of active SPARC awards in this dropdown list is generated automatically from the SPARC Airtable sheet once SODA is connected with your Airtable account. Select your award(s) and click on "Add" to save it/them in SODA. You will only have to do this once. SODA will automatically load these awards next time you launch SODA.</span></div>';
+  var bootb = bootbox.dialog({
+    title: editSPARCAwardsTitle,
+    message: sparcAwardEditMessage,
+    buttons: {
+      cancel: {
+        label: "Cancel",
+      },
+      confirm: {
+        label: "Confirm",
+        className: "btn btn-primary bootbox-add-airtable-class",
+        callback: function () {
+          // $(bootb.find(".modal-footer button")[1]).attr('id', 'bootbox-add-awards');
+          $(bootb).find(".modal-footer span").remove();
+          var message = addSPARCAwards();
+          bootb.find(".modal-footer").prepend(message);
+          if ($(".bootbox-add-airtable-class").text() == "Confirm" && $(bootb).find(".modal-footer span").text() == "") {
+            return true
+          } else {
+            return false;
+          }
+        },
+      },
+    },
+    size: "medium",
+    centerVertical: true,
+    // callback: function() {
+    //   $(bootb.find(".modal-footer button")[1]).attr('id', 'bootbox-add-awards');
+    // };
   });
 }
 

@@ -158,6 +158,40 @@ body.waiting * {
 .demo-controls {
   display: flex;
   align-items: center;
+  margin: 10px;
+}
+
+.div-dd-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 10px 0
+}
+
+.demo-controls-head {
+  display: flex;
+  align-items: center;
+  margin: 10px;
+  width: 18%;
+  float: left;
+  font-size: 14px;
+  margin: 10px 0;
+  /* padding-right: 10px; */
+  padding: 4px 6px;
+  text-align: left;
+  vertical-align: middle;
+  color: #a0a0a0;
+  font: bold;
+  font-weight: 500;
+}
+
+.demo-controls-body {
+  width: 75%;
+  float:right;
+}
+
+.demo-controls-end {
+  width: 5%
 }
 
 .demo-button-next-step {
@@ -245,7 +279,7 @@ body.waiting * {
 }
 
 .demo-button-prev-next:hover {
-  background-color: hsla(190, 60%, 36%, 1);
+  background-color: var(--color-light-green);
   color: white;
   outline: none;
   /* border-color: var(--color-accent); */
@@ -320,7 +354,7 @@ button.download-metadata:hover {
   outline: none;
   box-shadow: none;
   border: none;
-  border-color: var(--color-teal);
+  border-color: var(--color-light-green);
   background-clip: border-box;
   cursor: pointer;
 }
@@ -332,7 +366,7 @@ button.download-metadata:hover {
   border-radius: 0;
   padding: 0 0 0 0;
   margin: 0 0 0 0;
-  background-color: var(--color-teal);
+  background-color: var(--color-light-green);
   color: white;
   box-sizing: none;
   cursor: pointer;
@@ -965,8 +999,8 @@ label.input-banner-img {
 }
 
 .tagify {
-  border: 1px solid #c0c0c0 !important;
-  border-left: 2px solid var(--color-teal) !important;
+  border: 1px solid rgba(34,36,38,.15) !important;
+  /* border-left: 2px solid var(--color-light-green) !important; */
   border-radius: 5px !important;
   background-color: white !important;
   --tag--max-width: 250px !important;
@@ -1001,7 +1035,7 @@ label.input-banner-img {
   border: 1px solid #c0c0c0;
   margin-bottom: 10px;
   border-radius: 5px;
-  transition: var(--color-teal) 0.25s ease-out;
+  transition: var(--color-light-green) 0.25s ease-out;
   padding: 4px 6px;
 }
 
@@ -1011,7 +1045,7 @@ input::-webkit-calendar-picker-indicator {
 
 .form-container-input-bf:focus {
   background-color: #fffafa;
-  border-left: 2px solid #c0c0c0;
+  /* border-left: 2px solid #c0c0c0; */
   border-radius: 0;
 }
 
@@ -1021,10 +1055,10 @@ input::-webkit-calendar-picker-indicator {
   font: inherit;
   width: 100%;
   border: 1px solid #c0c0c0;
-  border-left: 2px solid var(--color-teal);
+  /* border-left: 2px solid var(--color-light-green); */
   margin-bottom: 10px;
   border-radius: 5px;
-  transition: var(--color-teal) 0.25s ease-out;
+  transition: var(--color-light-green) 0.25s ease-out;
   padding: 4px 6px;
   min-height: 60px;
   /* max-height:60px; */
@@ -1042,7 +1076,7 @@ input::-webkit-calendar-picker-indicator {
   font-weight: 400;
   font: inherit;
   border-radius: 5px;
-  transition: var(--color-teal) 0.25s ease-out;
+  transition: var(--color-light-green) 0.25s ease-out;
   height: auto;
   display: none;
 }
@@ -1068,16 +1102,21 @@ input::-webkit-calendar-picker-indicator {
   width: 100%;
   margin-bottom: 10px;
   border: 1px solid #c0c0c0;
-  border-left: 2px solid var(--color-teal);
+  border-left: 2px solid var(--color-light-green);
   border-radius: 5px;
-  transition: var(--color-teal) 0.25s ease-out;
+  transition: var(--color-light-green) 0.25s ease-out;
   padding: 4px 6px;
+}
+
+.form-container-input-bf disabled {
+  background: #f5f5f5
 }
 
 /* Dataset Description file container */
 .form-container-ds {
   float: left;
   font-size: 14px;
+  margin: 10px 0;
   /* padding-right: 10px; */
   padding: 4px 6px;
   width: 180px;
@@ -1101,7 +1140,7 @@ input::-webkit-calendar-picker-indicator {
   transition-delay: 0s;
   position: relative;
   padding-top: 20px;
-  color: var(--color-teal);
+  color: var(--color-light-green);
   text-indent: -9999px;
   border: none;
   background-color: transparent;
@@ -1156,21 +1195,21 @@ input::-webkit-calendar-picker-indicator {
   display: none;
 }
 .multisteps-form__progress-btn.js-active1 {
-  color: var(--color-teal);
+  color: var(--color-light-green)
 }
 .multisteps-form__progress-btn.js-active2 {
-  color: var(--color-teal);
+  color: var(--color-light-green)
 }
 
 .multisteps-form__progress-btn.js-active1:before {
   -webkit-transform: translateX(-50%) scale(1.2);
   transform: translateX(-50%) scale(1.5);
-  background-color: var(--color-teal);
+  background-color: var(--color-light-green)
 }
 .multisteps-form__progress-btn.js-active2:before {
   -webkit-transform: translateX(-50%) scale(1.2);
   transform: translateX(-50%) scale(1.5);
-  background-color: var(--color-teal);
+  background-color: var(--color-light-green)
 }
 
 /* Hide all steps by default: */
@@ -1197,7 +1236,7 @@ input::-webkit-calendar-picker-indicator {
 
 /* Mark the steps that are finished and valid: */
 .ds-step.finish {
-  background-color: #4caf50;
+  background-color: var(--color-light-green)
 }
 
 .switch-field {
@@ -1233,7 +1272,7 @@ input::-webkit-calendar-picker-indicator {
 
 .label-switch:hover {
   cursor: pointer;
-  color: var(--color-teal);
+  color: var(--color-light-green);
 }
 
 #addAccount:checked ~ #div-add-account,
@@ -1247,9 +1286,9 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .input-switch:checked + label {
-  border-bottom: 2px solid var(--color-teal);
+  border-bottom: 2px solid var(--color-light-green);
   text-decoration: none;
-  color: var(--color-teal);
+  color: var(--color-light-green);
   font-size: 16px;
   border-radius: 0;
 }
