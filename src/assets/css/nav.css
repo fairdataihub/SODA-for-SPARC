@@ -146,8 +146,9 @@ a[data-toggle="collapse"] {
   color: var(--color-light-green);
   background: none;
   font-weight: 600;
-  border-left: 4px solid var(--color-light-green);
-  border-radius: 0
+  border-left: 5px solid var(--color-light-green);
+  margin-left: -3px;
+  border-radius: 0;
 }
 
 #main-nav ul li a.is-selected svg {

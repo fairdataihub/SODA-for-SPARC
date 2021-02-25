@@ -22,13 +22,13 @@
 }
 
 .option-card:hover {
-  border: 1px solid var(--color-light-green);
-  box-shadow: 0px 0px 3px 0px var(--color-light-green);
+  /* border: 1px solid var(--color-light-green); */
+  box-shadow: 0px 0px 10px 0px var(--color-light-green);
 }
 
 .option-card.checked {
-  border: 1px solid var(--color-light-green);
-  box-shadow: 0px 0px 3px 0px var(--color-light-green);
+  /* border: 1px solid var(--color-light-green); */
+  box-shadow: 0px 0px 10px 0px var(--color-light-green);
   opacity: 1;
 }
 
@@ -67,7 +67,7 @@
 .option-card.radio-button:focus,
 .option-card.radio-button:active {
   color: var(--color-light-green);
-  border: 1px solid var(--color-light-green);
+  /* border: 1px solid var(--color-light-green); */
 }
 
 .option-card.radio-button:hover,
@@ -77,8 +77,8 @@
 }
 
 .option-card.radio-button.checked {
-  border: 1px solid var(--color-light-green);
-  box-shadow: 0px 0px 3px 0px var(--color-light-green);
+  /* border: 1px solid var(--color-light-green); */
+  box-shadow: 0px 0px 10px 0px var(--color-light-green);
   opacity: 1;
   pointer-events: none;
 }
@@ -91,6 +91,10 @@
 }
 
 .option-card.radio-button.non-selected svg {
+  fill: #585858;
+}
+
+.option-card.radio-button.non-selected svg path {
   fill: #585858;
 }
 
