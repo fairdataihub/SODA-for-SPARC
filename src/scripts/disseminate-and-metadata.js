@@ -263,6 +263,7 @@ function checkAirtableStatus() {
   ///// config and load live data from Airtable
   var airKeyContent = parseJson(airtableConfigPath);
   if (Object.keys(airKeyContent).length === 0) {
+    changeAirtableDiv("div-field-already-connected-dd", "div-field-not-connected-dd", "div-airtable-confirm-button-dd", "div-airtable-award-button-dd")
     changeAirtableDiv("div-field-already-connected", "div-field-not-connected", "div-airtable-confirm-button", "div-airtable-award-button")
   } else {
     var airKeyInput = airKeyContent["api-key"];
@@ -294,6 +295,7 @@ function checkAirtableStatus() {
           "none";
           if (err) {
             changeAirtableDiv("div-field-already-connected", "div-field-not-connected", "div-airtable-confirm-button", "div-airtable-award-button")
+            changeAirtableDiv("div-field-already-connected-dd", "div-field-not-connected-dd", "div-airtable-confirm-button-dd", "div-airtable-award-button-dd")
             log.error(err);
             console.log(err);
             return;
@@ -303,12 +305,15 @@ function checkAirtableStatus() {
             var resultArray = [...awardSet];
             awardArrayTagify.settings.whitelist = resultArray;
             $("#current-airtable-account").text(airKeyName);
+            $("#current-airtable-account-dd").text(airKeyName);
             changeAirtableDiv("div-field-not-connected", "div-field-already-connected", "div-airtable-award-button", "div-airtable-confirm-button")
+            changeAirtableDiv("div-field-not-connected-dd", "div-field-already-connected-dd", "div-airtable-award-button-dd", "div-airtable-confirm-button-dd")
           }
         }
       );
     } else {
       changeAirtableDiv("div-field-already-connected", "div-field-not-connected", "div-airtable-confirm-button", "div-airtable-award-button")
+      changeAirtableDiv("div-field-already-connected-dd", "div-field-not-connected-dd", "div-airtable-confirm-button-dd", "div-airtable-award-button-dd")
     }
   }
 }
@@ -563,3 +568,59 @@ ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
     }
   }
 })
+
+// prepare dataset description each section (go in and out effects)
+$(".button-individual-dd-section.remove").click(function () {
+  var metadataFileStatus = $($(this).parents()[1]).find(
+    ".para-metadata-file-status"
+  );
+  $($(this).parents()[1]).find(".div-dd-section-confirm").css("display", "none");
+  $($(this).parents()[1]).find(".div-dd-section-go-back").css("display", "flex");
+});
+
+$(".prepare-dd-cards").click(function () {
+  $("create_dataset_description-tab").removeClass("show");
+  var target = $(this).attr("data-next");
+  $("#" + target).toggleClass("show");
+  document.getElementById("prevBtn").style.display = "none";
+});
+
+function addNewRow(table) {
+  var rowcount = document.getElementById(table).rows.length;
+    /// append row to table from the bottom
+  var rowIndex = rowcount;
+  if (table==='doi-table') {
+    $('.doi-table-row input').attr('contenteditable','false');
+    $('.doi-table-row input').attr('readonly','readonly');
+    $('.doi-helper-buttons').css('display', 'inline-flex');
+    $('.doi-add-row-button').css('display', 'none');
+    var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td><select id='select-misc-link' class='form-container-input-bf' style='font-size:13px;line-height:2;'><option value='Select' disabled>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+  } else if (table === 'table-current-contributors') {
+    $('.contributor-table-row input').attr('contenteditable','false');
+    $('.contributor-table-row input').attr('readonly','readonly');
+    $('.contributor-table-row select').attr('disabled','true');
+    $('#table-current-contributors .contributor-helper-buttons').css('display', 'inline-flex');
+    $('#table-current-contributors .contributor-add-row-button').css('display', 'none');
+    var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td class='grab'><select id='ds-description-contributor-list' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+rowIndex+"'></input></td><td class='grab'><label class='switch'><input id='ds-contact-person' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+    createTagify('input-con-role-'+rowIndex.toString());
+  } else if (table === 'grant-table') {
+    $('.grant-table-row input').attr('contenteditable','false');
+    $('.grant-table-row input').attr('readonly','readonly');
+    $('#grant-table .grant-helper-buttons').css('display', 'inline-flex');
+    $('#grant-table .grant-add-row-button').css('display', 'none');
+    var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"grant-table\")' class='ui right floated medium primary labeled icon button grant-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons grant-helper-buttons' style='display:none'><button class='ui button'><i class='edit outline icon' style='color:var(--bs-table-active-color)'></i></button><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+  }
+}
+
+function createTagify(inputField) {
+  var input = document.getElementById(inputField);
+  // initialize Tagify on the above input node reference
+  var tagify = new Tagify(input, {
+    whitelist: ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+    enforceWhitelist: true,
+    dropdown : {
+       enabled   : 0,
+       closeOnSelect : true
+     }
+  })
+}

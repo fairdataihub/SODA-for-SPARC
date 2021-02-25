@@ -554,400 +554,144 @@
 
       <section class="main-tabs-section" id="disseminate_dataset_section">
         <div class="main-tabs show" id="post-curation-tab">
-          <div
-            class="individual-question post-curation show"
-            id="Post-curation-question-1"
-          >
-            <div class="ui form" style="width: 100%">
-              <div class="grouped fields">
-                <label style="font-size: 17px; text-align: center; color: #000">
-                  Please select one:</label
-                >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: center;
-                  "
-                >
-                  <div style="margin: 15px 0">
-                    <div
-                      class="option-card radio-button getting-started-1st-question"
-                      data-next="Post-curation-question-2"
-                      onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')"
-                    >
-                      <div class="card-head">
-                        <div class="folder-checkbox">
-                          <input
-                            class="folder-input-check"
-                            id="share-with-curation-team"
-                            name="post-curation-1"
-                            type="radio"
-                          />
-                          <label for="share-with-curation-team"></label>
-                        </div>
-                      </div>
-                      <div class="card-body">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="40px"
-                          height="40px"
-                          fill="var(--color-bg-orange)"
-                          class="bi bi-people"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"
-                          />
-                        </svg>
-                        <h2>Share with Curation Team</h2>
-                      </div>
-                    </div>
-                  </div>
+         <div class="individual-question post-curation show" id="Post-curation-question-1">
+             <div class="ui form" style="width:100%">
+               <div class="grouped fields">
+                 <label style="font-size:16px;text-align:center;color: #000">
+                   How would you like to disseminate your dataset? <br>
+                 <span style="font-size:13px;text-align:center;color: #696969">Please select one:</span></label>
+                 <div style="display:flex;flex-direction:row;justify-content:center">
+                   <div style="margin:15px 0;">
+                     <div class="option-card radio-button getting-started-1st-question" data-next="Post-curation-question-2" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
+                         <div class="card-head">
+                           <div class="folder-checkbox">
+                             <input class="folder-input-check" id="share-with-curation-team" name="post-curation-1" type="radio">
+                             <label for="share-with-curation-team"></label>
+                           </div>
+                         </div>
+                         <div class="card-body">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="var(--color-bg-orange)" class="bi bi-people" viewBox="0 0 16 16">
+                             <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
+                           </svg>
+                           <h2>Share with Curation Team</h2>
+                         </div>
+                       </div>
+                   </div>
 
-                  <div style="margin: 15px 0">
-                    <div
-                      class="option-card radio-button getting-started-1st-question"
-                      data-next="Post-curation-question-2"
-                      onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')"
-                    >
-                      <div class="card-head">
-                        <div class="folder-checkbox">
-                          <input
-                            class="folder-input-check"
-                            id="share-with-sparc-consortium"
-                            name="post-curation-1"
-                            type="radio"
-                          />
-                          <label for="share-with-sparc-consortium"></label>
-                        </div>
-                      </div>
-                      <div class="card-body">
-                        <i
-                          class="fab fa-connectdevelop"
-                          style="color: green"
-                        ></i>
-                        <h2>Share with SPARC Consortium</h2>
-                      </div>
-                    </div>
-                  </div>
+                   <div style="margin:15px 0;">
+                     <div class="option-card radio-button getting-started-1st-question" data-next="Post-curation-question-2" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
+                         <div class="card-head">
+                           <div class="folder-checkbox">
+                             <input class="folder-input-check" id="share-with-sparc-consortium" name="post-curation-1" type="radio">
+                             <label for="share-with-sparc-consortium"></label>
+                           </div>
+                         </div>
+                         <div class="card-body">
+                           <i class="fab fa-connectdevelop" style="color:green"></i>
+                           <h2>Share with SPARC Consortium </h2>
+                         </div>
+                     </div>
+                   </div>
 
-                  <div style="margin: 15px 0">
-                    <div
-                      class="option-card radio-button getting-started-1st-question"
-                      data-next="Post-curation-question-4"
-                      onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')"
-                    >
-                      <div class="card-head">
-                        <div class="folder-checkbox">
-                          <input
-                            class="folder-input-check"
-                            id="submit-pre-publishing"
-                            name="post-curation-1"
-                            type="radio"
-                          />
-                          <label for="submit-pre-publishing"></label>
-                        </div>
-                      </div>
-                      <div class="card-body">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="40px"
-                          height="40px"
-                          fill="var(--tagify-dd-color-primary)"
-                          class="bi bi-book"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"
-                          />
-                        </svg>
-                        <h2>Submit for pre-publishing review</h2>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+                   <div style="margin:15px 0;">
+                     <div class="option-card radio-button getting-started-1st-question"
+                           data-next="Post-curation-question-4" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
+                         <div class="card-head">
+                           <div class="folder-checkbox">
+                             <input class="folder-input-check" id="submit-pre-publishing" name="post-curation-1" type="radio">
+                             <label for="submit-pre-publishing"></label>
+                           </div>
+                         </div>
+                         <div class="card-body">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" fill="var(--tagify-dd-color-primary)" class="bi bi-book" viewBox="0 0 16 16">
+                             <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"/>
+                           </svg>
+                           <h2>Submit for pre-publishing review</h2>
+                         </div>
+                       </div>
+                     </div>
+                 </div>
+               </div>
+           </div>
+         </div>
 
-          <div
-            class="individual-question post-curation"
-            id="Post-curation-question-2"
-          >
-            <div class="ui form" style="width: 100%">
-              <div class="grouped fields">
-                <label style="font-size: 17px; text-align: center; color: #000">
-                  Please select a dataset</label
-                >
-                <div class="field" style="margin: 15px 0; width: 450px">
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: column;
-                      justify-content: space-between;
-                      margin-top: 15px;
-                      height: auto;
-                      box-shadow: 0px 0px 10px #d5d5d5;
-                      padding: 15px 25px;
-                      border-radius: 5px;
-                    "
-                  >
-                    <div
-                      style="
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: space-between;
-                        margin-bottom: 15px;
-                      "
-                    >
-                      <div>
-                        <h5 style="color: #808080; font-size: 15px">
-                          Current dataset:
-                          <span
-                            style="
-                              color: #000;
-                              font-weight: 600;
-                              margin-left: 8px;
-                              font-size: 15px;
-                            "
-                            class="bf-dataset-span"
-                            >None</span
-                          >
-                        </h5>
-                      </div>
-                      <svg
-                        class="svg-change-current-account"
-                        onclick="openDropdownPrompt('dataset')"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        fill="#000"
-                        class="bi bi-pencil-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                  <div
-                    class="div-confirm-button"
-                    style="
-                      display: none;
-                      flex-direction: row;
-                      justify-content: center;
-                      margin: 10px auto;
-                    "
-                  >
-                    <button
-                      onclick="transitionFreeFormMode(this, 'Post-curation-question-2', 'post-curation-tab', 'delete', 'individual-question post-curation')"
-                      data-next="Post-curation-question-3"
-                      style="
-                        cursor: pointer;
-                        border-radius: 8px;
-                        margin: 10px auto;
-                        width: 100px;
-                        height: 30px;
-                        background: var(--color-light-green);
-                        color: #fff;
-                        font-weight: 600;
-                        border: none;
-                        font-size: 13px;
-                      "
-                    >
-                      Confirm
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="individual-question post-curation"
-            id="Post-curation-question-4"
-          >
-            <div class="ui form" style="width: 100%">
-              <div class="grouped fields">
-                <label style="font-size: 17px; text-align: center; color: #000">
-                  Please select a dataset</label
-                >
-                <div class="field" style="margin: 15px 0; width: 450px">
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: column;
-                      justify-content: space-between;
-                      margin-top: 15px;
-                      height: auto;
-                      box-shadow: 0px 0px 10px #d5d5d5;
-                      padding: 15px 15px;
-                      border-radius: 5px;
-                    "
-                  >
-                    <div
-                      style="
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: space-between;
-                        margin-bottom: 15px;
-                      "
-                    >
-                      <div>
-                        <h5 style="color: #808080; font-size: 15px;">
-                          Current dataset:
-                          <span
-                            style="
-                              color: #000;
-                              font-weight: 600;
-                              margin-left: 8px;
-                              font-size: 15px;
-                            "
-                            class="bf-dataset-span"
-                            >None</span
-                          >
-                        </h5>
-                      </div>
-                      <svg
-                        class="svg-change-current-account"
-                        onclick="openDropdownPrompt('dataset')"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        fill="#000"
-                        class="bi bi-pencil-fill"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                  <div
-                    class="div-confirm-button"
-                    style="
-                      display: none;
-                      flex-direction: row;
-                      justify-content: center;
-                      margin: 10px auto;
-                    "
-                  >
-                    <button
-                      onclick="transitionFreeFormMode(this, 'Post-curation-question-4', 'post-curation-tab', 'delete', 'individual-question post-curation')"
-                      data-next="Post-curation-question-5"
-                      style="
-                        cursor: pointer;
-                        border-radius: 8px;
-                        margin: 10px auto;
-                        width: 100px;
-                        height: 30px;
-                        background: var(--color-light-green);
-                        color: #fff;
-                        font-weight: 600;
-                        border: none;
-                        font-size: 13px;
-                      "
-                    >
-                      Confirm
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+         <div class="individual-question post-curation" id="Post-curation-question-2">
+             <div class="ui form" style="width:100%">
+               <div class="grouped fields">
+                 <label style="font-size:16px;text-align:center;color: #000">
+                 Please select a dataset</label>
+                 <div class="field" style="margin:15px 0;width:450px">
+                   <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
+                     <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
+                       <div>
+                         <h5 style="color:#808080;font-size:15px">Current dataset:
+                         <span style="color:#000;font-weight:600;margin-left:8px;font-size:15px" class="bf-dataset-span">None</span></h5>
+                       </div>
+                       <svg class="svg-change-current-account" onclick="openDropdownPrompt('dataset')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                         <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                       </svg>
+                     </div>
+                   </div>
+                   <div class="div-confirm-button" style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
+                     <button onclick="transitionFreeFormMode(this, 'Post-curation-question-2', 'post-curation-tab', 'delete', 'individual-question post-curation')" data-next="Post-curation-question-3" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </div>
 
-          <div
-            class="individual-question post-curation"
-            id="Post-curation-question-3"
-          >
-            <div class="ui form" style="width: 100%">
-              <button
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 10px auto;
-                  width: 140px;
-                  height: 40px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 15px;
-                "
-              >
-                <i class="fas fa-share" style="padding-right: 5px"></i>
-                Share now
-              </button>
-            </div>
-          </div>
+           <div class="individual-question post-curation" id="Post-curation-question-4">
+               <div class="ui form" style="width:100%">
+                 <div class="grouped fields">
+                   <label style="font-size:16px;text-align:center;color: #000">
+                   Review dataset information and status below: </label>
+                   <div class="field" style="margin:15px 0;width:450px">
+                     <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
+                       <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
+                         <div>
+                           <h5 style="color:#808080;font-size:15px">Current dataset:
+                           <span style="color:#000;font-weight:600;margin-left:8px;font-size:15px" class="bf-dataset-span">None</span></h5>
+                         </div>
+                         <svg class="svg-change-current-account" onclick="openDropdownPrompt('dataset')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                           <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                         </svg>
+                       </div>
+                       <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
+                         <div>
+                           <h5 style="color:#808080;font-size:15px"> Review status:
+                             <span id='para-review-dataset-info-disseminate' style="color:#000;font-weight:600;margin-left:8px;font-size:15px">None</span>
+                           </h5>
+                         </div>
+                         <i class="fas fa-sync svg-change-current-account" id="button-refresh-publishing-status" style="color:#000"></i>
+                       </div>
+                     </div>
+                     <p id="para-disseminate-status-publish" style="text-align:center; margin-top:15px"></p>
+                     <div class="div-confirm-button" style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
+                       <!-- <div style="display: flex;
+                       flex-direction: row"> -->
+                         <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background:#fff;color:red;font-weight:600;border:1px solid red;font-size:14px">
+                           <i class="fas fa-ban" style="padding-right:5px"></i>
+                           Withdraw from review</button>
+                         <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px">
+                           <i class="fas fa-sign-in-alt" style="padding-right:5px"></i>
+                           Submit for review</button>
+                       <!-- </div> -->
+                       <!-- <button onclick="transitionFreeFormMode(this, 'Post-curation-question-4', 'post-curation-tab', 'delete', 'individual-question post-curation')" data-next="Post-curation-question-5" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button> -->
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </div>
 
-          <div
-            class="individual-question post-curation"
-            id="Post-curation-question-5"
-          >
-            <div class="ui form" style="width: 100%">
-              <div class="grouped fields">
-                <label style="font-size: 17px; text-align: center; color: #000">
-                  Please review status: </label
-                >
-                <div class="field" style="margin: 15px 0; width: 450px">
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: column;
-                      justify-content: space-between;
-                      margin-top: 15px;
-                      height: auto;
-                      box-shadow: 0px 0px 10px #d5d5d5;
-                      padding: 15px 15px;
-                      border-radius: 5px;
-                    "
-                  >
-                    <div
-                      style="
-                        display: flex;
-                        flex-direction: row;
-                        justify-content: space-between;
-                        margin-bottom: 15px;
-                      "
-                    >
-                      <div>
-                        <h5 style="color: #808080; font-size: 15px;">
-                        Review status:
-                          <span
-                            style="
-                              color: #000;
-                              font-weight: 600;
-                              margin-left: 8px;
-                              font-size: 15px;
-                            "
-                            id="para-review-dataset-info"
-                            ></span
-                          >
-                        </h5>
-                      </div>
-                      <svg
-                        class="svg-change-current-account"
-                        id="button-refresh-publishing-status"fill="#000"
-                        xmlns="http://www.w3.org/2000/svg" style="margin-left:15px" width="18" height="18" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
-                        <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
-                        <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
-                      </svg>
-                    </div>
-                  </div>
-                  <p id='para-publish-dataset-status' style="margin:10px;text-align:center"> </p>
-                  <div class="div-metadata-confirm" style="flex-direction:column;margin: 20px auto;display: flex">
-                    <button class="transition-btn" id="button-submit-review-dataset" style="margin: 30px auto;margin-bottom:10px; width: 220px;height:45px;font-size:14px"><i class="fas fa-sign-in-alt" style="margin-right:10px"></i>Submit for review</button>
-                    <button class="transition-btn" id="button-withdraw-review-dataset" style="display:block;margin: 0 auto; width: 220px;height:45px;color: #dc3545;background:#fff;border:1px solid #dc3545;font-size:14px"><i class="fas fa-times" style="margin-right:10px"></i>Withdraw from review</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
+           <div class="individual-question post-curation" id="Post-curation-question-3">
+               <div class="ui form" style="width:100%;display:flex;flex-direction:column;">
+                 <p id="para-disseminate-status"></p>
+                 <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:15px">
+                   <i class="fas fa-share" style="padding-right:5px"></i>
+                   Share now</button>
+               </div>
+             </div>
+         </div>
       </section>
     </div>
   </section>
@@ -1086,7 +830,7 @@
               fill="black"
             />
           </svg>
-          <h2>Prepare metadata - Prepare submission file </h2>
+          <h2>Prepare metadata - submission </h2>
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
@@ -1149,32 +893,12 @@
               </div>
               <!-- this is the set of buttons that will appear if Airtable account is not connected -->
               <div id="div-airtable-award-button" style="display: none;flex-direction:row;justify-content:center;margin:10px auto;margin-top:30px">
-                <button onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')" data-next="Question-prepare-submission-no-skip-1" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:35px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:15px;margin-right:20px">No, skip</button>
+                <button onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')" data-next="Question-prepare-submission-no-skip-1" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:32px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:15px;margin-right:20px">No, skip</button>
                 <button onclick="showAddAirtableAccountBootbox()" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:35px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:15px">Yes, let's connect</button>
               </div>
             </div>
           </div>
       </div>
-
-
-      <!-- <div class="individual-question prepare-submission" id="Question-prepare-submission-15">
-          <div class="ui form" style="width:100%">
-            <div class="grouped fields">
-              <label style="font-size:17px;color:var(--color-bg-plum);">2. Start typing below to search for your award(s):</label>
-              <div class="field" style="width: 100%;margin:15px">
-                <textarea id="input-grant-info" list="select-grant-info-list" style="width:90%;float:left;height:35px !important;padding:6px 8px;margin-top:15px"></textarea>
-              </div>
-              <div style="display:flex; flex-direction:row;margin:0 auto">
-                <button
-                    onclick="transitionFreeFormMode(this, 'Question-prepare-submission-2', 'create_submission-tab', '', 'individual-question prepare-submission')"
-                    data-next="Question-prepare-submission-3"
-                    style="cursor:pointer;border-radius: 8px;margin-right:10px; width: 100px;height:32px;background: #fff;color:var(--color-light-green);font-weight:600;border:1px solid var(--color-light-green);font-size:14px"><i class="fas fa-check" style="margin-right:5px"></i>Done</button>
-                <button id="button-add-award" style="cursor:pointer;border-radius: 8px; width: 100px;height:32px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px"><i class="fas fa-plus" style="margin-right:5px"></i>Add</button>
-              </div>
-              <p style="margin: 7px auto" id="para-save-award-info"></p>
-            </div>
-          </div>
-      </div> -->
 
       <div class="individual-question prepare-submission" id="Question-prepare-submission-no-skip-1">
           <div class="ui form" style="width:100%">
@@ -1738,6 +1462,590 @@
     </div>
 
   </section>
+
+
+    <section
+      id="create_dataset_description-section"
+      class="section js-section u-category-windows"
+      style="padding-left: 15px; overflow-y: hidden"
+    >
+      <div class="main-tabs show" id="create_dataset_description-tab" style="height:calc(100% - 60px);overflow-y:auto;display:flex;flex-direction:column;">
+        <header class="section-header">
+          <div style="display: flex; flex-direction: row">
+            <svg
+              width="52"
+              height="59"
+              viewBox="0 0 52 59"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M46.7819 11.6562H44.1829V17.4916H46.7819V40.8332H44.1829V46.6686H46.7819C49.6486 46.6686 51.9799 44.0514 51.9799 40.8332V17.4916C51.9799 14.2763 49.646 11.6562 46.7819 11.6562ZM10.396 23.327H33.774V34.9978H10.396V23.327Z"
+                fill="black"
+              />
+              <path
+                d="M38.9849 46.6685V5.83539H46.7689V0H25.977V5.83539H33.7869V11.6562H5.19799C2.3313 11.6562 0 14.2734 0 17.4916V40.8331C0 44.0513 2.3313 46.6685 5.19799 46.6685H33.7869V52.5185H25.977V58.3539H46.7689V52.5185H38.9849V46.6685ZM5.19799 40.8331V17.4916H33.7869V40.8331H5.19799Z"
+                fill="black"
+              />
+            </svg>
+            <h2>Prepare metadata - dataset_description </h2>
+          </div>
+          <div class="tab-info">
+            <p class="tab-info-p" style="margin-bottom: 2em">
+                The dataset description file is mandatory for all SPARC datasets.
+            </p>
+          </div>
+        </header>
+
+        <div class="individual-question prepare-dd show" id="Question-prepare-dd-1">
+            <div class="ui form" style="width:100%">
+                <div class="field" style="margin:15px 0;width:100%">
+                  <div class="grouped fields">
+                    <label style="font-size:17px;color:var(--color-bg-plum);">Let's check your Airtable connection status:</label>
+                    <!-- field that will show when AIrtable is not connected yet -->
+                    <div class="field" style="width: 100%;display:none" id="div-field-not-connected-dd">
+                      <!-- <div id="checking-airtable-connection" class="ui active green inline loader" style="display:block;margin:10px auto"></div> -->
+                      <p id="airtable-connection-status" style="font-weight:600;text-align: center;font-size:16px"><span style="color:#000">You are not connected to Airtable. </span><br><span style="color: #000">We recommend connecting SODA to your Airtable account, so SODA can auto-populate information for your metadata files at your convenience.<br><br>Would you like to connect to Airtable?</span></p>
+                    </div>
+                    <!-- field that will show when AIrtable is already connected -->
+                    <div class="field" style="width: 100%;display:flex" id="div-field-already-connected-dd">
+                      <div style="width:100%;display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
+                        <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
+                          <div class="card-container">
+                            <div style="width:100%">
+                              <h5 class="card-left" style="float:left;width:30%">Airtable account:</h5>
+                              <h5 class="card-right" id="current-airtable-account-dd" style="float:right;width:70%;margin-left:0;margin-top:0">None</h5>
+                            </div>
+                          </div>
+                          <svg class="svg-change-current-account" onclick="showAddAirtableAccountBootbox()" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                          </svg>
+                        </div>
+                        <div style="display:flex; flex-direction:row;margin-bottom:15px;">
+                          <div style="display:flex; width: 100%; flex-direction:row; justify-content:space-between;margin-bottom:15px">
+                            <div class="card-container">
+                              <div style="width:100%">
+                                <h5 class="card-left" style="float:left;width:30%">User's awards:</h5>
+                                <h5 class="card-right" id="current-users-awards-dd" style="float:right;width:70%;margin-left:0;margin-top:0;white-space: pre-line;">None</h5>
+                              </div>
+                            </div>
+                            <svg class="svg-change-current-account" onclick="editSPARCAwardsBootbox()" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                              <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                            </svg>
+                          </div>
+                          <div style="display:none" id="div-SPARC-edit-awards">
+                            <label style="font-weight:600">Existing SPARC Awards: </label>
+                            <br>
+                            <textarea id="input-existing-grants" class="form-control" style="max-width:100%;padding:6px 8px;" contenteditable="false"></textarea>
+                            <br>
+                            <label style="font-weight:600">Search for SPARC Awards: </label>
+                            <br>
+                            <textarea id="input-grant-info" list="select-grant-info-list" class="form-control" style="max-width:100%;padding:6px 8px;"></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- This is the button (Confirm) that will appear if users are already connected to Airtable -->
+                    <div id="div-airtable-confirm-button-dd" style="display: flex;flex-direction:row;justify-content:center;margin:10px auto">
+                      <button onclick="transitionFreeFormMode(this, 'Question-prepare-dd-1', 'create_dataset_description-tab', 'delete', 'individual-question prepare-dd')" data-next="Question-prepare-dd-4-sections" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
+                    </div>
+                    <!-- this is the set of buttons that will appear if Airtable account is not connected -->
+                    <div id="div-airtable-award-button-dd" style="display: none;flex-direction:row;justify-content:center;margin:10px auto;margin-top:30px">
+                      <button onclick="transitionFreeFormMode(this, 'Question-prepare-dd-1', 'create_dataset_description-tab', 'delete', 'individual-question prepare-dd')" data-next="Question-prepare-dd-4-sections" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:35px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:15px;margin-right:20px">No, skip</button>
+                      <button onclick="showAddAirtableAccountBootbox()" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:35px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:15px">Yes, let's connect</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+        <div class="individual-question prepare-dd" id="Question-prepare-dd-4-sections" style="width:85%">
+            <div class="ui form" style="width:100%">
+              <div class="grouped fields">
+                <label style="font-size:17px;color:var(--color-bg-plum);margin-bottom:20px">Fill out the below 4 sections to generate your dataset_description file
+                </label>
+                <div style="width:100%; position: relative;padding: 2em;margin-top: 1em;margin-bottom: 2em;border-radius: 6px;box-shadow: 0px 0px 10px #d5d5d5;;background-color: #fff;">
+                  <h5 align="center"> Note: Items marked with * are mandatory</h5>
+                  <div class="multisteps-form__progress" style="margin:40px 20px">
+                    <button id="ds-dataset-info" class="multisteps-form__progress-btn js-active1" style="font-size: 15px" type="button" title="Dataset Info"><b>Dataset Info</b></button>
+                    <button id="ds-award-info"class="multisteps-form__progress-btn" style="font-size: 15px" type="button" title="Award Info"><b>Award Info</b></button>
+                    <button id="ds-contributor-info"class="multisteps-form__progress-btn" style="font-size: 15px" type="button" title="Con Info"><b>Contributor Info</b></button>
+                    <button id="ds-misc-info"class="multisteps-form__progress-btn" style="font-size: 15px" type="button" title="Other Info"><b>Article(s) and protocol(s)</b></button>
+                    <button id="ds-optional-info" class="multisteps-form__progress-btn" style="font-size: 15px" type="button" title="Optional Info"><b>Completeness Info</b></button>
+                  </div>
+
+                  <!-- Dataset Info -->
+                  <div style="display:block;width:90%;margin: 0 auto;font-size:13px" id="div-ds-dataset-info" class="datasetsaveoption">
+                  <div>
+                    <div class="div-dd-info">
+                      <div class="demo-controls-head"><font color="black"> Name*: </font> </div>
+                      <div class="demo-controls-body">
+                        <select id="ds-name" class="form-container-input-bf" style="width: 100%;line-height:2;">
+                          <option value="Select dataset">Select dataset</option>
+                        </select>
+                      </div>
+                      <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext">
+                          Select the Blackfynn dataset where the dataset description file will be uploaded. You can create a new dataset from the "Manage Datasets" section under the "Handle datasets" feature.
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="div-dd-info">
+                      <div class="demo-controls-head"><font color="black"> Description*: </font> </div>
+                      <div class="demo-controls-body">
+                        <textarea id="ds-description" class="form-container-textarea" disabled></textarea>
+                      </div>
+                      <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext">
+                          The description will be automatically pulled from the description associated with the selected Blackfynn dataset. You can add/edit the description from the the "Manage Datasets" section under the "Add metadata to dataset" feature.
+                        </span>
+                      </div>
+                    </div>
+
+
+                  <div class="div-dd-info">
+                    <div class="demo-controls-head"><font color="black"> Keywords*: </font> </div>
+                    <div class="demo-controls-body">
+                      <textarea id="ds-keywords" class="form-container-textarea" style="border-left: 2px solid #258193;"> </textarea>
+                    </div>
+                    <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                      <span class="tooltiptext" style="z-index:2;">
+                        A set of 3-5 keywords other than the above that will aid in search. Hit "Enter" on your keyboard after each entry to register it.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="div-dd-info">
+                    <div class="demo-controls-head"><font color="black"> Number of subjects*: </font> </div>
+                    <div class="demo-controls-body">
+                      <input id="ds-subjects-no" type="number" class="form-container-input-bf" style="width:100%"/>
+                    </div>
+                    <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                      <span class="tooltiptext">
+                        Number of unique subjects in this dataset, should match subjects metadata file. Must be greater or equal to 1.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="div-dd-info">
+                    <div class="demo-controls-head"><font color="black"> Number of samples*: </font> </div>
+                    <div class="demo-controls-body">
+                      <input id="ds-samples-no" type="number" class="form-container-input-bf"/>
+                    </div>
+                    <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                      <span class="tooltiptext">
+                        Number of unique samples in this dataset, should match samples metadata file. Set to zero if there are no samples.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display:flex;justify-content:center;">
+                  <button id="button-next-ds-award" class="demo-button-prev-next" style="width:70px;height:35px"><i class="fas fa-long-arrow-alt-right"></i></button>
+                </div>
+                </div>
+
+                <div id="div-ds-award-info" style="width:90%;margin: 0 auto;font-size:13px" class="datasetsaveoption">
+                  <h5 align="center" style="color: var(--color-light-green)">Award Information </h5>
+                  <div>
+                    <div class="div-dd-info">
+                      <div class="demo-controls-head"><font color="black"> SPARC Award*: </font> </div>
+                      <div class="demo-controls-body">
+                        <select id="ds-description-award-list" class="form-container-input-bf" style="font-size:13px;line-height:2;">
+                          <option value="Select">Select an option</option>
+                        </select>
+                      </div>
+                      <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext">
+                          SPARC award associated with the dataset.
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="div-dd-info">
+                      <div class="demo-controls-head"><font color="black"> Other funding source(s): </font> </div>
+                      <div class="demo-controls-body">
+                        <textarea id="ds-other-funding" class="form-container-textarea" style="border-left: 2px solid #258193;"> </textarea>
+                      </div>
+                      <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext">
+                        Other funding sources, if any. Hit 'Enter' on your keyboard after typing each. Leave empty if none.
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="div-dd-info">
+                      <div class="demo-controls-head"><font color="black"> Acknowledgments: </font> </div>
+                      <div class="demo-controls-body">
+                        <textarea id="ds-description-acknowledgments" class="form-container-textarea"> </textarea>
+                      </div>
+                      <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext">
+                        Acknowledgments beyond funding and contributors, if any. Leave empty if none.
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display:flex;justify-content:center;margin-top:30px">
+                    <button id="button-prev-award-ds" class="demo-button-prev-next" style="width:70px;height:32px;margin-right:10px"><i style="font-size:18px" class="fas fa-long-arrow-alt-left"></i></button>
+                    <button id="button-next-award-contributor" class="demo-button-prev-next" style="width:70px;height:32px;"><i class="fas fa-long-arrow-alt-right"></i></button>
+                  </div>
+                </div>
+
+
+                  <!-- Contributor Info -->
+                <div id="div-ds-contributor-info" style="width:90%;margin: 0 auto;font-size:13px" class="datasetsaveoption">
+                  <p><h5 align="center" style="color: var(--color-light-green)">Contributors Information </h5></p>
+                  <!-- This div is for Other collaborators input -->
+                  <div class="div-dd-info">
+                    <div class="demo-controls-head" id="div-other-collaborators-1" style="display:none;"><font color="black"> Collaborator name*: </font> </div>
+                    <div class="demo-controls-body"  id="div-other-collaborators-2" style="display:none;">
+                      <input id="input-con-others" class="form-container-input-bf"/>
+                    </div>
+                    <div class="tooltipnew demo-controls-end" id="div-other-collaborators-3" style="display:none;"><img class="info" src="assets/img/info.png">
+                      <span class="tooltiptext">
+                          Name of a collaborator to the dataset not listed in the SPARC Airtable sheet. Must be in the format "Last, First".
+                      </span>
+                    </div>
+                  </div>
+
+                    <!-- <div align="right">
+                      <button id="button-ds-add-contributor" class="demo-button-prev-next" style="float:right">Add</button>
+                      <p id='para-save-contributor-status' style="float:right;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p>
+                    </div> -->
+
+                <div id="div-current-contributors" style="width:100%;margin:0 auto;display:block;overflow-x:scroll">
+                      <h5 align="center" style="color:#000">
+                        Provide information for each contributor below to add them to your dataset_description file
+                      <br>Tip: Move rows up and down to change the order that contributors appear in the dataset_description file)</h5>
+
+
+                      <table class="ui celled table" style="text-align:center" id="table-current-contributors">
+                        <style>
+                        /* style for grabbed contributor row for moving contributors */
+                          .grab { cursor: grab; }
+                          .grabbed { box-shadow: 0 0 6px #000; }
+                          .grabCursor, .grabCursor * { cursor: grabbing !important; }
+                        </style>
+                    <thead class="full-width">
+                      <tr>
+                        <th style="width:20%">Contributor Name</th>
+                        <th style="width:30%">ORCID ID</th>
+                        <th style="width:25%">Affiliation</th>
+                        <th style="width:25%">Role</th>
+                        <th style="width:5%">Contact Person</th>
+                        <th style="width:5%"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="contributor-table-row">
+                          <select id="ds-description-contributor-list" class="form-container-input-bf" style="font-size:13px;line-height: 2;">
+                            <option>Select an option</option>
+                          </select>
+                        </td>
+                        <td class="contributor-table-row"><input id="input-con-ID" contenteditable="true"></input></td>
+                        <td class="contributor-table-row">
+                          <input id="input-con-affiliation" contenteditable="true"></input>
+                        </td>
+                        <td class="contributor-table-row">
+                          <input id="input-con-role" contenteditable="true"></input>
+                        </td>
+                        <td class="contributor-table-row">
+                          <label class="switch">
+                            <input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"/>
+                            <span class="slider round"></span>
+                          </label>
+                        </td>
+                        <th>
+                          <div onclick="addNewRow('table-current-contributors')" class="contributor-add-row-button" style="border-radius: 2px;color:#fff;padding:5px !important;width:40px;font-size:13px;height:30px;background:dodgerblue;display:block">
+                            Add
+                          </div>
+                          <div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'>
+                            <button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button>
+                          </div>
+                        </th>
+                      </tr>
+                    </tbody>
+                  </table>
+
+<!--
+                      <table id="table-current-contributors">
+                        <tr>
+                          <th style="width:20%">Current Contributors</th>
+                          <th style="width:20%">ORCID ID</th>
+                          <th style="width:30%">Affiliation</th>
+                          <th style="width:20%">Role</th>
+                          <th style="width:10%">Contact Person</th>
+                          <th style="width:5%"></th>
+                        </tr>
+                      </table> -->
+                    </div>
+
+
+                  <div style="display:flex;justify-content:center;margin-top:30px">
+                    <button id="button-prev-contributor-award" class="demo-button-prev-next" style="width:70px;height:32px;margin-right:10px"><i style="font-size:18px" class="fas fa-long-arrow-alt-left"></i></button>
+                    <button id="button-next-contributor-misc" class="demo-button-prev-next" style="width:70px;height:32px;"><i class="fas fa-long-arrow-alt-right"></i></button>
+                  </div>
+                </div>
+
+              <!-- Protocols and Articles Info -->
+            <div id="div-ds-misc-info" style="width:90%;margin: 0 auto;font-size:13px" class="datasetsaveoption">
+              <p><h5 align="center" style="color: var(--color-light-green)">Article(s) and protocol(s) Information </h5></p>
+
+              <!-- <div id="show-add-link-description"> -->
+
+                <!-- <div> -->
+                  <!-- <div class="div-dd-info">
+                    <div class="demo-controls-head"><font color="black">Link type:</font> </div>
+                    <div class="demo-controls-body">
+                      <select id="select-misc-link" class="form-container-input-bf" style="font-size:13px;line-height:2;">
+                        <option value="Select" disabled>Select an option</option>
+                        <option value="Protocol URL or DOI*">Protocol URL or DOI*</option>
+                        <option value="Originating Article DOI">Originating Article DOI</option>
+                        <option value="Additional Link">Additional Link</option>
+                      </select>
+                    </div>
+                    <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                      <span class="tooltiptext" style="z-index:3;">
+                        Select the nature of the link:
+                        <br><br>
+                        - Protocol URLs or DOIs: URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.
+                        <br><br>
+                        - Originating Article DOIs: DOIs of published articles that were generated from this dataset.
+                        <br><br>
+                        - Additional links: URLs of additional resources used by this dataset (e.g., a link to a code repository).
+                        <br><br>
+                        Note that at least one "Protocol URLs or DOIs" link is mandatory. The remaining is optional.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="div-dd-info">
+                    <div class="demo-controls-head"><font color="black">Link:</font> </div>
+                    <div class="demo-controls-body">
+                      <input id="input-misc-links" class="form-container-input-bf" style="line-height:2;"/>
+                    </div>
+                    <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                      <span class="tooltiptext" style="z-index:3;">
+                          Enter the link.
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="div-dd-info">
+                    <div class="demo-controls-head"><font color="black">Link Description:</font> </div>
+                    <div class="demo-controls-body">
+                      <textarea id="input-misc-link-description" class="form-container-textarea"></textarea>
+                    </div>
+                    <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                      <span class="tooltiptext" style="z-index:3;">
+                        Optionally provide a short description of the link.
+                        <br><br>
+                        Click on "Add" to register specified link to SODA's link table. All links and descriptions added to the table will be included in your dataset description file when it is generated.
+                      </span>
+                    </div>
+                  </div> -->
+                  <h5 align="center" style="color:#000">
+                  <br>To add a link to your dataset_description file, select the link type from the dropdown list and provide the link and its description.</h5>
+
+                  <table class="ui celled table" style="text-align:center" id="doi-table">
+                    <style>
+                    /* style for grabbed contributor row for moving contributors */
+                      .grab { cursor: grab; }
+                      .grabbed { box-shadow: 0 0 6px #000; }
+                      .grabCursor, .grabCursor * { cursor: grabbing !important; }
+                    </style>
+                <thead class="full-width">
+                  <tr>
+                    <th style="width:25%">Link type</th>
+                    <th style="width:30%">Link</th>
+                    <th style="width:35%">Description</th>
+                    <th style="width:10%"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="contributor-table-row">
+                      <select id="select-misc-link" class="form-container-input-bf" style="font-size:13px;line-height:2;">
+                        <option value="Select" disabled>Select an option</option>
+                        <option value="Protocol URL or DOI*">Protocol URL or DOI*</option>
+                        <option value="Originating Article DOI">Originating Article DOI</option>
+                        <option value="Additional Link">Additional Link</option>
+                      </select>
+                    </td>
+                    <td class="contributor-table-row">
+                      <input id="input-misc-links" class="form-container-input-bf" contenteditable="true" style="font-size:13px;line-height:2;"></input>
+                    </td>
+                    <td class="contributor-table-row">
+                      <input id="input-misc-link-description" style="line-height:2;" contenteditable="true"></input>
+                    </td>
+                    <th>
+                      <div onclick="addNewRow('doi-table')" class="doi-add-row-button" style="border-radius: 2px;color:#fff;padding:5px !important;width:40px;font-size:13px;height:30px;background:dodgerblue;display:block">
+                        Add
+                      </div>
+                      <div class='ui small basic icon buttons doi-helper-buttons' style='display:none'>
+                        <button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button>
+                      </div>
+                    </th>
+                  </tr>
+                </tbody>
+              </table>
+
+
+            <!-- </div> -->
+
+                <!-- <div style="height:70px">
+                  <button id="button-ds-add-link" class="demo-button-prev-next" style="float:right">Add</button>
+                  <p id='para-save-link-status' style="float:right;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p>
+                </div> -->
+
+                <!-- </div> -->
+                  <!-- <div id="div-current-additional-links" style="width:100%;margin: 0 auto;display:none;overflow-x:scroll">
+                    <h5 align="center">Current Links:</h5>
+                    <table id="table-addl-links">
+                      <tr>
+                        <th style="width:15%">Link type</th>
+                        <th style="width:30%">Link</th>
+                        <th style="width:45%">Description</th>
+                        <th style="width:10%"></th>
+                     </tr>
+                    </table>
+                    <br><br><br>
+                  </div> -->
+
+                    <div style="display:flex;justify-content:center;margin: 20px">
+                      <button id="button-prev-misc-contributor" class="demo-button-prev-next" style="width:70px;height:32px; margin-right:10px"><i class="fas fa-long-arrow-alt-left"></i></button>
+                      <button id="button-next-misc-optional" class="demo-button-prev-next" style="width:70px;height:32px;"><i class="fas fa-long-arrow-alt-right"></i></button>
+                    </div>
+                  </div>
+
+
+                  <!-- Completeness Info -->
+                  <div id="div-ds-optional-info" style="width:90%;margin: 0 auto;font-size:13px" class="datasetsaveoption">
+                    <p><h5 align="center" style="color: var(--color-light-green)">Completeness Information </h5></p>
+                  <div>
+                    <div class="div-dd-info">
+                      <div class="demo-controls-head"><font color="black">Completeness of dataset: </font> </div>
+                      <div class="demo-controls-body">
+                        <input id="ds-completeness" class="form-container-input-bf"> </input>
+                      </div>
+                      <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext">
+                          Is the data set as uploaded complete or is it part of an ongoing study? Select "hasNext" to indicate that you expect more data on different subjects as a continuation of this study. Select “hasChildren” to indicate that you expect more data on the same subjects or samples derived from those subjects. Leave empty if none.
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="div-dd-info">
+                      <div class="demo-controls-head"><font color="black">Parent dataset(s):  </font> </div>
+                      <div class="demo-controls-body">
+                        <input id="input-parent-ds" class="form-container-input-bf">
+                      </div>
+                      <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext">
+                          If this is a part of a larger dataset, or references subjects or samples from a parent dataset, select the prior dataset. You need only the last dataset, not all datasets. If samples and subjects are from multiple parent datasets please select them all. Leave empty if none.
+                          <br><br>
+                          Tip: Start typing to see the name of your dataset, and then press Enter to add your dataset.
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="div-dd-info">
+                      <div class="demo-controls-head"><font color="black">Title for complete dataset: </font> </div>
+                      <div class="demo-controls-body">
+                        <input id="input-completeds-title" class="form-container-input-bf" />
+                      </div>
+                      <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext">
+                          Please give us a provisional title for the entire data set. Leave empty if not applicable.
+                          <br><br>
+                          After you complete all steps, click on "Generate" to generate your dataset description file. A warning message may show up if any mandatory fields are missing. You may decide to go back and address the issues or generate the file anyway (and address the issues later).
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="div-dd-info">
+                      <div class="demo-controls-head"><font color="black">Metadata Version:  </font> </div>
+                      <div class="demo-controls-body">
+                        <input id="input-metadata-ver" value="1.2.3" disabled class="form-container-input-bf"/>
+                      </div>
+                      <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext" style="width: 300px; font-weight: bold">
+                          DO NOT CHANGE: 1.2.3
+                        </span>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div style="display:flex;justify-content:center;">
+                    <button id="button-prev-optional-misc" class="demo-button-prev-next" style="width:70px;height:32px;margin-right:10px"><i class="fas fa-long-arrow-alt-left"></i></button>
+                  </div>
+                  </div>
+                  </div>
+                  <div
+                    style="
+                      flex-direction: row;
+                      justify-content: center;
+                      margin: 10px auto;
+                    "
+                  >
+                    <button
+                      id="button-generate-ds-description"
+                      style="
+                        cursor: pointer;
+                        border-radius: 8px;
+                        margin: 0 10px;
+                        width: 100px;
+                        height: 43px;
+                        background: var(--color-light-green);
+                        color: #fff;
+                        font-weight: 600;
+                        border: none;
+                        font-size: 13px;
+                      "
+                    >
+                      Generate
+                    </button>
+                    <p id='para-generate-description-status' style="display:none;float:right;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!-- main tabs' closing div -->
+      </div>
+
+      <!-- back button -->
+      <div
+      style="
+      border-top: 1px solid #f0f0f0;
+      padding: 10px;
+      padding-top: 15px;
+      height: 40px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+      bottom: 20px;
+      position: absolute;
+      "
+      >
+      <div style="display: flex; flex-direction: row; width: 110px">
+        <button
+        type="button"
+        class="transition-btn prev"
+        data-section="main_tabs"
+        >
+        <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+      </button>
+    </div>
+      </div>
+
+    </section>
+
 
   <section
     id="create_new_bf_dataset-section"
@@ -4749,6 +5057,10 @@
     </div>
   </section>
 
-  <script src='./scripts/disseminate-and-metadata.js' type='text/javascript'></script>
+  <script src='./scripts/disseminate-and-metadata.js' type='text/javascript'>
+  </script>
+  <script src='./renderer-process/prepare-metadata/save-information.jss' type='text/javascript'>
+  </script>
+
 
 </template>

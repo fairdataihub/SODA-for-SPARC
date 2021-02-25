@@ -560,22 +560,22 @@ const shareConsortiumStatus = document.querySelector(
 const bfReserveDOIBtn = document.querySelector("#button-reserve-doi");
 const currentDOI = document.querySelector("#input-current-doi");
 const reserveDOIStatus = document.querySelector("#para-reserve-doi-status");
-
-const bfPublishDatasetBtn = document.querySelector("#button-publish-dataset");
-const bfSubmitReviewDatasetBtn = document.querySelector(
-  "#button-submit-review-dataset"
-);
-const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
-  "#button-refresh-publishing-status"
-);
-const bfWithdrawReviewDatasetBtn = document.querySelector(
-  "#button-withdraw-review-dataset"
-);
-const reviewDatasetInfo = document.querySelector("#para-review-dataset-info");
-const publishingStatus = document.querySelector("#input-publishing-status");
-const publishDatasetStatus = document.querySelector(
-  "#para-publish-dataset-status"
-);
+//
+// const bfPublishDatasetBtn = document.querySelector("#button-publish-dataset");
+// const bfSubmitReviewDatasetBtn = document.querySelector(
+//   "#button-submit-review-dataset-old"
+// );
+// const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
+//   "#button-refresh-publishing-status-old"
+// );
+// const bfWithdrawReviewDatasetBtn = document.querySelector(
+//   "#button-withdraw-review-dataset"
+// );
+// const reviewDatasetInfo = document.querySelector("#para-review-dataset-info");
+// const publishingStatus = document.querySelector("#input-publishing-status");
+// const publishDatasetStatus = document.querySelector(
+//   "#para-publish-dataset-status"
+// );
 
 //////////////////////////////////
 // Constant parameters
@@ -1073,6 +1073,7 @@ function loadAwards() {
   existingSPARCAwardsTagify.removeAllTags();
   existingSPARCAwardsTagify.addTags(awardList);
   $("#current-users-awards").text(awardSpan.slice(0));
+  $("#current-users-awards-dd").text(awardSpan.slice(0));
 }
 
 loadAwards();
@@ -1107,6 +1108,7 @@ function addSPARCAwards() {
     }
     fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
     $("#current-users-awards").text(spanMessage);
+    $("#current-users-awards-dd").text(spanMessage);
   } else {
     var awardVal = [];
     for (var i = 0; i < tagifyArray.length; i++) {
@@ -1175,6 +1177,7 @@ function addSPARCAwards() {
     }
     fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
     $("#current-users-awards").text(spanMessage);
+    $("#current-users-awards-dd").text(spanMessage);
   }
   loadAwards()
   return message;
@@ -1615,8 +1618,8 @@ function clearCurrentConInfo() {
 function changeAwardInputDsDescription() {
   clearCurrentConInfo();
   /// delete old table
-  while (currentConTable.rows.length > 1) {
-    currentConTable.deleteRow(1);
+  while (currentConTable.rows.length > 2) {
+    currentConTable.deleteRow(2);
   }
   removeOptions(dsContributorArray);
 
@@ -1624,7 +1627,7 @@ function changeAwardInputDsDescription() {
   currentContributortagify.removeAllTags();
 
   addOption(dsContributorArray, "Select", "Select an option");
-  descriptionDateInput.options[0].disabled = true;
+  // descriptionDateInput.options[0].disabled = true;
   addOption(
     dsContributorArray,
     "Other collaborators",
@@ -1901,35 +1904,34 @@ function leaveFieldsEmpty(field, element) {
 function createTagsInput(field) {
   return new Tagify(field);
 }
-
-//// When users click on adding description for each additional link
-addAdditionalLinkBtn.addEventListener("click", function () {
-  createAdditionalLinksTable();
-});
-
-//// When users click on "Add" to current contributors table
-addCurrentContributorsBtn.addEventListener("click", function () {
-  document.getElementById("para-save-contributor-status").innerHTML = "";
-  if (
-    dsContributorArray.options[dsContributorArray.selectedIndex].value ===
-    "Select an option"
-  ) {
-    document.getElementById("para-save-contributor-status").innerHTML =
-      "<span style='color:red'>Please choose a contributor!</span>";
-  } else {
-    createCurrentConTable(currentConTable);
-  }
-});
+//
+// //// When users click on adding description for each additional link
+// addAdditionalLinkBtn.addEventListener("click", function () {
+//   createAdditionalLinksTable();
+// });
+//
+// //// When users click on "Add" to current contributors table
+// addCurrentContributorsBtn.addEventListener("click", function () {
+//   document.getElementById("para-save-contributor-status").innerHTML = "";
+//   if (
+//     dsContributorArray.options[dsContributorArray.selectedIndex].value ===
+//     "Select an option"
+//   ) {
+//     document.getElementById("para-save-contributor-status").innerHTML =
+//       "<span style='color:red'>Please choose a contributor!</span>";
+//   } else {
+//     createCurrentConTable(currentConTable);
+//   }
+// });
 
 $(currentConTable).mousedown(function (e) {
+  var length = currentConTable.rows.length - 1
   var tr = $(e.target).closest("tr"),
     sy = e.pageY,
     drag;
   if ($(e.target).is("tr")) tr = $(e.target);
   var index = tr.index();
   $(tr).addClass("grabbed");
-  // var rowCount = $(currentConTable).length;
-  // if( $(currentConTable).length > 2 ) {
   function move(e) {
     if (!drag && Math.abs(e.pageY - sy) < 10) return;
     drag = true;
@@ -1939,16 +1941,17 @@ $(currentConTable).mousedown(function (e) {
         y = s.offset().top;
       if (e.pageY >= y && e.pageY < y + s.outerHeight()) {
         if (i !== 0) {
-          if (i < tr.index()) s.insertAfter(tr);
-          else s.insertBefore(tr);
-          return false;
+          if ($(e.target).closest("tr")[0].rowIndex !== length) {
+            if (i < tr.index()) s.insertAfter(tr);
+            s.insertBefore(tr);
+            return false;
+          }
         }
       }
     });
   }
-  // }
   function up(e) {
-    if (drag && index != tr.index()) {
+    if (drag && index != tr.index() && tr.index() !== length) {
       drag = false;
     }
     $(document).unbind("mousemove", move).unbind("mouseup", up);
@@ -1963,7 +1966,7 @@ dsAwardArray.addEventListener("change", changeAwardInputDsDescription);
 /// Auto populate once a contributor is selected
 dsContributorArray.addEventListener("change", function (e) {
   ///clear old entries once a contributor option is changed
-  document.getElementById("para-save-contributor-status").innerHTML = "";
+  // document.getElementById("para-save-contributor-status").innerHTML = "";
   document.getElementById("input-con-ID").value = "";
 
   /// hide Other collaborators fields upon changing contributors
@@ -4270,8 +4273,8 @@ bfDatasetListPostCurationConsortium.addEventListener("change", () => {
 });
 
 function postCurationListChange() {
-  reserveDOIStatus.innerHTML = "";
-  publishDatasetStatus.innerHTML = "";
+  // reserveDOIStatus.innerHTML = "";
+  // publishDatasetStatus.innerHTML = "";
   //showCurrentDOI()
   showPublishingStatus();
 }
@@ -4935,21 +4938,21 @@ function shareWithConsortium() {
 //   })
 // })
 
-// Publish dataset
-bfSubmitReviewDatasetBtn.addEventListener("click", () => {
-  var selectedBfDataset =
-    bfDatasetListPostCurationPublish.options[
-      bfDatasetListPostCurationPublish.selectedIndex
-    ].text;
-  if (selectedBfDataset === "Select dataset") {
-    reviewDatasetInfo.innerHTML = "";
-    emessage = "Please select a valid dataset";
-    publishDatasetStatus.innerHTML =
-      "<span style='color: red;'> " + emessage + "</span>";
-  } else {
-    showPublishingStatus(submitReviewDatasetCheck);
-  }
-});
+// // Publish dataset
+// bfSubmitReviewDatasetBtn.addEventListener("click", () => {
+//   var selectedBfDataset =
+//     bfDatasetListPostCurationPublish.options[
+//       bfDatasetListPostCurationPublish.selectedIndex
+//     ].text;
+//   if (selectedBfDataset === "Select dataset") {
+//     reviewDatasetInfo.innerHTML = "";
+//     emessage = "Please select a valid dataset";
+//     publishDatasetStatus.innerHTML =
+//       "<span style='color: red;'> " + emessage + "</span>";
+//   } else {
+//     showPublishingStatus(submitReviewDatasetCheck);
+//   }
+// });
 
 function submitReviewDatasetCheck(res) {
   var reviewstatus = res[0];
@@ -4957,13 +4960,13 @@ function submitReviewDatasetCheck(res) {
   if (publishingStatus === "PUBLISH_IN_PROGRESS") {
     emessage =
       "Your dataset is currently being published. Please wait until it is completed.";
-    publishDatasetStatus.innerHTML =
-      "<span style='color: red;'> " + emessage + "</span>";
+    // publishDatasetStatus.innerHTML =
+    //   "<span style='color: red;'> " + emessage + "</span>";
   } else if (reviewstatus === "requested") {
     emessage =
       "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.";
-    publishDatasetStatus.innerHTML =
-      "<span style='color: red;'> " + emessage + "</span>";
+    // publishDatasetStatus.innerHTML =
+    //   "<span style='color: red;'> " + emessage + "</span>";
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
     ipcRenderer.send("warning-publish-dataset-again");
   } else {
@@ -4985,11 +4988,11 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
 
 function submitReviewDataset() {
   // disableform(bfPostCurationForm)
-  bfSubmitReviewDatasetBtn.disabled = true;
-  bfRefreshPublishingDatasetStatusBtn.disabled = true;
-  bfWithdrawReviewDatasetBtn.disabled = true;
-  publishDatasetStatus.innerHTML = "Please wait...";
-  bfPostCurationProgressPublish.style.display = "block";
+  // bfSubmitReviewDatasetBtn.disabled = true;
+  // bfRefreshPublishingDatasetStatusBtn.disabled = true;
+  // bfWithdrawReviewDatasetBtn.disabled = true;
+  // // publishDatasetStatus.innerHTML = "Please wait...";
+  // bfPostCurationProgressPublish.style.display = "block";
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
   var selectedBfDataset =
@@ -5005,16 +5008,16 @@ function submitReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        publishDatasetStatus.innerHTML =
-          "<span style='color: red;'> " + emessage + "</span>";
+        // publishDatasetStatus.innerHTML =
+        //   "<span style='color: red;'> " + emessage + "</span>";
         bfPostCurationProgressPublish.style.display = "none";
         // enableform(bfPostCurationForm)
         bfSubmitReviewDatasetBtn.disabled = false;
         bfRefreshPublishingDatasetStatusBtn.disabled = false;
         bfWithdrawReviewDatasetBtn.disabled = false;
       } else {
-        publishDatasetStatus.innerHTML =
-          "Success: Dataset has been submitted for review to the Publishers within your organization";
+        // publishDatasetStatus.innerHTML =
+        //   "Success: Dataset has been submitted for review to the Publishers within your organization";
         bfPostCurationProgressPublish.style.display = "none";
         showPublishingStatus("noClear");
       }
@@ -5022,25 +5025,25 @@ function submitReviewDataset() {
   );
 }
 
-//Withdraw dataset from review
-bfWithdrawReviewDatasetBtn.addEventListener("click", () => {
-  var selectedBfDataset = $(".bf-dataset-span").html();
-  if (selectedBfDataset === "None") {
-    reviewDatasetInfo.innerHTML = "";
-    emessage = "Please select a valid dataset";
-    publishDatasetStatus.innerHTML =
-      "<span style='color: red;'> " + emessage + "</span>";
-  } else {
-    showPublishingStatus(withdrawDatasetCheck);
-  }
-});
+// //Withdraw dataset from review
+// bfWithdrawReviewDatasetBtn.addEventListener("click", () => {
+//   var selectedBfDataset = $(".bf-dataset-span").html();
+//   if (selectedBfDataset === "None") {
+//     reviewDatasetInfo.innerHTML = "";
+//     emessage = "Please select a valid dataset";
+//     publishDatasetStatus.innerHTML =
+//       "<span style='color: red;'> " + emessage + "</span>";
+//   } else {
+//     showPublishingStatus(withdrawDatasetCheck);
+//   }
+// });
 
 function withdrawDatasetCheck(res) {
   var reviewstatus = res[0];
   if (reviewstatus !== "requested") {
     emessage = "Your dataset is not currently under review";
-    publishDatasetStatus.innerHTML =
-      "<span style='color: red;'> " + emessage + "</span>";
+    // publishDatasetStatus.innerHTML =
+    //   "<span style='color: red;'> " + emessage + "</span>";
   } else {
     ipcRenderer.send("warning-withdraw-dataset");
   }
@@ -5053,10 +5056,10 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
 });
 
 function withdrawReviewDataset() {
-  bfSubmitReviewDatasetBtn.disabled = true;
-  bfWithdrawReviewDatasetBtn.disabled = true;
-  publishDatasetStatus.innerHTML = "Please wait...";
-  bfPostCurationProgressPublish.style.display = "block";
+  // bfSubmitReviewDatasetBtn.disabled = true;
+  // bfWithdrawReviewDatasetBtn.disabled = true;
+  // publishDatasetStatus.innerHTML = "Please wait...";
+  // bfPostCurationProgressPublish.style.display = "block";
   var selectedBfAccount = $("#current-bf-dataset").text();
   var selectedBfDataset = $(".bf-dataset-span").html();
   client.invoke(
@@ -5068,15 +5071,15 @@ function withdrawReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        publishDatasetStatus.innerHTML =
-          "<span style='color: red;'> " + emessage + "</span>";
+        // publishDatasetStatus.innerHTML =
+        //   "<span style='color: red;'> " + emessage + "</span>";
         // bfPostCurationProgressPublish.style.display = "none";
-        bfSubmitReviewDatasetBtn.disabled = false;
-        bfRefreshPublishingDatasetStatusBtn.disabled = false;
-        bfWithdrawReviewDatasetBtn.disabled = false;
+        // bfSubmitReviewDatasetBtn.disabled = false;
+        // bfRefreshPublishingDatasetStatusBtn.disabled = false;
+        // bfWithdrawReviewDatasetBtn.disabled = false;
       } else {
-        publishDatasetStatus.innerHTML =
-          "Success: Dataset has been withdrawn from review";
+        // publishDatasetStatus.innerHTML =
+        //   "Success: Dataset has been withdrawn from review";
         showPublishingStatus("noClear");
       }
     }
@@ -5084,17 +5087,17 @@ function withdrawReviewDataset() {
 }
 
 // Refresh publishing dataset status
-bfRefreshPublishingDatasetStatusBtn.addEventListener("click", () => {
-  var selectedBfDataset = $(".bf-dataset-span").html();
-  if (selectedBfDataset === "None") {
-    reviewDatasetInfo.innerHTML = "";
-    emessage = "Please select a valid dataset";
-    publishDatasetStatus.innerHTML =
-      "<span style='color: red;'> " + emessage + "</span>";
-  } else {
-    showPublishingStatus();
-  }
-});
+// bfRefreshPublishingDatasetStatusBtn.addEventListener("click", () => {
+//   var selectedBfDataset = $(".bf-dataset-span").html();
+//   if (selectedBfDataset === "None") {
+//     reviewDatasetInfo.innerHTML = "";
+//     emessage = "Please select a valid dataset";
+//     publishDatasetStatus.innerHTML =
+//       "<span style='color: red;'> " + emessage + "</span>";
+//   } else {
+//     showPublishingStatus();
+//   }
+// });
 
 //////////////////////////////////
 // Helper functions
@@ -5906,16 +5909,16 @@ function showCurrentDOI() {
 }
 
 function showPublishingStatus(callback) {
-  reviewDatasetInfo.innerHTML = "Please wait...";
+  // reviewDatasetInfo.innerHTML = "Please wait...";
   if (callback == "noClear") {
     var nothing;
   } else {
-    publishDatasetStatus.innerHTML = "";
+    // publishDatasetStatus.innerHTML = "";
   }
   var selectedBfAccount = $("#current-bf-account").text();
   var selectedBfDataset = $(".bf-dataset-span").html();
   if (selectedBfDataset === "None") {
-    reviewDatasetInfo.innerHTML = "";
+    // reviewDatasetInfo.innerHTML = "";
   } else {
     client.invoke(
       "api_bf_get_publishing_status",
@@ -5925,12 +5928,12 @@ function showPublishingStatus(callback) {
         if (error) {
           log.error(error);
           console.error(error);
-          reviewDatasetInfo.innerHTML = "";
+          // reviewDatasetInfo.innerHTML = "";
           var emessage = userError(error);
           publishDatasetStatus.innerHTML =
             "<span style='color: red;'> " + emessage + "</span>";
         } else {
-          reviewDatasetInfo.innerHTML = publishStatusOutputConversion(res);
+          // reviewDatasetInfo.innerHTML = publishStatusOutputConversion(res);
           if (
             callback === submitReviewDatasetCheck ||
             callback === withdrawDatasetCheck
@@ -7040,6 +7043,7 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
         content["key-name"] = name;
         fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
         $("#current-airtable-account").text(name);
+        $("#current-airtable-account-dd").text(name);
         $("#bootbox-airtable-key-name").val("");
         $("#bootbox-airtable-key").val("");
         loadAwardData();

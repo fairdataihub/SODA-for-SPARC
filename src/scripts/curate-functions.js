@@ -847,9 +847,42 @@ function create_child_node(
   } else {
     selectedOriginalLocation = "";
   }
-  for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
-    if ("action" in oldFormatNode["folders"][key]) {
-      if (!oldFormatNode["folders"][key]["action"].includes("deleted")) {
+  if (oldFormatNode) {
+    for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
+      if ("action" in oldFormatNode["folders"][key]) {
+        if (!oldFormatNode["folders"][key]["action"].includes("deleted")) {
+          if (key === selectedOriginalLocation) {
+            newFormatNode.state.selected = true;
+            newFormatNode.state.opened = true;
+            var new_node = create_child_node(
+              value,
+              key,
+              "folder",
+              "",
+              true,
+              true,
+              true,
+              selectedOriginalLocation,
+              viewOptions
+            );
+          } else {
+            // newFormatNode.state.selected = false;
+            // newFormatNode.state.opened = false;
+            var new_node = create_child_node(
+              value,
+              key,
+              "folder",
+              "",
+              false,
+              false,
+              false,
+              selectedOriginalLocation,
+              viewOptions
+            );
+          }
+          newFormatNode["children"].push(new_node);
+        }
+      } else {
         if (key === selectedOriginalLocation) {
           newFormatNode.state.selected = true;
           newFormatNode.state.opened = true;
@@ -881,75 +914,44 @@ function create_child_node(
         }
         newFormatNode["children"].push(new_node);
       }
-    } else {
-      if (key === selectedOriginalLocation) {
-        newFormatNode.state.selected = true;
-        newFormatNode.state.opened = true;
-        var new_node = create_child_node(
-          value,
-          key,
-          "folder",
-          "",
-          true,
-          true,
-          true,
-          selectedOriginalLocation,
-          viewOptions
-        );
-      } else {
-        // newFormatNode.state.selected = false;
-        // newFormatNode.state.opened = false;
-        var new_node = create_child_node(
-          value,
-          key,
-          "folder",
-          "",
-          false,
-          false,
-          false,
-          selectedOriginalLocation,
-          viewOptions
-        );
-      }
-      newFormatNode["children"].push(new_node);
     }
-  }
-  if ("files" in oldFormatNode) {
-    for (const [key, value] of Object.entries(oldFormatNode["files"])) {
-      if (
-        [
-          ".png",
-          ".PNG",
-          ".xls",
-          ".xlsx",
-          ".pdf",
-          ".txt",
-          ".jpeg",
-          ".JPEG",
-          ".csv",
-          ".CSV",
-          ".DOC",
-          ".DOCX",
-          ".doc",
-          ".docx",
-        ].includes(path.parse(key).ext)
-      ) {
-        nodeType = "file " + path.parse(key).ext.slice(1);
-      } else {
-        nodeType = "file other";
-      }
-      if ("action" in oldFormatNode["files"][key]) {
-        if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
-          var new_node = {
-            text: key,
-            state: { disabled: true },
-            type: nodeType,
-          };
+    if ("files" in oldFormatNode) {
+      for (const [key, value] of Object.entries(oldFormatNode["files"])) {
+        if (
+          [
+            ".png",
+            ".PNG",
+            ".xls",
+            ".xlsx",
+            ".pdf",
+            ".txt",
+            ".jpeg",
+            ".JPEG",
+            ".csv",
+            ".CSV",
+            ".DOC",
+            ".DOCX",
+            ".doc",
+            ".docx",
+          ].includes(path.parse(key).ext)
+        ) {
+          nodeType = "file " + path.parse(key).ext.slice(1);
+        } else {
+          nodeType = "file other";
+        }
+        if ("action" in oldFormatNode["files"][key]) {
+          if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
+            var new_node = {
+              text: key,
+              state: { disabled: true },
+              type: nodeType,
+            };
+            newFormatNode["children"].push(new_node);
+          }
+        } else {
+          var new_node = { text: key, state: { disabled: true }, type: nodeType };
           newFormatNode["children"].push(new_node);
         }
-      } else {
-        var new_node = { text: key, state: { disabled: true }, type: nodeType };
-        newFormatNode["children"].push(new_node);
       }
     }
   }

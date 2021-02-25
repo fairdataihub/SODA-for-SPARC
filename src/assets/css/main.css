@@ -554,13 +554,6 @@ button[disabled] {
   box-shadow: 0px 0px 10px #d5d5d5;
 }
 
-.button-generate-dataset p {
-  color: #222c3c;
-  font-size: 13px;
-  margin-top: 25px;
-  font-family: "Raleway", sans-serif;
-}
-
 .button-generate-dataset:hover,
 .button-generate-dataset:active,
 .button-generate-dataset:focus {
