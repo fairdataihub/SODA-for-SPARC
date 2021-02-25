@@ -3874,10 +3874,18 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           "Manage Dataset - Upload Local Dataset",
           selectedbfdataset
         );
+        $("#upload_local_dataset_progress_div")[0].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
         bfSubmitDatasetBtn.disabled = false;
         pathSubmitDataset.disabled = false;
       } else {
         // document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
+        $("#upload_local_dataset_progress_div")[0].scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
         log.info("Completed submit function");
         console.log("Completed submit function");
         console.log(res);
@@ -3895,6 +3903,10 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
   var countDone = 0;
   var timerProgress = setInterval(progressfunction, 1000);
   function progressfunction() {
+    $("#upload_local_dataset_progress_div")[0].scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
     client.invoke("api_submit_dataset_progress", (error, res) => {
       if (error) {
         var emessage = userError(error);
@@ -5480,6 +5492,17 @@ function addPermissionUser(
   );
 }
 
+const removeRadioOptions = (ele) => {
+  $(`#${ele}`).html("");
+};
+
+const addRadioOption = (ul, text, val) => {
+  let li = document.createElement("li");
+  let element = `<input type="radio" id="${val}_radio" value="${val}" name="dataset_status_radio"/> <label for="${val}_radio">${text}</label> <div class="check"></div>`;
+  $(li).html(element);
+  $(`#${ul}`).append(li);
+};
+
 function showCurrentDatasetStatus(callback) {
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
@@ -5490,6 +5513,7 @@ function showCurrentDatasetStatus(callback) {
     bfCurrentDatasetStatusProgress.style.display = "none";
     datasetStatusStatus.innerHTML = "";
     removeOptions(bfListDatasetStatus);
+    removeRadioOptions("dataset_status_ul");
     bfListDatasetStatus.style.color = "black";
   } else {
     datasetStatusStatus.innerHTML = "Please wait...";
@@ -5508,12 +5532,14 @@ function showCurrentDatasetStatus(callback) {
         } else {
           var myitemselect = [];
           removeOptions(bfListDatasetStatus);
+          removeRadioOptions("dataset_status_ul")
           for (var item in res[0]) {
             var option = document.createElement("option");
             option.textContent = res[0][item]["displayName"];
             option.value = res[0][item]["name"];
             option.style.color = res[0][item]["color"];
             bfListDatasetStatus.appendChild(option);
+            addRadioOption("dataset_status_ul", res[0][item]["displayName"], res[0][item]["name"]);
           }
           bfListDatasetStatus.value = res[1];
           $(`input[name=dataset_status_radio][value=${res[1]}]`).prop(

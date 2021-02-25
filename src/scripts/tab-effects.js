@@ -2340,11 +2340,12 @@ function raiseWarningExit() {
   });
 }
 
-const exitCurate = async (resetProgressTabs, start_over = false) => {
+const exitCurate = async (resetProgressTabs, start_over = false, ) => {
   $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
     var res = await raiseWarningExit();
+
     if (res) {
       $(".vertical-progress-bar-step").removeClass("is-current");
       $(".vertical-progress-bar-step").removeClass("done");
@@ -2360,7 +2361,7 @@ const exitCurate = async (resetProgressTabs, start_over = false) => {
       $("#main_tabs_view").click();
       globalGettingStarted1stQuestionBool = false;
       if (start_over) {
-        $("#button-section-organize-dataset").click();
+        $("#organize_dataset_btn").click();
       }
     } else {
       globalGettingStarted1stQuestionBool = false;
@@ -2553,10 +2554,18 @@ $(document).ready(() => {
 
 $("#manage_dataset_tab").click();
 
-$("input[type=radio][name=dataset_status_radio]").change(function () {
-  //console.log(this.id);
-  $("#bf_list_dataset_status").val(this.value).trigger("change");
+$("body").on("click", ".check", function () {
+  $(this).siblings( "input[name=dataset_status_radio]:radio").click();
 });
+
+
+$("body").on(
+  "change",
+  "input[type=radio][name=dataset_status_radio]",
+  function () {
+    $("#bf_list_dataset_status").val(this.value).trigger("change");
+  }
+);
 
 const getBase64 = async (url) => {
   const axios = require("axios");

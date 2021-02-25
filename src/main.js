@@ -150,9 +150,9 @@ function initialize() {
 
   app.on("ready", () => {
     const windowOptions = {
-      minWidth: 1080,
+      minWidth: 1110,
       minHeight: 680,
-      width: 1080,
+      width: 1110,
       height: 720,
       center: true,
       show: false,

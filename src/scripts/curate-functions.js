@@ -111,7 +111,7 @@ const progressFileDropdown = document.getElementById("progress-files-dropdown");
 
 /////////////////////////////// Helpers function for Import progress function /////////////////////////////
 // function to load SODA with progress file
-function progressFileParse(ev) {
+const progressFileParse = (ev) => {
   var fileName = $(ev).val();
   if (fileName !== "Select") {
     var filePath = path.join(progressFilePath, fileName);
@@ -129,37 +129,62 @@ function progressFileParse(ev) {
   } else {
     return {};
   }
-}
+};
 
-function importManifest(object) {
+const importManifest = (object) => {
   if ("manifest-files" in object) {
     manifestFileCheck.checked = true;
   } else {
     manifestFileCheck.checked = false;
   }
-}
+};
 
-function importMetadataFilesProgress(object) {
+const importMetadataFilesProgress = (object) => {
   populateMetadataProgress(false, "", "");
   if ("metadata-files" in object) {
     var metadataFileArray = Object.keys(object["metadata-files"]);
-    metadataFileArray.forEach(function (element) {
+    metadataFileArray.forEach((element) => {
       var fullPath = object["metadata-files"][element]["path"];
       populateMetadataProgress(true, path.parse(element).name, fullPath);
+      if (!fs.existsSync(fullPath)) {
+        missing_metadata_files.push(fullPath);
+      }
     });
   }
-}
+};
 
-function importDatasetStructure(object) {
+const recursive_check_for_missing_files = (dataset_folder) => {
+  if ("files" in dataset_folder) {
+    for (let file in dataset_folder["files"]) {
+      if ("forTreeview" in dataset_folder["files"][file]) {
+        continue;
+      }
+      if (!fs.existsSync(dataset_folder["files"][file]["path"])) {
+        missing_dataset_files.push(dataset_folder["files"][file]["path"]);
+      }
+    }
+  }
+  if (
+    "folders" in dataset_folder &&
+    Object.keys(dataset_folder["folders"]).length !== 0
+  ) {
+    for (let folder in dataset_folder["folders"]) {
+      recursive_check_for_missing_files(dataset_folder["folders"][folder]);
+    }
+  }
+};
+
+const importDatasetStructure = (object) => {
   if ("dataset-structure" in object) {
     datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+    recursive_check_for_missing_files(datasetStructureJSONObj);
     highLevelFoldersDisableOptions();
   } else {
     datasetStructureJSONObj = { folders: {}, files: {}, type: "" };
   }
-}
+};
 
-function importGenerateDatasetStep(object) {
+const importGenerateDatasetStep = (object) => {
   if ("generate-dataset" in sodaJSONObj) {
     // Step 1: Where to generate the dataset
     if (sodaJSONObj["generate-dataset"]["destination"] === "local") {
@@ -216,7 +241,7 @@ function importGenerateDatasetStep(object) {
           $($("#generate-BF-dataset-options-existing").parents()[2]).click();
           var bfDatasetSelected =
             sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-          setTimeout(function () {
+          setTimeout( () => {
             $("#current-bf-dataset-generate").text(bfDatasetSelected);
             $("#button-confirm-bf-dataset").click();
             // Step 4: Handle existing files and folders
@@ -314,40 +339,155 @@ function populateMetadataProgress(
 }
 
 //////////////////////// Main Import progress function
+let missing_dataset_files = [];
+let missing_metadata_files = [];
 function loadProgressFile(ev) {
-  document.getElementById("para-progress-file-status").innerHTML = "";
-  document.getElementById("nextBtn").disabled = true;
-  document.getElementById("div-progress-file-loader").style.display = "block";
-  // create loading effect
+  let return_option = "";
+  missing_dataset_files = [];
+  missing_metadata_files = [];
+
+  if ($(ev).val() === "Select") {
+    return;
+  }
+
   var jsonContent = progressFileParse(ev);
+
+  $("#para-progress-file-status").html("");
+  $("#nextBtn").prop("disabled", true);
+
+  // create loading effect
+  $("#div-progress-file-loader").css("display", "block");
+
   if (JSON.stringify(jsonContent) !== "{}") {
     sodaJSONObj = jsonContent;
-    setTimeout(function () {
+    setTimeout(() => {
       sodaJSONObj = jsonContent;
       importManifest(sodaJSONObj);
       importMetadataFilesProgress(sodaJSONObj);
       importDatasetStructure(sodaJSONObj);
       importGenerateDatasetStep(sodaJSONObj);
-      document.getElementById("div-progress-file-loader").style.display =
-        "none";
-      document.getElementById("nextBtn").disabled = false;
-      document.getElementById("para-progress-file-status").innerHTML =
-        "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+      if (missing_dataset_files.length > 0 || missing_metadata_files > 0) {
+        verify_missing_files("pre-existing");
+      } else {
+        document.getElementById("div-progress-file-loader").style.display =
+          "none";
+        document.getElementById("nextBtn").disabled = false;
+        document.getElementById("para-progress-file-status").innerHTML =
+          "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+      }
     }, 1300);
   } else {
     sodaJSONObj =
       '{"starting-point":"new","dataset-structure":{},"metadata-files":{}}';
-    setTimeout(function () {
+    setTimeout(() => {
       importManifest(sodaJSONObj);
       importMetadataFilesProgress(sodaJSONObj);
       importDatasetStructure(sodaJSONObj);
       importGenerateDatasetStep(sodaJSONObj);
-      document.getElementById("div-progress-file-loader").style.display =
-        "none";
-      document.getElementById("para-progress-file-status").innerHTML = "";
+      if (missing_dataset_files.length > 0 || missing_metadata_files > 0) {
+        return_option = verify_missing_files("new");
+      } else {
+        document.getElementById("div-progress-file-loader").style.display =
+          "none";
+        document.getElementById("para-progress-file-status").innerHTML = "";
+      }
     }, 500);
   }
 }
+
+const verify_missing_files = (mode) => {
+  let missing_files = missing_metadata_files.concat(missing_dataset_files);
+  let message_text = ""
+  message_text = "The following files have been moved or deleted since this progress file was saved. Would you like SODA to ignore these files and continue? <br><br><ul>";
+
+  for (let item in missing_files) {
+    message_text += `<li>${missing_files[item]}</li>`;
+  }
+
+  message_text += "</ul>";
+
+  bootbox.confirm({
+    message: message_text,
+    centerVertical: true,
+    buttons: {
+      confirm: {
+        label: "Yes",
+        className: "btn-success",
+      },
+      cancel: {
+        label: "No",
+        className: "btn-danger",
+      },
+    },
+    callback: (result) => {
+      if (result == true) {
+        remove_missing_files();
+        if (mode === "pre-existing") {
+          document.getElementById("div-progress-file-loader").style.display =
+            "none";
+          document.getElementById("nextBtn").disabled = false;
+          document.getElementById("para-progress-file-status").innerHTML =
+            "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+        } else if (mode === "new") {
+          document.getElementById("div-progress-file-loader").style.display =
+            "none";
+          document.getElementById("para-progress-file-status").innerHTML = "";
+        }
+      } else {
+        document.getElementById("div-progress-file-loader").style.display =
+        "none";
+        document.getElementById("para-progress-file-status").innerHTML = "";
+      }
+    },
+  });
+};
+
+const remove_missing_files = () => {
+  if (missing_metadata_files.length > 0) {
+    for (let item_path in missing_metadata_files) {
+      for (let item in sodaJSONObj["metadata-files"]) {
+        if (
+          sodaJSONObj["metadata-files"][item]["path"] ==
+          missing_metadata_files[item_path]
+        ) {
+          delete sodaJSONObj["metadata-files"][item];
+        }
+      }
+    }
+  }
+  if (missing_dataset_files.length > 0) {
+    for (let item_path in missing_dataset_files) {
+      recursive_remove_missing_file(
+        missing_dataset_files[item_path],
+        sodaJSONObj["dataset-structure"]
+      );
+    }
+  }
+};
+
+const recursive_remove_missing_file = (item_path, dataset_folder) => {
+  if ("files" in dataset_folder) {
+    for (let file in dataset_folder["files"]) {
+      if ("forTreeview" in dataset_folder["files"][file]) {
+        continue;
+      }
+      if (dataset_folder["files"][file]["path"] == item_path) {
+        delete dataset_folder["files"][file];
+      }
+    }
+  }
+  if (
+    "folders" in dataset_folder &&
+    Object.keys(dataset_folder["folders"]).length !== 0
+  ) {
+    for (let folder in dataset_folder["folders"]) {
+      recursive_remove_missing_file(
+        item_path,
+        dataset_folder["folders"][folder]
+      );
+    }
+  }
+};
 
 // function removeOptions(selectbox) {
 //   var i;
@@ -365,7 +505,7 @@ function loadProgressFile(ev) {
 // }
 
 // function to load Progress dropdown
-function importOrganizeProgressPrompt() {
+const importOrganizeProgressPrompt = () => {
   document.getElementById("para-progress-file-status").innerHTML = "";
   removeOptions(progressFileDropdown);
   addOption(progressFileDropdown, "Select", "Select");
@@ -442,7 +582,7 @@ async function openDropdownPrompt(dropdown) {
       inputValue: defaultBfAccount,
       reverseButtons: true,
       footer: footerMessage,
-      didOpen: function (ele) {
+      didOpen: (ele) => {
         $(ele).find(".swal2-select").attr("id", "bfaccountdropdown");
         $("#bfaccountdropdown").removeClass("swal2-select");
         $("#bfaccountdropdown").addClass("w-100");
