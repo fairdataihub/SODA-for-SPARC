@@ -1518,6 +1518,24 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     .find(".option-card.radio-button")
     .addClass("non-selected");
 
+  // empty para elements (TODO: will convert these para elements to a swal2 alert so we dont have to clear them out)
+  $(disseminateStatusMessage).text("");
+  $(disseminateStatusMessagePublish).text("");
+
+  if (ev.getAttribute("data-next") == "Question-prepare-submission-7") {
+    var res = showPreviewSubmission();
+    var awardRes = res["awards"];
+    var dateRes = res["date"];
+    var milestonesRes = res["milestones"];
+    var milestoneValues = [];
+    $("#submission-SPARC-award-span").text(awardRes);
+    $("#submission-completion-date-span").text(dateRes);
+    milestonesRes.forEach((item, i) => {
+      milestoneValues.push(milestonesRes[i].value);
+    });
+    $("#submission-milestones-span").text(milestoneValues.join(", \n"));
+  }
+
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute("data-next"));
   hidePrevDivs(currentDiv, category);
@@ -1537,7 +1555,7 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     }
     $(ev).hide();
   } else {
-    if ($("bf-dataset-span").text() !== "None") {
+    if ($("bf-dataset-span").html() !== "None") {
       $(target).children().find(".div-confirm-button button").show();
     }
   }
@@ -2417,7 +2435,7 @@ document
     document.getElementById("generate-dataset-progress-tab").style.display =
       "none";
       $("#save-progress-btn").css("display", "none");
-      $("#start-over-btn").css("display", "none");    
+      $("#start-over-btn").css("display", "none");
     showParentTab(currentTab, 1);
   });
 
@@ -2638,3 +2656,5 @@ $("#edit_banner_image_button").click(async () => {
     );
   }
 });
+
+$('.content-button').popover();
