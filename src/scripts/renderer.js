@@ -229,10 +229,10 @@ const generateSubmissionBtn = document.getElementById("generate-submission");
 // Prepare Dataset Description File
 const dsAwardArray = document.getElementById("ds-description-award-list");
 const dsContributorArray = document.getElementById(
-  "ds-description-contributor-list"
+  "ds-description-contributor-list-1"
 );
-var contributorRoles = document.getElementById("input-con-role");
-const affiliationInput = document.getElementById("input-con-affiliation");
+var contributorRoles = document.getElementById("input-con-role-1");
+const affiliationInput = document.getElementById("input-con-affiliation-1");
 const addCurrentContributorsBtn = document.getElementById(
   "button-ds-add-contributor"
 );

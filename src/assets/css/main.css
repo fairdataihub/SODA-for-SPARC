@@ -369,8 +369,8 @@ button[disabled] {
 .switch {
   position: relative;
   display: inline-block;
-  width: 65px;
-  height: 35px;
+  width: 45px;
+  height: 20px;
   padding: 5px;
 }
 

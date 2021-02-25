@@ -115,7 +115,7 @@ function checkFieldsContributors() {
 // /// check if other info section is all populated
 function checkOtherInfoFields() {
   var div = "ds-misc-info";
-  var tableCurrentLinks = document.getElementById("table-addl-links");
+  var tableCurrentLinks = document.getElementById("doi-table");
   var fieldSatisfied = false;
   for (var i = 1; i < tableCurrentLinks.rows.length; i++) {
     if (
