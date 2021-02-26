@@ -586,33 +586,50 @@ $(".prepare-dd-cards").click(function () {
 });
 
 function addNewRow(table) {
+  $("#add-other-contributors").text("Add contributors not listed above");
+  $("#para-save-link-status").text("");
+  $("#para-save-contributor-status").text("");
   var rowcount = document.getElementById(table).rows.length;
     /// append row to table from the bottom
   var rowIndex = rowcount;
+  var currentRow = document.getElementById(table).rows[document.getElementById(table).rows.length-1]
   if (table==='doi-table') {
-    $('.doi-table-row input').attr('contenteditable','false');
-    $('.doi-table-row input').attr('readonly','readonly');
-    $('.doi-helper-buttons').css('display', 'inline-flex');
-    $('.doi-add-row-button').css('display', 'none');
-    var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td><select id='select-misc-link' class='form-container-input-bf' style='font-size:13px;line-height:2;'><option value='Select' disabled>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+    if ($(document.getElementById('doi-table').rows[rowIndex-1].cells[1]).find("input").val() == "") {
+      $("#para-save-link-status").text("Please enter a link to add!")
+    } else {
+      $('.doi-helper-buttons').css('display', 'inline-flex');
+      $('.doi-add-row-button').css('display', 'none');
+      var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-link" +rowIndex +"'><td><select id='select-misc-link' class='form-container-input-bf' style='font-size:13px;line-height:2;'><option value='Select' disabled>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button onclick='delete_link(" +
+      rowIndex +")'' class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+    }
   } else if (table === 'table-current-contributors') {
-    $('.contributor-table-row input').attr('contenteditable','false');
-    $('.contributor-table-row input').attr('readonly','readonly');
-    $('.contributor-table-row select').attr('disabled','true');
-    $('#table-current-contributors .contributor-helper-buttons').css('display', 'inline-flex');
-    $('#table-current-contributors .contributor-add-row-button').css('display', 'none');
-    var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td class='grab'><select id='ds-description-contributor-list' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+rowIndex+"'></input></td><td class='grab'><label class='switch'><input id='ds-contact-person' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
-    createTagify('input-con-role-'+rowIndex.toString());
-  } else if (table === 'grant-table') {
-    $('.grant-table-row input').attr('contenteditable','false');
-    $('.grant-table-row input').attr('readonly','readonly');
-    $('#grant-table .grant-helper-buttons').css('display', 'inline-flex');
-    $('#grant-table .grant-add-row-button').css('display', 'none');
-    var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"grant-table\")' class='ui right floated medium primary labeled icon button grant-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons grant-helper-buttons' style='display:none'><button class='ui button'><i class='edit outline icon' style='color:var(--bs-table-active-color)'></i></button><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+    // check if all the fields are populated before Adding
+    if ($("#"+currentRow.cells[0].children[0].id).val() == "Select an option" || $("#"+currentRow.cells[0].children[0].id).val() == "Select an option" || $("#"+currentRow.cells[0].children[0].id).val() == "" || $("#"+currentRow.cells[1].children[0].id).val() == "" || $("#"+currentRow.cells[1].children[0].id).val() == "" || currentRow.cells[3].innerText == "" || currentRow.cells[4].innerText == "") {
+      $("#para-save-contributor-status").text("Please fill in all the fields to add!")
+    } else {
+      $('#table-current-contributors .contributor-helper-buttons').css('display', 'inline-flex');
+      $('#table-current-contributors .contributor-add-row-button').css('display', 'none');
+      var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +rowIndex +"'><td class='grab'><select id='ds-description-contributor-list-last-"+rowIndex+"' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select id='ds-description-contributor-list-first-"+rowIndex+"' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+rowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+rowIndex+"'></input></td><td class='grab'><label class='switch'><input id='ds-contact-person' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
+      rowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+      createConsRoleTagify('input-con-role-'+rowIndex.toString());
+      createConsAffliationTagify('input-con-affiliation-'+rowIndex.toString())
+      cloneConNamesSelect('ds-description-contributor-list-last-'+rowIndex.toString(), 'ds-description-contributor-list-first-'+rowIndex.toString())
+    }
   }
 }
 
-function createTagify(inputField) {
+function cloneConNamesSelect(selectLast, selectFirst) {
+  for (var i = 0; i < currentContributorsLastNames.length; i++) {
+    var opt = currentContributorsLastNames[i];
+    addOption(document.getElementById(selectLast), opt, opt);
+  }
+  for (var i = 0; i < currentContributorsFirstNames.length; i++) {
+    var opt = currentContributorsFirstNames[i];
+    addOption(document.getElementById(selectFirst), opt, opt);
+  }
+}
+
+function createConsRoleTagify(inputField) {
   var input = document.getElementById(inputField);
   // initialize Tagify on the above input node reference
   var tagify = new Tagify(input, {
@@ -623,4 +640,45 @@ function createTagify(inputField) {
        closeOnSelect : true
      }
   })
+}
+
+function createConsAffliationTagify(inputField) {
+  var input = document.getElementById(inputField);
+  var tagify = new Tagify(input, {
+    dropdown: {
+      classname: "color-blue",
+      enabled: 0, // show the dropdown immediately on focus
+      maxItems: 25,
+      closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+    },
+    duplicates: false
+  })
+}
+
+$(document).ready(function() {
+  $("#add-other-contributors").on("click", function() {
+    if ($(this).text() == "Add contributors not listed above") {
+      addOtherContributors("table-current-contributors");
+      $(this).text("Cancel manual typing")
+    } else {
+      cancelOtherContributors("table-current-contributors")
+      $(this).text("Add contributors not listed above")
+    }
+  })
+})
+
+function cancelOtherContributors(table) {
+  var rowcount = document.getElementById(table).rows.length;
+  var rowIndex = rowcount;
+  var currentRow = document.getElementById(table).rows[document.getElementById(table).rows.length-1]
+  currentRow.cells[0].outerHTML = "<td class='grab'><select id='ds-description-contributor-list-last-"+rowIndex+"' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td>"
+  currentRow.cells[1].outerHTML = "<td class='grab'><select id='ds-description-contributor-list-first-"+rowIndex+"' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td>"
+}
+
+function addOtherContributors(table) {
+  var rowcount = document.getElementById(table).rows.length;
+  var rowIndex = rowcount;
+  var currentRow = document.getElementById(table).rows[document.getElementById(table).rows.length-1]
+  currentRow.cells[0].outerHTML = "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-last-"+rowIndex+"'></input></td>"
+  currentRow.cells[1].outerHTML = "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-first-"+rowIndex+"'></input></td>"
 }

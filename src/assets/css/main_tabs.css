@@ -169,8 +169,7 @@
   -webkit-transition: all 0.25s linear;
 }
 
-.content-button:active,
-.content-button:focus{
+.content-button:active{
   border: 1px solid var(--color-light-green);
   box-shadow: 0px 0px 3px 0px var(--color-light-green);
   transition: all 0.25s linear;
@@ -200,6 +199,10 @@
   bottom: 0px;
   background-color: white;
   position: absolute;
+}
+
+.transition-btn i{
+  pointer-events: none;
 }
 
 .content-button svg {

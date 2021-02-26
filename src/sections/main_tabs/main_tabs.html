@@ -1664,6 +1664,7 @@
 
                   <!-- Dataset Info -->
                   <div style="display:block;width:90%;margin: 0 auto;font-size:13px" id="div-ds-dataset-info" class="datasetsaveoption">
+                    <p><h5 align="center" style="color: var(--color-light-green)">Dataset Information </h5></p>
                   <div>
                     <div class="div-dd-info">
                       <div class="demo-controls-head"><font color="black"> Name*: </font> </div>
@@ -1800,10 +1801,9 @@
 
                     <!-- <div align="right">
                       <button id="button-ds-add-contributor" class="demo-button-prev-next" style="float:right">Add</button>
-                      <p id='para-save-contributor-status' style="float:right;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p>
                     </div> -->
 
-                <div id="div-current-contributors" style="width:100%;margin:0 auto;display:block;overflow-x:scroll">
+                <div id="div-current-contributors" style="width:100%;margin:0 auto;display:block;overflow-x:autp">
                       <h5 align="center" style="color:#000">
                         Provide information for each contributor below to add them to your dataset_description file
                       <br>Tip: Move rows up and down to change the order that contributors appear in the dataset_description file)</h5>
@@ -1818,27 +1818,33 @@
                         </style>
                     <thead class="full-width">
                       <tr>
-                        <th style="width:20%">Contributor Name</th>
-                        <th style="width:30%">ORCID ID</th>
-                        <th style="width:25%">Affiliation</th>
-                        <th style="width:25%">Role</th>
-                        <th style="width:5%">Contact Person</th>
+                        <th style="width:15%">Last Name*</th>
+                        <th style="width:15%">First Name*</th>
+                        <th style="width:25%">ORCID ID*</th>
+                        <th style="width:25%">Affiliation*</th>
+                        <th style="width:20%">Role*</th>
+                        <th style="width:5%">Contact Person*</th>
                         <th style="width:5%"></th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
+                      <tr id='row-current-name1'>
                         <td class="contributor-table-row">
-                          <select id="ds-description-contributor-list" class="form-container-input-bf" style="font-size:13px;line-height: 2;">
-                            <option>Select an option</option>
+                          <select id="ds-description-contributor-list-last-1" class="form-container-input-bf" style="font-size:13px;line-height: 2;">
+                            <option value="Select an option">Select an option</option>
                           </select>
                         </td>
-                        <td class="contributor-table-row"><input id="input-con-ID" contenteditable="true"></input></td>
                         <td class="contributor-table-row">
-                          <input id="input-con-affiliation" contenteditable="true"></input>
+                          <select id="ds-description-contributor-list-first-1" class="form-container-input-bf" style="font-size:13px;line-height: 2;">
+                            <option value="Select an option">Select an option</option>
+                          </select>
+                        </td>
+                        <td class="contributor-table-row"><input id="input-con-ID-1" contenteditable="true"></input></td>
+                        <td class="contributor-table-row">
+                          <input id="input-con-affiliation-1" contenteditable="true"></input>
                         </td>
                         <td class="contributor-table-row">
-                          <input id="input-con-role" contenteditable="true"></input>
+                          <input id="input-con-role-1" contenteditable="true"></input>
                         </td>
                         <td class="contributor-table-row">
                           <label class="switch">
@@ -1851,25 +1857,17 @@
                             Add
                           </div>
                           <div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'>
-                            <button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button>
+                            <button class='ui button'  onclick="delete_current_con(1)"><i class='trash alternate outline icon' style='color:red'></i></button>
                           </div>
                         </th>
                       </tr>
                     </tbody>
                   </table>
-
-<!--
-                      <table id="table-current-contributors">
-                        <tr>
-                          <th style="width:20%">Current Contributors</th>
-                          <th style="width:20%">ORCID ID</th>
-                          <th style="width:30%">Affiliation</th>
-                          <th style="width:20%">Role</th>
-                          <th style="width:10%">Contact Person</th>
-                          <th style="width:5%"></th>
-                        </tr>
-                      </table> -->
-                    </div>
+                  <div style="text-align:center">
+                    <a style="text-decoration:underline" id="add-other-contributors">Add contributors not listed above</a>
+                  </div>
+                  <p id='para-save-contributor-status' style="text-align: center;font-size:14px;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:15px;color:red"></p>
+                </div>
 
 
                   <div style="display:flex;justify-content:center;margin-top:30px">
@@ -1881,60 +1879,6 @@
               <!-- Protocols and Articles Info -->
             <div id="div-ds-misc-info" style="width:90%;margin: 0 auto;font-size:13px" class="datasetsaveoption">
               <p><h5 align="center" style="color: var(--color-light-green)">Article(s) and protocol(s) Information </h5></p>
-
-              <!-- <div id="show-add-link-description"> -->
-
-                <!-- <div> -->
-                  <!-- <div class="div-dd-info">
-                    <div class="demo-controls-head"><font color="black">Link type:</font> </div>
-                    <div class="demo-controls-body">
-                      <select id="select-misc-link" class="form-container-input-bf" style="font-size:13px;line-height:2;">
-                        <option value="Select" disabled>Select an option</option>
-                        <option value="Protocol URL or DOI*">Protocol URL or DOI*</option>
-                        <option value="Originating Article DOI">Originating Article DOI</option>
-                        <option value="Additional Link">Additional Link</option>
-                      </select>
-                    </div>
-                    <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
-                      <span class="tooltiptext" style="z-index:3;">
-                        Select the nature of the link:
-                        <br><br>
-                        - Protocol URLs or DOIs: URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.
-                        <br><br>
-                        - Originating Article DOIs: DOIs of published articles that were generated from this dataset.
-                        <br><br>
-                        - Additional links: URLs of additional resources used by this dataset (e.g., a link to a code repository).
-                        <br><br>
-                        Note that at least one "Protocol URLs or DOIs" link is mandatory. The remaining is optional.
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="div-dd-info">
-                    <div class="demo-controls-head"><font color="black">Link:</font> </div>
-                    <div class="demo-controls-body">
-                      <input id="input-misc-links" class="form-container-input-bf" style="line-height:2;"/>
-                    </div>
-                    <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
-                      <span class="tooltiptext" style="z-index:3;">
-                          Enter the link.
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="div-dd-info">
-                    <div class="demo-controls-head"><font color="black">Link Description:</font> </div>
-                    <div class="demo-controls-body">
-                      <textarea id="input-misc-link-description" class="form-container-textarea"></textarea>
-                    </div>
-                    <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
-                      <span class="tooltiptext" style="z-index:3;">
-                        Optionally provide a short description of the link.
-                        <br><br>
-                        Click on "Add" to register specified link to SODA's link table. All links and descriptions added to the table will be included in your dataset description file when it is generated.
-                      </span>
-                    </div>
-                  </div> -->
                   <h5 align="center" style="color:#000">
                   <br>To add a link to your dataset_description file, select the link type from the dropdown list and provide the link and its description.</h5>
 
@@ -1954,8 +1898,8 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td class="contributor-table-row">
+                  <tr id='row-current-link1'>
+                    <td class="doi-table-row">
                       <select id="select-misc-link" class="form-container-input-bf" style="font-size:13px;line-height:2;">
                         <option value="Select" disabled>Select an option</option>
                         <option value="Protocol URL or DOI*">Protocol URL or DOI*</option>
@@ -1963,10 +1907,10 @@
                         <option value="Additional Link">Additional Link</option>
                       </select>
                     </td>
-                    <td class="contributor-table-row">
+                    <td class="doi-table-row">
                       <input id="input-misc-links" class="form-container-input-bf" contenteditable="true" style="font-size:13px;line-height:2;"></input>
                     </td>
-                    <td class="contributor-table-row">
+                    <td class="doi-table-row">
                       <input id="input-misc-link-description" style="line-height:2;" contenteditable="true"></input>
                     </td>
                     <th>
@@ -1974,99 +1918,79 @@
                         Add
                       </div>
                       <div class='ui small basic icon buttons doi-helper-buttons' style='display:none'>
-                        <button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button>
+                        <button onclick="delete_link(1)" class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button>
                       </div>
                     </th>
                   </tr>
                 </tbody>
               </table>
+              <p id='para-save-link-status' style="text-align: center;font-size:14px;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:15px;color:red"></p>
 
 
-            <!-- </div> -->
+            <div style="display:flex;justify-content:center;margin: 20px">
+              <button id="button-prev-misc-contributor" class="demo-button-prev-next" style="width:70px;height:32px; margin-right:10px"><i class="fas fa-long-arrow-alt-left"></i></button>
+              <button id="button-next-misc-optional" class="demo-button-prev-next" style="width:70px;height:32px;"><i class="fas fa-long-arrow-alt-right"></i></button>
+            </div>
+          </div>
 
-                <!-- <div style="height:70px">
-                  <button id="button-ds-add-link" class="demo-button-prev-next" style="float:right">Add</button>
-                  <p id='para-save-link-status' style="float:right;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p>
-                </div> -->
 
-                <!-- </div> -->
-                  <!-- <div id="div-current-additional-links" style="width:100%;margin: 0 auto;display:none;overflow-x:scroll">
-                    <h5 align="center">Current Links:</h5>
-                    <table id="table-addl-links">
-                      <tr>
-                        <th style="width:15%">Link type</th>
-                        <th style="width:30%">Link</th>
-                        <th style="width:45%">Description</th>
-                        <th style="width:10%"></th>
-                     </tr>
-                    </table>
-                    <br><br><br>
-                  </div> -->
-
-                    <div style="display:flex;justify-content:center;margin: 20px">
-                      <button id="button-prev-misc-contributor" class="demo-button-prev-next" style="width:70px;height:32px; margin-right:10px"><i class="fas fa-long-arrow-alt-left"></i></button>
-                      <button id="button-next-misc-optional" class="demo-button-prev-next" style="width:70px;height:32px;"><i class="fas fa-long-arrow-alt-right"></i></button>
-                    </div>
+              <!-- Completeness Info -->
+              <div id="div-ds-optional-info" style="width:90%;margin: 0 auto;font-size:13px" class="datasetsaveoption">
+                <p><h5 align="center" style="color: var(--color-light-green)">Completeness Information </h5></p>
+              <div>
+                <div class="div-dd-info">
+                  <div class="demo-controls-head"><font color="black">Completeness of dataset: </font> </div>
+                  <div class="demo-controls-body">
+                    <input id="ds-completeness" class="form-container-input-bf"> </input>
                   </div>
-
-
-                  <!-- Completeness Info -->
-                  <div id="div-ds-optional-info" style="width:90%;margin: 0 auto;font-size:13px" class="datasetsaveoption">
-                    <p><h5 align="center" style="color: var(--color-light-green)">Completeness Information </h5></p>
-                  <div>
-                    <div class="div-dd-info">
-                      <div class="demo-controls-head"><font color="black">Completeness of dataset: </font> </div>
-                      <div class="demo-controls-body">
-                        <input id="ds-completeness" class="form-container-input-bf"> </input>
-                      </div>
-                      <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
-                        <span class="tooltiptext">
-                          Is the data set as uploaded complete or is it part of an ongoing study? Select "hasNext" to indicate that you expect more data on different subjects as a continuation of this study. Select “hasChildren” to indicate that you expect more data on the same subjects or samples derived from those subjects. Leave empty if none.
-                        </span>
-                      </div>
-                    </div>
-
-                    <div class="div-dd-info">
-                      <div class="demo-controls-head"><font color="black">Parent dataset(s):  </font> </div>
-                      <div class="demo-controls-body">
-                        <input id="input-parent-ds" class="form-container-input-bf">
-                      </div>
-                      <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
-                        <span class="tooltiptext">
-                          If this is a part of a larger dataset, or references subjects or samples from a parent dataset, select the prior dataset. You need only the last dataset, not all datasets. If samples and subjects are from multiple parent datasets please select them all. Leave empty if none.
-                          <br><br>
-                          Tip: Start typing to see the name of your dataset, and then press Enter to add your dataset.
-                        </span>
-                      </div>
-                    </div>
-
-                    <div class="div-dd-info">
-                      <div class="demo-controls-head"><font color="black">Title for complete dataset: </font> </div>
-                      <div class="demo-controls-body">
-                        <input id="input-completeds-title" class="form-container-input-bf" />
-                      </div>
-                      <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
-                        <span class="tooltiptext">
-                          Please give us a provisional title for the entire data set. Leave empty if not applicable.
-                          <br><br>
-                          After you complete all steps, click on "Generate" to generate your dataset description file. A warning message may show up if any mandatory fields are missing. You may decide to go back and address the issues or generate the file anyway (and address the issues later).
-                        </span>
-                      </div>
-                    </div>
-
-                    <div class="div-dd-info">
-                      <div class="demo-controls-head"><font color="black">Metadata Version:  </font> </div>
-                      <div class="demo-controls-body">
-                        <input id="input-metadata-ver" value="1.2.3" disabled class="form-container-input-bf"/>
-                      </div>
-                      <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
-                        <span class="tooltiptext" style="width: 300px; font-weight: bold">
-                          DO NOT CHANGE: 1.2.3
-                        </span>
-                      </div>
-                    </div>
-
+                  <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                    <span class="tooltiptext">
+                      Is the data set as uploaded complete or is it part of an ongoing study? Select "hasNext" to indicate that you expect more data on different subjects as a continuation of this study. Select “hasChildren” to indicate that you expect more data on the same subjects or samples derived from those subjects. Leave empty if none.
+                    </span>
                   </div>
+                </div>
+
+                <div class="div-dd-info">
+                  <div class="demo-controls-head"><font color="black">Parent dataset(s):  </font> </div>
+                  <div class="demo-controls-body">
+                    <input id="input-parent-ds" class="form-container-input-bf">
+                  </div>
+                  <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                    <span class="tooltiptext">
+                      If this is a part of a larger dataset, or references subjects or samples from a parent dataset, select the prior dataset. You need only the last dataset, not all datasets. If samples and subjects are from multiple parent datasets please select them all. Leave empty if none.
+                      <br><br>
+                      Tip: Start typing to see the name of your dataset, and then press Enter to add your dataset.
+                    </span>
+                  </div>
+                </div>
+
+                <div class="div-dd-info">
+                  <div class="demo-controls-head"><font color="black">Title for complete dataset: </font> </div>
+                  <div class="demo-controls-body">
+                    <input id="input-completeds-title" class="form-container-input-bf" />
+                  </div>
+                  <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                    <span class="tooltiptext">
+                      Please give us a provisional title for the entire data set. Leave empty if not applicable.
+                      <br><br>
+                      After you complete all steps, click on "Generate" to generate your dataset description file. A warning message may show up if any mandatory fields are missing. You may decide to go back and address the issues or generate the file anyway (and address the issues later).
+                    </span>
+                  </div>
+                </div>
+
+                <div class="div-dd-info">
+                  <div class="demo-controls-head"><font color="black">Metadata Version:  </font> </div>
+                  <div class="demo-controls-body">
+                    <input id="input-metadata-ver" value="1.2.3" disabled class="form-container-input-bf"/>
+                  </div>
+                  <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                    <span class="tooltiptext" style="width: 300px; font-weight: bold">
+                      DO NOT CHANGE: 1.2.3
+                    </span>
+                  </div>
+                </div>
+
+              </div>
 
                   <div style="display:flex;justify-content:center;">
                     <button id="button-prev-optional-misc" class="demo-button-prev-next" style="width:70px;height:32px;margin-right:10px"><i class="fas fa-long-arrow-alt-left"></i></button>
@@ -2097,7 +2021,7 @@
                     >
                       Generate
                     </button>
-                    <p id='para-generate-description-status' style="display:none;float:right;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p>
+                    <p id='para-generate-description-status' style="text-align: center;padding-top:0;margin: 10px 0"></p>
                   </div>
                 </div>
               </div>
@@ -3508,7 +3432,7 @@
           id="div_add_edit_subtitle" style="height: auto"
         >
           <div class="ui form" style="width: 500px">
-            <div class="grouped fields">
+            <div class="grouped fields" style="width: 500px; margin: auto;">
               <label
                 style="
                   font-size: 17px;
@@ -5062,8 +4986,7 @@
 
   <script src='./scripts/disseminate-and-metadata.js' type='text/javascript'>
   </script>
-  <script src='./renderer-process/prepare-metadata/save-information.jss' type='text/javascript'>
+  <script src='./renderer-process/prepare-metadata/save-information.js' type='text/javascript'>
   </script>
-
 
 </template>
