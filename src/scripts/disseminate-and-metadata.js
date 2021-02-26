@@ -598,7 +598,8 @@ function addNewRow(table) {
     } else {
       $('.doi-helper-buttons').css('display', 'inline-flex');
       $('.doi-add-row-button').css('display', 'none');
-      var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td><select id='select-misc-link' class='form-container-input-bf' style='font-size:13px;line-height:2;'><option value='Select' disabled>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+      var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-link" +rowIndex +"'><td><select id='select-misc-link' class='form-container-input-bf' style='font-size:13px;line-height:2;'><option value='Select' disabled>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button onclick='delete_link(" +
+      rowIndex +")'' class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
     }
   } else if (table === 'table-current-contributors') {
     // check if all the fields are populated before Adding
@@ -607,11 +608,23 @@ function addNewRow(table) {
     } else {
       $('#table-current-contributors .contributor-helper-buttons').css('display', 'inline-flex');
       $('#table-current-contributors .contributor-add-row-button').css('display', 'none');
-      var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr><td class='grab'><select id='ds-description-contributor-list-last-"+rowIndex+"' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select id='ds-description-contributor-list-first-"+rowIndex+"' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+rowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+rowIndex+"'></input></td><td class='grab'><label class='switch'><input id='ds-contact-person' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
-      createConDropdownList('ds-description-contributor-list-last-'+rowIndex.toString(), 'ds-description-contributor-list-first-'+rowIndex.toString());
+      var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +rowIndex +"'><td class='grab'><select id='ds-description-contributor-list-last-"+rowIndex+"' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select id='ds-description-contributor-list-first-"+rowIndex+"' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+rowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+rowIndex+"'></input></td><td class='grab'><label class='switch'><input id='ds-contact-person' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
+      rowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
       createConsRoleTagify('input-con-role-'+rowIndex.toString());
       createConsAffliationTagify('input-con-affiliation-'+rowIndex.toString())
+      cloneConNamesSelect('ds-description-contributor-list-last-'+rowIndex.toString(), 'ds-description-contributor-list-first-'+rowIndex.toString())
     }
+  }
+}
+
+function cloneConNamesSelect(selectLast, selectFirst) {
+  for (var i = 0; i < currentContributorsLastNames.length; i++) {
+    var opt = currentContributorsLastNames[i];
+    addOption(document.getElementById(selectLast), opt, opt);
+  }
+  for (var i = 0; i < currentContributorsFirstNames.length; i++) {
+    var opt = currentContributorsFirstNames[i];
+    addOption(document.getElementById(selectFirst), opt, opt);
   }
 }
 
@@ -626,11 +639,6 @@ function createConsRoleTagify(inputField) {
        closeOnSelect : true
      }
   })
-}
-
-function createConDropdownList(select1, select2) {
-  $('#ds-description-contributor-list-last-1').find('option').clone().appendTo('#'+select1);
-  $('#ds-description-contributor-list-first-1').find('option').clone().appendTo('#'+select2);
 }
 
 function createConsAffliationTagify(inputField) {

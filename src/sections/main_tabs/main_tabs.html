@@ -1765,14 +1765,14 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
+                      <tr id='row-current-name1'>
                         <td class="contributor-table-row">
-                          <select id="ds-description-contributor-list-1" class="form-container-input-bf" style="font-size:13px;line-height: 2;">
+                          <select id="ds-description-contributor-list-last-1" class="form-container-input-bf" style="font-size:13px;line-height: 2;">
                             <option>Select an option</option>
                           </select>
                         </td>
                         <td class="contributor-table-row">
-                          <select id="ds-description-contributor-list-1" class="form-container-input-bf" style="font-size:13px;line-height: 2;">
+                          <select id="ds-description-contributor-list-first-1" class="form-container-input-bf" style="font-size:13px;line-height: 2;">
                             <option>Select an option</option>
                           </select>
                         </td>
@@ -1794,7 +1794,7 @@
                             Add
                           </div>
                           <div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'>
-                            <button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button>
+                            <button class='ui button'  onclick="delete_current_con(1)"><i class='trash alternate outline icon' style='color:red'></i></button>
                           </div>
                         </th>
                       </tr>
@@ -1835,7 +1835,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
+                  <tr id='row-current-link1'>
                     <td class="doi-table-row">
                       <select id="select-misc-link" class="form-container-input-bf" style="font-size:13px;line-height:2;">
                         <option value="Select" disabled>Select an option</option>
@@ -1855,7 +1855,7 @@
                         Add
                       </div>
                       <div class='ui small basic icon buttons doi-helper-buttons' style='display:none'>
-                        <button class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button>
+                        <button onclick="delete_link(1)" class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button>
                       </div>
                     </th>
                   </tr>

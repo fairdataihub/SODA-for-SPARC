@@ -206,6 +206,9 @@ const saveInformationBtn = document.getElementById("button-save-milestone");
 const editSPARCAwardsTextbox = document.getElementById("input-grant-info");
 var sparcAwardEditMessage = $("#div-SPARC-edit-awards");
 
+var currentContributorsLastNames = [];
+var currentContributorsFirstNames = [];
+
 //// initiate a tagify Award list
 const awardArrayTagify = new Tagify(editSPARCAwardsTextbox, {
   delimiters: null,
@@ -228,9 +231,13 @@ const generateSubmissionBtn = document.getElementById("generate-submission");
 
 // Prepare Dataset Description File
 const dsAwardArray = document.getElementById("ds-description-award-list");
-const dsContributorArray = document.getElementById(
-  "ds-description-contributor-list-1"
+const dsContributorArrayLast1 = document.getElementById(
+  "ds-description-contributor-list-last-1"
 );
+const dsContributorArrayFirst1 = document.getElementById(
+  "ds-description-contributor-list-first-1"
+);
+
 var contributorRoles = document.getElementById("input-con-role-1");
 const affiliationInput = document.getElementById("input-con-affiliation-1");
 const addCurrentContributorsBtn = document.getElementById(
@@ -1609,30 +1616,33 @@ function getParentDatasets() {
 }
 
 function clearCurrentConInfo() {
-  document.getElementById("input-con-ID").value = "";
-  document.getElementById("input-con-role").value = "";
-  document.getElementById("input-con-affiliation").value = "";
+  document.getElementById("input-con-ID-1").value = "";
+  document.getElementById("input-con-role-1").value = "";
+  document.getElementById("input-con-affiliation-1").value = "";
   contactPerson.checked = false;
 }
 
 function changeAwardInputDsDescription() {
+  currentContributorsLastNames = [];
+  currentContributorsFirstNames = [];
   clearCurrentConInfo();
   /// delete old table
   while (currentConTable.rows.length > 2) {
     currentConTable.deleteRow(2);
   }
-  removeOptions(dsContributorArray);
 
   currentAffliationtagify.removeAllTags();
   currentContributortagify.removeAllTags();
 
-  addOption(dsContributorArray, "Select", "Select an option");
-  // descriptionDateInput.options[0].disabled = true;
-  addOption(
-    dsContributorArray,
-    "Other collaborators",
-    "Other collaborators not listed"
-  );
+  if (dsContributorArrayLast1) {
+    removeOptions(dsContributorArrayLast1);
+    addOption(dsContributorArrayLast1, "Select", "Select an option");
+  }
+  if (dsContributorArrayFirst1) {
+    removeOptions(dsContributorArrayFirst1);
+    addOption(dsContributorArrayFirst1, "Select", "Select an option");
+  }
+
   var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value;
   var airKeyContent = parseJson(airtableConfigPath);
   if (Object.keys(airKeyContent).length !== 0) {
@@ -1647,17 +1657,24 @@ function changeAwardInputDsDescription() {
         filterByFormula: `({SPARC_Award_#} = "${awardVal}")`,
       })
       .eachPage(function page(records, fetchNextPage) {
-        var awardValArray = [];
         records.forEach(function (record) {
           var firstName = record.get("First_name");
           var lastName = record.get("Last_name");
-          var fullName = lastName.concat(", ", firstName);
-          awardValArray.push(fullName);
+          currentContributorsLastNames.push(lastName);
+          currentContributorsFirstNames.push(firstName);
         }),
           fetchNextPage();
-        for (var i = 0; i < awardValArray.length; i++) {
-          var opt = awardValArray[i];
-          addOption(dsContributorArray, opt, opt);
+        for (var i = 0; i < currentContributorsLastNames.length; i++) {
+          var opt = currentContributorsLastNames[i];
+          if (dsContributorArrayLast1) {
+            addOption(dsContributorArrayLast1, opt, opt);
+          }
+        }
+        for (var i = 0; i < currentContributorsFirstNames.length; i++) {
+          var opt = currentContributorsFirstNames[i];
+          if (dsContributorArrayFirst1) {
+            addOption(dsContributorArrayFirst1, opt, opt);
+          }
         }
       }),
       function done(err) {
@@ -1964,129 +1981,114 @@ $(currentConTable).mousedown(function (e) {
 dsAwardArray.addEventListener("change", changeAwardInputDsDescription);
 
 /// Auto populate once a contributor is selected
-dsContributorArray.addEventListener("change", function (e) {
-  ///clear old entries once a contributor option is changed
-  // document.getElementById("para-save-contributor-status").innerHTML = "";
-  document.getElementById("input-con-ID").value = "";
-
-  /// hide Other collaborators fields upon changing contributors
-  document.getElementById("div-other-collaborators-1").style.display = "none";
-  document.getElementById("div-other-collaborators-2").style.display = "none";
-  document.getElementById("div-other-collaborators-3").style.display = "none";
-
-  currentContributortagify.removeAllTags();
-  currentAffliationtagify.removeAllTags();
-
-  contactPerson.checked = false;
-
-  var contributorVal =
-    dsContributorArray.options[dsContributorArray.selectedIndex].value;
-  if (contributorVal === "Other collaborators not listed") {
-    document.getElementById("input-con-others").value = "";
-    document.getElementById("div-other-collaborators-1").style.display = "flex";
-    document.getElementById("div-other-collaborators-2").style.display = "flex";
-    document.getElementById("div-other-collaborators-3").style.display = "flex";
-  } else {
-    currentContributortagify.destroy();
-    currentAffliationtagify.destroy();
-    document.getElementById("input-con-ID").disabled = true;
-    affiliationInput.disabled = true;
-    document.getElementById("input-con-role").disabled = true;
-    document.getElementById("input-con-ID").value = "Loading...";
-    affiliationInput.value = "Loading...";
-    document.getElementById("input-con-role").value = "Loading...";
-
-    var airKeyContent = parseJson(airtableConfigPath);
-    var airKeyInput = airKeyContent["api-key"];
-    var airtableConfig = Airtable.configure({
-      endpointUrl: "https://" + airtableHostname,
-      apiKey: airKeyInput,
-    });
-    var base = Airtable.base("appiYd1Tz9Sv857GZ");
-    var name = contributorVal.split(", ");
-    var lastName = name[0];
-    var firstName = name[1];
-    base("sparc_members")
-      .select({
-        filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`,
-      })
-      .eachPage(function page(records, fetchNextPage) {
-        var conInfoObj = {};
-        records.forEach(function (record) {
-          conInfoObj["ID"] = record.get("ORCID");
-          conInfoObj["Role"] = record.get("Dataset_contributor_roles_for_SODA");
-          conInfoObj["Affiliation"] = record.get("Institution");
-        }),
-          fetchNextPage();
-
-        // if no records found, leave fields empty
-        leaveFieldsEmpty(
-          conInfoObj["ID"],
-          document.getElementById("input-con-ID")
-        );
-        leaveFieldsEmpty(
-          conInfoObj["Role"],
-          document.getElementById("input-con-role")
-        );
-        leaveFieldsEmpty(conInfoObj["Affiliation"], affiliationInput);
-
-        /// initiate tagify for contributor roles
-        currentContributortagify = new Tagify(contributorRoles, {
-          whitelist: [
-            "PrincipleInvestigator",
-            "Creator",
-            "CoInvestigator",
-            "DataCollector",
-            "DataCurator",
-            "DataManager",
-            "Distributor",
-            "Editor",
-            "Producer",
-            "ProjectLeader",
-            "ProjectManager",
-            "ProjectMember",
-            "RelatedPerson",
-            "Researcher",
-            "ResearchGroup",
-            "Sponsor",
-            "Supervisor",
-            "WorkPackageLeader",
-            "Other",
-          ],
-          dropdown: {
-            classname: "color-blue",
-            enabled: 0, // show the dropdown immediately on focus
-            maxItems: 25,
-            // position  : "text",    // place the dropdown near the typed text
-            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-          },
-          duplicates: false,
-        });
-        /// initiate tagify for affiliations
-        currentAffliationtagify = new Tagify(affiliationInput, {
-          dropdown: {
-            classname: "color-blue",
-            enabled: 0, // show the dropdown immediately on focus
-            maxItems: 25,
-            closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-          },
-          duplicates: false,
-          delimiters: ";",
-        });
-
-        document.getElementById("input-con-ID").disabled = false;
-        affiliationInput.disabled = false;
-        document.getElementById("input-con-role").disabled = false;
-      }),
-      function done(err) {
-        if (err) {
-          log.error(err);
-          console.error(err);
-          return;
-        }
-      };
-  }
-});
+// dsContributorArray.addEventListener("change", function (e) {
+//
+//   currentContributortagify.removeAllTags();
+//   currentAffliationtagify.removeAllTags();
+//
+//   contactPerson.checked = false;
+//
+//   var contributorVal =
+//     dsContributorArray.options[dsContributorArray.selectedIndex].value;
+//   currentContributortagify.destroy();
+//   currentAffliationtagify.destroy();
+//   document.getElementById("input-con-ID-1").disabled = true;
+//   affiliationInput.disabled = true;
+//   document.getElementById("input-con-role-1").disabled = true;
+//   document.getElementById("input-con-ID-1").value = "Loading...";
+//   affiliationInput.value = "Loading...";
+//   document.getElementById("input-con-role").value = "Loading...";
+//
+//   var airKeyContent = parseJson(airtableConfigPath);
+//   var airKeyInput = airKeyContent["api-key"];
+//   var airtableConfig = Airtable.configure({
+//     endpointUrl: "https://" + airtableHostname,
+//     apiKey: airKeyInput,
+//   });
+//   var base = Airtable.base("appiYd1Tz9Sv857GZ");
+//   var name = contributorVal.split(", ");
+//   var lastName = name[0];
+//   var firstName = name[1];
+//   base("sparc_members")
+//     .select({
+//       filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`,
+//     })
+//     .eachPage(function page(records, fetchNextPage) {
+//       var conInfoObj = {};
+//       records.forEach(function (record) {
+//         conInfoObj["ID"] = record.get("ORCID");
+//         conInfoObj["Role"] = record.get("Dataset_contributor_roles_for_SODA");
+//         conInfoObj["Affiliation"] = record.get("Institution");
+//       }),
+//         fetchNextPage();
+//
+//       // if no records found, leave fields empty
+//       leaveFieldsEmpty(
+//         conInfoObj["ID"],
+//         document.getElementById("input-con-ID")
+//       );
+//       leaveFieldsEmpty(
+//         conInfoObj["Role"],
+//         document.getElementById("input-con-role")
+//       );
+//       leaveFieldsEmpty(conInfoObj["Affiliation"], affiliationInput);
+//
+//       /// initiate tagify for contributor roles
+//       currentContributortagify = new Tagify(contributorRoles, {
+//         whitelist: [
+//           "PrincipleInvestigator",
+//           "Creator",
+//           "CoInvestigator",
+//           "DataCollector",
+//           "DataCurator",
+//           "DataManager",
+//           "Distributor",
+//           "Editor",
+//           "Producer",
+//           "ProjectLeader",
+//           "ProjectManager",
+//           "ProjectMember",
+//           "RelatedPerson",
+//           "Researcher",
+//           "ResearchGroup",
+//           "Sponsor",
+//           "Supervisor",
+//           "WorkPackageLeader",
+//           "Other",
+//         ],
+//         dropdown: {
+//           classname: "color-blue",
+//           enabled: 0, // show the dropdown immediately on focus
+//           maxItems: 25,
+//           // position  : "text",    // place the dropdown near the typed text
+//           closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+//         },
+//         duplicates: false,
+//       });
+//       /// initiate tagify for affiliations
+//       currentAffliationtagify = new Tagify(affiliationInput, {
+//         dropdown: {
+//           classname: "color-blue",
+//           enabled: 0, // show the dropdown immediately on focus
+//           maxItems: 25,
+//           closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+//         },
+//         duplicates: false,
+//         delimiters: ";",
+//       });
+//
+//       document.getElementById("input-con-ID").disabled = false;
+//       affiliationInput.disabled = false;
+//       document.getElementById("input-con-role").disabled = false;
+//     }),
+//     function done(err) {
+//       if (err) {
+//         log.error(err);
+//         console.error(err);
+//         return;
+//       }
+//     };
+// });
 
 ///// grab datalist name and auto-load current description
 function showDatasetDescription() {
