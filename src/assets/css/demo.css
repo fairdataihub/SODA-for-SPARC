@@ -1347,6 +1347,20 @@ input:checked + .slider:before {
   border-radius: 25px;
 }
 
+.slider.round.manifest {
+  width: 60px;
+  height:30px;
+}
+
+.slider.round.manifest:before {
+  width: 26px;
+  height: 26px;
+}
+
+input:checked + .slider.round.manifest:before {
+  transform: translateX(30px)
+}
+
 .slider.round:before {
   border-radius: 50%;
 }
