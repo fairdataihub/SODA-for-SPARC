@@ -98,7 +98,7 @@
   overflow: auto;
 }
 
-#prepare_metadata_main_container,
+/* #prepare_metadata_main_container, */
 #prepare_dataset_main_container {
   transform: translate(-50%, -50%);
   position: absolute;
