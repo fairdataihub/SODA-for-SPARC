@@ -1,4 +1,4 @@
-const { ipcRenderer } = require("electron");
+//const { ipcRenderer } = require("electron");
 //
 // function showAddGrant() {
 //   document.getElementById("div-add-new-grant").style.display = "block";
