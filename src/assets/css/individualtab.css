@@ -796,6 +796,11 @@
   width: 50%;
 }
 
+.field-disseminate-dataset {
+  margin: 15px auto;
+  width: 450px;
+}
+
 .div-organize-dataset-menu {
   float: right;
   display: flex;
