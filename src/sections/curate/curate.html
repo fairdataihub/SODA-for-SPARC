@@ -124,7 +124,7 @@
           <label style="font-size:17px;text-align:center;color:var(--color-bg-plum)">Let's get started. What would you like to do?
 
           <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
-          <div style="display:flex;flex-direction:row;">
+          <div style="display:flex;flex-direction:row;justify-content: center;">
             <div style="margin:15px 0;">
               <div class="option-card radio-button getting-started-1st-question" id="div-getting-started-prepare-new" data-next="Question-getting-started-final" onclick="transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
                   <div class="card-head">
@@ -204,7 +204,7 @@
     <div class="ui form" style="width:450px">
       <div class="grouped fields">
         <label style="font-size:17px;color:var(--color-bg-plum);text-align:center;">What is the location of the dataset?</label>
-        <div class="field" style="margin:15px 0;">
+        <div class="field" style="margin:15px auto; display: flex; justify-content: center;">
           <input class="form-control" style="width:450px !important" id="input-destination-getting-started-locally" type="text" readonly placeholder="Browse here">
         </div>
       </div>
@@ -221,7 +221,7 @@
         <div class="grouped fields">
           <label style="font-size:17px;color:var(--color-bg-plum);text-align:center;">Which dataset would you like to continue working on?
           <br><span style="color: #696969;font-size:13px">Please select one: </span></label>
-          <div class="field" style="margin:15px 0;width:450px;">
+          <div class="field" style="margin:15px auto;width:450px;">
             <select id="progress-files-dropdown" onchange="loadProgressFile(this)" name="progress file" class='ui selection dropdown' style="width:450px !important;border-radius:7px;padding:8px">
               <option> Select </option>
             </select>
@@ -237,7 +237,7 @@
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">What is your Blackfynn account?</label>
-              <div class="field" style="margin:5px 0;width:450px;">
+              <div class="field" style="margin:5px auto;width:450px;">
                 <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
                   <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
                     <div>
@@ -265,7 +265,7 @@
             <div class="ui form" style="width:100%">
               <div class="grouped fields">
                 <label style="font-size:17px;color:var(--color-bg-plum);">Which existing Blackfynn dataset would you like to use?</label>
-                <div class="field" style="margin:15px 0;width:450px">
+                <div class="field" style="margin:15px auto;width:450px">
                   <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
                     <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
                       <div>
@@ -280,7 +280,7 @@
                   <div style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
                     <button id="button-confirm-bf-dataset-getting-started" onclick="transitionSubQuestionsButton(this, 'Question-getting-started-BF-dataset', 'getting-started-tab', 'delete', 'individual-question getting-started')" data-next="Question-getting-started-final" style="display:none;cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
                     <p style="text-align:center;font-weight:600;display:none;" id="dataset-loaded-message"><span>Your requested dataset has been loaded successfully. Please select continue below!</span></p>
-                    <div id="bf-dataset-spinner" class="spinner" style="visibility:hidden;position: absolute;right:10px">
+                    <div id="bf-dataset-spinner" class="spinner" style="visibility:hidden;right:10px">
                       <div class="rect1"></div>
                       <div class="rect2"></div>
                       <div class="rect3"></div>
@@ -897,7 +897,7 @@
               <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Where would you like to generate your dataset?
               <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
 
-              <div style="display:flex;flex-direction:row;">
+              <div style="display:flex;flex-direction:row;justify-content: center;">
                 <div style="margin:15px 0;" id="generate-dataset-replace-existing">
                   <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div-old"
                     onclick="transitionSubQuestions(this, 'Question-generate-dataset', 'generate-dataset-tab', '', 'generate-dataset')">
@@ -953,7 +953,7 @@
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">What is your Blackfynn account?</label>
-              <div class="field" style="margin:5px 0;width:450px;">
+              <div class="field" style="margin:5px auto;width:450px;">
                 <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
                   <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
                     <div>
@@ -986,7 +986,7 @@
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);text-align:center">Which dataset would you like to generate on?
               <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
-              <div style="display:flex;flex-direction:row;">
+              <div style="display:flex;flex-direction:row; justify-content: center;">
                 <div style="margin:15px 0;">
                   <div class="option-card radio-button" data-next="Question-generate-dataset-choose-ds-name" onclick="transitionSubQuestions(this, 'Question-generate-dataset-options', 'generate-dataset-tab', '', 'generate-dataset')">
                       <div class="card-head">
@@ -1031,7 +1031,7 @@
         <div class="ui form" style="width:450px">
           <div class="grouped fields">
             <label style="font-size:17px;color:var(--color-bg-plum);width:100%;text-align:center">What is the name of the new dataset?</label>
-            <div class="field" style="margin:15px 0;">
+            <div class="field" style="margin:15px auto; display: flex; justify-content: center;">
               <input type="text" class="form-control" style="background: #fff !important;width:450px !important" id="inputNewNameDataset" placeholder="Type here">
             </div>
           </div>
@@ -1047,7 +1047,7 @@
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);">Which existing Blackfynn dataset would you like to use?</label>
-              <div class="field" style="margin:15px 0;width:450px">
+              <div class="field" style="margin:15px auto;width:450px">
                 <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
                   <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
                     <div>
@@ -1082,8 +1082,8 @@
                       <div id="div-filter-datasets-progress-2" class="ui active green inline loader" style="display:none;margin:10px auto"></div>
                       <p id='para-filter-datasets-status-2' style="font-size:14px"> </p>
 
-                      <h5 style="text-align:left;color:#000"> Select your dataset</h5>
-                      <div class="search-select-box">
+                      <h5 style="text-align:left;color:#000; display: none;" id="bf-dataset-select-header"> Select your dataset</h5>
+                      <div class="search-select-box" id="bf-dataset-select-div" style="display: none;">
                       <select class="w-100" id="curatebfdatasetlist" data-live-search="true" name="Blackfynn dataset" style="width:450px;border-radius:7px;padding:8px">
                         <option value="" disabled> Loading... </option>
                       </select>
@@ -1120,7 +1120,7 @@
             </div>
 
             <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
-            <div style="display:flex;flex-direction:row;">
+            <div style="display:flex;flex-direction:row;justify-content: center;">
               <div style="margin:15px 0;">
                 <div class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'generate-dataset-tab', '', 'generate-dataset')">
                     <div class="card-head">
@@ -1208,7 +1208,7 @@
               </span>
             </div>
           <br><span style="color: #898989;font-size:12px">Please select one:</span></label>
-          <div style="display:flex;flex-direction:row;">
+          <div style="display:flex;flex-direction:row; justify-content: center;">
             <div style="margin:15px 0;">
               <div class="option-card radio-button" data-next="Question-generate-dataset-generate-div-old" onclick="transitionSubQuestions(this, 'Question-generate-dataset-existing-files-options', 'generate-dataset-tab', '', 'generate-dataset')">
                   <div class="card-head">
@@ -1268,7 +1268,7 @@
         <div class="ui form" style="width:450px">
           <div class="grouped fields">
             <label style="font-size:17px;color:var(--color-bg-plum);text-align:center;">At which location should we generate the dataset?</label>
-            <div class="field" style="margin:15px 0;">
+            <div class="field" style="margin:15px auto; display: flex; justify-content: center;">
               <input class="form-control" style="width:450px !important" id="input-destination-generate-dataset-locally" type="text" readonly placeholder="Browse here">
             </div>
           </div>

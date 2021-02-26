@@ -2578,13 +2578,14 @@ const getBase64 = async (url) => {
     );
 };
 
+// function for importing a banner image if one already exists
 $("#edit_banner_image_button").click(async () => {
   $("#edit_banner_image_modal").modal("show");
   if ($("#para-current-banner-img").text() === "None") {
     //Do nothing... regular import
   } else {
     let img_src = $("#current-banner-img").attr("src");
-    let img_base64 = await getBase64(img_src);
+    let img_base64 = await getBase64(img_src); // encode image to base64
 
     $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
     $("#save-banner-image").css("visibility", "visible");
@@ -2592,11 +2593,13 @@ $("#edit_banner_image_button").click(async () => {
     $("#div-img-container").css("display", "block");
     $("#para-path-image").html("path");
 
+    // Look for the security token in the URL. If this this doesn't exist, something went wrong with the aws bucket link.
     let position = img_src.search("X-Amz-Security-Token");
 
     if (position != -1) {
+      // The image url will be before the security token
       let new_img_src = img_src.substring(0, position - 1);
-      let new_position = new_img_src.lastIndexOf(".");
+      let new_position = new_img_src.lastIndexOf("."); // 
 
       if (new_position != -1) {
         imageExtension = new_img_src.substring(new_position + 1);
@@ -2657,4 +2660,5 @@ $("#edit_banner_image_button").click(async () => {
   }
 });
 
+// Enable the popover content for the main-tab buttons
 $('.content-button').popover();

@@ -696,6 +696,8 @@ async function openDropdownPrompt(dropdown) {
     $(datasetPermissionDiv)
       .find("#div-filter-datasets-progress-2")
       .css("display", "block");
+    $("#bf-dataset-select-header").css("display", "none")
+    $("#bf-dataset-select-div").css("display", "none")
     $(datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
     $("#para-continue-bf-dataset-getting-started").text("");
     $(datasetPermissionDiv)
@@ -757,9 +759,11 @@ async function openDropdownPrompt(dropdown) {
   }
 }
 
-$("#select-permission-list-2").change(function (e) {
+$("#select-permission-list-2").change((e) => {
   // updateDatasetList(defaultBfAccount);
   $("#div-filter-datasets-progress-2").css("display", "block");
+  $("#bf-dataset-select-header").css("display", "none")
+  $("#bf-dataset-select-div").css("display", "none")
   // var datasetPermission = $("#select-permission-list-2").val();
   var bfacct = $("#current-bf-account").text();
   if (bfacct === "None") {
@@ -768,6 +772,8 @@ $("#select-permission-list-2").change(function (e) {
     $(datasetPermissionDiv)
       .find("#div-filter-datasets-progress-2")
       .css("display", "none");
+      $("#bf-dataset-select-header").css("display", "block")
+      $("#bf-dataset-select-div").css("display", "block")
   } else {
     $("#curatebfdatasetlist").selectpicker();
     updateDatasetList(bfacct);
@@ -845,6 +851,8 @@ function tempDatasetListsSync() {
 
 function updateDatasetList(bfaccount) {
   $("#div-filter-datasets-progress-2").css("display", "block");
+  $("#bf-dataset-select-header").css("display", "none")
+    $("#bf-dataset-select-div").css("display", "none")
   removeOptions(curateDatasetDropdown);
   addOption(curateDatasetDropdown, "Select dataset", "Select dataset");
   initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
@@ -884,6 +892,8 @@ function updateDatasetList(bfaccount) {
       document.getElementById("div-permission-list-2").style.display = "block";
     }
     $("#div-filter-datasets-progress-2").css("display", "none");
+    $("#bf-dataset-select-header").css("display", "block")
+    $("#bf-dataset-select-div").css("display", "block")
     if (document.getElementById("div-permission-list-2")) {
       document.getElementById("para-filter-datasets-status-2").innerHTML =
         filteredDatasets.length +

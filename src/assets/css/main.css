@@ -268,13 +268,15 @@ button[disabled] {
 .single-item.selected-item:hover {
   border: #c0c0c0;
   background-color: #d8d7d7;
-  /* transform: translateY(-6px); */
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .single-item.selected-item:focus {
   border: #c0c0c0;
   background-color: #eeeaea;
-  /* transform: translateY(-6px); */
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .ds-selected {
@@ -290,7 +292,8 @@ button[disabled] {
 .single-item:hover {
   border: #c0c0c0;
   background-color: #f5f5f5;
-  /* transform: translateY(-6px); */
+  transition: all 0.15s linear;
+  -webkit-transition: all 0.15s linear;
 }
 
 .single-item:hover + #myspan {
@@ -340,10 +343,6 @@ button[disabled] {
   font-weight: bold;
   pointer-events: none;
 }
-/*
-.dropdown-item:hover {
-  background-color: #F0F0F0 !important;
-} */
 
 .folder_desc {
   text-align: center;
@@ -560,7 +559,11 @@ button[disabled] {
   outline: none;
   border: 1px solid var(--color-light-green);
   box-shadow: 0px 0px 3px 0px var(--color-light-green);
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+
 }
+
 .button-generate-dataset p {
   color: #000;
   font-weight: 500;
@@ -615,6 +618,8 @@ button[disabled] {
 
 .metadata-button.button-generate-dataset.done {
   border: 1px solid var(--color-light-green);
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear; 
 }
 
 .metadata-button.button-generate-dataset.done p {
@@ -630,6 +635,8 @@ button[disabled] {
   color: var(--color-light-green);
   display: block !important;
   margin: 0 auto;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .form-group.row {
@@ -1064,7 +1071,7 @@ button[disabled] {
   border-radius: 10px 0 0 10px;
   border: 1px solid #f0f0f0;
   background: #f5f5f5;
-  text-color: #000;
+  color: #000;
   padding: 20px;
   line-height: 1.5;
   float: right;
