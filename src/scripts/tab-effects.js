@@ -2662,3 +2662,4 @@ $("#edit_banner_image_button").click(async () => {
 
 // Enable the popover content for the main-tab buttons
 $('.content-button').popover();
+$('.option-card-disseminate-dataset').popover();

@@ -22,8 +22,8 @@
 }
 
 .option-card:hover {
-  border: 1px solid var(--color-light-green);
-  box-shadow: 0px 0px 3px 0px var(--color-light-green);
+  /* border: 1px solid var(--color-light-green); */
+  box-shadow: 0px 0px 10px 0px var(--color-light-green);
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
 }
@@ -79,7 +79,7 @@
 .option-card.radio-button:focus,
 .option-card.radio-button:active {
   color: var(--color-light-green);
-  border: 1px solid var(--color-light-green);
+  /* border: 1px solid var(--color-light-green); */
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
 }
@@ -107,6 +107,10 @@
 }
 
 .option-card.radio-button.non-selected svg {
+  fill: #585858;
+}
+
+.option-card.radio-button.non-selected svg path {
   fill: #585858;
 }
 
@@ -811,6 +815,11 @@
 
 .field {
   width: 50%;
+}
+
+.field-disseminate-dataset {
+  margin: 15px auto;
+  width: 450px;
 }
 
 .div-organize-dataset-menu {
