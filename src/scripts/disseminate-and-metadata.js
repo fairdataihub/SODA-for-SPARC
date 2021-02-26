@@ -665,6 +665,8 @@ function checkContributorNameDuplicates(table, currentRow) {
 }
 
 function cloneConNamesSelect(selectLast) {
+  removeOptions(document.getElementById(selectLast));
+  addOption(document.getElementById(selectLast), "Select an option", "Select an option");
   for (var i = 0; i < currentContributorsLastNames.length; i++) {
     var opt = currentContributorsLastNames[i];
     if (document.getElementById(selectLast)) {
@@ -725,6 +727,8 @@ function addOtherContributors(table) {
   var currentRow = document.getElementById(table).rows[document.getElementById(table).rows.length-1]
   currentRow.cells[0].outerHTML = "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-last-"+rowIndex+"'></input></td>"
   currentRow.cells[1].outerHTML = "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-first-"+rowIndex+"'></input></td>"
+  createConsRoleTagify("input-con-role-"+currentRow.rowIndex.toString())
+  createConsAffliationTagify("input-con-affiliation-"+currentRow.rowIndex.toString())
 }
 
 function convertDropdownToTextBox(dropdown) {

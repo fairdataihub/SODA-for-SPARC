@@ -1565,6 +1565,10 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     $("#dd-connect-Airtable").css("display", "block")
     ddNoAirtableMode("On");
   }
+  if (ev.id == "submission-no-airtable-mode") {
+    $("#div-airtable-award-button").show();
+    $("#submission-connect-Airtable").css("display", "block")
+  }
 
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(

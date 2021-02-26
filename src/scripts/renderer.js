@@ -1629,9 +1629,10 @@ function changeAwardInputDsDescription() {
   currentContributorsLastNames = [];
   currentContributorsFirstNames = [];
   globalContributorNameObject = {}
-  // clearCurrentConInfo();
   /// delete old table
   $("#table-current-contributors").find('tr').slice(1,-1).remove();
+  var currentRowLeftID = $($($("#table-current-contributors").find('tr')[1].cells[0]).find("select")[0]).prop("id")
+  cloneConNamesSelect(currentRowLeftID);
 
   var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value;
   var airKeyContent = parseJson(airtableConfigPath);
