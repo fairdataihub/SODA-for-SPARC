@@ -1835,7 +1835,7 @@ function createCurrentConTable(table) {
 //////////////////////// Article(s) and Protocol(s) /////////////////////
 function createAdditionalLinksTable() {
   document.getElementById("para-save-link-status").innerHTML = "";
-  var linkTable = document.getElementById("table-addl-links");
+  var linkTable = document.getElementById("doi-table");
   var linkType = document.getElementById("select-misc-link").value;
   var link = document.getElementById("input-misc-links").value;
   var description = document.getElementById("input-misc-link-description")
@@ -2146,11 +2146,11 @@ function emptyDSInfoEntries() {
 }
 
 function emptyLinkInfo() {
-  var tableCurrentLinks = document.getElementById("table-addl-links");
+  var tableCurrentLinks = document.getElementById("doi-table");
   var fieldSatisfied = false;
   for (var i = 0; i < tableCurrentLinks.rows.length; i++) {
     if (
-      tableCurrentLinks.rows[i].cells[0].innerHTML === "Protocol URL or DOI*"
+      $(tableCurrentLinks.rows[i].cells[0]).find("select").val() == "Protocol URL or DOI*"
     ) {
       fieldSatisfied = true;
     }
@@ -2169,8 +2169,10 @@ function emptyInfoEntries(element) {
 function contactPersonCheck() {
   var contactPersonExists = false;
   var rowcount = currentConTable.rows.length;
+
   for (var i = 0; i < rowcount; i++) {
-    if (currentConTable.rows[i].cells[4].innerHTML === "Yes") {
+    var contactLabel = $(currentConTable.rows[i].cells[5]).find("label").find("input")[0];
+    if (contactLabel && contactLabel.checked) {
       contactPersonExists = true;
       break;
     }
@@ -2227,14 +2229,34 @@ function grabConInfoEntries() {
   var rowcountCon = currentConTable.rows.length;
   var currentConInfo = [];
   for (i = 1; i < rowcountCon; i++) {
-    var conRoleInfo = currentConTable.rows[i].cells[3].innerHTML;
-    var conAffliationInfo = currentConTable.rows[i].cells[2].innerHTML;
+    var conRoleTagify = $(currentConTable.rows[i].cells[4]).find("tag").toArray();
+    var conRoleInfo = [];
+    if (conRoleTagify.length>0) {
+      conRoleTagify.forEach((item, i) => {
+        conRoleInfo.push($(conRoleTagify)[i].innerText)
+      });
+    }
+
+    var conAffliationTagify = $(currentConTable.rows[i].cells[3]).find("tag").toArray();
+    var conAffliationInfo = [];
+    if (conAffliationTagify.length>0) {
+      conAffliationTagify.forEach((item, i) => {
+        conAffliationInfo.push($(conAffliationTagify)[i].innerText)
+      });
+    }
+
+    var contactLabel = $(currentConTable.rows[i].cells[5]).find("label").find("input")[0];
+    var contactCheck = "No";
+    if (contactLabel && contactLabel.checked) {
+      contactCheck = "Yes"
+    }
+
     var myCurrentCon = {
-      conName: currentConTable.rows[i].cells[0].innerHTML.trim(),
-      conID: currentConTable.rows[i].cells[1].innerHTML.trim(),
+      conName: $($(currentConTable.rows[i].cells[0])[0]).find("select").val() + ", " + $($(currentConTable.rows[i].cells[1])[0]).find("select").val(),
+      conID: $($(currentConTable.rows[1].cells[2])[0]).find("input").val().trim(),
       conAffliation: conAffliationInfo,
       conRole: conRoleInfo,
-      conContact: currentConTable.rows[i].cells[4].innerHTML,
+      conContact: contactCheck,
     };
     currentConInfo.push(myCurrentCon);
   }
@@ -2247,16 +2269,13 @@ function grabConInfoEntries() {
 function grabProtocolSection() {
   var miscObj = {};
   /// Additional link description
-  var rowcountLink = document.getElementById("table-addl-links").rows.length;
+  var rowcountLink = document.getElementById("doi-table").rows.length;
   var addlLinkInfo = [];
   for (i = 1; i < rowcountLink; i++) {
     var addlLink = {
-      "link type": document.getElementById("table-addl-links").rows[i].cells[0]
-        .innerHTML,
-      link: document.getElementById("table-addl-links").rows[i].cells[1]
-        .innerHTML,
-      description: document.getElementById("table-addl-links").rows[i].cells[2]
-        .innerHTML,
+      "link type": $(document.getElementById("doi-table").rows[i].cells[0]).find("select").val(),
+      link: $(document.getElementById("doi-table").rows[i].cells[1]).find("input").val(),
+      description: $(document.getElementById("doi-table").rows[i].cells[2]).find("input").val(),
     };
     addlLinkInfo.push(addlLink);
   }
@@ -2436,12 +2455,9 @@ ipcRenderer.on(
 
         /// get current, selected Blackfynn account
         var bfaccountname =
-          bfAccountList.options[bfAccountList.selectedIndex].text;
+          $("#current-bf-account").text();
 
         /// call python function to save file
-        document.getElementById(
-          "para-generate-description-status"
-        ).style.display = "block";
         if (dirpath != null) {
           client.invoke(
             "api_save_ds_description_file",

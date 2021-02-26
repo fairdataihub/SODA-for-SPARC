@@ -593,8 +593,8 @@ function addNewRow(table) {
   var rowIndex = rowcount;
   var currentRow = document.getElementById(table).rows[document.getElementById(table).rows.length-1]
   if (table==='doi-table') {
-    if (currentRow.cells[1].innerText == "" || currentRow.cells[2].innerText == "") {
-      $("#para-save-link-status").text("Please fill in all the fields to add!")
+    if ($(document.getElementById('doi-table').rows[rowIndex-1].cells[1]).find("input").val() == "") {
+      $("#para-save-link-status").text("Please enter a link to add!")
     } else {
       $('.doi-helper-buttons').css('display', 'inline-flex');
       $('.doi-add-row-button').css('display', 'none');
@@ -618,6 +618,8 @@ function addNewRow(table) {
 }
 
 function cloneConNamesSelect(selectLast, selectFirst) {
+  removeOptions(document.getElementById(selectLast))
+  removeOptions(document.getElementById(selectFirst))
   for (var i = 0; i < currentContributorsLastNames.length; i++) {
     var opt = currentContributorsLastNames[i];
     addOption(document.getElementById(selectLast), opt, opt);
