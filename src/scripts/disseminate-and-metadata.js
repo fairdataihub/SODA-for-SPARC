@@ -732,9 +732,19 @@ function addOtherContributors(table) {
 }
 
 function convertDropdownToTextBox(dropdown) {
-  $("#"+dropdown).replaceWith(
-    "<input type='text' id='"+dropdown+"'></input>"
-  )
+  if (document.getElementById(dropdown)) {
+      $("#"+dropdown).replaceWith(
+        "<input type='text' id='"+dropdown+"'></input>"
+      )
+    }
+}
+
+function convertTextBoxToDropdown(textbox) {
+  if (document.getElementById(textbox)) {
+    $("#"+textbox).replaceWith(
+      "<select id='"+textbox+"' onchange='changeAwardInputDsDescription()' class='form-container-input-bf' style='line-height:2; font-size:13px'></select>"
+    )
+  }
 }
 
 function ddNoAirtableMode(action) {
@@ -747,5 +757,11 @@ function ddNoAirtableMode(action) {
   } else if (action == "Off") {
     noAirtable = false;
     $("#add-other-contributors").css("display", "block");
+    $("#table-current-contributors").find('tr').slice(1,-1).remove();
+    convertTextBoxToDropdown("ds-description-award-list");
+    $("#"+dsAwardArray.id).remove()
+    loadAwards()
+    convertTextBoxToDropdown("ds-description-contributor-list-last-1");
+    convertTextBoxToDropdown("ds-description-contributor-list-first-1");
   }
 }

@@ -7058,59 +7058,78 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
           "</span>"
       );
   } else {
-    // test connection
-    const optionsSparcTable = {
-      hostname: airtableHostname,
-      port: 443,
-      path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
-      headers: { Authorization: `Bearer ${key}` },
-    };
-    var sparcTableSuccess;
-    https.get(optionsSparcTable, (res) => {
-      if (res.statusCode === 200) {
-        /// updating api key in SODA's storage
-        createMetadataDir();
-        var content = parseJson(airtableConfigPath);
-        content["api-key"] = key;
-        content["key-name"] = name;
-        fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-        $("#current-airtable-account").text(name);
-        $("#current-airtable-account-dd").text(name);
-        $("#bootbox-airtable-key-name").val("");
-        $("#bootbox-airtable-key").val("");
-        loadAwardData();
-        myBootboxDialog.modal("hide");
-        bootbox.alert({
-          message: "Successfully connected!",
-          centerVertical: true,
-        });
-      } else if (res.statusCode === 403) {
-        $(myBootboxDialog).find(".modal-footer span").remove();
-        myBootboxDialog
-          .find(".modal-footer")
-          .prepend(
-            "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>"
-          );
-      } else {
-        log.error(res);
-        console.error(res);
-        $(myBootboxDialog).find(".modal-footer span").remove();
-        myBootboxDialog
-          .find(".modal-footer")
-          .prepend(
-            "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
-          );
-      }
-      res.on("error", (error) => {
-        log.error(error);
-        console.error(error);
-        $(myBootboxDialog).find(".modal-footer span").remove();
-        myBootboxDialog
-          .find(".modal-footer")
-          .prepend(
-            "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
-          );
-      });
+    bootbox.confirm({
+      title: "Connect to Airtable",
+      message:
+        "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
+      centerVertical: true,
+      size: "medium",
+      button: {
+        ok: {
+          label: "Yes",
+          className: "btn-primary",
+        },
+      },
+      callback: function (r) {
+        if (r !== null && r === true) {
+          // test connection
+          const optionsSparcTable = {
+            hostname: airtableHostname,
+            port: 443,
+            path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
+            headers: { Authorization: `Bearer ${key}` },
+          };
+          var sparcTableSuccess;
+          https.get(optionsSparcTable, (res) => {
+            if (res.statusCode === 200) {
+              /// updating api key in SODA's storage
+              createMetadataDir();
+              var content = parseJson(airtableConfigPath);
+              content["api-key"] = key;
+              content["key-name"] = name;
+              fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
+              $("#current-airtable-account").text(name);
+              $("#current-airtable-account-dd").text(name);
+              $("#bootbox-airtable-key-name").val("");
+              $("#bootbox-airtable-key").val("");
+              loadAwardData();
+              checkAirtableStatus();
+              ddNoAirtableMode("Off");
+              myBootboxDialog.modal("hide");
+              bootbox.alert({
+                message: "Successfully connected!",
+                centerVertical: true,
+              });
+            } else if (res.statusCode === 403) {
+              $(myBootboxDialog).find(".modal-footer span").remove();
+              myBootboxDialog
+                .find(".modal-footer")
+                .prepend(
+                  "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>"
+                );
+            } else {
+              log.error(res);
+              console.error(res);
+              $(myBootboxDialog).find(".modal-footer span").remove();
+              myBootboxDialog
+                .find(".modal-footer")
+                .prepend(
+                  "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
+                );
+            }
+            res.on("error", (error) => {
+              log.error(error);
+              console.error(error);
+              $(myBootboxDialog).find(".modal-footer span").remove();
+              myBootboxDialog
+                .find(".modal-footer")
+                .prepend(
+                  "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
+                );
+            });
+          });
+        }
+      },
     });
   }
 }
