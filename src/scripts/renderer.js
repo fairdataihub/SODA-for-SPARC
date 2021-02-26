@@ -1621,14 +1621,14 @@ function clearCurrentConInfo() {
   document.getElementById("input-con-ID-1").value = "";
   document.getElementById("input-con-role-1").value = "";
   document.getElementById("input-con-affiliation-1").value = "";
-  contactPerson.checked = false;
+  // contactPerson.checked = false;
 }
 
 function changeAwardInputDsDescription() {
   currentContributorsLastNames = [];
   currentContributorsFirstNames = [];
   globalContributorNameObject = {}
-  clearCurrentConInfo();
+  // clearCurrentConInfo();
   /// delete old table
   while (currentConTable.rows.length > 2) {
     currentConTable.deleteRow(2);
@@ -1687,12 +1687,103 @@ function changeAwardInputDsDescription() {
 // on change event when users choose a contributor's last name
 function onchangeLastNames(no) {
   $('#ds-description-contributor-list-first-'+no.toString()).attr("disabled", true);
-  conLastname = $('#ds-description-contributor-list-last-'+no.toString()).val()
+  var conLastname = $('#ds-description-contributor-list-last-'+no.toString()).val();
+  removeOptions(document.getElementById('ds-description-contributor-list-first-'+no.toString()))
+  addOption(document.getElementById('ds-description-contributor-list-first-'+no.toString()), "Select an option", "Select an option")
   if (conLastname in globalContributorNameObject) {
     addOption(document.getElementById('ds-description-contributor-list-first-'+no.toString()), globalContributorNameObject[conLastname], globalContributorNameObject[conLastname])
   }
   $('#ds-description-contributor-list-first-'+no.toString()).attr("disabled", false);
 }
+
+// on change event when users choose a contributor's first name -> Load con info
+function onchangeFirstNames(no) {
+  var conLastname = $('#ds-description-contributor-list-last-'+no.toString()).val();
+  var conFirstname = $('#ds-description-contributor-list-first-'+no.toString()).val();
+  if (conFirstname !== "Select an option") {
+    loadContributorInfo(no, conLastname, conFirstname)
+  }
+}
+
+// Auto populate once a contributor is selected
+function loadContributorInfo(no, lastName, firstName) {
+
+  // first destroy old tagifies
+  $($('#input-con-affiliation-'+no.toString()).siblings()[0]).remove()
+  $($('#input-con-role-'+no.toString()).siblings()[0]).remove()
+
+  var tagifyRole = new Tagify(document.getElementById('input-con-role-'+no.toString()), {
+    whitelist: ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+    enforceWhitelist: true,
+    dropdown : {
+       enabled   : 0,
+       closeOnSelect : true
+     }
+  })
+  var tagifyAffliation = new Tagify(document.getElementById('input-con-affiliation-'+no.toString()), {
+    dropdown: {
+      classname: "color-blue",
+      enabled: 0, // show the dropdown immediately on focus
+      maxItems: 25,
+      closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+    },
+    duplicates: false
+  })
+  tagifyRole.removeAllTags();
+  tagifyAffliation.removeAllTags();
+  var contactLabel = $("#ds-contact-person-"+no.toString());
+  $(contactLabel).prop("checked", false)
+  document.getElementById("input-con-ID-"+no.toString()).value = "Loading...";
+
+  tagifyAffliation.loading(true).dropdown.hide.call(tagifyAffliation)
+  tagifyRole.loading(true).dropdown.hide.call(tagifyRole)
+
+  var airKeyContent = parseJson(airtableConfigPath);
+  var airKeyInput = airKeyContent["api-key"];
+  var airtableConfig = Airtable.configure({
+    endpointUrl: "https://" + airtableHostname,
+    apiKey: airKeyInput,
+  });
+  var base = Airtable.base("appiYd1Tz9Sv857GZ");
+  base("sparc_members")
+    .select({
+      filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`,
+    })
+    .eachPage(function page(records, fetchNextPage) {
+      var conInfoObj = {};
+      records.forEach(function (record) {
+        conInfoObj["ID"] = record.get("ORCID");
+        conInfoObj["Role"] = record.get("Dataset_contributor_roles_for_SODA");
+        conInfoObj["Affiliation"] = record.get("Institution");
+      }),
+        fetchNextPage();
+
+      // if no records found, leave fields empty
+      leaveFieldsEmpty(
+        conInfoObj["ID"],
+        document.getElementById("input-con-ID-"+no.toString())
+      );
+      leaveFieldsEmpty(
+        conInfoObj["Role"],
+        document.getElementById("input-con-role-"+no.toString())
+      );
+      leaveFieldsEmpty(conInfoObj["Affiliation"], document.getElementById("input-con-affiliation-"+no.toString()));
+
+      tagifyAffliation.addTags(conInfoObj["Affiliation"])
+      tagifyRole.addTags(conInfoObj["Role"])
+
+      tagifyAffliation.loading(false).dropdown.show.call(tagifyAffliation)
+      tagifyRole.loading(false).dropdown.show.call(tagifyRole)
+    }),
+    function done(err) {
+      if (err) {
+        log.error(err);
+        console.error(err);
+        return;
+      }
+    };
+}
+
 
 //////////////////////// Current Contributor(s) /////////////////////
 
@@ -1928,25 +2019,6 @@ function leaveFieldsEmpty(field, element) {
 function createTagsInput(field) {
   return new Tagify(field);
 }
-//
-// //// When users click on adding description for each additional link
-// addAdditionalLinkBtn.addEventListener("click", function () {
-//   createAdditionalLinksTable();
-// });
-//
-// //// When users click on "Add" to current contributors table
-// addCurrentContributorsBtn.addEventListener("click", function () {
-//   document.getElementById("para-save-contributor-status").innerHTML = "";
-//   if (
-//     dsContributorArray.options[dsContributorArray.selectedIndex].value ===
-//     "Select an option"
-//   ) {
-//     document.getElementById("para-save-contributor-status").innerHTML =
-//       "<span style='color:red'>Please choose a contributor!</span>";
-//   } else {
-//     createCurrentConTable(currentConTable);
-//   }
-// });
 
 $(currentConTable).mousedown(function (e) {
   var length = currentConTable.rows.length - 1
@@ -1986,116 +2058,6 @@ $(currentConTable).mousedown(function (e) {
 
 /// load Airtable Contributor data
 dsAwardArray.addEventListener("change", changeAwardInputDsDescription);
-
-// Auto populate once a contributor is selected
-function loadContributorInfo() {
-
-  currentContributortagify.removeAllTags();
-  currentAffliationtagify.removeAllTags();
-
-  contactPerson.checked = false;
-
-  var contributorVal =
-    dsContributorArray.options[dsContributorArray.selectedIndex].value;
-  currentContributortagify.destroy();
-  currentAffliationtagify.destroy();
-  document.getElementById("input-con-ID-1").disabled = true;
-  affiliationInput.disabled = true;
-  document.getElementById("input-con-role-1").disabled = true;
-  document.getElementById("input-con-ID-1").value = "Loading...";
-  affiliationInput.value = "Loading...";
-  document.getElementById("input-con-role").value = "Loading...";
-
-  var airKeyContent = parseJson(airtableConfigPath);
-  var airKeyInput = airKeyContent["api-key"];
-  var airtableConfig = Airtable.configure({
-    endpointUrl: "https://" + airtableHostname,
-    apiKey: airKeyInput,
-  });
-  var base = Airtable.base("appiYd1Tz9Sv857GZ");
-  var name = contributorVal.split(", ");
-  var lastName = name[0];
-  var firstName = name[1];
-  base("sparc_members")
-    .select({
-      filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`,
-    })
-    .eachPage(function page(records, fetchNextPage) {
-      var conInfoObj = {};
-      records.forEach(function (record) {
-        conInfoObj["ID"] = record.get("ORCID");
-        conInfoObj["Role"] = record.get("Dataset_contributor_roles_for_SODA");
-        conInfoObj["Affiliation"] = record.get("Institution");
-      }),
-        fetchNextPage();
-
-      // if no records found, leave fields empty
-      leaveFieldsEmpty(
-        conInfoObj["ID"],
-        document.getElementById("input-con-ID")
-      );
-      leaveFieldsEmpty(
-        conInfoObj["Role"],
-        document.getElementById("input-con-role")
-      );
-      leaveFieldsEmpty(conInfoObj["Affiliation"], affiliationInput);
-
-      /// initiate tagify for contributor roles
-      currentContributortagify = new Tagify(contributorRoles, {
-        whitelist: [
-          "PrincipleInvestigator",
-          "Creator",
-          "CoInvestigator",
-          "DataCollector",
-          "DataCurator",
-          "DataManager",
-          "Distributor",
-          "Editor",
-          "Producer",
-          "ProjectLeader",
-          "ProjectManager",
-          "ProjectMember",
-          "RelatedPerson",
-          "Researcher",
-          "ResearchGroup",
-          "Sponsor",
-          "Supervisor",
-          "WorkPackageLeader",
-          "Other",
-        ],
-        dropdown: {
-          classname: "color-blue",
-          enabled: 0, // show the dropdown immediately on focus
-          maxItems: 25,
-          // position  : "text",    // place the dropdown near the typed text
-          closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-        },
-        duplicates: false,
-      });
-      /// initiate tagify for affiliations
-      currentAffliationtagify = new Tagify(affiliationInput, {
-        dropdown: {
-          classname: "color-blue",
-          enabled: 0, // show the dropdown immediately on focus
-          maxItems: 25,
-          closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-        },
-        duplicates: false,
-        delimiters: ";",
-      });
-
-      document.getElementById("input-con-ID").disabled = false;
-      affiliationInput.disabled = false;
-      document.getElementById("input-con-role").disabled = false;
-    }),
-    function done(err) {
-      if (err) {
-        log.error(err);
-        console.error(err);
-        return;
-      }
-    };
-}
 
 ///// grab datalist name and auto-load current description
 function showDatasetDescription() {

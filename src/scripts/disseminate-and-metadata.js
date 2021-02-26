@@ -606,20 +606,32 @@ function addNewRow(table) {
     }
   } else if (table === 'table-current-contributors') {
     // check if all the fields are populated before Adding
-    if ($("#"+currentRow.cells[0].children[0].id).val() == "Select an option" || $("#"+currentRow.cells[0].children[0].id).val() == "Select an option" || $("#"+currentRow.cells[0].children[0].id).val() == "" || $("#"+currentRow.cells[1].children[0].id).val() == "" || $("#"+currentRow.cells[1].children[0].id).val() == "" || currentRow.cells[3].innerText == "" || currentRow.cells[4].innerText == "") {
+    if ($("#"+currentRow.cells[0].children[0].id).val() == "Select an option" || $("#"+currentRow.cells[0].children[0].id).val() == "Select an option" || $("#"+currentRow.cells[0].children[0].id).val() == "" || $("#"+currentRow.cells[1].children[0].id).val() == "" || $("#"+currentRow.cells[2].children[0].id).val() == "" || currentRow.cells[3].innerText == "" || currentRow.cells[4].innerText == "") {
       $("#para-save-contributor-status").text("Please fill in all the fields to add!")
     } else {
+      if ($(currentRow).find("label").find("input")[0].checked) {
+        var contactPersonBoolean = contactPersonCheck();
+        if (contactPersonBoolean) {
+          $("#para-save-contributor-status").text("One contact person is already added above. Only one contact person is allowed for a dataset.")
+          return
+        }
+      }
+      var nameDuplicateBoolean = checkContributorNameDuplicates(table, currentRow)
+      if (nameDuplicateBoolean) {
+        $("#para-save-contributor-status").text("Contributor already added!")
+        return
+      }
       $('#table-current-contributors .contributor-helper-buttons').css('display', 'inline-flex');
       $('#table-current-contributors .contributor-add-row-button').css('display', 'none');
       // check for unique row id in case users delete old rows and append new rows (same IDs!)
       var newRowIndex = checkForUniqueRowID("row-current-name", rowIndex);
-      var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +newRowIndex +"'><td class='grab'><select id='ds-description-contributor-list-last-"+newRowIndex+"' onchange='onchangeLastNames("+newRowIndex+")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select id='ds-description-contributor-list-first-"+newRowIndex+"' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+newRowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+newRowIndex+"'></input></td><td class='grab'><label class='switch'><input id='ds-contact-person' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
+      var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +newRowIndex +"'><td class='grab'><select id='ds-description-contributor-list-last-"+newRowIndex+"' onchange='onchangeLastNames("+newRowIndex+")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select id='ds-description-contributor-list-first-"+newRowIndex+"' onchange='onchangeFirstNames("+newRowIndex+")'  class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' id='input-con-ID-"+newRowIndex+"' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+newRowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+newRowIndex+"'></input></td><td class='grab'><label class='switch'><input id='ds-contact-person-"+newRowIndex+"' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
       rowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
-      createConsRoleTagify('input-con-role-'+newRowIndex.toString());
-      createConsAffliationTagify('input-con-affiliation-'+newRowIndex.toString())
+      // createConsRoleTagify('input-con-role-'+newRowIndex.toString());
+      // createConsAffliationTagify('input-con-affiliation-'+newRowIndex.toString())
       cloneConNamesSelect('ds-description-contributor-list-last-'+newRowIndex.toString())
+      }
     }
-  }
 }
 
 function checkForUniqueRowID(rowID, no) {
@@ -629,6 +641,22 @@ function checkForUniqueRowID(rowID, no) {
     no = no + 1
     return checkForUniqueRowID(rowID, no)
   }
+}
+
+// check for duplicates in names of contributors
+function checkContributorNameDuplicates(table, currentRow) {
+  var duplicate = false;
+  var currentConLastName = $("#"+currentRow.cells[0].children[0].id).val();
+  var currentConFirstName = $("#"+currentRow.cells[1].children[0].id).val();
+  var rowcount = document.getElementById(table).rows.length;
+  for (var i = 1; i < rowcount - 1; i++) {
+    if ($("#"+document.getElementById(table).rows[i].cells[0].children[0].id).val() === currentConLastName
+      && $("#"+document.getElementById(table).rows[i].cells[1].children[0].id).val()  === currentConFirstName) {
+      duplicate = true;
+      break;
+    }
+  }
+  return duplicate
 }
 
 function cloneConNamesSelect(selectLast) {

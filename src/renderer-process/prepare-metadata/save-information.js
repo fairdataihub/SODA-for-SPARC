@@ -1,23 +1,3 @@
-const { ipcRenderer } = require("electron");
-//
-// function showAddGrant() {
-//   document.getElementById("div-add-new-grant").style.display = "block";
-//   document.getElementById("div-select-existing-grant").style.display = "none";
-// }
-//
-// function showSelectGrant() {
-//   document.getElementById("div-add-new-grant").style.display = "none";
-//   document.getElementById("div-select-existing-grant").style.display = "block";
-// }
-//
-// document.querySelector("#addGrant").addEventListener("click", () => {
-//   showAddGrant();
-// });
-//
-// document.querySelector("#selectGrant").addEventListener("click", () => {
-//   showSelectGrant();
-// });
-
 function showDSInfo() {
   document.getElementById("div-ds-dataset-info").style.display = "block";
   document.getElementById("div-ds-award-info").style.display = "none";
