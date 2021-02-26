@@ -78,6 +78,7 @@
                   class="content-button"
                   id="create_new_bf_dataset_btn"
                   data-section="create_new_bf_dataset"
+                  data-content="Create a new empty dataset on Blackfynn" rel="popover" data-placement="bottom" data-trigger="hover"
                 >
                   <svg
                   width="48"
@@ -101,6 +102,7 @@
                   class="content-button"
                   id="rename_existing_bf_dataset_btn"
                   data-section="rename_existing_bf_dataset"
+                  data-content="Rename an existing dataset on Blackfynn" rel="popover" data-placement="bottom" data-trigger="hover"
                 >
                   <svg
                   width="48"
@@ -141,6 +143,7 @@
                   class="content-button"
                   id="add_edit_permissions_btn"
                   data-section="add_edit_permissions"
+                  data-content="Popover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-trigger" rel="popover" data-placement="bottom"  data-trigger="hover"
                 >
                   <svg
                   width="48"
@@ -253,7 +256,7 @@
                     <path d="M15.3571 44.9999H3.07142C2.25708 44.999 1.47632 44.6601 0.900497 44.0575C0.32467 43.4549 0.000813124 42.6378 0 41.7856V3.21428C0.000813124 2.36206 0.32467 1.54499 0.900497 0.94238C1.47632 0.33977 2.25708 0.000850943 3.07142 0H27.6428C28.4572 0.000850943 29.2379 0.33977 29.8137 0.94238C30.3896 1.54499 30.7134 2.36206 30.7142 3.21428V16.0714H27.6428V3.21428H3.07142V41.7856H15.3571V44.9999Z"
                           fill="#565E6B" />
                   </svg>
-                  <h2>Assign a license</h2>
+                  <h2>Assign<br>a license</h2>
                 </button>
               </div>
             </div>
@@ -295,6 +298,7 @@
                   class="content-button"
                   id="view_change_dataset_status_btn"
                   data-section="view_change_dataset_status"
+                  data-content="Popover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-triggerPopover with data-trigger" rel="popover" data-placement="top" data-original-title="Title" data-trigger="hover"
                 >
                     <svg
                     width="48"
@@ -2001,12 +2005,12 @@
     class="section js-section u-category-windows"
     style="padding-left: 15px; overflow-y: hidden"
   >
-    <div class="main-tabs show" id="create_new_bf_dataset-tab">
+    <div class="main-tabs show" id="create_new_bf_dataset-tabc" style="display: flex; height: 100%; overflow-y: hidden">
       <header class="section-header">
-        <div style="display: flex; flex-direction: row">
+        <div style="display: inline-flex; align-items: center; flex-direction: row;">
           <svg
-            width="46"
-            height="52"
+            width="40"
+            height="40"
             viewBox="0 0 46 52"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -2016,7 +2020,7 @@
               fill="black"
             />
           </svg>
-          <h2>Manage Datasets - Create a new dataset</h2>
+          <h2 style="font-size: 25px;">Manage Datasets - Create a new dataset</h2>
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
@@ -2025,211 +2029,209 @@
         </div>
       </header>
 
-      <div
-        class="individual-question manage-dataset show"
-        id="create_empty_dataset_BF_account_tab"
-      >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                text-align: center;
-              "
-              >Is this your Blackfynn account?</label
-            >
-            <div class="field" style="margin: auto; width: 450px">
-              <div
+      <div id="create_new_bf_dataset-tab" style="overflow-y: auto; height: 70%">
+        <div
+          class="individual-question manage-dataset show"
+          id="create_empty_dataset_BF_account_tab" style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label
                 style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  text-align: center;
                 "
+                >Is this your Blackfynn account?</label
               >
+              <div class="field" style="margin: auto; width: 450px">
                 <div
                   style="
                     display: flex;
-                    flex-direction: row;
+                    flex-direction: column;
                     justify-content: space-between;
-                    margin-bottom: 15px;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
                   "
                 >
-                  <div>
-                    <h5 style="color: #808080; font-size: 15px">
-                      Current account:
-                      <span
-                        style="
-                          color: #000;
-                          font-weight: 600;
-                          margin-left: 8px;
-                          font-size: 15px;
-                        "
-                        id="create_empty_dataset_BF_account_span"
-                        >None</span
-                      >
-                    </h5>
-                  </div>
-                  <svg
-                    class="svg-change-current-account"
-                    onclick="openDropdownPrompt('bf')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    class="bi bi-pencil-fill"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
-                </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
-                  <h5 style="color: #808080; font-size: 15px">
-                    Account details:
-                  </h5>
-                  <p
+                  <div
                     style="
-                      color: #000;
-                      font-weight: 600;
-                      margin-left: 15px;
-                      font-size: 15px;
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                      margin-bottom: 15px;
                     "
-                    id="para_create_empty_dataset_BF_account"
                   >
-                    None
-                  </p>
+                    <div>
+                      <h5 style="color: #808080; font-size: 15px">
+                        Current account:
+                        <span
+                          style="
+                            color: #000;
+                            font-weight: 600;
+                            margin-left: 8px;
+                            font-size: 15px;
+                          "
+                          id="create_empty_dataset_BF_account_span"
+                          >None</span
+                        >
+                      </h5>
+                    </div>
+                    <svg
+                      class="svg-change-current-account"
+                      onclick="openDropdownPrompt('bf')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      class="bi bi-pencil-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      margin-bottom: 15px;
+                    "
+                  >
+                    <h5 style="color: #808080; font-size: 15px">
+                      Account details:
+                    </h5>
+                    <p
+                      style="
+                        color: #000;
+                        font-weight: 600;
+                        margin-left: 15px;
+                        font-size: 15px;
+                      "
+                      id="para_create_empty_dataset_BF_account"
+                    >
+                      None
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div
-              id="div-create_empty_dataset-account-btns"
-              style="
-                flex-direction: row;
-                justify-content: center;
-                margin: 10px auto;
-              "
-            >
-              <button
-                id="create_empty_dataset"
-                onclick="transitionFreeFormMode(this, 'create_empty_dataset_BF_account_tab', 'create_new_bf_dataset-tab', 'delete', 'individual-question manage-dataset')"
-                data-next="div-create-new-empty-dataset"
+              <div
+                id="div-create_empty_dataset-account-btns"
                 style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 0 10px;
-                  width: 100px;
-                  height: 30px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 13px;
+                  flex-direction: row;
+                  justify-content: center;
+                  margin: 10px auto;
                 "
               >
-                Confirm
-              </button>
+                <button
+                  id="create_empty_dataset"
+                  onclick="transitionFreeFormMode(this, 'create_empty_dataset_BF_account_tab', 'create_new_bf_dataset-tab', 'delete', 'individual-question manage-dataset')"
+                  data-next="div-create-new-empty-dataset"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 0 10px;
+                    width: 100px;
+                    height: 30px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    font-size: 13px;
+                  "
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question manage-dataset"
+          id="div-create-new-empty-dataset" style="height: auto"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <label
+                style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
+                "
+                >What is the name of the new dataset?</label
+              >
+              <div
+                class="field"
+                style="display: flex; justify-content: center; width: 100%"
+              >
+                <input
+                  type="text"
+                  class="form-control"
+                  style="background: #fff !important; width: 450px"
+                  id="bf-new-dataset-name"
+                  placeholder="Type here"
+                />
+              </div>
+              <p
+                style="color: red; width: 440px"
+                id="para-new-name-dataset-message"
+              ></p>
+              <div
+                id="div-confirm-inputNewNameDataset"
+                style="
+                display: flex;
+                  flex-direction: row;
+                  justify-content: center;
+                  margin: 0 auto;
+                "
+              >
+                <button
+                  id="button-create-bf-new-dataset"
+                  class="content-action-button"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 0 10px 13px 0;
+                    width: 140px;
+                    height: 30px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    font-size: 14px;
+                  "
+                >
+                  Create dataset
+                </button>
+                <div id="bf-create-new-dataset-spinner" class="spinner" style="visibility:hidden;position: absolute;right:10px">
+                  <div class="rect1"></div>
+                  <div class="rect2"></div>
+                  <div class="rect3"></div>
+                  <div class="rect4"></div>
+                  <div class="rect5"></div>
+                </div>
+              </div>
+              <p
+                id="para-add-new-dataset-status"
+                style="
+                  text-align: center;
+                  font-weight: 600;
+                  color: var(--color-light-green);
+                "
+              ></p>
+              
             </div>
           </div>
         </div>
       </div>
 
-      <div
-        class="individual-question manage-dataset"
-        id="div-create-new-empty-dataset"
-      >
-        <div class="ui form" style="width: 450px">
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
-              >What is the name of the new dataset?</label
-            >
-            <div
-              class="field"
-              style="display: flex; justify-content: center; width: 100%"
-            >
-              <input
-                type="text"
-                class="form-control"
-                style="background: #fff !important; width: 450px"
-                id="bf-new-dataset-name"
-                placeholder="Type here"
-              />
-            </div>
-            <p
-              style="color: red; width: 440px"
-              id="para-new-name-dataset-message"
-            ></p>
-            <div
-              id="div-confirm-inputNewNameDataset"
-              style="
-                flex-direction: row;
-                justify-content: center;
-                margin: 0 auto;
-              "
-            >
-              <button
-                id="button-create-bf-new-dataset"
-                class="content-action-button"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 0 10px 13px 0;
-                  width: 140px;
-                  height: 30px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 14px;
-                "
-              >
-                Create dataset
-              </button>
-            </div>
-            <p
-              id="para-add-new-dataset-status"
-              style="
-                text-align: center;
-                font-weight: 600;
-                color: var(--color-light-green);
-              "
-            ></p>
-          </div>
-        </div>
-      </div>
-
-      <div
-        style="
-          border-top: 1px solid #f0f0f0;
-          padding: 10px;
-          padding-top: 15px;
-          height: 50px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          width: 100%;
-          bottom: 20px;
-          position: absolute;
-        "
-      >
+      <div class="footer-div">
         <div style="display: flex; flex-direction: row; width: 110px">
           <button
             type="button"
@@ -2255,12 +2257,12 @@
     class="section js-section u-category-windows"
     style="padding-left: 15px; overflow-y: hidden"
   >
-    <div class="main-tabs show" id="rename_bf_dataset-tab">
+    <div class="main-tabs show" id="rename_bf_dataset-tabc" style="display: flex; height: 100%; overflow-y: hidden">
       <header class="section-header">
-        <div style="display: flex; flex-direction: row">
+        <div style="display: inline-flex; align-items: center; flex-direction: row;">
           <svg
-            width="52"
-            height="59"
+            width="40"
+            height="40"
             viewBox="0 0 52 59"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -2274,7 +2276,7 @@
               fill="black"
             />
           </svg>
-          <h2>Manage Datasets - Rename a dataset</h2>
+          <h2 style="font-size: 25px;">Manage Datasets - Rename an existing dataset</h2>
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
@@ -2283,189 +2285,182 @@
         </div>
       </header>
 
-      <div
-        class="individual-question manage-dataset show"
-        id="rename_dataset_BF_account_tab"
-      >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >Which Blackfynn dataset would you like to rename?</label
-            >
-            <div class="field" style="margin: auto; width: 450px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
+      <div id="rename_bf_dataset-tab" style="overflow-y: auto; height: 70%">
+        <div
+          class="individual-question manage-dataset show"
+          id="rename_dataset_BF_account_tab" style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Which Blackfynn dataset would you like to rename?</label
               >
+              <div class="field" style="margin: auto; width: 450px">
                 <div
                   style="
                     display: flex;
-                    flex-direction: row;
+                    flex-direction: column;
                     justify-content: space-between;
-                    margin-bottom: 15px;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
                   "
                 >
-                  <div>
-                    <h5 style="color: #808080; font-size: 15px">
-                      Current dataset:
-                      <span
-                        class="bf-dataset-span"
-                        style="
-                          color: #000;
-                          font-weight: 600;
-                          margin-left: 8px;
-                          font-size: 15px;
-                        "
-                        >None</span
-                      >
-                    </h5>
-                  </div>
-                  <svg
-                    class="svg-change-current-account"
-                    onclick="openDropdownPrompt('dataset')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    class="bi bi-pencil-fill"
-                    viewBox="0 0 16 16"
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                      margin-bottom: 15px;
+                    "
                   >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
+                    <div>
+                      <h5 style="color: #808080; font-size: 15px">
+                        Current dataset:
+                        <span
+                          class="bf-dataset-span"
+                          style="
+                            color: #000;
+                            font-weight: 600;
+                            margin-left: 8px;
+                            font-size: 15px;
+                          "
+                          >None</span
+                        >
+                      </h5>
+                    </div>
+                    <svg
+                      class="svg-change-current-account"
+                      onclick="openDropdownPrompt('dataset')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      class="bi bi-pencil-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div
+                  class="div-confirm-button"
+                  style="
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 10px auto;
+                  "
+                >
+                  <button
+                    id="button-rename-dataset-confirm"
+                    onclick="transitionFreeFormMode(this, 'rename_dataset_BF_account_tab', 'rename_bf_dataset-tab', 'delete', 'individual-question manage-dataset')"
+                    data-next="div-rename-bf-dataset"
+                    class="confirm-button"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Confirm
+                  </button>
                 </div>
               </div>
-              <div
-                class="div-confirm-button"
+            </div>
+          </div>
+        </div>
+  
+        <div
+          class="individual-question manage-dataset"
+          id="div-rename-bf-dataset" style="height: auto"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <label
                 style="
-                  display: none;
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
+                "
+                >What is the new name of the dataset?</label
+              >
+              <div
+                class="field"
+                style="display: flex; justify-content: center; width: 100%"
+              >
+                <input
+                  type="text"
+                  class="form-control"
+                  style="background: #fff !important; width: 450px"
+                  id="bf-rename-dataset-name"
+                  placeholder="Type here"
+                />
+              </div>
+              <p
+                style="
+                  color: red;
+                  width: 440px;
+                  padding-bottom: 5px;
+                  text-align: center;
+                "
+                id="para-rename-dataset-message"
+              ></p>
+              <div
+                id="div-confirm-inputNewNameDataset"
+                style="
                   flex-direction: row;
                   justify-content: center;
-                  margin: 10px auto;
+                  margin: 0 auto;
                 "
               >
                 <button
-                  id="button-rename-dataset-confirm"
-                  onclick="transitionFreeFormMode(this, 'rename_dataset_BF_account_tab', 'rename_bf_dataset-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div-rename-bf-dataset"
-                  class="confirm-button"
+                  id="button-rename-dataset"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
+                    margin: 0 10px 13px 0;
+                    width: 140px;
                     height: 30px;
                     background: var(--color-light-green);
                     color: #fff;
                     font-weight: 600;
                     border: none;
-                    font-size: 13px;
+                    font-size: 15px;
                   "
                 >
-                  Confirm
+                  Rename dataset
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="individual-question manage-dataset"
-        id="div-rename-bf-dataset"
-      >
-        <div class="ui form" style="width: 450px">
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
-              >What is the new name of the dataset?</label
-            >
-            <div
-              class="field"
-              style="display: flex; justify-content: center; width: 100%"
-            >
-              <input
-                type="text"
-                class="form-control"
-                style="background: #fff !important; width: 450px"
-                id="bf-rename-dataset-name"
-                placeholder="Type here"
-              />
-            </div>
-            <p
-              style="
-                color: red;
-                width: 440px;
-                padding-bottom: 5px;
-                text-align: center;
-              "
-              id="para-rename-dataset-message"
-            ></p>
-            <div
-              id="div-confirm-inputNewNameDataset"
-              style="
-                flex-direction: row;
-                justify-content: center;
-                margin: 0 auto;
-              "
-            >
-              <button
-                id="button-rename-dataset"
+              <p
+                id="para-rename-dataset-status"
                 style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 0 10px 13px 0;
-                  width: 140px;
-                  height: 30px;
-                  background: var(--color-light-green);
-                  color: #fff;
+                  text-align: center;
                   font-weight: 600;
-                  border: none;
-                  font-size: 15px;
+                  color: var(--color-light-green);
                 "
-              >
-                Rename dataset
-              </button>
+              ></p>
             </div>
-            <p
-              id="para-rename-dataset-status"
-              style="
-                text-align: center;
-                font-weight: 600;
-                color: var(--color-light-green);
-              "
-            ></p>
           </div>
         </div>
+
       </div>
 
+
       <div
-        style="
-          border-top: 1px solid #f0f0f0;
-          padding: 10px;
-          padding-top: 15px;
-          height: 50px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          width: 100%;
-          bottom: 20px;
-          position: absolute;
-        "
+      class="footer-div"
       >
         <div style="display: flex; flex-direction: row; width: 110px">
           <button
@@ -2491,12 +2486,12 @@
     class="section js-section u-category-windows"
     style="padding-left: 15px; overflow-y: hidden"
   >
-    <div class="main-tabs show" id="pi_dataset_owner_parent-tab">
+    <div class="main-tabs show" id="pi_dataset_owner_parent-tabc" style="display: flex; height: 100%; overflow-y: hidden">
       <header class="section-header">
-        <div style="display: flex; flex-direction: row">
+        <div style="display: inline-flex; align-items: center; flex-direction: row;">
           <svg
-            width="52"
-            height="59"
+            width="40"
+            height="40"
             viewBox="0 0 52 59"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -2510,7 +2505,7 @@
               fill="black"
             />
           </svg>
-          <h2>Manage Datasets - Make PI owner of dataset</h2>
+          <h2 style="font-size: 25px;">Manage Datasets - Make PI owner of dataset</h2>
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
@@ -2519,220 +2514,222 @@
         </div>
       </header>
 
-      <div
-        class="individual-question manage-dataset show"
-        id="pi_dataset_owner_tab"
-      >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >Which Blackfynn dataset would you like to work on?</label
-            >
-            <div class="field" style="margin: auto; width: 500px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
+      <div id="pi_dataset_owner_parent-tab" style="overflow-y: auto; height: 70%">
+    
+        <div
+          class="individual-question manage-dataset show"
+          id="pi_dataset_owner_tab" style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Which Blackfynn dataset would you like to work on?</label
               >
+              <div class="field" style="margin: auto; width: 500px">
                 <div
                   style="
                     display: flex;
-                    flex-direction: row;
+                    flex-direction: column;
                     justify-content: space-between;
-                    margin-bottom: 15px;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
                   "
                 >
-                  <div>
-                    <h5 style="color: #808080; font-size: 15px">
-                      Current dataset:
-                      <span
-                        class="bf-dataset-span"
-                        style="
-                          color: #000;
-                          font-weight: 600;
-                          margin-left: 8px;
-                          font-size: 15px;
-                        "
-                        >None</span
-                      >
-                    </h5>
-                  </div>
-                  <svg
-                    class="svg-change-current-account"
-                    onclick="openDropdownPrompt('dataset')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    class="bi bi-pencil-fill"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
-                </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: row;
-                    margin-bottom: 15px;
-                  "
-                >
-                  <h5 style="color: #808080; font-size: 15px">
-                    Current permissions:
-                  </h5>
                   <div
-                    id="div-bf-current-permission-progress"
-                    class="progressdiv"
-                  >
-                    <div class="indeterminatebar"></div>
-                  </div>
-                  <p
                     style="
-                      color: #000;
-                      font-weight: 600;
-                      margin-left: 15px;
-                      font-size: 15px;
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                      margin-bottom: 15px;
                     "
-                    id="para-dataset-permission-current"
                   >
-                    None
-                  </p>
+                    <div>
+                      <h5 style="color: #808080; font-size: 15px">
+                        Current dataset:
+                        <span
+                          class="bf-dataset-span"
+                          style="
+                            color: #000;
+                            font-weight: 600;
+                            margin-left: 8px;
+                            font-size: 15px;
+                          "
+                          >None</span
+                        >
+                      </h5>
+                    </div>
+                    <svg
+                      class="svg-change-current-account"
+                      onclick="openDropdownPrompt('dataset')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      class="bi bi-pencil-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      margin-bottom: 15px;
+                    "
+                  >
+                    <h5 style="color: #808080; font-size: 15px">
+                      Current permissions:
+                    </h5>
+                    <div
+                      id="div-bf-current-permission-progress"
+                      class="progressdiv"
+                    >
+                      <div class="indeterminatebar"></div>
+                    </div>
+                    <p
+                      style="
+                        color: #000;
+                        font-weight: 600;
+                        margin-left: 15px;
+                        font-size: 15px;
+                      "
+                      id="para-dataset-permission-current"
+                    >
+                      None
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="button_pi_dataset_owner_confirm"
-                  onclick="transitionFreeFormMode(this, 'pi_dataset_owner_tab', 'pi_dataset_owner_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div_make_pi_owner_permissions"
-                  class="confirm-button"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="individual-question manage-dataset"
-        id="div_make_pi_owner_permissions"
-      >
-        <div class="ui form" style="width: 500px">
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
-              >Change permissions:</label
-            >
-            <div
-              class="field"
-              style="
-                display: flex;
-                width: 500px;
-                justify-content: space-between;
-                flex-direction: column;
-              "
-            >
-              <div
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: center;
-                "
-              >
-                <select
-                  class="my-dropdown"
-                  style="width: 60%; padding: 8px 12px; height: 38px"
-                  id="bf_list_users_pi"
-                >
-                  <option>Select PI</option>
-                </select>
-
                 <div
-                  id="div-button-add-permission-pi"
-                  style="flex-direction: row; justify-content: center"
+                  class="div-confirm-button"
+                  style="
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 10px auto;
+                  "
                 >
                   <button
-                    id="button-add-permission-pi"
+                    id="button_pi_dataset_owner_confirm"
+                    onclick="transitionFreeFormMode(this, 'pi_dataset_owner_tab', 'pi_dataset_owner_parent-tab', 'delete', 'individual-question manage-dataset')"
+                    data-next="div_make_pi_owner_permissions"
+                    class="confirm-button"
                     style="
                       cursor: pointer;
                       border-radius: 8px;
-                      margin: 0 10px 0 20px;
-                      width: 140px;
-                      height: 35px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
                       background: var(--color-light-green);
                       color: #fff;
                       font-weight: 600;
                       border: none;
-                      font-size: 14px;
+                      font-size: 13px;
                     "
                   >
-                    Make PI owner
+                    Confirm
                   </button>
                 </div>
               </div>
-
-              <p
-                id="para-dataset-permission-status-pi"
-                style="
-                  text-align: center;
-                  font-weight: 600;
-                  color: var(--color-light-green);
-                  padding-top: 20px;
-                "
-              ></p>
             </div>
           </div>
         </div>
-      </div>
+    
+        <div
+          class="individual-question manage-dataset"
+          id="div_make_pi_owner_permissions" style="height: auto"
+        >
+          <div class="ui form" style="width: 500px">
+            <div class="grouped fields">
+              <label
+                style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
+                "
+                >Change permissions:</label
+              >
+              <div
+                class="field"
+                style="
+                  display: flex;
+                  width: 500px;
+                  justify-content: center;
+                  align-items: center;
+                  flex-direction: column;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                  "
+                >
+                  <select
+                    class="my-dropdown"
+                    style="width: 60%; padding: 8px 12px; height: 38px"
+                    id="bf_list_users_pi"
+                  >
+                    <option>Select PI</option>
+                  </select>
+    
+                  <div
+                    id="div-button-add-permission-pi"
+                    style="flex-direction: row; justify-content: center"
+                  >
+                    <button
+                      id="button-add-permission-pi"
+                      style="
+                        cursor: pointer;
+                        border-radius: 8px;
+                        margin: 0 10px 0 20px;
+                        width: 140px;
+                        height: 35px;
+                        background: var(--color-light-green);
+                        color: #fff;
+                        font-weight: 600;
+                        border: none;
+                        font-size: 14px;
+                      "
+                    >
+                      Make PI owner
+                    </button>
+                  </div>
+                </div>
+                
+                <div id="bf-add-permission-pi-spinner" class="spinner" style="visibility:hidden;margin-top: 10px;">
+                  <div class="rect1"></div>
+                  <div class="rect2"></div>
+                  <div class="rect3"></div>
+                  <div class="rect4"></div>
+                  <div class="rect5"></div>
+                </div>
+
+                <p
+                  id="para-dataset-permission-status-pi"
+                  style="
+                    text-align: center;
+                    font-weight: 600;
+                    color: var(--color-light-green);
+                    padding-top: 20px;
+                  "
+                ></p>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
 
       <div
-        style="
-          border-top: 1px solid #f0f0f0;
-          padding: 10px;
-          padding-top: 15px;
-          height: 50px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          width: 100%;
-          bottom: 20px;
-          position: absolute;
-        "
+      class="footer-div"
       >
         <div style="display: flex; flex-direction: row; width: 110px">
           <button
@@ -2765,10 +2762,10 @@
       style="display: flex; height: 100%; overflow-y: hidden"
     >
       <header class="section-header">
-        <div style="display: flex; flex-direction: row">
+        <div style="display: inline-flex; align-items: center; flex-direction: row;">
           <svg
-            width="53"
-            height="48"
+            width="40"
+            height="40"
             viewBox="0 0 53 48"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -2778,7 +2775,7 @@
               fill="black"
             />
           </svg>
-          <h2>Manage Datasets - Add/edit dataset permissions</h2>
+          <h2 style="font-size: 25px;">Manage Datasets - Add/edit dataset permissions</h2>
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
@@ -2790,7 +2787,7 @@
 
       <div
         id="add_edit_permissions_parent-tab"
-        style="overflow-y: auto; height: 75%"
+        style="overflow-y: auto; height: 70%"
       >
         <div
           class="individual-question manage-dataset show"
@@ -3063,6 +3060,7 @@
                   <div
                     id="div-button-add-permission"
                     style="
+                      display: flex;
                       flex-direction: row;
                       justify-content: center;
                       margin: 0 auto;
@@ -3085,6 +3083,13 @@
                     >
                       Add permission for user
                     </button>
+                    <div id="bf-add-permission-user-spinner" class="spinner" style="visibility:hidden;position: absolute;right:10px">
+                      <div class="rect1"></div>
+                      <div class="rect2"></div>
+                      <div class="rect3"></div>
+                      <div class="rect4"></div>
+                      <div class="rect5"></div>
+                    </div>
                   </div>
                   <p
                     id="para-dataset-permission-status"
@@ -3155,6 +3160,7 @@
                   <div
                     id="div-button-add-permission-team"
                     style="
+                      display: flex;
                       flex-direction: row;
                       justify-content: center;
                       margin: 0 auto;
@@ -3177,6 +3183,13 @@
                     >
                       Add permission for team
                     </button>
+                    <div id="bf-add-permission-team-spinner" class="spinner" style="visibility:hidden;position: absolute;right:10px">
+                      <div class="rect1"></div>
+                      <div class="rect2"></div>
+                      <div class="rect3"></div>
+                      <div class="rect4"></div>
+                      <div class="rect5"></div>
+                    </div>
                   </div>
                   <p
                     id="para-dataset-permission-status-team"
@@ -3195,19 +3208,7 @@
       </div>
 
       <div
-        style="
-          border-top: 1px solid #f0f0f0;
-          padding: 10px;
-          padding-top: 15px;
-          height: 50px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          width: 95%;
-          bottom: 20px;
-          background-color: white;
-          position: absolute;
-        "
+      class="footer-div"
       >
         <div style="display: flex; flex-direction: row; width: 110px">
           <button
@@ -3230,7 +3231,6 @@
         bf_list_roles - bf_list_roless
         bf_list_userss - bf_list_userss
         para-dataset-permission-status-pi - para-dataset-permission-status-pii
-        button-add-permission-pi - button-add-permission-pii
         bf_list_users_pi - bf_list_users_pii
       -->
     </div>
@@ -3241,12 +3241,12 @@
     class="section js-section u-category-windows"
     style="padding-left: 15px; overflow-y: hidden"
   >
-    <div class="main-tabs show" id="add_edit_subtitle_parent-tab">
+    <div class="main-tabs show" id="add_edit_subtitle_parent-tabc" style="display: flex; height: 100%; overflow-y: hidden">
       <header class="section-header">
-        <div style="display: flex; flex-direction: row">
+        <div style="display: inline-flex; align-items: center; flex-direction: row;">
           <svg
-            width="48"
-            height="39"
+            width="40"
+            height="40"
             viewBox="0 0 48 39"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -3256,7 +3256,7 @@
               fill="black"
             />
           </svg>
-          <h2>Manage Datasets - Add/edit subtitle</h2>
+          <h2 style="font-size: 25px;">Manage Datasets - Add/edit subtitle</h2>
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
@@ -3265,214 +3265,206 @@
         </div>
       </header>
 
-      <div
-        class="individual-question manage-dataset show"
-        id="add_edit_subtitle_tab"
-      >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >Which Blackfynn dataset would you like to work on?</label
-            >
-            <div class="field" style="margin: auto; width: 450px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
+      <div id="add_edit_subtitle_parent-tab" >
+        <div
+          class="individual-question manage-dataset show"
+          id="add_edit_subtitle_tab" style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Which Blackfynn dataset would you like to work on?</label
               >
+              <div class="field" style="margin: auto; width: 450px">
                 <div
                   style="
                     display: flex;
-                    flex-direction: row;
+                    flex-direction: column;
                     justify-content: space-between;
-                    margin-bottom: 15px;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
                   "
                 >
-                  <div>
-                    <h5 style="color: #808080; font-size: 15px">
-                      Current dataset:
-                      <span
-                        class="bf-dataset-span"
-                        style="
-                          color: #000;
-                          font-weight: 600;
-                          margin-left: 8px;
-                          font-size: 15px;
-                        "
-                        >None</span
-                      >
-                    </h5>
-                  </div>
-                  <svg
-                    class="svg-change-current-account"
-                    onclick="openDropdownPrompt('dataset')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    class="bi bi-pencil-fill"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
-                </div>
-                <div
-                  id="div-bf-current-metadata-progress"
-                  class="progressdiv synced-progress"
-                >
-                  <div class="indeterminatebar"></div>
-                </div>
-              </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="button_add_edit_subtitle_confirm"
-                  onclick="transitionFreeFormMode(this, 'add_edit_subtitle_tab', 'add_edit_subtitle_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div_add_edit_subtitle"
-                  class="confirm-button"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="individual-question manage-dataset"
-        id="div_add_edit_subtitle"
-      >
-        <div class="ui form" style="width: 500px">
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
-              >Enter subtitle below.<br />
-              <span style="color: #696969; font-size: 13px"
-                >Any existing subtitle will be displayed:
-              </span>
-            </label>
-            <div
-              class="field"
-              style="
-                display: flex;
-                justify-content: center;
-                width: 450px;
-                flex-direction: column;
-              "
-            >
-              <div style="width: 100%; position: relative">
-                <textarea
-                  id="bf-dataset-subtitle"
-                  class="demo-response"
-                  style="position: relative"
-                  rows="6"
-                  maxlength="256"
-                >
-                </textarea>
-                <p>
-                  <span
-                    id="para-char-count-metadata"
+                  <div
                     style="
-                      position: absolute;
-                      bottom: 10px;
-                      right: 15px;
-                      color: rgb(117, 107, 107);
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                      margin-bottom: 15px;
                     "
                   >
-                    256 characters left
-                  </span>
-                </p>
-              </div>
-              <div style="display: flex; flex-direction: row">
+                    <div>
+                      <h5 style="color: #808080; font-size: 15px">
+                        Current dataset:
+                        <span
+                          class="bf-dataset-span"
+                          style="
+                            color: #000;
+                            font-weight: 600;
+                            margin-left: 8px;
+                            font-size: 15px;
+                          "
+                          >None</span
+                        >
+                      </h5>
+                    </div>
+                    <svg
+                      class="svg-change-current-account"
+                      onclick="openDropdownPrompt('dataset')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      class="bi bi-pencil-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                  </div>
+                  <div
+                    id="div-bf-current-metadata-progress"
+                    class="progressdiv synced-progress"
+                  >
+                    <div class="indeterminatebar"></div>
+                  </div>
+                </div>
                 <div
-                  id="div-button-add-subtitle"
+                  class="div-confirm-button"
                   style="
+                    display: none;
                     flex-direction: row;
                     justify-content: center;
-                    margin: 0 auto;
-                    padding-top: 20px;
+                    margin: 10px auto;
                   "
                 >
                   <button
-                    id="button-add-subtitle"
+                    id="button_add_edit_subtitle_confirm"
+                    onclick="transitionFreeFormMode(this, 'add_edit_subtitle_tab', 'add_edit_subtitle_parent-tab', 'delete', 'individual-question manage-dataset')"
+                    data-next="div_add_edit_subtitle"
+                    class="confirm-button"
                     style="
                       cursor: pointer;
                       border-radius: 8px;
-                      margin: 0 10px;
-                      width: 190px;
-                      height: 40px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
                       background: var(--color-light-green);
                       color: #fff;
                       font-weight: 600;
                       border: none;
-                      font-size: 15px;
+                      font-size: 13px;
                     "
                   >
-                    Add subtitle to dataset
+                    Confirm
                   </button>
                 </div>
-                <p
-                  id="para-dataset-subtitle-status"
-                  style="
-                    text-align: center;
-                    font-weight: 600;
-                    color: var(--color-light-green);
-                    padding-top: 20px;
-                  "
-                ></p>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div
+          class="individual-question manage-dataset"
+          id="div_add_edit_subtitle" style="height: auto"
+        >
+          <div class="ui form" style="width: 500px">
+            <div class="grouped fields">
+              <label
+                style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
+                "
+                >Enter subtitle below.<br />
+                <span style="color: #696969; font-size: 13px"
+                  >Any existing subtitle will be displayed:
+                </span>
+              </label>
+              <div
+                class="field"
+                style="
+                  display: flex;
+                  justify-content: center;
+                  width: 100%;
+                  flex-direction: column;
+                "
+              >
+                <div style="width: 100%; position: relative">
+                  <textarea
+                    id="bf-dataset-subtitle"
+                    class="demo-response"
+                    style="position: relative"
+                    rows="6"
+                    maxlength="256"
+                  >
+                  </textarea>
+                  <p>
+                    <span
+                      id="para-char-count-metadata"
+                      style="
+                        position: absolute;
+                        bottom: 10px;
+                        right: 15px;
+                        color: rgb(117, 107, 107);
+                      "
+                    >
+                      256 characters left
+                    </span>
+                  </p>
+                </div>
+                <div style="display: flex; flex-direction: row">
+                  <div
+                    id="div-button-add-subtitle"
+                    style="
+                      flex-direction: row;
+                      justify-content: center;
+                      margin: 0 auto;
+                      padding-top: 20px;
+                    "
+                  >
+                    <button
+                      id="button-add-subtitle"
+                      style="
+                        cursor: pointer;
+                        border-radius: 8px;
+                        margin: 0 10px;
+                        width: 190px;
+                        height: 40px;
+                        background: var(--color-light-green);
+                        color: #fff;
+                        font-weight: 600;
+                        border: none;
+                        font-size: 15px;
+                      "
+                    >
+                      Add subtitle to dataset
+                    </button>
+                  </div>
+                  <p
+                    id="para-dataset-subtitle-status"
+                    style="
+                      text-align: center;
+                      font-weight: 600;
+                      color: var(--color-light-green);
+                      padding-top: 20px;
+                    "
+                  ></p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
+
       <div
-        style="
-          border-top: 1px solid #f0f0f0;
-          padding: 10px;
-          padding-top: 15px;
-          height: 50px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          width: 100%;
-          bottom: 20px;
-          position: absolute;
-        "
+      class="footer-div"
       >
         <div style="display: flex; flex-direction: row; width: 110px">
           <button
@@ -3501,10 +3493,10 @@
   >
     <div class="main-tabs show" id="add_edit_description_parent-tabc" style="display: flex; height: 100%; overflow-y: hidden">
       <header class="section-header">
-        <div style="display: flex; flex-direction: row">
+        <div style="display: inline-flex; align-items: center; flex-direction: row;">
           <svg
-            width="48"
-            height="35"
+            width="40"
+            height="40"
             viewBox="0 0 48 35"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -3526,7 +3518,7 @@
               fill="black"
             />
           </svg>
-          <h2>Manage Datasets - Add/edit description</h2>
+          <h2 style="font-size: 25px;">Manage Datasets - Add/edit description</h2>
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
@@ -3709,19 +3701,7 @@
       </div>
 
       <div
-        style="
-          border-top: 1px solid #f0f0f0;
-          padding: 10px;
-          padding-top: 15px;
-          height: 50px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          width: 95%;
-          bottom: 20px;
-          background-color: white;
-          position: absolute;
-        "
+      class="footer-div"
       >
         <div style="display: flex; flex-direction: row; width: 110px">
           <button
@@ -3753,10 +3733,10 @@
       style="display: flex; height: 100%; overflow-y: hidden"
     >
       <header class="section-header">
-        <div style="display: flex; flex-direction: row">
+        <div style="display: inline-flex; align-items: center; flex-direction: row;">
           <svg
-            width="43"
-            height="42"
+            width="40"
+            height="40"
             viewBox="0 0 43 42"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -3774,7 +3754,7 @@
               fill="black"
             />
           </svg>
-          <h2>Manage Datasets - Upload a banner image</h2>
+          <h2 style="font-size: 25px;">Manage Datasets - Upload a banner image</h2>
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
@@ -3784,7 +3764,7 @@
       </header>
       <div
         id="add_edit_banner_parent-tab"
-        style="overflow-y: auto; height: 75%"
+        style="overflow-y: auto; height: 70%"
       >
         <div
           class="individual-question manage-dataset show"
@@ -3966,19 +3946,7 @@
       </div>
 
       <div
-        style="
-          border-top: 1px solid #f0f0f0;
-          background-color: white;
-          padding: 10px;
-          padding-top: 15px;
-          position: absolute;
-          height: 50px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          width: 95%;
-          bottom: 10px;
-        "
+      class="footer-div"
       >
         <div style="display: flex; flex-direction: row; width: 110px">
           <button
@@ -4136,12 +4104,12 @@
     class="section js-section u-category-windows"
     style="padding-left: 15px; overflow-y: hidden"
   >
-    <div class="main-tabs show" id="add_license_parent-tab">
+    <div class="main-tabs show" id="add_license_parent-tabc" style="display: flex; height: 100%; overflow-y: hidden">
       <header class="section-header">
-        <div style="display: flex; flex-direction: row">
+        <div style="display: inline-flex; align-items: center; flex-direction: row;">
           <svg
-            width="43"
-            height="45"
+            width="40"
+            height="40"
             viewBox="0 0 43 45"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -4171,7 +4139,7 @@
               fill="black"
             />
           </svg>
-          <h2>Manage Datasets - Assign a license</h2>
+          <h2 style="font-size: 25px;">Manage Datasets - Assign a license</h2>
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
@@ -4181,38 +4149,149 @@
         </div>
       </header>
 
-      <div class="individual-question manage-dataset show" id="add_license_tab">
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >Which Blackfynn dataset would you like to work on?</label
-            >
-            <div class="field" style="margin: auto; width: 450px">
+      <div id="add_license_parent-tab" style="overflow-y: auto; height: 70%">
+        <div class="individual-question manage-dataset show" style="height: auto" id="add_license_tab">
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Which Blackfynn dataset would you like to work on?</label
+              >
+              <div class="field" style="margin: auto; width: 450px">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                  "
+                >
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                      margin-bottom: 15px;
+                    "
+                  >
+                    <div>
+                      <h5 style="color: #808080; font-size: 15px">
+                        Current dataset:
+                        <span
+                          class="bf-dataset-span"
+                          style="
+                            color: #000;
+                            font-weight: 600;
+                            margin-left: 8px;
+                            font-size: 15px;
+                          "
+                          >None</span
+                        >
+                      </h5>
+                    </div>
+                    <svg
+                      class="svg-change-current-account"
+                      onclick="openDropdownPrompt('dataset')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      class="bi bi-pencil-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div
+                  class="div-confirm-button"
+                  style="
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 10px auto;
+                  "
+                >
+                  <button
+                    id="button_add_license_confirm"
+                    onclick="transitionFreeFormMode(this, 'add_license_tab', 'add_license_parent-tab', 'delete', 'individual-question manage-dataset')"
+                    data-next="div_add_license"
+                    class="confirm-button"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="individual-question manage-dataset" id="div_add_license" style="height: auto">
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <label
+                style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
+                "
+                >Assign a license using the button below:</label
+              >
               <div
+                class="field"
                 style="
                   display: flex;
+                  justify-content: center;
+                  width: 100%;
                   flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
                 "
               >
                 <div
                   style="
                     display: flex;
-                    flex-direction: row;
+                    flex-direction: column;
                     justify-content: space-between;
-                    margin-bottom: 15px;
+                    margin: 15px auto;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                    width: 450px;
                   "
                 >
-                  <div>
-                    <h5 style="color: #808080; font-size: 15px">
-                      Current dataset:
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: left;
+                      margin-bottom: 15px;
+                      width: 100%;
+                    "
+                  >
+                    <div style="display: flex; flex-direction: row">
+                      <h5 style="color: #808080; font-size: 15px">
+                        Current License:
+                      </h5>
                       <span
-                        class="bf-dataset-span"
+                        id="para-dataset-license-current"
                         style="
                           color: #000;
                           font-weight: 600;
@@ -4221,174 +4300,53 @@
                         "
                         >None</span
                       >
-                    </h5>
+                    </div>
                   </div>
-                  <svg
-                    class="svg-change-current-account"
-                    onclick="openDropdownPrompt('dataset')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    class="bi bi-pencil-fill"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
                 </div>
-              </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="button_add_license_confirm"
-                  onclick="transitionFreeFormMode(this, 'add_license_tab', 'add_license_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div_add_license"
-                  class="confirm-button"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="individual-question manage-dataset" id="div_add_license">
-        <div class="ui form" style="width: 450px">
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
-              >Assign a license using the button below:</label
-            >
-            <div
-              class="field"
-              style="
-                display: flex;
-                justify-content: center;
-                width: 100%;
-                flex-direction: column;
-              "
-            >
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                  width: 450px;
-                "
-              >
                 <div
+                  id="div-button-add-license"
                   style="
-                    display: flex;
                     flex-direction: row;
-                    justify-content: left;
-                    margin-bottom: 15px;
-                    width: 100%;
+                    justify-content: center;
+                    margin: 25px auto;
                   "
                 >
-                  <div style="display: flex; flex-direction: row">
-                    <h5 style="color: #808080; font-size: 15px">
-                      Current License:
-                    </h5>
-                    <span
-
-                      id="para-dataset-license-current"
-                      style="
-                        color: #000;
-                        font-weight: 600;
-                        margin-left: 8px;
-                        font-size: 15px;
-                      "
-                      >None</span
-                    >
-                  </div>
+                  <button
+                    id="button-add-license"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 0 10px;
+                      width: 290px;
+                      height: 50px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 15px;
+                      display: none;
+                    "
+                  >
+                    Assign Creative Commons Attribution (CC-BY) license
+                  </button>
                 </div>
-              </div>
-
-              <div
-                id="div-button-add-license"
-                style="
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 25px auto;
-                "
-              >
-                <button
-                  id="button-add-license"
+                <p
+                  id="para-dataset-license-status"
                   style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 0 10px;
-                    width: 290px;
-                    height: 50px;
-                    background: var(--color-light-green);
-                    color: #fff;
+                    text-align: center;
                     font-weight: 600;
-                    border: none;
-                    font-size: 15px;
-                    display: none;
+                    color: var(--color-light-green);
                   "
-                >
-                  Assign Creative Commons Attribution (CC-BY) license
-                </button>
+                ></p>
               </div>
-              <p
-                id="para-dataset-license-status"
-                style="
-                  text-align: center;
-                  font-weight: 600;
-                  color: var(--color-light-green);
-                "
-              ></p>
             </div>
           </div>
         </div>
       </div>
 
       <div
-        style="
-          border-top: 1px solid #f0f0f0;
-          padding: 10px;
-          padding-top: 15px;
-          height: 50px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          width: 100%;
-          bottom: 20px;
-          position: absolute;
-        "
+      class="footer-div"
       >
         <div style="display: flex; flex-direction: row; width: 110px">
           <button
@@ -4417,10 +4375,10 @@
   >
     <div class="main-tabs show" id="upload_local_dataset_parent-tabc" style="display: flex; height: 100%; overflow-y: hidden">
       <header class="section-header">
-        <div style="display: flex; flex-direction: row">
+        <div style="display: inline-flex; align-items: center; flex-direction: row;">
           <svg
-            width="58"
-            height="52"
+            width="40"
+            height="40"
             viewBox="0 0 58 52"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -4434,7 +4392,7 @@
               fill="black"
             />
           </svg>
-          <h2>Manage Datasets - Upload a local dataset</h2>
+          <h2 style="font-size: 25px;">Manage Datasets - Upload a local dataset</h2>
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
@@ -4443,7 +4401,7 @@
         </div>
       </header>
 
-      <div id="upload_local_dataset_parent-tab" style="overflow-y: auto; height: 75%">
+      <div id="upload_local_dataset_parent-tab" style="overflow-y: auto; height: 70%"> 
         <div
           class="individual-question manage-dataset show"
           id="upload_local_dataset_tab"
@@ -4551,7 +4509,7 @@
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >What is the location of the dataset?</label
               >
-              <div class="field" style="margin: 15px auto 10px auto; display: flex; justify-content: center; flex-direction: column;">
+              <div class="field" style="margin: 15px auto 10px auto; display: flex; justify-content: center; flex-direction: column; width: 450px;">
                 <input
                   class="form-control"
                   style="width: 450px !important"
@@ -4671,19 +4629,7 @@
     </div>
 
     <div
-      style="
-        border-top: 1px solid #f0f0f0;
-        padding: 10px;
-        padding-top: 15px;
-        height: 50px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        width: 95%;
-        bottom: 20px;
-        position: absolute;
-        background-color: white;
-      "
+    class="footer-div"
     >
       <div style="display: flex; flex-direction: row; width: 110px">
         <button
@@ -4712,12 +4658,12 @@
     class="section js-section u-category-windows"
     style="padding-left: 15px; overflow-y: hidden"
   >
-    <div class="main-tabs show" id="view_change_dataset_status_parent-tab">
+    <div class="main-tabs show" id="view_change_dataset_status_parent-tabc" style="display: flex; height: 100%; overflow-y: hidden">
       <header class="section-header">
-        <div style="display: flex; flex-direction: row">
+        <div style="display: inline-flex; align-items: center; flex-direction: row;">
           <svg
-            width="47"
-            height="53"
+            width="40"
+            height="40"
             viewBox="0 0 47 53"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -4735,7 +4681,7 @@
               fill="black"
             />
           </svg>
-          <h2>Manage Datasets - View/change dataset status</h2>
+          <h2 style="font-size: 25px;">Manage Datasets - View/change dataset status</h2>
         </div>
         <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
@@ -4745,227 +4691,225 @@
         </div>
       </header>
 
-      <div
-        class="individual-question manage-dataset show"
-        id="view_change_dataset_status_tab"
-      >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >Which Blackfynn dataset would you like to view?</label
-            >
-            <div class="field" style="margin: auto; width: 450px">
-              <div
+      <div id="view_change_dataset_status_parent-tab" style="overflow-y: auto; height: 70%">
+        <div
+          class="individual-question manage-dataset show"
+          id="view_change_dataset_status_tab" style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Which Blackfynn dataset would you like to view?</label
+              >
+              <div class="field" style="margin: auto; width: 450px">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                  "
+                >
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                      margin-bottom: 15px;
+                    "
+                  >
+                    <div>
+                      <h5 style="color: #808080; font-size: 15px">
+                        Current dataset:
+                        <span
+                          class="bf-dataset-span"
+                          style="
+                            color: #000;
+                            font-weight: 600;
+                            margin-left: 8px;
+                            font-size: 15px;
+                          "
+                          >None</span
+                        >
+                      </h5>
+                    </div>
+                    <svg
+                      class="svg-change-current-account"
+                      onclick="openDropdownPrompt('dataset')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      class="bi bi-pencil-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                  </div>
+  
+                  <div
+                    id="div-bf-current-dataset-status-progress"
+                    class="progressdiv synced-progress"
+                    style="display: block"
+                  >
+                    <div class="indeterminatebar"></div>
+                  </div>
+                </div>
+                <div
+                  class="div-confirm-button"
+                  style="
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 10px auto;
+                  "
+                >
+                  <button
+                    id="button_view_change_dataset_status_confirm"
+                    onclick="transitionFreeFormMode(this, 'view_change_dataset_status_tab', 'view_change_dataset_status_parent-tab', 'delete', 'individual-question manage-dataset')"
+                    data-next="div_view_change_dataset_status"
+                    class="confirm-button"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div
+          class="individual-question manage-dataset"
+          id="div_view_change_dataset_status" style="height: auto"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <label
                 style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
                 "
+                >View/change status</label
+              >
+              <div
+                class="field"
+                style="display: flex; justify-content: center; width: 100%"
               >
                 <div
                   style="
                     display: flex;
-                    flex-direction: row;
+                    flex-direction: column;
                     justify-content: space-between;
-                    margin-bottom: 15px;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
                   "
                 >
-                  <div>
-                    <h5 style="color: #808080; font-size: 15px">
-                      Current dataset:
-                      <span
-                        class="bf-dataset-span"
-                        style="
-                          color: #000;
-                          font-weight: 600;
-                          margin-left: 8px;
-                          font-size: 15px;
-                        "
-                        >None</span
-                      >
-                    </h5>
-                  </div>
-                  <svg
-                    class="svg-change-current-account"
-                    onclick="openDropdownPrompt('dataset')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    class="bi bi-pencil-fill"
-                    viewBox="0 0 16 16"
+                  <form action="#">
+                    <div class="dataset-status-container">
+                      <ul id="dataset_status_ul" style="padding-left: 0px"></ul>
+                    </div>
+                    <!--
+                      <li>
+                        <input
+                          type="radio"
+                          id="no_status_radio"
+                          value="NO_STATUS"
+                          name="dataset_status_radio"
+                        />
+                        <label for="no_status_radio">No Status</label>
+  
+                        <div class="check"></div>
+                      </li>
+  
+                      <li>
+                        <input
+                          type="radio"
+                          id="work_in_progress_radio"
+                          value="WORK_IN_PROGRESS"
+                          name="dataset_status_radio"
+                        />
+                        <label for="work_in_progress_radio"
+                          >Work in Progress</label
+                        >
+  
+                        <div class="check"><div class="inside"></div></div>
+                      </li>
+  
+                      <li>
+                        <input
+                          type="radio"
+                          id="in_review_radio"
+                          value="IN_REVIEW"
+                          name="dataset_status_radio"
+                        />
+                        <label for="in_review_radio">In Review</label>
+  
+                        <div class="check"><div class="inside"></div></div>
+                      </li>
+  
+                      <li>
+                        <input
+                          type="radio"
+                          id="completed_radio"
+                          value="COMPLETED"
+                          name="dataset_status_radio"
+                        />
+                        <label for="completed_radio">Completed</label>
+  
+                        <div class="check"><div class="inside"></div></div>
+                      </li>
+                    -->
+                  </form>
+  
+                  <select
+                    class="my-dropdown"
+                    style="width: 80%; display: none"
+                    id="bf_list_dataset_status"
                   >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
-                </div>
-
-                <div
-                  id="div-bf-current-dataset-status-progress"
-                  class="progressdiv synced-progress"
-                  style="display: block"
-                >
-                  <div class="indeterminatebar"></div>
+                    <option></option>
+                  </select>
                 </div>
               </div>
-              <div
-                class="div-confirm-button"
+  
+              <p
+                id="para-dataset-status-status"
                 style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
+                  text-align: center;
+                  font-weight: 600;
+                  color: var(--color-light-green);
+                  padding-top: 20px;
                 "
-              >
-                <button
-                  id="button_view_change_dataset_status_confirm"
-                  onclick="transitionFreeFormMode(this, 'view_change_dataset_status_tab', 'view_change_dataset_status_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div_view_change_dataset_status"
-                  class="confirm-button"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
+              ></p>
             </div>
           </div>
         </div>
       </div>
 
       <div
-        class="individual-question manage-dataset"
-        id="div_view_change_dataset_status"
-      >
-        <div class="ui form" style="width: 450px">
-          <div class="grouped fields">
-            <label
-              style="
-                font-size: 17px;
-                color: var(--color-bg-plum);
-                width: 100%;
-                text-align: center;
-              "
-              >View/change status</label
-            >
-            <div
-              class="field"
-              style="display: flex; justify-content: center; width: 100%"
-            >
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
-                <form action="#">
-                  <div class="dataset-status-container">
-                    <ul id="dataset_status_ul" style="padding-left: 0px"></ul>
-                  </div>
-                  <!--
-                    <li>
-                      <input
-                        type="radio"
-                        id="no_status_radio"
-                        value="NO_STATUS"
-                        name="dataset_status_radio"
-                      />
-                      <label for="no_status_radio">No Status</label>
-                      <div class="check"></div>
-                    </li>
-                    <li>
-                      <input
-                        type="radio"
-                        id="work_in_progress_radio"
-                        value="WORK_IN_PROGRESS"
-                        name="dataset_status_radio"
-                      />
-                      <label for="work_in_progress_radio"
-                        >Work in Progress</label
-                      >
-                      <div class="check"><div class="inside"></div></div>
-                    </li>
-                    <li>
-                      <input
-                        type="radio"
-                        id="in_review_radio"
-                        value="IN_REVIEW"
-                        name="dataset_status_radio"
-                      />
-                      <label for="in_review_radio">In Review</label>
-                      <div class="check"><div class="inside"></div></div>
-                    </li>
-                    <li>
-                      <input
-                        type="radio"
-                        id="completed_radio"
-                        value="COMPLETED"
-                        name="dataset_status_radio"
-                      />
-                      <label for="completed_radio">Completed</label>
-                      <div class="check"><div class="inside"></div></div>
-                    </li>
-                  -->
-                </form>
-
-                <select
-                  class="my-dropdown"
-                  style="width: 80%; display: none"
-                  id="bf_list_dataset_status"
-                >
-                  <option></option>
-                </select>
-              </div>
-            </div>
-
-            <p
-              id="para-dataset-status-status"
-              style="
-                text-align: center;
-                font-weight: 600;
-                color: var(--color-light-green);
-                padding-top: 20px;
-              "
-            ></p>
-          </div>
-        </div>
-      </div>
-
-      <div
-        style="
-          border-top: 1px solid #f0f0f0;
-          padding: 10px;
-          padding-top: 15px;
-          height: 50px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          width: 100%;
-          bottom: 20px;
-          position: absolute;
-        "
+      class="footer-div"
       >
         <div style="display: flex; flex-direction: row; width: 110px">
           <button

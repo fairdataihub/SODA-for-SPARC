@@ -2656,3 +2656,5 @@ $("#edit_banner_image_button").click(async () => {
     );
   }
 });
+
+$('.content-button').popover();
