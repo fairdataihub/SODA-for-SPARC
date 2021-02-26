@@ -586,6 +586,7 @@ $(".prepare-dd-cards").click(function () {
 });
 
 function addNewRow(table) {
+  $("#add-other-contributors").text("Add contributors not listed above");
   $("#para-save-link-status").text("");
   $("#para-save-contributor-status").text("");
   var rowcount = document.getElementById(table).rows.length;
@@ -618,8 +619,6 @@ function addNewRow(table) {
 }
 
 function cloneConNamesSelect(selectLast, selectFirst) {
-  removeOptions(document.getElementById(selectLast))
-  removeOptions(document.getElementById(selectFirst))
   for (var i = 0; i < currentContributorsLastNames.length; i++) {
     var opt = currentContributorsLastNames[i];
     addOption(document.getElementById(selectLast), opt, opt);

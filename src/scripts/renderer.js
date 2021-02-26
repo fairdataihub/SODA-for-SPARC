@@ -1980,115 +1980,115 @@ $(currentConTable).mousedown(function (e) {
 /// load Airtable Contributor data
 dsAwardArray.addEventListener("change", changeAwardInputDsDescription);
 
-/// Auto populate once a contributor is selected
-// dsContributorArray.addEventListener("change", function (e) {
-//
-//   currentContributortagify.removeAllTags();
-//   currentAffliationtagify.removeAllTags();
-//
-//   contactPerson.checked = false;
-//
-//   var contributorVal =
-//     dsContributorArray.options[dsContributorArray.selectedIndex].value;
-//   currentContributortagify.destroy();
-//   currentAffliationtagify.destroy();
-//   document.getElementById("input-con-ID-1").disabled = true;
-//   affiliationInput.disabled = true;
-//   document.getElementById("input-con-role-1").disabled = true;
-//   document.getElementById("input-con-ID-1").value = "Loading...";
-//   affiliationInput.value = "Loading...";
-//   document.getElementById("input-con-role").value = "Loading...";
-//
-//   var airKeyContent = parseJson(airtableConfigPath);
-//   var airKeyInput = airKeyContent["api-key"];
-//   var airtableConfig = Airtable.configure({
-//     endpointUrl: "https://" + airtableHostname,
-//     apiKey: airKeyInput,
-//   });
-//   var base = Airtable.base("appiYd1Tz9Sv857GZ");
-//   var name = contributorVal.split(", ");
-//   var lastName = name[0];
-//   var firstName = name[1];
-//   base("sparc_members")
-//     .select({
-//       filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`,
-//     })
-//     .eachPage(function page(records, fetchNextPage) {
-//       var conInfoObj = {};
-//       records.forEach(function (record) {
-//         conInfoObj["ID"] = record.get("ORCID");
-//         conInfoObj["Role"] = record.get("Dataset_contributor_roles_for_SODA");
-//         conInfoObj["Affiliation"] = record.get("Institution");
-//       }),
-//         fetchNextPage();
-//
-//       // if no records found, leave fields empty
-//       leaveFieldsEmpty(
-//         conInfoObj["ID"],
-//         document.getElementById("input-con-ID")
-//       );
-//       leaveFieldsEmpty(
-//         conInfoObj["Role"],
-//         document.getElementById("input-con-role")
-//       );
-//       leaveFieldsEmpty(conInfoObj["Affiliation"], affiliationInput);
-//
-//       /// initiate tagify for contributor roles
-//       currentContributortagify = new Tagify(contributorRoles, {
-//         whitelist: [
-//           "PrincipleInvestigator",
-//           "Creator",
-//           "CoInvestigator",
-//           "DataCollector",
-//           "DataCurator",
-//           "DataManager",
-//           "Distributor",
-//           "Editor",
-//           "Producer",
-//           "ProjectLeader",
-//           "ProjectManager",
-//           "ProjectMember",
-//           "RelatedPerson",
-//           "Researcher",
-//           "ResearchGroup",
-//           "Sponsor",
-//           "Supervisor",
-//           "WorkPackageLeader",
-//           "Other",
-//         ],
-//         dropdown: {
-//           classname: "color-blue",
-//           enabled: 0, // show the dropdown immediately on focus
-//           maxItems: 25,
-//           // position  : "text",    // place the dropdown near the typed text
-//           closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-//         },
-//         duplicates: false,
-//       });
-//       /// initiate tagify for affiliations
-//       currentAffliationtagify = new Tagify(affiliationInput, {
-//         dropdown: {
-//           classname: "color-blue",
-//           enabled: 0, // show the dropdown immediately on focus
-//           maxItems: 25,
-//           closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-//         },
-//         duplicates: false,
-//         delimiters: ";",
-//       });
-//
-//       document.getElementById("input-con-ID").disabled = false;
-//       affiliationInput.disabled = false;
-//       document.getElementById("input-con-role").disabled = false;
-//     }),
-//     function done(err) {
-//       if (err) {
-//         log.error(err);
-//         console.error(err);
-//         return;
-//       }
-//     };
-// });
+/ Auto populate once a contributor is selected
+function loadContributorInfo(this) {
+
+  currentContributortagify.removeAllTags();
+  currentAffliationtagify.removeAllTags();
+
+  contactPerson.checked = false;
+
+  var contributorVal =
+    dsContributorArray.options[dsContributorArray.selectedIndex].value;
+  currentContributortagify.destroy();
+  currentAffliationtagify.destroy();
+  document.getElementById("input-con-ID-1").disabled = true;
+  affiliationInput.disabled = true;
+  document.getElementById("input-con-role-1").disabled = true;
+  document.getElementById("input-con-ID-1").value = "Loading...";
+  affiliationInput.value = "Loading...";
+  document.getElementById("input-con-role").value = "Loading...";
+
+  var airKeyContent = parseJson(airtableConfigPath);
+  var airKeyInput = airKeyContent["api-key"];
+  var airtableConfig = Airtable.configure({
+    endpointUrl: "https://" + airtableHostname,
+    apiKey: airKeyInput,
+  });
+  var base = Airtable.base("appiYd1Tz9Sv857GZ");
+  var name = contributorVal.split(", ");
+  var lastName = name[0];
+  var firstName = name[1];
+  base("sparc_members")
+    .select({
+      filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`,
+    })
+    .eachPage(function page(records, fetchNextPage) {
+      var conInfoObj = {};
+      records.forEach(function (record) {
+        conInfoObj["ID"] = record.get("ORCID");
+        conInfoObj["Role"] = record.get("Dataset_contributor_roles_for_SODA");
+        conInfoObj["Affiliation"] = record.get("Institution");
+      }),
+        fetchNextPage();
+
+      // if no records found, leave fields empty
+      leaveFieldsEmpty(
+        conInfoObj["ID"],
+        document.getElementById("input-con-ID")
+      );
+      leaveFieldsEmpty(
+        conInfoObj["Role"],
+        document.getElementById("input-con-role")
+      );
+      leaveFieldsEmpty(conInfoObj["Affiliation"], affiliationInput);
+
+      /// initiate tagify for contributor roles
+      currentContributortagify = new Tagify(contributorRoles, {
+        whitelist: [
+          "PrincipleInvestigator",
+          "Creator",
+          "CoInvestigator",
+          "DataCollector",
+          "DataCurator",
+          "DataManager",
+          "Distributor",
+          "Editor",
+          "Producer",
+          "ProjectLeader",
+          "ProjectManager",
+          "ProjectMember",
+          "RelatedPerson",
+          "Researcher",
+          "ResearchGroup",
+          "Sponsor",
+          "Supervisor",
+          "WorkPackageLeader",
+          "Other",
+        ],
+        dropdown: {
+          classname: "color-blue",
+          enabled: 0, // show the dropdown immediately on focus
+          maxItems: 25,
+          // position  : "text",    // place the dropdown near the typed text
+          closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+        },
+        duplicates: false,
+      });
+      /// initiate tagify for affiliations
+      currentAffliationtagify = new Tagify(affiliationInput, {
+        dropdown: {
+          classname: "color-blue",
+          enabled: 0, // show the dropdown immediately on focus
+          maxItems: 25,
+          closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+        },
+        duplicates: false,
+        delimiters: ";",
+      });
+
+      document.getElementById("input-con-ID").disabled = false;
+      affiliationInput.disabled = false;
+      document.getElementById("input-con-role").disabled = false;
+    }),
+    function done(err) {
+      if (err) {
+        log.error(err);
+        console.error(err);
+        return;
+      }
+    };
+});
 
 ///// grab datalist name and auto-load current description
 function showDatasetDescription() {
@@ -2148,7 +2148,7 @@ function emptyDSInfoEntries() {
 function emptyLinkInfo() {
   var tableCurrentLinks = document.getElementById("doi-table");
   var fieldSatisfied = false;
-  for (var i = 0; i < tableCurrentLinks.rows.length; i++) {
+  for (var i = 0; i < tableCurrentLinks.rows.length - 1; i++) {
     if (
       $(tableCurrentLinks.rows[i].cells[0]).find("select").val() == "Protocol URL or DOI*"
     ) {
@@ -2170,7 +2170,7 @@ function contactPersonCheck() {
   var contactPersonExists = false;
   var rowcount = currentConTable.rows.length;
 
-  for (var i = 0; i < rowcount; i++) {
+  for (var i = 0; i < rowcount - 1; i++) {
     var contactLabel = $(currentConTable.rows[i].cells[5]).find("label").find("input")[0];
     if (contactLabel && contactLabel.checked) {
       contactPersonExists = true;
@@ -2228,7 +2228,7 @@ function grabConInfoEntries() {
   /// grab entries from contributor table
   var rowcountCon = currentConTable.rows.length;
   var currentConInfo = [];
-  for (i = 1; i < rowcountCon; i++) {
+  for (i = 1; i < rowcountCon - 1; i++) {
     var conRoleTagify = $(currentConTable.rows[i].cells[4]).find("tag").toArray();
     var conRoleInfo = [];
     if (conRoleTagify.length>0) {
@@ -2251,11 +2251,21 @@ function grabConInfoEntries() {
       contactCheck = "Yes"
     }
 
+    var conLastName = "";
+    var conFirstName = "";
+    if ($($(currentConTable.rows[i].cells[0])[0]).find("select").length == 0) {
+      conLastName = $($(currentConTable.rows[i].cells[0])[0]).find("input").val().trim();
+      conFirstName = $($(currentConTable.rows[i].cells[1])[0]).find("input").val().trim();
+    } else {
+      conLastName = $($(currentConTable.rows[i].cells[0])[0]).find("select").val();
+      conFirstName = $($(currentConTable.rows[i].cells[1])[0]).find("select").val();
+    }
+    var conID = $($(currentConTable.rows[i].cells[2])[0]).find("input").val().trim();
     var myCurrentCon = {
-      conName: $($(currentConTable.rows[i].cells[0])[0]).find("select").val() + ", " + $($(currentConTable.rows[i].cells[1])[0]).find("select").val(),
-      conID: $($(currentConTable.rows[1].cells[2])[0]).find("input").val().trim(),
-      conAffliation: conAffliationInfo,
-      conRole: conRoleInfo,
+      conName: conLastName + ", " + conFirstName,
+      conID: conID,
+      conAffliation: conAffliationInfo.join("; "),
+      conRole: conRoleInfo.join(", "),
       conContact: contactCheck,
     };
     currentConInfo.push(myCurrentCon);
@@ -2271,7 +2281,7 @@ function grabProtocolSection() {
   /// Additional link description
   var rowcountLink = document.getElementById("doi-table").rows.length;
   var addlLinkInfo = [];
-  for (i = 1; i < rowcountLink; i++) {
+  for (i = 1; i < rowcountLink - 1; i++) {
     var addlLink = {
       "link type": $(document.getElementById("doi-table").rows[i].cells[0]).find("select").val(),
       link: $(document.getElementById("doi-table").rows[i].cells[1]).find("input").val(),
