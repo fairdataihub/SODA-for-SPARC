@@ -1771,7 +1771,7 @@
                     <tbody>
                       <tr id='row-current-name1'>
                         <td class="contributor-table-row">
-                          <select id="ds-description-contributor-list-last-1" class="form-container-input-bf" style="font-size:13px;line-height: 2;">
+                          <select id="ds-description-contributor-list-last-1" class="form-container-input-bf" onchange="onchangeLastNames(1)" style="font-size:13px;line-height: 2;">
                             <option value="Select an option">Select an option</option>
                           </select>
                         </td>
@@ -2225,7 +2225,7 @@
                   color: var(--color-light-green);
                 "
               ></p>
-              
+
             </div>
           </div>
         </div>
@@ -2381,7 +2381,7 @@
             </div>
           </div>
         </div>
-  
+
         <div
           class="individual-question manage-dataset"
           id="div-rename-bf-dataset" style="height: auto"
@@ -2515,7 +2515,7 @@
       </header>
 
       <div id="pi_dataset_owner_parent-tab" style="overflow-y: auto; height: 70%">
-    
+
         <div
           class="individual-question manage-dataset show"
           id="pi_dataset_owner_tab" style="height: auto"
@@ -2639,7 +2639,7 @@
             </div>
           </div>
         </div>
-    
+
         <div
           class="individual-question manage-dataset"
           id="div_make_pi_owner_permissions" style="height: auto"
@@ -2679,7 +2679,7 @@
                   >
                     <option>Select PI</option>
                   </select>
-    
+
                   <div
                     id="div-button-add-permission-pi"
                     style="flex-direction: row; justify-content: center"
@@ -2703,7 +2703,7 @@
                     </button>
                   </div>
                 </div>
-                
+
                 <div id="bf-add-permission-pi-spinner" class="spinner" style="visibility:hidden;margin-top: 10px;">
                   <div class="rect1"></div>
                   <div class="rect2"></div>
@@ -3367,7 +3367,7 @@
             </div>
           </div>
         </div>
-  
+
         <div
           class="individual-question manage-dataset"
           id="div_add_edit_subtitle" style="height: auto"
@@ -4401,7 +4401,7 @@
         </div>
       </header>
 
-      <div id="upload_local_dataset_parent-tab" style="overflow-y: auto; height: 70%"> 
+      <div id="upload_local_dataset_parent-tab" style="overflow-y: auto; height: 70%">
         <div
           class="individual-question manage-dataset show"
           id="upload_local_dataset_tab"
@@ -4752,7 +4752,7 @@
                       />
                     </svg>
                   </div>
-  
+
                   <div
                     id="div-bf-current-dataset-status-progress"
                     class="progressdiv synced-progress"
@@ -4795,7 +4795,7 @@
             </div>
           </div>
         </div>
-  
+
         <div
           class="individual-question manage-dataset"
           id="div_view_change_dataset_status" style="height: auto"
@@ -4840,10 +4840,10 @@
                           name="dataset_status_radio"
                         />
                         <label for="no_status_radio">No Status</label>
-  
+
                         <div class="check"></div>
                       </li>
-  
+
                       <li>
                         <input
                           type="radio"
@@ -4854,10 +4854,10 @@
                         <label for="work_in_progress_radio"
                           >Work in Progress</label
                         >
-  
+
                         <div class="check"><div class="inside"></div></div>
                       </li>
-  
+
                       <li>
                         <input
                           type="radio"
@@ -4866,10 +4866,10 @@
                           name="dataset_status_radio"
                         />
                         <label for="in_review_radio">In Review</label>
-  
+
                         <div class="check"><div class="inside"></div></div>
                       </li>
-  
+
                       <li>
                         <input
                           type="radio"
@@ -4878,12 +4878,12 @@
                           name="dataset_status_radio"
                         />
                         <label for="completed_radio">Completed</label>
-  
+
                         <div class="check"><div class="inside"></div></div>
                       </li>
                     -->
                   </form>
-  
+
                   <select
                     class="my-dropdown"
                     style="width: 80%; display: none"
@@ -4893,7 +4893,7 @@
                   </select>
                 </div>
               </div>
-  
+
               <p
                 id="para-dataset-status-status"
                 style="

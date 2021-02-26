@@ -599,7 +599,9 @@ function addNewRow(table) {
     } else {
       $('.doi-helper-buttons').css('display', 'inline-flex');
       $('.doi-add-row-button').css('display', 'none');
-      var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-link" +rowIndex +"'><td><select id='select-misc-link' class='form-container-input-bf' style='font-size:13px;line-height:2;'><option value='Select' disabled>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button onclick='delete_link(" +
+      // check for unique row id in case users delete old rows and append new rows (same IDs!)
+      var newRowIndex = checkForUniqueRowID("row-current-link", rowIndex);
+      var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-link" +newRowIndex +"'><td><select id='select-misc-link' class='form-container-input-bf' style='font-size:13px;line-height:2;'><option value='Select' disabled>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button onclick='delete_link(" +
       rowIndex +")'' class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
     }
   } else if (table === 'table-current-contributors') {
@@ -609,23 +611,32 @@ function addNewRow(table) {
     } else {
       $('#table-current-contributors .contributor-helper-buttons').css('display', 'inline-flex');
       $('#table-current-contributors .contributor-add-row-button').css('display', 'none');
-      var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +rowIndex +"'><td class='grab'><select id='ds-description-contributor-list-last-"+rowIndex+"' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select id='ds-description-contributor-list-first-"+rowIndex+"' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+rowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+rowIndex+"'></input></td><td class='grab'><label class='switch'><input id='ds-contact-person' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
+      // check for unique row id in case users delete old rows and append new rows (same IDs!)
+      var newRowIndex = checkForUniqueRowID("row-current-name", rowIndex);
+      var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +newRowIndex +"'><td class='grab'><select id='ds-description-contributor-list-last-"+newRowIndex+"' onchange='onchangeLastNames("+newRowIndex+")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select id='ds-description-contributor-list-first-"+newRowIndex+"' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+newRowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+newRowIndex+"'></input></td><td class='grab'><label class='switch'><input id='ds-contact-person' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
       rowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
-      createConsRoleTagify('input-con-role-'+rowIndex.toString());
-      createConsAffliationTagify('input-con-affiliation-'+rowIndex.toString())
-      cloneConNamesSelect('ds-description-contributor-list-last-'+rowIndex.toString(), 'ds-description-contributor-list-first-'+rowIndex.toString())
+      createConsRoleTagify('input-con-role-'+newRowIndex.toString());
+      createConsAffliationTagify('input-con-affiliation-'+newRowIndex.toString())
+      cloneConNamesSelect('ds-description-contributor-list-last-'+newRowIndex.toString())
     }
   }
 }
 
-function cloneConNamesSelect(selectLast, selectFirst) {
+function checkForUniqueRowID(rowID, no) {
+  if ($("#"+rowID+no.toString()).length == 0) {
+    return no
+  } else {
+    no = no + 1
+    return checkForUniqueRowID(rowID, no)
+  }
+}
+
+function cloneConNamesSelect(selectLast) {
   for (var i = 0; i < currentContributorsLastNames.length; i++) {
     var opt = currentContributorsLastNames[i];
-    addOption(document.getElementById(selectLast), opt, opt);
-  }
-  for (var i = 0; i < currentContributorsFirstNames.length; i++) {
-    var opt = currentContributorsFirstNames[i];
-    addOption(document.getElementById(selectFirst), opt, opt);
+    if (document.getElementById(selectLast)) {
+      addOption(document.getElementById(selectLast), opt, opt);
+    }
   }
 }
 

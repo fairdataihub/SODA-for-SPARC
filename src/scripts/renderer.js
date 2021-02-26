@@ -223,6 +223,8 @@ const awardArrayTagify = new Tagify(editSPARCAwardsTextbox, {
   },
 });
 
+var globalContributorNameObject = {};
+
 // Prepare Submission File
 const airtableAccountBootboxMessage =
   "<form><div class='form-group row'><label for='bootbox-airtable-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-airtable-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-airtable-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-airtable-key' type='text' class='form-control'/></div></div></form>";
@@ -1625,6 +1627,7 @@ function clearCurrentConInfo() {
 function changeAwardInputDsDescription() {
   currentContributorsLastNames = [];
   currentContributorsFirstNames = [];
+  globalContributorNameObject = {}
   clearCurrentConInfo();
   /// delete old table
   while (currentConTable.rows.length > 2) {
@@ -1642,7 +1645,6 @@ function changeAwardInputDsDescription() {
     removeOptions(dsContributorArrayFirst1);
     addOption(dsContributorArrayFirst1, "Select", "Select an option");
   }
-
   var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value;
   var airKeyContent = parseJson(airtableConfigPath);
   if (Object.keys(airKeyContent).length !== 0) {
@@ -1660,20 +1662,15 @@ function changeAwardInputDsDescription() {
         records.forEach(function (record) {
           var firstName = record.get("First_name");
           var lastName = record.get("Last_name");
+          globalContributorNameObject[lastName] = firstName;
           currentContributorsLastNames.push(lastName);
-          currentContributorsFirstNames.push(firstName);
+          // currentContributorsFirstNames.push(firstName);
         }),
           fetchNextPage();
         for (var i = 0; i < currentContributorsLastNames.length; i++) {
           var opt = currentContributorsLastNames[i];
           if (dsContributorArrayLast1) {
             addOption(dsContributorArrayLast1, opt, opt);
-          }
-        }
-        for (var i = 0; i < currentContributorsFirstNames.length; i++) {
-          var opt = currentContributorsFirstNames[i];
-          if (dsContributorArrayFirst1) {
-            addOption(dsContributorArrayFirst1, opt, opt);
           }
         }
       }),
@@ -1685,6 +1682,16 @@ function changeAwardInputDsDescription() {
         }
       };
   }
+}
+
+// on change event when users choose a contributor's last name
+function onchangeLastNames(no) {
+  $('#ds-description-contributor-list-first-'+no.toString()).attr("disabled", true);
+  conLastname = $('#ds-description-contributor-list-last-'+no.toString()).val()
+  if (conLastname in globalContributorNameObject) {
+    addOption(document.getElementById('ds-description-contributor-list-first-'+no.toString()), globalContributorNameObject[conLastname], globalContributorNameObject[conLastname])
+  }
+  $('#ds-description-contributor-list-first-'+no.toString()).attr("disabled", false);
 }
 
 //////////////////////// Current Contributor(s) /////////////////////
@@ -1980,8 +1987,8 @@ $(currentConTable).mousedown(function (e) {
 /// load Airtable Contributor data
 dsAwardArray.addEventListener("change", changeAwardInputDsDescription);
 
-/ Auto populate once a contributor is selected
-function loadContributorInfo(this) {
+// Auto populate once a contributor is selected
+function loadContributorInfo() {
 
   currentContributortagify.removeAllTags();
   currentAffliationtagify.removeAllTags();
@@ -2088,7 +2095,7 @@ function loadContributorInfo(this) {
         return;
       }
     };
-});
+}
 
 ///// grab datalist name and auto-load current description
 function showDatasetDescription() {
