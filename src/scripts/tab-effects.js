@@ -1559,6 +1559,13 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
       $(target).children().find(".div-confirm-button button").show();
     }
   }
+
+  if (ev.id == "dataset-description-no-airtable-mode") {
+    $("#div-airtable-award-button-dd").show();
+    $("#dd-connect-Airtable").css("display", "block")
+    ddNoAirtableMode("On");
+  }
+
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(
     parentDiv
@@ -2599,7 +2606,7 @@ $("#edit_banner_image_button").click(async () => {
     if (position != -1) {
       // The image url will be before the security token
       let new_img_src = img_src.substring(0, position - 1);
-      let new_position = new_img_src.lastIndexOf("."); // 
+      let new_position = new_img_src.lastIndexOf("."); //
 
       if (new_position != -1) {
         imageExtension = new_img_src.substring(new_position + 1);

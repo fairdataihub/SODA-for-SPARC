@@ -25,6 +25,7 @@ const DragSelect = require("dragselect");
 const excelToJson = require("convert-excel-to-json");
 const csvToJson = require("convert-csv-to-json");
 const app = remote.app;
+var noAirtable = false;
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -1630,21 +1631,8 @@ function changeAwardInputDsDescription() {
   globalContributorNameObject = {}
   // clearCurrentConInfo();
   /// delete old table
-  while (currentConTable.rows.length > 2) {
-    currentConTable.deleteRow(2);
-  }
+  $("#table-current-contributors").find('tr').slice(1,-1).remove();
 
-  currentAffliationtagify.removeAllTags();
-  currentContributortagify.removeAllTags();
-
-  if (dsContributorArrayLast1) {
-    removeOptions(dsContributorArrayLast1);
-    addOption(dsContributorArrayLast1, "Select", "Select an option");
-  }
-  if (dsContributorArrayFirst1) {
-    removeOptions(dsContributorArrayFirst1);
-    addOption(dsContributorArrayFirst1, "Select", "Select an option");
-  }
   var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value;
   var airKeyContent = parseJson(airtableConfigPath);
   if (Object.keys(airKeyContent).length !== 0) {
@@ -1664,7 +1652,6 @@ function changeAwardInputDsDescription() {
           var lastName = record.get("Last_name");
           globalContributorNameObject[lastName] = firstName;
           currentContributorsLastNames.push(lastName);
-          // currentContributorsFirstNames.push(firstName);
         }),
           fetchNextPage();
         for (var i = 0; i < currentContributorsLastNames.length; i++) {
@@ -2057,7 +2044,7 @@ $(currentConTable).mousedown(function (e) {
 });
 
 /// load Airtable Contributor data
-dsAwardArray.addEventListener("change", changeAwardInputDsDescription);
+// dsAwardArray.addEventListener("change", changeAwardInputDsDescription);
 
 ///// grab datalist name and auto-load current description
 function showDatasetDescription() {
@@ -2129,7 +2116,6 @@ function emptyLinkInfo() {
 
 function emptyInfoEntries(element) {
   var fieldSatisfied = true;
-  // var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
   if (element === "Select") {
     fieldSatisfied = false;
   }
@@ -2177,7 +2163,11 @@ function grabDSInfoEntries() {
 }
 
 function grabConInfoEntries() {
-  var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+  if (noAirtable) {
+    var funding = $("#ds-description-award-list").val().trim()
+  } else {
+    var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+  }
   var acknowledgment = document
     .getElementById("ds-description-acknowledgments")
     .value.trim();
@@ -2363,7 +2353,11 @@ function detectEmptyRequiredFields(funding) {
 ////////////////////////////////////////////////////////////////
 generateDSBtn.addEventListener("click", (event) => {
   document.getElementById("para-generate-description-status").innerHTML = "";
-  var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+  if (noAirtable) {
+    var funding = $("#ds-description-award-list").val().trim()
+  } else {
+    var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+  }
   var allFieldsSatisfied = detectEmptyRequiredFields(funding)[0];
   var errorMessage = detectEmptyRequiredFields(funding)[1];
 

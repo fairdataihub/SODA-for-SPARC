@@ -382,7 +382,7 @@
                   <line class="cls-1" x1="4.4" y1="62.64" x2="63.26" y2="62.64" stroke="#13716D"/>
                   <line class="cls-1" x1="22.4" y1="46.35" x2="22.4" y2="80.5" stroke="#13716D"/>
                   <line class="cls-1" x1="40.4" y1="46.35" x2="40.4" y2="80.5" stroke="#13716D"/>
-                  
+
                   </g></g>
                   </svg>
                   <h2>Create submission.xlsx</h2>
@@ -407,7 +407,7 @@
                   <line class="cls-1" x1="4.4" y1="62.64" x2="63.26" y2="62.64" stroke="#13716D"/>
                   <line class="cls-1" x1="22.4" y1="46.35" x2="22.4" y2="80.5" stroke="#13716D"/>
                   <line class="cls-1" x1="40.4" y1="46.35" x2="40.4" y2="80.5" stroke="#13716D"/>
-                  
+
                   </g></g>
                   </svg>
                   <h2>Create dataset_<br>description.xlsx</h2>
@@ -442,7 +442,7 @@
                   <line class="cls-1" x1="4.4" y1="62.64" x2="63.26" y2="62.64" stroke="#13716D"/>
                   <line class="cls-1" x1="22.4" y1="46.35" x2="22.4" y2="80.5" stroke="#13716D"/>
                   <line class="cls-1" x1="40.4" y1="46.35" x2="40.4" y2="80.5" stroke="#13716D"/>
-                  
+
                   </g></g>
                   </svg>
                   <h2>Create subjects.xlsx</h2>
@@ -467,7 +467,7 @@
                   <line class="cls-1" x1="4.4" y1="62.64" x2="63.26" y2="62.64" stroke="#13716D"/>
                   <line class="cls-1" x1="22.4" y1="46.35" x2="22.4" y2="80.5" stroke="#13716D"/>
                   <line class="cls-1" x1="40.4" y1="46.35" x2="40.4" y2="80.5" stroke="#13716D"/>
-                  
+
                   </g></g>
                   </svg>
                   <h2>Create samples.xlsx</h2>
@@ -1639,8 +1639,8 @@
                     </div>
                     <!-- this is the set of buttons that will appear if Airtable account is not connected -->
                     <div id="div-airtable-award-button-dd" style="display: none;flex-direction:row;justify-content:center;margin:10px auto;margin-top:30px">
-                      <button onclick="transitionFreeFormMode(this, 'Question-prepare-dd-1', 'create_dataset_description-tab', 'delete', 'individual-question prepare-dd')" data-next="Question-prepare-dd-4-sections" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:35px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:15px;margin-right:20px">No, skip</button>
-                      <button onclick="showAddAirtableAccountBootbox()" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:35px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:15px">Yes, let's connect</button>
+                      <button onclick="transitionFreeFormMode(this, 'Question-prepare-dd-1', 'create_dataset_description-tab', 'delete', 'individual-question prepare-dd')" id="dataset-description-no-airtable-mode" data-next="Question-prepare-dd-4-sections" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:35px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:15px;margin-right:20px">No, skip</button>
+                      <button onclick="showAddAirtableAccountBootbox()" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:35px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:15px" id="dd-connect-Airtable">Yes, let's connect</button>
                     </div>
                   </div>
                 </div>
@@ -1741,7 +1741,7 @@
                     <div class="div-dd-info">
                       <div class="demo-controls-head"><font color="black"> SPARC Award*: </font> </div>
                       <div class="demo-controls-body">
-                        <select id="ds-description-award-list" class="form-container-input-bf" style="font-size:13px;line-height:2;">
+                        <select id="ds-description-award-list" onchange="changeAwardInputDsDescription()" class="form-container-input-bf" style="font-size:13px;line-height:2;">
                           <option value="Select">Select an option</option>
                         </select>
                       </div>
