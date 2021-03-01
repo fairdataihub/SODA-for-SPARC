@@ -3676,6 +3676,7 @@ bfAccountList.addEventListener("change", () => {
     $("#current-bf-account").text(defaultBfAccount);
     $("#current-bf-account-generate").text(defaultBfAccount);
     $("#create_empty_dataset_BF_account_span").text(defaultBfAccount);
+    $(".bf-account-span").text(defaultBfAccount);
     // updateDatasetList(defaultBfAccount);
     showAccountDetails(bfAccountLoadProgress);
     showHideDropdownButtons("account", "show");
@@ -3812,6 +3813,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
           log.error(error);
           console.error(error);
           var emessage = userError(error);
+          $("#bf-rename-dataset-spinner").css("visibility", "hidden");
           bfRenameDatasetStatus.innerHTML =
             "<span style='color: red;'> " + emessage + "</span>" + sadCan;
           bfRenameDatasetBtn.disabled = false;
@@ -3821,7 +3823,6 @@ bfRenameDatasetBtn.addEventListener("click", () => {
             "Manage Dataset - Rename Existing Dataset",
             currentDatasetName + " to " + renamedDatasetName
           );
-          $("#bf-rename-dataset-spinner").css("visibility", "hidden");
         } else {
           defaultBfDataset = renamedDatasetName;
           $(".bf-dataset-span").html(renamedDatasetName);
@@ -5648,6 +5649,7 @@ function showAccountDetails(loadProgress) {
         $("#para-account-detail-curate").html(res);
         $("#para-account-detail-curate-generate").html(res);
         $("#para_create_empty_dataset_BF_account").html(res);
+        $(".bf-account-details-span").html(res);
         bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML;
         loadProgress.style.display = "none";
         document.getElementById("div-permission-list").style.display = "block";
@@ -5893,6 +5895,7 @@ function loadDefaultAccount() {
         $("#current-bf-account").text(myitemselect);
         $("#current-bf-account-generate").text(myitemselect);
         $("#create_empty_dataset_BF_account_span").text(myitemselect);
+        $(".bf-account-span").text(myitemselect);
 
         showAccountDetails(bfAccountLoadProgress);
         showHideDropdownButtons("account", "show");
@@ -7036,11 +7039,13 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
             $("#current-bf-account").text(name);
             $("#current-bf-account-generate").text(name);
             $("#create_empty_dataset_BF_account_span").text(name);
+            $(".bf-account-span").text(name);
             $("#current-bf-dataset").text("None");
             $("#current-bf-dataset-generate").text("None");
             $(".bf-dataset-span").html("None");
             $("#para-account-detail-curate-generate").html(res);
             $("#para_create_empty_dataset_BF_account").html(res);
+            $(".bf-account-details-span").html(res);
 
             showHideDropdownButtons("account", "show");
           }
@@ -7260,8 +7265,10 @@ function showDefaultBFAccount() {
               $("#current-bf-account").text("None");
               $("#current-bf-account-generate").text("None");
               $("#create_empty_dataset_BF_account_span").text("None");
+              $(".bf-account-span").text("None");
               $("#para-account-detail-curate-generate").html("None");
               $("#para_create_empty_dataset_BF_account").html("None");
+              $(".bf-account-details-span").html("None");
 
               bfSelectAccountStatus.innerHTML =
                 "<span style='color:red'>" + error + "</span>";
@@ -7272,8 +7279,10 @@ function showDefaultBFAccount() {
               $("#current-bf-account").text(defaultBfAccount);
               $("#current-bf-account-generate").text(defaultBfAccount);
               $("#create_empty_dataset_BF_account_span").text(defaultBfAccount);
+              $(".bf-account-span").text(defaultBfAccount);
               $("#para-account-detail-curate-generate").html(res);
               $("#para_create_empty_dataset_BF_account").html(res);
+              $(".bf-account-details-span").html(res);
 
               bfSelectAccountStatus.innerHTML = res;
               $("#div-bf-account-load-progress").css("display", "none");
