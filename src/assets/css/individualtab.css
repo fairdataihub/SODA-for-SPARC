@@ -137,9 +137,14 @@
   border: 1px solid #20b2aa;
 }
 
+
 .option-card.radio-button.non-selected:hover svg{
   fill:
 } */
+
+#table-current-contributors td {
+  min-width: 100px
+}
 
 .card-head {
   /* text-align: center; */

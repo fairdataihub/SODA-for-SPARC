@@ -1752,6 +1752,19 @@
                       </div>
                     </div>
 
+                    <div class="div-dd-info" id="SPARC-Award-raw-input-div-dd" style="display:none">
+                      <div class="demo-controls-head"><font color="black"> SPARC Award*: </font> </div>
+                      <div class="demo-controls-body">
+                        <input id="ds-description-award-raw-input-dd" class="form-container-input-bf" style="font-size:13px;line-height:2;">
+                        </input>
+                      </div>
+                      <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
+                        <span class="tooltiptext">
+                          SPARC award associated with the dataset.
+                        </span>
+                      </div>
+                    </div>
+
                     <div class="div-dd-info">
                       <div class="demo-controls-head"><font color="black"> Other funding source(s): </font> </div>
                       <div class="demo-controls-body">
@@ -1803,7 +1816,7 @@
                       <button id="button-ds-add-contributor" class="demo-button-prev-next" style="float:right">Add</button>
                     </div> -->
 
-                <div id="div-current-contributors" style="width:100%;margin:0 auto;display:block;overflow-x:autp">
+                <div id="div-current-contributors" style="width:100%;margin:0 auto;display:block;overflow-x:auto">
                       <h5 align="center" style="color:#000">
                         Provide information for each contributor below to add them to your dataset_description file
                       <br>Tip: Move rows up and down to change the order that contributors appear in the dataset_description file)</h5>
@@ -1829,15 +1842,23 @@
                     </thead>
                     <tbody>
                       <tr id='row-current-name1'>
-                        <td class="contributor-table-row">
+                        <td class="contributor-table-row" id="dd-contributor-row-last-1">
                           <select id="ds-description-contributor-list-last-1" class="form-container-input-bf" onchange="onchangeLastNames(1)" style="font-size:13px;line-height: 2;">
                             <option value="Select an option">Select an option</option>
                           </select>
                         </td>
-                        <td class="contributor-table-row">
+                        <td class="contributor-table-row" id="dd-contributor-row-first-1">
                           <select id="ds-description-contributor-list-first-1" class="form-container-input-bf" onchange="onchangeFirstNames(1)" style="font-size:13px;line-height: 2;">
                             <option value="Select an option">Select an option</option>
                           </select>
+                        </td>
+                        <td class="contributor-table-row" id="dd-contributor-row-raw-last-1" style="display:none">
+                          <input id="ds-description-raw-contributor-list-last-1" class="form-container-input-bf" style="font-size:13px;line-height: 2;">
+                          </input>
+                        </td>
+                        <td class="contributor-table-row"  id="dd-contributor-row-raw-first-1" style="display:none">
+                          <input id="ds-description-raw-contributor-list-first-1" class="form-container-input-bf" style="font-size:13px;line-height: 2;">
+                          </input>
                         </td>
                         <td class="contributor-table-row"><input id="input-con-ID-1" contenteditable="true"></input></td>
                         <td class="contributor-table-row">
