@@ -852,7 +852,7 @@ function tempDatasetListsSync() {
 function updateDatasetList(bfaccount) {
   $("#div-filter-datasets-progress-2").css("display", "block");
   $("#bf-dataset-select-header").css("display", "none")
-    $("#bf-dataset-select-div").css("display", "none")
+  $("#bf-dataset-select-div").css("display", "none")
   removeOptions(curateDatasetDropdown);
   addOption(curateDatasetDropdown, "Select dataset", "Select dataset");
   initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
@@ -905,7 +905,7 @@ function updateDatasetList(bfaccount) {
 }
 
 /// helper function to refresh live search dropdowns per dataset permission on change event
-function initializeBootstrapSelect(dropdown, action) {
+const initializeBootstrapSelect = (dropdown, action) => {
   if (action === "disabled") {
     $(dropdown).attr("disabled", true);
     $(".dropdown.bootstrap-select button").addClass("disabled");
@@ -921,7 +921,7 @@ function initializeBootstrapSelect(dropdown, action) {
 }
 
 // function to show dataset or account Confirm buttons
-function showHideDropdownButtons(category, action) {
+const showHideDropdownButtons = (category, action) => {
   if (category === "dataset") {
     if (action === "show") {
       // btn under Step 6
@@ -1565,7 +1565,8 @@ function showTreeViewPreview(new_dataset_name) {
 
 // per change event of current dataset span text
 $(".bf-dataset-span").on("DOMSubtreeModified", function () {
-  if ($(".bf-dataset-span").html() === "None") {
+  let temp = $(".bf-dataset-span").html();
+  if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
     $($(this).parents().find(".field").find(".div-confirm-button")).css(
       "display",
       "none"

@@ -211,12 +211,14 @@ function disseminateShowCurrentPermission(bfAcct, bfDS) {
 
 function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
   if (dataset === "Select dataset") {
-    bfCurrentDatasetStatusProgress.style.display = "none";
+    //bfCurrentDatasetStatusProgress.style.display = "none";
+    $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
+    $("#bf-dataset-status-spinner").css("display", "none");
     datasetStatusStatus.innerHTML = "";
     removeOptions(bfListDatasetStatus);
     bfListDatasetStatus.style.color = "black";
   } else {
-    datasetStatusStatus.innerHTML = "Please wait...";
+    datasetStatusStatus.innerHTML = "";
     client.invoke(
       "api_bf_get_dataset_status",
       account,
@@ -228,7 +230,9 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
           var emessage = userError(error);
           datasetStatusStatus.innerHTML =
             "<span style='color: red;'> " + emessage + "</span>";
-          bfCurrentDatasetStatusProgress.style.display = "none";
+          //bfCurrentDatasetStatusProgress.style.display = "none";
+          $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
+          $("#bf-dataset-status-spinner").css("display", "none");
         } else {
           var myitemselect = [];
           removeOptions(bfListDatasetStatus);
@@ -241,7 +245,9 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
           }
           bfListDatasetStatus.value = res[1];
           selectOptionColor(bfListDatasetStatus);
-          bfCurrentDatasetStatusProgress.style.display = "none";
+          //bfCurrentDatasetStatusProgress.style.display = "none";
+          $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
+          $("#bf-dataset-status-spinner").css("display", "none");
           datasetStatusStatus.innerHTML = "";
           if (callback !== "") {
             callback();

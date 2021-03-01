@@ -2245,8 +2245,9 @@
                 id="div-confirm-inputNewNameDataset"
                 style="
                 display: flex;
-                  flex-direction: row;
+                  flex-direction: column;
                   justify-content: center;
+                  align-items: center;
                   margin: 0 auto;
                 "
               >
@@ -2268,7 +2269,7 @@
                 >
                   Create dataset
                 </button>
-                <div id="bf-create-new-dataset-spinner" class="spinner" style="visibility:hidden;position: absolute;right:10px">
+                <div id="bf-create-new-dataset-spinner" class="spinner" style="visibility:hidden;">
                   <div class="rect1"></div>
                   <div class="rect2"></div>
                   <div class="rect3"></div>
@@ -2284,7 +2285,6 @@
                   color: var(--color-light-green);
                 "
               ></p>
-
             </div>
           </div>
         </div>
@@ -2480,8 +2480,10 @@
               <div
                 id="div-confirm-inputNewNameDataset"
                 style="
-                  flex-direction: row;
+                  display: flex;
+                  flex-direction: column;
                   justify-content: center;
+                  align-items: center;
                   margin: 0 auto;
                 "
               >
@@ -2502,6 +2504,13 @@
                 >
                   Rename dataset
                 </button>
+                <div id="bf-rename-dataset-spinner" class="spinner" style="visibility:hidden;">
+                  <div class="rect1"></div>
+                  <div class="rect2"></div>
+                  <div class="rect3"></div>
+                  <div class="rect4"></div>
+                  <div class="rect5"></div>
+                </div>
               </div>
               <p
                 id="para-rename-dataset-status"
@@ -3120,8 +3129,9 @@
                     id="div-button-add-permission"
                     style="
                       display: flex;
-                      flex-direction: row;
+                      flex-direction: column;
                       justify-content: center;
+                      align-items: center;
                       margin: 0 auto;
                     "
                   >
@@ -3142,7 +3152,7 @@
                     >
                       Add permission for user
                     </button>
-                    <div id="bf-add-permission-user-spinner" class="spinner" style="visibility:hidden;position: absolute;right:10px">
+                    <div id="bf-add-permission-user-spinner" class="spinner" style="visibility:hidden;margin:10px">
                       <div class="rect1"></div>
                       <div class="rect2"></div>
                       <div class="rect3"></div>
@@ -3220,8 +3230,9 @@
                     id="div-button-add-permission-team"
                     style="
                       display: flex;
-                      flex-direction: row;
+                      flex-direction: column;
                       justify-content: center;
+                      align-items: center;
                       margin: 0 auto;
                     "
                   >
@@ -3242,7 +3253,7 @@
                     >
                       Add permission for team
                     </button>
-                    <div id="bf-add-permission-team-spinner" class="spinner" style="visibility:hidden;position: absolute;right:10px">
+                    <div id="bf-add-permission-team-spinner" class="spinner" style="visibility:hidden;margin:10px">
                       <div class="rect1"></div>
                       <div class="rect2"></div>
                       <div class="rect3"></div>
@@ -3481,8 +3492,10 @@
                   <div
                     id="div-button-add-subtitle"
                     style="
-                      flex-direction: row;
+                    display: flex;
+                      flex-direction: column;
                       justify-content: center;
+                      align-items: center;
                       margin: 0 auto;
                       padding-top: 20px;
                     "
@@ -3504,6 +3517,13 @@
                     >
                       Add subtitle to dataset
                     </button>
+                    <div id="bf-add-subtitle-dataset-spinner" class="spinner" style="visibility:hidden; margin: 10px;">
+                      <div class="rect1"></div>
+                      <div class="rect2"></div>
+                      <div class="rect3"></div>
+                      <div class="rect4"></div>
+                      <div class="rect5"></div>
+                    </div>
                   </div>
                   <p
                     id="para-dataset-subtitle-status"
@@ -3721,8 +3741,10 @@
               <div
                 id="div-button-add-description"
                 style="
-                  flex-direction: row;
+                  display: flex;
+                  flex-direction: column;
                   justify-content: center;
+                  align-items: center;
                   margin: 0 auto;
                   padding-top: 20px;
                 "
@@ -3744,6 +3766,13 @@
                 >
                   Add description
                 </button>
+                <div id="bf-add-description-dataset-spinner" class="spinner" style="visibility:hidden; margin: 10px;">
+                  <div class="rect1"></div>
+                  <div class="rect2"></div>
+                  <div class="rect3"></div>
+                  <div class="rect4"></div>
+                  <div class="rect5"></div>
+                </div>
               </div>
               <p
                 id="para-dataset-description-status"
@@ -4366,8 +4395,10 @@
                 <div
                   id="div-button-add-license"
                   style="
-                    flex-direction: row;
+                  display: flex;
+                    flex-direction: column;
                     justify-content: center;
+                    align-items: center;
                     margin: 25px auto;
                   "
                 >
@@ -4389,6 +4420,13 @@
                   >
                     Assign Creative Commons Attribution (CC-BY) license
                   </button>
+                  <div id="bf-add-license-dataset-spinner" class="spinner" style="visibility:hidden; margin: 10px;">
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
+                  </div>
                 </div>
                 <p
                   id="para-dataset-license-status"
@@ -4814,8 +4852,8 @@
 
                   <div
                     id="div-bf-current-dataset-status-progress"
-                    class="progressdiv synced-progress"
-                    style="display: block"
+                    class="progressdiv"
+                    style="display: none; visibility: hidden;"
                   >
                     <div class="indeterminatebar"></div>
                   </div>
@@ -4872,7 +4910,7 @@
               >
               <div
                 class="field"
-                style="display: flex; justify-content: center; width: 100%"
+                style="display: flex;flex-direction: column; justify-content: center;align-items: center; width: 100%"
               >
                 <div
                   style="
@@ -4950,6 +4988,13 @@
                   >
                     <option></option>
                   </select>
+                </div>
+                <div id="bf-dataset-status-spinner" class="spinner" style="visibility:visible; margin: 10px;">
+                  <div class="rect1"></div>
+                  <div class="rect2"></div>
+                  <div class="rect3"></div>
+                  <div class="rect4"></div>
+                  <div class="rect5"></div>
                 </div>
               </div>
 
