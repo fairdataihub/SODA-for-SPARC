@@ -252,6 +252,26 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
   }
 }
 
+function checkDatasetDisseminate() {
+  if ($(".bf-dataset-span.disseminate").text() !== "None") {
+    $("#disseminate-dataset-confirm-button").click()
+  }
+}
+
+$(".bf-dataset-span.disseminate").on('DOMSubtreeModified',function(){
+  checkDatasetDisseminate()
+})
+
+$(".bf-dataset-span.submit-review").on('DOMSubtreeModified',function(){
+  if ($(this).text() !== "None") {
+    $("#div-confirm-submit-review").show();
+    $("#div-confirm-submit-review button").show();
+  } else {
+    $("#div-confirm-submit-review").hide();
+    $("#div-confirm-submit-review button").hide();
+  }
+})
+
 function showDDDUploadDiv() {
   $("#div-buttons-show-DDD").hide();
   $("#div-upload-DDD").show();

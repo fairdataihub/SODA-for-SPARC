@@ -1544,10 +1544,6 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     $(target).addClass("show");
   }
 
-  // append to parentDiv
-  document.getElementById(parentDiv).appendChild(target);
-
-  document.getElementById(currentDiv).classList.add("prev");
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
   if (button === "delete") {
     if ($(ev).siblings().length > 0) {
@@ -1558,6 +1554,16 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     if ($("bf-dataset-span").html() !== "None") {
       $(target).children().find(".div-confirm-button button").show();
     }
+  }
+
+  document.getElementById(parentDiv).appendChild(target);
+  document.getElementById(currentDiv).classList.add("prev");
+
+  if (ev.getAttribute("data-next") == "Post-curation-question-2") {
+    checkDatasetDisseminate()
+    setTimeout(function() {
+      $(target).addClass("test2");
+    }, 300)
   }
 
   if (ev.id == "dataset-description-no-airtable-mode") {
