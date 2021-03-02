@@ -346,7 +346,10 @@ def bf_dataset_account(accountname):
         for dataset in datasets_list:
             selected_dataset_id = dataset.id
             user_role = bf._api._get('/datasets/' + str(selected_dataset_id) + '/role')['role']
-            store.append({"id": selected_dataset_id, "name": dataset.name, "role": user_role})
+            if (user_role == "viewer"):
+                True == True;
+            else:
+                store.append({"id": selected_dataset_id, "name": dataset.name, "role": user_role})
         return store
 
     #filter_dataset(datasets_list)

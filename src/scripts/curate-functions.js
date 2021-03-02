@@ -713,7 +713,7 @@ async function openDropdownPrompt(dropdown) {
     initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
     const { value: bfDS } = await Swal.fire({
       title:
-        "<h3 style='margin-bottom:20px !important'>Please choose a dataset</h3>",
+        "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
       html: datasetPermissionDiv,
       showCloseButton: true,
       showCancelButton: true,

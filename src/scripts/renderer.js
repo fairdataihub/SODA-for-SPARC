@@ -3855,6 +3855,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
             "Manage Dataset - Rename Existing Dataset",
             currentDatasetName + " to " + renamedDatasetName
           );
+          $("#bf-rename-dataset-spinner").css("visibility", "hidden");
           client.invoke(
             "api_bf_dataset_account",
             bfAccountList.options[bfAccountList.selectedIndex].text,
@@ -3863,12 +3864,10 @@ bfRenameDatasetBtn.addEventListener("click", () => {
                 log.error(error);
                 console.log(error);
                 var emessage = error;
-                $("#bf-rename-dataset-spinner").css("visibility", "hidden");
               } else {
                 datasetList = [];
                 datasetList = result;
                 refreshDatasetList();
-                $("#bf-rename-dataset-spinner").css("visibility", "hidden");
               }
             }
           );
