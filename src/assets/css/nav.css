@@ -45,13 +45,14 @@
   border-top: 1px solid #d5d5d5;
   color: #f0f0f0;
   font-family: "Source Sans Pro", sans-serif;
-  transition: all 600ms ease;
+  transition: all 0.25s linear;
   transform-origin: 0 50%; /* Set the transformed position of sidebar to center left side. */
 }
 
 #main-nav.active {
   width: 0;
   transform: rotateY(150deg); /* Rotate sidebar vertically by 100 degrees. */
+  transition: all 0.25s linear;
 }
 
 .navbar-btn {
@@ -60,6 +61,7 @@
 
 .navbar-btn.active {
   margin-left: -190px;
+  transition: all 0.25s linear;
 }
 
 .navbar-btn:focus {

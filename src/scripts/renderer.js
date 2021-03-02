@@ -5733,7 +5733,7 @@ function selectOptionDropdown(dropdown, selectedDataset) {
 }
 
 //// De-populate dataset dropdowns to clear options
-function clearDatasetDropdowns() {
+const clearDatasetDropdowns = () => {
   for (let list of [
     bfDatasetList,
     bfDatasetListMetadata,
@@ -5755,7 +5755,7 @@ function clearDatasetDropdowns() {
 }
 
 /// populate the dropdowns with refreshed dataset list
-function populateDatasetDropdowns(mylist) {
+const populateDatasetDropdowns = (mylist) => {
   clearDatasetDropdowns();
   for (myitem in mylist) {
     var myitemselect = mylist[myitem];
@@ -5784,16 +5784,17 @@ function populateDatasetDropdowns(mylist) {
     bfDatasetListPostCurationConsortium.appendChild(option9);
     bfDatasetListPostCurationPublish.appendChild(option10);
     curateDatasetDropdown.appendChild(option11);
-
+    
     renameDatasetlistChange();
     metadataDatasetlistChange();
     permissionDatasetlistChange();
     postCurationListChange();
     datasetStatusListChange();
   }
+
 }
 
-datasetPermissionList.addEventListener("change", function (e) {
+datasetPermissionList.addEventListener("change",  (e) =>{
   var datasetPermission =
     datasetPermissionList.options[datasetPermissionList.selectedIndex].text;
 
@@ -5816,16 +5817,15 @@ datasetPermissionList.addEventListener("change", function (e) {
       removeOptions(list);
       addOption(list, "Select dataset", "Select dataset");
     }
+    
     var numberOfDatasetsRetrieved = refreshDatasetList();
-    document.getElementById("div-permission-list").style.display = "block";
-    document.getElementById("div-filter-datasets-progress").style.display =
-      "none";
-    document.getElementById("para-filter-datasets-status").innerHTML =
-      numberOfDatasetsRetrieved +
-      " dataset(s) where you have " +
-      datasetPermission.toLowerCase() +
-      " permissions were loaded successfully in SODA's interface. " +
-      smileyCan;
+    $("#div-permission-list").css("display", "block");
+    $("#div-filter-datasets-progress").css("display", "none");
+    $("#para-filter-datasets-status").html(`${numberOfDatasetsRetrieved} +
+    " dataset(s) where you have " +
+    ${datasetPermission.toLowerCase()} +
+    " permissions were loaded successfully in SODA's interface. " +
+    ${smileyCan};`)
   }
 });
 

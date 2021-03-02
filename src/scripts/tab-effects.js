@@ -481,6 +481,7 @@ const nextPrev = (n) => {
       },
     });
     console.log(event);
+    $("#sidebarCollapse").click();
     document.body.dispatchEvent(event);
     return;
   }
@@ -2567,6 +2568,11 @@ $(document).ready(() => {
     //$("#"+section+"-section").css("display", "block");
     console.log("here");
     $("#para-add-new-dataset-status").html();
+    $("#sidebarCollapse").click();
+  });
+
+  $(".footer-div div button").click(function () {
+    $("#sidebarCollapse").click();
   });
 });
 
