@@ -912,7 +912,7 @@ var milestoneTagify2 = new Tagify(milestoneInput2, {
   delimiters: null,
 });
 
-milestoneTagify2.on("input", function () {
+milestoneTagify2.on("add", function () {
   var buttonDiv = $($("#selected-milestone-2").parents()[1]).find(
     ".div-confirm-enter-milestone"
   );
