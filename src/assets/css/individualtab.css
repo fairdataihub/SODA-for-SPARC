@@ -14,7 +14,7 @@
   margin: 10px;
   color: white;
   opacity: 0.9;
-  border: none;
+  border: 1px transparent;
   position: relative;
   box-shadow: 0px 0px 10px #d5d5d5;
   cursor: pointer;
@@ -24,17 +24,23 @@
 .option-card:hover {
   /* border: 1px solid var(--color-light-green); */
   box-shadow: 0px 0px 10px 0px var(--color-light-green);
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .option-card.checked {
   border: 1px solid var(--color-light-green);
   box-shadow: 0px 0px 3px 0px var(--color-light-green);
   opacity: 1;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .option-card.disabled {
   pointer-events: none;
   opacity: 0.6;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .option-card.radio-button {
@@ -42,6 +48,8 @@
   height: 180px !important;
   grid-template-rows: 10% auto !important;
   pointer-events: auto;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .option-card.radio-button .card-body {
@@ -53,10 +61,14 @@
 .option-card.radio-button .card-body i {
   font-size: 39px;
   color: green;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .option-card.radio-button .card-body h2 {
   font-size: 14px;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .option-card.radio-button .card-head {
@@ -68,12 +80,16 @@
 .option-card.radio-button:active {
   color: var(--color-light-green);
   /* border: 1px solid var(--color-light-green); */
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .option-card.radio-button:hover,
 .option-card.radio-button:focus,
 .option-card.radio-button:active i {
   color: var(--color-light-green);
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .option-card.radio-button.checked {
@@ -295,14 +311,13 @@
   font-weight: 600;
   width: 130px;
   height: 38px;
-  /* padding: 10px; */
-  /* border: 1px solid #20b2aa; */
-  /* border-radius: 20px; */
   color: #fff;
   cursor: pointer;
   padding: 8px 24px;
   border: none;
   border-radius: 4px;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .transition-btn.prev {
@@ -310,10 +325,14 @@
   border: none;
   color: #666666;
   width: 110px;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .transition-btn:hover {
   box-shadow: 0 0 6px #b0b0b0;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .transition-btn:disabled,
@@ -322,7 +341,9 @@
   background: #fff;
   color: #cccccc;
   border: 1px solid #cccccc;
-  opacity: 0.8
+  opacity: 0.8;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .parent-tabs {
@@ -731,7 +752,7 @@
   /* transition: scale-display .3s; */
   transition: all 0.3s ease-out !important;
   margin: 0 auto;
-  margin-bottom: 10%;
+  margin-bottom: 3em;
   width: calc(100% - 300px)
   /* border-top:1px solid var(--color-bg-plum) */
 }
