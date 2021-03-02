@@ -204,25 +204,11 @@ const addNewMilestoneBtn = document.getElementById(
   "button-default-save-milestone"
 );
 const saveInformationBtn = document.getElementById("button-save-milestone");
-const editSPARCAwardsTextbox = document.getElementById("input-grant-info");
+// const editSPARCAwardsTextbox = document.getElementById("input-grant-info");
 var sparcAwardEditMessage = $("#div-SPARC-edit-awards");
 
 var currentContributorsLastNames = [];
 var currentContributorsFirstNames = [];
-
-//// initiate a tagify Award list
-const awardArrayTagify = new Tagify(editSPARCAwardsTextbox, {
-  delimiters: null,
-  enforceWhitelist: true,
-  whitelist: [],
-  duplicates: false,
-  dropdown: {
-    classname: "color-blue",
-    maxItems: Infinity,
-    enabled: 0,
-    closeOnSelect: true,
-  },
-});
 
 var globalContributorNameObject = {};
 
@@ -1104,7 +1090,7 @@ function getRowIndex(table) {
 // Save grant information
 function addSPARCAwards() {
   var message = "";
-  var tagifyArray = awardArrayTagify.value;
+  var tagifyArray = existingSPARCAwardsTagify.value;
   var spanMessage = "";
   // create empty milestone json files for newly added award
   createMetadataDir();
@@ -1130,14 +1116,12 @@ function addSPARCAwards() {
       var keyValuePair = { "award-number": awardNo, "award-full-title": award };
       awardNoAray.push(keyValuePair);
     }
-    var duplicateList = [];
-    var successfullyAddedList = [];
-    var newlyAddedAwards = [];
+
+    removeOptions(presavedAwardArray1)
+    removeOptions(presavedAwardArray2)
+    removeOptions(dsAwardArray)
 
     for (var keyValuePair of awardNoAray) {
-      if (keyValuePair["award-number"] in awardsJson) {
-        duplicateList.push(keyValuePair["award-number"]);
-      } else {
         addOption(
           presavedAwardArray1,
           keyValuePair["award-full-title"],
@@ -1153,33 +1137,7 @@ function addSPARCAwards() {
           keyValuePair["award-full-title"],
           keyValuePair["award-number"]
         );
-        newlyAddedAwards.push({"value": keyValuePair["award-full-title"], "award-number": keyValuePair["award-number"]})
-        successfullyAddedList.push(keyValuePair["award-number"]);
-      }
     }
-    existingSPARCAwardsTagify.addTags(newlyAddedAwards);
-    if (duplicateList.length !== 0) {
-      if (successfullyAddedList.length !== 0) {
-        message =
-          "<span style='color: red;'>Award(s) already added to your existing awards: " +
-          duplicateList.join(", ") +
-          "</span><br><span color='color:black'>Award(s) successfully added: " +
-          successfullyAddedList.join(", ") +
-          ".</span>";
-      } else {
-        message =
-          "<span style='color: red;'>Award(s) already added to your existing awards: " +
-          duplicateList.join(", ") +
-          ".</span>";
-      }
-    } else {
-      message =
-        "<span color='color:black'>Award(s) successfully added: " +
-        successfullyAddedList.join(", ") +
-        ".</span>";
-    }
-    $(".bootbox-add-airtable-class").text("Confirm");
-    awardArrayTagify.removeAllTags();
     awardsJson = {};
     for (var i=0; i< existingSPARCAwardsTagify.value.length; i++) {
       spanMessage = spanMessage + existingSPARCAwardsTagify.value[i]["value"] + "\n";
@@ -1421,7 +1379,7 @@ function loadAwardData() {
             // create set to remove duplicates
             var awardSet = new Set(awardResultArray);
             var resultArray = [...awardSet];
-            awardArrayTagify.settings.whitelist = resultArray;
+            existingSPARCAwardsTagify.settings.whitelist = resultArray;
           }
         }
       );
@@ -2294,12 +2252,12 @@ function grabCompletenessInfo() {
 }
 
 //// upon choosing a dataset, populate current description
-datasetDescriptionFileDataset.addEventListener("change", function () {
-  document.getElementById("ds-description").disabled = true;
-  document.getElementById("ds-description").innerHTML = "Loading...";
-  syncDatasetDropdownOption(datasetDescriptionFileDataset);
-  showDatasetDescription();
-});
+// datasetDescriptionFileDataset.addEventListener("change", function () {
+//   document.getElementById("ds-description").disabled = true;
+//   document.getElementById("ds-description").innerHTML = "Loading...";
+//   syncDatasetDropdownOption(datasetDescriptionFileDataset);
+//   showDatasetDescription();
+// });
 
 /// detect empty required fields and raise a warning
 function detectEmptyRequiredFields(funding) {
@@ -7134,18 +7092,18 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
   }
 }
 
-awardArrayTagify.on("add", function() {
-  if (awardArrayTagify.value.length > 0) {
-    $(".bootbox-add-airtable-class").text("Add")
-  } else {
-    $(".bootbox-add-airtable-class").text("Confirm")
-  }
-})
+// awardArrayTagify.on("add", function() {
+//   if (awardArrayTagify.value.length > 0) {
+//     $(".bootbox-add-airtable-class").text("Add")
+//   } else {
+//     $(".bootbox-add-airtable-class").text("Confirm")
+//   }
+// })
 
 function editSPARCAwardsBootbox() {
   $(sparcAwardEditMessage).css("display", "block");
   var editSPARCAwardsTitle =
-    '<h3 style="float:left"> Add/Edit your SPARC award(s): </h3><div style="padding-top:5px" class="tooltipnew"><img class="info" src="assets/img/info.png"><span class="tooltiptext">The list of active SPARC awards in this dropdown list is generated automatically from the SPARC Airtable sheet once SODA is connected with your Airtable account. Select your award(s) and click on "Add" to save it/them in SODA. You will only have to do this once. SODA will automatically load these awards next time you launch SODA.</span></div>';
+    '<h3 style="float:left"> Search for your SPARC award(s): </h3><div style="padding-top:5px" class="tooltipnew"><img class="info" src="assets/img/info.png"><span class="tooltiptext">The list of active SPARC awards in this dropdown list is generated automatically from the SPARC Airtable sheet once SODA is connected with your Airtable account. Select your award(s) and click on "Add" to save it/them in SODA. You will only have to do this once. SODA will automatically load these awards next time you launch SODA.</span></div>';
   var bootb = bootbox.dialog({
     title: editSPARCAwardsTitle,
     message: sparcAwardEditMessage,
@@ -7157,7 +7115,6 @@ function editSPARCAwardsBootbox() {
         label: "Confirm",
         className: "btn btn-primary bootbox-add-airtable-class",
         callback: function () {
-          // $(bootb.find(".modal-footer button")[1]).attr('id', 'bootbox-add-awards');
           $(bootb).find(".modal-footer span").remove();
           var message = addSPARCAwards();
           bootb.find(".modal-footer").prepend(message);
@@ -7171,9 +7128,6 @@ function editSPARCAwardsBootbox() {
     },
     size: "medium",
     centerVertical: true,
-    // callback: function() {
-    //   $(bootb.find(".modal-footer button")[1]).attr('id', 'bootbox-add-awards');
-    // };
   });
 }
 

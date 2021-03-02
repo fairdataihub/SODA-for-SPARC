@@ -323,7 +323,7 @@ function checkAirtableStatus() {
             // create set to remove duplicates
             var awardSet = new Set(sparcAwards);
             var resultArray = [...awardSet];
-            awardArrayTagify.settings.whitelist = resultArray;
+            existingSPARCAwardsTagify.settings.whitelist = resultArray;
             $("#current-airtable-account").text(airKeyName);
             $("#current-airtable-account-dd").text(airKeyName);
             changeAirtableDiv("div-field-not-connected", "div-field-already-connected", "div-airtable-award-button", "div-airtable-confirm-button")
