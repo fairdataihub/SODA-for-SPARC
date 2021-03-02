@@ -25,6 +25,7 @@ const DragSelect = require("dragselect");
 const excelToJson = require("convert-excel-to-json");
 const csvToJson = require("convert-csv-to-json");
 const app = remote.app;
+var noAirtable = false;
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -203,25 +204,11 @@ const addNewMilestoneBtn = document.getElementById(
   "button-default-save-milestone"
 );
 const saveInformationBtn = document.getElementById("button-save-milestone");
-const editSPARCAwardsTextbox = document.getElementById("input-grant-info");
+// const editSPARCAwardsTextbox = document.getElementById("input-grant-info");
 var sparcAwardEditMessage = $("#div-SPARC-edit-awards");
 
 var currentContributorsLastNames = [];
 var currentContributorsFirstNames = [];
-
-//// initiate a tagify Award list
-const awardArrayTagify = new Tagify(editSPARCAwardsTextbox, {
-  delimiters: null,
-  enforceWhitelist: true,
-  whitelist: [],
-  duplicates: false,
-  dropdown: {
-    classname: "color-blue",
-    maxItems: Infinity,
-    enabled: 0,
-    closeOnSelect: true,
-  },
-});
 
 var globalContributorNameObject = {};
 
@@ -911,7 +898,7 @@ var milestoneTagify2 = new Tagify(milestoneInput2, {
   delimiters: null,
 });
 
-milestoneTagify2.on("input", function () {
+milestoneTagify2.on("add", function () {
   var buttonDiv = $($("#selected-milestone-2").parents()[1]).find(
     ".div-confirm-enter-milestone"
   );
@@ -1103,7 +1090,7 @@ function getRowIndex(table) {
 // Save grant information
 function addSPARCAwards() {
   var message = "";
-  var tagifyArray = awardArrayTagify.value;
+  var tagifyArray = existingSPARCAwardsTagify.value;
   var spanMessage = "";
   // create empty milestone json files for newly added award
   createMetadataDir();
@@ -1129,14 +1116,12 @@ function addSPARCAwards() {
       var keyValuePair = { "award-number": awardNo, "award-full-title": award };
       awardNoAray.push(keyValuePair);
     }
-    var duplicateList = [];
-    var successfullyAddedList = [];
-    var newlyAddedAwards = [];
+
+    removeOptions(presavedAwardArray1)
+    removeOptions(presavedAwardArray2)
+    removeOptions(dsAwardArray)
 
     for (var keyValuePair of awardNoAray) {
-      if (keyValuePair["award-number"] in awardsJson) {
-        duplicateList.push(keyValuePair["award-number"]);
-      } else {
         addOption(
           presavedAwardArray1,
           keyValuePair["award-full-title"],
@@ -1152,33 +1137,7 @@ function addSPARCAwards() {
           keyValuePair["award-full-title"],
           keyValuePair["award-number"]
         );
-        newlyAddedAwards.push({"value": keyValuePair["award-full-title"], "award-number": keyValuePair["award-number"]})
-        successfullyAddedList.push(keyValuePair["award-number"]);
-      }
     }
-    existingSPARCAwardsTagify.addTags(newlyAddedAwards);
-    if (duplicateList.length !== 0) {
-      if (successfullyAddedList.length !== 0) {
-        message =
-          "<span style='color: red;'>Award(s) already added to your existing awards: " +
-          duplicateList.join(", ") +
-          "</span><br><span color='color:black'>Award(s) successfully added: " +
-          successfullyAddedList.join(", ") +
-          ".</span>";
-      } else {
-        message =
-          "<span style='color: red;'>Award(s) already added to your existing awards: " +
-          duplicateList.join(", ") +
-          ".</span>";
-      }
-    } else {
-      message =
-        "<span color='color:black'>Award(s) successfully added: " +
-        successfullyAddedList.join(", ") +
-        ".</span>";
-    }
-    $(".bootbox-add-airtable-class").text("Confirm");
-    awardArrayTagify.removeAllTags();
     awardsJson = {};
     for (var i=0; i< existingSPARCAwardsTagify.value.length; i++) {
       spanMessage = spanMessage + existingSPARCAwardsTagify.value[i]["value"] + "\n";
@@ -1420,7 +1379,7 @@ function loadAwardData() {
             // create set to remove duplicates
             var awardSet = new Set(awardResultArray);
             var resultArray = [...awardSet];
-            awardArrayTagify.settings.whitelist = resultArray;
+            existingSPARCAwardsTagify.settings.whitelist = resultArray;
           }
         }
       );
@@ -1628,23 +1587,11 @@ function changeAwardInputDsDescription() {
   currentContributorsLastNames = [];
   currentContributorsFirstNames = [];
   globalContributorNameObject = {}
-  // clearCurrentConInfo();
   /// delete old table
-  while (currentConTable.rows.length > 2) {
-    currentConTable.deleteRow(2);
-  }
+  $("#table-current-contributors").find('tr').slice(1,-1).remove();
+  var currentRowLeftID = $($($("#table-current-contributors").find('tr')[1].cells[0]).find("select")[0]).prop("id")
+  cloneConNamesSelect(currentRowLeftID);
 
-  currentAffliationtagify.removeAllTags();
-  currentContributortagify.removeAllTags();
-
-  if (dsContributorArrayLast1) {
-    removeOptions(dsContributorArrayLast1);
-    addOption(dsContributorArrayLast1, "Select", "Select an option");
-  }
-  if (dsContributorArrayFirst1) {
-    removeOptions(dsContributorArrayFirst1);
-    addOption(dsContributorArrayFirst1, "Select", "Select an option");
-  }
   var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value;
   var airKeyContent = parseJson(airtableConfigPath);
   if (Object.keys(airKeyContent).length !== 0) {
@@ -1664,7 +1611,6 @@ function changeAwardInputDsDescription() {
           var lastName = record.get("Last_name");
           globalContributorNameObject[lastName] = firstName;
           currentContributorsLastNames.push(lastName);
-          // currentContributorsFirstNames.push(firstName);
         }),
           fetchNextPage();
         for (var i = 0; i < currentContributorsLastNames.length; i++) {
@@ -2057,7 +2003,7 @@ $(currentConTable).mousedown(function (e) {
 });
 
 /// load Airtable Contributor data
-dsAwardArray.addEventListener("change", changeAwardInputDsDescription);
+// dsAwardArray.addEventListener("change", changeAwardInputDsDescription);
 
 ///// grab datalist name and auto-load current description
 function showDatasetDescription() {
@@ -2131,7 +2077,6 @@ function emptyLinkInfo() {
 
 function emptyInfoEntries(element) {
   var fieldSatisfied = true;
-  // var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
   if (element === "Select") {
     fieldSatisfied = false;
   }
@@ -2179,7 +2124,11 @@ function grabDSInfoEntries() {
 }
 
 function grabConInfoEntries() {
-  var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+  if (noAirtable) {
+    var funding = $("#ds-description-award-list").val().trim()
+  } else {
+    var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+  }
   var acknowledgment = document
     .getElementById("ds-description-acknowledgments")
     .value.trim();
@@ -2305,12 +2254,12 @@ function grabCompletenessInfo() {
 }
 
 //// upon choosing a dataset, populate current description
-datasetDescriptionFileDataset.addEventListener("change", function () {
-  document.getElementById("ds-description").disabled = true;
-  document.getElementById("ds-description").innerHTML = "Loading...";
-  syncDatasetDropdownOption(datasetDescriptionFileDataset);
-  showDatasetDescription();
-});
+// datasetDescriptionFileDataset.addEventListener("change", function () {
+//   document.getElementById("ds-description").disabled = true;
+//   document.getElementById("ds-description").innerHTML = "Loading...";
+//   syncDatasetDropdownOption(datasetDescriptionFileDataset);
+//   showDatasetDescription();
+// });
 
 /// detect empty required fields and raise a warning
 function detectEmptyRequiredFields(funding) {
@@ -2365,7 +2314,11 @@ function detectEmptyRequiredFields(funding) {
 ////////////////////////////////////////////////////////////////
 generateDSBtn.addEventListener("click", (event) => {
   document.getElementById("para-generate-description-status").innerHTML = "";
-  var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+  if (noAirtable) {
+    var funding = $("#ds-description-award-list").val().trim()
+  } else {
+    var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
+  }
   var allFieldsSatisfied = detectEmptyRequiredFields(funding)[0];
   var errorMessage = detectEmptyRequiredFields(funding)[1];
 
@@ -7122,75 +7075,94 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
           "</span>"
       );
   } else {
-    // test connection
-    const optionsSparcTable = {
-      hostname: airtableHostname,
-      port: 443,
-      path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
-      headers: { Authorization: `Bearer ${key}` },
-    };
-    var sparcTableSuccess;
-    https.get(optionsSparcTable, (res) => {
-      if (res.statusCode === 200) {
-        /// updating api key in SODA's storage
-        createMetadataDir();
-        var content = parseJson(airtableConfigPath);
-        content["api-key"] = key;
-        content["key-name"] = name;
-        fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-        $("#current-airtable-account").text(name);
-        $("#current-airtable-account-dd").text(name);
-        $("#bootbox-airtable-key-name").val("");
-        $("#bootbox-airtable-key").val("");
-        loadAwardData();
-        myBootboxDialog.modal("hide");
-        bootbox.alert({
-          message: "Successfully connected!",
-          centerVertical: true,
-        });
-      } else if (res.statusCode === 403) {
-        $(myBootboxDialog).find(".modal-footer span").remove();
-        myBootboxDialog
-          .find(".modal-footer")
-          .prepend(
-            "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>"
-          );
-      } else {
-        log.error(res);
-        console.error(res);
-        $(myBootboxDialog).find(".modal-footer span").remove();
-        myBootboxDialog
-          .find(".modal-footer")
-          .prepend(
-            "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
-          );
-      }
-      res.on("error", (error) => {
-        log.error(error);
-        console.error(error);
-        $(myBootboxDialog).find(".modal-footer span").remove();
-        myBootboxDialog
-          .find(".modal-footer")
-          .prepend(
-            "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
-          );
-      });
+    bootbox.confirm({
+      title: "Connect to Airtable",
+      message:
+        "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
+      centerVertical: true,
+      size: "medium",
+      button: {
+        ok: {
+          label: "Yes",
+          className: "btn-primary",
+        },
+      },
+      callback: function (r) {
+        if (r !== null && r === true) {
+          // test connection
+          const optionsSparcTable = {
+            hostname: airtableHostname,
+            port: 443,
+            path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
+            headers: { Authorization: `Bearer ${key}` },
+          };
+          var sparcTableSuccess;
+          https.get(optionsSparcTable, (res) => {
+            if (res.statusCode === 200) {
+              /// updating api key in SODA's storage
+              createMetadataDir();
+              var content = parseJson(airtableConfigPath);
+              content["api-key"] = key;
+              content["key-name"] = name;
+              fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
+              $("#current-airtable-account").text(name);
+              $("#current-airtable-account-dd").text(name);
+              $("#bootbox-airtable-key-name").val("");
+              $("#bootbox-airtable-key").val("");
+              loadAwardData();
+              checkAirtableStatus();
+              ddNoAirtableMode("Off");
+              myBootboxDialog.modal("hide");
+              bootbox.alert({
+                message: "Successfully connected!",
+                centerVertical: true,
+              });
+            } else if (res.statusCode === 403) {
+              $(myBootboxDialog).find(".modal-footer span").remove();
+              myBootboxDialog
+                .find(".modal-footer")
+                .prepend(
+                  "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>"
+                );
+            } else {
+              log.error(res);
+              console.error(res);
+              $(myBootboxDialog).find(".modal-footer span").remove();
+              myBootboxDialog
+                .find(".modal-footer")
+                .prepend(
+                  "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
+                );
+            }
+            res.on("error", (error) => {
+              log.error(error);
+              console.error(error);
+              $(myBootboxDialog).find(".modal-footer span").remove();
+              myBootboxDialog
+                .find(".modal-footer")
+                .prepend(
+                  "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
+                );
+            });
+          });
+        }
+      },
     });
   }
 }
 
-awardArrayTagify.on("add", function() {
-  if (awardArrayTagify.value.length > 0) {
-    $(".bootbox-add-airtable-class").text("Add")
-  } else {
-    $(".bootbox-add-airtable-class").text("Confirm")
-  }
-})
+// awardArrayTagify.on("add", function() {
+//   if (awardArrayTagify.value.length > 0) {
+//     $(".bootbox-add-airtable-class").text("Add")
+//   } else {
+//     $(".bootbox-add-airtable-class").text("Confirm")
+//   }
+// })
 
 function editSPARCAwardsBootbox() {
   $(sparcAwardEditMessage).css("display", "block");
   var editSPARCAwardsTitle =
-    '<h3 style="float:left"> Add/Edit your SPARC award(s): </h3><div style="padding-top:5px" class="tooltipnew"><img class="info" src="assets/img/info.png"><span class="tooltiptext">The list of active SPARC awards in this dropdown list is generated automatically from the SPARC Airtable sheet once SODA is connected with your Airtable account. Select your award(s) and click on "Add" to save it/them in SODA. You will only have to do this once. SODA will automatically load these awards next time you launch SODA.</span></div>';
+    '<h3 style="float:left"> Search for your SPARC award(s): </h3><div style="padding-top:5px" class="tooltipnew"><img class="info" src="assets/img/info.png"><span class="tooltiptext">The list of active SPARC awards in this dropdown list is generated automatically from the SPARC Airtable sheet once SODA is connected with your Airtable account. Select your award(s) and click on "Add" to save it/them in SODA. You will only have to do this once. SODA will automatically load these awards next time you launch SODA.</span></div>';
   var bootb = bootbox.dialog({
     title: editSPARCAwardsTitle,
     message: sparcAwardEditMessage,
@@ -7202,7 +7174,6 @@ function editSPARCAwardsBootbox() {
         label: "Confirm",
         className: "btn btn-primary bootbox-add-airtable-class",
         callback: function () {
-          // $(bootb.find(".modal-footer button")[1]).attr('id', 'bootbox-add-awards');
           $(bootb).find(".modal-footer span").remove();
           var message = addSPARCAwards();
           bootb.find(".modal-footer").prepend(message);
@@ -7216,9 +7187,6 @@ function editSPARCAwardsBootbox() {
     },
     size: "medium",
     centerVertical: true,
-    // callback: function() {
-    //   $(bootb.find(".modal-footer button")[1]).attr('id', 'bootbox-add-awards');
-    // };
   });
 }
 

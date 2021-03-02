@@ -1544,10 +1544,6 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     $(target).addClass("show");
   }
 
-  // append to parentDiv
-  document.getElementById(parentDiv).appendChild(target);
-
-  document.getElementById(currentDiv).classList.add("prev");
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
   if (button === "delete") {
     if ($(ev).siblings().length > 0) {
@@ -1559,6 +1555,27 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
       $(target).children().find(".div-confirm-button button").show();
     }
   }
+
+  document.getElementById(parentDiv).appendChild(target);
+  document.getElementById(currentDiv).classList.add("prev");
+
+  if (ev.getAttribute("data-next") == "Post-curation-question-2") {
+    checkDatasetDisseminate()
+    setTimeout(function() {
+      $(target).addClass("test2");
+    }, 300)
+  }
+
+  if (ev.id == "dataset-description-no-airtable-mode") {
+    $("#div-airtable-award-button-dd").show();
+    $("#dd-connect-Airtable").css("display", "block")
+    ddNoAirtableMode("On");
+  }
+  if (ev.id == "submission-no-airtable-mode") {
+    $("#div-airtable-award-button").show();
+    $("#submission-connect-Airtable").css("display", "block")
+  }
+
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(
     parentDiv
@@ -2600,7 +2617,7 @@ $("#edit_banner_image_button").click(async () => {
     if (position != -1) {
       // The image url will be before the security token
       let new_img_src = img_src.substring(0, position - 1);
-      let new_position = new_img_src.lastIndexOf("."); // 
+      let new_position = new_img_src.lastIndexOf("."); //
 
       if (new_position != -1) {
         imageExtension = new_img_src.substring(new_position + 1);

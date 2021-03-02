@@ -1049,6 +1049,10 @@ input::-webkit-calendar-picker-indicator {
   border-radius: 0;
 }
 
+.form-container-input-bf:disabled {
+  background-color: #e5e5e5 !important;
+}
+
 .form-container-textarea {
   float: right;
   font-weight: 400;
