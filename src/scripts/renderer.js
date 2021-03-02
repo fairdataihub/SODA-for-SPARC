@@ -848,6 +848,7 @@ ipcRenderer.on("selected-DDD-download-folder", (event, path, filename) => {
 
 ////////////////////////Import Milestone Info//////////////////////////////////
 const descriptionDateInput = document.getElementById("selected-milestone-date");
+
 const milestoneInput1 = document.getElementById("selected-milestone-1");
 var milestoneTagify1 = new Tagify(milestoneInput1, {
   duplicates: false,
@@ -860,13 +861,29 @@ var milestoneTagify1 = new Tagify(milestoneInput1, {
   },
 });
 
+
 milestoneTagify1.on("add", function () {
   var buttonDiv = $($("#selected-milestone-1").parents()[1]).find(
     ".div-confirm-enter-milestone"
   );
   if (milestoneTagify1.value.length !== 0) {
-    $(buttonDiv).show();
-    $($(buttonDiv).children()[0]).show();
+    if (!$("#Question-prepare-submission-4").hasClass("prev")) {
+      $(buttonDiv).show();
+      $($(buttonDiv).children()[0]).show();
+    }
+    if ($("#Question-prepare-submission-7").hasClass("show")) {
+      var res = showPreviewSubmission();
+      var awardRes = res["awards"];
+      var dateRes = res["date"];
+      var milestonesRes = res["milestones"];
+      var milestoneValues = [];
+      $("#submission-SPARC-award-span").text(awardRes);
+      $("#submission-completion-date-span").text(dateRes);
+      milestonesRes.forEach((item, i) => {
+        milestoneValues.push(milestonesRes[i].value);
+      });
+      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
+    }
   } else {
     $(buttonDiv).hide();
     $("#Question-prepare-submission-4")
@@ -881,8 +898,23 @@ milestoneTagify1.on("remove", function () {
     ".div-confirm-enter-milestone"
   );
   if (milestoneTagify1.value.length !== 0) {
-    $(buttonDiv).show();
-    $($(buttonDiv).children()[0]).show();
+    if (!$("#Question-prepare-submission-4").hasClass("prev")) {
+      $(buttonDiv).show();
+      $($(buttonDiv).children()[0]).show();
+    }
+    if ($("#Question-prepare-submission-7").hasClass("show")) {
+      var res = showPreviewSubmission();
+      var awardRes = res["awards"];
+      var dateRes = res["date"];
+      var milestonesRes = res["milestones"];
+      var milestoneValues = [];
+      $("#submission-SPARC-award-span").text(awardRes);
+      $("#submission-completion-date-span").text(dateRes);
+      milestonesRes.forEach((item, i) => {
+        milestoneValues.push(milestonesRes[i].value);
+      });
+      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
+    }
   } else {
     $(buttonDiv).hide();
     $("#Question-prepare-submission-4")
@@ -903,8 +935,23 @@ milestoneTagify2.on("add", function () {
     ".div-confirm-enter-milestone"
   );
   if (milestoneTagify2.value.length !== 0) {
-    $(buttonDiv).show();
-    $($(buttonDiv).children()[0]).show();
+    if (!$("#Question-prepare-submission-no-skip-2").hasClass("prev")) {
+      $(buttonDiv).show();
+      $($(buttonDiv).children()[0]).show();
+    }
+    if ($("#Question-prepare-submission-7").hasClass("show")) {
+      var res = showPreviewSubmission();
+      var awardRes = res["awards"];
+      var dateRes = res["date"];
+      var milestonesRes = res["milestones"];
+      var milestoneValues = [];
+      $("#submission-SPARC-award-span").text(awardRes);
+      $("#submission-completion-date-span").text(dateRes);
+      milestonesRes.forEach((item, i) => {
+        milestoneValues.push(milestonesRes[i].value);
+      });
+      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
+    }
   } else {
     $(buttonDiv).hide();
     $("#Question-prepare-submission-no-skip-2").removeClass("prev");
@@ -920,8 +967,23 @@ milestoneTagify2.on("remove", function () {
     ".div-confirm-enter-milestone"
   );
   if (milestoneTagify2.value.length !== 0) {
-    $(buttonDiv).show();
-    $($(buttonDiv).children()[0]).show();
+    if (!$("#Question-prepare-submission-no-skip-2").hasClass("prev")) {
+      $(buttonDiv).show();
+      $($(buttonDiv).children()[0]).show();
+    }
+    if ($("#Question-prepare-submission-7").hasClass("show")) {
+      var res = showPreviewSubmission();
+      var awardRes = res["awards"];
+      var dateRes = res["date"];
+      var milestonesRes = res["milestones"];
+      var milestoneValues = [];
+      $("#submission-SPARC-award-span").text(awardRes);
+      $("#submission-completion-date-span").text(dateRes);
+      milestonesRes.forEach((item, i) => {
+        milestoneValues.push(milestonesRes[i].value);
+      });
+      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
+    }
   } else {
     $(buttonDiv).hide();
     $("#Question-prepare-submission-no-skip-2")
@@ -1490,11 +1552,19 @@ function clearCurrentConInfo() {
 }
 
 function changeAwardInputDsDescription() {
+  if (dsContributorArrayLast1) {
+    removeOptions(dsContributorArrayLast1);
+  }
+  if (dsContributorArrayFirst1) {
+    removeOptions(dsContributorArrayFirst1);
+  }
   currentContributorsLastNames = [];
   currentContributorsFirstNames = [];
   globalContributorNameObject = {}
   /// delete old table
   $("#table-current-contributors").find('tr').slice(1,-1).remove();
+  $($($("#table-current-contributors").find('tr')[1].cells[4]).find("input")[0]).val("")
+  removeOptions(document.getElementById($($($("#table-current-contributors").find('tr')[1].cells[1]).find("select")[0]).prop("id")))
   var currentRowLeftID = $($($("#table-current-contributors").find('tr')[1].cells[0]).find("select")[0]).prop("id")
   cloneConNamesSelect(currentRowLeftID);
 
@@ -1519,6 +1589,8 @@ function changeAwardInputDsDescription() {
           currentContributorsLastNames.push(lastName);
         }),
           fetchNextPage();
+          removeOptions(dsContributorArrayLast1);
+          addOption(dsContributorArrayLast1, "Select an option", "Select an option");
         for (var i = 0; i < currentContributorsLastNames.length; i++) {
           var opt = currentContributorsLastNames[i];
           if (dsContributorArrayLast1) {
@@ -6960,9 +7032,14 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
               checkAirtableStatus();
               ddNoAirtableMode("Off");
               myBootboxDialog.modal("hide");
-              bootbox.alert({
-                message: "Successfully connected!",
-                centerVertical: true,
+              $("#Question-prepare-submission-1").nextAll().removeClass("show").removeClass("prev");
+              $("#Question-prepare-dd-1").nextAll().removeClass("show").removeClass("prev");
+              Swal.fire({
+                title: "Successfully connected. Loading your Airtable account...",
+                timer: 2500,
+                timerProgressBar: true,
+                allowEscapeKey: false,
+                showConfirmButton: false,
               });
             } else if (res.statusCode === 403) {
               $(myBootboxDialog).find(".modal-footer span").remove();

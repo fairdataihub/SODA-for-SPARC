@@ -382,6 +382,28 @@ $("#textarea-SPARC-award-raw-input").keyup(function() {
 
 // 3A. Select a completion date
 
+$("#input-milestone-date").change(function() {
+  if ($(this).val() !== ""){
+    if (!$("#Question-prepare-submission-6").hasClass("prev")) {
+      $("#div-confirm-completion-date").show();
+      $($("#div-confirm-completion-date").children()[0]).show();
+    }
+    var res = showPreviewSubmission();
+    var awardRes = res["awards"];
+    var dateRes = res["date"];
+    var milestonesRes = res["milestones"];
+    var milestoneValues = [];
+    $("#submission-SPARC-award-span").text(awardRes);
+    $("#submission-completion-date-span").text(dateRes);
+    milestonesRes.forEach((item, i) => {
+      milestoneValues.push(milestonesRes[i].value);
+    });
+    $("#submission-milestones-span").text(milestoneValues.join(", \n"));
+  } else {
+    $("#div-confirm-completion-date").hide();
+  }
+})
+
 $("#selected-milestone-date").change(function() {
   document.getElementById("input-milestone-date").value = "";
   if ($("#selected-milestone-date").val() !== "") {
@@ -389,9 +411,22 @@ $("#selected-milestone-date").change(function() {
       actionEnterNewDate("flex");
     } else {
       actionEnterNewDate("none");
+      if (!$("#Question-prepare-submission-6").hasClass("prev")) {
+        $("#div-confirm-completion-date").show();
+        $($("#div-confirm-completion-date").children()[0]).show();
+      }
+      var res = showPreviewSubmission();
+      var awardRes = res["awards"];
+      var dateRes = res["date"];
+      var milestonesRes = res["milestones"];
+      var milestoneValues = [];
+      $("#submission-SPARC-award-span").text(awardRes);
+      $("#submission-completion-date-span").text(dateRes);
+      milestonesRes.forEach((item, i) => {
+        milestoneValues.push(milestonesRes[i].value);
+      });
+      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
     }
-    $("#div-confirm-completion-date").show();
-    $($("#div-confirm-completion-date").children()[0]).show();
   } else {
     $("#div-confirm-completion-date").hide();
   }
@@ -399,8 +434,21 @@ $("#selected-milestone-date").change(function() {
 // 3B. Manually type a completion date
 $("#input-milestone-date-raw").change(function() {
   if ($("#input-milestone-date-raw").val() !== "mm/dd/yyyy") {
-    $("#div-confirm-completion-date-raw").show();
-    $($("#div-confirm-completion-date-raw").children()[0]).show();
+    if (!$("#Question-prepare-submission-no-skip-3").hasClass("prev")) {
+      $("#div-confirm-completion-date-raw").show();
+      $($("#div-confirm-completion-date-raw").children()[0]).show();
+    }
+    var res = showPreviewSubmission();
+    var awardRes = res["awards"];
+    var dateRes = res["date"];
+    var milestonesRes = res["milestones"];
+    var milestoneValues = [];
+    $("#submission-SPARC-award-span").text(awardRes);
+    $("#submission-completion-date-span").text(dateRes);
+    milestonesRes.forEach((item, i) => {
+      milestoneValues.push(milestonesRes[i].value);
+    });
+    $("#submission-milestones-span").text(milestoneValues.join(", \n"));
   } else {
     $("#div-confirm-completion-date-raw").hide();
   }
@@ -794,15 +842,17 @@ function ddNoAirtableMode(action) {
 function resetDDUI(table) {
   $("#SPARC-Award-raw-input-div-dd").css("display", "none");
   $("#dd-contributor-row-raw-last-1").css("display", "none");
+  $("#ds-description-contributor-list-last-1").css("display", "flex");
+  $("#ds-description-contributor-list-first-1").css("display", "flex");
   $("#dd-contributor-row-raw-first-1").css("display", "none");
   $($("#ds-description-award-list").parents()[1]).css("display", "flex");
   $("#add-other-contributors").css("display", "block");
   $("#add-other-contributors").text("Add contributors not listed above")
-  $("#table-current-contributors").find('tr').slice(1).remove();
-  rowIndex = 1;
-  newRowIndex = 1;
-  var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +newRowIndex +"'><td class='grab'><select id='ds-description-contributor-list-last-"+newRowIndex+"' onchange='onchangeLastNames("+newRowIndex+")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select disabled id='ds-description-contributor-list-first-"+newRowIndex+"' onchange='onchangeFirstNames("+newRowIndex+")'  class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' id='input-con-ID-"+newRowIndex+"' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+newRowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+newRowIndex+"'></input></td><td class='grab'><label class='switch'><input id='ds-contact-person-"+newRowIndex+"' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-  rowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
-  changeAwardInputDsDescription()
+  // $("#table-current-contributors").find('tr').slice(1).remove();
+  // rowIndex = 1;
+  // newRowIndex = 1;
+  // var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +newRowIndex +"'><td class='grab'><select id='ds-description-contributor-list-last-"+newRowIndex+"' onchange='onchangeLastNames("+newRowIndex+")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select disabled id='ds-description-contributor-list-first-"+newRowIndex+"' onchange='onchangeFirstNames("+newRowIndex+")'  class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' id='input-con-ID-"+newRowIndex+"' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+newRowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+newRowIndex+"'></input></td><td class='grab'><label class='switch'><input id='ds-contact-person-"+newRowIndex+"' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
+  // rowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+  // changeAwardInputDsDescription()
   // cloneConNamesSelect('ds-description-contributor-list-last-'+rowIndex.toString())
 }
