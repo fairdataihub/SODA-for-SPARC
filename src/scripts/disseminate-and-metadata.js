@@ -273,6 +273,8 @@ $(".bf-dataset-span.submit-review").on('DOMSubtreeModified',function(){
 })
 
 function showDDDUploadDiv() {
+  $("#Question-prepare-submission-DDD").removeClass("prev");
+  $("#Question-prepare-submission-DDD").nextAll().removeClass("show").removeClass("prev");
   $("#div-buttons-show-DDD").hide();
   $("#div-upload-DDD").show();
 }

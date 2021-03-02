@@ -940,22 +940,20 @@ const existingSPARCAwardsTagify = new Tagify(existingSPARCAwards, {
 });
 
 //// when users click on Import
-document
-  .getElementById("button-import-milestone")
-  .addEventListener("click", function () {
+function importMilestoneDocument() {
+  if (event.currentTarget.id == "button-import-milestone") {
     document.getElementById("para-milestone-document-info-long").style.display =
-      "none";
+    "none";
     document.getElementById("para-milestone-document-info").innerHTML = "";
     var filepath = document.getElementById("input-milestone-select")
-      .placeholder;
+    .placeholder;
     if (filepath === "Select a file") {
       document.getElementById("para-milestone-document-info").innerHTML =
-        "<span style='color: red ;'>" +
-        "Please select a data deliverables document first!</span>";
-      $("#div-confirm-DDD-import").hide();
+      "<span style='color: red ;'>" +
+      "Please select a data deliverables document first!</span>";
     } else {
       var award =
-        presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+      presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
       client.invoke("api_extract_milestone_info", filepath, (error, res) => {
         if (error) {
           var emessage = userError(error);
@@ -967,7 +965,6 @@ document
           document.getElementById(
             "para-milestone-document-info-long"
           ).innerHTML = "<span style='color: red;'> " + emessage + "</span>";
-          $("#div-confirm-DDD-import").hide();
         } else {
           milestoneObj = res;
           createMetadataDir();
@@ -976,18 +973,22 @@ document
           informationJson[award] = milestoneObj;
           fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
           document.getElementById("para-milestone-document-info").innerHTML =
-            "<span style='color: black ;'>" + "Imported!</span>";
+          "<span style='color: black ;'>" + "Imported!</span>";
           document.getElementById("input-milestone-select").placeholder =
-            "Select a file";
+          "Select a file";
           removeOptions(descriptionDateInput);
           milestoneTagify1.removeAllTags();
           milestoneTagify1.settings.whitelist = [];
-          $("#div-confirm-DDD-import").show();
-          $($("#div-confirm-DDD-import").children()[0]).show();
+          milestoneTagify2.settings.whitelist = [];
+          changeAwardInput();
+          $("#div-cancel-DDD-import").hide();
+          $("#div-confirm-DDD-import button").click()
         }
       });
     }
-  });
+  } else if (event.currentTarget.id == "button-import-milestone-reupload") {
+  }
+}
 
 document
   .getElementById("input-milestone-select")
@@ -1068,6 +1069,7 @@ function loadAwards() {
   }
   existingSPARCAwardsTagify.removeAllTags();
   existingSPARCAwardsTagify.addTags(awardList);
+  console.log(awardList)
   $("#current-users-awards").text(awardSpan.slice(0));
   $("#current-users-awards-dd").text(awardSpan.slice(0));
 }
@@ -1091,6 +1093,7 @@ function getRowIndex(table) {
 function addSPARCAwards() {
   var message = "";
   var tagifyArray = existingSPARCAwardsTagify.value;
+  console.log(tagifyArray)
   var spanMessage = "";
   // create empty milestone json files for newly added award
   createMetadataDir();
@@ -1098,13 +1101,9 @@ function addSPARCAwards() {
   awardsJson = parseJson(awardPath);
   if (tagifyArray.length === 0) {
     awardsJson = {};
-    for (var i=0; i< existingSPARCAwardsTagify.value.length; i++) {
-      spanMessage = spanMessage + existingSPARCAwardsTagify.value[i]["value"] + "\n";
-      awardsJson[existingSPARCAwardsTagify.value[i]["award-number"]] = existingSPARCAwardsTagify.value[i]["value"];
-    }
     fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
-    $("#current-users-awards").text(spanMessage);
-    $("#current-users-awards-dd").text(spanMessage);
+    $("#current-users-awards").text("None");
+    $("#current-users-awards-dd").text("None");
   } else {
     var awardVal = [];
     for (var i = 0; i < tagifyArray.length; i++) {
@@ -1121,6 +1120,7 @@ function addSPARCAwards() {
     removeOptions(presavedAwardArray2)
     removeOptions(dsAwardArray)
 
+    awardsJson = {};
     for (var keyValuePair of awardNoAray) {
         addOption(
           presavedAwardArray1,
@@ -1137,16 +1137,15 @@ function addSPARCAwards() {
           keyValuePair["award-full-title"],
           keyValuePair["award-number"]
         );
+        spanMessage = spanMessage + keyValuePair["award-full-title"] + "\n";
+        awardsJson[keyValuePair["award-number"]] = keyValuePair["award-full-title"];
     }
-    awardsJson = {};
-    for (var i=0; i< existingSPARCAwardsTagify.value.length; i++) {
-      spanMessage = spanMessage + existingSPARCAwardsTagify.value[i]["value"] + "\n";
-      awardsJson[existingSPARCAwardsTagify.value[i]["award-number"]] = existingSPARCAwardsTagify.value[i]["value"];
-    }
+
     fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
     $("#current-users-awards").text(spanMessage);
     $("#current-users-awards-dd").text(spanMessage);
   }
+
   loadAwards()
   return message;
 }
@@ -1403,9 +1402,10 @@ function changeAwardInput() {
   document.getElementById("para-save-submission-status").innerHTML = "";
   milestoneTagify1.removeAllTags();
   milestoneTagify1.settings.whitelist = [];
+  milestoneTagify2.removeAllTags();
+  milestoneTagify2.settings.whitelist = [];
   removeOptions(descriptionDateInput);
   addOption(descriptionDateInput, "Select an option", "Select");
-  // descriptionDateInput.options[0].disabled = true;
 
   award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
   var informationJson = parseJson(milestonePath);
@@ -1435,6 +1435,7 @@ function changeAwardInput() {
     ddBolean = false;
   }
   milestoneTagify1.settings.whitelist = milestoneValueArray;
+  milestoneTagify2.settings.whitelist = milestoneValueArray;
   for (var i = 0; i < completionDateArray.length; i++) {
     addOption(
       descriptionDateInput,
@@ -1442,18 +1443,9 @@ function changeAwardInput() {
       completionDateArray[i]
     );
   }
-  // descriptionDateInput.value = completionDateArray[1];
   return ddBolean;
 }
 
-// descriptionDateInput.addEventListener("change", function () {
-//   document.getElementById("input-milestone-date").value = "";
-//   if (descriptionDateInput.value === "Enter a date") {
-//     actionEnterNewDate("flex");
-//   } else {
-//     actionEnterNewDate("none");
-//   }
-// });
 
 const submissionDateInput = document.getElementById("input-milestone-date");
 
@@ -1471,92 +1463,6 @@ function actionEnterNewDate(action) {
 
 /////// Populate Submission file fields from presaved information
 presavedAwardArray2.addEventListener("change", changeAwardInput);
-
-/// Generate submission file
-// generateSubmissionBtn.addEventListener("click", (event) => {
-//   document.getElementById("para-save-submission-status").innerHTML = "";
-//   awardVal = document.getElementById("presaved-award-list").value;
-//   milestoneVal = milestoneTagify1.value;
-//   dateVal = document.getElementById("selected-milestone-date").value;
-//
-//   var missingDateBool =
-//     dateVal === "Enter a date" && submissionDateInput.value === "";
-//   if (
-//     awardVal === "Select" ||
-//     milestoneVal.length === 0 ||
-//     dateVal === "" ||
-//     missingDateBool
-//   ) {
-//     document.getElementById("para-save-submission-status").innerHTML =
-//       "<span style='color: red;'>Please fill in all fields to generate!</span>";
-//   } else {
-//     ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
-//   }
-// });
-//
-// ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
-//   if (dirpath.length > 0) {
-//     var destinationPath = path.join(dirpath[0], filename);
-//     if (fs.existsSync(destinationPath)) {
-//       var emessage = "File " + filename + " already exists in " + dirpath[0];
-//       ipcRenderer.send("open-error-metadata-file-exits", emessage);
-//     } else {
-//       var award =
-//         presavedAwardArray2.options[presavedAwardArray2.selectedIndex].value;
-//       var milestoneValue = [];
-//       for (var i = 0; i < milestoneVal.length; i++) {
-//         milestoneValue.push(milestoneVal[i].value);
-//       }
-//       var date;
-//       if (
-//         document.getElementById("selected-milestone-date").value ===
-//         "Enter a date"
-//       ) {
-//         date = document.getElementById("input-milestone-date").value;
-//       } else {
-//         date = document.getElementById("selected-milestone-date").value;
-//       }
-//       var json_arr = [];
-//       json_arr.push({
-//         award: award,
-//         date: date,
-//         milestone: milestoneValue[0],
-//       });
-//       if (milestoneValue.length > 0) {
-//         for (var index = 1; index < milestoneValue.length; index++) {
-//           json_arr.push({
-//             award: "",
-//             date: "",
-//             milestone: milestoneValue[index],
-//           });
-//         }
-//       }
-//       json_str = JSON.stringify(json_arr);
-//       if (dirpath != null) {
-//         client.invoke(
-//           "api_save_submission_file",
-//           destinationPath,
-//           json_str,
-//           (error, res) => {
-//             if (error) {
-//               var emessage = userError(error);
-//               log.error(error);
-//               console.error(error);
-//               document.getElementById("para-save-submission-status").innerHTML =
-//                 "<span style='color: red;'> " + emessage + "</span>";
-//             } else {
-//               document.getElementById("para-save-submission-status").innerHTML =
-//                 "<span style='color: black ;'>" +
-//                 "Done!" +
-//                 smileyCan +
-//                 "</span>";
-//             }
-//           }
-//         );
-//       }
-//     }
-//   }
-// });
 
 //////////////// Dataset description file ///////////////////////
 //////////////// //////////////// //////////////// ////////////////

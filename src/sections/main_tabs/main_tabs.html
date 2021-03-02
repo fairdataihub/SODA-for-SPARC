@@ -1068,14 +1068,14 @@
                 </div>
               </label>
               <div style="display:flex; flex-direction:row;margin:0 auto;margin-top:30px" id="div-buttons-show-DDD">
-                <button onclick="transitionFreeFormMode(this, 'Question-prepare-submission-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')" data-next="Question-prepare-submission-no-skip-2" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:35px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:14px;margin-right:15px">No, skip</button>
+                <button id="button-skip-DDD" onclick="transitionFreeFormMode(this, 'Question-prepare-submission-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')" data-next="Question-prepare-submission-no-skip-2" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:35px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:14px;margin-right:15px">No, skip</button>
                 <button onclick="showDDDUploadDiv()" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:35px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px">Yes, upload</button>
               </div>
               <div style="display:none; flex-direction:row;margin:0 15px;margin-top:30px" id="div-upload-DDD">
                 <div id="div-show-milestone-info-no-existing">
                   <div class="container-milestone-upload" style="display:flex;">
                     <input class="milestone-upload-text" id="input-milestone-select" style="width:85%;text-align:center;height:40px;border-radius:0" type="text" readonly placeholder="Select a file">
-                    <button id="button-import-milestone" type="button" style="width:15%;height:40px;background:var(--color-light-green)" class="button-milestone-upload"><b>Import</b></button>
+                    <button id="button-import-milestone" onclick="importMilestoneDocument(this)" type="button" style="width:15%;height:40px;background:var(--color-light-green)" class="button-milestone-upload"><b>Import</b></button>
                   </div>
                   <p id="para-milestone-document-info" style="margin-top:15px;text-align:center;vertical-align:middle;"></p>
                   <p id="para-milestone-document-info-long" style="display:none;margin-top:5px;margin-bottom:0;text-align:left;padding: 0 0"></p>
@@ -1185,7 +1185,7 @@
     <div class="individual-question prepare-submission" id="Question-prepare-submission-reupload-DDD">
       <div class="ui form" style="width:100%">
         <div class="grouped fields">
-          <label style="font-size:17px;color:var(--color-bg-plum);">Please upload your Data Deliverables below:
+          <label style="font-size:17px;color:var(--color-bg-plum);">Please re-upload your Data Deliverables below:
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">
               The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document (usually kept by the PI of the SPARC award or the award manager).
@@ -1203,7 +1203,7 @@
             <div style="width:100%">
               <div class="container-milestone-upload" style="display:flex;">
                 <input class="milestone-upload-text" id="input-milestone-select-reupload" style="width:85%;text-align:center;height:40px;border-radius:0" type="text" readonly placeholder="Select a file">
-                <button id="button-import-milestone-reupload" type="button" style="width:15%;height:40px;background:var(--color-light-green)" class="button-milestone-upload"><b>Import</b></button>
+                <button id="button-import-milestone-reupload" onclick="importMilestoneDocument(this)" type="button" style="width:15%;height:40px;background:var(--color-light-green)" class="button-milestone-upload"><b>Import</b></button>
               </div>
               <p id="para-milestone-document-info-reupload" style="margin-top:15px;text-align:center;vertical-align:middle;"></p>
               <p id="para-milestone-document-info-long-reupload" style="display:none;margin-top:5px;margin-bottom:0;text-align:left;padding: 0 0"></p>
