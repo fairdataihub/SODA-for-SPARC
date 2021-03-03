@@ -1131,7 +1131,6 @@ function loadAwards() {
   }
   existingSPARCAwardsTagify.removeAllTags();
   existingSPARCAwardsTagify.addTags(awardList);
-  console.log(awardList)
   $("#current-users-awards").text(awardSpan.slice(0));
   $("#current-users-awards-dd").text(awardSpan.slice(0));
 }
@@ -2230,12 +2229,12 @@ function grabCompletenessInfo() {
 }
 
 //// upon choosing a dataset, populate current description
-// datasetDescriptionFileDataset.addEventListener("change", function () {
-//   document.getElementById("ds-description").disabled = true;
-//   document.getElementById("ds-description").innerHTML = "Loading...";
-//   syncDatasetDropdownOption(datasetDescriptionFileDataset);
-//   showDatasetDescription();
-// });
+datasetDescriptionFileDataset.addEventListener("change", function () {
+  document.getElementById("ds-description").disabled = true;
+  document.getElementById("ds-description").innerHTML = "Loading...";
+  syncDatasetDropdownOption(datasetDescriptionFileDataset);
+  showDatasetDescription();
+});
 
 /// detect empty required fields and raise a warning
 function detectEmptyRequiredFields(funding) {

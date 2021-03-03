@@ -254,7 +254,9 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
 
 function checkDatasetDisseminate() {
   if ($(".bf-dataset-span.disseminate").text() !== "None") {
-    $("#disseminate-dataset-confirm-button").click()
+    if ($("#Post-curation-question-1").hasClass("prev")) {
+      $("#disseminate-dataset-confirm-button").click();
+    }
   }
 }
 
