@@ -1532,12 +1532,30 @@
                     margin: 10px auto;
                   "
                 >
+                <button
+                  onclick="resetSubmission()"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 10px;
+                    width: 120px;
+                    height: 35px;
+                    background-color: #fcae3f;
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    font-size: 13px;
+                    display: none;
+                  "
+                ><i class="fas fa-sync-alt" style="margin-right:10px"></i>
+                  Start over
+                </button>
                   <button
                     onclick="generateSubmissionFile()"
                     style="
                       cursor: pointer;
                       border-radius: 8px;
-                      margin: 10px auto;
+                      margin: 10px;
                       width: 120px;
                       height: 35px;
                       background: var(--color-light-green);
@@ -1617,7 +1635,7 @@
                       <!-- <div id="checking-airtable-connection" class="ui active green inline loader" style="display:block;margin:10px auto"></div> -->
                       <p id="airtable-connection-status" style="font-weight:600;text-align: center;font-size:16px"><span style="color:#000">You are not connected to Airtable. </span><br><span style="color: #000">We recommend connecting SODA to your Airtable account, so SODA can auto-populate information for your metadata files at your convenience.<br><br>Would you like to connect to Airtable?</span></p>
                     </div>
-                    <!-- field that will show when AIrtable is already connected -->
+                    <!-- field that will show when Airtable is already connected -->
                     <div class="field" style="width: 100%;display:flex" id="div-field-already-connected-dd">
                       <div style="width:100%;display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
                         <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
@@ -1867,7 +1885,7 @@
                           </select>
                         </td>
                         <td class="contributor-table-row" id="dd-contributor-row-first-1">
-                          <select id="ds-description-contributor-list-first-1" class="form-container-input-bf" onchange="onchangeFirstNames(1)" style="font-size:13px;line-height: 2;">
+                          <select id="ds-description-contributor-list-first-1" disabled class="form-container-input-bf" onchange="onchangeFirstNames(1)" style="font-size:13px;line-height: 2;">
                             <option value="Select an option">Select an option</option>
                           </select>
                         </td>
@@ -2044,23 +2062,41 @@
                       margin: 10px auto;
                     "
                   >
-                    <button
-                      id="button-generate-ds-description"
-                      style="
-                        cursor: pointer;
-                        border-radius: 8px;
-                        margin: 0 10px;
-                        width: 100px;
-                        height: 43px;
-                        background: var(--color-light-green);
-                        color: #fff;
-                        font-weight: 600;
-                        border: none;
-                        font-size: 13px;
-                      "
-                    >
-                      Generate
-                    </button>
+                  <button
+                    onclick="resetDD()"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px;
+                      width: 120px;
+                      height: 35px;
+                      background-color: #fcae3f;
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                      display: none;
+                    "
+                  ><i class="fas fa-sync-alt" style="margin-right:10px"></i>
+                    Start over
+                  </button>
+                  <button
+                    id="button-generate-ds-description"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px;
+                      width: 120px;
+                      height: 35px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Generate
+                  </button>
                     <p id='para-generate-description-status' style="text-align: center;padding-top:0;margin: 10px 0"></p>
                   </div>
                 </div>
@@ -2404,13 +2440,13 @@
                     border-radius: 5px;
                   "
                 >
-                  
+
                   <div
                     style="
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                     <div class="card-container manage-dataset">
@@ -2447,7 +2483,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -2679,7 +2715,7 @@
                     display: flex;
                     flex-direction: row;
                     justify-content: space-between;
-                    
+
                   "
                 >
                 <div class="card-container manage-dataset">
@@ -2716,7 +2752,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -2744,7 +2780,7 @@
                     style="
                       display: flex;
                       flex-direction: row;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -2753,7 +2789,7 @@
                       <h5 class="card-right current-permissions" id="para-dataset-permission-current">None</h5>
                     </div>
                   </div>
-                    
+
                     <div
                       id="div-bf-current-permission-progress"
                       class="progressdiv"
@@ -2975,7 +3011,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -3012,7 +3048,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -3040,7 +3076,7 @@
                     style="
                       display: flex;
                       flex-direction: row;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -3049,7 +3085,7 @@
                       <h5 class="card-right current-permissions" id="para-add-edit-dataset-permission-current">None</h5>
                     </div>
                   </div>
-                    
+
                     <div
                       id="div-bf-add-edit-current-permission-progress"
                       class="progressdiv"
@@ -3476,7 +3512,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -3513,7 +3549,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -3778,7 +3814,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -3815,7 +3851,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -4055,7 +4091,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -4092,7 +4128,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -4465,7 +4501,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -4502,7 +4538,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -4760,7 +4796,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -4797,7 +4833,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -5079,7 +5115,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">
@@ -5116,7 +5152,7 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      
+
                     "
                   >
                   <div class="card-container manage-dataset">

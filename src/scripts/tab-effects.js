@@ -1583,9 +1583,15 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
   }
 
   // auto-scroll to bottom of div
-  document.getElementById(parentDiv).scrollTop = document.getElementById(
-    parentDiv
-  ).scrollHeight;
+  if (ev.getAttribute("data-next") == "Question-prepare-dd-4-sections") {
+    document.getElementById(parentDiv).scrollTop = document.getElementById(
+      parentDiv
+    ).scrollHeight + 30;
+  } else {
+    document.getElementById(parentDiv).scrollTop = document.getElementById(
+      parentDiv
+    ).scrollHeight;
+  }
 }
 
 const reset_ui = () => {

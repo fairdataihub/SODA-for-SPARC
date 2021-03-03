@@ -1556,13 +1556,20 @@ function changeAwardInputDsDescription() {
   }
   if (dsContributorArrayFirst1) {
     removeOptions(dsContributorArrayFirst1);
+    addOption(dsContributorArrayFirst1, "Select an option", "Select an option")
   }
+
   currentContributorsLastNames = [];
   currentContributorsFirstNames = [];
   globalContributorNameObject = {}
+
   /// delete old table
   $("#table-current-contributors").find('tr').slice(1,-1).remove();
-  $($($("#table-current-contributors").find('tr')[1].cells[4]).find("input")[0]).val("")
+  for (var i=0; i<document.getElementById("table-current-contributors").rows[1].cells.length;i++) {
+    $($($("#table-current-contributors").find('tr')[1].cells[i]).find("input")[0]).val("")
+    $($($("#table-current-contributors").find('tr')[1].cells[i]).find("textarea")[0]).val("")
+  }
+
   removeOptions(document.getElementById($($($("#table-current-contributors").find('tr')[1].cells[1]).find("select")[0]).prop("id")))
   var currentRowLeftID = $($($("#table-current-contributors").find('tr')[1].cells[0]).find("select")[0]).prop("id")
   cloneConNamesSelect(currentRowLeftID);
@@ -5761,7 +5768,7 @@ const populateDatasetDropdowns = (mylist) => {
     bfDatasetListPostCurationConsortium.appendChild(option9);
     bfDatasetListPostCurationPublish.appendChild(option10);
     curateDatasetDropdown.appendChild(option11);
-    
+
     renameDatasetlistChange();
     metadataDatasetlistChange();
     permissionDatasetlistChange();
@@ -5794,7 +5801,7 @@ datasetPermissionList.addEventListener("change",  (e) =>{
       removeOptions(list);
       addOption(list, "Select dataset", "Select dataset");
     }
-    
+
     var numberOfDatasetsRetrieved = refreshDatasetList();
     $("#div-permission-list").css("display", "block");
     $("#div-filter-datasets-progress").css("display", "none");
@@ -5882,13 +5889,13 @@ function updateBfAccountList() {
       bfAccountList.options[0].disabled = true;
       // loadAllBFAccounts()
       loadDefaultAccount();
-    }
     if (res[0] === "Select" && res.length === 1) {
       bfSelectAccountStatus.innerHTML =
         "No existing accounts to switch. Please add a new account!";
       bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML;
       datasetPermissionList.disabled = true;
       // loadAllBFAccounts()
+      }
     }
     bfSelectAccountStatus.innerHTML = "";
     bfAccountLoadProgress.style.display = "none";
@@ -7082,12 +7089,18 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
               content["api-key"] = key;
               content["key-name"] = name;
               fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
+              checkAirtableStatus();
+              $("#submission-connect-Airtable").text("Loading...");
+              $("#dd-connect-Airtable").text("Loading...");
+              $("#submission-connect-Airtable").prop("disabled", "true");
+              $("#dd-connect-Airtable").prop("disabled", "true");
+              $("#submission-no-airtable-mode").prop("disabled", "true");
+              $("#dataset-description-no-airtable-mode").prop("disabled", "true");
               $("#current-airtable-account").text(name);
               $("#current-airtable-account-dd").text(name);
               $("#bootbox-airtable-key-name").val("");
               $("#bootbox-airtable-key").val("");
               loadAwardData();
-              checkAirtableStatus();
               ddNoAirtableMode("Off");
               myBootboxDialog.modal("hide");
               $("#Question-prepare-submission-1").nextAll().removeClass("show").removeClass("prev");
