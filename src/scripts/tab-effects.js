@@ -2570,14 +2570,17 @@ $("input:radio[name=main_tabs]").click(function () {
 $(document).ready(() => {
   $(".content-button").click(function () {
     let section = $(this).data("section");
-    //$("#"+section+"-section").css("display", "block");
-    console.log("here");
-    $("#para-add-new-dataset-status").html();
-    $("#sidebarCollapse").click();
-  });
 
-  $(".footer-div div button").click(function () {
-    $("#sidebarCollapse").click();
+    $("#para-add-new-dataset-status").html();
+    $("#main-nav").addClass("active");
+    $("#sidebarCollapse").addClass("active");
+    $(".section").addClass("fullShown");
+  });
+  
+  $(".footer-div div button").click( () => {
+    $("#main-nav").removeClass("active");
+    $("#sidebarCollapse").removeClass("active");
+    $(".section").removeClass("fullShown");
   });
 });
 
@@ -2692,3 +2695,4 @@ $("#edit_banner_image_button").click(async () => {
 // Enable the popover content for the main-tab buttons
 $('.content-button').popover();
 $('.option-card-disseminate-dataset').popover();
+$('.coming-soon-div').popover();

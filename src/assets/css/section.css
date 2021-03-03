@@ -37,6 +37,7 @@
 .section.fullShown {
   left: 210px;
   max-width: 100%;
+  transition: all 0.25s linear;
 }
 
 .section h3,

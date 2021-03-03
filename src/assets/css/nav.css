@@ -11,6 +11,7 @@
   cursor: pointer;
   border: none;
   z-index: 2;
+  transition: all 0.25s linear;
 }
 
 #sidebarCollapse span {
@@ -19,24 +20,31 @@
   margin: 0 auto;
   display: block;
   background: var(--color-light-green);
-  transition: all 0.1s cubic-bezier(0.81, -0.33, 0.345, 1.375);
+  transition: all 0.25s linear;
+  /* transition: all 0.1s cubic-bezier(0.81, -0.33, 0.345, 1.375); */
 }
 /* animate toggle button */
 #sidebarCollapse span:first-of-type {
+  transition: all 0.25s linear;
   transform: rotate(45deg) translate(2px, 2px);
 }
 #sidebarCollapse span:nth-of-type(2) {
+  transition: all 0.25s linear;
   opacity: 0;
 }
 #sidebarCollapse span:last-of-type {
+  transition: all 0.25s linear;
   transform: rotate(-45deg) translate(1px, -1px);
 }
 
 #sidebarCollapse.active span {
+  transition: all 0.25s linear;
   transform: none;
   opacity: 1;
   margin: 5px auto;
 }
+
+
 
 #main-nav {
   min-width: 240px;
@@ -203,6 +211,10 @@ a[data-toggle="collapse"] {
 .list-unstyled {
   list-style: none;
   border-bottom: none;
+}
+
+.list-unstyled.components li a {
+  -webkit-user-drag: none;
 }
 
 .collapse:not(.show) {
