@@ -740,6 +740,8 @@ async function openDropdownPrompt(dropdown) {
         $("#bf-dataset-select-div").hide();
       },
       preConfirm: () => {
+        $("body").addClass("waiting");
+
         $(datasetPermissionDiv)
           .find("#div-filter-datasets-progress-2")
           .css("display", "block");
@@ -751,10 +753,26 @@ async function openDropdownPrompt(dropdown) {
 
         if (!bfDataset) {
           Swal.showValidationMessage("Please select a dataset!");
+
+          $(datasetPermissionDiv)
+            .find("#div-filter-datasets-progress-2")
+            .css("display", "none");
+          $("#curatebfdatasetlist").selectpicker("show");
+          $("#curatebfdatasetlist").selectpicker("refresh");
+          $("#bf-dataset-select-div").show();
+
           return undefined;
         } else {
           if (bfDataset === "Select dataset") {
             Swal.showValidationMessage("Please select a dataset!");
+
+            $(datasetPermissionDiv)
+              .find("#div-filter-datasets-progress-2")
+              .css("display", "none");
+            $("#curatebfdatasetlist").selectpicker("show");
+            $("#curatebfdatasetlist").selectpicker("refresh");
+            $("#bf-dataset-select-div").show();
+
             return undefined;
           } else {
             return bfDataset;
@@ -762,7 +780,7 @@ async function openDropdownPrompt(dropdown) {
         }
       },
     });
-
+    
     // check return value
     if (bfDS) {
       $("#current-bf-dataset").text(bfDataset);
@@ -791,6 +809,8 @@ async function openDropdownPrompt(dropdown) {
     } else {
       showHideDropdownButtons("dataset", "show");
     }
+    $("body").removeClass("waiting");
+
   }
 }
 

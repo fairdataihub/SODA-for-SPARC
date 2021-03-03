@@ -110,7 +110,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
 // function to fill the card details in the preview tab of step 7
 const fill_info_details = () => {
   let new_dataset_name = "My_dataset_folder";
-  $(".card-container").remove();
+  $(".card-container.generate-preview").remove();
   if (sodaJSONObj["starting-point"]["type"] === "bf") {
     add_card_detail(
       "Blackfynn account",
@@ -424,7 +424,7 @@ const add_card_detail = (
   let parent_element = $("#div-preview-dataset-details");
 
   let new_card_element =
-    "<div class='card-container'><h5 class='card-left'>" +
+    "<div class='card-container generate-preview'><h5 class='card-left'>" +
     card_left +
     ":</h5><p class='card-right'>" +
     card_right;

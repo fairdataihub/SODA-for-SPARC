@@ -2461,7 +2461,7 @@
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Blackfynn dataset would you like to rename?</label
               >
-              <div class="field" style="margin: auto; width: 450px">
+              <div class="field" style="margin: auto; width: 500px">
                 <div
                   style="
                     display: flex;
@@ -2474,23 +2474,20 @@
                     border-radius: 5px;
                   "
                 >
+                  
                   <div
                     style="
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
-                    <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current account:
-                        <span
-                          style="color: #000; font-weight: 600; margin-left: 8px; font-size: 15px"
-                          class= "bf-account-span"
-                          >None</span
-                        >
-                      </h5>
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5 class="card-left">Current account:</h5>
+                        <h5 class="card-right bf-account-span">None</h5>
+                      </div>
                     </div>
                     <svg
                       class="svg-change-current-account"
@@ -2508,37 +2505,27 @@
                     </svg>
                   </div>
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                    <h5 style="color: #808080; font-size: 15px">Account details:</h5>
-                    <p
-                      style="color: #000; font-weight: 600; margin-left: 15px; font-size: 15px"
-                      class="bf-account-details-span"
-                    >
-                      None
-                    </p>
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-right bf-account-details-span">None</h5>
+                      </div>
+                    </div>
                   </div>
                   <div
                     style="
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
+                  <div class="card-container manage-dataset">
                     <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current dataset:
-                        <span
-                          class="bf-dataset-span"
-                          style="
-                            color: #000;
-                            font-weight: 600;
-                            margin-left: 8px;
-                            font-size: 15px;
-                          "
-                          >None</span
-                        >
-                      </h5>
+                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('dataset')"
@@ -2760,19 +2747,15 @@
                     display: flex;
                     flex-direction: row;
                     justify-content: space-between;
-                    margin-bottom: 15px;
+                    
                   "
                 >
+                <div class="card-container manage-dataset">
                   <div>
-                    <h5 style="color: #808080; font-size: 15px">
-                      Current account:
-                      <span
-                        style="color: #000; font-weight: 600; margin-left: 8px; font-size: 15px"
-                        class= "bf-account-span"
-                        >None</span
-                      >
-                    </h5>
+                    <h5 class="card-left">Current account:</h5>
+                    <h5 class="card-right bf-account-span">None</h5>
                   </div>
+                </div>
                   <svg
                     class="svg-change-current-account"
                     onclick="openDropdownPrompt('bf')"
@@ -2789,37 +2772,27 @@
                   </svg>
                 </div>
                 <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <h5 style="color: #808080; font-size: 15px">Account details:</h5>
-                  <p
-                    style="color: #000; font-weight: 600; margin-left: 15px; font-size: 15px"
-                    class="bf-account-details-span"
-                  >
-                    None
-                  </p>
+                  <div class="card-container manage-dataset">
+                    <div>
+                      <h5 class="card-left">Account details:</h5>
+                      <h5 class="card-right bf-account-details-span">None</h5>
+                    </div>
+                  </div>
                 </div>
                   <div
                     style="
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
-                    <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current dataset:
-                        <span
-                          class="bf-dataset-span"
-                          style="
-                            color: #000;
-                            font-weight: 600;
-                            margin-left: 8px;
-                            font-size: 15px;
-                          "
-                          >None</span
-                        >
-                      </h5>
+                  <div class="card-container manage-dataset">
+                    <div style="width:100%">
+                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('dataset')"
@@ -2839,29 +2812,22 @@
                     style="
                       display: flex;
                       flex-direction: row;
-                      margin-bottom: 15px;
+                      
                     "
                   >
-                    <h5 style="color: #808080; font-size: 15px">
-                      Current permissions:
-                    </h5>
+                  <div class="card-container manage-dataset">
+                    <div>
+                      <h5 class="card-left">Current permissions:</h5>
+                      <h5 class="card-right current-permissions" id="para-dataset-permission-current">None</h5>
+                    </div>
+                  </div>
+                    
                     <div
                       id="div-bf-current-permission-progress"
                       class="progressdiv"
                     >
                       <div class="indeterminatebar"></div>
                     </div>
-                    <p
-                      style="
-                        color: #000;
-                        font-weight: 600;
-                        margin-left: 15px;
-                        font-size: 15px;
-                      "
-                      id="para-dataset-permission-current"
-                    >
-                      None
-                    </p>
                   </div>
                 </div>
                 <div
@@ -3075,19 +3041,15 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
+                  <div class="card-container manage-dataset">
                     <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current account:
-                        <span
-                          style="color: #000; font-weight: 600; margin-left: 8px; font-size: 15px"
-                          class= "bf-account-span"
-                          >None</span
-                        >
-                      </h5>
+                      <h5 class="card-left">Current account:</h5>
+                      <h5 class="card-right bf-account-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('bf')"
@@ -3104,37 +3066,27 @@
                     </svg>
                   </div>
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                    <h5 style="color: #808080; font-size: 15px">Account details:</h5>
-                    <p
-                      style="color: #000; font-weight: 600; margin-left: 15px; font-size: 15px"
-                      class="bf-account-details-span"
-                    >
-                      None
-                    </p>
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-right bf-account-details-span">None</h5>
+                      </div>
+                    </div>
                   </div>
                   <div
                     style="
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
-                    <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current dataset:
-                        <span
-                          class="bf-dataset-span"
-                          style="
-                            color: #000;
-                            font-weight: 600;
-                            margin-left: 8px;
-                            font-size: 15px;
-                          "
-                          >None</span
-                        >
-                      </h5>
+                  <div class="card-container manage-dataset">
+                    <div style="width:100%">
+                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('dataset')"
@@ -3154,29 +3106,22 @@
                     style="
                       display: flex;
                       flex-direction: row;
-                      margin-bottom: 15px;
+                      
                     "
                   >
-                    <h5 style="color: #808080; font-size: 15px">
-                      Current permissions:
-                    </h5>
+                  <div class="card-container manage-dataset">
+                    <div>
+                      <h5 class="card-left">Current permissions:</h5>
+                      <h5 class="card-right current-permissions" id="para-add-edit-dataset-permission-current">None</h5>
+                    </div>
+                  </div>
+                    
                     <div
                       id="div-bf-add-edit-current-permission-progress"
                       class="progressdiv"
                     >
                       <div class="indeterminatebar"></div>
                     </div>
-                    <p
-                      style="
-                        color: #000;
-                        font-weight: 600;
-                        margin-left: 15px;
-                        font-size: 15px;
-                      "
-                      id="para-add-edit-dataset-permission-current"
-                    >
-                      None
-                    </p>
                   </div>
                 </div>
                 <div
@@ -3577,7 +3522,7 @@
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Blackfynn dataset would you like to work on?</label
               >
-              <div class="field" style="margin: auto; width: 450px">
+              <div class="field" style="margin: auto; width: 500px">
                 <div
                   style="
                     display: flex;
@@ -3595,19 +3540,15 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
+                  <div class="card-container manage-dataset">
                     <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current account:
-                        <span
-                          style="color: #000; font-weight: 600; margin-left: 8px; font-size: 15px"
-                          class= "bf-account-span"
-                          >None</span
-                        >
-                      </h5>
+                      <h5 class="card-left">Current account:</h5>
+                      <h5 class="card-right bf-account-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('bf')"
@@ -3624,37 +3565,27 @@
                     </svg>
                   </div>
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                    <h5 style="color: #808080; font-size: 15px">Account details:</h5>
-                    <p
-                      style="color: #000; font-weight: 600; margin-left: 15px; font-size: 15px"
-                      class="bf-account-details-span"
-                    >
-                      None
-                    </p>
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-right bf-account-details-span">None</h5>
+                      </div>
+                    </div>
                   </div>
                   <div
                     style="
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
-                    <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current dataset:
-                        <span
-                          class="bf-dataset-span"
-                          style="
-                            color: #000;
-                            font-weight: 600;
-                            margin-left: 8px;
-                            font-size: 15px;
-                          "
-                          >None</span
-                        >
-                      </h5>
+                  <div class="card-container manage-dataset">
+                    <div style="width:100%">
+                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('dataset')"
@@ -3891,7 +3822,7 @@
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Blackfynn dataset would you like to work on?</label
               >
-              <div class="field" style="margin: auto; width: 450px">
+              <div class="field" style="margin: auto; width: 500px">
                 <div
                   style="
                     display: flex;
@@ -3909,19 +3840,15 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
+                  <div class="card-container manage-dataset">
                     <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current account:
-                        <span
-                          style="color: #000; font-weight: 600; margin-left: 8px; font-size: 15px"
-                          class= "bf-account-span"
-                          >None</span
-                        >
-                      </h5>
+                      <h5 class="card-left">Current account:</h5>
+                      <h5 class="card-right bf-account-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('bf')"
@@ -3938,37 +3865,27 @@
                     </svg>
                   </div>
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                    <h5 style="color: #808080; font-size: 15px">Account details:</h5>
-                    <p
-                      style="color: #000; font-weight: 600; margin-left: 15px; font-size: 15px"
-                      class="bf-account-details-span"
-                    >
-                      None
-                    </p>
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-right bf-account-details-span">None</h5>
+                      </div>
+                    </div>
                   </div>
                   <div
                     style="
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
+                  <div class="card-container manage-dataset">
                     <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current dataset:
-                        <span
-                          class="bf-dataset-span"
-                          style="
-                            color: #000;
-                            font-weight: 600;
-                            margin-left: 8px;
-                            font-size: 15px;
-                          "
-                          >None</span
-                        >
-                      </h5>
+                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('dataset')"
@@ -4180,7 +4097,7 @@
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Blackfynn dataset would you like to work on?</label
               >
-              <div class="field" style="margin: auto; width: 450px">
+              <div class="field" style="margin: auto; width: 500px">
                 <div
                   style="
                     display: flex;
@@ -4198,19 +4115,15 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
+                  <div class="card-container manage-dataset">
                     <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current account:
-                        <span
-                          style="color: #000; font-weight: 600; margin-left: 8px; font-size: 15px"
-                          class= "bf-account-span"
-                          >None</span
-                        >
-                      </h5>
+                      <h5 class="card-left">Current account:</h5>
+                      <h5 class="card-right bf-account-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('bf')"
@@ -4227,37 +4140,27 @@
                     </svg>
                   </div>
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                    <h5 style="color: #808080; font-size: 15px">Account details:</h5>
-                    <p
-                      style="color: #000; font-weight: 600; margin-left: 15px; font-size: 15px"
-                      class="bf-account-details-span"
-                    >
-                      None
-                    </p>
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-right bf-account-details-span">None</h5>
+                      </div>
+                    </div>
                   </div>
                   <div
                     style="
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
+                  <div class="card-container manage-dataset">
                     <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current dataset:
-                        <span
-                          class="bf-dataset-span"
-                          style="
-                            color: #000;
-                            font-weight: 600;
-                            margin-left: 8px;
-                            font-size: 15px;
-                          "
-                          >None</span
-                        >
-                      </h5>
+                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('dataset')"
@@ -4602,7 +4505,7 @@
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Blackfynn dataset would you like to work on?</label
               >
-              <div class="field" style="margin: auto; width: 450px">
+              <div class="field" style="margin: auto; width: 500px">
                 <div
                   style="
                     display: flex;
@@ -4620,19 +4523,15 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
+                  <div class="card-container manage-dataset">
                     <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current account:
-                        <span
-                          style="color: #000; font-weight: 600; margin-left: 8px; font-size: 15px"
-                          class= "bf-account-span"
-                          >None</span
-                        >
-                      </h5>
+                      <h5 class="card-left">Current account:</h5>
+                      <h5 class="card-right bf-account-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('bf')"
@@ -4649,37 +4548,27 @@
                     </svg>
                   </div>
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                    <h5 style="color: #808080; font-size: 15px">Account details:</h5>
-                    <p
-                      style="color: #000; font-weight: 600; margin-left: 15px; font-size: 15px"
-                      class="bf-account-details-span"
-                    >
-                      None
-                    </p>
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-right bf-account-details-span">None</h5>
+                      </div>
+                    </div>
                   </div>
                   <div
                     style="
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
+                  <div class="card-container manage-dataset">
                     <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current dataset:
-                        <span
-                          class="bf-dataset-span"
-                          style="
-                            color: #000;
-                            font-weight: 600;
-                            margin-left: 8px;
-                            font-size: 15px;
-                          "
-                          >None</span
-                        >
-                      </h5>
+                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('dataset')"
@@ -4927,19 +4816,15 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
+                  <div class="card-container manage-dataset">
                     <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current account:
-                        <span
-                          style="color: #000; font-weight: 600; margin-left: 8px; font-size: 15px"
-                          class= "bf-account-span"
-                          >None</span
-                        >
-                      </h5>
+                      <h5 class="card-left">Current account:</h5>
+                      <h5 class="card-right bf-account-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('bf')"
@@ -4956,37 +4841,27 @@
                     </svg>
                   </div>
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                    <h5 style="color: #808080; font-size: 15px">Account details:</h5>
-                    <p
-                      style="color: #000; font-weight: 600; margin-left: 15px; font-size: 15px"
-                      class="bf-account-details-span"
-                    >
-                      None
-                    </p>
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-right bf-account-details-span">None</h5>
+                      </div>
+                    </div>
                   </div>
                   <div
                     style="
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
+                  <div class="card-container manage-dataset">
                     <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current dataset:
-                        <span
-                          class="bf-dataset-span"
-                          style="
-                            color: #000;
-                            font-weight: 600;
-                            margin-left: 8px;
-                            font-size: 15px;
-                          "
-                          >None</span
-                        >
-                      </h5>
+                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('dataset')"
@@ -5240,7 +5115,7 @@
               <label style="font-size: 17px; color: var(--color-bg-plum)"
                 >Which Blackfynn dataset would you like to view?</label
               >
-              <div class="field" style="margin: auto; width: 450px">
+              <div class="field" style="margin: auto; width: 500px">
                 <div
                   style="
                     display: flex;
@@ -5258,19 +5133,15 @@
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
+                  <div class="card-container manage-dataset">
                     <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current account:
-                        <span
-                          style="color: #000; font-weight: 600; margin-left: 8px; font-size: 15px"
-                          class= "bf-account-span"
-                          >None</span
-                        >
-                      </h5>
+                      <h5 class="card-left">Current account:</h5>
+                      <h5 class="card-right bf-account-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('bf')"
@@ -5287,37 +5158,27 @@
                     </svg>
                   </div>
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                    <h5 style="color: #808080; font-size: 15px">Account details:</h5>
-                    <p
-                      style="color: #000; font-weight: 600; margin-left: 15px; font-size: 15px"
-                      class="bf-account-details-span"
-                    >
-                      None
-                    </p>
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-right bf-account-details-span">None</h5>
+                      </div>
+                    </div>
                   </div>
                   <div
                     style="
                       display: flex;
                       flex-direction: row;
                       justify-content: space-between;
-                      margin-bottom: 15px;
+                      
                     "
                   >
+                  <div class="card-container manage-dataset">
                     <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current dataset:
-                        <span
-                          class="bf-dataset-span"
-                          style="
-                            color: #000;
-                            font-weight: 600;
-                            margin-left: 8px;
-                            font-size: 15px;
-                          "
-                          >None</span
-                        >
-                      </h5>
+                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('dataset')"
