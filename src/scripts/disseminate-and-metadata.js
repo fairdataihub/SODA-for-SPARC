@@ -800,10 +800,10 @@ $(document).ready(function() {
 
 function cancelOtherContributors(table) {
   var rowcount = document.getElementById(table).rows.length;
-  var rowIndex = rowcount;
+  var rowIndex = rowcount - 1;
   var currentRow = document.getElementById(table).rows[document.getElementById(table).rows.length-1]
-  currentRow.cells[0].outerHTML = "<td class='grab'><select id='ds-description-contributor-list-last-"+rowIndex+"' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td>"
-  currentRow.cells[1].outerHTML = "<td class='grab'><select disabled id='ds-description-contributor-list-first-"+rowIndex+"' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td>"
+  currentRow.cells[0].outerHTML = "<td class='grab'><select id='ds-description-contributor-list-last-"+rowIndex+"' onchange='onchangeLastNames("+rowIndex+")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td>"
+  currentRow.cells[1].outerHTML = "<td class='grab'><select disabled id='ds-description-contributor-list-first-"+rowIndex+"' onchange='onchangeFirstNames("+rowIndex+")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td>"
   cloneConNamesSelect('ds-description-contributor-list-last-'+rowIndex.toString())
 }
 
