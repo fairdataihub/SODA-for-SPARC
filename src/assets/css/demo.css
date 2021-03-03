@@ -661,6 +661,7 @@ table.table-save-metadata {
   float: none;
   font-style: normal;
   padding: 3px;
+  padding-bottom: 0
 }
 
 .tooltipnew.contributor img {
