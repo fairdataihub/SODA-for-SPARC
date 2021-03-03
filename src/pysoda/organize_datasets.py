@@ -523,8 +523,8 @@ def create_dataset(recursivePath, jsonStructure, listallfiles):
 
 def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = True):
     """
-    Function for importing blackfynn data files info into the "dataset-structure" key of the soda json structure, 
-    including metadata from any existing manifest files in the high-level folders 
+    Function for importing blackfynn data files info into the "dataset-structure" key of the soda json structure,
+    including metadata from any existing manifest files in the high-level folders
     (name, id, timestamp, description, additional metadata)
 
     Args:
@@ -545,7 +545,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         else:
             return file_name
 
-    # Add a new key containing the path to all the files and folders on the 
+    # Add a new key containing the path to all the files and folders on the
     # local data structure..
     def recursive_item_path_create(folder, path):
         if "files" in folder.keys():
@@ -564,6 +564,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
     level = 0
 
     def recursive_dataset_import(my_item, dataset_folder, metadata_files, my_folder_name, my_level, manifest_dict):
+        nonlocal level
         col_count = 0
         file_count = 0
         nonlocal level;
@@ -629,7 +630,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                     filename = join(my_relative_path, file_key)
                     colum_headers = manifest_df.columns.tolist()
                     filename.replace("\\","/")
-                    
+
                     if filename in list(manifest_df["filename"].values):
                         if "description" in colum_headers:
                             mydescription = manifest_df[manifest_df['filename'] == filename]["description"].values[0]
@@ -647,24 +648,24 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         if "folders" in my_folder.keys():
             for folder_key, folder in my_folder["folders"].items():
                 relative_path = join(my_relative_path, folder_key)
-                
+
                 recursive_manifest_info_import(folder, relative_path, manifest_df)
-    
+
     # START
-    
+
     error = []
-    
+
     # check that the blackfynn account is valid
     try:
         bf_account_name = soda_json_structure["bf-account-selected"]["account-name"]
     except Exception as e:
         raise e
-        
+
     try:
         bf = Blackfynn(bf_account_name)
     except Exception as e:
         error.append('Error: Please select a valid Blackfynn account')
-        raise Exception(error)  
+        raise Exception(error)
 
     # check that the blackfynn dataset is valid
     try:
@@ -676,7 +677,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
     except Exception as e:
         error.append('Error: Please select a valid Blackfynn dataset')
         raise Exception(error)
-    
+
     # check that the user has permission to edit this dataset
     try:
         role = bf_get_current_user_permission(bf, myds)
@@ -701,13 +702,13 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         metadata_files = soda_json_structure["metadata-files"]
         if not metadata_files:
             del soda_json_structure['metadata-files']
-        
+
         dataset_folder = soda_json_structure["dataset-structure"]
         # pull information from the manifest files if they satisfy the SPARC format
         if "folders" in dataset_folder.keys():
             for folder_key in manifest_dict.keys():
                 manifest_df = manifest_dict[folder_key]
-                manifest_df = manifest_df.fillna('')  
+                manifest_df = manifest_df.fillna('')
                 colum_headers = manifest_df.columns.tolist()
                 folder = dataset_folder["folders"][folder_key]
                 if "filename" in colum_headers:
@@ -718,6 +719,6 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         recursive_item_path_create(soda_json_structure["dataset-structure"], [])
         success_message = "Data files under a valid high-level SPARC folders have been imported"
         return [soda_json_structure, success_message]
-    
+
     except Exception as e:
         raise e

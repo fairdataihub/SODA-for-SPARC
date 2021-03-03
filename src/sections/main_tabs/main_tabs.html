@@ -1073,7 +1073,13 @@
       <div class="individual-question prepare-submission" id="Question-prepare-submission-no-skip-1">
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
-              <label style="font-size:17px;color:var(--color-bg-plum);">Enter your SPARC Award below: <br><span style="color: #696969;font-size:13px">E.g: A12345678</span></label>
+              <label style="font-size:17px;color:var(--color-bg-plum);">Enter your SPARC Award below:
+              <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext contributor">
+                  Enter your SPARC award to provide additional information about it.
+                </span>
+              </div>
+              <br><span style="color: #696969;font-size:13px">E.g: A12345678</span></label>
               <div class="field" style="width: 100%;margin:15px">
                 <textarea id="textarea-SPARC-award-raw-input" style="width:100%;float:left;height:35px !important;padding:6px 8px;margin-top:15px"></textarea>
               </div>
@@ -1092,7 +1098,13 @@
       <div class="individual-question prepare-submission" id="Question-prepare-submission-3">
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
-              <label style="font-size:17px;color:var(--color-bg-plum);">Select the SPARC award for your submission file:</label>
+              <label style="font-size:17px;color:var(--color-bg-plum);">Select the SPARC award for your submission file:
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    Select your SPARC award to provide additional information about it.
+                  </span>
+                </div>
+              </label>
               <div class="field" style="width: 100%;margin: 15px">
                 <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:100%; height:35px;line-height:2;padding: 6px 8px; font-size:14px">
                   <option value="Select">Select an option</option>
@@ -1140,8 +1152,8 @@
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);">There is currently no existing milestone information for this award. Would you like to upload your Data Deliverables document?
-                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
                   The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document (usually kept by the PI of the SPARC award or the award manager).
                   <br>
                   Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use.
@@ -1229,7 +1241,15 @@
       <div class="individual-question prepare-submission" id="Question-prepare-submission-4">
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
-              <label style="font-size:17px;color:var(--color-bg-plum);">Enter your milestone(s) below: </label>
+              <label style="font-size:17px;color:var(--color-bg-plum);">Enter your milestone(s) below:
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    Enter/Select a milestone from the suggested list compiled from the Data Deliverables document imported to SODA. Choose "Not specified in the Data Deliverables document" if this dataset isn't associated with any milestone initially planned.
+                    <br><br>
+                    Hit "Enter" to register it.
+                  </span>
+                </div>
+              </label>
               <div class="field" style="margin:15px 0;width:100%">
                 <textarea id="selected-milestone-1" class="form-container-textarea"></textarea>
               </div>
@@ -1272,8 +1292,8 @@
       <div class="ui form" style="width:100%">
         <div class="grouped fields">
           <label style="font-size:17px;color:var(--color-bg-plum);">Please re-upload your Data Deliverables below:
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">
+            <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+              <span class="tooltiptext contributor">
               The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document (usually kept by the PI of the SPARC award or the award manager).
               <br>
               Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use.
@@ -1357,7 +1377,15 @@
     <div class="individual-question prepare-submission" id="Question-prepare-submission-no-skip-2">
         <div class="ui form" style="width:100%">
           <div class="grouped fields">
-            <label style="font-size:17px;color:var(--color-bg-plum);">Enter your milestone(s) below: </label>
+            <label style="font-size:17px;color:var(--color-bg-plum);">Enter your milestone(s) below:
+              <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                <span class="tooltiptext contributor">
+                  Manually enter milestone(s) for your SPARC award. Enter "Not specified in the Data Deliverables document" if this dataset isn't associated with any milestone initially planned.
+                  <br><br>
+                  Hit "Enter" to register it.
+                </span>
+              </div>
+            </label>
             <div class="field" style="margin:15px 0;width:100%">
               <textarea id="selected-milestone-2" class="form-container-textarea"></textarea>
             </div>
@@ -1398,17 +1426,18 @@
       <div class="individual-question prepare-submission" id="Question-prepare-submission-6">
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
-              <label style="font-size:17px;color:var(--color-bg-plum);">What is the completion date for the milestone(s):</label>
+              <label style="font-size:17px;color:var(--color-bg-plum);">What is the completion date for the milestone(s):
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                 <span class="tooltiptext contributor">
+                   Select the date from the list of completion dates automatically extracted from the Data Deliverables document uploaded above.
+                 </span>
+               </div>
+             </label>
               <div class="field" style="margin:15px 0;width:100%">
                 <select class="my-dropdown-metadata" style="height:35px;line-height:2;padding: 6px 8px; font-size:14px" id="selected-milestone-date"></select>
               </div>
               <div>
                 <div style='display:none;' id="div-submission-enter-different-date-1" class="form-container-ds"><font color="black"> Enter Date: </font> </div>
-                <div class="tooltipnew" style='display:none;' id="div-submission-enter-different-date-2"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext">
-                    This date is filled automatically using extracted information from the Data Deliverables document and based on the milestone/description of data selected above.
-                  </span>
-                </div>
               </div>
               <div class="demo-controls" style='display:none;' id="div-submission-enter-different-date-3">
                 <input type="date" id="input-milestone-date" required style="font-family: inherit" class="form-container-input-bf"></input>
@@ -1448,7 +1477,13 @@
       <div class="individual-question prepare-submission" id="Question-prepare-submission-no-skip-3">
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
-              <label style="font-size:17px;color:var(--color-bg-plum);">What is the completion date for your milestone(s)?</label>
+              <label style="font-size:17px;color:var(--color-bg-plum);">What is the completion date for your milestone(s)?
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                 <span class="tooltiptext contributor">
+                   Enter the completion date for your specified milestone(s) above.
+                 </span>
+                 </div>
+               </label>
               <div class="field" style="width: 100%;margin:15px">
                 <input type="date" id="input-milestone-date-raw" style="font-family: inherit" class="form-container-input-bf"></input>
               </div>
@@ -1868,13 +1903,48 @@
                         </style>
                     <thead class="full-width">
                       <tr>
-                        <th style="width:15%">Last Name*</th>
-                        <th style="width:15%">First Name*</th>
-                        <th style="width:25%">ORCID ID*</th>
-                        <th style="width:25%">Affiliation*</th>
-                        <th style="width:20%">Role*</th>
-                        <th style="width:5%">Contact Person*</th>
-                        <th style="width:5%"></th>
+                        <th style="width:15%">Last Name*
+
+                        </th>
+                        <th style="width:15%">First Name*
+
+                        </th>
+                        <th style="width:25%">
+                          ORCID ID*
+                          <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                              <span class="tooltiptext contributor" style="width: 300px; font-weight: bold">
+                                If contributor doesn't have an ORCID ID, we suggest they sign up for one at <a href="https://orcid.org" style="color:white"> https://orcid.org </a>
+                              </span>
+                          </div>
+                        </th>
+                        <th style="width:25%">Affiliation*
+                          <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                            <span class="tooltiptext contributor">
+                              Institutional affiliation for contributor. Hit "Enter" on your keyboard after each entry to register it.
+                            </span>
+                          </div>
+                        </th>
+                        <th style="width:20%">Role*
+                          <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                            <span class="tooltiptext contributor">
+                               Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit "Enter" after each entry to register it. Checkout the related <a href="https://schema.datacite.org/meta/kernel-4.3/" style="color:white"> documentation</a> for a definition of each of these roles.
+                            </span>
+                          </div>
+                        </th>
+                        <th style="width:5%">Contact Person*
+                          <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                            <span class="tooltiptext contributor">
+                              Check if the contributor is a contact person for the dataset. At least one and only one of the contributors should be the contact person.
+                            </span>
+                          </div>
+                        </th>
+                        <th style="width:5%">
+                          <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                            <span class="tooltiptext contributor">
+                              Click "Add" to add contributors to SODA's contributor table. Each contributor added to the table will be added to the dataset description file when it is generated.
+                            </span>
+                          </div>
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1949,10 +2019,42 @@
                     </style>
                 <thead class="full-width">
                   <tr>
-                    <th style="width:25%">Link type</th>
-                    <th style="width:30%">Link</th>
-                    <th style="width:35%">Description</th>
-                    <th style="width:10%"></th>
+                    <th style="width:25%">Link type
+                      <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                          <span class="tooltiptext contributor" style="width: 300px; font-weight: bold">
+                            Select the nature of the link:
+                           <br>
+                           - Protocol URLs or DOIs: URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.
+                           <br>
+                           - Originating Article DOIs: DOIs of published articles that were generated from this dataset.
+                           <br>
+                           - Additional links: URLs of additional resources used by this dataset (e.g., a link to a code repository).
+                          </span>
+                      </div>
+                    </th>
+                    <th style="width:30%">Link
+                      <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                          <span class="tooltiptext contributor" style="width: 300px; font-weight: bold">
+                            Enter the link.
+                          </span>
+                      </div>
+                    </th>
+                    <th style="width:35%">Description
+                      <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                          <span class="tooltiptext contributor" style="width: 300px; font-weight: bold">
+                            Optionally provide a short description of the link.
+                          </span>
+                      </div>
+                    </th>
+                    <th style="width:10%">
+                      <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                          <span class="tooltiptext contributor" style="width: 300px; font-weight: bold">
+                            Click on "Add" to register specified link to SODA's link table. All links and descriptions added to the table will be included in your dataset description file when it is generated.
+                            <br><br>
+                            Note that at least one "Protocol URLs or DOIs" link is mandatory. The remaining is optional.
+                          </span>
+                      </div>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
