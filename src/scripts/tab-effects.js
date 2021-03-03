@@ -1577,6 +1577,11 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     $("#submission-connect-Airtable").css("display", "block")
   }
 
+  if (ev.id == "button-skip-DDD") {
+    $($(ev).parents()[0]).css("display", "flex");
+    $($(ev).siblings()[0]).show();
+  }
+
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(
     parentDiv

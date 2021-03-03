@@ -762,8 +762,8 @@
                        </svg>
                      </div>
                    </div>
-                   <div class="div-confirm-button" style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
-                     <button id="disseminate-dataset-confirm-button" onclick="transitionFreeFormMode(this, 'Post-curation-question-2', 'post-curation-tab', '', 'individual-question post-curation')" data-next="Post-curation-question-3" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
+                   <div style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
+                     <button id="disseminate-dataset-confirm-button" onclick="transitionFreeFormMode(this, 'Post-curation-question-2', 'post-curation-tab', '', 'individual-question post-curation')" data-next="Post-curation-question-3" style="display:none;cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
                    </div>
                  </div>
                </div>
@@ -1028,7 +1028,7 @@
                     <div class="card-container">
                       <div style="width:100%">
                         <h5 class="card-left" style="float:left;width:30%">Airtable account:</h5>
-                        <h5 class="card-right" id="current-airtable-account" style="float:right;width:70%;margin-left:0;margin-top:0">None</h5>
+                        <h5 class="card-right" id="current-airtable-account" style="float:right;width:70%;margin-left:0;margin-top:0">Loading...</h5>
                       </div>
                     </div>
                     <svg class="svg-change-current-account" onclick="showAddAirtableAccountBootbox()" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
@@ -1152,14 +1152,14 @@
                 </div>
               </label>
               <div style="display:flex; flex-direction:row;margin:0 auto;margin-top:30px" id="div-buttons-show-DDD">
-                <button onclick="transitionFreeFormMode(this, 'Question-prepare-submission-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')" data-next="Question-prepare-submission-no-skip-2" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:35px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:14px;margin-right:15px">No, skip</button>
+                <button id="button-skip-DDD" onclick="transitionFreeFormMode(this, 'Question-prepare-submission-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')" data-next="Question-prepare-submission-no-skip-2" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:35px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:14px;margin-right:15px">No, skip</button>
                 <button onclick="showDDDUploadDiv()" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:35px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px">Yes, upload</button>
               </div>
               <div style="display:none; flex-direction:row;margin:0 15px;margin-top:30px" id="div-upload-DDD">
                 <div id="div-show-milestone-info-no-existing">
                   <div class="container-milestone-upload" style="display:flex;">
                     <input class="milestone-upload-text" id="input-milestone-select" style="width:85%;text-align:center;height:40px;border-radius:0" type="text" readonly placeholder="Select a file">
-                    <button id="button-import-milestone" type="button" style="width:15%;height:40px;background:var(--color-light-green)" class="button-milestone-upload"><b>Import</b></button>
+                    <button id="button-import-milestone" onclick="importMilestoneDocument(this)" type="button" style="width:15%;height:40px;background:var(--color-light-green)" class="button-milestone-upload"><b>Import</b></button>
                   </div>
                   <p id="para-milestone-document-info" style="margin-top:15px;text-align:center;vertical-align:middle;"></p>
                   <p id="para-milestone-document-info-long" style="display:none;margin-top:5px;margin-bottom:0;text-align:left;padding: 0 0"></p>
@@ -1269,7 +1269,7 @@
     <div class="individual-question prepare-submission" id="Question-prepare-submission-reupload-DDD">
       <div class="ui form" style="width:100%">
         <div class="grouped fields">
-          <label style="font-size:17px;color:var(--color-bg-plum);">Please upload your Data Deliverables below:
+          <label style="font-size:17px;color:var(--color-bg-plum);">Please re-upload your Data Deliverables below:
             <div class="tooltipnew"><img class="info" src="assets/img/info.png">
               <span class="tooltiptext">
               The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document (usually kept by the PI of the SPARC award or the award manager).
@@ -1287,7 +1287,7 @@
             <div style="width:100%">
               <div class="container-milestone-upload" style="display:flex;">
                 <input class="milestone-upload-text" id="input-milestone-select-reupload" style="width:85%;text-align:center;height:40px;border-radius:0" type="text" readonly placeholder="Select a file">
-                <button id="button-import-milestone-reupload" type="button" style="width:15%;height:40px;background:var(--color-light-green)" class="button-milestone-upload"><b>Import</b></button>
+                <button id="button-import-milestone-reupload" onclick="importMilestoneDocument(this)" type="button" style="width:15%;height:40px;background:var(--color-light-green)" class="button-milestone-upload"><b>Import</b></button>
               </div>
               <p id="para-milestone-document-info-reupload" style="margin-top:15px;text-align:center;vertical-align:middle;"></p>
               <p id="para-milestone-document-info-long-reupload" style="display:none;margin-top:5px;margin-bottom:0;text-align:left;padding: 0 0"></p>
@@ -1477,7 +1477,6 @@
                   "
                 >
                 <div style="display:flex; flex-direction: row; justify-content:space-between;margin-bottom:10px">
-                  <div>
                     <h5 style="color: #808080; font-size: 15px">
                       SPARC Award:
                       <span
@@ -1491,24 +1490,8 @@
                         ></span
                       >
                     </h5>
-                  </div>
-                  <svg
-                    class="svg-change-current-account"
-                    onclick="openDropdownPrompt('dataset')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    class="bi bi-pencil-fill"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
                 </div>
                 <div style="display:flex; flex-direction: row; justify-content:space-between;margin-bottom: 10px">
-                  <div>
                     <h5 style="color: #808080; font-size: 15px">
                       Milestone(s):
                       <span
@@ -1522,24 +1505,8 @@
                         ></span
                       >
                     </h5>
-                  </div>
-                  <svg
-                    class="svg-change-current-account"
-                    onclick="openDropdownPrompt('dataset')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    class="bi bi-pencil-fill"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
                 </div>
                 <div style="display:flex; flex-direction: row; justify-content:space-between;margin-bottom: 10px">
-                  <div>
                     <h5 style="color: #808080; font-size: 15px">
                       Completion date:
                       <span
@@ -1553,21 +1520,6 @@
                         ></span
                       >
                     </h5>
-                  </div>
-                  <svg
-                    class="svg-change-current-account"
-                    onclick="openDropdownPrompt('dataset')"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="#000"
-                    class="bi bi-pencil-fill"
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                    />
-                  </svg>
                 </div>
                 </div>
                 <div
@@ -1682,7 +1634,7 @@
                           <div class="card-container">
                             <div style="width:100%">
                               <h5 class="card-left" style="float:left;width:30%">Airtable account:</h5>
-                              <h5 class="card-right" id="current-airtable-account-dd" style="float:right;width:70%;margin-left:0;margin-top:0">None</h5>
+                              <h5 class="card-right" id="current-airtable-account-dd" style="float:right;width:70%;margin-left:0;margin-top:0">Loading...</h5>
                             </div>
                           </div>
                           <svg class="svg-change-current-account" onclick="showAddAirtableAccountBootbox()" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
