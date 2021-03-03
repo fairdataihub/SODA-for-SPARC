@@ -331,13 +331,13 @@ function checkAirtableStatus() {
             return;
           } else {
             // create set to remove duplicates
-            var awardSet = new Set(sparcAwards);
-            var resultArray = [...awardSet];
-            existingSPARCAwardsTagify.settings.whitelist = resultArray;
             $("#current-airtable-account").text(airKeyName);
             $("#current-airtable-account-dd").text(airKeyName);
             changeAirtableDiv("div-field-not-connected", "div-field-already-connected", "div-airtable-award-button", "div-airtable-confirm-button")
             changeAirtableDiv("div-field-not-connected-dd", "div-field-already-connected-dd", "div-airtable-award-button-dd", "div-airtable-confirm-button-dd")
+            var awardSet = new Set(sparcAwards);
+            var resultArray = [...awardSet];
+            existingSPARCAwardsTagify.settings.whitelist = resultArray;
           }
         }
       );
@@ -346,6 +346,10 @@ function checkAirtableStatus() {
       changeAirtableDiv("div-field-already-connected-dd", "div-field-not-connected-dd", "div-airtable-confirm-button-dd", "div-airtable-award-button-dd")
     }
   }
+  $("#submission-connect-Airtable").prop("disabled", false);
+  $("#dd-connect-Airtable").prop("disabled", false);
+  $("#submission-no-airtable-mode").prop("disabled", false);
+  $("#dataset-description-no-airtable-mode").prop("disabled", false);
 }
 
 checkAirtableStatus()
@@ -355,6 +359,7 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
   $("#"+buttonHide).hide();
   $("#"+divShow).show();
   $("#"+buttonShow).show();
+  $("#submission-connect-Airtable").text("Yes, let's connect");
 }
 
 // Below is all the actions that show/hide Confirm buttons per the onclick/onchange/keyup... events
