@@ -2172,7 +2172,17 @@
                   color: var(--color-bg-plum);
                   text-align: center;
                 "
-                >Is this your Blackfynn account?</label
+                >Is this your Blackfynn account?
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    Default account (last selected account before app closed) will be loaded automatically at start if available.
+                    <br><br>
+                    Click on the edit button and select one from the drop-down list for changing to another account (in case multiple ones are connected with SODA).
+                    <br><br>
+                    To remove an account from the list, you would have to delete the associated API key from the Blackfynn webpage (under "My Settings").
+                  </span>
+                </div>
+                </label
               >
               <div class="field" style="margin: auto; width: 450px">
                 <div
@@ -2294,7 +2304,13 @@
                   width: 100%;
                   text-align: center;
                 "
-                >What is the name of the new dataset?</label
+                >What is the name of the new dataset? 
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    Enter desired name for your new dataset. This is the field that will be displayed in public as the title of the dataset. Please make sure that your dataset title is different than your other dataset titles and that it is relatively informative.
+                  </span>
+                </div>
+                </label
               >
               <div
                 class="field"
@@ -2425,7 +2441,13 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Which Blackfynn dataset would you like to rename?</label
+                >Which Blackfynn dataset would you like to rename?
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    Note: You must have "owner" or "manager" permissions on the dataset to change its name. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+                  </span>
+                </div>
+                </label
               >
               <div class="field" style="margin: auto; width: 500px">
                 <div
@@ -2556,7 +2578,13 @@
                   width: 100%;
                   text-align: center;
                 "
-                >What is the new name of the dataset?</label
+                >What is the new name of the dataset?
+                  <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                    <span class="tooltiptext contributor">
+                      Note: You must have "owner" or "manager" permissions on the dataset to change its name. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+                    </span>
+                  </div>
+                </label
               >
               <div
                 class="field"
@@ -2695,7 +2723,15 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Which Blackfynn dataset would you like to work on?</label
+                >Which Blackfynn dataset would you like to work on?
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    Select the Blackfynn dataset you wish to see/edit permissions (sorted alphabetically).
+                    <br><br>
+                    Note: You must have "owner" or "manager" permissions on the dataset to manage permissions. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+                  </span>
+                </div>
+                </label
               >
               <div class="field" style="margin: auto; width: 500px">
                 <div
@@ -2844,9 +2880,21 @@
                   font-size: 17px;
                   color: var(--color-bg-plum);
                   text-align: center;
+                  margin-bottom: 20px;
                 "
-                >Change permissions:</label
-              >
+                >Change permissions:
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    SPARC curation rules require to set the PI of the SPARC award as "owner" of the dataset before it is shared with the Curation Team for review. This is to ensures that the PI is the only person who can publish the dataset.
+                    <br>
+                    <br>
+                    Giving permissions to other members and/or team is only necessary if you need them to contribute to the dataset.
+                    <br>
+                    <br>
+                    See our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide.
+                  </span>
+                </div>
+                </label>
               <div
                 class="field"
                 style="
@@ -2991,7 +3039,15 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Which Blackfynn dataset would you like to work on?</label
+                >Which Blackfynn dataset would you like to work on?
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    Select the Blackfynn dataset you wish to see/edit permissions (sorted alphabetically).
+                    <br><br>
+                    Note: You must have "owner" or "manager" permissions on the dataset to manage permissions. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+                  </span>
+                </div>
+                </label
               >
               <div class="field" style="margin: auto; width: 500px">
                 <div
@@ -3137,7 +3193,15 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Do you want to edit user or team permissions?</label
+                >Do you want to edit user or team permissions?
+                <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+                  Giving permissions to other members and/or team is only necessary if you need them to contribute to the dataset.
+                  <br>
+                  <br>
+                  See our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide.
+                  </span>
+                </div>
+                </label
               >
               <div
                 style="
@@ -3235,7 +3299,12 @@
                   text-align: center;
                 "
                 >Please select the user for whom you want to modify
-                permissions:</label
+                permissions:
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    See our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide.
+                  </span>
+                </div></label
               >
               <div
                 class="field"
@@ -3337,7 +3406,13 @@
                   text-align: center;
                 "
                 >Please select the team for whom you want to modify
-                permissions:</label
+                permissions:
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                      See our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide.
+                    </span>
+                  </div>
+                </label
               >
               <div
                 class="field"
@@ -3492,7 +3567,15 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Which Blackfynn dataset would you like to work on?</label
+                >Which Blackfynn dataset would you like to work on?
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    Subtitle is mandatory SPARC metadata.
+                    <br><br>
+                    Note: You must have "owner" or "manager" permissions on the dataset to edit metadata. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+                  </span>
+                </div>
+                </label
               >
               <div class="field" style="margin: auto; width: 500px">
                 <div
@@ -3628,7 +3711,13 @@
                   width: 100%;
                   text-align: center;
                 "
-                >Enter subtitle below.<br />
+                >Enter subtitle below.
+                  <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                    <span class="tooltiptext contributor">
+                      Add two or three sentences (limit of 256 characters) that describe the content of your dataset such that it is possible to differentiate it from other datasets. This field will become the short description visible immediately under the title of your dataset once it is published.
+                    </span>
+                  </div>
+                  <br />
                 <span style="color: #696969; font-size: 13px"
                   >Any existing subtitle will be displayed:
                 </span>
@@ -3794,7 +3883,14 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Which Blackfynn dataset would you like to work on?</label
+                >Which Blackfynn dataset would you like to work on?
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    Description is mandatory SPARC metadata.
+                    <br><br>
+                    Note: You must have "owner" or "manager" permissions on the dataset to edit metadata. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+                  </span>
+                </div></label
               >
               <div class="field" style="margin: auto; width: 500px">
                 <div
@@ -3931,7 +4027,13 @@
                   width: 100%;
                   text-align: center;
                 "
-                >Enter description below: <br />
+                >Enter description below: 
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    Provide a detailed description of your dataset. This description will be highly visible on the SPARC data portal once your dataset is published.
+                  </span>
+                </div>
+                <br />
                 <span style="color: #696969; font-size: 13px"
                   >Any existing description will be displayed:
                 </span>
@@ -4071,7 +4173,15 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Which Blackfynn dataset would you like to work on?</label
+                >Which Blackfynn dataset would you like to work on?
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    Banner image is mandatory SPARC metadata.
+                    <br><br>
+                    Note: You must have "owner" or "manager" permissions on the dataset to edit metadata. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+                  </span>
+                </div>
+                </label
               >
               <div class="field" style="margin: auto; width: 500px">
                 <div
@@ -4212,7 +4322,15 @@
                   width: 100%;
                   text-align: center;
                 "
-                >Current banner image of selected dataset</label
+                >Current banner image of selected dataset: 
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    This image will be associated with the dataset and used as a thumbnail once the dataset is published.
+                    <br><br>
+                    This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly recommended. The final image size must not exceed 5MB as per Blackfynn's restriction.
+                  </span>
+                </div>
+                </label
               >
               <div
                 class="field"
@@ -4481,7 +4599,15 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Which Blackfynn dataset would you like to work on?</label
+                >Which Blackfynn dataset would you like to work on?
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    License is mandatory SPARC metadata.
+                    <br><br>
+                    Note: You must have "owner" or "manager" permissions on the dataset to edit metadata. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+                  </span>
+                </div>
+                </label
               >
               <div class="field" style="margin: auto; width: 500px">
                 <div
@@ -4608,7 +4734,13 @@
                   width: 100%;
                   text-align: center;
                 "
-                >Assign a license using the button below:</label
+                >Assign a license using the button below: 
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    As per SPARC rules, you must assign the Creative Commons Attribution (CC-BY) license to all your SPARC datasets.
+                  </span>
+                </div>
+                </label
               >
               <div
                 class="field"
@@ -4776,7 +4908,15 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Which Blackfynn dataset would you like to work on?</label
+                >Which Blackfynn dataset would you like to work on?
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext">
+                    Select the target dataset on your Blackfynn account (sorted alphabetically).
+                    <br> <br>
+                    Note: You must have "owner", "manager" or "editor" permissions on the dataset to upload. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+                    </span>
+                </div>
+                </label
               >
               <div class="field" style="margin: auto; width: 500px">
                 <div
@@ -4986,6 +5126,11 @@
                 >
                   Upload dataset
                 </button>
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    Click on "Upload dataset" to push all the files/folders from the selected local folder into the selected Blackfynn dataset. Local folder structure will be preserved. The progress bar located below will provide a live update on the upload.
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -5095,7 +5240,17 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Which Blackfynn dataset would you like to view?</label
+                >Which Blackfynn dataset would you like to view? 
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    The status of a dataset is used to allow easy communication between SPARC investigators and the SPARC Dataset Curation Team regarding the progress of a dataset through the curation process. In the SPARC consortium organization, there are 12 status options that each SPARC Dataset will go through one by one during the submission and curation process. Each status indicates which team is responsible for the step.
+                    <br><br>
+                    Select the Blackfynn dataset for which you wish to change the status (sorted alphabetically).
+                    <br><br>
+                    Note: You must have "owner" or "manager" permissions on the dataset to change dataset status. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
+                  </span>
+                </div>
+                </label
               >
               <div class="field" style="margin: auto; width: 500px">
                 <div
@@ -5233,7 +5388,13 @@
                   width: 100%;
                   text-align: center;
                 "
-                >View/change status</label
+                >View/change status
+                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
+                  <span class="tooltiptext contributor">
+                    To find out more about dataset status, please visit <a href="https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd" style="color:white;"> docs.sparc.science </a>.
+                  </span>
+                </div>
+                </label
               >
               <div
                 class="field"
