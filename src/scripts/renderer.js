@@ -3692,7 +3692,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         addNewDatasetToList(bfNewDatasetName.value);
         datasetPermissionList.selectedIndex = "0";
         document.getElementById("para-filter-datasets-status").innerHTML = "";
-        var numDatasets = refreshDatasetList();
+        //var numDatasets = refreshDatasetList();
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -3710,7 +3710,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
             } else {
               datasetList = [];
               datasetList = result;
-              //refreshDatasetList();
+              tempDatasetListsSync();
             }
           }
         );
@@ -4702,7 +4702,7 @@ bfAddPermissionBtn.addEventListener("click", () => {
       selectedUser,
       selectedRole
     );
-    $("#bf-add-permission-user-spinner").css("visibility", "hidden");
+    //$("#bf-add-permission-user-spinner").css("visibility", "hidden");
   }
 });
 
@@ -5440,6 +5440,7 @@ function addPermissionUser(
     selectedRole,
     (error, res) => {
       if (error) {
+        $("#bf-add-permission-user-spinner").css("visibility", "hidden");
         log.error(error);
         console.error(error);
         var emessage = userError(error);
@@ -5456,6 +5457,7 @@ function addPermissionUser(
         // refresh dataset lists with filter
         client.invoke("api_get_username", selectedBfAccount, (error, res1) => {
           if (error) {
+            $("#bf-add-permission-user-spinner").css("visibility", "hidden");
             log.error(error);
             console.error(error);
           } else {
@@ -5486,6 +5488,7 @@ function addPermissionUser(
               );
               syncDatasetDropdownOption(bfDatasetListPermission);
             }
+            $("#bf-add-permission-user-spinner").css("visibility", "hidden");
           }
         });
       }
