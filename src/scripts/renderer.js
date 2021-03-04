@@ -746,6 +746,7 @@ var currentAffliationtagify = new Tagify(affiliationInput, {
     maxItems: 25,
     closeOnSelect: true, // keep the dropdown open after selecting a suggestion
   },
+  delimiters: null,
   duplicates: false,
 });
 
@@ -1655,6 +1656,7 @@ function loadContributorInfo(no, lastName, firstName) {
       maxItems: 25,
       closeOnSelect: true, // keep the dropdown open after selecting a suggestion
     },
+    delimiters: null,
     duplicates: false
   })
   tagifyRole.removeAllTags();
@@ -1697,6 +1699,7 @@ function loadContributorInfo(no, lastName, firstName) {
       );
       leaveFieldsEmpty(conInfoObj["Affiliation"], document.getElementById("input-con-affiliation-"+no.toString()));
 
+      console.log(conInfoObj["Affiliation"])
       tagifyAffliation.addTags(conInfoObj["Affiliation"])
       tagifyRole.addTags(conInfoObj["Role"])
 
