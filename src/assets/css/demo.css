@@ -657,6 +657,27 @@ table.table-save-metadata {
   z-index: 1;
 }
 
+.tooltipnew.contributor {
+  float: none;
+  font-style: normal;
+  padding: 3px;
+  padding-bottom: 0px;
+}
+
+.tooltipnew.contributor img {
+  height: 14px;
+  width: 14px
+}
+
+.tooltiptext.contributor {
+  right: 80%;
+  max-width: 250px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 200px;
+  font-size: 14px
+}
+
 .info {
   width: 18px;
   height: 18px;
