@@ -1560,6 +1560,10 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
   document.getElementById(parentDiv).appendChild(target);
   document.getElementById(currentDiv).classList.add("prev");
 
+  if (ev.getAttribute("data-next") == "Question-prepare-submission-DDD") {
+    $("#button-skip-DDD").show()
+  }
+
   if (ev.getAttribute("data-next") == "Post-curation-question-2") {
     checkDatasetDisseminate()
     setTimeout(function() {
