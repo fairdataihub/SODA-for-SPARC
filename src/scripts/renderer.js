@@ -2110,7 +2110,7 @@ function grabDSInfoEntries() {
 
 function grabConInfoEntries() {
   if (noAirtable) {
-    var funding = $("#ds-description-award-list").val().trim()
+    var funding = $("#ds-description-award-raw-input-dd").val().trim()
   } else {
     var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
   }
@@ -2132,17 +2132,60 @@ function grabConInfoEntries() {
   }
   /// grab entries from contributor table
   var rowcountCon = currentConTable.rows.length;
+  var cellRowCount = currentConTable.rows[1].cells.length
+  var res;
+
+  // there are 2 cases: when cells.length = 7 (normal) OR cell.length = 9 (abnormal)
+  if (cellRowCount == 7) {
+    res = grabCellConInfo("normal", rowcountCon)
+  } else if (cellRowCount == 9) {
+    res = grabCellConInfo("abnormal", rowcountCon)
+  }
+
+  contributorObj["funding"] = fundingArray;
+  contributorObj["acknowledgment"] = acknowledgment;
+  contributorObj["contributors"] = res;
+  return contributorObj;
+}
+
+function grabCellConInfo(type, rowcountCon) {
   var currentConInfo = [];
+  var idCell;
+  var roleCell;
+  var affCel;
+  var contactCell;
+
+  if (type == "normal") {
+    idCell = 2;
+    affCel = 3;
+    roleCell = 4;
+    contactCell = 5;
+  } else if (type == "abnormal") {
+    idCell = 4;
+    affCel = 5;
+    roleCell = 6;
+    contactCell = 7;
+  }
+
   for (i = 1; i < rowcountCon - 1; i++) {
-    var conRoleTagify = $(currentConTable.rows[i].cells[4]).find("tag").toArray();
+    var conLastName;
+    var conFirstName;
+    if ($($(currentConTable.rows[i].cells[0])[0]).find("select").length > 0) {
+      conLastName = $($(currentConTable.rows[i].cells[0])[0]).find("select").val();
+      conFirstName = $($(currentConTable.rows[i].cells[1])[0]).find("select").val();
+    } else {
+      conLastName = $($(currentConTable.rows[i].cells[0])[0]).find("input").val().trim();
+      conFirstName = $($(currentConTable.rows[i].cells[1])[0]).find("input").val().trim();
+    }
+
+    var conRoleTagify = $(currentConTable.rows[i].cells[roleCell]).find("tag").toArray();
     var conRoleInfo = [];
     if (conRoleTagify.length>0) {
       conRoleTagify.forEach((item, i) => {
         conRoleInfo.push($(conRoleTagify)[i].innerText)
       });
     }
-
-    var conAffliationTagify = $(currentConTable.rows[i].cells[3]).find("tag").toArray();
+    var conAffliationTagify = $(currentConTable.rows[i].cells[affCel]).find("tag").toArray();
     var conAffliationInfo = [];
     if (conAffliationTagify.length>0) {
       conAffliationTagify.forEach((item, i) => {
@@ -2150,22 +2193,13 @@ function grabConInfoEntries() {
       });
     }
 
-    var contactLabel = $(currentConTable.rows[i].cells[5]).find("label").find("input")[0];
+    var contactLabel = $(currentConTable.rows[i].cells[contactCell]).find("label").find("input")[0];
     var contactCheck = "No";
     if (contactLabel && contactLabel.checked) {
       contactCheck = "Yes"
     }
 
-    var conLastName = "";
-    var conFirstName = "";
-    if ($($(currentConTable.rows[i].cells[0])[0]).find("select").length == 0) {
-      conLastName = $($(currentConTable.rows[i].cells[0])[0]).find("input").val().trim();
-      conFirstName = $($(currentConTable.rows[i].cells[1])[0]).find("input").val().trim();
-    } else {
-      conLastName = $($(currentConTable.rows[i].cells[0])[0]).find("select").val();
-      conFirstName = $($(currentConTable.rows[i].cells[1])[0]).find("select").val();
-    }
-    var conID = $($(currentConTable.rows[i].cells[2])[0]).find("input").val().trim();
+    var conID = $($(currentConTable.rows[i].cells[idCell])[0]).find("input").val().trim();
     var myCurrentCon = {
       conName: conLastName + ", " + conFirstName,
       conID: conID,
@@ -2175,10 +2209,7 @@ function grabConInfoEntries() {
     };
     currentConInfo.push(myCurrentCon);
   }
-  contributorObj["funding"] = fundingArray;
-  contributorObj["acknowledgment"] = acknowledgment;
-  contributorObj["contributors"] = currentConInfo;
-  return contributorObj;
+  return currentConInfo
 }
 
 function grabProtocolSection() {
@@ -2359,6 +2390,8 @@ ipcRenderer.on(
         }
         //// grab entries from contributor info section and pass values to conSectionArray
         var contributorObj = grabConInfoEntries();
+
+        console.log(contributorObj)
 
         /// grab entries from other misc info section
         var miscObj = grabProtocolSection();
