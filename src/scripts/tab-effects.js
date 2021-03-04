@@ -1844,8 +1844,19 @@ const hidePrevDivs = (currentDiv, category) => {
             child.id === "inputNewNameDataset" ||
             child.id === "bf-rename-dataset-name"
           ) {
-            $(`${child.id}`).val("");
-            $(`${child.id}`).attr("placeholder", "Type here");
+            if (child.id === "bf-rename-dataset-name") {
+              if (
+                $(".bf-dataset-span").html() == "None" ||
+                $(".bf-dataset-span").html() == ""
+              ) {
+                $("#bf-rename-dataset-name").val(
+                  `${$(".bf-dataset-span").html()}`
+                );
+              }
+            } else {
+              $(`${child.id}`).val("");
+              $(`${child.id}`).attr("placeholder", "Type here");
+            }
           } else {
             if (document.getElementById(child.id)) {
               $(`${child.id}`).val("");
@@ -2706,3 +2717,5 @@ $("#edit_banner_image_button").click(async () => {
 $('.content-button').popover();
 $('.option-card-disseminate-dataset').popover();
 $('.coming-soon-div').popover();
+$('#button-submit-dataset').popover();
+$('.popover-tooltip').popover();

@@ -4322,8 +4322,8 @@ $(bfListDatasetStatus).on("change", () => {
 bfAddSubtitleBtn.addEventListener("click", () => {
   bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
-  $("#bf-add-subtitle-dataset-spinner").css("visibility", "visible");
-  datasetSubtitleStatus.innerHTML = "Please wait...";
+  $("#bf-add-subtitle-dataset-spinner").show();
+  //datasetSubtitleStatus.innerHTML = "Please wait...";
   disableform(bfMetadataForm);
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
@@ -4340,7 +4340,7 @@ bfAddSubtitleBtn.addEventListener("click", () => {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $("#bf-add-subtitle-dataset-spinner").css("visibility", "hidden");
+        $("#bf-add-subtitle-dataset-spinner").hide();
         datasetSubtitleStatus.innerHTML =
         "<span style='color: red;'> " + emessage + "</span>";
         bfCurrentMetadataProgress.style.display = "none";
@@ -4353,7 +4353,7 @@ bfAddSubtitleBtn.addEventListener("click", () => {
           selectedBfDataset
           );
         } else {
-        $("#bf-add-subtitle-dataset-spinner").css("visibility", "hidden");
+        $("#bf-add-subtitle-dataset-spinner").hide();
         datasetSubtitleStatus.innerHTML = res;
         bfCurrentMetadataProgress.style.display = "none";
         $(".synced-progress").css("display", "none");
@@ -4373,8 +4373,8 @@ bfAddSubtitleBtn.addEventListener("click", () => {
 bfAddDescriptionBtn.addEventListener("click", () => {
   bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
-  $("#bf-add-description-dataset-spinner").css("visibility", "visible");
-  datasetDescriptionStatus.innerHTML = "Please wait...";
+  $("#bf-add-description-dataset-spinner").show();
+  //datasetDescriptionStatus.innerHTML = "Please wait...";
   disableform(bfMetadataForm);
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
@@ -4391,7 +4391,7 @@ bfAddDescriptionBtn.addEventListener("click", () => {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $("#bf-add-description-dataset-spinner").css("visibility", "hidden");
+        $("#bf-add-description-dataset-spinner").hide();
         datasetDescriptionStatus.innerHTML =
         "<span style='color: red;'> " + emessage + "</span>";
         bfCurrentMetadataProgress.style.display = "none";
@@ -4404,7 +4404,7 @@ bfAddDescriptionBtn.addEventListener("click", () => {
           selectedBfDataset
           );
         } else {
-        $("#bf-add-description-dataset-spinner").css("visibility", "hidden");
+        $("#bf-add-description-dataset-spinner").hide();
         datasetDescriptionStatus.innerHTML = res;
         bfCurrentMetadataProgress.style.display = "none";
         $(".synced-progress").css("display", "none");
@@ -4577,7 +4577,7 @@ ipcRenderer.on("show-banner-image-below-1024", (event, index) => {
 bfAddLicenseBtn.addEventListener("click", () => {
   bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
-  $("#bf-add-license-dataset-spinner").css("visibility", "visible");
+  $("#bf-add-license-dataset-spinner").show();
   datasetLicenseStatus.innerHTML = "Please wait...";
   disableform(bfMetadataForm);
   var selectedBfAccount =
@@ -4596,7 +4596,7 @@ bfAddLicenseBtn.addEventListener("click", () => {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $("#bf-add-license-dataset-spinner").css("visibility", "hidden");
+        $("#bf-add-license-dataset-spinner").hide();
         datasetLicenseStatus.innerHTML =
         "<span style='color: red;'> " + emessage + "</span>";
         bfCurrentMetadataProgress.style.display = "none";
@@ -4609,8 +4609,8 @@ bfAddLicenseBtn.addEventListener("click", () => {
           );
           enableform(bfMetadataForm);
         } else {
-          $("#bf-add-license-dataset-spinner").css("visibility", "hidden");
-          datasetLicenseStatus.innerHTML = res;
+        $("#bf-add-license-dataset-spinner").hide();
+        datasetLicenseStatus.innerHTML = res;
         showCurrentLicense();
         ipcRenderer.send(
           "track-event",
@@ -5252,6 +5252,11 @@ const showCurrentBannerImage = () => {
     $(".synced-progress").css("display", "none");
     bfCurrentBannerImg.src = "";
     document.getElementById("para-current-banner-img").innerHTML = "None";
+    bfViewImportedImage.src = "";
+    $("#div-img-container-holder").css("display", "block");
+    $("#div-img-container").css("display", "none");
+    $("#save-banner-image").css("visibility", "hidden");
+    myCropper.destroy();
   } else {
     client.invoke(
       "api_bf_get_banner_image",
@@ -5265,11 +5270,21 @@ const showCurrentBannerImage = () => {
           $(".synced-progress").css("display", "none");
           bfCurrentBannerImg.src = "assets/img/no-banner-image.png";
           document.getElementById("para-current-banner-img").innerHTML = "None";
+          bfViewImportedImage.src = "";
+          $("#div-img-container-holder").css("display", "block");
+          $("#div-img-container").css("display", "none");
+          $("#save-banner-image").css("visibility", "hidden");
+          myCropper.destroy();
         } else {
           if (res === "No banner image") {
             bfCurrentBannerImg.src = "";
             document.getElementById("para-current-banner-img").innerHTML =
               "None";
+            bfViewImportedImage.src = "";
+            $("#div-img-container-holder").css("display", "block");
+            $("#div-img-container").css("display", "none");
+            $("#save-banner-image").css("visibility", "hidden");
+            myCropper.destroy();
           } else {
             document.getElementById("para-current-banner-img").innerHTML = "";
             bfCurrentBannerImg.src = res;
@@ -5310,14 +5325,13 @@ function showCurrentLicense() {
           $(".synced-progress").css("display", "none");
         } else {
           currentDatasetLicense.innerHTML = res;
-          if (res === "No license is currently assigned to this dataset")
-          {
-            $("#button-add-license").show()
-          }
-          else if (res === "Creative Commons Attribution")
-          {
-            $("#button-add-license").hide()
-            $("#para-dataset-license-status").html("You are all set. This dataset already has the correct license assigned.")
+          if (res === "No license is currently assigned to this dataset") {
+            $("#button-add-license").show();
+          } else if (res === "Creative Commons Attribution") {
+            $("#button-add-license").hide();
+            $("#para-dataset-license-status").html(
+              "You are all set. This dataset already has the correct license assigned."
+            );
           }
           $(bfCurrentMetadataProgress).css("display", "none");
           $(".synced-progress").css("display", "none");
@@ -8365,6 +8379,10 @@ $("#bf-rename-dataset-name").keyup(function () {
       $("#button-rename-dataset").show();
     }
   } else {
+    if(newName == "")
+    {
+      $("#para-rename-dataset-message").html("");
+    }
     $("#button-rename-dataset").hide();
   }
 });
