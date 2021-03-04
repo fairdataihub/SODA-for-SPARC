@@ -191,7 +191,8 @@ body.waiting * {
 }
 
 .demo-controls-end {
-  width: 5%
+  width: 30px;
+  height:30px;
 }
 
 .demo-button-next-step {

@@ -145,7 +145,7 @@ $(document).ready(function() {
   document
   .getElementById("button-prev-contributor-award")
   .addEventListener("click", () => {
-    document.getElementById("ds-dataset-info").click();
+    document.getElementById("ds-award-info").click();
     checkFieldsContributors();
   });
   document
