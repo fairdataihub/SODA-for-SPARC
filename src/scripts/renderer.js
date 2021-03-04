@@ -2072,7 +2072,7 @@ function contactPersonCheck() {
   var rowcount = currentConTable.rows.length;
 
   for (var i = 0; i < rowcount - 1; i++) {
-    var contactLabel = $(currentConTable.rows[i].cells[5]).find("label").find("input")[0];
+    var contactLabel = $(currentConTable.rows[i].cells[currentConTable.rows[i].cells.length-2]).find("label").find("input")[0];
     if (contactLabel && contactLabel.checked) {
       contactPersonExists = true;
       break;
