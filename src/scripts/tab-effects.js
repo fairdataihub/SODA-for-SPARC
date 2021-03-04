@@ -2561,13 +2561,13 @@ $("#start-over-btn").click(() => {
 
 const description_text = {
   manage_dataset_section:
-    "This interface provides a convenient window to accomplish all required curation steps on your Blackfynn datasets.",
+    "This interface provides a convenient window to accomplish all required curation steps on your Blackfynn datasets",
   prepare_metadata_section:
     "This interface will help you in preparing the SPARC metadata files for your dataset",
   prepare_dataset_section:
-    "This interface will help you in organizing your dataset and upload it to Blackfynn.",
+    "This interface will help you in organizing your dataset according to the SPARC Data Structure",
   disseminate_dataset_section:
-    "This interface provides a convenient window to complete tasks required once your dataset has been organized and uploaded on Blackfynn."
+    "This interface will assist you in completing tasks required once your dataset has been fully prepared"
 };
 
 $("input:radio[name=main_tabs]").click(function () {
