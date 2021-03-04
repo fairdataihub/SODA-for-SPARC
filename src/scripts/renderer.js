@@ -4577,7 +4577,7 @@ ipcRenderer.on("show-banner-image-below-1024", (event, index) => {
 bfAddLicenseBtn.addEventListener("click", () => {
   bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
-  $("#bf-add-license-dataset-spinner").css("visibility", "visible");
+  $("#bf-add-license-dataset-spinner").show();
   datasetLicenseStatus.innerHTML = "Please wait...";
   disableform(bfMetadataForm);
   var selectedBfAccount =
@@ -4596,7 +4596,7 @@ bfAddLicenseBtn.addEventListener("click", () => {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $("#bf-add-license-dataset-spinner").css("visibility", "hidden");
+        $("#bf-add-license-dataset-spinner").hide();
         datasetLicenseStatus.innerHTML =
         "<span style='color: red;'> " + emessage + "</span>";
         bfCurrentMetadataProgress.style.display = "none";
@@ -4609,7 +4609,7 @@ bfAddLicenseBtn.addEventListener("click", () => {
           );
           enableform(bfMetadataForm);
         } else {
-          $("#bf-add-license-dataset-spinner").css("visibility", "hidden");
+        $("#bf-add-license-dataset-spinner").hide();
           datasetLicenseStatus.innerHTML = res;
         showCurrentLicense();
         ipcRenderer.send(
