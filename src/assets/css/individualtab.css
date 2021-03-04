@@ -887,6 +887,24 @@
   margin-bottom: 30px;
 }
 
+.individual-question.prepare-submission {
+  width: 60%
+}
+
+.individual-question.prepare-submission .field {
+  margin: 15px !important;
+  width : 100% !important;
+}
+
+.individual-question.prepare-dd {
+  width: 60%
+}
+
+.individual-question.prepare-dd .field {
+  margin: 15px !important;
+  width : 100% !important;
+}
+
 .ui.form .grouped.fields {
   display: flex !important;
   flex-direction: column;
@@ -1097,8 +1115,8 @@
   float: left;
 }
 
-.card-right.bf-account-span, 
-.card-right.bf-account-details-span, 
+.card-right.bf-account-span,
+.card-right.bf-account-details-span,
 .card-right.bf-dataset-span,
 .card-right.current-permissions {
   width: auto;
@@ -1106,6 +1124,17 @@
   margin-top: 0px;
   padding-left: 5px;
   white-space: pre-line;
+}
+
+.card-container.prepare-submission .card-left {
+  text-align: right;
+  width: 50%
+}
+
+.card-container.prepare-submission .card-right {
+  text-align: left;
+  width: 50%;
+  margin-top: 0
 }
 
 .card-right {
