@@ -1570,9 +1570,11 @@ function changeAwardInputDsDescription() {
     $($($("#table-current-contributors").find('tr')[1].cells[i]).find("textarea")[0]).val("")
   }
 
-  removeOptions(document.getElementById($($($("#table-current-contributors").find('tr')[1].cells[1]).find("select")[0]).prop("id")))
-  var currentRowLeftID = $($($("#table-current-contributors").find('tr')[1].cells[0]).find("select")[0]).prop("id")
-  cloneConNamesSelect(currentRowLeftID);
+  var selectID = document.getElementById($($($("#table-current-contributors").find('tr')[1].cells[1]).find("select")[0]).prop("id"));
+  if (selectID) {
+    removeOptions(selectID)
+    $($($("#table-current-contributors").find('tr')[1].cells[1]).find("select")[0]).prop("disabled", true)
+  }
 
   var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value;
   var airKeyContent = parseJson(airtableConfigPath);
@@ -1594,16 +1596,12 @@ function changeAwardInputDsDescription() {
           globalContributorNameObject[lastName] = firstName;
           currentContributorsLastNames.push(lastName);
         }),
-          fetchNextPage();
-          removeOptions(dsContributorArrayLast1);
-          addOption(dsContributorArrayLast1, "Select an option", "Select an option");
-        for (var i = 0; i < currentContributorsLastNames.length; i++) {
-          var opt = currentContributorsLastNames[i];
-          if (dsContributorArrayLast1) {
-            addOption(dsContributorArrayLast1, opt, opt);
+        fetchNextPage();
+        var currentRowLeftID = $($($("#table-current-contributors").find('tr')[1].cells[0]).find("select")[0]).prop("id");
+        if(currentRowLeftID) {
+          cloneConNamesSelect(currentRowLeftID);
           }
-        }
-      }),
+        })
       function done(err) {
         if (err) {
           log.error(err);
