@@ -2581,7 +2581,7 @@ $(document).ready(() => {
   $(".content-button").click(function () {
     let section = $(this).data("section");
 
-    $("#para-add-new-dataset-status").html();
+    $("#para-add-new-dataset-status").html("");
     $("#main-nav").addClass("active");
     $("#sidebarCollapse").addClass("active");
     $(".section").addClass("fullShown");

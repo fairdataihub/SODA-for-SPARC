@@ -675,7 +675,8 @@ table.table-save-metadata {
   overflow-y: auto;
   overflow-x: hidden;
   max-height: 200px;
-  font-size: 14px
+  font-size: 14px;
+  font-style: italic;
 }
 
 .info {

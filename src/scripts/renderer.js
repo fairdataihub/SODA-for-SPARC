@@ -8365,6 +8365,24 @@ $("#bf-rename-dataset-name").keyup(function () {
   }
 });
 
+$("#bf-new-dataset-name").keyup(function () {
+  let newName = $("#bf-new-dataset-name").val().trim();
+
+  if (newName !== "") {
+    if (check_forbidden_characters_bf(newName)) {
+      $("#para-add-new-dataset-status").html(
+        "Error: A Blackfynn dataset name cannot contain any of the following characters: /:*?'<>."
+      );
+      $("#button-create-bf-new-dataset").hide();
+    } else {
+      $("#para-rename-dataset-message").html("");
+      $("#button-create-bf-new-dataset").show();
+    }
+  } else {
+    $("#button-create-bf-new-dataset").hide();
+  }
+});
+
 $("#inputNewNameDataset").keyup(function () {
   var newName = $("#inputNewNameDataset").val().trim();
 
