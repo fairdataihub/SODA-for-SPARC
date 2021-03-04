@@ -4610,7 +4610,7 @@ bfAddLicenseBtn.addEventListener("click", () => {
           enableform(bfMetadataForm);
         } else {
         $("#bf-add-license-dataset-spinner").hide();
-          datasetLicenseStatus.innerHTML = res;
+        datasetLicenseStatus.innerHTML = res;
         showCurrentLicense();
         ipcRenderer.send(
           "track-event",
