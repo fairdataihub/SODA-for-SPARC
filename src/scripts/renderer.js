@@ -3678,6 +3678,8 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         );
       } else {
         $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
+        $(bfCreateNewDatasetBtn).hide();
+        defaultBfDataset = bfNewDatasetName.value;
         bfCreateNewDatasetStatus.innerHTML =
           "Success: created dataset" +
           " '" +
@@ -3690,14 +3692,13 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         addNewDatasetToList(bfNewDatasetName.value);
         datasetPermissionList.selectedIndex = "0";
         document.getElementById("para-filter-datasets-status").innerHTML = "";
-        var numDatasets = refreshDatasetList();
+        //var numDatasets = refreshDatasetList();
         ipcRenderer.send(
           "track-event",
           "Success",
           "Manage Dataset - Create Empty Dataset",
           bfNewDatasetName.value
           );
-          defaultBfDataset = bfNewDatasetName.value;
         client.invoke(
           "api_bf_dataset_account",
           defaultBfAccount,
@@ -3709,12 +3710,11 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
             } else {
               datasetList = [];
               datasetList = result;
-              refreshDatasetList();
+              tempDatasetListsSync();
             }
           }
         );
-        $(datasetDescriptionFileDataset).val(bfNewDatasetName.value).change();
-        tempDatasetListsSync();
+        //tempDatasetListsSync();
         $(".bf-dataset-span").html(bfNewDatasetName.value);
         $(".confirm-button").click();
         bfNewDatasetName.value = "";
@@ -3805,7 +3805,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
               } else {
                 datasetList = [];
                 datasetList = result;
-                refreshDatasetList();
+                //refreshDatasetList();
               }
             }
           );
@@ -3831,7 +3831,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
   var selectedbfaccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
   //var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text;
-  var selectedBfDataset = defaultBfDataset;
+  var selectedbfdataset = defaultBfDataset;
   client.invoke(
     "api_bf_submit_dataset",
     selectedbfaccount,
@@ -4702,7 +4702,7 @@ bfAddPermissionBtn.addEventListener("click", () => {
       selectedUser,
       selectedRole
     );
-    $("#bf-add-permission-user-spinner").css("visibility", "hidden");
+    //$("#bf-add-permission-user-spinner").css("visibility", "hidden");
   }
 });
 
@@ -5440,6 +5440,7 @@ function addPermissionUser(
     selectedRole,
     (error, res) => {
       if (error) {
+        $("#bf-add-permission-user-spinner").css("visibility", "hidden");
         log.error(error);
         console.error(error);
         var emessage = userError(error);
@@ -5456,6 +5457,7 @@ function addPermissionUser(
         // refresh dataset lists with filter
         client.invoke("api_get_username", selectedBfAccount, (error, res1) => {
           if (error) {
+            $("#bf-add-permission-user-spinner").css("visibility", "hidden");
             log.error(error);
             console.error(error);
           } else {
@@ -5486,6 +5488,7 @@ function addPermissionUser(
               );
               syncDatasetDropdownOption(bfDatasetListPermission);
             }
+            $("#bf-add-permission-user-spinner").css("visibility", "hidden");
           }
         });
       }
@@ -8371,12 +8374,12 @@ $("#bf-new-dataset-name").keyup(function () {
 
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
-      $("#para-add-new-dataset-status").html(
+      $("#para-new-name-dataset-message").html(
         "Error: A Blackfynn dataset name cannot contain any of the following characters: /:*?'<>."
       );
       $("#button-create-bf-new-dataset").hide();
     } else {
-      $("#para-rename-dataset-message").html("");
+      $("#para-new-name-dataset-message").html("");
       $("#button-create-bf-new-dataset").show();
     }
   } else {
