@@ -2278,17 +2278,7 @@
                   color: var(--color-bg-plum);
                   text-align: center;
                 "
-                >Is this your Blackfynn account?
-                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext contributor">
-                    Default account (last selected account before app closed) will be loaded automatically at start if available.
-                    <br><br>
-                    Click on the edit button and select one from the drop-down list for changing to another account (in case multiple ones are connected with SODA).
-                    <br><br>
-                    To remove an account from the list, you would have to delete the associated API key from the Blackfynn webpage (under "My Settings").
-                  </span>
-                </div>
-                </label
+                >Is this your Blackfynn account?</label
               >
               <div class="field" style="margin: auto; width: 450px">
                 <div
@@ -2681,11 +2671,6 @@
                   text-align: center;
                 "
                 >What is the new name of the dataset?
-                  <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
-                    <span class="tooltiptext contributor">
-                      Note: You must have "owner" or "manager" permissions on the dataset to change its name. See feature "Manage dataset permissions" of SODA and our associated <a href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions" style="color:white;"> documentation</a> for more information.
-                    </span>
-                  </div>
                 </label
               >
               <div
@@ -2703,8 +2688,8 @@
               <p
                 style="
                   color: red;
-                  width: 440px;
                   padding-bottom: 5px;
+                  padding-top: 5px;
                   text-align: center;
                 "
                 id="para-rename-dataset-message"
@@ -3839,7 +3824,7 @@
                     </span>
                   </p>
                 </div>
-                <div style="display: flex; flex-direction: row">
+                <div style="display: flex; flex-direction: column;">
                   <div
                     id="div-button-add-subtitle"
                     style="
@@ -3868,7 +3853,7 @@
                     >
                       Add subtitle to dataset
                     </button>
-                    <div id="bf-add-subtitle-dataset-spinner" class="spinner" style="visibility:hidden; margin: 10px;">
+                    <div id="bf-add-subtitle-dataset-spinner" class="spinner" style="display: none; margin: 10px;">
                       <div class="rect1"></div>
                       <div class="rect2"></div>
                       <div class="rect3"></div>
@@ -4155,7 +4140,7 @@
                 >
                   Add description
                 </button>
-                <div id="bf-add-description-dataset-spinner" class="spinner" style="visibility:hidden; margin: 10px;">
+                <div id="bf-add-description-dataset-spinner" class="spinner" style="display: none; margin: 10px;">
                   <div class="rect1"></div>
                   <div class="rect2"></div>
                   <div class="rect3"></div>
