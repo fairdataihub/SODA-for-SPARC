@@ -274,6 +274,10 @@
   margin-top: 0px;
 }
 
+.popover-tooltip{
+ padding-left: 10px;
+}
+
 ul li .check{
   display: block;
   position: absolute;
