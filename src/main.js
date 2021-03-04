@@ -151,9 +151,9 @@ function initialize() {
   app.on("ready", () => {
     const windowOptions = {
       minWidth: 1110,
-      minHeight: 680,
+      minHeight: 735,
       width: 1110,
-      height: 720,
+      height: 735,
       center: true,
       show: false,
       icon: __dirname + "/assets/menu-icon/soda_icon.png",
