@@ -1442,18 +1442,12 @@ async function transitionSubQuestionsButton(
     "Question-generate-dataset-generate-div-old"
   ) {
     $("#nextBtn").prop("disabled", false);
-  }
-
-  if (
-    !(
-      ev.getAttribute("data-next") ===
-      "Question-generate-dataset-generate-div-old"
-    )
-  ) {
+  } else {
     // create moving effects when new questions appear
-    $("#nextBtn").prop("disabled", false);
+    $("#nextBtn").prop("disabled", true);
     setTimeout(() => target.classList.add("test2"), 100);
   }
+
 
   document.getElementById(currentDiv).classList.add("prev");
 
