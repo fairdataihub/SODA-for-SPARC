@@ -2718,4 +2718,10 @@ $('.content-button').popover();
 $('.option-card-disseminate-dataset').popover();
 $('.coming-soon-div').popover();
 $('#button-submit-dataset').popover();
-$('.popover-tooltip').popover();
+$('.popover-tooltip').each(function () {
+  var $this = $(this);
+  $this.popover({
+      trigger: 'hover',
+      container: $this
+  })
+});
