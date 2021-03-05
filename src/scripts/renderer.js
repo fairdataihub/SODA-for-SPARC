@@ -4304,9 +4304,6 @@ bfDatasetListPostCurationConsortium.addEventListener("change", () => {
 });
 
 function postCurationListChange() {
-  // reserveDOIStatus.innerHTML = "";
-  // publishDatasetStatus.innerHTML = "";
-  //showCurrentDOI()
   showPublishingStatus();
 }
 
@@ -4982,22 +4979,6 @@ function shareWithConsortium() {
 //   })
 // })
 
-// // Publish dataset
-// bfSubmitReviewDatasetBtn.addEventListener("click", () => {
-//   var selectedBfDataset =
-//     bfDatasetListPostCurationPublish.options[
-//       bfDatasetListPostCurationPublish.selectedIndex
-//     ].text;
-//   if (selectedBfDataset === "Select dataset") {
-//     reviewDatasetInfo.innerHTML = "";
-//     emessage = "Please select a valid dataset";
-//     publishDatasetStatus.innerHTML =
-//       "<span style='color: red;'> " + emessage + "</span>";
-//   } else {
-//     showPublishingStatus(submitReviewDatasetCheck);
-//   }
-// });
-
 function submitReviewDatasetCheck(res) {
   var reviewstatus = res[0];
   var publishingStatus = res[1];
@@ -5031,9 +5012,9 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
 });
 
 function submitReviewDataset() {
+  $(disseminateStatusMessagePublish).text("")
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
   client.invoke(
     "api_bf_submit_review_dataset",
@@ -5044,42 +5025,32 @@ function submitReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        // publishDatasetStatus.innerHTML =
-        //   "<span style='color: red;'> " + emessage + "</span>";
-        bfPostCurationProgressPublish.style.display = "none";
-        // enableform(bfPostCurationForm)
-        bfSubmitReviewDatasetBtn.disabled = false;
-        bfRefreshPublishingDatasetStatusBtn.disabled = false;
-        bfWithdrawReviewDatasetBtn.disabled = false;
+        $(disseminateStatusMessagePublish).css("color", "red")
+        $(disseminateStatusMessagePublish).text(emessage)
       } else {
-        // publishDatasetStatus.innerHTML =
-        //   "Success: Dataset has been submitted for review to the Publishers within your organization";
-        bfPostCurationProgressPublish.style.display = "none";
+        $(disseminateStatusMessage).css("color", "var(--color-light-green)")
+        $(disseminateStatusMessage).text("Success: Dataset has been submitted for review to the Publishers within your organization")
         showPublishingStatus("noClear");
       }
+      bfSubmitReviewDatasetBtn.disabled = false;
+      bfRefreshPublishingDatasetStatusBtn.disabled = false;
+      bfWithdrawReviewDatasetBtn.disabled = false;
     }
-  );
+  )
+  ;
 }
 
 // //Withdraw dataset from review
-// bfWithdrawReviewDatasetBtn.addEventListener("click", () => {
-//   var selectedBfDataset = $(".bf-dataset-span").html();
-//   if (selectedBfDataset === "None") {
-//     reviewDatasetInfo.innerHTML = "";
-//     emessage = "Please select a valid dataset";
-//     publishDatasetStatus.innerHTML =
-//       "<span style='color: red;'> " + emessage + "</span>";
-//   } else {
-//     showPublishingStatus(withdrawDatasetCheck);
-//   }
-// });
+function withdrawDatasetSubmission() {
+  showPublishingStatus(withdrawDatasetCheck);
+}
 
 function withdrawDatasetCheck(res) {
   var reviewstatus = res[0];
   if (reviewstatus !== "requested") {
     emessage = "Your dataset is not currently under review";
-    // publishDatasetStatus.innerHTML =
-    //   "<span style='color: red;'> " + emessage + "</span>";
+    $(disseminateStatusMessagePublish).css("color", "red")
+    $(disseminateStatusMessagePublish).text(emessage)
   } else {
     ipcRenderer.send("warning-withdraw-dataset");
   }
@@ -5105,17 +5076,16 @@ function withdrawReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        // publishDatasetStatus.innerHTML =
-        //   "<span style='color: red;'> " + emessage + "</span>";
-        // bfPostCurationProgressPublish.style.display = "none";
-        // bfSubmitReviewDatasetBtn.disabled = false;
-        bfRefreshPublishingDatasetStatusBtn.disabled = false;
-        // bfWithdrawReviewDatasetBtn.disabled = false;
+        $(disseminateStatusMessagePublish).css("color", "red")
+        $(disseminateStatusMessagePublish).text(emessage)
       } else {
-        // publishDatasetStatus.innerHTML =
-        //   "Success: Dataset has been withdrawn from review";
+        $(disseminateStatusMessagePublish).css("color", "var(--color-light-green)")
+        $(disseminateStatusMessagePublish).text("Success: Dataset has been withdrawn from review")
         showPublishingStatus("noClear");
       }
+      bfSubmitReviewDatasetBtn.disabled = false;
+      bfRefreshPublishingDatasetStatusBtn.disabled = false;
+      bfWithdrawReviewDatasetBtn.disabled = false;
     }
   );
 }
@@ -5950,7 +5920,6 @@ function showCurrentDOI() {
   bfPostCurationProgressDOI.style.display = "block";
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListPostCurationDOI.options[bfDatasetListPostCurationDOI.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   if (selectedBfDataset === "Select dataset") {
     currentDOI.value = "-------";
@@ -5979,16 +5948,14 @@ function showCurrentDOI() {
 }
 
 function showPublishingStatus(callback) {
-  // reviewDatasetInfo.innerHTML = "Please wait...";
   if (callback == "noClear") {
     var nothing;
   } else {
-    // publishDatasetStatus.innerHTML = "";
+    $(disseminateStatusMessage).text("")
   }
   var selectedBfAccount = $("#current-bf-account").text();
   var selectedBfDataset = $(".bf-dataset-span").html();;
   if (selectedBfDataset === "None") {
-    // reviewDatasetInfo.innerHTML = "";
   } else {
     client.invoke(
       "api_bf_get_publishing_status",
@@ -5998,12 +5965,11 @@ function showPublishingStatus(callback) {
         if (error) {
           log.error(error);
           console.error(error);
-          // reviewDatasetInfo.innerHTML = "";
           var emessage = userError(error);
-          //publishDatasetStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
+          $(disseminateStatusMessagePublish).css("color", "red")
+          $(disseminateStatusMessagePublish).text(emessage)
         } else {
-          // reviewDatasetInfo.innerHTML = publishStatusOutputConversion(res);
+          $("#para-review-dataset-info-disseminate").text(publishStatusOutputConversion(res));
           if (
             callback === submitReviewDatasetCheck ||
             callback === withdrawDatasetCheck
@@ -6033,17 +5999,6 @@ function publishStatusOutputConversion(res) {
     outputMessage +=
       "Dataset has been accepted for publication by your Publishing Team";
   }
-
-  // outputMessage += '<br><br>'
-  // if (publishStatus === 'NOT_PUBLISHED'){
-  //   outputMessage += 'Dataset has not been published yet'
-  // } else if (publishStatus === 'PUBLISH_IN_PROGRESS'){
-  //   outputMessage += 'Dataset is being published. Publishing times can vary based on the size of your dataset. Your dataset will remain locked until publishing has completed.'
-  // } else if (publishStatus === 'PUBLISH_FAILED'){
-  //   outputMessage += 'Dataset failed to publish. Your Publishing team is made aware and will try again.'
-  // } else if (publishStatus === 'PUBLISHED'){
-  //   outputMessage += 'Dataset has been published'
-  // }
 
   return outputMessage;
 }

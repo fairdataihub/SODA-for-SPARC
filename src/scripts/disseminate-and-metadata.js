@@ -148,9 +148,7 @@ function disseminateConsortium(bfAcct, bfDS) {
 }
 
 function disseminatePublish() {
-  var account = $("#current-bf-account").text();
-  var dataset = $(".bf-dataset-span").html();
-  disseminateShowPublishingStatus(submitReviewDatasetCheck, account, dataset);
+  showPublishingStatus(submitReviewDatasetCheck);
 }
 
 function refreshDatasetStatus() {
@@ -166,31 +164,8 @@ function disseminateShowPublishingStatus(callback, account, dataset) {
       var nothing;
     } else {
       $(disseminateStatusMessagePublish).text("");
+      showPublishingStatus(submitReviewDatasetCheck);
     }
-    client.invoke(
-      "api_bf_get_publishing_status",
-      account,
-      dataset,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          var emessage = userError(error);
-          $(disseminateStatusMessagePublish).css("color", "red")
-          $(disseminateStatusMessagePublish).text(emessage)
-          $("#disseminate-publish-spinner").hide()
-        } else {
-          $("#para-review-dataset-info-disseminate").text(publishStatusOutputConversion(res));
-          $("#disseminate-publish-spinner").hide()
-          if (
-            callback === submitReviewDatasetCheck ||
-            callback === withdrawDatasetCheck
-          ) {
-            callback(res);
-          }
-        }
-      }
-    );
   }
 }
 
