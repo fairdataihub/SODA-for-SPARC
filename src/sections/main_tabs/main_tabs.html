@@ -857,14 +857,15 @@
                        </div>
                      </div>
                      <div id="div-confirm-submit-review" style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
-                         <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background:#fff;color:red;font-weight:600;border:1px solid red;font-size:14px">
+                         <button id="button-withdraw-review-dataset" onclick="withdrawDatasetSubmission()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background:#fff;color:red;font-weight:600;border:1px solid red;font-size:14px">
                            <i class="fas fa-ban" style="padding-right:5px"></i>
                            Withdraw from review</button>
-                         <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px">
+                         <button id="button-submit-review-dataset" onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px">
                            <i class="fas fa-sign-in-alt" style="padding-right:5px"></i>
                            Submit</button>
                      </div>
                      <p id="para-disseminate-status-publish" style="color:red;text-align:center; margin-top:10px"></p>
+                     <div id="disseminate-publish-spinner" class="ui active green inline loader" style="display:none;margin:10px auto;width:100%"></div>
                    </div>
                  </div>
                </div>
@@ -876,6 +877,7 @@
                    <i class="fas fa-share" style="padding-right:5px"></i>
                    Share now</button>
                  <p id="para-disseminate-status" style="color:red;margin-top:10px;text-align:center"></p>
+                 <div id="disseminate-spinner" class="ui active green inline loader" style="display:none;margin:10px auto;width:100%"></div>
                </div>
              </div>
          </div>
@@ -891,31 +893,10 @@
     <div class="main-tabs show" id="download_metadata_templates-tab" style="height:calc(100% - 70px);overflow-y:auto">
       <header class="section-header">
         <div style="display: inline-flex; align-items: center; flex-direction: row; width: 94.5%; padding-right: 20px; margin-bottom: 50px;">
-          <!-- <svg
-            width="52"
-            height="59"
-            viewBox="0 0 52 59"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M46.7819 11.6562H44.1829V17.4916H46.7819V40.8332H44.1829V46.6686H46.7819C49.6486 46.6686 51.9799 44.0514 51.9799 40.8332V17.4916C51.9799 14.2763 49.646 11.6562 46.7819 11.6562ZM10.396 23.327H33.774V34.9978H10.396V23.327Z"
-              fill="black"
-            />
-            <path
-              d="M38.9849 46.6685V5.83539H46.7689V0H25.977V5.83539H33.7869V11.6562H5.19799C2.3313 11.6562 0 14.2734 0 17.4916V40.8331C0 44.0513 2.3313 46.6685 5.19799 46.6685H33.7869V52.5185H25.977V58.3539H46.7689V52.5185H38.9849V46.6685ZM5.19799 40.8331V17.4916H33.7869V40.8331H5.19799Z"
-              fill="black"
-            />
-          </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
           <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Prepare Metadata - Download templates</h2>
         </div>
         </div>
-        <!-- <div class="tab-info">
-          <p class="tab-info-p" style="margin-bottom: 2em">
-             Get the templates provided by the SPARC Curation Team to manually fill out metadata files
-          </p>
-        </div> -->
       </header>
 
       <div class="div-organize-generate-dataset">
@@ -1544,6 +1525,7 @@
                 </div>
                 <p id='para-save-submission-status' style="text-align:center;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p>
               </div>
+              <div id="generate-submission-spinner" class="ui active green inline loader" style="display:none;margin:10px auto;width:100%"></div>
             </div>
           </div>
       </div>
@@ -2136,8 +2118,9 @@
                   >
                     Generate
                   </button>
-                    <p id='para-generate-description-status' style="text-align: center;padding-top:0;margin: 10px 0"></p>
+                  <p id='para-generate-description-status' style="text-align: center;padding-top:0;margin: 10px 0"></p>
                   </div>
+                  <div id="generate-dd-spinner" class="ui active green inline loader" style="display:none;margin:10px auto"></div>
                 </div>
               </div>
             </div>
