@@ -207,10 +207,17 @@ function disseminateShowCurrentPermission(bfAcct, bfDS) {
           bfCurrentPermissionProgress.style.display = "none";
         } else {
           var permissionList = "";
+          let datasetOwner = ""
           for (var i in res) {
             permissionList = permissionList + res[i] + "<br>";
+            if (res[i].indexOf('owner') != -1)
+            {
+              let first_position = res[i].indexOf(':');
+              let second_position = res[i].indexOf(',');
+              datasetOwner = res[i].substring(first_position, second_position);
+            }
           }
-          currentDatasetPermission.innerHTML = permissionList;
+          currentDatasetPermission.innerHTML = datasetOwner;
           bfCurrentPermissionProgress.style.display = "none";
         }
       }

@@ -3782,7 +3782,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
   } else {
     $("#bf-rename-dataset-spinner").css("visibility", "visible");
     bfRenameDatasetBtn.disabled = true;
-    bfRenameDatasetStatus.innerHTML = "Renaming...";
+    bfRenameDatasetStatus.innerHTML = "";
     client.invoke(
       "api_bf_rename_dataset",
       selectedbfaccount,
@@ -5469,10 +5469,17 @@ function showCurrentPermission() {
           bfAddEditCurrentPermissionProgress.style.display = "none";
         } else {
           var permissionList = "";
+          let datasetOwner = ""
           for (var i in res) {
             permissionList = permissionList + res[i] + "<br>";
+            if (res[i].indexOf('owner') != -1)
+            {
+              let first_position = res[i].indexOf(':');
+              let second_position = res[i].indexOf(',');
+              datasetOwner = res[i].substring(first_position + 2, second_position);
+            }
           }
-          currentDatasetPermission.innerHTML = permissionList;
+          currentDatasetPermission.innerHTML = datasetOwner;
           currentAddEditDatasetPermission.innerHTML = permissionList;
           bfCurrentPermissionProgress.style.display = "none";
           bfAddEditCurrentPermissionProgress.style.display = "none";
@@ -9098,4 +9105,3 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
   });
 };
 
-$('.ui.dropdown').dropdown();
