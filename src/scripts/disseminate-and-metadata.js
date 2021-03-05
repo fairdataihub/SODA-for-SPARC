@@ -781,9 +781,9 @@ function createConsRoleTagify(inputField) {
     whitelist: ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
     enforceWhitelist: true,
     dropdown : {
-       enabled   : 0,
-       closeOnSelect : true
-     }
+       enabled   : 1,
+       closeOnSelect: true,
+      }
   })
 }
 

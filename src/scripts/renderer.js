@@ -1643,7 +1643,7 @@ function loadContributorInfo(no, lastName, firstName) {
     enforceWhitelist: true,
     dropdown : {
        enabled   : 0,
-       closeOnSelect : true
+       closeOnSelect: true,
      }
   })
   var tagifyAffliation = new Tagify(document.getElementById('input-con-affiliation-'+no.toString()), {
@@ -1701,7 +1701,7 @@ function loadContributorInfo(no, lastName, firstName) {
       tagifyRole.addTags(conInfoObj["Role"])
 
       tagifyAffliation.loading(false).dropdown.show.call(tagifyAffliation)
-      tagifyRole.loading(false).dropdown.show.call(tagifyRole)
+      tagifyRole.loading(false)
     }),
     function done(err) {
       if (err) {
