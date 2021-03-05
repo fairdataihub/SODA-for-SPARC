@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog } = require("electron");
+const { app, BrowserWindow, dialog, shell } = require("electron");
 app.showExitPrompt = true;
 const path = require("path");
 const glob = require("glob");
@@ -101,6 +101,11 @@ function initialize() {
   loadDemos();
   function createWindow() {
     mainWindow.webContents.openDevTools();
+
+    mainWindow.webContents.on('new-window', (event, url) => { 
+      event.preventDefault();
+      shell.openExternal(url);
+    })
 
     mainWindow.webContents.once("dom-ready", () => {
       if (updatechecked == false) {
