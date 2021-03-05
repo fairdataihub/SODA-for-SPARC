@@ -5787,7 +5787,7 @@ const clearDatasetDropdowns = () => {
 }
 
 /// populate the dropdowns with refreshed dataset list
-const populateDatasetDropdowns = (mylist) => {
+function populateDatasetDropdowns(mylist) {
   clearDatasetDropdowns();
   for (myitem in mylist) {
     var myitemselect = mylist[myitem];

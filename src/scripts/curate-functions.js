@@ -576,7 +576,7 @@ async function openDropdownPrompt(dropdown) {
       showCloseButton: true,
       inputOptions: bfAccountOptions,
       confirmButtonText: "Confirm",
-      denyButtonText: "Add account",
+      denyButtonText: "Add new account",
       showDenyButton: true,
       showCancelButton: false,
       inputValue: defaultBfAccount,
