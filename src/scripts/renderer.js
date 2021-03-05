@@ -535,38 +535,38 @@ const bfDatasetListPostCurationPublish = document.querySelector(
 const bfPostCurationProgressCuration = document.querySelector(
   "#div-bf-post-curation-progress-curation"
 );
-const bfPostCurationProgressConsortium = document.querySelector(
-  "#div-bf-post-curation-progress-consortium"
-);
-const bfPostCurationProgressPublish = document.querySelector(
-  "#div-bf-post-curation-progress-publish"
-);
-const bfPostCurationProgressDOI = document.querySelector(
-  "#div-bf-post-curation-progress-doi"
-);
+// const bfPostCurationProgressConsortium = document.querySelector(
+//   "#div-bf-post-curation-progress-consortium"
+// );
+// const bfPostCurationProgressPublish = document.querySelector(
+//   "#div-bf-post-curation-progress-publish"
+// );
+// const bfPostCurationProgressDOI = document.querySelector(
+//   "#div-bf-post-curation-progress-doi"
+// );
 
-const bfShareConsortiumBtn = document.querySelector("#button-share-consortium");
-const sharedWithConsortiumStatus = document.querySelector(
-  "#shared-with-consortium-status"
-);
-const shareConsortiumStatus = document.querySelector(
-  "#para-share-consortium-status"
-);
+// const bfShareConsortiumBtn = document.querySelector("#button-share-consortium");
+// const sharedWithConsortiumStatus = document.querySelector(
+//   "#shared-with-consortium-status"
+// );
+// const shareConsortiumStatus = document.querySelector(
+//   "#para-share-consortium-status"
+// );
 
-const bfReserveDOIBtn = document.querySelector("#button-reserve-doi");
-const currentDOI = document.querySelector("#input-current-doi");
-const reserveDOIStatus = document.querySelector("#para-reserve-doi-status");
+// const bfReserveDOIBtn = document.querySelector("#button-reserve-doi");
+// const currentDOI = document.querySelector("#input-current-doi");
+// const reserveDOIStatus = document.querySelector("#para-reserve-doi-status");
 //
 // const bfPublishDatasetBtn = document.querySelector("#button-publish-dataset");
-// const bfSubmitReviewDatasetBtn = document.querySelector(
-//   "#button-submit-review-dataset-old"
-// );
-const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
-  "#button-refresh-publishing-status-old"
+const bfSubmitReviewDatasetBtn = document.querySelector(
+  "#button-submit-review-dataset"
 );
-// const bfWithdrawReviewDatasetBtn = document.querySelector(
-//   "#button-withdraw-review-dataset"
-// );
+const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
+  "#button-refresh-publishing-status"
+);
+const bfWithdrawReviewDatasetBtn = document.querySelector(
+  "#button-withdraw-review-dataset"
+);
 // const reviewDatasetInfo = document.querySelector("#para-review-dataset-info");
 // const publishingStatus = document.querySelector("#input-publishing-status");
 // const publishDatasetStatus = document.querySelector(
@@ -1001,6 +1001,10 @@ const existingSPARCAwardsTagify = new Tagify(existingSPARCAwards, {
   delimiters: null,
   editTags: false,
   whitelist: [],
+  dropdown: {
+    enabled: 0,
+    closeOnSelect: true,
+  }
 });
 
 //// when users click on Import
@@ -4884,26 +4888,23 @@ function shareWithCurationTeam() {
   );
 }
 
-// Share with Consortium
-bfShareConsortiumBtn.addEventListener("click", () => {
-  shareConsortiumStatus.innerHTML = "";
-  ipcRenderer.send("warning-share-with-consortium", formBannerHeight.value);
-});
-
-ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
-  if (index === 0) {
-    shareWithConsortium();
-  }
-});
+// // Share with Consortium
+// bfShareConsortiumBtn.addEventListener("click", () => {
+//   shareConsortiumStatus.innerHTML = "";
+//   ipcRenderer.send("warning-share-with-consortium", formBannerHeight.value);
+// });
+//
+// ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
+//   if (index === 0) {
+//     shareWithConsortium();
+//   }
+// });
 
 function shareWithConsortium() {
   shareConsortiumStatus.innerHTML = "Please wait...";
-  bfPostCurationProgressConsortium.style.display = "block";
-  // disableform(bfPostCurationForm)
   bfShareConsortiumBtn.disabled = true;
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListPostCurationConsortium.options[bfDatasetListPostCurationConsortium.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var selectedTeam = "SPARC Embargoed Data Sharing Group";
   var selectedRole = "viewer";
@@ -4920,8 +4921,6 @@ function shareWithConsortium() {
         var emessage = userError(error);
         shareConsortiumStatus.innerHTML =
           "<span style='color: red;'> " + emessage + "</span>";
-        bfPostCurationProgressConsortium.style.display = "none";
-        // enableform(bfPostCurationForm)
         bfShareConsortiumBtn.disabled = false;
       } else {
         showCurrentPermission();
@@ -5032,15 +5031,9 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
 });
 
 function submitReviewDataset() {
-  // disableform(bfPostCurationForm)
-  // bfSubmitReviewDatasetBtn.disabled = true;
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
-  // bfWithdrawReviewDatasetBtn.disabled = true;
-  // // publishDatasetStatus.innerHTML = "Please wait...";
-  // bfPostCurationProgressPublish.style.display = "block";
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListPostCurationPublish.options[bfDatasetListPostCurationPublish.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   client.invoke(
     "api_bf_submit_review_dataset",
@@ -5099,10 +5092,8 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
 });
 
 function withdrawReviewDataset() {
-  // bfSubmitReviewDatasetBtn.disabled = true;
-  // bfWithdrawReviewDatasetBtn.disabled = true;
-  // publishDatasetStatus.innerHTML = "Please wait...";
-  // bfPostCurationProgressPublish.style.display = "block";
+  bfSubmitReviewDatasetBtn.disabled = true;
+  bfWithdrawReviewDatasetBtn.disabled = true;
   var selectedBfAccount = $("#current-bf-dataset").text();
   var selectedBfDataset = $(".bf-dataset-span").html();
   client.invoke(

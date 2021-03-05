@@ -42,8 +42,7 @@ ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
 })
 
 function disseminateCurationTeam(account, dataset) {
-  $(disseminateStatusMessage).css("color", "#000")
-  $(disseminateStatusMessage).text("Please wait...");
+  $("#disseminate-spinner").show();
   var selectedTeam = "SPARC Data Curation Team";
   var selectedRole = "manager";
   client.invoke(
@@ -59,6 +58,7 @@ function disseminateCurationTeam(account, dataset) {
         var emessage = userError(error);
         $(disseminateStatusMessage).css("color", "red")
         $(disseminateStatusMessage).text(emessage);
+        $("#disseminate-spinner").hide();
       } else {
         disseminateShowCurrentPermission(account, dataset);
         var selectedStatusOption = "03. Ready for Curation (Investigator)";
@@ -73,7 +73,8 @@ function disseminateCurationTeam(account, dataset) {
               console.error(error);
               var emessage = userError(error);
               $(disseminateStatusMessage).css("color", "red")
-              $(disseminateStatusMessage).text(emessage)
+              $(disseminateStatusMessage).text(emessage);
+              $("#disseminate-spinner").hide();
               ipcRenderer.send(
                 "track-event",
                 "Error",
@@ -83,6 +84,7 @@ function disseminateCurationTeam(account, dataset) {
             } else {
               $(disseminateStatusMessage).css("color", "var(--color-light-green)")
               $(disseminateStatusMessage).text('Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"');
+              $("#disseminate-spinner").hide();
               ipcRenderer.send(
                 "track-event",
                 "Success",
@@ -99,8 +101,7 @@ function disseminateCurationTeam(account, dataset) {
 }
 
 function disseminateConsortium(bfAcct, bfDS) {
-  $(disseminateStatusMessage).css("color", "#000")
-  $(disseminateStatusMessage).text("Please wait...");
+  $("#disseminate-spinner").show();
   var selectedTeam = "SPARC Embargoed Data Sharing Group";
   var selectedRole = "viewer";
   client.invoke(
@@ -116,6 +117,7 @@ function disseminateConsortium(bfAcct, bfDS) {
         var emessage = userError(error);
         $(disseminateStatusMessage).css("color", "red")
         $(disseminateStatusMessage).text(emessage)
+        $("#disseminate-spinner").hide();
       } else {
         disseminateShowCurrentPermission(bfAcct, bfDS);
         var selectedStatusOption = "11. Complete, Under Embargo (Investigator)";
@@ -131,9 +133,11 @@ function disseminateConsortium(bfAcct, bfDS) {
               var emessage = userError(error);
               $(disseminateStatusMessage).css("color", "red")
               $(disseminateStatusMessage).text(emessage)
+              $("#disseminate-spinner").hide();
             } else {
               $(disseminateStatusMessage).css("color", "var(--color-light-green)")
               $(disseminateStatusMessage).text('Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"')
+              $("#disseminate-spinner").hide();
               disseminiateShowCurrentDatasetStatus("", bfAcct, bfDS);
             }
           }
@@ -156,8 +160,7 @@ function refreshDatasetStatus() {
 }
 
 function disseminateShowPublishingStatus(callback, account, dataset) {
-  $(disseminateStatusMessagePublish).css("color", "#000")
-  $(disseminateStatusMessagePublish).text("Please wait...");
+  $("#disseminate-publish-spinner").show();
   if (dataset !== "None") {
     if (callback == "noClear") {
       var nothing;
@@ -175,8 +178,10 @@ function disseminateShowPublishingStatus(callback, account, dataset) {
           var emessage = userError(error);
           $(disseminateStatusMessagePublish).css("color", "red")
           $(disseminateStatusMessagePublish).text(emessage)
+          $("#disseminate-publish-spinner").hide()
         } else {
           $("#para-review-dataset-info-disseminate").text(publishStatusOutputConversion(res));
+          $("#disseminate-publish-spinner").hide()
           if (
             callback === submitReviewDatasetCheck ||
             callback === withdrawDatasetCheck
