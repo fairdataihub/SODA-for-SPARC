@@ -181,7 +181,7 @@ const downloadSamples = document.getElementById("a-samples");
 const downloadSubjects = document.getElementById("a-subjects");
 const downloadDescription = document.getElementById("a-description");
 const downloadManifest = document.getElementById("a-manifest");
-const downloadDDD = document.getElementById("a-DDD");
+// const downloadDDD = document.getElementById("a-DDD");
 
 /// save airtable api key
 const addAirtableKeyBtn = document.getElementById("button-add-airtable-key");
@@ -836,22 +836,9 @@ ipcRenderer.on("selected-metadata-download-folder", (event, path, filename) => {
 });
 
 const a_DDD_click_function = () => {
-  $("#a-DDD").click();
-} 
-
-const open_airtable_link = () => {
-  //window.open("https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide");
-  console.log("coming here");
-  require("shell").openExternal("https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide")
+  ipcRenderer.send("open-folder-dialog-save-DDD", templateArray[5]);
 }
 
-$(".airtable-sheet").on('click', () => {
-  open_airtable_link();
-})
-
-downloadDDD.addEventListener("click", (event) => {
-  ipcRenderer.send("open-folder-dialog-save-DDD", templateArray[5]);
-});
 ipcRenderer.on("selected-DDD-download-folder", (event, path, filename) => {
   if (path.length > 0) {
     downloadTemplates(filename, path[0]);
@@ -1142,7 +1129,7 @@ function loadAwards() {
     addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
     addOption(dsAwardArray, eval(JSON.stringify(awards[key])), key);
     awardList.push({"value": eval(JSON.stringify(awards[key])), "award-number": key});
-    awardSpan = awardSpan + eval(JSON.stringify(awards[key])) + "\n";
+    awardSpan = awardSpan + eval(JSON.stringify(awards[key])) + "\n\n";
   }
   existingSPARCAwardsTagify.removeAllTags();
   existingSPARCAwardsTagify.addTags(awardList);
@@ -1169,7 +1156,6 @@ function getRowIndex(table) {
 function addSPARCAwards() {
   var message = "";
   var tagifyArray = existingSPARCAwardsTagify.value;
-  console.log(tagifyArray)
   var spanMessage = "";
   // create empty milestone json files for newly added award
   createMetadataDir();
@@ -1213,7 +1199,7 @@ function addSPARCAwards() {
           keyValuePair["award-full-title"],
           keyValuePair["award-number"]
         );
-        spanMessage = spanMessage + keyValuePair["award-full-title"] + "\n";
+        spanMessage = spanMessage + keyValuePair["award-full-title"] + "\n\n";
         awardsJson[keyValuePair["award-number"]] = keyValuePair["award-full-title"];
     }
 
@@ -1528,9 +1514,6 @@ const submissionDateInput = document.getElementById("input-milestone-date");
 function actionEnterNewDate(action) {
   document.getElementById(
     "div-submission-enter-different-date-1"
-  ).style.display = action;
-  document.getElementById(
-    "div-submission-enter-different-date-2"
   ).style.display = action;
   document.getElementById(
     "div-submission-enter-different-date-3"
@@ -7213,14 +7196,6 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
     });
   }
 }
-
-// awardArrayTagify.on("add", function() {
-//   if (awardArrayTagify.value.length > 0) {
-//     $(".bootbox-add-airtable-class").text("Add")
-//   } else {
-//     $(".bootbox-add-airtable-class").text("Confirm")
-//   }
-// })
 
 function editSPARCAwardsBootbox() {
   $(sparcAwardEditMessage).css("display", "block");

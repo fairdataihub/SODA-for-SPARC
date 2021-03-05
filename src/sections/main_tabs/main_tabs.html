@@ -42,7 +42,7 @@
             value="prepare_dataset_section"
           />
           <label class="tab-label" for="prepare_dataset_tab"
-            >Prepare Dataset</label
+            >Prepare Datasets</label
           >
 
           <input
@@ -53,7 +53,7 @@
             value="disseminate_dataset_section"
           />
           <label class="tab-label" for="disseminate_dataset_tab"
-            >Disseminate Dataset</label
+            >Disseminate Datasets </label
           >
         </div>
       </form>
@@ -513,7 +513,7 @@
           <div class="flex-row-container">
             <div class="flex-content-container">
               <div class="header-container">
-                <p class="content-header">Download templates</p>
+                <p class="content-header">Metadata file templates</p>
               </div>
               <div class="button-container">
                 <button
@@ -932,7 +932,7 @@
             <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
             <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
           </svg>
-          <p style="margin-top:30px;font-family:'Raleway',sans-serif; word-break:break-word">dataset_description.xlsx</p>
+          <p style="margin-top:30px;font-family:'Raleway',sans-serif; word-break:break-word">dataset_ description.xlsx</p>
         </button>
 
         <button class="file-templates-button" id="a-subjects">
@@ -985,31 +985,10 @@
     <div class="main-tabs show" id="create_submission-tab" style="height:calc(100% - 60px);overflow-y:auto;display:flex;flex-direction:column;">
       <header class="section-header">
         <div style="display: inline-flex; align-items: center; flex-direction: row; width: 94.5%; padding-right: 20px; margin-bottom: 50px;">
-          <!-- <svg
-            width="52"
-            height="59"
-            viewBox="0 0 52 59"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M46.7819 11.6562H44.1829V17.4916H46.7819V40.8332H44.1829V46.6686H46.7819C49.6486 46.6686 51.9799 44.0514 51.9799 40.8332V17.4916C51.9799 14.2763 49.646 11.6562 46.7819 11.6562ZM10.396 23.327H33.774V34.9978H10.396V23.327Z"
-              fill="black"
-            />
-            <path
-              d="M38.9849 46.6685V5.83539H46.7689V0H25.977V5.83539H33.7869V11.6562H5.19799C2.3313 11.6562 0 14.2734 0 17.4916V40.8331C0 44.0513 2.3313 46.6685 5.19799 46.6685H33.7869V52.5185H25.977V58.3539H46.7689V52.5185H38.9849V46.6685ZM5.19799 40.8331V17.4916H33.7869V40.8331H5.19799Z"
-              fill="black"
-            />
-          </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
           <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Prepare Metadata - Create submission.xlsx </h2>
         </div>
         </div>
-        <!-- <div class="tab-info">
-          <p class="tab-info-p" style="margin-bottom: 2em">
-              The submission file is mandatory for all SPARC datasets.
-          </p>
-        </div> -->
       </header>
 
       <div class="individual-question prepare-submission show" id="Question-prepare-submission-1" style="margin-top:20px">
@@ -1141,8 +1120,6 @@
               </div>
             </div>
           </div>
-      </div>
-
 
       <div class="individual-question prepare-submission" id="Question-prepare-submission-DDD">
           <div class="ui form" style="width:100%">
@@ -1156,7 +1133,6 @@
                 Note that you can import a new Dataset Deliverable to replace an existing one.
                 <br/><br/>
                 Click <a href=# onclick='a_DDD_click_function()'>here</a> to download a template of the Data Deliverables document to see the expected format. Most importantly, at least one table with these exact three hearders is expected: 'Related milestone, aim, or task', 'Description of data', 'Expected date of completion'." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
-                <div id='a-DDD'>
               </label>
               <div style="display:flex; flex-direction:row;margin:0 auto;margin-top:30px" id="div-buttons-show-DDD">
                 <button id="button-skip-DDD" onclick="transitionFreeFormMode(this, 'Question-prepare-submission-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')" data-next="Question-prepare-submission-no-skip-2" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:35px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:14px;margin-right:15px">No, skip</button>
@@ -1229,6 +1205,7 @@
               </div>
             </div>
           </div>
+        </div>
       </div>
 
       <div class="individual-question prepare-submission" id="Question-prepare-submission-4">
@@ -2160,24 +2137,23 @@
                 </div>
               </div>
             </div>
-        </div>
-        <!-- main tabs' closing div -->
-      </div>
 
       <!-- back button -->
       <div class="footer-div">
-      <div style="display: flex; flex-direction: row; width: 110px">
-        <button
-        type="button"
-        class="transition-btn prev"
-        data-section="main_tabs"
-        >
-        <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-      </button>
-    </div>
+        <div style="display: flex; flex-direction: row; width: 110px">
+          <button
+          type="button"
+          class="transition-btn prev"
+          data-section="main_tabs"
+          >
+          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+          </button>
+        </div>
       </div>
+        <!-- main tabs' closing div -->
+    </div>
 
-    </section>
+  </section>
 
   <section
     id="create_new_bf_dataset-section"
@@ -2912,11 +2888,7 @@
                   margin-bottom: 20px;
                 "
                 >Change permissions:
-                <i class="fas fa-info-circle popover-tooltip" data-content="SPARC curation rules require to set the PI of the SPARC award as 'owner' of the dataset before it is shared with the Curation Team for review. This is to ensures that the PI is the only person who can publish the dataset.
-                <br />
-                Giving permissions to other members and/or team is only necessary if you need them to contribute to the dataset.
-                <br />
-                See our associated <a href='https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions' target='_blank' style='color:white;'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide." rel="popover" data-html="true" data-placement="right" data-trigger="hover" ></i>
+                <i class="fas fa-info-circle popover-tooltip" data-content="SPARC curation rules require to set the PI of the SPARC award as 'owner' of the dataset before it is shared with the Curation Team for review. This is to ensures that the PI is the only person who can publish the dataset." rel="popover" data-html="true" data-placement="right" data-trigger="hover" ></i>
                 </label>
               <div
                 class="field"
@@ -3210,11 +3182,8 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Do you want to edit user or team permissions?
-                <i class="fas fa-info-circle popover-tooltip" data-content="Giving permissions to other members and/or team is only necessary if you need them to contribute to the dataset.
-                <br>
-                <br>
-                See our associated <a href='https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions' target='_blank' style='color:white;'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
+                >Do you want to provide permissions to another users or teams?
+                <i class="fas fa-info-circle popover-tooltip" data-content="Giving permissions to other members and/or team is only necessary if you need them to contribute to the dataset." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
                 </label
               >
               <div
@@ -3713,11 +3682,11 @@
                   width: 100%;
                   text-align: center;
                 "
-                >Enter subtitle below.
+                >Enter subtitle below:
                   <i class="fas fa-info-circle popover-tooltip" data-content="Add two or three sentences (limit of 256 characters) that describe the content of your dataset such that it is possible to differentiate it from other datasets. This field will become the short description visible immediately under the title of your dataset once it is published." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
                   <br />
                 <span style="color: #696969; font-size: 13px"
-                  >Any existing subtitle will be displayed:
+                  >Any existing subtitle will be displayed
                 </span>
               </label>
               <div
@@ -4024,7 +3993,7 @@
                 <i class="fas fa-info-circle popover-tooltip" data-content="Provide a detailed description of your dataset. This description will be highly visible on the SPARC data portal once your dataset is published." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
                 <br />
                 <span style="color: #696969; font-size: 13px"
-                  >Any existing description will be displayed:
+                  >Any existing description will be displayed
                 </span>
               </label>
               <div
