@@ -1571,6 +1571,12 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     }, 300)
   }
 
+  if (ev.getAttribute("data-next") == "Question-prepare-dd-4-sections") {
+    setTimeout(function() {
+      $(target).addClass("test2");
+    }, 300)
+  }
+
   if (ev.id == "dataset-description-no-airtable-mode") {
     $("#div-airtable-award-button-dd").show();
     $("#dd-connect-Airtable").css("display", "block")
@@ -1587,11 +1593,7 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
   }
 
   // auto-scroll to bottom of div
-  if (ev.getAttribute("data-next") == "Question-prepare-dd-4-sections") {
-    document.getElementById(parentDiv).scrollTop = document.getElementById(
-      parentDiv
-    ).scrollHeight + 30;
-  } else {
+  if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
     document.getElementById(parentDiv).scrollTop = document.getElementById(
       parentDiv
     ).scrollHeight;
