@@ -17,10 +17,10 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="Logo-can-black-circle.svg"
-   inkscape:export-filename="C:\Users\Bhavesh\Desktop\logo-can1024-black-circle.png"
-   inkscape:export-xdpi="89.367271"
-   inkscape:export-ydpi="89.367271">
+   sodipodi:docname="Logo-can-grey-circle.svg"
+   inkscape:export-filename="C:\Users\Bhavesh\Desktop\logo-can1024-grey-circle.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
   <defs
      id="defs2">
     <marker
@@ -537,10 +537,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.43133514"
-     inkscape:cx="-258.79106"
+     inkscape:cx="-408.72912"
      inkscape:cy="704.4568"
      inkscape:document-units="mm"
-     inkscape:current-layer="g1238"
+     inkscape:current-layer="g1223"
      showgrid="false"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
@@ -653,12 +653,12 @@
             <g
                id="g1223">
               <ellipse
-                 style="opacity:1;fill:#e8e8e8;fill-opacity:0.98039216;stroke:none;stroke-width:0.67282981;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+                 style="opacity:1;fill:#e8e8e8;fill-opacity:0.98039216;stroke:#12716d;stroke-width:3.62810922;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
                  id="path957"
                  cx="129.94527"
                  cy="155.92052"
-                 rx="122.8719"
-                 ry="122.872" />
+                 rx="120.63458"
+                 ry="120.63468" />
               <rect
                  transform="matrix(0.93675604,0.34998302,-0.53713883,0.84349385,0,0)"
                  ry="7.8531866"
