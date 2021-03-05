@@ -561,9 +561,9 @@ const reserveDOIStatus = document.querySelector("#para-reserve-doi-status");
 // const bfSubmitReviewDatasetBtn = document.querySelector(
 //   "#button-submit-review-dataset-old"
 // );
-// const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
-//   "#button-refresh-publishing-status-old"
-// );
+const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
+  "#button-refresh-publishing-status-old"
+);
 // const bfWithdrawReviewDatasetBtn = document.querySelector(
 //   "#button-withdraw-review-dataset"
 // );
@@ -5037,7 +5037,7 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
 function submitReviewDataset() {
   // disableform(bfPostCurationForm)
   // bfSubmitReviewDatasetBtn.disabled = true;
-  // bfRefreshPublishingDatasetStatusBtn.disabled = true;
+  bfRefreshPublishingDatasetStatusBtn.disabled = true;
   // bfWithdrawReviewDatasetBtn.disabled = true;
   // // publishDatasetStatus.innerHTML = "Please wait...";
   // bfPostCurationProgressPublish.style.display = "block";
@@ -5121,7 +5121,7 @@ function withdrawReviewDataset() {
         //   "<span style='color: red;'> " + emessage + "</span>";
         // bfPostCurationProgressPublish.style.display = "none";
         // bfSubmitReviewDatasetBtn.disabled = false;
-        // bfRefreshPublishingDatasetStatusBtn.disabled = false;
+        bfRefreshPublishingDatasetStatusBtn.disabled = false;
         // bfWithdrawReviewDatasetBtn.disabled = false;
       } else {
         // publishDatasetStatus.innerHTML =
@@ -7141,6 +7141,9 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
               content["key-name"] = name;
               fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
               checkAirtableStatus();
+              document.getElementById(
+                "para-generate-description-status"
+              ).innerHTML = "";
               $("#submission-connect-Airtable").text("Loading...");
               $("#dd-connect-Airtable").text("Loading...");
               $("#submission-connect-Airtable").prop("disabled", "true");
