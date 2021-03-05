@@ -2362,13 +2362,12 @@ ipcRenderer.on(
   "selected-metadata-ds-description",
   (event, dirpath, filename) => {
     if (dirpath.length > 0) {
+      $("#generate-dd-spinner").show()
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage = "File " + filename + " already exists in " + dirpath[0];
         ipcRenderer.send("open-error-metadata-file-exits", emessage);
       } else {
-        document.getElementById("para-generate-description-status").innerHTML =
-          "Please wait...";
         var datasetInfoValueArray = grabDSInfoEntries();
 
         //// process obtained values to pass to an array ///
@@ -2439,6 +2438,7 @@ ipcRenderer.on(
         }
       }
     }
+    $("#generate-dd-spinner").hide()
   }
 );
 

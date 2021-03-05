@@ -610,6 +610,7 @@ function generateSubmissionFile() {
 }
 ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
   if (dirpath.length > 0) {
+    $("#generate-submission-spinner").show();
     var destinationPath = path.join(dirpath[0], filename);
     if (fs.existsSync(destinationPath)) {
       var emessage = "File " + filename + " already exists in " + dirpath[0];
@@ -659,6 +660,7 @@ ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
       }
     }
   }
+  $("#generate-submission-spinner").hide()
 })
 
 // prepare dataset description each section (go in and out effects)
