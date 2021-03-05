@@ -910,6 +910,7 @@ function checkEmptyConRowInfo(table, row) {
 }
 
 function onChangeContactLabel(no) {
+  $("#para-save-contributor-status").text("");
   var contactPersonBoolean = contactPersonCheck();
   if (contactPersonBoolean) {
     $("#ds-contact-person-"+no).prop("checked", false);

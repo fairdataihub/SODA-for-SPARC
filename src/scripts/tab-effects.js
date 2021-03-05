@@ -2597,7 +2597,7 @@ $(document).ready(() => {
     $("#sidebarCollapse").addClass("active");
     $(".section").addClass("fullShown");
   });
-  
+
   $(".footer-div div button").click( () => {
     $("#main-nav").removeClass("active");
     $("#sidebarCollapse").removeClass("active");
