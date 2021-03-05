@@ -8851,7 +8851,9 @@ function initiate_generate() {
         var main_total_generate_dataset_size = res[3];
         var main_generated_dataset_size = res[4];
         var elapsed_time_formatted = res[5];
-        console.log(main_generated_dataset_size);
+        
+        console.log(`Data transferred (bytes): ${main_generated_dataset_size}`);
+
         if (start_generate === 1) {
           divGenerateProgressBar.style.display = "block";
           if (main_curate_progress_message.includes("Success: COMPLETED!")) {

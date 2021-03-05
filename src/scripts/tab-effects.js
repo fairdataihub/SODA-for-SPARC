@@ -480,7 +480,6 @@ const nextPrev = (n) => {
         target: { dataset: { section: "main_tabs" }, classList: ["someclass"] },
       },
     });
-    console.log(event);
     $("#sidebarCollapse").click();
     document.body.dispatchEvent(event);
     return;
@@ -2384,7 +2383,7 @@ function raiseWarningExit() {
   });
 }
 
-const exitCurate = async (resetProgressTabs, start_over = false, ) => {
+const exitCurate = async (resetProgressTabs, start_over = false ) => {
   $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
@@ -2401,8 +2400,7 @@ const exitCurate = async (resetProgressTabs, start_over = false, ) => {
 
       currentTab = 0;
       wipeOutCurateProgress();
-      //$("#prepare-dataset-a")[0].click();
-      $("#main_tabs_view").click();
+      $("#main_tabs_view")[0].click();
       globalGettingStarted1stQuestionBool = false;
       if (start_over) {
         $("#organize_dataset_btn").click();
@@ -2721,7 +2719,7 @@ $('#button-submit-dataset').popover();
 $('.popover-tooltip').each(function () {
   var $this = $(this);
   $this.popover({
-      trigger: 'click',
+      trigger: 'hover',
       container: $this
   })
 });
