@@ -1992,7 +1992,7 @@ $(currentConTable).mousedown(function (e) {
 // dsAwardArray.addEventListener("change", changeAwardInputDsDescription);
 
 ///// grab datalist name and auto-load current description
-function showDatasetDescription() {
+const showDatasetDescription = () => {
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
   let temp = datasetDescriptionFileDataset.selectedIndex;
@@ -2005,6 +2005,12 @@ function showDatasetDescription() {
     bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
     document.getElementById("ds-description").innerHTML = "";
+    setTimeout(() => {
+      document.getElementById("description_header_label").scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 5);
   } else {
     client.invoke(
       "api_bf_get_subtitle",
@@ -2017,14 +2023,20 @@ function showDatasetDescription() {
         } else {
           // plainText = removeMd(res)
           document.getElementById("ds-description").innerHTML = res;
+          setTimeout(() => {
+            document.getElementById("description_header_label").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }, 5);
         }
       }
     );
     document.getElementById("ds-description").disabled = false;
   }
-}
+};
 
-function emptyDSInfoEntries() {
+const emptyDSInfoEntries = () => {
   var fieldSatisfied = true;
   var inforObj = grabDSInfoEntries();
   var emptyFieldArray = [];
@@ -5279,11 +5291,11 @@ const showCurrentBannerImage = () => {
           } else {
             document.getElementById("para-current-banner-img").innerHTML = "";
             bfCurrentBannerImg.src = res;
-            setTimeout(() => {
-              document
-                .getElementById("edit_banner_image_button")
-                .scrollIntoView({ behavior: "smooth", block: "center" });
-            }, 400);
+            // setTimeout(() => {
+            //   document
+            //     .getElementById("edit_banner_image_button")
+            //     .scrollIntoView({ behavior: "smooth", block: "center" });
+            // }, 400);
           }
           bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");
@@ -8797,7 +8809,9 @@ function initiate_generate() {
         var main_total_generate_dataset_size = res[3];
         var main_generated_dataset_size = res[4];
         var elapsed_time_formatted = res[5];
-        console.log(main_generated_dataset_size);
+        
+        console.log(`Data transferred (bytes): ${main_generated_dataset_size}`);
+
         if (start_generate === 1) {
           divGenerateProgressBar.style.display = "block";
           if (main_curate_progress_message.includes("Success: COMPLETED!")) {
@@ -9029,3 +9043,5 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
     );
   });
 };
+
+$('.ui.dropdown').dropdown();
