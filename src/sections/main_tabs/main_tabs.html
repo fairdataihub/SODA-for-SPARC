@@ -985,31 +985,10 @@
     <div class="main-tabs show" id="create_submission-tab" style="height:calc(100% - 60px);overflow-y:auto;display:flex;flex-direction:column;">
       <header class="section-header">
         <div style="display: inline-flex; align-items: center; flex-direction: row; width: 94.5%; padding-right: 20px; margin-bottom: 50px;">
-          <!-- <svg
-            width="52"
-            height="59"
-            viewBox="0 0 52 59"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M46.7819 11.6562H44.1829V17.4916H46.7819V40.8332H44.1829V46.6686H46.7819C49.6486 46.6686 51.9799 44.0514 51.9799 40.8332V17.4916C51.9799 14.2763 49.646 11.6562 46.7819 11.6562ZM10.396 23.327H33.774V34.9978H10.396V23.327Z"
-              fill="black"
-            />
-            <path
-              d="M38.9849 46.6685V5.83539H46.7689V0H25.977V5.83539H33.7869V11.6562H5.19799C2.3313 11.6562 0 14.2734 0 17.4916V40.8331C0 44.0513 2.3313 46.6685 5.19799 46.6685H33.7869V52.5185H25.977V58.3539H46.7689V52.5185H38.9849V46.6685ZM5.19799 40.8331V17.4916H33.7869V40.8331H5.19799Z"
-              fill="black"
-            />
-          </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
           <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Prepare Metadata - Create submission.xlsx </h2>
         </div>
         </div>
-        <!-- <div class="tab-info">
-          <p class="tab-info-p" style="margin-bottom: 2em">
-              The submission file is mandatory for all SPARC datasets.
-          </p>
-        </div> -->
       </header>
 
       <div class="individual-question prepare-submission show" id="Question-prepare-submission-1" style="margin-top:20px">
@@ -1152,25 +1131,19 @@
               </div>
             </div>
           </div>
-      </div>
-
 
       <div class="individual-question prepare-submission" id="Question-prepare-submission-DDD">
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);">There is currently no existing milestone information for this award. Would you like to upload your Data Deliverables document?
-                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext contributor">
-                  The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document (usually kept by the PI of the SPARC award or the award manager).
-                  <br>
-                  <br>
-                  Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use.
-                  <br><br>
-                  Note that you can import a new Dataset Deliverable to replace an existing one.
-                  <br><br>
-                  Click <a href=# id="a-DDD" style="color:white;">here</a> to download a template of the Data Deliverables document to see the expected format. Most importantly, at least one table with these exact three hearders is expected: "Related milestone, aim, or task", "Description of data", "Expected date of completion".
-                  </span>
-                </div>
+                <i class="fas fa-info-circle popover-tooltip" data-content="The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document (usually kept by the PI of the SPARC award or the award manager).
+                <br/>
+                <br/>
+                Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use.
+                <br/><br/>
+                Note that you can import a new Dataset Deliverable to replace an existing one.
+                <br/><br/>
+                Click <a href=# onclick='a_DDD_click_function()'>here</a> to download a template of the Data Deliverables document to see the expected format. Most importantly, at least one table with these exact three hearders is expected: 'Related milestone, aim, or task', 'Description of data', 'Expected date of completion'." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
               </label>
               <div style="display:flex; flex-direction:row;margin:0 auto;margin-top:30px" id="div-buttons-show-DDD">
                 <button id="button-skip-DDD" onclick="transitionFreeFormMode(this, 'Question-prepare-submission-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')" data-next="Question-prepare-submission-no-skip-2" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:35px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:14px;margin-right:15px">No, skip</button>
@@ -1243,6 +1216,7 @@
               </div>
             </div>
           </div>
+        </div>
       </div>
 
       <div class="individual-question prepare-submission" id="Question-prepare-submission-4">
@@ -2199,24 +2173,23 @@
                 </div>
               </div>
             </div>
-        </div>
-        <!-- main tabs' closing div -->
-      </div>
 
       <!-- back button -->
       <div class="footer-div">
-      <div style="display: flex; flex-direction: row; width: 110px">
-        <button
-        type="button"
-        class="transition-btn prev"
-        data-section="main_tabs"
-        >
-        <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-      </button>
-    </div>
+        <div style="display: flex; flex-direction: row; width: 110px">
+          <button
+          type="button"
+          class="transition-btn prev"
+          data-section="main_tabs"
+          >
+          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+          </button>
+        </div>
       </div>
+        <!-- main tabs' closing div -->
+    </div>
 
-    </section>
+  </section>
 
   <section
     id="create_new_bf_dataset-section"

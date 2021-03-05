@@ -2597,7 +2597,7 @@ $(document).ready(() => {
     $("#sidebarCollapse").addClass("active");
     $(".section").addClass("fullShown");
   });
-  
+
   $(".footer-div div button").click( () => {
     $("#main-nav").removeClass("active");
     $("#sidebarCollapse").removeClass("active");
@@ -2718,4 +2718,10 @@ $('.content-button').popover();
 $('.option-card-disseminate-dataset').popover();
 $('.coming-soon-div').popover();
 $('#button-submit-dataset').popover();
-$('.popover-tooltip').popover();
+$('.popover-tooltip').each(function () {
+  var $this = $(this);
+  $this.popover({
+      trigger: 'hover',
+      container: $this
+  })
+});
