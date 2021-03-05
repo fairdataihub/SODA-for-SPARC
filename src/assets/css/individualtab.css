@@ -972,7 +972,7 @@
   animation-iteration-count: infinite;
   animation-direction: alternate;
   position: relative;
-  color: var(--color-teal);
+  color: var(--color-light-green);
   font-size: 21px;
   margin-right: 10px;
 }
