@@ -1020,15 +1020,11 @@
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);">Let's check your Airtable connection status:
-                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
-                   <span class="tooltiptext contributor">
-                     SODA make use of the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;"> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
-                     <br><br>
-                     To achieve that, create an Airtable account and request access to the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;">SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href="mailto:chorn@pitt.edu" style='color: white'> chorn@pitt.edu</a>)
-                     <br><br>
-                     Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a> to learn how to obtain or re-generate your API key.
-                   </span>
-                 </div>
+                <i class="fas fa-info-circle popover-tooltip" data-content="SODA make use of the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide'> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
+                  <br/><br/>
+                  To achieve that, create an Airtable account and request access to the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' >SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href='mailto:chorn@pitt.edu'> chorn@pitt.edu</a>)
+                  <br/><br/>
+                  Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href='https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key'> Airtable Help page</a> to learn how to obtain or re-generate your API key." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i>
               </label>
 
               <!-- field that will show when AIrtable is not connected yet -->
@@ -1072,7 +1068,8 @@
               </div>
               <!-- this is the set of buttons that will appear if Airtable account is not connected -->
               <div id="div-airtable-award-button" style="display: none;flex-direction:row;justify-content:center;margin:10px auto;margin-top:30px">
-                <button id="submission-no-airtable-mode" onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')" data-next="Question-prepare-submission-no-skip-1" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:32px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:15px;margin-right:20px">No, skip</button>
+                <button id="submission-no-airtable-mode" onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')" 
+                data-next="Question-prepare-submission-no-skip-1" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:32px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:15px;margin-right:20px">No, skip</button>
                 <button id="submission-connect-Airtable" onclick="showAddAirtableAccountBootbox()" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:35px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:15px">Yes, let's connect</button>
               </div>
             </div>
@@ -1084,11 +1081,7 @@
             <div class="grouped fields">
 
               <label style="font-size:17px;color:var(--color-bg-plum);">Enter your SPARC Award below:
-              <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
-                <span class="tooltiptext contributor">
-                  Enter your SPARC award to provide additional information about it.
-                </span>
-              </div>
+                <i class="fas fa-info-circle popover-tooltip" data-content="Enter your SPARC award to provide additional information about it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i>
               </label>
 
               <div class="field">
@@ -1110,11 +1103,7 @@
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);">Select the SPARC award for your submission file:
-                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext contributor">
-                    Select your SPARC award to provide additional information about it.
-                  </span>
-                </div>
+                <i class="fas fa-info-circle popover-tooltip" data-content="Select your SPARC award to provide additional information about it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
               </label>
               <div class="field">
                 <select id="select-presaved-grant-info-list" class="my-dropdown-metadata" style="width:100%; height:35px;line-height:2;padding: 6px 8px; font-size:14px">
@@ -1163,18 +1152,15 @@
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);">There is currently no existing milestone information for this award. Would you like to upload your Data Deliverables document?
-                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext contributor">
-                  The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document (usually kept by the PI of the SPARC award or the award manager).
-                  <br>
-                  <br>
-                  Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use.
-                  <br><br>
-                  Note that you can import a new Dataset Deliverable to replace an existing one.
-                  <br><br>
-                  Click <a href=# id="a-DDD" style="color:white;">here</a> to download a template of the Data Deliverables document to see the expected format. Most importantly, at least one table with these exact three hearders is expected: "Related milestone, aim, or task", "Description of data", "Expected date of completion".
-                  </span>
-                </div>
+                <i class="fas fa-info-circle popover-tooltip" data-content="The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document (usually kept by the PI of the SPARC award or the award manager).
+                <br/>
+                <br/>
+                Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use.
+                <br/><br/>
+                Note that you can import a new Dataset Deliverable to replace an existing one.
+                <br/><br/>
+                Click <a href=# onclick='a_DDD_click_function()'>here</a> to download a template of the Data Deliverables document to see the expected format. Most importantly, at least one table with these exact three hearders is expected: 'Related milestone, aim, or task', 'Description of data', 'Expected date of completion'." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
+                <div id='a-DDD'>
               </label>
               <div style="display:flex; flex-direction:row;margin:0 auto;margin-top:30px" id="div-buttons-show-DDD">
                 <button id="button-skip-DDD" onclick="transitionFreeFormMode(this, 'Question-prepare-submission-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')" data-next="Question-prepare-submission-no-skip-2" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:35px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:14px;margin-right:15px">No, skip</button>
@@ -1254,13 +1240,9 @@
             <div class="grouped fields">
 
               <label style="font-size:17px;color:var(--color-bg-plum);">Select your milestone(s) associated with the dataset:
-                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
-                  <span class="tooltiptext contributor">
-                    Enter/Select a milestone from the suggested list compiled from the Data Deliverables document imported to SODA. Choose "Not specified in the Data Deliverables document" if this dataset isn't associated with any milestone initially planned.
-                    <br><br>
-                    Hit "Enter" to register it.
-                  </span>
-                </div>
+                <i class="fas fa-info-circle popover-tooltip" data-content="Enter/Select a milestone from the suggested list compiled from the Data Deliverables document imported to SODA. Choose 'Not specified in the Data Deliverables document' if this dataset is not associated with any milestone initially planned.
+                <br/><br/>
+                Hit 'Enter' to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
               </label>
 
               <div class="field">
@@ -1305,18 +1287,13 @@
       <div class="ui form" style="width:100%">
         <div class="grouped fields">
           <label style="font-size:17px;color:var(--color-bg-plum);">Please re-upload your Data Deliverables below:
-            <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext contributor">
-              The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document (usually kept by the PI of the SPARC award or the award manager).
-              <br>
-              Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use.
-              <br>
-              Note that you can import a new Dataset Deliverable to replace an existing one.
-              <br>
-              Click <a href=# id="a-DDD" style="color:white;">here</a> to download a template of the Data Deliverables document to see the expected format. Most importantly, at least one table with these exact three hearders is expected: "Related milestone, aim, or task", "Description of data", "Expected date of completion".
-              <br><br>
-              </span>
-            </div>
+            <i class="fas fa-info-circle popover-tooltip" data-content="The milestones and associated datasets as agreed between awardees and SPARC are summarized in a document called Data Deliverables document (usually kept by the PI of the SPARC award or the award manager).
+            <br/>
+            Import that document in SODA to automatically extract milestones and associated information which will be used to help you prepare the submission metadata file in the next section. You will have to do this only once and it will be then remembered by SODA for subsequent use.
+            <br/>
+            Note that you can import a new Dataset Deliverable to replace an existing one.
+            <br/>
+            Click <a href=# onclick='a_DDD_click_function()'>here</a> to download a template of the Data Deliverables document to see the expected format. Most importantly, at least one table with these exact three hearders is expected: 'Related milestone, aim, or task', 'Description of data', 'Expected date of completion'." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
           </label>
           <div style="display:flex; flex-direction:row;margin:0 15px;margin-top:30px">
             <div style="width:100%">
@@ -1392,13 +1369,9 @@
           <div class="grouped fields">
 
             <label style="font-size:17px;color:var(--color-bg-plum);">Enter your milestone(s) associated with the dataset (press Enter on your keyboard after each):
-              <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
-                <span class="tooltiptext contributor">
-                  Manually enter milestone(s) for your SPARC award. Enter "Not specified in the Data Deliverables document" if this dataset isn't associated with any milestone initially planned.
-                  <br><br>
-                  Hit "Enter" to register it.
-                </span>
-              </div>
+              <i class="fas fa-info-circle popover-tooltip" data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
+              <br/><br/>
+              Hit 'Enter' to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover" ></i>
             </label>
 
             <div class="field">
@@ -1442,11 +1415,7 @@
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);">What is the completion date for the milestone(s):
-                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
-                 <span class="tooltiptext contributor">
-                   Select the date from the list of completion dates automatically extracted from the Data Deliverables document uploaded above.
-                 </span>
-               </div>
+                <i class="fas fa-info-circle popover-tooltip" data-content="Select the date from the list of completion dates automatically extracted from the Data Deliverables document uploaded above." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i>
              </label>
               <div class="field">
                 <select class="my-dropdown-metadata" style="height:35px;line-height:2;padding: 6px 8px; font-size:14px;text-align:center" id="selected-milestone-date"></select>
@@ -1493,11 +1462,7 @@
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);">What is the completion date for your milestone(s)?
-                <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
-                 <span class="tooltiptext contributor">
-                   Enter the completion date for your specified milestone(s) above.
-                 </span>
-                 </div>
+                <i class="fas fa-info-circle popover-tooltip" data-content="Enter the completion date for your specified milestone(s) above." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
                </label>
               <div class="field">
                 <input type="date" id="input-milestone-date-raw" style="font-family: inherit;text-align:center" class="form-container-input-bf"></input>
@@ -1662,15 +1627,11 @@
                 <div class="field">
                   <div class="grouped fields">
                     <label style="font-size:17px;color:var(--color-bg-plum);">Let's check your Airtable connection status:
-                      <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
-                         <span class="tooltiptext contributor">
-                           SODA make use of the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;"> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
-                           <br><br>
-                           To achieve that, create an Airtable account and request access to the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;">SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href="mailto:chorn@pitt.edu" style='color: white'> chorn@pitt.edu</a>)
-                           <br><br>
-                           Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a> to learn how to obtain or re-generate your API key.
-                         </span>
-                       </div>
+                      <i class="fas fa-info-circle popover-tooltip" data-content="SODA make use of the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide'> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
+                      <br/><br/>
+                      To achieve that, create an Airtable account and request access to the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' >SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href='mailto:chorn@pitt.edu'> chorn@pitt.edu</a>)
+                      <br/><br/>
+                      Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href='https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key'> Airtable Help page</a> to learn how to obtain or re-generate your API key." rel="popover" data-html="true" data-placement="right" data-trigger="hover" ></i>
                     </label>
                     <!-- field that will show when AIrtable is not connected yet -->
                     <div class="field" style="width: 100%;display:none" id="div-field-not-connected-dd">
@@ -2396,7 +2357,7 @@
                   text-align: center;
                 "
                 >What is the name of the new dataset?
-                <i class="fas fa-info-circle popover-tooltip" data-content="Enter desired name for your new dataset. This is the field that will be displayed in public as the title of the dataset. Please make sure that your dataset title is different than your other dataset titles and that it is relatively informative." rel="popover" data-placement="right" data-trigger="hover" ></i>
+                <i class="fas fa-info-circle popover-tooltip" data-content="Enter desired name for your new dataset. This is the field that will be displayed in public as the title of the dataset. Please make sure that your dataset title is different than your other dataset titles and that it is relatively informative." rel="popover" data-html="true" data-placement="right" data-trigger="hover" ></i>
                 </label
               >
               <div
@@ -3462,7 +3423,6 @@
                 >Please select the team for whom you want to modify
                 permissions:
                 <i class="fas fa-info-circle popover-tooltip" data-content="See our associated <a href='https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
-                
                 </label
               >
               <div
