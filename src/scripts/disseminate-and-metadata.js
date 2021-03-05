@@ -2,8 +2,9 @@ const disseminateStatusMessage = $("#para-disseminate-status");
 const disseminateStatusMessagePublish = $("#para-disseminate-status-publish");
 
 function disseminateDataset() {
-  if ($(".bf-dataset-span").text() === "None") {
-    $(disseminateStatusMessage).text("<span style='color:red'>Please select a dataset!</span>");
+  if ($(".bf-dataset-span").html() === "None") {
+    $(disseminateStatusMessage).css("color", "red")
+    $(disseminateStatusMessage).text("Please select a dataset!");
   } else {
     // check radio button to see which share option users choose
     // 1. Share with Curation Team
@@ -27,7 +28,7 @@ function disseminateDataset() {
 ipcRenderer.on("warning-share-with-curation-team-selection", (event, index) => {
   if (index === 0) {
     var account = $("#current-bf-account").text();
-    var dataset = $(".bf-dataset-span").text();
+    var dataset = $(".bf-dataset-span").html();
     disseminateCurationTeam(account, dataset);
   }
 });
@@ -35,7 +36,7 @@ ipcRenderer.on("warning-share-with-curation-team-selection", (event, index) => {
 ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
   if (index === 0) {
     var account = $("#current-bf-account").text();
-    var dataset = $(".bf-dataset-span").text();
+    var dataset = $(".bf-dataset-span").html();
     disseminateConsortium(account, dataset);
   }
 })
@@ -56,6 +57,7 @@ function disseminateCurationTeam(account, dataset) {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
+        $(disseminateStatusMessage).css("color", "red")
         $(disseminateStatusMessage).text(emessage);
       } else {
         disseminateShowCurrentPermission(account, dataset);
@@ -112,6 +114,7 @@ function disseminateConsortium(bfAcct, bfDS) {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
+        $(disseminateStatusMessage).css("color", "red")
         $(disseminateStatusMessage).text(emessage)
       } else {
         disseminateShowCurrentPermission(bfAcct, bfDS);
@@ -142,8 +145,14 @@ function disseminateConsortium(bfAcct, bfDS) {
 
 function disseminatePublish() {
   var account = $("#current-bf-account").text();
-  var dataset = $(".bf-dataset-span").text();
+  var dataset = $(".bf-dataset-span").html();
   disseminateShowPublishingStatus(submitReviewDatasetCheck, account, dataset);
+}
+
+function refreshDatasetStatus() {
+  var account = $("#current-bf-account").text();
+  var dataset = $(".bf-dataset-span").html();
+  disseminateShowPublishingStatus("", account, dataset);
 }
 
 function disseminateShowPublishingStatus(callback, account, dataset) {
@@ -259,8 +268,8 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
 }
 
 function checkDatasetDisseminate() {
-  if ($(".bf-dataset-span.disseminate").text() !== "None") {
-    if ($("#Post-curation-question-1").hasClass("prev")) {
+  if ($(".bf-dataset-span.disseminate").html() !== "None") {
+    if ($("#Post-curation-question-1").hasClass("prev") && !$("#Post-curation-question-4").hasClass("show")) {
       $("#disseminate-dataset-confirm-button").click();
     }
   }
@@ -271,7 +280,7 @@ $(".bf-dataset-span.disseminate").on('DOMSubtreeModified',function(){
 })
 
 $(".bf-dataset-span.submit-review").on('DOMSubtreeModified',function(){
-  if ($(this).text() !== "None") {
+  if ($(this).html() !== "None") {
     $("#div-confirm-submit-review").show();
     $("#div-confirm-submit-review button").show();
   } else {
