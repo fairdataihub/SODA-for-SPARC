@@ -2721,7 +2721,12 @@ $('#button-submit-dataset').popover();
 $('.popover-tooltip').each(function () {
   var $this = $(this);
   $this.popover({
-      trigger: 'hover',
+      trigger: 'click',
       container: $this
   })
+});
+
+$('#inbox').on('shown.bs.popover', function () {
+  $(".airtable-sheet").onclick = function () { open_airtable_link(); };
+
 });

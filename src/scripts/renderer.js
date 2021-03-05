@@ -839,6 +839,16 @@ const a_DDD_click_function = () => {
   $("#a-DDD").click();
 } 
 
+const open_airtable_link = () => {
+  //window.open("https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide");
+  console.log("coming here");
+  require("shell").openExternal("https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide")
+}
+
+$(".airtable-sheet").on('click', () => {
+  open_airtable_link();
+})
+
 downloadDDD.addEventListener("click", (event) => {
   ipcRenderer.send("open-folder-dialog-save-DDD", templateArray[5]);
 });
