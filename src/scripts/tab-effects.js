@@ -2574,11 +2574,11 @@ const description_text = {
   manage_dataset_section:
     "This interface provides a convenient window to accomplish all required curation steps on your Blackfynn datasets",
   prepare_metadata_section:
-    "This interface will help you in preparing the SPARC metadata files for your dataset",
+    "This interface will help you in preparing the SPARC metadata files for your datasets",
   prepare_dataset_section:
-    "This interface will help you in organizing your dataset according to the SPARC Data Structure",
+    "This interface will help you in organizing your datasets according to the SPARC Data Structure",
   disseminate_dataset_section:
-    "This interface will assist you in completing tasks required once your dataset has been fully prepared"
+    "This interface will assist you in completing steps required once your datasets have been fully prepared"
 };
 
 $("input:radio[name=main_tabs]").click(function () {
