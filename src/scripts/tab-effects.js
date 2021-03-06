@@ -2709,7 +2709,13 @@ $("#edit_banner_image_button").click(async () => {
 
 // Enable the popover content for the main-tab buttons
 $('.content-button').popover();
-$('.option-card-disseminate-dataset').popover();
+$('.option-card-disseminate-dataset').each(function () {
+  var $this = $(this);
+  $this.popover({
+      trigger: 'hover',
+      container: $this
+  })
+});
 $('.coming-soon-div').popover();
 $('#button-submit-dataset').popover();
 $('.popover-tooltip').each(function () {
