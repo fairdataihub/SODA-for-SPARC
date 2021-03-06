@@ -210,7 +210,6 @@
                   <path d="M2.22693 30C1.63631 30 1.06988 30.2634 0.652252 30.7322C0.234622 31.2011 0 31.8369 0 32.5C0 33.163 0.234622 33.7989 0.652252 34.2677C1.06988 34.7366 1.63631 35 2.22693 35H30.4347C31.0253 35 31.5917 34.7366 32.0093 34.2677C32.427 33.7989 32.6616 33.163 32.6616 32.5C32.6616 31.8369 32.427 31.2011 32.0093 30.7322C31.5917 30.2634 31.0253 30 30.4347 30H2.22693Z"
                         fill="#565E6B" />
                 </svg>
-                  </svg>
                   <h2>Add/edit description</h2>
                 </button>
                 <button
@@ -844,23 +843,24 @@
                          </svg>
                        </div>
                        <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
-                         <div>
-                           <h5 style="color:#808080;font-size:15px"> Review status:
-                             <span id='para-review-dataset-info-disseminate' style="color:#000;font-weight:600;margin-left:8px;font-size:15px">None</span>
-                           </h5>
+                         <div class="card-container prepare-submission">
+                           <h5 class="card-left" style="color:#808080;font-size:15px; width: 30%;"> Review status:</h5>
+                            <span id='para-review-dataset-info-disseminate' style="color:#000;font-weight:600;margin-left:8px;font-size:15px; width: 70%;">None</span>
+
                          </div>
                          <i class="fas fa-sync svg-change-current-account" id="button-refresh-publishing-status" onclick="refreshDatasetStatus()" style="color:#000"></i>
                        </div>
                      </div>
                      <div id="div-confirm-submit-review" style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
-                         <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background:#fff;color:red;font-weight:600;border:1px solid red;font-size:14px">
+                         <button id="button-withdraw-review-dataset" onclick="withdrawDatasetSubmission()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background:#fff;color:red;font-weight:600;border:1px solid red;font-size:14px">
                            <i class="fas fa-ban" style="padding-right:5px"></i>
                            Withdraw from review</button>
-                         <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px">
+                         <button id="button-submit-review-dataset" onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px">
                            <i class="fas fa-sign-in-alt" style="padding-right:5px"></i>
                            Submit</button>
                      </div>
                      <p id="para-disseminate-status-publish" style="color:red;text-align:center; margin-top:10px"></p>
+                     <div id="disseminate-publish-spinner" class="ui active green inline loader" style="display:none;margin:10px auto;width:100%"></div>
                    </div>
                  </div>
                </div>
@@ -872,6 +872,7 @@
                    <i class="fas fa-share" style="padding-right:5px"></i>
                    Share now</button>
                  <p id="para-disseminate-status" style="color:red;margin-top:10px;text-align:center"></p>
+                 <div id="disseminate-spinner" class="ui active green inline loader" style="display:none;margin:10px auto;width:100%"></div>
                </div>
              </div>
          </div>
@@ -887,31 +888,10 @@
     <div class="main-tabs show" id="download_metadata_templates-tab" style="height:calc(100% - 70px);overflow-y:auto">
       <header class="section-header">
         <div style="display: inline-flex; align-items: center; flex-direction: row; width: 94.5%; padding-right: 20px; margin-bottom: 50px;">
-          <!-- <svg
-            width="52"
-            height="59"
-            viewBox="0 0 52 59"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M46.7819 11.6562H44.1829V17.4916H46.7819V40.8332H44.1829V46.6686H46.7819C49.6486 46.6686 51.9799 44.0514 51.9799 40.8332V17.4916C51.9799 14.2763 49.646 11.6562 46.7819 11.6562ZM10.396 23.327H33.774V34.9978H10.396V23.327Z"
-              fill="black"
-            />
-            <path
-              d="M38.9849 46.6685V5.83539H46.7689V0H25.977V5.83539H33.7869V11.6562H5.19799C2.3313 11.6562 0 14.2734 0 17.4916V40.8331C0 44.0513 2.3313 46.6685 5.19799 46.6685H33.7869V52.5185H25.977V58.3539H46.7689V52.5185H38.9849V46.6685ZM5.19799 40.8331V17.4916H33.7869V40.8331H5.19799Z"
-              fill="black"
-            />
-          </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
           <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Prepare Metadata - Download templates</h2>
         </div>
         </div>
-        <!-- <div class="tab-info">
-          <p class="tab-info-p" style="margin-bottom: 2em">
-             Get the templates provided by the SPARC Curation Team to manually fill out metadata files
-          </p>
-        </div> -->
       </header>
 
       <div class="div-organize-generate-dataset">
@@ -920,42 +900,429 @@
         </h3>
         <div style="margin-bottom:30px;display:flex;flex-direction:row;justify-content:center">
         <button class="file-templates-button" id="a-submission" href="#">
-          <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-download" viewBox="0 0 16 16">
-            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+          <svg
+            viewBox="0 0 80.48 98.35">
+            <defs
+              id="defs4">
+              <style
+                id="style2">.cls-a,.cls-b{fill:none;}.cls-a,.cls-b,.cls-c{stroke:#000;stroke-miterlimit:10;}.cls-a{stroke-width:5px;}.cls-b{stroke-width:6px;}</style>
+            </defs>
+            <g
+              id="Layer_2"
+              data-name="Layer 2">
+              <g
+                id="Layer_2-2"
+                data-name="Layer 2">
+                <rect
+                  class="cls-a"
+                  x="65.199997"
+                  y="70.639999"
+                  width="0.17"
+                  height="25.219999"
+                  id="rect6"
+                  style="fill:none;stroke:#b80d49;stroke-width:5.091;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;stroke-linecap:butt;stroke-linejoin:round" />
+                <rect
+                  class="cls-a"
+                  x="9.8388805"
+                  y="-114.80454"
+                  width="0.094172873"
+                  height="14.105361"
+                  transform="matrix(-0.72916542,0.68433748,-0.63101019,-0.77577454,0,0)"
+                  id="rect8"
+                  style="fill:none;stroke:#b80d49;stroke-width:5.00628185;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <path
+                  class="cls-c"
+                  d="m 65.54,17.54 v 3.23 H 52.61 A 7.31,7.31 0 0 1 45.09,13.68 V 3 h 3.72 z"
+                  id="path12"
+                  style="fill:#565E6B;stroke:#565E6B;stroke-width:1.01815367;stroke-miterlimit:10;stroke-dasharray:none"
+                  inkscape:connector-curvature="0" />
+                <line
+                  class="cls-a"
+                  x1="4.4000001"
+                  y1="46.349998"
+                  x2="68.260002"
+                  y2="46.349998"
+                  id="line14"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <line
+                  class="cls-a"
+                  x1="4.4000001"
+                  y1="62.639999"
+                  x2="68.260002"
+                  y2="62.639999"
+                  id="line16"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <polygon
+                  class="cls-a"
+                  points="22.98,46.35 22.98,58.03 22.98,83.25 "
+                  id="polygon18"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <polygon
+                  class="cls-a"
+                  points="41.29,58.35 41.29,46.35 41.29,85.8 "
+                  id="polygon20"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <rect
+                  class="cls-a"
+                  x="-112.08436"
+                  y="-56.490459"
+                  width="0.10513774"
+                  height="14.939537"
+                  transform="matrix(-0.89029505,-0.45538415,0.60761674,-0.79423038,0,0)"
+                  id="rect8-9"
+                  style="fill:none;stroke:#b80d49;stroke-width:5.04100275;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <path
+                  class="cls-b"
+                  d="m 43.72,83.16 -32.67,0.09 c -4.294395,0.09542 -7.8639125,-3.286701 -8,-7.58 V 10.58 C 3.1807137,6.2842907 6.7534873,2.8990877 11.05,3 h 37.76 l 16.938369,14.956737 0.01381,47.225535"
+                  id="path10"
+                  style="fill:none;stroke:#565E6B;stroke-width:6.10892296;stroke-miterlimit:10;stroke-dasharray:none"
+                  inkscape:connector-curvature="0"
+                  sodipodi:nodetypes="cccccccc" />
+              </g>
+            </g>
           </svg>
           <p style="margin-top:30px;font-family:'Raleway', sans-serif">submission.xlsx</p>
         </button>
 
         <button class="file-templates-button" id="a-description">
-          <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-download" viewBox="0 0 16 16">
-            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+          <div style="margin-top: 15px;">
+          <svg
+            viewBox="0 0 80.48 98.35">
+            <defs
+              id="defs4">
+              <style
+                id="style2">.cls-a,.cls-b{fill:none;}.cls-a,.cls-b,.cls-c{stroke:#000;stroke-miterlimit:10;}.cls-a{stroke-width:5px;}.cls-b{stroke-width:6px;}</style>
+            </defs>
+            <g
+              id="Layer_2"
+              data-name="Layer 2">
+              <g
+                id="Layer_2-2"
+                data-name="Layer 2">
+                <rect
+                  class="cls-a"
+                  x="65.199997"
+                  y="70.639999"
+                  width="0.17"
+                  height="25.219999"
+                  id="rect6"
+                  style="fill:none;stroke:#b80d49;stroke-width:5.091;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;stroke-linecap:butt;stroke-linejoin:round" />
+                <rect
+                  class="cls-a"
+                  x="9.8388805"
+                  y="-114.80454"
+                  width="0.094172873"
+                  height="14.105361"
+                  transform="matrix(-0.72916542,0.68433748,-0.63101019,-0.77577454,0,0)"
+                  id="rect8"
+                  style="fill:none;stroke:#b80d49;stroke-width:5.00628185;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <path
+                  class="cls-c"
+                  d="m 65.54,17.54 v 3.23 H 52.61 A 7.31,7.31 0 0 1 45.09,13.68 V 3 h 3.72 z"
+                  id="path12"
+                  style="fill:#565E6B;stroke:#565E6B;stroke-width:1.01815367;stroke-miterlimit:10;stroke-dasharray:none"
+                  inkscape:connector-curvature="0" />
+                <line
+                  class="cls-a"
+                  x1="4.4000001"
+                  y1="46.349998"
+                  x2="68.260002"
+                  y2="46.349998"
+                  id="line14"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <line
+                  class="cls-a"
+                  x1="4.4000001"
+                  y1="62.639999"
+                  x2="68.260002"
+                  y2="62.639999"
+                  id="line16"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <polygon
+                  class="cls-a"
+                  points="22.98,46.35 22.98,58.03 22.98,83.25 "
+                  id="polygon18"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <polygon
+                  class="cls-a"
+                  points="41.29,58.35 41.29,46.35 41.29,85.8 "
+                  id="polygon20"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <rect
+                  class="cls-a"
+                  x="-112.08436"
+                  y="-56.490459"
+                  width="0.10513774"
+                  height="14.939537"
+                  transform="matrix(-0.89029505,-0.45538415,0.60761674,-0.79423038,0,0)"
+                  id="rect8-9"
+                  style="fill:none;stroke:#b80d49;stroke-width:5.04100275;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <path
+                  class="cls-b"
+                  d="m 43.72,83.16 -32.67,0.09 c -4.294395,0.09542 -7.8639125,-3.286701 -8,-7.58 V 10.58 C 3.1807137,6.2842907 6.7534873,2.8990877 11.05,3 h 37.76 l 16.938369,14.956737 0.01381,47.225535"
+                  id="path10"
+                  style="fill:none;stroke:#565E6B;stroke-width:6.10892296;stroke-miterlimit:10;stroke-dasharray:none"
+                  inkscape:connector-curvature="0"
+                  sodipodi:nodetypes="cccccccc" />
+              </g>
+            </g>
           </svg>
+        </div>
           <p style="margin-top:30px;font-family:'Raleway',sans-serif; word-break:break-word">dataset_ description.xlsx</p>
         </button>
 
         <button class="file-templates-button" id="a-subjects">
-          <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-download" viewBox="0 0 16 16">
-            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+          <svg
+            viewBox="0 0 80.48 98.35">
+            <defs
+              id="defs4">
+              <style
+                id="style2">.cls-a,.cls-b{fill:none;}.cls-a,.cls-b,.cls-c{stroke:#000;stroke-miterlimit:10;}.cls-a{stroke-width:5px;}.cls-b{stroke-width:6px;}</style>
+            </defs>
+            <g
+              id="Layer_2"
+              data-name="Layer 2">
+              <g
+                id="Layer_2-2"
+                data-name="Layer 2">
+                <rect
+                  class="cls-a"
+                  x="65.199997"
+                  y="70.639999"
+                  width="0.17"
+                  height="25.219999"
+                  id="rect6"
+                  style="fill:none;stroke:#b80d49;stroke-width:5.091;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;stroke-linecap:butt;stroke-linejoin:round" />
+                <rect
+                  class="cls-a"
+                  x="9.8388805"
+                  y="-114.80454"
+                  width="0.094172873"
+                  height="14.105361"
+                  transform="matrix(-0.72916542,0.68433748,-0.63101019,-0.77577454,0,0)"
+                  id="rect8"
+                  style="fill:none;stroke:#b80d49;stroke-width:5.00628185;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <path
+                  class="cls-c"
+                  d="m 65.54,17.54 v 3.23 H 52.61 A 7.31,7.31 0 0 1 45.09,13.68 V 3 h 3.72 z"
+                  id="path12"
+                  style="fill:#565E6B;stroke:#565E6B;stroke-width:1.01815367;stroke-miterlimit:10;stroke-dasharray:none"
+                  inkscape:connector-curvature="0" />
+                <line
+                  class="cls-a"
+                  x1="4.4000001"
+                  y1="46.349998"
+                  x2="68.260002"
+                  y2="46.349998"
+                  id="line14"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <line
+                  class="cls-a"
+                  x1="4.4000001"
+                  y1="62.639999"
+                  x2="68.260002"
+                  y2="62.639999"
+                  id="line16"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <polygon
+                  class="cls-a"
+                  points="22.98,46.35 22.98,58.03 22.98,83.25 "
+                  id="polygon18"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <polygon
+                  class="cls-a"
+                  points="41.29,58.35 41.29,46.35 41.29,85.8 "
+                  id="polygon20"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <rect
+                  class="cls-a"
+                  x="-112.08436"
+                  y="-56.490459"
+                  width="0.10513774"
+                  height="14.939537"
+                  transform="matrix(-0.89029505,-0.45538415,0.60761674,-0.79423038,0,0)"
+                  id="rect8-9"
+                  style="fill:none;stroke:#b80d49;stroke-width:5.04100275;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <path
+                  class="cls-b"
+                  d="m 43.72,83.16 -32.67,0.09 c -4.294395,0.09542 -7.8639125,-3.286701 -8,-7.58 V 10.58 C 3.1807137,6.2842907 6.7534873,2.8990877 11.05,3 h 37.76 l 16.938369,14.956737 0.01381,47.225535"
+                  id="path10"
+                  style="fill:none;stroke:#565E6B;stroke-width:6.10892296;stroke-miterlimit:10;stroke-dasharray:none"
+                  inkscape:connector-curvature="0"
+                  sodipodi:nodetypes="cccccccc" />
+              </g>
+            </g>
           </svg>
           <p style="margin-top:30px;font-family:'Raleway', sans-serif">subjects.xlsx</p>
         </button>
       </div>
         <div style="margin-bottom:30px;display:flex;flex-direction:row;justify-content:center">
         <button class="file-templates-button" id="a-samples">
-          <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-download" viewBox="0 0 16 16">
-            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+          <svg
+            viewBox="0 0 80.48 98.35">
+            <defs
+              id="defs4">
+              <style
+                id="style2">.cls-a,.cls-b{fill:none;}.cls-a,.cls-b,.cls-c{stroke:#000;stroke-miterlimit:10;}.cls-a{stroke-width:5px;}.cls-b{stroke-width:6px;}</style>
+            </defs>
+            <g
+              id="Layer_2"
+              data-name="Layer 2">
+              <g
+                id="Layer_2-2"
+                data-name="Layer 2">
+                <rect
+                  class="cls-a"
+                  x="65.199997"
+                  y="70.639999"
+                  width="0.17"
+                  height="25.219999"
+                  id="rect6"
+                  style="fill:none;stroke:#b80d49;stroke-width:5.091;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;stroke-linecap:butt;stroke-linejoin:round" />
+                <rect
+                  class="cls-a"
+                  x="9.8388805"
+                  y="-114.80454"
+                  width="0.094172873"
+                  height="14.105361"
+                  transform="matrix(-0.72916542,0.68433748,-0.63101019,-0.77577454,0,0)"
+                  id="rect8"
+                  style="fill:none;stroke:#b80d49;stroke-width:5.00628185;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <path
+                  class="cls-c"
+                  d="m 65.54,17.54 v 3.23 H 52.61 A 7.31,7.31 0 0 1 45.09,13.68 V 3 h 3.72 z"
+                  id="path12"
+                  style="fill:#565E6B;stroke:#565E6B;stroke-width:1.01815367;stroke-miterlimit:10;stroke-dasharray:none"
+                  inkscape:connector-curvature="0" />
+                <line
+                  class="cls-a"
+                  x1="4.4000001"
+                  y1="46.349998"
+                  x2="68.260002"
+                  y2="46.349998"
+                  id="line14"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <line
+                  class="cls-a"
+                  x1="4.4000001"
+                  y1="62.639999"
+                  x2="68.260002"
+                  y2="62.639999"
+                  id="line16"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <polygon
+                  class="cls-a"
+                  points="22.98,46.35 22.98,58.03 22.98,83.25 "
+                  id="polygon18"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <polygon
+                  class="cls-a"
+                  points="41.29,58.35 41.29,46.35 41.29,85.8 "
+                  id="polygon20"
+                  style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <rect
+                  class="cls-a"
+                  x="-112.08436"
+                  y="-56.490459"
+                  width="0.10513774"
+                  height="14.939537"
+                  transform="matrix(-0.89029505,-0.45538415,0.60761674,-0.79423038,0,0)"
+                  id="rect8-9"
+                  style="fill:none;stroke:#b80d49;stroke-width:5.04100275;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+                <path
+                  class="cls-b"
+                  d="m 43.72,83.16 -32.67,0.09 c -4.294395,0.09542 -7.8639125,-3.286701 -8,-7.58 V 10.58 C 3.1807137,6.2842907 6.7534873,2.8990877 11.05,3 h 37.76 l 16.938369,14.956737 0.01381,47.225535"
+                  id="path10"
+                  style="fill:none;stroke:#565E6B;stroke-width:6.10892296;stroke-miterlimit:10;stroke-dasharray:none"
+                  inkscape:connector-curvature="0"
+                  sodipodi:nodetypes="cccccccc" />
+              </g>
+            </g>
           </svg>
           <p style="margin-top:30px;font-family:'Raleway', sans-serif">samples.xlsx</p>
         </button>
         <button class="file-templates-button" id="a-manifest">
-          <svg xmlns="http://www.w3.org/2000/svg" class="bi bi-download" viewBox="0 0 16 16">
-            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-          </svg>
+          <svg
+          viewBox="0 0 80.48 98.35">
+          <defs
+            id="defs4">
+            <style
+              id="style2">.cls-a,.cls-b{fill:none;}.cls-a,.cls-b,.cls-c{stroke:#000;stroke-miterlimit:10;}.cls-a{stroke-width:5px;}.cls-b{stroke-width:6px;}</style>
+          </defs>
+          <g
+            id="Layer_2"
+            data-name="Layer 2">
+            <g
+              id="Layer_2-2"
+              data-name="Layer 2">
+              <rect
+                class="cls-a"
+                x="65.199997"
+                y="70.639999"
+                width="0.17"
+                height="25.219999"
+                id="rect6"
+                style="fill:none;stroke:#b80d49;stroke-width:5.091;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;stroke-linecap:butt;stroke-linejoin:round" />
+              <rect
+                class="cls-a"
+                x="9.8388805"
+                y="-114.80454"
+                width="0.094172873"
+                height="14.105361"
+                transform="matrix(-0.72916542,0.68433748,-0.63101019,-0.77577454,0,0)"
+                id="rect8"
+                style="fill:none;stroke:#b80d49;stroke-width:5.00628185;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+              <path
+                class="cls-c"
+                d="m 65.54,17.54 v 3.23 H 52.61 A 7.31,7.31 0 0 1 45.09,13.68 V 3 h 3.72 z"
+                id="path12"
+                style="fill:#565E6B;stroke:#565E6B;stroke-width:1.01815367;stroke-miterlimit:10;stroke-dasharray:none"
+                inkscape:connector-curvature="0" />
+              <line
+                class="cls-a"
+                x1="4.4000001"
+                y1="46.349998"
+                x2="68.260002"
+                y2="46.349998"
+                id="line14"
+                style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+              <line
+                class="cls-a"
+                x1="4.4000001"
+                y1="62.639999"
+                x2="68.260002"
+                y2="62.639999"
+                id="line16"
+                style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+              <polygon
+                class="cls-a"
+                points="22.98,46.35 22.98,58.03 22.98,83.25 "
+                id="polygon18"
+                style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+              <polygon
+                class="cls-a"
+                points="41.29,58.35 41.29,46.35 41.29,85.8 "
+                id="polygon20"
+                style="fill:none;stroke:#13716d;stroke-width:5.09076929;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+              <rect
+                class="cls-a"
+                x="-112.08436"
+                y="-56.490459"
+                width="0.10513774"
+                height="14.939537"
+                transform="matrix(-0.89029505,-0.45538415,0.60761674,-0.79423038,0,0)"
+                id="rect8-9"
+                style="fill:none;stroke:#b80d49;stroke-width:5.04100275;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
+              <path
+                class="cls-b"
+                d="m 43.72,83.16 -32.67,0.09 c -4.294395,0.09542 -7.8639125,-3.286701 -8,-7.58 V 10.58 C 3.1807137,6.2842907 6.7534873,2.8990877 11.05,3 h 37.76 l 16.938369,14.956737 0.01381,47.225535"
+                id="path10"
+                style="fill:none;stroke:#565E6B;stroke-width:6.10892296;stroke-miterlimit:10;stroke-dasharray:none"
+                inkscape:connector-curvature="0"
+                sodipodi:nodetypes="cccccccc" />
+            </g>
+          </g>
+        </svg>
           <p style="margin-top:30px;font-family:'Raleway', sans-serif">manifest.xlsx</p>
         </button>
         </div>
@@ -1060,8 +1427,7 @@
               </label>
 
               <div class="field">
-                <input id="textarea-SPARC-award-raw-input" style="width:100%;margin-top:15px"></input>
-              </div>
+                <input id="textarea-SPARC-award-raw-input" style="width:100%;margin-top:15px">              </div>
               <div style="display:none; flex-direction:row;margin:0 auto" id="div-confirm-enter-SPARC-award">
                 <button
                     onclick="transitionFreeFormMode(this, 'Question-prepare-submission-no-skip-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
@@ -1397,7 +1763,7 @@
                 <div style='display:none;' id="div-submission-enter-different-date-1" class="form-container-ds"><font color="black"> Enter Date: </font> </div>
               </div>
               <div class="demo-controls" style='display:none;' id="div-submission-enter-different-date-3">
-                <input type="date" id="input-milestone-date" style="text-align:center" required style="font-family: inherit" class="form-container-input-bf"></input>
+                <input type="date" id="input-milestone-date" style="text-align:center" required style="font-family: inherit" class="form-container-input-bf">
               </div>
               <div
               style="
@@ -1438,7 +1804,7 @@
                 <i class="fas fa-info-circle popover-tooltip" data-content="Enter the completion date for your specified milestone(s) above." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
                </label>
               <div class="field">
-                <input type="date" id="input-milestone-date-raw" style="font-family: inherit;text-align:center" class="form-container-input-bf"></input>
+                <input type="date" id="input-milestone-date-raw" style="font-family: inherit;text-align:center" class="form-container-input-bf">
               </div>
               <div style="display:none; flex-direction:row;margin:0 auto" id="div-confirm-completion-date-raw">
                 <button
@@ -1540,6 +1906,7 @@
                 </div>
                 <p id='para-save-submission-status' style="text-align:center;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p>
               </div>
+              <div id="generate-submission-spinner" class="ui active green inline loader" style="display:none;margin:10px auto;width:100%"></div>
             </div>
           </div>
       </div>
@@ -1763,7 +2130,6 @@
                       <div class="demo-controls-head"><font color="black"> SPARC Award*: </font> </div>
                       <div class="demo-controls-body">
                         <input id="ds-description-award-raw-input-dd" class="form-container-input-bf" style="font-size:13px;line-height:2;">
-                        </input>
                       </div>
                       <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
                         <span class="tooltiptext">
@@ -1895,18 +2261,18 @@
                         </td>
                         <td class="contributor-table-row" id="dd-contributor-row-raw-last-1" style="display:none">
                           <input id="ds-description-raw-contributor-list-last-1" class="form-container-input-bf" style="font-size:13px;line-height: 2;">
-                          </input>
+                          
                         </td>
                         <td class="contributor-table-row"  id="dd-contributor-row-raw-first-1" style="display:none">
                           <input id="ds-description-raw-contributor-list-first-1" class="form-container-input-bf" style="font-size:13px;line-height: 2;">
-                          </input>
+                          
                         </td>
-                        <td class="contributor-table-row"><input id="input-con-ID-1" contenteditable="true"></input></td>
+                        <td class="contributor-table-row"><input id="input-con-ID-1" contenteditable="true"></td>
                         <td class="contributor-table-row">
-                          <input id="input-con-affiliation-1" contenteditable="true"></input>
+                          <input id="input-con-affiliation-1" contenteditable="true">
                         </td>
                         <td class="contributor-table-row">
-                          <input id="input-con-role-1" contenteditable="true"></input>
+                          <input id="input-con-role-1" contenteditable="true">
                         </td>
                         <td class="contributor-table-row">
                           <label class="switch">
@@ -2001,10 +2367,10 @@
                       </select>
                     </td>
                     <td class="doi-table-row">
-                      <input id="input-misc-links" class="form-container-input-bf" contenteditable="true" style="font-size:13px;line-height:2;"></input>
+                      <input id="input-misc-links" class="form-container-input-bf" contenteditable="true" style="font-size:13px;line-height:2;">
                     </td>
                     <td class="doi-table-row">
-                      <input id="input-misc-link-description" style="line-height:2;" contenteditable="true"></input>
+                      <input id="input-misc-link-description" style="line-height:2;" contenteditable="true">
                     </td>
                     <th>
                       <div onclick="addNewRow('doi-table')" class="doi-add-row-button" style="border-radius: 2px;color:#fff;padding:5px !important;width:40px;font-size:13px;height:30px;background:dodgerblue;display:block">
@@ -2033,7 +2399,7 @@
                 <div class="div-dd-info">
                   <div class="demo-controls-head"><font color="black">Completeness of dataset: </font> </div>
                   <div class="demo-controls-body">
-                    <input id="ds-completeness" class="form-container-input-bf"> </input>
+                    <input id="ds-completeness" class="form-container-input-bf"> 
                   </div>
                   <div class="tooltipnew demo-controls-end"><img class="info" src="assets/img/info.png">
                     <span class="tooltiptext">
@@ -2132,8 +2498,9 @@
                   >
                     Generate
                   </button>
-                    <p id='para-generate-description-status' style="text-align: center;padding-top:0;margin: 10px 0"></p>
+                  <p id='para-generate-description-status' style="text-align: center;padding-top:0;margin: 10px 0"></p>
                   </div>
+                  <div id="generate-dd-spinner" class="ui active green inline loader" style="display:none;margin:10px auto"></div>
                 </div>
               </div>
             </div>
@@ -2163,34 +2530,11 @@
     <div class="main-tabs show" id="create_new_bf_dataset-tabc" style="display: flex; height: 100%; overflow-y: hidden">
       <header class="section-header">
         <div style="display: inline-flex; align-items: center; flex-direction: row; width: 94.5%; padding-right: 20px; margin-bottom: 50px;">
-          <!-- <div style="margin-top: 22px; padding-right: 15px;">
-          <svg
-                  width="30"
-                  height="30"
-                  viewBox="0 0 46 52"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M17.8065 28.7678H2.54378C1.86913 28.7678 1.22211 29.0624 0.745056 29.5868C0.268004 30.1112 0 30.8224 0 31.564V48.3413C0 49.0829 0.268004 49.7941 0.745056 50.3185C1.22211 50.8429 1.86913 51.1375 2.54378 51.1375H17.8065C18.4811 51.1375 19.1281 50.8429 19.6052 50.3185C20.0822 49.7941 20.3502 49.0829 20.3502 48.3413V31.564C20.3502 30.8224 20.0822 30.1112 19.6052 29.5868C19.1281 29.0624 18.4811 28.7678 17.8065 28.7678ZM15.2627 45.5451H5.08756V34.3602H15.2627V45.5451Z"
-                          fill="#565E6B" />
-                    <path d=" M43.2442 0.805664H27.9816C27.3069 0.805664 26.6599 1.10026 26.1828 1.62466C25.7058 2.14905 25.4378 2.86027 25.4378 3.60188V20.3792C25.4378 21.1208 25.7058 21.832 26.1828 22.3564C26.6599 22.8808 27.3069 23.1754 27.9816 23.1754H43.2442C43.9189 23.1754 44.5659 22.8808 45.043 22.3564C45.52 21.832 45.788 21.1208 45.788 20.3792V3.60188C45.788 2.86027 45.52 2.14905 45.043 1.62466C44.5659 1.10026 43.9189 0.805664 43.2442 0.805664ZM40.7005 17.5829H30.5253V6.39809H40.7005V17.5829Z"
-                          fill="#565E6B" />
-                    <path d=" M43.2442 37.1564H38.1567V31.564C38.1567 30.8224 37.8887 30.1112 37.4116 29.5868C36.9346 29.0624 36.2876 28.7678 35.6129 28.7678C34.9383 28.7678 34.2912 29.0624 33.8142 29.5868C33.3371 30.1112 33.0691 30.8224 33.0691 31.564V37.1564H27.9816C27.3069 37.1564 26.6599 37.451 26.1828 37.9754C25.7058 38.4998 25.4378 39.211 25.4378 39.9526C25.4378 40.6942 25.7058 41.4055 26.1828 41.9299C26.6599 42.4543 27.3069 42.7489 27.9816 42.7489H33.0691V48.3413C33.0691 49.0829 33.3371 49.7941 33.8142 50.3185C34.2912 50.8429 34.9383 51.1375 35.6129 51.1375C36.2876 51.1375 36.9346 50.8429 37.4116 50.3185C37.8887 49.7941 38.1567 49.0829 38.1567 48.3413V42.7489H43.2442C43.9189 42.7489 44.5659 42.4543 45.043 41.9299C45.52 41.4055 45.788 40.6942 45.788 39.9526C45.788 39.211 45.52 38.4998 45.043 37.9754C44.5659 37.451 43.9189 37.1564 43.2442 37.1564Z "
-                          fill="#13716D" />
-                    <path d="M17.8065 0.805664H2.54378C1.86913 0.805664 1.22211 1.10026 0.745056 1.62466C0.268004 2.14905 0 2.86027 0 3.60188V20.3792C0 21.1208 0.268004 21.832 0.745056 22.3564C1.22211 22.8808 1.86913 23.1754 2.54378 23.1754H17.8065C18.4811 23.1754 19.1281 22.8808 19.6052 22.3564C20.0822 21.832 20.3502 21.1208 20.3502 20.3792V3.60188C20.3502 2.86027 20.0822 2.14905 19.6052 1.62466C19.1281 1.10026 18.4811 0.805664 17.8065 0.805664ZM15.2627 17.5829H5.08756V6.39809H15.2627V17.5829Z"
-                          fill="#565E6B" />
-                </svg>
-              </div> -->
-          <!-- <h2 style="font-size: 20px; font-weight: 400; color: #13716D; margin-top: 20px;">Manage Datasets - Create a new dataset</h2> -->
-          <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px; ">
-          <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px;border: 1px solid transparent;">Manage Datasets - Create a new dataset</h2>
+          <div class="need-help-div">
+            <h2>Manage Datasets - Create a new dataset</h2>
+            <a>Need help?</a>
+          </div>
         </div>
-        </div>
-        <!-- <div class="tab-info">
-          <p class="tab-info-p" style="margin-bottom: 2em">
-            Create a new empty dataset on Blackfynn.
-          </p>
-        </div> -->
       </header>
 
       <div id="create_new_bf_dataset-tab" style="overflow-y: auto; height: 70%">
@@ -2489,7 +2833,7 @@
                   >
                     <div class="card-container manage-dataset">
                       <div>
-                        <h5 class="card-left">Current account:</h5>
+                        <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current account:</h5>
                         <h5 class="card-right bf-account-span">None</h5>
                       </div>
                     </div>
@@ -2511,7 +2855,7 @@
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                     <div class="card-container manage-dataset">
                       <div>
-                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-left" style="text-align: right; padding-right: 5px;">Account details:</h5>
                         <h5 class="card-right bf-account-details-span">None</h5>
                       </div>
                     </div>
@@ -2526,7 +2870,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current dataset:</h5>
                       <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
                   </div>
@@ -2738,7 +3082,7 @@
 
                 </label
               >
-              <div class="field" style="margin: auto; width: 500px">
+              <div class="field" style="margin: auto; width: 550px">
                 <div
                   style="
                     display: flex;
@@ -2761,7 +3105,7 @@
                 >
                 <div class="card-container manage-dataset">
                   <div>
-                    <h5 class="card-left">Current account:</h5>
+                    <h5 class="card-left" style="text-align: right; padding-right: 5px; width: 165px;">Current account:</h5>
                     <h5 class="card-right bf-account-span">None</h5>
                   </div>
                 </div>
@@ -2783,7 +3127,7 @@
                 <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Account details:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;width: 165px;">Account details:</h5>
                       <h5 class="card-right bf-account-details-span">None</h5>
                     </div>
                   </div>
@@ -2798,7 +3142,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div style="width:100%">
-                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;width: 165px;">Current dataset:</h5>
                       <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
                   </div>
@@ -2826,7 +3170,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Current permissions:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;width: 165px;">Current owner:</h5>
                       <h5 class="card-right current-permissions" id="para-dataset-permission-current">None</h5>
                     </div>
                   </div>
@@ -3038,7 +3382,7 @@
 
                 </label
               >
-              <div class="field" style="margin: auto; width: 500px">
+              <div class="field" style="margin: auto; width: 550px">
                 <div
                   style="
                     display: flex;
@@ -3061,7 +3405,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Current account:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;width: 165px;">Current account:</h5>
                       <h5 class="card-right bf-account-span">None</h5>
                     </div>
                   </div>
@@ -3083,7 +3427,7 @@
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                     <div class="card-container manage-dataset">
                       <div>
-                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-left" style="text-align: right; padding-right: 5px;width: 165px;">Account details:</h5>
                         <h5 class="card-right bf-account-details-span">None</h5>
                       </div>
                     </div>
@@ -3098,7 +3442,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div style="width:100%">
-                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;width: 165px;">Current dataset:</h5>
                       <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
                   </div>
@@ -3126,7 +3470,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Current permissions:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;width: 165px;">Current permissions:</h5>
                       <h5 class="card-right current-permissions" id="para-add-edit-dataset-permission-current">None</h5>
                     </div>
                   </div>
@@ -3568,7 +3912,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Current account:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current account:</h5>
                       <h5 class="card-right bf-account-span">None</h5>
                     </div>
                   </div>
@@ -3590,7 +3934,7 @@
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                     <div class="card-container manage-dataset">
                       <div>
-                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-left" style="text-align: right; padding-right: 5px;">Account details:</h5>
                         <h5 class="card-right bf-account-details-span">None</h5>
                       </div>
                     </div>
@@ -3605,7 +3949,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div style="width:100%">
-                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current dataset:</h5>
                       <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
                   </div>
@@ -3847,9 +4191,7 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Which Blackfynn dataset would you like to work on?
-
-                </div></label
+                >Which Blackfynn dataset would you like to work on?</label
               >
               <div class="field" style="margin: auto; width: 500px">
                 <div
@@ -3874,7 +4216,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Current account:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current account:</h5>
                       <h5 class="card-right bf-account-span">None</h5>
                     </div>
                   </div>
@@ -3896,7 +4238,7 @@
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                     <div class="card-container manage-dataset">
                       <div>
-                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-left" style="text-align: right; padding-right: 5px;">Account details:</h5>
                         <h5 class="card-right bf-account-details-span">None</h5>
                       </div>
                     </div>
@@ -3911,7 +4253,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current dataset:</h5>
                       <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
                   </div>
@@ -4156,7 +4498,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Current account:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current account:</h5>
                       <h5 class="card-right bf-account-span">None</h5>
                     </div>
                   </div>
@@ -4178,7 +4520,7 @@
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                     <div class="card-container manage-dataset">
                       <div>
-                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-left" style="text-align: right; padding-right: 5px;">Account details:</h5>
                         <h5 class="card-right bf-account-details-span">None</h5>
                       </div>
                     </div>
@@ -4193,7 +4535,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current dataset:</h5>
                       <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
                   </div>
@@ -4572,7 +4914,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Current account:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current account:</h5>
                       <h5 class="card-right bf-account-span">None</h5>
                     </div>
                   </div>
@@ -4594,7 +4936,7 @@
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                     <div class="card-container manage-dataset">
                       <div>
-                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-left" style="text-align: right; padding-right: 5px;">Account details:</h5>
                         <h5 class="card-right bf-account-details-span">None</h5>
                       </div>
                     </div>
@@ -4609,7 +4951,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current dataset:</h5>
                       <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
                   </div>
@@ -4710,7 +5052,7 @@
                     "
                   >
                     <div style="display: flex; flex-direction: row">
-                      <h5 style="color: #808080; font-size: 15px">
+                      <h5 style="color: #808080; font-size: 15px; width:125px;">
                         Current License:
                       </h5>
                       <span
@@ -4871,7 +5213,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Current account:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current account:</h5>
                       <h5 class="card-right bf-account-span">None</h5>
                     </div>
                   </div>
@@ -4893,7 +5235,7 @@
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                     <div class="card-container manage-dataset">
                       <div>
-                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-left" style="text-align: right; padding-right: 5px;">Account details:</h5>
                         <h5 class="card-right bf-account-details-span">None</h5>
                       </div>
                     </div>
@@ -4908,7 +5250,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current dataset:</h5>
                       <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
                   </div>
@@ -5193,7 +5535,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Current account:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current account:</h5>
                       <h5 class="card-right bf-account-span">None</h5>
                     </div>
                   </div>
@@ -5215,7 +5557,7 @@
                   <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                     <div class="card-container manage-dataset">
                       <div>
-                        <h5 class="card-left">Account details:</h5>
+                        <h5 class="card-left" style="text-align: right; padding-right: 5px;">Account details:</h5>
                         <h5 class="card-right bf-account-details-span">None</h5>
                       </div>
                     </div>
@@ -5230,7 +5572,7 @@
                   >
                   <div class="card-container manage-dataset">
                     <div>
-                      <h5 class="card-left">Current dataset:</h5>
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current dataset:</h5>
                       <h5 class="card-right bf-dataset-span">None</h5>
                     </div>
                   </div>
@@ -5637,6 +5979,38 @@
 
     </div>
   </section>
+
+  <section
+  id="guided_mode-section"
+  class="section js-section u-category-windows"
+  style="padding-left: 15px; overflow-y: hidden"
+>
+  <div class="main-tabs show" id="guided_mode_parent-tabc" style="display: flex; height: 100%; overflow-y: hidden">
+    <header class="section-header">
+      <div style="display: inline-flex; align-items: center; flex-direction: row; width: 94.5%; padding-right: 20px;">
+        <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
+        <h2 style="font-size: 14px; color: #222;  font-weight: 600; padding: 10px 9px; border: 1px solid transparent;"> Guided mode - Coming soon</h2>
+      </div>
+      </div>
+        <div class="tab-info">
+        <p class="tab-info-p" style="margin-bottom: 2em; width: 94.5%;">
+          This interface will allow you to go through all the steps needed to create publish a dataset on blackfynn with a guided step by step process to help you along the way.
+        </p>
+      </div>
+      </header>
+
+      <div style="display: flex;justify-content: center; align-items: center;flex-direction: column;height: 50%;">
+        <img src="./assets/img/can-smiley.png" style="margin: 30px;"> 
+        <p style="color: #4d4a4a; font-family: 'Lato', sans-serif; font-weight: 400;
+        font-size: 1.5em;">Coming soon...</p>
+      </div>
+
+      
+  </div>
+</section>
+
+
+  
 
   <script src='./scripts/disseminate-and-metadata.js' type='text/javascript'>
   </script>

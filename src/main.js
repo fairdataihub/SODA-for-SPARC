@@ -100,7 +100,7 @@ function initialize() {
 
   loadDemos();
   function createWindow() {
-    mainWindow.webContents.openDevTools();
+    //mainWindow.webContents.openDevTools();
 
     mainWindow.webContents.on('new-window', (event, url) => { 
       event.preventDefault();
@@ -195,7 +195,7 @@ function initialize() {
         }
         autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
-      }, 5000);
+      }, 6000);
     });
   });
 
