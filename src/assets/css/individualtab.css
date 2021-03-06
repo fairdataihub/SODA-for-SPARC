@@ -1443,5 +1443,6 @@
   text-decoration: underline;
   width: 30%;
   padding-top: 12px;
+  border-bottom: none !important;
   text-align: right;
 }
