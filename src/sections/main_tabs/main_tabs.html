@@ -545,67 +545,45 @@
         <div class="flex-main-container" id="prepare_dataset_main_container">
           <div class="flex-row-container">
             <div class="flex-content-container">
-              <div class="button-container">
+              <div class="button-container" style="margin-top: -8px; padding: 50px 50px">
                 <button
                   class="content-button"
                   id="organize_dataset_btn"
                   data-section="organize"
-                  style="width: 200px; height: 200px; margin-top: 10px;"
+                  data-content="Generate your SPARC format dataset." rel="popover" data-placement="bottom" data-trigger="hover"
+                  style="width: 150px; height: 150px;"
                 >
-                  <h5
-                    style="
-                      font-family: 'Raleway', sans-serif;
-                      color: #585858;
-                      font-size: 17px;
-                      pointer-events: none;
-                    "
-                  >
-                    Organize dataset
-                  </h5>
+                  
                   <i
                     class="fas fa-sitemap"
                     style="
-                      font-size: 58px;
+                      font-size: 48px;
                       color: #13716D;
                       pointer-events: none;
                     "
                   ></i>
-                  <p
-                    style="
-                      pointer-events: none;
-                      font-size: 14px;
-                      font-weight: 300;
-                      margin-top: 15px;
-                    "
-                  >
-                    Generate your SPARC format dataset
-                  </p>
+                  <h2>
+                    Organize dataset
+                  </h2>
+                  
                 </button>
+                <div class="coming-soon-div" data-content="Coming soon..." rel="popover" data-placement="bottom" data-trigger="hover">
                 <button
                   class="content-button"
                   id="validate_dataset_btn"
                   style="
                     pointer-events: none;
                     background: #f6f6f6;
-                    width: 200px;
-                    height: 200px;
-                    margin-top: 10px;
+                    width: 150px;
+                    height: 150px;
                   "
                   data-section="validate_dataset"
                 >
-                  <h5
-                    style="
-                      font-family: 'Raleway', sans-serif;
-                      color: #585858;
-                      font-size: 17px;
-                    "
-                  >
-                    Validate dataset
-                  </h5>
+                  
                   <svg
                     style="pointer-events: none"
-                    width="50px"
-                    height="50px"
+                    width="48px"
+                    height="48px"
                     viewBox="0 0 16 16"
                     class="bi bi-clipboard-check"
                     fill="#585858"
@@ -620,15 +598,10 @@
                       d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3zm4.354 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"
                     />
                   </svg>
-                  <p
-                    style="
-                      pointer-events: none;
-                      font-size: 14px;
-                      font-weight: 300;
-                    "
-                  >
-                    Coming soon...
-                  </p>
+                  <h2>
+                    Validate dataset
+                  </h2>
+                </div>
                 </button>
               </div>
             </div>
@@ -636,7 +609,7 @@
         </div>
       </section>
 
-      <section class="main-tabs-section" id="disseminate_dataset_section">
+      <section class="main-tabs-section" id="disseminate_dataset_section" style="margin-top: 32px;">
         <div class="main-tabs show" id="post-curation-tab">
          <div class="individual-question post-curation show" id="Post-curation-question-1">
              <div class="ui form" style="width:100%">
@@ -645,7 +618,7 @@
                    How would you like to disseminate your dataset? <br>
                  <span style="font-size:13px;text-align:center;color: #696969">Please select one:</span></label> -->
                  <div style="display:flex;flex-direction:row;justify-content:center">
-                   <div class = "option-card-disseminate-dataset" style="margin:15px 0;"
+                   <div class = "option-card-disseminate-dataset"
                         data-content="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." rel="popover" data-placement="bottom" data-trigger="hover">
                      <div class="option-card radio-button getting-started-1st-question" data-next="Post-curation-question-2" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
                          <div class="card-head">
@@ -670,7 +643,7 @@
                        </div>
                    </div>
 
-                   <div class = "option-card-disseminate-dataset" style="margin:15px 0;"
+                   <div class = "option-card-disseminate-dataset" 
                    data-content="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." rel="popover" data-placement="bottom" data-trigger="hover">
                      <div class="option-card radio-button getting-started-1st-question" data-next="Post-curation-question-2" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
                          <div class="card-head">
@@ -686,7 +659,7 @@
                      </div>
                    </div>
 
-                   <div class = "option-card-disseminate-dataset" style="margin:15px 0;"
+                   <div class = "option-card-disseminate-dataset"
                    data-content="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." rel="popover" data-placement="bottom" data-trigger="hover">
                      <div class="option-card radio-button getting-started-1st-question"
                            data-next="Post-curation-question-4" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
