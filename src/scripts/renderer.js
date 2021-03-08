@@ -181,7 +181,7 @@ const downloadSamples = document.getElementById("a-samples");
 const downloadSubjects = document.getElementById("a-subjects");
 const downloadDescription = document.getElementById("a-description");
 const downloadManifest = document.getElementById("a-manifest");
-const downloadDDD = document.getElementById("a-DDD");
+// const downloadDDD = document.getElementById("a-DDD");
 
 /// save airtable api key
 const addAirtableKeyBtn = document.getElementById("button-add-airtable-key");
@@ -535,38 +535,38 @@ const bfDatasetListPostCurationPublish = document.querySelector(
 const bfPostCurationProgressCuration = document.querySelector(
   "#div-bf-post-curation-progress-curation"
 );
-const bfPostCurationProgressConsortium = document.querySelector(
-  "#div-bf-post-curation-progress-consortium"
-);
-const bfPostCurationProgressPublish = document.querySelector(
-  "#div-bf-post-curation-progress-publish"
-);
-const bfPostCurationProgressDOI = document.querySelector(
-  "#div-bf-post-curation-progress-doi"
-);
+// const bfPostCurationProgressConsortium = document.querySelector(
+//   "#div-bf-post-curation-progress-consortium"
+// );
+// const bfPostCurationProgressPublish = document.querySelector(
+//   "#div-bf-post-curation-progress-publish"
+// );
+// const bfPostCurationProgressDOI = document.querySelector(
+//   "#div-bf-post-curation-progress-doi"
+// );
 
-const bfShareConsortiumBtn = document.querySelector("#button-share-consortium");
-const sharedWithConsortiumStatus = document.querySelector(
-  "#shared-with-consortium-status"
-);
-const shareConsortiumStatus = document.querySelector(
-  "#para-share-consortium-status"
-);
+// const bfShareConsortiumBtn = document.querySelector("#button-share-consortium");
+// const sharedWithConsortiumStatus = document.querySelector(
+//   "#shared-with-consortium-status"
+// );
+// const shareConsortiumStatus = document.querySelector(
+//   "#para-share-consortium-status"
+// );
 
-const bfReserveDOIBtn = document.querySelector("#button-reserve-doi");
-const currentDOI = document.querySelector("#input-current-doi");
-const reserveDOIStatus = document.querySelector("#para-reserve-doi-status");
+// const bfReserveDOIBtn = document.querySelector("#button-reserve-doi");
+// const currentDOI = document.querySelector("#input-current-doi");
+// const reserveDOIStatus = document.querySelector("#para-reserve-doi-status");
 //
 // const bfPublishDatasetBtn = document.querySelector("#button-publish-dataset");
-// const bfSubmitReviewDatasetBtn = document.querySelector(
-//   "#button-submit-review-dataset-old"
-// );
-const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
-  "#button-refresh-publishing-status-old"
+const bfSubmitReviewDatasetBtn = document.querySelector(
+  "#button-submit-review-dataset"
 );
-// const bfWithdrawReviewDatasetBtn = document.querySelector(
-//   "#button-withdraw-review-dataset"
-// );
+const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
+  "#button-refresh-publishing-status"
+);
+const bfWithdrawReviewDatasetBtn = document.querySelector(
+  "#button-withdraw-review-dataset"
+);
 // const reviewDatasetInfo = document.querySelector("#para-review-dataset-info");
 // const publishingStatus = document.querySelector("#input-publishing-status");
 // const publishDatasetStatus = document.querySelector(
@@ -836,12 +836,9 @@ ipcRenderer.on("selected-metadata-download-folder", (event, path, filename) => {
 });
 
 const a_DDD_click_function = () => {
-  $("#a-DDD").click();
-} 
-
-downloadDDD.addEventListener("click", (event) => {
   ipcRenderer.send("open-folder-dialog-save-DDD", templateArray[5]);
-});
+}
+
 ipcRenderer.on("selected-DDD-download-folder", (event, path, filename) => {
   if (path.length > 0) {
     downloadTemplates(filename, path[0]);
@@ -1004,6 +1001,10 @@ const existingSPARCAwardsTagify = new Tagify(existingSPARCAwards, {
   delimiters: null,
   editTags: false,
   whitelist: [],
+  dropdown: {
+    enabled: 0,
+    closeOnSelect: true,
+  }
 });
 
 //// when users click on Import
@@ -1132,7 +1133,7 @@ function loadAwards() {
     addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
     addOption(dsAwardArray, eval(JSON.stringify(awards[key])), key);
     awardList.push({"value": eval(JSON.stringify(awards[key])), "award-number": key});
-    awardSpan = awardSpan + eval(JSON.stringify(awards[key])) + "\n";
+    awardSpan = awardSpan + eval(JSON.stringify(awards[key])) + "\n\n";
   }
   existingSPARCAwardsTagify.removeAllTags();
   existingSPARCAwardsTagify.addTags(awardList);
@@ -1159,7 +1160,6 @@ function getRowIndex(table) {
 function addSPARCAwards() {
   var message = "";
   var tagifyArray = existingSPARCAwardsTagify.value;
-  console.log(tagifyArray)
   var spanMessage = "";
   // create empty milestone json files for newly added award
   createMetadataDir();
@@ -1203,7 +1203,7 @@ function addSPARCAwards() {
           keyValuePair["award-full-title"],
           keyValuePair["award-number"]
         );
-        spanMessage = spanMessage + keyValuePair["award-full-title"] + "\n";
+        spanMessage = spanMessage + keyValuePair["award-full-title"] + "\n\n";
         awardsJson[keyValuePair["award-number"]] = keyValuePair["award-full-title"];
     }
 
@@ -1520,9 +1520,6 @@ function actionEnterNewDate(action) {
     "div-submission-enter-different-date-1"
   ).style.display = action;
   document.getElementById(
-    "div-submission-enter-different-date-2"
-  ).style.display = action;
-  document.getElementById(
     "div-submission-enter-different-date-3"
   ).style.display = action;
 }
@@ -1650,7 +1647,7 @@ function loadContributorInfo(no, lastName, firstName) {
     enforceWhitelist: true,
     dropdown : {
        enabled   : 0,
-       closeOnSelect : true
+       closeOnSelect: true,
      }
   })
   var tagifyAffliation = new Tagify(document.getElementById('input-con-affiliation-'+no.toString()), {
@@ -1708,7 +1705,7 @@ function loadContributorInfo(no, lastName, firstName) {
       tagifyRole.addTags(conInfoObj["Role"])
 
       tagifyAffliation.loading(false).dropdown.show.call(tagifyAffliation)
-      tagifyRole.loading(false).dropdown.show.call(tagifyRole)
+      tagifyRole.loading(false)
     }),
     function done(err) {
       if (err) {
@@ -1995,7 +1992,7 @@ $(currentConTable).mousedown(function (e) {
 // dsAwardArray.addEventListener("change", changeAwardInputDsDescription);
 
 ///// grab datalist name and auto-load current description
-function showDatasetDescription() {
+const showDatasetDescription = () => {
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
   let temp = datasetDescriptionFileDataset.selectedIndex;
@@ -2008,6 +2005,12 @@ function showDatasetDescription() {
     bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
     document.getElementById("ds-description").innerHTML = "";
+    setTimeout(() => {
+      document.getElementById("description_header_label").scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 5);
   } else {
     client.invoke(
       "api_bf_get_subtitle",
@@ -2020,14 +2023,20 @@ function showDatasetDescription() {
         } else {
           // plainText = removeMd(res)
           document.getElementById("ds-description").innerHTML = res;
+          setTimeout(() => {
+            document.getElementById("description_header_label").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }, 5);
         }
       }
     );
     document.getElementById("ds-description").disabled = false;
   }
-}
+};
 
-function emptyDSInfoEntries() {
+const emptyDSInfoEntries = () => {
   var fieldSatisfied = true;
   var inforObj = grabDSInfoEntries();
   var emptyFieldArray = [];
@@ -2369,13 +2378,12 @@ ipcRenderer.on(
   "selected-metadata-ds-description",
   (event, dirpath, filename) => {
     if (dirpath.length > 0) {
+      $("#generate-dd-spinner").show()
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage = "File " + filename + " already exists in " + dirpath[0];
         ipcRenderer.send("open-error-metadata-file-exits", emessage);
       } else {
-        document.getElementById("para-generate-description-status").innerHTML =
-          "Please wait...";
         var datasetInfoValueArray = grabDSInfoEntries();
 
         //// process obtained values to pass to an array ///
@@ -2446,6 +2454,7 @@ ipcRenderer.on(
         }
       }
     }
+    $("#generate-dd-spinner").hide()
   }
 );
 
@@ -4307,9 +4316,6 @@ bfDatasetListPostCurationConsortium.addEventListener("change", () => {
 });
 
 function postCurationListChange() {
-  // reserveDOIStatus.innerHTML = "";
-  // publishDatasetStatus.innerHTML = "";
-  //showCurrentDOI()
   showPublishingStatus();
 }
 
@@ -4891,26 +4897,23 @@ function shareWithCurationTeam() {
   );
 }
 
-// Share with Consortium
-bfShareConsortiumBtn.addEventListener("click", () => {
-  shareConsortiumStatus.innerHTML = "";
-  ipcRenderer.send("warning-share-with-consortium", formBannerHeight.value);
-});
-
-ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
-  if (index === 0) {
-    shareWithConsortium();
-  }
-});
+// // Share with Consortium
+// bfShareConsortiumBtn.addEventListener("click", () => {
+//   shareConsortiumStatus.innerHTML = "";
+//   ipcRenderer.send("warning-share-with-consortium", formBannerHeight.value);
+// });
+//
+// ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
+//   if (index === 0) {
+//     shareWithConsortium();
+//   }
+// });
 
 function shareWithConsortium() {
   shareConsortiumStatus.innerHTML = "Please wait...";
-  bfPostCurationProgressConsortium.style.display = "block";
-  // disableform(bfPostCurationForm)
   bfShareConsortiumBtn.disabled = true;
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListPostCurationConsortium.options[bfDatasetListPostCurationConsortium.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var selectedTeam = "SPARC Embargoed Data Sharing Group";
   var selectedRole = "viewer";
@@ -4927,8 +4930,6 @@ function shareWithConsortium() {
         var emessage = userError(error);
         shareConsortiumStatus.innerHTML =
           "<span style='color: red;'> " + emessage + "</span>";
-        bfPostCurationProgressConsortium.style.display = "none";
-        // enableform(bfPostCurationForm)
         bfShareConsortiumBtn.disabled = false;
       } else {
         showCurrentPermission();
@@ -4990,22 +4991,6 @@ function shareWithConsortium() {
 //   })
 // })
 
-// // Publish dataset
-// bfSubmitReviewDatasetBtn.addEventListener("click", () => {
-//   var selectedBfDataset =
-//     bfDatasetListPostCurationPublish.options[
-//       bfDatasetListPostCurationPublish.selectedIndex
-//     ].text;
-//   if (selectedBfDataset === "Select dataset") {
-//     reviewDatasetInfo.innerHTML = "";
-//     emessage = "Please select a valid dataset";
-//     publishDatasetStatus.innerHTML =
-//       "<span style='color: red;'> " + emessage + "</span>";
-//   } else {
-//     showPublishingStatus(submitReviewDatasetCheck);
-//   }
-// });
-
 function submitReviewDatasetCheck(res) {
   var reviewstatus = res[0];
   var publishingStatus = res[1];
@@ -5039,15 +5024,9 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
 });
 
 function submitReviewDataset() {
-  // disableform(bfPostCurationForm)
-  // bfSubmitReviewDatasetBtn.disabled = true;
+  $(disseminateStatusMessagePublish).text("")
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
-  // bfWithdrawReviewDatasetBtn.disabled = true;
-  // // publishDatasetStatus.innerHTML = "Please wait...";
-  // bfPostCurationProgressPublish.style.display = "block";
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListPostCurationPublish.options[bfDatasetListPostCurationPublish.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
   client.invoke(
     "api_bf_submit_review_dataset",
@@ -5058,42 +5037,32 @@ function submitReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        // publishDatasetStatus.innerHTML =
-        //   "<span style='color: red;'> " + emessage + "</span>";
-        bfPostCurationProgressPublish.style.display = "none";
-        // enableform(bfPostCurationForm)
-        bfSubmitReviewDatasetBtn.disabled = false;
-        bfRefreshPublishingDatasetStatusBtn.disabled = false;
-        bfWithdrawReviewDatasetBtn.disabled = false;
+        $(disseminateStatusMessagePublish).css("color", "red")
+        $(disseminateStatusMessagePublish).text(emessage)
       } else {
-        // publishDatasetStatus.innerHTML =
-        //   "Success: Dataset has been submitted for review to the Publishers within your organization";
-        bfPostCurationProgressPublish.style.display = "none";
+        $(disseminateStatusMessage).css("color", "var(--color-light-green)")
+        $(disseminateStatusMessage).text("Success: Dataset has been submitted for review to the Publishers within your organization")
         showPublishingStatus("noClear");
       }
+      bfSubmitReviewDatasetBtn.disabled = false;
+      bfRefreshPublishingDatasetStatusBtn.disabled = false;
+      bfWithdrawReviewDatasetBtn.disabled = false;
     }
-  );
+  )
+  ;
 }
 
 // //Withdraw dataset from review
-// bfWithdrawReviewDatasetBtn.addEventListener("click", () => {
-//   var selectedBfDataset = $(".bf-dataset-span").html();
-//   if (selectedBfDataset === "None") {
-//     reviewDatasetInfo.innerHTML = "";
-//     emessage = "Please select a valid dataset";
-//     publishDatasetStatus.innerHTML =
-//       "<span style='color: red;'> " + emessage + "</span>";
-//   } else {
-//     showPublishingStatus(withdrawDatasetCheck);
-//   }
-// });
+function withdrawDatasetSubmission() {
+  showPublishingStatus(withdrawDatasetCheck);
+}
 
 function withdrawDatasetCheck(res) {
   var reviewstatus = res[0];
   if (reviewstatus !== "requested") {
     emessage = "Your dataset is not currently under review";
-    // publishDatasetStatus.innerHTML =
-    //   "<span style='color: red;'> " + emessage + "</span>";
+    $(disseminateStatusMessagePublish).css("color", "red")
+    $(disseminateStatusMessagePublish).text(emessage)
   } else {
     ipcRenderer.send("warning-withdraw-dataset");
   }
@@ -5106,10 +5075,8 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
 });
 
 function withdrawReviewDataset() {
-  // bfSubmitReviewDatasetBtn.disabled = true;
-  // bfWithdrawReviewDatasetBtn.disabled = true;
-  // publishDatasetStatus.innerHTML = "Please wait...";
-  // bfPostCurationProgressPublish.style.display = "block";
+  bfSubmitReviewDatasetBtn.disabled = true;
+  bfWithdrawReviewDatasetBtn.disabled = true;
   var selectedBfAccount = $("#current-bf-dataset").text();
   var selectedBfDataset = $(".bf-dataset-span").html();
   client.invoke(
@@ -5121,17 +5088,16 @@ function withdrawReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        // publishDatasetStatus.innerHTML =
-        //   "<span style='color: red;'> " + emessage + "</span>";
-        // bfPostCurationProgressPublish.style.display = "none";
-        // bfSubmitReviewDatasetBtn.disabled = false;
-        bfRefreshPublishingDatasetStatusBtn.disabled = false;
-        // bfWithdrawReviewDatasetBtn.disabled = false;
+        $(disseminateStatusMessagePublish).css("color", "red")
+        $(disseminateStatusMessagePublish).text(emessage)
       } else {
-        // publishDatasetStatus.innerHTML =
-        //   "Success: Dataset has been withdrawn from review";
+        $(disseminateStatusMessagePublish).css("color", "var(--color-light-green)")
+        $(disseminateStatusMessagePublish).text("Success: Dataset has been withdrawn from review")
         showPublishingStatus("noClear");
       }
+      bfSubmitReviewDatasetBtn.disabled = false;
+      bfRefreshPublishingDatasetStatusBtn.disabled = false;
+      bfWithdrawReviewDatasetBtn.disabled = false;
     }
   );
 }
@@ -5325,11 +5291,11 @@ const showCurrentBannerImage = () => {
           } else {
             document.getElementById("para-current-banner-img").innerHTML = "";
             bfCurrentBannerImg.src = res;
-            setTimeout(() => {
-              document
-                .getElementById("edit_banner_image_button")
-                .scrollIntoView({ behavior: "smooth", block: "center" });
-            }, 400);
+            // setTimeout(() => {
+            //   document
+            //     .getElementById("edit_banner_image_button")
+            //     .scrollIntoView({ behavior: "smooth", block: "center" });
+            // }, 400);
           }
           bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");
@@ -5966,7 +5932,6 @@ function showCurrentDOI() {
   bfPostCurationProgressDOI.style.display = "block";
   var selectedBfAccount =
     bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListPostCurationDOI.options[bfDatasetListPostCurationDOI.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   if (selectedBfDataset === "Select dataset") {
     currentDOI.value = "-------";
@@ -5995,16 +5960,14 @@ function showCurrentDOI() {
 }
 
 function showPublishingStatus(callback) {
-  // reviewDatasetInfo.innerHTML = "Please wait...";
   if (callback == "noClear") {
     var nothing;
   } else {
-    // publishDatasetStatus.innerHTML = "";
+    $(disseminateStatusMessage).text("")
   }
   var selectedBfAccount = $("#current-bf-account").text();
   var selectedBfDataset = $(".bf-dataset-span").html();;
   if (selectedBfDataset === "None") {
-    // reviewDatasetInfo.innerHTML = "";
   } else {
     client.invoke(
       "api_bf_get_publishing_status",
@@ -6014,12 +5977,11 @@ function showPublishingStatus(callback) {
         if (error) {
           log.error(error);
           console.error(error);
-          // reviewDatasetInfo.innerHTML = "";
           var emessage = userError(error);
-          //publishDatasetStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>";
+          $(disseminateStatusMessagePublish).css("color", "red")
+          $(disseminateStatusMessagePublish).text(emessage)
         } else {
-          // reviewDatasetInfo.innerHTML = publishStatusOutputConversion(res);
+          $("#para-review-dataset-info-disseminate").text(publishStatusOutputConversion(res));
           if (
             callback === submitReviewDatasetCheck ||
             callback === withdrawDatasetCheck
@@ -6049,17 +6011,6 @@ function publishStatusOutputConversion(res) {
     outputMessage +=
       "Dataset has been accepted for publication by your Publishing Team";
   }
-
-  // outputMessage += '<br><br>'
-  // if (publishStatus === 'NOT_PUBLISHED'){
-  //   outputMessage += 'Dataset has not been published yet'
-  // } else if (publishStatus === 'PUBLISH_IN_PROGRESS'){
-  //   outputMessage += 'Dataset is being published. Publishing times can vary based on the size of your dataset. Your dataset will remain locked until publishing has completed.'
-  // } else if (publishStatus === 'PUBLISH_FAILED'){
-  //   outputMessage += 'Dataset failed to publish. Your Publishing team is made aware and will try again.'
-  // } else if (publishStatus === 'PUBLISHED'){
-  //   outputMessage += 'Dataset has been published'
-  // }
 
   return outputMessage;
 }
@@ -6986,6 +6937,7 @@ function showDetailsFile() {
 
 var bfAddAccountBootboxMessage =
   "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='text' /></div></div></form>";
+  var bfaddaccountTitle = '<h3 style="float:left">Please specify a key name and enter your Blackfynn API key and secret below:<div style="padding-top:5px" class="tooltipnew"><img class="info" src="assets/img/info.png"><span class="tooltiptext">Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients" style="color:white;"> Blackfynn Help page </a>for generating API key and secret and setting up your Blackfynn account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the "Select existing account" tab.</span></div></h3>'
 
 function addBFAccountInsideBootbox(myBootboxDialog) {
   var name = $("#bootbox-key-name").val();
@@ -7053,8 +7005,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
 
 function showBFAddAccountBootbox() {
   var bootb = bootbox.dialog({
-    title:
-      "Please specify a key name and enter your Blackfynn API key and secret below:",
+    title:bfaddaccountTitle,
     message: bfAddAccountBootboxMessage,
     buttons: {
       cancel: {
@@ -7203,14 +7154,6 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
     });
   }
 }
-
-// awardArrayTagify.on("add", function() {
-//   if (awardArrayTagify.value.length > 0) {
-//     $(".bootbox-add-airtable-class").text("Add")
-//   } else {
-//     $(".bootbox-add-airtable-class").text("Confirm")
-//   }
-// })
 
 function editSPARCAwardsBootbox() {
   $(sparcAwardEditMessage).css("display", "block");
@@ -8866,7 +8809,9 @@ function initiate_generate() {
         var main_total_generate_dataset_size = res[3];
         var main_generated_dataset_size = res[4];
         var elapsed_time_formatted = res[5];
-        console.log(main_generated_dataset_size);
+        
+        console.log(`Data transferred (bytes): ${main_generated_dataset_size}`);
+
         if (start_generate === 1) {
           divGenerateProgressBar.style.display = "block";
           if (main_curate_progress_message.includes("Success: COMPLETED!")) {
@@ -9098,3 +9043,5 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
     );
   });
 };
+
+$('.ui.dropdown').dropdown();

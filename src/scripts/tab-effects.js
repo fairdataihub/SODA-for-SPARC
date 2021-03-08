@@ -480,7 +480,6 @@ const nextPrev = (n) => {
         target: { dataset: { section: "main_tabs" }, classList: ["someclass"] },
       },
     });
-    console.log(event);
     $("#sidebarCollapse").click();
     document.body.dispatchEvent(event);
     return;
@@ -1442,18 +1441,12 @@ async function transitionSubQuestionsButton(
     "Question-generate-dataset-generate-div-old"
   ) {
     $("#nextBtn").prop("disabled", false);
-  }
-
-  if (
-    !(
-      ev.getAttribute("data-next") ===
-      "Question-generate-dataset-generate-div-old"
-    )
-  ) {
+  } else {
     // create moving effects when new questions appear
-    $("#nextBtn").prop("disabled", false);
+    $("#nextBtn").prop("disabled", true);
     setTimeout(() => target.classList.add("test2"), 100);
   }
+
 
   document.getElementById(currentDiv).classList.add("prev");
 
@@ -1571,6 +1564,12 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     }, 300)
   }
 
+  if (ev.getAttribute("data-next") == "Question-prepare-dd-4-sections") {
+    setTimeout(function() {
+      $(target).addClass("test2");
+    }, 300)
+  }
+
   if (ev.id == "dataset-description-no-airtable-mode") {
     $("#div-airtable-award-button-dd").show();
     $("#dd-connect-Airtable").css("display", "block")
@@ -1587,11 +1586,7 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
   }
 
   // auto-scroll to bottom of div
-  if (ev.getAttribute("data-next") == "Question-prepare-dd-4-sections") {
-    document.getElementById(parentDiv).scrollTop = document.getElementById(
-      parentDiv
-    ).scrollHeight + 30;
-  } else {
+  if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
     document.getElementById(parentDiv).scrollTop = document.getElementById(
       parentDiv
     ).scrollHeight;
@@ -2384,7 +2379,7 @@ function raiseWarningExit() {
   });
 }
 
-const exitCurate = async (resetProgressTabs, start_over = false, ) => {
+const exitCurate = async (resetProgressTabs, start_over = false ) => {
   $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
@@ -2401,8 +2396,7 @@ const exitCurate = async (resetProgressTabs, start_over = false, ) => {
 
       currentTab = 0;
       wipeOutCurateProgress();
-      //$("#prepare-dataset-a")[0].click();
-      $("#main_tabs_view").click();
+      $("#main_tabs_view")[0].click();
       globalGettingStarted1stQuestionBool = false;
       if (start_over) {
         $("#organize_dataset_btn").click();
@@ -2597,7 +2591,7 @@ $(document).ready(() => {
     $("#sidebarCollapse").addClass("active");
     $(".section").addClass("fullShown");
   });
-  
+
   $(".footer-div div button").click( () => {
     $("#main-nav").removeClass("active");
     $("#sidebarCollapse").removeClass("active");
@@ -2718,4 +2712,10 @@ $('.content-button').popover();
 $('.option-card-disseminate-dataset').popover();
 $('.coming-soon-div').popover();
 $('#button-submit-dataset').popover();
-$('.popover-tooltip').popover();
+$('.popover-tooltip').each(function () {
+  var $this = $(this);
+  $this.popover({
+      trigger: 'hover',
+      container: $this
+  })
+});

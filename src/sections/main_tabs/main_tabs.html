@@ -694,8 +694,8 @@
          <div class="individual-question post-curation" id="Post-curation-question-2" style="margin-bottom:10px">
              <div class="ui form" style="width:100%">
                <div class="grouped fields">
-                 <label style="font-size:16px;text-align:center;color: #000">
-                 Please select a dataset</label>
+                 <label style="font-size:17px;color:var(--color-bg-plum);">
+                 Select a dataset</label>
                  <div class="field-disseminate-dataset">
                    <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
                     <div
@@ -714,7 +714,7 @@
                           class= "bf-account-span"
                           >None</span
                         >
-                      
+
                     </div>
                     <svg
                       class="svg-change-current-account"
@@ -763,8 +763,8 @@
            <div class="individual-question post-curation" id="Post-curation-question-4">
                <div class="ui form" style="width:100%">
                  <div class="grouped fields">
-                   <label style="font-size:16px;text-align:center;color: #000">
-                   Please select a dataset </label>
+                   <label style="font-size:17px;color:var(--color-bg-plum);">
+                   Select a dataset </label>
                    <div class="field-disseminate-dataset">
                      <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
                       <div
@@ -824,20 +824,21 @@
                          <div class="card-container prepare-submission">
                            <h5 class="card-left" style="color:#808080;font-size:15px; width: 30%;"> Review status:</h5>
                             <span id='para-review-dataset-info-disseminate' style="color:#000;font-weight:600;margin-left:8px;font-size:15px; width: 70%;">None</span>
-                           
+
                          </div>
                          <i class="fas fa-sync svg-change-current-account" id="button-refresh-publishing-status" onclick="refreshDatasetStatus()" style="color:#000;"></i>
                        </div>
                      </div>
                      <div id="div-confirm-submit-review" style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
-                         <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background:#fff;color:red;font-weight:600;border:1px solid red;font-size:14px">
+                         <button id="button-withdraw-review-dataset" onclick="withdrawDatasetSubmission()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background:#fff;color:red;font-weight:600;border:1px solid red;font-size:14px">
                            <i class="fas fa-ban" style="padding-right:5px"></i>
                            Withdraw from review</button>
-                         <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px">
+                         <button id="button-submit-review-dataset" onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px">
                            <i class="fas fa-sign-in-alt" style="padding-right:5px"></i>
                            Submit</button>
                      </div>
                      <p id="para-disseminate-status-publish" style="color:red;text-align:center; margin-top:10px"></p>
+                     <div id="disseminate-publish-spinner" class="ui active green inline loader" style="display:none;margin:10px auto;width:100%"></div>
                    </div>
                  </div>
                </div>
@@ -849,6 +850,7 @@
                    <i class="fas fa-share" style="padding-right:5px"></i>
                    Share now</button>
                  <p id="para-disseminate-status" style="color:red;margin-top:10px;text-align:center"></p>
+                 <div id="disseminate-spinner" class="ui active green inline loader" style="display:none;margin:10px auto;width:100%"></div>
                </div>
              </div>
          </div>
@@ -864,31 +866,13 @@
     <div class="main-tabs show" id="download_metadata_templates-tab" style="height:calc(100% - 70px);overflow-y:auto">
       <header class="section-header">
         <div style="display: inline-flex; align-items: center; flex-direction: row; width: 94.5%; padding-right: 20px; margin-bottom: 50px;">
-          <!-- <svg
-            width="52"
-            height="59"
-            viewBox="0 0 52 59"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M46.7819 11.6562H44.1829V17.4916H46.7819V40.8332H44.1829V46.6686H46.7819C49.6486 46.6686 51.9799 44.0514 51.9799 40.8332V17.4916C51.9799 14.2763 49.646 11.6562 46.7819 11.6562ZM10.396 23.327H33.774V34.9978H10.396V23.327Z"
-              fill="black"
-            />
-            <path
-              d="M38.9849 46.6685V5.83539H46.7689V0H25.977V5.83539H33.7869V11.6562H5.19799C2.3313 11.6562 0 14.2734 0 17.4916V40.8331C0 44.0513 2.3313 46.6685 5.19799 46.6685H33.7869V52.5185H25.977V58.3539H46.7689V52.5185H38.9849V46.6685ZM5.19799 40.8331V17.4916H33.7869V40.8331H5.19799Z"
-              fill="black"
-            />
-          </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
-          <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Prepare Metadata - Download templates</h2>
+            <div class="need-help-div">
+              <h2>Prepare Metadata - Download templates</h2>
+              <a target='_blank' href="">Need help?</a>
+            </div>
         </div>
         </div>
-        <!-- <div class="tab-info">
-          <p class="tab-info-p" style="margin-bottom: 2em">
-             Get the templates provided by the SPARC Curation Team to manually fill out metadata files
-          </p>
-        </div> -->
       </header>
 
       <div class="div-organize-generate-dataset">
@@ -1349,42 +1333,24 @@
     <div class="main-tabs show" id="create_submission-tab" style="height:calc(100% - 60px);overflow-y:auto;display:flex;flex-direction:column;">
       <header class="section-header">
         <div style="display: inline-flex; align-items: center; flex-direction: row; width: 94.5%; padding-right: 20px; margin-bottom: 50px;">
-          <!-- <svg
-            width="52"
-            height="59"
-            viewBox="0 0 52 59"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M46.7819 11.6562H44.1829V17.4916H46.7819V40.8332H44.1829V46.6686H46.7819C49.6486 46.6686 51.9799 44.0514 51.9799 40.8332V17.4916C51.9799 14.2763 49.646 11.6562 46.7819 11.6562ZM10.396 23.327H33.774V34.9978H10.396V23.327Z"
-              fill="black"
-            />
-            <path
-              d="M38.9849 46.6685V5.83539H46.7689V0H25.977V5.83539H33.7869V11.6562H5.19799C2.3313 11.6562 0 14.2734 0 17.4916V40.8331C0 44.0513 2.3313 46.6685 5.19799 46.6685H33.7869V52.5185H25.977V58.3539H46.7689V52.5185H38.9849V46.6685ZM5.19799 40.8331V17.4916H33.7869V40.8331H5.19799Z"
-              fill="black"
-            />
-          </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
-          <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Prepare Metadata - Create submission.xlsx </h2>
+            <div class="need-help-div">
+              <h2>Prepare Metadata - Create submission.xlsx</h2>
+              <a target='_blank' href="">Need help?</a>
+            </div>
         </div>
         </div>
-        <!-- <div class="tab-info">
-          <p class="tab-info-p" style="margin-bottom: 2em">
-              The submission file is mandatory for all SPARC datasets.
-          </p>
-        </div> -->
       </header>
 
       <div class="individual-question prepare-submission show" id="Question-prepare-submission-1" style="margin-top:20px">
           <div class="ui form" style="width:100%">
             <div class="grouped fields">
               <label style="font-size:17px;color:var(--color-bg-plum);">Let's check your Airtable connection status:
-                <i class="fas fa-info-circle popover-tooltip" data-content="SODA make use of the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide'> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
-                  <br/><br/>
-                  To achieve that, create an Airtable account and request access to the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' >SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href='mailto:chorn@pitt.edu'> chorn@pitt.edu</a>)
-                  <br/><br/>
-                  Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href='https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key'> Airtable Help page</a> to learn how to obtain or re-generate your API key." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i>
+                <i class="fas fa-info-circle popover-tooltip" data-content="SODA make use of the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' target='_blank' class='airtable-sheet'> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
+                <br/><br/>
+                To achieve that, create an Airtable account and request access to the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' target='_blank' class='airtable-sheet' >SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href='mailto:chorn@pitt.edu'> chorn@pitt.edu</a>)
+                <br/><br/>
+                Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href='https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key' target='_blank'> Airtable Help page</a> to learn how to obtain or re-generate your API key." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i>
               </label>
 
               <!-- field that will show when AIrtable is not connected yet -->
@@ -1505,8 +1471,6 @@
               </div>
             </div>
           </div>
-      </div>
-
 
       <div class="individual-question prepare-submission" id="Question-prepare-submission-DDD">
           <div class="ui form" style="width:100%">
@@ -1520,7 +1484,6 @@
                 Note that you can import a new Dataset Deliverable to replace an existing one.
                 <br/><br/>
                 Click <a href=# onclick='a_DDD_click_function()'>here</a> to download a template of the Data Deliverables document to see the expected format. Most importantly, at least one table with these exact three hearders is expected: 'Related milestone, aim, or task', 'Description of data', 'Expected date of completion'." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
-                <div id='a-DDD'>
               </label>
               <div style="display:flex; flex-direction:row;margin:0 auto;margin-top:30px" id="div-buttons-show-DDD">
                 <button id="button-skip-DDD" onclick="transitionFreeFormMode(this, 'Question-prepare-submission-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')" data-next="Question-prepare-submission-no-skip-2" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:35px;background: #fff;color:red;font-weight:600;border:1px solid red;font-size:14px;margin-right:15px">No, skip</button>
@@ -1593,6 +1556,7 @@
               </div>
             </div>
           </div>
+        </div>
       </div>
 
       <div class="individual-question prepare-submission" id="Question-prepare-submission-4">
@@ -1927,6 +1891,7 @@
                 </div>
                 <p id='para-save-submission-status' style="text-align:center;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p>
               </div>
+              <div id="generate-submission-spinner" class="ui active green inline loader" style="display:none;margin:10px auto;width:100%"></div>
             </div>
           </div>
       </div>
@@ -1972,7 +1937,10 @@
               />
             </svg> -->
             <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
-            <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Prepare Metadata - Create dataset_description.xlsx  </h2>
+              <div class="need-help-div">
+                <h2>Prepare Metadata - Create dataset_description.xlsx</h2>
+                <a target='_blank' href="">Need help?</a>
+              </div>
           </div>
           </div>
           <!-- <div class="tab-info">
@@ -1987,11 +1955,11 @@
                 <div class="field">
                   <div class="grouped fields">
                     <label style="font-size:17px;color:var(--color-bg-plum);">Let's check your Airtable connection status:
-                      <i class="fas fa-info-circle popover-tooltip" data-content="SODA make use of the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide'> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
+                      <i class="fas fa-info-circle popover-tooltip" data-content="SODA make use of the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' target='_blank'> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
                       <br/><br/>
-                      To achieve that, create an Airtable account and request access to the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' >SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href='mailto:chorn@pitt.edu'> chorn@pitt.edu</a>)
+                      To achieve that, create an Airtable account and request access to the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' target='_blank' >SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href='mailto:chorn@pitt.edu'> chorn@pitt.edu</a>)
                       <br/><br/>
-                      Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href='https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key'> Airtable Help page</a> to learn how to obtain or re-generate your API key." rel="popover" data-html="true" data-placement="right" data-trigger="hover" ></i>
+                      Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href='https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key' target='_blank'> Airtable Help page</a> to learn how to obtain or re-generate your API key." rel="popover" data-html="true" data-placement="right" data-trigger="hover" ></i>
                     </label>
                     <!-- field that will show when AIrtable is not connected yet -->
                     <div class="field" style="width: 100%;display:none" id="div-field-not-connected-dd">
@@ -2234,7 +2202,7 @@
                           ORCID ID*
                           <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
                               <span class="tooltiptext contributor" style="width: 300px; font-weight: bold">
-                                If contributor doesn't have an ORCID ID, we suggest they sign up for one at <a href="https://orcid.org" style="color:white"> https://orcid.org </a>
+                                If contributor doesn't have an ORCID ID, we suggest they sign up for one at <a href="https://orcid.org" style="color:white" target='_blank'> https://orcid.org </a>
                               </span>
                           </div>
                         </th>
@@ -2248,7 +2216,7 @@
                         <th style="width:20%">Role*
                           <div class="tooltipnew contributor"><img class="info" src="assets/img/info.png">
                             <span class="tooltiptext contributor">
-                               Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit "Enter" after each entry to register it. Checkout the related <a href="https://schema.datacite.org/meta/kernel-4.3/" style="color:white"> documentation</a> for a definition of each of these roles.
+                               Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit "Enter" after each entry to register it. Checkout the related <a href="https://schema.datacite.org/meta/kernel-4.3/" target='_blank' style="color:white"> documentation</a> for a definition of each of these roles.
                             </span>
                           </div>
                         </th>
@@ -2519,29 +2487,29 @@
                   >
                     Generate
                   </button>
-                    <p id='para-generate-description-status' style="text-align: center;padding-top:0;margin: 10px 0"></p>
+                  <p id='para-generate-description-status' style="text-align: center;padding-top:0;margin: 10px 0"></p>
                   </div>
+                  <div id="generate-dd-spinner" class="ui active green inline loader" style="display:none;margin:10px auto"></div>
                 </div>
               </div>
             </div>
-        </div>
-        <!-- main tabs' closing div -->
-      </div>
 
       <!-- back button -->
       <div class="footer-div">
-      <div style="display: flex; flex-direction: row; width: 110px">
-        <button
-        type="button"
-        class="transition-btn prev"
-        data-section="main_tabs"
-        >
-        <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-      </button>
-    </div>
+        <div style="display: flex; flex-direction: row; width: 110px">
+          <button
+          type="button"
+          class="transition-btn prev"
+          data-section="main_tabs"
+          >
+          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+          </button>
+        </div>
       </div>
+        <!-- main tabs' closing div -->
+    </div>
 
-    </section>
+  </section>
 
   <section
     id="create_new_bf_dataset-section"
@@ -2551,34 +2519,11 @@
     <div class="main-tabs show" id="create_new_bf_dataset-tabc" style="display: flex; height: 100%; overflow-y: hidden">
       <header class="section-header">
         <div style="display: inline-flex; align-items: center; flex-direction: row; width: 94.5%; padding-right: 20px; margin-bottom: 50px;">
-          <!-- <div style="margin-top: 22px; padding-right: 15px;">
-          <svg
-                  width="30"
-                  height="30"
-                  viewBox="0 0 46 52"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M17.8065 28.7678H2.54378C1.86913 28.7678 1.22211 29.0624 0.745056 29.5868C0.268004 30.1112 0 30.8224 0 31.564V48.3413C0 49.0829 0.268004 49.7941 0.745056 50.3185C1.22211 50.8429 1.86913 51.1375 2.54378 51.1375H17.8065C18.4811 51.1375 19.1281 50.8429 19.6052 50.3185C20.0822 49.7941 20.3502 49.0829 20.3502 48.3413V31.564C20.3502 30.8224 20.0822 30.1112 19.6052 29.5868C19.1281 29.0624 18.4811 28.7678 17.8065 28.7678ZM15.2627 45.5451H5.08756V34.3602H15.2627V45.5451Z"
-                          fill="#565E6B" />
-                    <path d=" M43.2442 0.805664H27.9816C27.3069 0.805664 26.6599 1.10026 26.1828 1.62466C25.7058 2.14905 25.4378 2.86027 25.4378 3.60188V20.3792C25.4378 21.1208 25.7058 21.832 26.1828 22.3564C26.6599 22.8808 27.3069 23.1754 27.9816 23.1754H43.2442C43.9189 23.1754 44.5659 22.8808 45.043 22.3564C45.52 21.832 45.788 21.1208 45.788 20.3792V3.60188C45.788 2.86027 45.52 2.14905 45.043 1.62466C44.5659 1.10026 43.9189 0.805664 43.2442 0.805664ZM40.7005 17.5829H30.5253V6.39809H40.7005V17.5829Z"
-                          fill="#565E6B" />
-                    <path d=" M43.2442 37.1564H38.1567V31.564C38.1567 30.8224 37.8887 30.1112 37.4116 29.5868C36.9346 29.0624 36.2876 28.7678 35.6129 28.7678C34.9383 28.7678 34.2912 29.0624 33.8142 29.5868C33.3371 30.1112 33.0691 30.8224 33.0691 31.564V37.1564H27.9816C27.3069 37.1564 26.6599 37.451 26.1828 37.9754C25.7058 38.4998 25.4378 39.211 25.4378 39.9526C25.4378 40.6942 25.7058 41.4055 26.1828 41.9299C26.6599 42.4543 27.3069 42.7489 27.9816 42.7489H33.0691V48.3413C33.0691 49.0829 33.3371 49.7941 33.8142 50.3185C34.2912 50.8429 34.9383 51.1375 35.6129 51.1375C36.2876 51.1375 36.9346 50.8429 37.4116 50.3185C37.8887 49.7941 38.1567 49.0829 38.1567 48.3413V42.7489H43.2442C43.9189 42.7489 44.5659 42.4543 45.043 41.9299C45.52 41.4055 45.788 40.6942 45.788 39.9526C45.788 39.211 45.52 38.4998 45.043 37.9754C44.5659 37.451 43.9189 37.1564 43.2442 37.1564Z "
-                          fill="#13716D" />
-                    <path d="M17.8065 0.805664H2.54378C1.86913 0.805664 1.22211 1.10026 0.745056 1.62466C0.268004 2.14905 0 2.86027 0 3.60188V20.3792C0 21.1208 0.268004 21.832 0.745056 22.3564C1.22211 22.8808 1.86913 23.1754 2.54378 23.1754H17.8065C18.4811 23.1754 19.1281 22.8808 19.6052 22.3564C20.0822 21.832 20.3502 21.1208 20.3502 20.3792V3.60188C20.3502 2.86027 20.0822 2.14905 19.6052 1.62466C19.1281 1.10026 18.4811 0.805664 17.8065 0.805664ZM15.2627 17.5829H5.08756V6.39809H15.2627V17.5829Z"
-                          fill="#565E6B" />
-                </svg>
-              </div> -->
-          <!-- <h2 style="font-size: 20px; font-weight: 400; color: #13716D; margin-top: 20px;">Manage Datasets - Create a new dataset</h2> -->
-          <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px; ">
-          <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px;border: 1px solid transparent;">Manage Datasets - Create a new dataset</h2>
+          <div class="need-help-div">
+            <h2>Manage Datasets - Create a new dataset</h2>
+            <a target='_blank' href="">Need help?</a>
+          </div>
         </div>
-        </div>
-        <!-- <div class="tab-info">
-          <p class="tab-info-p" style="margin-bottom: 2em">
-            Create a new empty dataset on Blackfynn.
-          </p>
-        </div> -->
       </header>
 
       <div id="create_new_bf_dataset-tab" style="overflow-y: auto; height: 70%">
@@ -2630,7 +2575,7 @@
                           id="create_empty_dataset_BF_account_span"
                           >None</span
                         >
-                      
+
                     </div>
                     <svg
                       class="svg-change-current-account"
@@ -2834,7 +2779,10 @@
             />
           </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
-          <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px;border: 1px solid transparent;">Manage Datasets - Rename an existing dataset</h2>
+            <div class="need-help-div">
+              <h2>Manage Datasets - Rename an existing dataset</h2>
+              <a target='_blank' href="">Need help?</a>
+            </div>
         </div>
         </div>
         <!-- <div class="tab-info">
@@ -3105,8 +3053,11 @@
             />
           </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
-          <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Manage Datasets - Make PI owner of dataset</h2>
-        </div>
+            <div class="need-help-div">
+              <h2>Manage Datasets - Make PI owner of dataset</h2>
+              <a target='_blank' href="">Need help?</a>
+            </div>
+          </div>
         </div>
         <!-- <div class="tab-info">
           <p class="tab-info-p" style="margin-bottom: 2em">
@@ -3401,7 +3352,10 @@
             />
           </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
-          <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Manage Datasets - Add/edit dataset permissions</h2>
+            <div class="need-help-div">
+              <h2>Manage Datasets - Add/edit dataset permissions</h2>
+              <a target='_blank' href="">Need help?</a>
+            </div>
         </div>
         </div>
         <!-- <div class="tab-info">
@@ -3572,9 +3526,8 @@
           <div class="ui form" style="width: 100%">
             <div class="grouped fields">
               <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Do you want to provide permissions to another users or teams?
-                <i class="fas fa-info-circle popover-tooltip" data-content="Giving permissions to other members and/or team is only necessary if you need them to contribute to the dataset.
-                " rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
+                >Do you want to provide permissions to another user or teams?
+                <i class="fas fa-info-circle popover-tooltip" data-content="Giving permissions to other members and/or team is only necessary if you need them to contribute to the dataset." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
                 </label
               >
               <div
@@ -3606,12 +3559,11 @@
                         xmlns="http://www.w3.org/2000/svg"
                         width="40"
                         height="40"
-                        fill="var(--color-bg-orange)"
                         class="bi bi-person"
                         viewBox="0 0 16 16"
                       >
                         <path
-                          d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"
+                          d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" fill="#13716D"
                         />
                       </svg>
                       <h2>Add/edit user permissions</h2>
@@ -3638,17 +3590,15 @@
                     </div>
                     <div class="card-body">
                       <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="40px"
-                        height="40px"
-                        fill="var(--color-bg-orange)"
-                        class="bi bi-people"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"
-                        />
-                      </svg>
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="40px"
+                          height="40px"
+                          class="bi bi-people"
+                          viewBox="0 0 16 16"
+                        >
+                        <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" fill="#13716D"/>
+                        <path d="M6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" fill="#B80D49"/>
+                        </svg>
                       <h2>Add/edit team permissions</h2>
                     </div>
                   </div>
@@ -3674,7 +3624,7 @@
                 "
                 >Please select the user for whom you want to modify
                 permissions:
-                <i class="fas fa-info-circle popover-tooltip" data-content="See our associated <a href='https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
+                <i class="fas fa-info-circle popover-tooltip" data-content="See our associated <a href='https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
               </label
               >
               <div
@@ -3689,13 +3639,16 @@
                     padding-bottom: 20px;
                   "
                 >
-                  <select
+                <select class="ui search dropdown" id="bf_list_users">
+                  <option>Select user</option>
+                </select>
+                  <!-- <select
                     class="my-dropdown"
                     style="width: 60%; padding: 8px 12px; height: 38px"
                     id="bf_list_users"
                   >
                     <option>Select user</option>
-                  </select>
+                  </select> -->
 
                   <select
                     class="my-dropdown"
@@ -3778,7 +3731,7 @@
                 "
                 >Please select the team for whom you want to modify
                 permissions:
-                <i class="fas fa-info-circle popover-tooltip" data-content="See our associated <a href='https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
+                <i class="fas fa-info-circle popover-tooltip" data-content="See our associated <a href='https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions' target='_blank'> documentation</a> to learn more about the meaning of the different roles and what type of permissions they provide." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
 
                 </label
               >
@@ -3917,7 +3870,10 @@
             />
           </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
-          <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Manage Datasets - Add/edit subtitle</h2>
+            <div class="need-help-div">
+              <h2>Manage Datasets - Add/edit subtitle</h2>
+              <a target='_blank' href="">Need help?</a>
+            </div>
         </div>
         </div>
         <!-- <div class="tab-info">
@@ -4222,7 +4178,10 @@
             />
           </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
-          <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Manage Datasets - Add/edit description</h2>
+            <div class="need-help-div">
+              <h2>Manage Datasets - Add/edit description</h2>
+              <a target='_blank' href="">Need help?</a>
+            </div>
         </div>
         </div>
         <!-- <div class="tab-info">
@@ -4380,6 +4339,7 @@
                   width: 100%;
                   text-align: center;
                 "
+                id="description_header_label"
                 >Enter description below:
                 <i class="fas fa-info-circle popover-tooltip" data-content="Provide a detailed description of your dataset. This description will be highly visible on the SPARC data portal once your dataset is published." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
                 <br />
@@ -4501,7 +4461,10 @@
             />
           </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
-          <h2 style="font-size: 14px; color: #222;  font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Manage Datasets - Upload a banner image</h2>
+            <div class="need-help-div">
+              <h2>Manage Datasets - Upload a banner image</h2>
+              <a target='_blank' href="">Need help?</a>
+            </div>
         </div>
         </div>
         <!-- <div class="tab-info">
@@ -4922,7 +4885,10 @@
             />
           </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
-          <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Manage Datasets - Assign a license</h2>
+            <div class="need-help-div">
+              <h2>Manage Datasets - Assign a license</h2>
+              <a target='_blank' href="">Need help?</a>
+            </div>
         </div>
         </div>
         <!-- <div class="tab-info">
@@ -5218,7 +5184,10 @@
             />
           </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
-          <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Manage Datasets - Upload a local dataset</h2>
+            <div class="need-help-div">
+              <h2>Manage Datasets - Upload a local dataset</h2>
+              <a target='_blank' href="">Need help?</a>
+            </div>
         </div>
         </div>
         <!-- <div class="tab-info">
@@ -5540,7 +5509,10 @@
             />
           </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
-          <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Manage Datasets - View/change dataset status</h2>
+            <div class="need-help-div">
+              <h2>Manage Datasets - View/change dataset status</h2>
+              <a target='_blank' href="">Need help?</a>
+            </div>
         </div>
         </div>
         <!-- <div class="tab-info">
@@ -5686,6 +5658,7 @@
           </div>
         </div>
 
+
         <div
           class="individual-question manage-dataset"
           id="div_view_change_dataset_status" style="height: auto"
@@ -5700,7 +5673,7 @@
                   text-align: center;
                 "
                 >View/change status
-                <i class="fas fa-info-circle popover-tooltip" data-content="To find out more about dataset status, please visit <a href='https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd'> sparc.science </a>." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
+                <i class="fas fa-info-circle popover-tooltip" data-content="To find out more about dataset status, please visit <a href='https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd' target='_blank'> docs.sparc.science </a>." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i>
                 </label
               >
               <div
@@ -5802,7 +5775,10 @@
             />
           </svg> -->
           <div style="width: 100%; border-bottom: 3px solid #B80D49; margin-bottom: -5px;">
-          <h2 style="font-size: 14px; color: #222; font-weight: 600; padding: 10px 9px; border: 1px solid transparent;">Manage Datasets - View/change dataset status</h2>
+            <div class="need-help-div">
+              <h2>Manage Datasets - View/change dataset status</h2>
+              <a target='_blank' href="">Need help?</a>
+            </div>
         </div>
         </div>
         <!-- <div class="tab-info">

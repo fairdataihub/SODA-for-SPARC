@@ -972,7 +972,7 @@
   animation-iteration-count: infinite;
   animation-direction: alternate;
   position: relative;
-  color: var(--color-teal);
+  color: var(--color-light-green);
   font-size: 21px;
   margin-right: 10px;
 }
@@ -1315,7 +1315,8 @@
 .jstree-anchor:visited,
 .jstree-anchor:hover,
 .jstree-anchor:active {
-  color: var(--color-accent) !important;
+  color: var(--color) !important;
+  font-weight: 600;
 }
 
 .jstree-icon.jstree-themeicon.jstree-themeicon-custom {
@@ -1416,4 +1417,32 @@
   100% {
     box-shadow: 0 0 0 0 rgba(52, 172, 224, 0);
   }
+}
+
+.need-help-div {
+  width: 100%;
+  border-bottom: 3px solid #B80D49;
+  margin-bottom: -5px;
+  display: flex;
+  flex-direction: row;
+  height: 40px;
+}
+
+.need-help-div h2 {
+  font-size: 14px;
+  width: 70%;
+  margin-right: 0;
+  color: #222;
+  font-weight: 600;
+  padding: 10px;
+  border: 1px solid transparent;
+  text-align: left
+}
+
+.need-help-div a {
+  text-decoration: underline;
+  width: 30%;
+  padding-top: 12px;
+  border-bottom: none !important;
+  text-align: right;
 }
