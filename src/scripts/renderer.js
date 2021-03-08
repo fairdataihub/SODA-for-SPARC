@@ -5971,7 +5971,7 @@ function showPublishingStatus(callback) {
     $(disseminateStatusMessage).text("")
   }
   var selectedBfAccount = $("#current-bf-account").text();
-  var selectedBfDataset = $(".bf-dataset-span").html();;
+  var selectedBfDataset = $(".bf-dataset-span").html();
   if (selectedBfDataset === "None") {
   } else {
     client.invoke(
