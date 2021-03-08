@@ -1439,6 +1439,11 @@
   text-align: left
 }
 
+.api-width > .modal-dialog {
+  width: 600px !important;
+  max-width: 600px !important;
+}
+
 .need-help-div a {
   text-decoration: underline;
   width: 30%;

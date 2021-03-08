@@ -563,8 +563,8 @@ async function openDropdownPrompt(dropdown) {
       if (Object.keys(bfAccountOptions).length === 1) {
         footerMessage = "No existing accounts to load. Please add an account.";
       } else {
-        footerMessage =
-          "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Blackfynn-account'>Need help?</a>";
+        // footerMessage = "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Blackfynn-account'>Need help?</a>";
+        footerMessage = "";
       }
     } else {
       footerMessage = bfAccountOptionsStatus;
