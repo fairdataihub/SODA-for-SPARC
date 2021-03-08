@@ -8791,7 +8791,8 @@ function initiate_generate() {
           } else {
             datasetList = [];
             datasetList = result;
-            refreshDatasetList();
+            //refreshDatasetList();
+            tempDatasetListsSync();
           }
         }
       );
@@ -8809,7 +8810,8 @@ function initiate_generate() {
           } else {
             datasetList = [];
             datasetList = result;
-            refreshDatasetList();
+            //refreshDatasetList();
+            tempDatasetListsSync();
           }
         }
       );

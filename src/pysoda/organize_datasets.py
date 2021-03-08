@@ -541,7 +541,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         from curate import bf_recognized_file_extensions
         filename, file_extension = os.path.splitext(file_name)
         if file_extension in bf_recognized_file_extensions:
-            return item_name + file_extension
+            return item_name 
         else:
             return file_name
 
@@ -567,7 +567,6 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         nonlocal level
         col_count = 0
         file_count = 0
-        nonlocal level;
 
         for item in my_item:
             if item.type == "Collection":
@@ -600,7 +599,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 file_details = bf._api._get(
                     '/packages/' + str(package_id) + '/view')
                 file_name = file_details[0]["content"]["name"]
-                file_name = verify_file_name(item.name, file_name)
+                #file_name = verify_file_name(item.name, file_name)
 
                 if my_level == 0 and file_name in high_level_metadata_sparc:
                     metadata_files[file_name] = {
