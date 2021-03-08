@@ -1470,6 +1470,24 @@ async function transitionSubQuestionsButton(
     parentDiv
   ).scrollHeight;
 
+  if (ev.getAttribute("data-next") === "Question-getting-started-final") {
+    $("#progress-files-dropdown").val("Select");
+    $("#para-progress-file-status").text("");
+    $("#nextBtn").prop("disabled", true);
+    $("#para-continue-prepare-new-getting-started").text("");
+    if ($("#existing-bf").is(":checked")) {
+      $("#nextBtn").prop("disabled", true);
+      // this exitCurate function gets called in the beginning here
+      // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
+      $("#Question-getting-started-existing-BF-account").show();
+      $("#Question-getting-started-existing-BF-account").children().show();
+      if (sodaJSONObj["dataset-structure"] != {}) {
+        reset_ui();
+        $("#nextBtn").prop("disabled", false);
+      }
+    }
+  }
+
   if (
     ev.getAttribute("data-next") === "input-destination-getting-started-locally"
   ) {
@@ -1528,6 +1546,11 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
       milestoneValues.push(milestonesRes[i].value);
     });
     $("#submission-milestones-span").text(milestoneValues.join(", \n"));
+  }
+
+  if (ev.getAttribute("data-next") == "div-rename-bf-dataset") {
+    let dataset_name = $("bf-dataset-span").html();
+    $("#bf-rename-dataset-name").val(dataset_name);
   }
 
   // first, handle target or the next div to show
@@ -2586,13 +2609,23 @@ $(document).ready(() => {
   $(".content-button").click(function () {
     let section = $(this).data("section");
 
+    if (section === "rename_existing_bf_dataset") {
+      let rename_dataset_name = $("#rename_dataset_name").html();
+      if (rename_dataset_name != "None" && rename_dataset_name != "") {
+        $("#bf-rename-dataset-name").val(rename_dataset_name);
+      }
+      else {
+        $("#bf-rename-dataset-name").val("");
+      }
+    }
+
     $("#para-add-new-dataset-status").html("");
     $("#main-nav").addClass("active");
     $("#sidebarCollapse").addClass("active");
     $(".section").addClass("fullShown");
   });
 
-  $(".footer-div div button").click( () => {
+  $(".footer-div div button").click(() => {
     $("#main-nav").removeClass("active");
     $("#sidebarCollapse").removeClass("active");
     $(".section").removeClass("fullShown");
