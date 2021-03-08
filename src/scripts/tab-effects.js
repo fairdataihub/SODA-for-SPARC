@@ -1530,6 +1530,11 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     $("#submission-milestones-span").text(milestoneValues.join(", \n"));
   }
 
+  if (ev.getAttribute("data-next") == "div-rename-bf-dataset") {
+    let dataset_name = $("bf-dataset-span").html();
+    $("#bf-rename-dataset-name").val(dataset_name);
+  }
+
   // first, handle target or the next div to show
   var target = document.getElementById(ev.getAttribute("data-next"));
   hidePrevDivs(currentDiv, category);
@@ -2586,13 +2591,23 @@ $(document).ready(() => {
   $(".content-button").click(function () {
     let section = $(this).data("section");
 
+    if (section === "rename_existing_bf_dataset") {
+      let rename_dataset_name = $("#rename_dataset_name").html();
+      if (rename_dataset_name != "None" && rename_dataset_name != "") {
+        $("#bf-rename-dataset-name").val(rename_dataset_name);
+      }
+      else {
+        $("#bf-rename-dataset-name").val("");
+      }
+    }
+
     $("#para-add-new-dataset-status").html("");
     $("#main-nav").addClass("active");
     $("#sidebarCollapse").addClass("active");
     $(".section").addClass("fullShown");
   });
 
-  $(".footer-div div button").click( () => {
+  $(".footer-div div button").click(() => {
     $("#main-nav").removeClass("active");
     $("#sidebarCollapse").removeClass("active");
     $(".section").removeClass("fullShown");

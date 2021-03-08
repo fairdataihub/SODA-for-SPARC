@@ -4117,7 +4117,7 @@ bfDatasetList.addEventListener("change", () => {
 
 // Rename dataset
 bfDatasetListRenameDataset.addEventListener("change", () => {
-  renameDatasetlistChange();
+  //renameDatasetlistChange();
   syncDatasetDropdownOption(bfDatasetListRenameDataset);
   bfRenameDatasetStatus.innerHTML = "";
 });
@@ -5326,8 +5326,10 @@ function showCurrentLicense() {
           currentDatasetLicense.innerHTML = res;
           if (res === "No license is currently assigned to this dataset") {
             $("#button-add-license").show();
+            $("#assign-a-license-header").show();
           } else if (res === "Creative Commons Attribution") {
             $("#button-add-license").hide();
+            $("#assign-a-license-header").hide();
             $("#para-dataset-license-status").html(
               "You are all set. This dataset already has the correct license assigned."
             );
