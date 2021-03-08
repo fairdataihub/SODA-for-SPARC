@@ -9,16 +9,19 @@ function disseminateDataset() {
     // check radio button to see which share option users choose
     // 1. Share with Curation Team
     if ($('input[name="post-curation-1"]:checked')[0].id === "share-with-curation-team") {
+      $("#disseminate-spinner").show();
       $(disseminateStatusMessage).text("");
       ipcRenderer.send("warning-share-with-curation-team", formBannerHeight.value);
     }
     // 2. Share with SPARC Consortium
     if ($('input[name="post-curation-1"]:checked')[0].id === "share-with-sparc-consortium") {
+      $("#disseminate-spinner").show();
       $(disseminateStatusMessage).text("");
       ipcRenderer.send("warning-share-with-consortium", formBannerHeight.value);
     }
     // 3. Submit for pre-publishing
     if ($('input[name="post-curation-1"]:checked')[0].id === "submit-pre-publishing") {
+      $("#disseminate-publish-spinner").show();
       $(disseminateStatusMessage).text("");
       disseminatePublish()
     }
@@ -42,7 +45,6 @@ ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
 })
 
 function disseminateCurationTeam(account, dataset) {
-  $("#disseminate-spinner").show();
   var selectedTeam = "SPARC Data Curation Team";
   var selectedRole = "manager";
   client.invoke(
@@ -101,7 +103,6 @@ function disseminateCurationTeam(account, dataset) {
 }
 
 function disseminateConsortium(bfAcct, bfDS) {
-  $("#disseminate-spinner").show();
   var selectedTeam = "SPARC Embargoed Data Sharing Group";
   var selectedRole = "viewer";
   client.invoke(
@@ -158,15 +159,15 @@ function refreshDatasetStatus() {
 }
 
 function disseminateShowPublishingStatus(callback, account, dataset) {
-  $("#disseminate-publish-spinner").show();
   if (dataset !== "None") {
     if (callback == "noClear") {
       var nothing;
     } else {
       $(disseminateStatusMessagePublish).text("");
-      showPublishingStatus(submitReviewDatasetCheck);
+      showPublishingStatus("noClear");
     }
   }
+  $("#disseminate-publish-spinner").hide();
 }
 
 function disseminateShowCurrentPermission(bfAcct, bfDS) {

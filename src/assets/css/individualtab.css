@@ -1446,3 +1446,11 @@
   border-bottom: none !important;
   text-align: right;
 }
+
+#para-review-dataset-info-disseminate {
+  color:#000;
+  font-weight:600;
+  margin-left:8px;
+  font-size:15px;
+  width: 70%;
+}
