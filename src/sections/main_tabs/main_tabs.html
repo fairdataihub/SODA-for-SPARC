@@ -578,7 +578,6 @@
                   "
                   data-section="validate_dataset"
                 >
-
                   <svg
                     style="pointer-events: none"
                     width="48px"
@@ -600,8 +599,8 @@
                   <h2>
                     Validate dataset
                   </h2>
-                </div>
                 </button>
+                </div>
               </div>
             </div>
           </div>
@@ -832,19 +831,31 @@
                            Submit</button>
                      </div>
                      <p id="para-disseminate-status-publish" style="color:red;text-align:center; margin-top:10px"></p>
-                     <div id="disseminate-publish-spinner" class="ui active green inline loader" style="display:none;margin:10px auto;width:100%"></div>
+                     <div id="disseminate-publish-spinner" class="spinner" style="display:none;margin:10px auto;width:100%">
+                      <div class="rect1"></div>
+                      <div class="rect2"></div>
+                      <div class="rect3"></div>
+                      <div class="rect4"></div>
+                      <div class="rect5"></div>
+                    </div>
                    </div>
                  </div>
                </div>
              </div>
 
            <div class="individual-question post-curation" id="Post-curation-question-3">
-               <div class="ui form" style="width:100%;display:flex;flex-direction:column;">
+               <div class="ui form" style="width:100%;display:flex;flex-direction:column;justify-content: center;align-items: center;">
                  <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:15px">
                    <i class="fas fa-share" style="padding-right:5px"></i>
                    Share now</button>
                  <p id="para-disseminate-status" style="color:red;margin-top:10px;text-align:center"></p>
-                 <div id="disseminate-spinner" class="ui active green inline loader" style="display:none;margin:10px auto;width:100%"></div>
+                 <div id="disseminate-spinner" class="spinner" style="display: none;">
+                  <div class="rect1"></div>
+                  <div class="rect2"></div>
+                  <div class="rect3"></div>
+                  <div class="rect4"></div>
+                  <div class="rect5"></div>
+                </div>
                </div>
              </div>
          </div>
@@ -2855,7 +2866,7 @@
                   <div class="card-container manage-dataset">
                     <div>
                       <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current dataset:</h5>
-                      <h5 class="card-right bf-dataset-span">None</h5>
+                      <h5 id="rename_dataset_name" class="card-right bf-dataset-span">None</h5>
                     </div>
                   </div>
                     <svg
@@ -4902,7 +4913,7 @@
                     margin-top: 15px;
                     height: auto;
                     box-shadow: 0px 0px 10px #d5d5d5;
-                    padding: 15px 25px;
+                    padding: 15px 15px 0px 0px;
                     border-radius: 5px;
                   "
                 >
@@ -4972,6 +4983,14 @@
                       />
                     </svg>
                   </div>
+                  <div style="display: flex; flex-direction: row; margin-bottom: 15px">
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5 class="card-left" style="text-align: right; padding-right: 5px;">Current License:</h5>
+                        <h5 id="para-dataset-license-current" class="card-right bf-account-details-span">None</h5>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div
                   class="div-confirm-button"
@@ -5011,7 +5030,8 @@
         <div class="individual-question manage-dataset" id="div_add_license" style="height: auto">
           <div class="ui form" style="width: 450px">
             <div class="grouped fields">
-              <label
+              <label 
+                id = "assign-a-license-header"
                 style="
                   font-size: 17px;
                   color: var(--color-bg-plum);
@@ -5031,46 +5051,6 @@
                   flex-direction: column;
                 "
               >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: space-between;
-                    margin: 15px auto;
-                    height: auto;
-                    box-shadow: 0px 0px 10px #d5d5d5;
-                    padding: 15px 25px;
-                    border-radius: 5px;
-                    width: 450px;
-                  "
-                >
-                  <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: left;
-                      margin-bottom: 15px;
-                      width: 100%;
-                    "
-                  >
-                    <div style="display: flex; flex-direction: row">
-                      <h5 style="color: #808080; font-size: 15px; width:125px;">
-                        Current License:
-                      </h5>
-                      <span
-                        id="para-dataset-license-current"
-                        style="
-                          color: #000;
-                          font-weight: 600;
-                          margin-left: 8px;
-                          font-size: 15px;
-                        "
-                        >None</span
-                      >
-                    </div>
-                  </div>
-                </div>
-
                 <div
                   id="div-button-add-license"
                   style="

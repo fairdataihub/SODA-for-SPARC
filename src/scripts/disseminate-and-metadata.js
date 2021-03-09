@@ -33,6 +33,8 @@ ipcRenderer.on("warning-share-with-curation-team-selection", (event, index) => {
     var account = $("#current-bf-account").text();
     var dataset = $(".bf-dataset-span").html();
     disseminateCurationTeam(account, dataset);
+  } else {
+      $("#disseminate-spinner").hide();
   }
 });
 
@@ -41,6 +43,8 @@ ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
     var account = $("#current-bf-account").text();
     var dataset = $(".bf-dataset-span").html();
     disseminateConsortium(account, dataset);
+  } else {
+    $("#disseminate-spinner").hide();
   }
 })
 

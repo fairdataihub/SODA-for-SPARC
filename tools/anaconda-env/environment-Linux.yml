@@ -1,4 +1,4 @@
-name: env-electron-python
+name: release-env
 channels:
 - defaults
 - conda-forge
