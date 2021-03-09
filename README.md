@@ -45,7 +45,7 @@
 SODA (Software to Organize Data Automatically) for SPARC is a desktop software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators and thus promote the [FAIR Data Principles](https://www.go-fair.org/fair-principles/). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA for SPARC is designed such that users can accomplish all the [requirements to submit a SPARC dataset](https://docs.sparc.science/submit_data.html) rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduce users' effort to a bare minimum during each step, often to just a few clicks. 
 
 <p align="center">
-  <img src="/docs/readme/screenshot-soda-interface.PNG" alt="interface" width="600"> 
+  <img src="https://github.com/bvhpatel/SODA/raw/master/docs/documentation/Landing-page/UserInterface.PNG" alt="interface" width="600"> 
   <br/> 
   <i> A screenshot of the user interface of SODA. </i>
   </img>
@@ -79,7 +79,7 @@ See the [Wiki](https://github.com/bvhpatel/SODA/wiki) for our full documentation
 To report any issues with the software, suggest improvements, or request a new feature, please open a new issue via the [Issues tab](https://github.com/bvhpatel/SODA/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could also use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea). The feedback form is also accessible directly in the user interface of SODA.
 
 <p align="center">
-   <img src="/docs/readme/feedback-form-new.PNG" alt="interface" width="600">
+   <img src="https://github.com/bvhpatel/SODA/raw/master/docs/documentation/Landing-page/feedbackform.PNG" alt="interface" width="600">
   <br/> 
   <i> A screenshot of our feedback form in the user interface of SODA. </i>
   </img>
