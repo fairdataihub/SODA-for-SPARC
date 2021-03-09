@@ -21,6 +21,7 @@
   "build": {
     "appId": "com.calmi2.soda",
     "asar": false,
+    "generateUpdatesFilesForAllChannels": true,
     "files": [
       "**/*",
       "!pysoda/",
