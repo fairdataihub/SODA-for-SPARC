@@ -2319,7 +2319,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 destination_folder_id = item.id
                 #delete existing manifest files
                 for subitem in item:
-                    if subitem.name == "manifest.xlsx":
+                    file_name_no_ext = os.path.splitext(subitem.name)[0]
+                    if file_name_no_ext == "manifest":
                         subitem.delete()
                         item.update()
                 #upload new manifest files

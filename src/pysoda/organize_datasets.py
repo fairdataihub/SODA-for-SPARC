@@ -564,7 +564,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
     level = 0
 
     def recursive_dataset_import(my_item, dataset_folder, metadata_files, my_folder_name, my_level, manifest_dict):
-        nonlocal level
+        level = 0
         col_count = 0
         file_count = 0
 
@@ -579,7 +579,6 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 if my_level == 0 and folder_name not in high_level_sparc_folders and requested_sparc_only:  # only import SPARC folders
                     continue
                 if col_count == 1:
-                    #dataset_folder["folders"] = {}
                     level = my_level + 1
                 dataset_folder["folders"][folder_name] = {
                     "type": "bf", "action": ["existing"], "path": item.id}
@@ -599,7 +598,6 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 file_details = bf._api._get(
                     '/packages/' + str(package_id) + '/view')
                 file_name = file_details[0]["content"]["name"]
-                #file_name = verify_file_name(item.name, file_name)
 
                 if my_level == 0 and file_name in high_level_metadata_sparc:
                     metadata_files[file_name] = {
@@ -607,10 +605,6 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
 
                 else:
                     file_count += 1
-                    #if file_count == 1:
-                    #dataset_folder["files"] = {}
-#                     if my_level == 0:
-#                         dataset_folder["files"][file_name] = {"type": "bf", "action": ["existing"], "path": item.id}
                     if my_level == 1 and file_name in manifest_sparc:
                         file_id = file_details[0]["content"]["id"]
                         manifest_url = bf._api._get(
