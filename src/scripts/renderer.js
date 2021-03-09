@@ -6942,7 +6942,7 @@ function showDetailsFile() {
 
 var bfAddAccountBootboxMessage =
   "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='text' /></div></div></form>";
-  var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Blackfynn API key and secret below:<i class="fas fa-info-circle popover-tooltip" data-content="Please checkout the dedicated <a target='_blank' href='https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients'> Blackfynn Help page </a>for generating API key and secret and setting up your Blackfynn account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`
+  var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Blackfynn API key and secret below:<i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Blackfynn-account-with-SODA'> help page </a>for generating API key and secret and setting up your Blackfynn account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`
 
 function addBFAccountInsideBootbox(myBootboxDialog) {
   var name = $("#bootbox-key-name").val();
@@ -7040,7 +7040,7 @@ function showBFAddAccountBootbox() {
 }
 
 function showAddAirtableAccountBootbox() {
-  var htmlTitle = `<h4 style-"text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle popover-tooltip" data-content="To obtain or re-generate your API key to connect to SODA during your first use, check out the dedicated <a href='https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key' target='_blank'> Airtable Help page</a>. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
+  var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
 
   var bootb = bootbox
     .dialog({
