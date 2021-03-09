@@ -1471,18 +1471,9 @@ async function transitionSubQuestionsButton(
   ).scrollHeight;
 
   if (ev.getAttribute("data-next") === "Question-getting-started-final") {
-    $("#progress-files-dropdown").val("Select");
-    $("#para-progress-file-status").text("");
-    $("#nextBtn").prop("disabled", true);
-    $("#para-continue-prepare-new-getting-started").text("");
     if ($("#existing-bf").is(":checked")) {
       $("#nextBtn").prop("disabled", true);
-      // this exitCurate function gets called in the beginning here
-      // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
-      $("#Question-getting-started-existing-BF-account").show();
-      $("#Question-getting-started-existing-BF-account").children().show();
       if (sodaJSONObj["dataset-structure"] != {}) {
-        reset_ui();
         $("#nextBtn").prop("disabled", false);
       }
     }
