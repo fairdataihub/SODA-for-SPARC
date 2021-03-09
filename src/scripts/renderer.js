@@ -7073,18 +7073,18 @@ function showAddAirtableAccountBootbox() {
         });
       },
     })
-    .find(".modal-dialog")
-    .css("max-width", "600px");
+    // .find(".modal-dialog")
+    // .css("max-width", "600px");
 }
 
-function addAirtableAccountInsideBootbox(myBootboxDialog) {
+function addAirtableAccountInsideBootbox(myBootboxD) {
   var name = $("#bootbox-airtable-key-name").val();
   var key = $("#bootbox-airtable-key").val();
   if (name.length === 0 || key.length === 0) {
     var errorMessage =
       "<span style='color: red;'>Please fill in both required fields to add.</span>";
-    $(myBootboxDialog).find(".modal-footer span").remove();
-    myBootboxDialog
+    $(myBootboxD).find(".modal-footer span").remove();
+    myBootboxD
       .find(".modal-footer")
       .prepend(
         "<span style='color:red;padding-right:10px;display:inline-block;'>" +
@@ -7138,7 +7138,6 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
               $("#bootbox-airtable-key").val("");
               loadAwardData();
               ddNoAirtableMode("Off");
-              myBootboxDialog.modal("hide");
               $("#Question-prepare-submission-1").nextAll().removeClass("show").removeClass("prev");
               $("#Question-prepare-dd-1").nextAll().removeClass("show").removeClass("prev");
               Swal.fire({
@@ -7149,8 +7148,8 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
                 showConfirmButton: false,
               });
             } else if (res.statusCode === 403) {
-              $(myBootboxDialog).find(".modal-footer span").remove();
-              myBootboxDialog
+              $(myBootboxD).find(".modal-footer span").remove();
+              myBootboxD
                 .find(".modal-footer")
                 .prepend(
                   "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>"
@@ -7158,8 +7157,8 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
             } else {
               log.error(res);
               console.error(res);
-              $(myBootboxDialog).find(".modal-footer span").remove();
-              myBootboxDialog
+              $(myBootboxD).find(".modal-footer span").remove();
+              myBootboxD
                 .find(".modal-footer")
                 .prepend(
                   "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
@@ -7168,14 +7167,15 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
             res.on("error", (error) => {
               log.error(error);
               console.error(error);
-              $(myBootboxDialog).find(".modal-footer span").remove();
-              myBootboxDialog
+              $(myBootboxD).find(".modal-footer span").remove();
+              myBootboxD
                 .find(".modal-footer")
                 .prepend(
                   "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
                 );
             });
           });
+          myBootboxD.modal("hide");
         }
       },
     });
