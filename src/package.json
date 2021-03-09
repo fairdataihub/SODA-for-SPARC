@@ -46,7 +46,7 @@
     },
     "linux": {
       "target": "AppImage",
-      "icon": "assets/app-icon/png/soda_icon.png"
+      "icon": "assets/app-icon/png/icon.png"
     },
     "nsis": {
       "createDesktopShortcut": "always",
