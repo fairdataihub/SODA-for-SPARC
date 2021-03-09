@@ -12,8 +12,10 @@ const { JSONStorage } = require("node-localstorage");
 const { trackEvent } = require("./scripts/analytics");
 const { fstat } = require("fs");
 
+autoUpdater.channel = "beta"
 log.transports.console.level = false;
 global.trackEvent = trackEvent;
+
 const nodeStorage = new JSONStorage(app.getPath("userData"));
 /*************************************************************
  * Python Process
