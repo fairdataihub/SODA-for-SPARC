@@ -7138,6 +7138,7 @@ function addAirtableAccountInsideBootbox(myBootboxD) {
               $("#bootbox-airtable-key").val("");
               loadAwardData();
               ddNoAirtableMode("Off");
+              myBootboxD.modal("hide");
               $("#Question-prepare-submission-1").nextAll().removeClass("show").removeClass("prev");
               $("#Question-prepare-dd-1").nextAll().removeClass("show").removeClass("prev");
               Swal.fire({
@@ -7175,7 +7176,6 @@ function addAirtableAccountInsideBootbox(myBootboxD) {
                 );
             });
           });
-          myBootboxD.modal("hide");
         }
       },
     });
