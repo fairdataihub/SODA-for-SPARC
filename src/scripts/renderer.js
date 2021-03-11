@@ -4992,7 +4992,8 @@ function shareWithConsortium() {
 // })
 
 function submitReviewDatasetCheck(res) {
-  $("#disseminate-publish-spinner").show();
+  //$("#disseminate-publish-spinner").show();
+  $("#submit_prepublishing_review-spinner").show();
   var reviewstatus = res[0];
   var publishingStatus = res[1];
   if (publishingStatus === "PUBLISH_IN_PROGRESS") {
@@ -5000,13 +5001,15 @@ function submitReviewDatasetCheck(res) {
       "Your dataset is currently being published. Please wait until it is completed.";
     // publishDatasetStatus.innerHTML =
     //   "<span style='color: red;'> " + emessage + "</span>";
-    $("#disseminate-publish-spinner").hide();
+    //$("#disseminate-publish-spinner").hide();
+    $("#submit_prepublishing_review-spinner").hide();
   } else if (reviewstatus === "requested") {
     emessage =
       "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.";
     // publishDatasetStatus.innerHTML =
     //   "<span style='color: red;'> " + emessage + "</span>";
-    $("#disseminate-publish-spinner").hide();
+    //$("#disseminate-publish-spinner").hide();
+    $("#submit_prepublishing_review-spinner").hide();
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
     ipcRenderer.send("warning-publish-dataset-again");
   } else {
@@ -5018,18 +5021,20 @@ ipcRenderer.on("warning-publish-dataset-selection", (event, index) => {
   if (index === 0) {
     submitReviewDataset();
   }
-  $("#disseminate-publish-spinner").hide();
+  //$("#disseminate-publish-spinner").hide();
+  $("#submit_prepublishing_review-spinner").hide();
 });
 
 ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   if (index === 0) {
     submitReviewDataset();
   }
-  $("#disseminate-publish-spinner").hide();
+  //$("#disseminate-publish-spinner").hide();
+  $("#submit_prepublishing_review-spinner").hide();
 });
 
 function submitReviewDataset() {
-  $(disseminateStatusMessagePublish).text("")
+  $("#para-submit_prepublishing_review-status").text("")
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
@@ -5042,17 +5047,18 @@ function submitReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $(disseminateStatusMessagePublish).css("color", "red")
-        $(disseminateStatusMessagePublish).text(emessage)
+        $("#para-submit_prepublishing_review-status").css("color", "red")
+        $("#para-submit_prepublishing_review-status").text(emessage)
       } else {
-        $(disseminateStatusMessage).css("color", "var(--color-light-green)")
-        $(disseminateStatusMessage).text("Success: Dataset has been submitted for review to the Publishers within your organization")
+        $("#para-submit_prepublishing_review-status").css("color", "var(--color-light-green)")
+        $("#para-submit_prepublishing_review-status").text("Success: Dataset has been submitted for review to the Publishers within your organization")
         showPublishingStatus("noClear");
       }
       bfSubmitReviewDatasetBtn.disabled = false;
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
       bfWithdrawReviewDatasetBtn.disabled = false;
-      $("#disseminate-publish-spinner").hide();
+      //$("#disseminate-publish-spinner").hide();
+      $("#submit_prepublishing_review-spinner").hide();
     }
   )
   ;
@@ -5060,7 +5066,8 @@ function submitReviewDataset() {
 
 // //Withdraw dataset from review
 function withdrawDatasetSubmission() {
-  $("#disseminate-publish-spinner").show();
+  //$("#disseminate-publish-spinner").show();
+  $("#submit_prepublishing_review-spinner").show();
   showPublishingStatus(withdrawDatasetCheck);
 }
 
@@ -5068,9 +5075,10 @@ function withdrawDatasetCheck(res) {
   var reviewstatus = res[0];
   if (reviewstatus !== "requested") {
     emessage = "Your dataset is not currently under review";
-    $(disseminateStatusMessagePublish).css("color", "red")
-    $(disseminateStatusMessagePublish).text(emessage)
-    $("#disseminate-publish-spinner").hide();
+    $("#para-submit_prepublishing_review-status").css("color", "red")
+    $("#para-submit_prepublishing_review-status").text(emessage)
+    //$("#disseminate-publish-spinner").hide();
+    $("#submit_prepublishing_review-spinner").hide();
   } else {
     ipcRenderer.send("warning-withdraw-dataset");
   }
@@ -5080,7 +5088,8 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
   if (index === 0) {
     withdrawReviewDataset();
   }
-  $("#disseminate-publish-spinner").hide();
+  //$("#disseminate-publish-spinner").hide();
+  $("#submit_prepublishing_review-spinner").hide();
 });
 
 function withdrawReviewDataset() {
@@ -5097,17 +5106,18 @@ function withdrawReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $(disseminateStatusMessagePublish).css("color", "red")
-        $(disseminateStatusMessagePublish).text(emessage)
+        $("#para-submit_prepublishing_review-status").css("color", "red")
+        $("#para-submit_prepublishing_review-status").text(emessage)
       } else {
-        $(disseminateStatusMessagePublish).css("color", "var(--color-light-green)")
-        $(disseminateStatusMessagePublish).text("Success: Dataset has been withdrawn from review")
+        $("#para-submit_prepublishing_review-status").css("color", "var(--color-light-green)")
+        $("#para-submit_prepublishing_review-status").text("Success: Dataset has been withdrawn from review")
         showPublishingStatus("noClear");
       }
       bfSubmitReviewDatasetBtn.disabled = false;
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
       bfWithdrawReviewDatasetBtn.disabled = false;
-      $("#disseminate-publish-spinner").hide();
+      //$("#disseminate-publish-spinner").hide();
+      $("#submit_prepublishing_review-spinner").hide();
     }
   );
 }
@@ -5968,7 +5978,8 @@ function showPublishingStatus(callback) {
   if (callback == "noClear") {
     var nothing;
   } else {
-    $(disseminateStatusMessage).text("")
+    $("#para-share-curation_team-status").text("");
+    $("#para-share-with-sparc-consortium-status").text("");
   }
   var selectedBfAccount = $("#current-bf-account").text();
   var selectedBfDataset = $(".bf-dataset-span").html();
@@ -5983,8 +5994,8 @@ function showPublishingStatus(callback) {
           log.error(error);
           console.error(error);
           var emessage = userError(error);
-          $(disseminateStatusMessagePublish).css("color", "red")
-          $(disseminateStatusMessagePublish).text(emessage)
+          $("#para-submit_prepublishing_review-status").css("color", "red")
+          $("#para-submit_prepublishing_review-status").text(emessage)
         } else {
           $("#para-review-dataset-info-disseminate").text(publishStatusOutputConversion(res));
           if (
