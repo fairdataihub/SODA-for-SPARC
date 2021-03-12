@@ -1522,8 +1522,9 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     .addClass("non-selected");
 
   // empty para elements (TODO: will convert these para elements to a swal2 alert so we dont have to clear them out)
-  $(disseminateStatusMessage).text("");
-  $(disseminateStatusMessagePublish).text("");
+  $("#para-share-curation_team-status").text("");
+  $("#para-share-with-sparc-consortium-status").text("");
+  $("#para-submit_prepublishing_review-status").text("");
 
   if (ev.getAttribute("data-next") == "Question-prepare-submission-7") {
     var res = showPreviewSubmission();
@@ -1572,7 +1573,7 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
   }
 
   if (ev.getAttribute("data-next") == "Post-curation-question-2") {
-    checkDatasetDisseminate()
+    //checkDatasetDisseminate()
     setTimeout(function() {
       $(target).addClass("test2");
     }, 300)
