@@ -1619,9 +1619,10 @@ function onchangeLastNames(no) {
   $('#ds-description-contributor-list-first-'+no.toString()).attr("disabled", true);
   var conLastname = $('#ds-description-contributor-list-last-'+no.toString()).val();
   removeOptions(document.getElementById('ds-description-contributor-list-first-'+no.toString()))
-  addOption(document.getElementById('ds-description-contributor-list-first-'+no.toString()), "Select an option", "Select an option")
   if (conLastname in globalContributorNameObject) {
     addOption(document.getElementById('ds-description-contributor-list-first-'+no.toString()), globalContributorNameObject[conLastname], globalContributorNameObject[conLastname])
+    $('#ds-description-contributor-list-first-'+no.toString()).val(globalContributorNameObject[conLastname]).trigger("onchange");
+    
     // delete contributor names from list after it's added
     delete globalContributorNameObject[conLastname]
     var newConLastNames = currentContributorsLastNames.filter(function(value, index, arr){
