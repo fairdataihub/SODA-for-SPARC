@@ -5617,6 +5617,10 @@ function selectOptionColor(mylist) {
 
 function showAccountDetails(loadProgress) {
   /// load and get permission for account
+  $(".bf-dataset-span").css("color", "#bbb");
+  $(".svg-change-current-account.dataset").css("display", "none");
+  $(".ui.active.green.inline.loader.small").css("display", "block");
+
   client.invoke(
     "api_bf_account_details",
     bfAccountList.options[bfAccountList.selectedIndex].text,
@@ -5628,6 +5632,9 @@ function showAccountDetails(loadProgress) {
           "<span style='color: red;'> " + error + "</span>";
         bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML;
         loadProgress.style.display = "none";
+        $(".bf-dataset-span").css("color", "#000");
+        $(".svg-change-current-account.dataset").css("display", "block");
+        $(".ui.active.green.inline.loader.small").css("display", "none");
       } else {
         bfSelectAccountStatus.innerHTML = res;
         $("#para-account-detail-curate").html(res);
@@ -5652,6 +5659,9 @@ function showAccountDetails(loadProgress) {
               var emessage = error;
               document.getElementById("para-filter-datasets-status").innerHTML =
                 "<span style='color: red'>" + emessage + "</span>";
+                $(".bf-dataset-span").css("color", "#000");
+                $(".svg-change-current-account.dataset").css("display", "block");
+                $(".ui.active.green.inline.loader.small").css("display", "none");
             } else {
               datasetList = [];
               datasetList = result;
@@ -5663,6 +5673,9 @@ function showAccountDetails(loadProgress) {
               document.getElementById("para-filter-datasets-status").innerHTML =
                 "All datasets were loaded successfully in SODA's interface. " +
                 smileyCan;
+                $(".bf-dataset-span").css("color", "#000");
+                $(".svg-change-current-account.dataset").css("display", "block");
+                $(".ui.active.green.inline.loader.small").css("display", "none");
             }
           }
         );
