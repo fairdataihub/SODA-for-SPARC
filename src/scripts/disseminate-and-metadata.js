@@ -282,10 +282,15 @@ $(".bf-dataset-span.submit-review").on('DOMSubtreeModified',function(){
 })
 
 function showDDDUploadDiv() {
+  document.getElementById("para-milestone-document-info").innerHTML = "";
+  document.getElementById("para-milestone-document-info-long").innerHTML = "";
   $("#Question-prepare-submission-DDD").removeClass("prev");
   $("#Question-prepare-submission-DDD").nextAll().removeClass("show").removeClass("prev");
   $("#div-buttons-show-DDD").hide();
+  $("#input-milestone-select").prop("placeholder", "Browse here");
+  $("#button-import-milestone").hide();
   $("#div-upload-DDD").show();
+  $("#div-cancel-DDD-import").show();
 }
 
 var sparcAwards = [];
