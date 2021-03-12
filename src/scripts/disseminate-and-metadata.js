@@ -806,152 +806,61 @@ function addNewRow(table) {
   $("#para-save-link-status").text("");
   $("#para-save-contributor-status").text("");
   var rowcount = document.getElementById(table).rows.length;
-  /// append row to table from the bottom
+    /// append row to table from the bottom
   var rowIndex = rowcount;
-  var currentRow = document.getElementById(table).rows[
-    document.getElementById(table).rows.length - 1
-  ];
-  if (table === "doi-table") {
-    if (
-      $(document.getElementById("doi-table").rows[rowIndex - 1].cells[1])
-        .find("input")
-        .val() == ""
-    ) {
-      $("#para-save-link-status").text("Please enter a link to add!");
+  var currentRow = document.getElementById(table).rows[document.getElementById(table).rows.length-1]
+  if (table==='doi-table') {
+    if ($(document.getElementById('doi-table').rows[rowIndex-1].cells[1]).find("input").val() == "") {
+      $("#para-save-link-status").text("Please enter a link to add!")
     } else {
-      $(".doi-helper-buttons").css("display", "inline-flex");
-      $(".doi-add-row-button").css("display", "none");
+      $('.doi-helper-buttons').css('display', 'inline-flex');
+      $('.doi-add-row-button').css('display', 'none');
       // check for unique row id in case users delete old rows and append new rows (same IDs!)
       var newRowIndex = checkForUniqueRowID("row-current-link", rowIndex);
-      var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
-        "<tr id='row-current-link" +
-        newRowIndex +
-        "'><td><select id='select-misc-link' class='form-container-input-bf' style='font-size:13px;line-height:2;'><option value='Select' disabled>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button onclick='delete_link(" +
-        rowIndex +
-        ")'' class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
+      var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-link" +newRowIndex +"'><td><select id='select-misc-link' class='form-container-input-bf' style='font-size:13px;line-height:2;'><option value='Select' disabled>Select an option</option><option value='Protocol URL or DOI*'>Protocol URL or DOI*</option><option value='Originating Article DOI'>Originating Article DOI</option><option value='Additional Link'>Additional Link</option></select></td><td><input type='text' contenteditable='true'></input></td><td><input type='text' contenteditable='true'></input></td><td><div onclick='addNewRow(\"doi-table\")' class='ui right floated medium primary labeled icon button doi-add-row-button' style='display:block;font-size:14px;height:30px;padding-top:9px !important;background:dodgerblue'><i class='plus icon' style='padding:8px'></i>Add</div><div class='ui small basic icon buttons doi-helper-buttons' style='display:none'><button onclick='delete_link(" +
+      rowIndex +")'' class='ui button'><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
     }
-  } else if (table === "table-current-contributors") {
+  } else if (table === 'table-current-contributors') {
     // check if all the fields are populated before Adding
-    var empty = checkEmptyConRowInfo(table, currentRow);
-    if (empty) {
-      $("#para-save-contributor-status").text(
-        "Please fill in all the fields to add!"
-      );
-      return;
-    }
-    if ($(currentRow).find("label").find("input")[0].checked) {
-      var contactPersonBoolean = contactPersonCheck();
-      if (contactPersonBoolean) {
-        $("#para-save-contributor-status").text(
-          "One contact person is already added above. Only one contact person is allowed for a dataset."
-        );
-        return;
+      var empty = checkEmptyConRowInfo(table, currentRow);
+      if (empty) {
+        $("#para-save-contributor-status").text("Please fill in all the fields to add!")
+        return
       }
-    }
-    var nameDuplicateBoolean = checkContributorNameDuplicates(
-      table,
-      currentRow
-    );
-    if (nameDuplicateBoolean) {
-      $("#para-save-contributor-status").text("Contributor already added!");
-      return;
-    }
-    $("#table-current-contributors .contributor-helper-buttons").css(
-      "display",
-      "inline-flex"
-    );
-    $("#table-current-contributors .contributor-add-row-button").css(
-      "display",
-      "none"
-    );
-    // check for unique row id in case users delete old rows and append new rows (same IDs!)
-    var newRowIndex = checkForUniqueRowID("row-current-name", rowIndex);
-    if (noAirtable) {
-      var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
-        "<tr id='row-current-name" +
-        newRowIndex +
-        "'><td class='grab'><input id='ds-description-raw-contributor-list-last-" +
-        newRowIndex +
-        "' class='form-container-input-bf' type='text'></input></td><td class='grab'><input id='ds-description-raw-contributor-list-first-" +
-        newRowIndex +
-        "' type='text' class='form-container-input-bf'></input></td><td class='grab'><input type='text' id='input-con-ID-" +
-        newRowIndex +
-        "' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-" +
-        newRowIndex +
-        "' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-" +
-        newRowIndex +
-        "'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel(" +
-        newRowIndex +
-        ")' id='ds-contact-person-" +
-        newRowIndex +
-        "' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-        rowIndex +
-        ")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
-      createConsRoleTagify("input-con-role-" + newRowIndex.toString());
-      createConsAffliationTagify(
-        "input-con-affiliation-" + newRowIndex.toString()
-      );
-    } else {
-      if ($("#add-other-contributors").text() == "Cancel manual typing") {
-        var row = (document
-          .getElementById(table)
-          .insertRow(rowIndex).outerHTML =
-          "<tr id='row-current-name" +
-          newRowIndex +
-          "'><td class='grab'><input placeholder='Type here' id='ds-description-raw-contributor-list-last-" +
-          newRowIndex +
-          "' class='form-container-input-bf' type='text'></input></td><td class='grab'><input placeholder='Type here' id='ds-description-raw-contributor-list-first-" +
-          newRowIndex +
-          "' type='text' class='form-container-input-bf'></input></td><td class='grab'><input type='text' id='input-con-ID-" +
-          newRowIndex +
-          "' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-" +
-          newRowIndex +
-          "' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-" +
-          newRowIndex +
-          "'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel(" +
-          newRowIndex +
-          ")' id='ds-contact-person-" +
-          newRowIndex +
-          "' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-          rowIndex +
-          ")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
-        createConsRoleTagify("input-con-role-" + newRowIndex.toString());
-        createConsAffliationTagify(
-          "input-con-affiliation-" + newRowIndex.toString()
-        );
+      if ($(currentRow).find("label").find("input")[0].checked) {
+        var contactPersonBoolean = contactPersonCheck();
+        if (contactPersonBoolean) {
+          $("#para-save-contributor-status").text("One contact person is already added above. Only one contact person is allowed for a dataset.")
+          return
+        }
+      }
+      var nameDuplicateBoolean = checkContributorNameDuplicates(table, currentRow)
+      if (nameDuplicateBoolean) {
+        $("#para-save-contributor-status").text("Contributor already added!")
+        return
+      }
+      $('#table-current-contributors .contributor-helper-buttons').css('display', 'inline-flex');
+      $('#table-current-contributors .contributor-add-row-button').css('display', 'none');
+      // check for unique row id in case users delete old rows and append new rows (same IDs!)
+      var newRowIndex = checkForUniqueRowID("row-current-name", rowIndex);
+      if (noAirtable) {
+        var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +newRowIndex +"'><td class='grab'><input id='ds-description-raw-contributor-list-last-"+newRowIndex+"' class='form-container-input-bf' type='text'></input></td><td class='grab'><input id='ds-description-raw-contributor-list-first-"+newRowIndex+"' type='text' class='form-container-input-bf'></input></td><td class='grab'><input type='text' id='input-con-ID-"+newRowIndex+"' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+newRowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+newRowIndex+"'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel("+newRowIndex+")' id='ds-contact-person-"+newRowIndex+"' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
+        newRowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+        createConsRoleTagify("input-con-role-"+newRowIndex.toString())
+        createConsAffliationTagify("input-con-affiliation-"+newRowIndex.toString())
       } else {
-        var row = (document
-          .getElementById(table)
-          .insertRow(rowIndex).outerHTML =
-          "<tr id='row-current-name" +
-          newRowIndex +
-          "'><td class='grab'><select id='ds-description-contributor-list-last-" +
-          newRowIndex +
-          "' onchange='onchangeLastNames(" +
-          newRowIndex +
-          ")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select disabled id='ds-description-contributor-list-first-" +
-          newRowIndex +
-          "' onchange='onchangeFirstNames(" +
-          newRowIndex +
-          ")' disabled class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' id='input-con-ID-" +
-          newRowIndex +
-          "' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-" +
-          newRowIndex +
-          "' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-" +
-          newRowIndex +
-          "'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel(" +
-          newRowIndex +
-          ")' id='ds-contact-person-" +
-          newRowIndex +
-          "' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-          rowIndex +
-          ")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
-        cloneConNamesSelect(
-          "ds-description-contributor-list-last-" + newRowIndex.toString()
-        );
+        if ($("#add-other-contributors").text() == "Cancel manual typing") {
+          var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +newRowIndex +"'><td class='grab'><input placeholder='Type here' id='ds-description-raw-contributor-list-last-"+newRowIndex+"' class='form-container-input-bf' type='text'></input></td><td class='grab'><input placeholder='Type here' id='ds-description-raw-contributor-list-first-"+newRowIndex+"' type='text' class='form-container-input-bf'></input></td><td class='grab'><input type='text' id='input-con-ID-"+newRowIndex+"' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+newRowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+newRowIndex+"'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel("+newRowIndex+")' id='ds-contact-person-"+newRowIndex+"' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
+          newRowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+          createConsRoleTagify("input-con-role-"+newRowIndex.toString())
+          createConsAffliationTagify("input-con-affiliation-"+newRowIndex.toString())
+        } else {
+          var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +newRowIndex +"'><td class='grab'><select id='ds-description-contributor-list-last-"+newRowIndex+"' onchange='onchangeLastNames("+newRowIndex+")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select disabled id='ds-description-contributor-list-first-"+newRowIndex+"' onchange='onchangeFirstNames("+newRowIndex+")' disabled class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' id='input-con-ID-"+newRowIndex+"' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+newRowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+newRowIndex+"'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel("+newRowIndex+")' id='ds-contact-person-"+newRowIndex+"' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
+          newRowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+          cloneConNamesSelect('ds-description-contributor-list-last-'+newRowIndex.toString())
+          }
+        }
       }
-    }
-  }
 }
 
 function checkForUniqueRowID(rowID, no) {
@@ -1120,32 +1029,10 @@ function ddNoAirtableMode(action) {
     $("#table-current-contributors").find("tr").slice(1).remove();
     rowIndex = 1;
     newRowIndex = 1;
-    var row = (document
-      .getElementById("table-current-contributors")
-      .insertRow(rowIndex).outerHTML =
-      "<tr id='row-current-name" +
-      newRowIndex +
-      "'><td class='grab'><input id='ds-description-raw-contributor-list-last-" +
-      newRowIndex +
-      "' class='form-container-input-bf' type='text'></input></td><td class='grab'><input id='ds-description-raw-contributor-list-first-" +
-      newRowIndex +
-      "' type='text' class='form-container-input-bf'></input></td><td class='grab'><input type='text' id='input-con-ID-" +
-      newRowIndex +
-      "' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-" +
-      newRowIndex +
-      "' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-" +
-      newRowIndex +
-      "'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel(" +
-      newRowIndex +
-      ")' id='ds-contact-person-" +
-      newRowIndex +
-      "' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-      rowIndex +
-      ")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
-    createConsRoleTagify("input-con-role-" + newRowIndex.toString());
-    createConsAffliationTagify(
-      "input-con-affiliation-" + newRowIndex.toString()
-    );
+    var row = document.getElementById("table-current-contributors").insertRow(rowIndex).outerHTML="<tr id='row-current-name" +newRowIndex +"'><td class='grab'><input id='ds-description-raw-contributor-list-last-"+newRowIndex+"' class='form-container-input-bf' type='text'></input></td><td class='grab'><input id='ds-description-raw-contributor-list-first-"+newRowIndex+"' type='text' class='form-container-input-bf'></input></td><td class='grab'><input type='text' id='input-con-ID-"+newRowIndex+"' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+newRowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+newRowIndex+"'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel("+newRowIndex+")' id='ds-contact-person-"+newRowIndex+"' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
+    newRowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+    createConsRoleTagify("input-con-role-"+newRowIndex.toString())
+    createConsAffliationTagify("input-con-affiliation-"+newRowIndex.toString())
   } else if (action == "Off") {
     noAirtable = false;
     resetDDUI("table-current-contributors");
@@ -1172,34 +1059,10 @@ function resetDDUI(table) {
 
   rowIndex = 1;
   newRowIndex = 1;
-  var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-name" +
-    newRowIndex +
-    "'><td class='grab'><select id='ds-description-contributor-list-last-" +
-    newRowIndex +
-    "' onchange='onchangeLastNames(" +
-    newRowIndex +
-    ")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select disabled id='ds-description-contributor-list-first-" +
-    newRowIndex +
-    "' onchange='onchangeFirstNames(" +
-    newRowIndex +
-    ")'  class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' id='input-con-ID-" +
-    newRowIndex +
-    "' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-" +
-    newRowIndex +
-    "' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-" +
-    newRowIndex +
-    "'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel(" +
-    newRowIndex +
-    ")' id='ds-contact-person-" +
-    newRowIndex +
-    "' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-    rowIndex +
-    ")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
-  changeAwardInputDsDescription();
-  cloneConNamesSelect(
-    "ds-description-contributor-list-last-" + rowIndex.toString()
-  );
+  var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +newRowIndex +"'><td class='grab'><select id='ds-description-contributor-list-last-"+newRowIndex+"' onchange='onchangeLastNames("+newRowIndex+")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select disabled id='ds-description-contributor-list-first-"+newRowIndex+"' onchange='onchangeFirstNames("+newRowIndex+")'  class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' id='input-con-ID-"+newRowIndex+"' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+newRowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+newRowIndex+"'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel("+newRowIndex+")' id='ds-contact-person-"+newRowIndex+"' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
+  newRowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+  changeAwardInputDsDescription()
+  cloneConNamesSelect('ds-description-contributor-list-last-'+rowIndex.toString())
 }
 
 function checkEmptyConRowInfo(table, row) {
@@ -1210,15 +1073,9 @@ function checkEmptyConRowInfo(table, row) {
       var cell = $(row.cells[i]);
       for (var item of type) {
         if ($(cell).find(item).length > 0) {
-          if (
-            $(cell).find(item).val() == "" ||
-            $(cell).find(item).val() == "Select an option" ||
-            $(cell).find(item).val() == "Select"
-          ) {
-            empty = true;
-            console.log(cell);
-            console.log($(cell).find(item).val());
-            break;
+          if ($(cell).find(item).val() == "" || $(cell).find(item).val() == "Select an option" || $(cell).find(item).val() == "Select") {
+            empty = true
+            break
           }
         }
       }

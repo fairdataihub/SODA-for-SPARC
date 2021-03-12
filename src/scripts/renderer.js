@@ -1619,9 +1619,16 @@ function onchangeLastNames(no) {
   $('#ds-description-contributor-list-first-'+no.toString()).attr("disabled", true);
   var conLastname = $('#ds-description-contributor-list-last-'+no.toString()).val();
   removeOptions(document.getElementById('ds-description-contributor-list-first-'+no.toString()))
-  addOption(document.getElementById('ds-description-contributor-list-first-'+no.toString()), "Select an option", "Select an option")
   if (conLastname in globalContributorNameObject) {
     addOption(document.getElementById('ds-description-contributor-list-first-'+no.toString()), globalContributorNameObject[conLastname], globalContributorNameObject[conLastname])
+    $('#ds-description-contributor-list-first-'+no.toString()).val(globalContributorNameObject[conLastname]).trigger("onchange");
+    
+    // delete contributor names from list after it's added
+    delete globalContributorNameObject[conLastname]
+    var newConLastNames = currentContributorsLastNames.filter(function(value, index, arr){
+       return value !== conLastname;
+     });
+    currentContributorsLastNames = newConLastNames
   }
   $('#ds-description-contributor-list-first-'+no.toString()).attr("disabled", false);
 }
@@ -1700,7 +1707,6 @@ function loadContributorInfo(no, lastName, firstName) {
       );
       leaveFieldsEmpty(conInfoObj["Affiliation"], document.getElementById("input-con-affiliation-"+no.toString()));
 
-      console.log(conInfoObj["Affiliation"])
       tagifyAffliation.addTags(conInfoObj["Affiliation"])
       tagifyRole.addTags(conInfoObj["Role"])
 
@@ -1720,6 +1726,13 @@ function loadContributorInfo(no, lastName, firstName) {
 //////////////////////// Current Contributor(s) /////////////////////
 
 function delete_current_con(no) {
+  // after a contributor is deleted, add their name back to the contributor last name dropdown list
+  if ($("#ds-description-contributor-list-last-"+no).length > 0 && $("#ds-description-contributor-list-first-"+no).length > 0) {
+    var deletedLastName = $("#ds-description-contributor-list-last-"+no).val();
+    var deletedFirstName = $("#ds-description-contributor-list-first-"+no).val();
+    globalContributorNameObject[deletedLastName] = deletedFirstName
+    currentContributorsLastNames.push(deletedLastName)
+  }
   document.getElementById("row-current-name" + no + "").outerHTML = "";
 }
 
