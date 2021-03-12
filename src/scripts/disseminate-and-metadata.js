@@ -1,4 +1,4 @@
-function disseminateDataset(option) {
+const disseminateDataset = (option) => {
   if (option === "share-with-curation-team") {
     $("#share-curation-team-spinner").show();
     $("#para-share-curation_team-status").text("");
@@ -17,6 +17,19 @@ function disseminateDataset(option) {
   }
   return;
 }
+
+const unshareDataset = (option) => {
+  $(".spinner.post-curation").show();
+  if (option === "share-with-curation-team")
+  {
+    disseminateCurationTeam(defaultBfAccount, defaultBfDataset, 'unshare')
+  }
+  else if (option === "share-with-sparc-consortium")
+  {
+    disseminateConsortium(defaultBfAccount, defaultBfDataset, 'unshare')
+  }
+}
+
 
 ipcRenderer.on("warning-share-with-curation-team-selection", (event, index) => {
   if (index === 0) {
@@ -38,9 +51,15 @@ ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
   }
 });
 
-function disseminateCurationTeam(account, dataset) {
+const disseminateCurationTeam = (account, dataset, share_status = "") => {
   var selectedTeam = "SPARC Data Curation Team";
   var selectedRole = "manager";
+
+  if (share_status === "unshare")
+  {
+    selectedRole = "remove current permissions"
+  }
+
   client.invoke(
     "api_bf_add_permission_team",
     account,
@@ -54,11 +73,17 @@ function disseminateCurationTeam(account, dataset) {
         var emessage = userError(error);
         $("#para-share-curation_team-status").css("color", "red");
         $("#para-share-curation_team-status").text(emessage);
-        //$(disseminateStatusMessage).text(emessage);
         $("#share-curation-team-spinner").hide();
+        $(".spinner.post-curation").hide();
       } else {
         disseminateShowCurrentPermission(account, dataset);
         var selectedStatusOption = "03. Ready for Curation (Investigator)";
+
+        if (share_status === "unshare")
+        {
+          selectedStatusOption = "02. Work In Progress (Investigator)"
+        }
+
         client.invoke(
           "api_bf_change_dataset_status",
           account,
@@ -78,15 +103,31 @@ function disseminateCurationTeam(account, dataset) {
                 "Disseminate Dataset - Share with Curation Team",
                 dataset
               );
+              $(".spinner.post-curation").hide();
             } else {
               $("#para-share-curation_team-status").css(
                 "color",
                 "var(--color-light-green)"
               );
-              $("#para-share-curation_team-status").text(
-                'Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"'
-              );
+              
               $("#share-curation-team-spinner").hide();
+              
+              if (share_status === "unshare")
+              {
+                $("#para-share-curation_team-status").text(`Success - Removed the Curation Team's manager permissions and set dataset status to "Work In Progress"`);
+                $("#curation-team-unshare-btn").hide();
+                $("#curation-team-share-btn").show();
+              }
+              else {
+                $("#para-share-curation_team-status").text('Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"');
+                $("#curation-team-unshare-btn").show();
+                $("#curation-team-share-btn").hide();
+              }
+
+              curation_consortium_check();
+              showCurrentPermission();
+              showCurrentDatasetStatus();
+
               ipcRenderer.send(
                 "track-event",
                 "Success",
@@ -94,6 +135,7 @@ function disseminateCurationTeam(account, dataset) {
                 dataset
               );
               disseminiateShowCurrentDatasetStatus("", account, dataset);
+              $(".spinner.post-curation").hide();
             }
           }
         );
@@ -102,9 +144,15 @@ function disseminateCurationTeam(account, dataset) {
   );
 }
 
-function disseminateConsortium(bfAcct, bfDS) {
+function disseminateConsortium(bfAcct, bfDS, share_status="") {
   var selectedTeam = "SPARC Embargoed Data Sharing Group";
   var selectedRole = "viewer";
+
+  if (share_status === "unshare")
+  {
+    selectedRole = "remove current permissions"
+  }
+
   client.invoke(
     "api_bf_add_permission_team",
     bfAcct,
@@ -119,9 +167,16 @@ function disseminateConsortium(bfAcct, bfDS) {
         $("#para-share-with-sparc-consortium-status").css("color", "red");
         $("#para-share-with-sparc-consortium-status").text(emessage);
         $("#share-with-sparc-consortium-spinner").hide();
+        $(".spinner.post-curation").hide();
       } else {
         disseminateShowCurrentPermission(bfAcct, bfDS);
         var selectedStatusOption = "11. Complete, Under Embargo (Investigator)";
+
+        if (share_status === "unshare")
+        {
+          selectedStatusOption = "10. Curated & Awaiting PI Approval (Curators)"
+        }
+
         client.invoke(
           "api_bf_change_dataset_status",
           bfAcct,
@@ -135,6 +190,7 @@ function disseminateConsortium(bfAcct, bfDS) {
               $("#para-share-with-sparc-consortium-status").css("color", "red");
               $("#para-share-with-sparc-consortium-status").text(emessage);
               $("#share-with-sparc-consortium-spinner").hide();
+              $(".spinner.post-curation").hide();
             } else {
               $("#para-share-with-sparc-consortium-status").css(
                 "color",
@@ -143,8 +199,26 @@ function disseminateConsortium(bfAcct, bfDS) {
               $("#para-share-with-sparc-consortium-status").text(
                 'Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"'
               );
+
+              if (share_status === "unshare")
+              {
+                $("#para-share-with-sparc-consortium-status").text(`Success - Removed the SPARC Consortium's viewer permissions and set dataset status to "Curated & Awaiting PI Approval"`);
+                $("#sparc-consortium-unshare-btn").hide();
+                $("#sparc-consortium-share-btn").share();
+              }
+              else {
+                $("#para-share-with-sparc-consortium-status").text('Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"');
+                $("#sparc-consortium-unshare-btn").show();
+                $("#sparc-consortium-share-btn").hide();
+              }
+              
+              curation_consortium_check()
+              showCurrentPermission();
+              showCurrentDatasetStatus();
+
               $("#share-with-sparc-consortium-spinner").hide();
               disseminiateShowCurrentDatasetStatus("", bfAcct, bfDS);
+              $(".spinner.post-curation").hide();
             }
           }
         );

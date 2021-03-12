@@ -4187,6 +4187,7 @@ const permissionDatasetlistChange = () => {
   bfCurrentPermissionProgress.style.display = "block";
   bfAddEditCurrentPermissionProgress.style.display = "block";
   showCurrentPermission();
+  curation_consortium_check();
 }
 
 const syncDatasetDropdownOption = (dropdown) => {
@@ -5416,9 +5417,7 @@ function refreshBfTeamsList(teamList) {
 function showCurrentPermission() {
   currentDatasetPermission.innerHTML = "Please wait...";
   currentAddEditDatasetPermission.innerHTML = "Please wait...";
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
   if (selectedBfDataset === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
@@ -5808,6 +5807,7 @@ function populateDatasetDropdowns(mylist) {
     renameDatasetlistChange();
     metadataDatasetlistChange();
     permissionDatasetlistChange();
+    curation_consortium_check();
     postCurationListChange();
     datasetStatusListChange();
   }
@@ -9080,5 +9080,192 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
         }
       }
     );
+  });
+};
+
+const curation_consortium_check = () => {
+  let selected_account = defaultBfAccount;
+  let selected_dataset = defaultBfDataset;
+
+  $(".spinner.post-curation").show();
+  $("#para-share-curation_team-status").css("color", "black");
+  $("#para-share-curation_team-status").text("");
+  $("#para-share-with-sparc-consortium-status").css("color", "black");
+  $("#para-share-with-sparc-consortium-status").text("");
+
+  client.invoke("api_bf_account_details", selected_account, (error, res) => {
+    if (error) {
+      log.error(error);
+      console.error(error);
+
+      $("#curation-team-unshare-btn").hide();
+      $("#sparc-consortium-unshare-btn").hide();
+      $("#curation-team-share-btn").hide();
+      $("#sparc-consortium-share-btn").hide();
+
+      $(".spinner.post-curation").hide();
+    } else {
+      res = res.replace(/<[^>]*>?/gm, "");
+
+      if (res.search("SPARC Consortium") == -1) {
+        
+        $("#current_curation_team_status").text("None");
+        $("#current_sparc_consortium_status").text("None");
+
+        $("#para-share-curation_team-status").css("color", "red");
+        $("#para-share-curation_team-status").text("This account is not in the SPARC Consortium organization. Please switch accounts and try again");
+        $("#para-share-with-sparc-consortium-status").css("color", "red");
+        $("#para-share-with-sparc-consortium-status").text("This account is not in the SPARC Consortium organization. Please switch accounts and try again");
+
+        $("#curation-team-unshare-btn").hide();
+        $("#sparc-consortium-unshare-btn").hide();
+        $("#curation-team-share-btn").hide();
+        $("#sparc-consortium-share-btn").hide();
+        $(".spinner.post-curation").hide();
+        return;
+      }
+
+      $("#curation-team-unshare-btn").hide();
+      $("#sparc-consortium-unshare-btn").hide();
+      $("#curation-team-share-btn").hide();
+      $("#sparc-consortium-share-btn").hide();
+
+      if (selected_dataset === "Select dataset") {
+        $("#current_curation_team_status").text("None");
+        $("#current_sparc_consortium_status").text("None");
+        $(".spinner.post-curation").hide();
+      } else {
+        client.invoke(
+          "api_bf_get_permission",
+          selected_account,
+          selected_dataset,
+          (error, res) => {
+            if (error) {
+              log.error(error);
+              console.error(error);
+              $("#current_curation_team_status").text("None");
+              $("#current_sparc_consortium_status").text("None");
+              $(".spinner.post-curation").hide();
+            } else {
+              let curation_permission_satisfied = false;
+              let consortium_permission_satisfied = false;
+              let return_status = false;
+
+              for (var i in res) {
+                let permission = String(res[i]);
+                if (permission.search("SPARC Data Curation Team") != -1) {
+                  if (permission.search("manager") != -1) {
+                    curation_permission_satisfied = true;
+                  }
+                }
+                if (
+                  permission.search("SPARC Embargoed Data Sharing Group") != -1
+                ) {
+                  if (permission.search("viewer") != -1) {
+                    curation_permission_satisfied = true;
+                  }
+                }
+              }
+
+              if (!curation_permission_satisfied) {
+                $("#current_curation_team_status").text(
+                  "Not shared with the curation team"
+                );
+                return_status = true;
+              }
+              if (!consortium_permission_satisfied) {
+                $("#current_sparc_consortium_status").text(
+                  "Not shared with the SPARC Consortium"
+                );
+                return_status = true;
+              }
+
+              if (return_status) {
+                $("#curation-team-unshare-btn").hide();
+                $("#sparc-consortium-unshare-btn").hide();
+                $("#curation-team-share-btn").show();
+                $("#sparc-consortium-share-btn").show();
+                $(".spinner.post-curation").hide();
+                return;
+              }
+
+              client.invoke(
+                "api_bf_get_dataset_status",
+                defaultBfAccount,
+                defaultBfDataset,
+                (error, res) => {
+                  if (error) {
+                    log.error(error);
+                    console.error(error);
+                    $("#current_curation_team_status").text("None");
+                    $("#current_sparc_consortium_status").text("None");
+                    $(".spinner.post-curation").hide();
+                  } else {
+                    let dataset_status_value = res[1];
+                    let dataset_status = parseInt(
+                      dataset_status_value.substring(0, 2)
+                    );
+                    let curation_status_satisfied = false;
+                    let consortium_status_satisfied = false;
+
+                    if (dataset_status > 2) {
+                      curation_status_satisfied = true;
+                    }
+                    if (dataset_status > 10) {
+                      consortium_status_satisfied = true;
+                    }
+
+                    if (!curation_status_satisfied) {
+                      $("#current_curation_team_status").text(
+                        "Not shared with the curation team"
+                      );
+                      return_status = true;
+                    }
+                    if (!consortium_status_satisfied) {
+                      $("#current_sparc_consortium_status").text(
+                        "Not shared with the SPARC Consortium"
+                      );
+                      return_status = true;
+                    }
+
+                    if (return_status) {
+                      $("#curation-team-unshare-btn").hide();
+                      $("#sparc-consortium-unshare-btn").hide();
+                      $("#curation-team-share-btn").show();
+                      $("#sparc-consortium-share-btn").show();
+                      $(".spinner.post-curation").hide();
+                      return;
+                    }
+
+                    // show the unshare buttons
+                    $("#current_curation_team_status").text(
+                      "Shared with the curation team"
+                    );
+                    $("#current_sparc_consortium_status").text(
+                      "Shared with the SPARC Consortium"
+                    );
+
+                    $("#curation-team-unshare-btn").show();
+                    $("#sparc-consortium-unshare-btn").show();
+                    $("#curation-team-share-btn").hide();
+                    $("#sparc-consortium-share-btn").hide();
+
+                    $("#para-share-curation_team-status").text(
+                      "You are all set! This dataset has already been shared with the Curation team."
+                    );
+
+                    $("#para-share-with-sparc-consortium-status").text(
+                      "You are all set! This dataset has already been shared with the SPARC Consortium."
+                    );
+
+                    $(".spinner.post-curation").hide();
+                  }
+                }
+              );
+            }
+          }
+        );
+      }
+    }
   });
 };
