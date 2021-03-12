@@ -20,15 +20,14 @@ const disseminateDataset = (option) => {
 
 const unshareDataset = (option) => {
   $(".spinner.post-curation").show();
-  if (option === "share-with-curation-team")
-  {
-    disseminateCurationTeam(defaultBfAccount, defaultBfDataset, 'unshare')
+  if (option === "share-with-curation-team") {
+    $("#para-share-curation_team-status").text("");
+    disseminateCurationTeam(defaultBfAccount, defaultBfDataset, "unshare");
+  } else if (option === "share-with-sparc-consortium") {
+    $("#para-share-with-sparc-consortium-status").text("");
+    disseminateConsortium(defaultBfAccount, defaultBfDataset, "unshare");
   }
-  else if (option === "share-with-sparc-consortium")
-  {
-    disseminateConsortium(defaultBfAccount, defaultBfDataset, 'unshare')
-  }
-}
+};
 
 
 ipcRenderer.on("warning-share-with-curation-team-selection", (event, index) => {
@@ -124,7 +123,7 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
                 $("#curation-team-share-btn").hide();
               }
 
-              curation_consortium_check();
+              curation_consortium_check("update");
               showCurrentPermission();
               showCurrentDatasetStatus();
 
@@ -204,7 +203,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status="") {
               {
                 $("#para-share-with-sparc-consortium-status").text(`Success - Removed the SPARC Consortium's viewer permissions and set dataset status to "Curated & Awaiting PI Approval"`);
                 $("#sparc-consortium-unshare-btn").hide();
-                $("#sparc-consortium-share-btn").share();
+                $("#sparc-consortium-share-btn").show();
               }
               else {
                 $("#para-share-with-sparc-consortium-status").text('Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"');
@@ -212,12 +211,12 @@ function disseminateConsortium(bfAcct, bfDS, share_status="") {
                 $("#sparc-consortium-share-btn").hide();
               }
               
-              curation_consortium_check()
+              curation_consortium_check('update')
               showCurrentPermission();
               showCurrentDatasetStatus();
 
-              $("#share-with-sparc-consortium-spinner").hide();
               disseminiateShowCurrentDatasetStatus("", bfAcct, bfDS);
+              $("#share-with-sparc-consortium-spinner").hide();
               $(".spinner.post-curation").hide();
             }
           }
