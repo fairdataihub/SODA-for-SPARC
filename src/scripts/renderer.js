@@ -9125,6 +9125,7 @@ const curation_consortium_check = (mode = "") => {
       
       $(".spinner.post-curation").hide();
     } else {
+      // remove html tags from response
       res = res.replace(/<[^>]*>?/gm, "");
 
       if (res.search("SPARC Consortium") == -1) {
