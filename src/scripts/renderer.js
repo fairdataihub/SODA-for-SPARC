@@ -1015,7 +1015,7 @@ function importMilestoneDocument() {
     document.getElementById("para-milestone-document-info").innerHTML = "";
     var filepath = document.getElementById("input-milestone-select")
     .placeholder;
-    if (filepath === "Select a file") {
+    if (filepath === "Browse here") {
       document.getElementById("para-milestone-document-info").innerHTML =
       "<span style='color: red ;'>" +
       "Please select a data deliverables document first!</span>";
@@ -1043,7 +1043,7 @@ function importMilestoneDocument() {
           document.getElementById("para-milestone-document-info").innerHTML =
           "<span style='color: black ;'>" + "Imported!</span>";
           document.getElementById("input-milestone-select").placeholder =
-          "Select a file";
+          "Browse here";
           removeOptions(descriptionDateInput);
           milestoneTagify1.removeAllTags();
           milestoneTagify1.settings.whitelist = [];
@@ -1061,6 +1061,8 @@ function importMilestoneDocument() {
 document
   .getElementById("input-milestone-select")
   .addEventListener("click", function () {
+    document.getElementById("para-milestone-document-info").innerHTML = "";
+    document.getElementById("para-milestone-document-info-long").innerHTML = "";
     document.getElementById("para-milestone-document-info-long").style.display =
       "none";
     ipcRenderer.send("open-file-dialog-milestone-doc");
@@ -1072,6 +1074,11 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
       document.getElementById("input-milestone-select").placeholder =
         filepath[0];
     }
+  }
+  if (document.getElementById("input-milestone-select").placeholder !== "Browse here") {
+    $("#button-import-milestone").show()
+  } else {
+    $("#button-import-milestone").hide()
   }
 });
 //
@@ -1303,7 +1310,7 @@ var defaultAward = loadDefaultAward();
 function loadMilestoneInfo(awardNumber) {
   document.getElementById("para-milestone-document-info").innerHTML = "";
   document.getElementById("input-milestone-select").placeholder =
-    "Select a file";
+    "Browse here";
 
   if (awardNumber === "Select") {
     document.getElementById(
@@ -1622,7 +1629,7 @@ function onchangeLastNames(no) {
   if (conLastname in globalContributorNameObject) {
     addOption(document.getElementById('ds-description-contributor-list-first-'+no.toString()), globalContributorNameObject[conLastname], globalContributorNameObject[conLastname])
     $('#ds-description-contributor-list-first-'+no.toString()).val(globalContributorNameObject[conLastname]).trigger("onchange");
-    
+
     // delete contributor names from list after it's added
     delete globalContributorNameObject[conLastname]
     var newConLastNames = currentContributorsLastNames.filter(function(value, index, arr){

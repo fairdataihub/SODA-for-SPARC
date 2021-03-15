@@ -489,12 +489,12 @@ const recursive_remove_missing_file = (item_path, dataset_folder) => {
   }
 };
 
-// function removeOptions(selectbox) {
-//   var i;
-//   for (i = selectbox.options.length - 1; i >= 0; i--) {
-//     selectbox.remove(i);
-//   }
-// }
+function removeOptions(selectbox) {
+  var i;
+  for (i = selectbox.options.length - 1; i >= 0; i--) {
+    selectbox.remove(i);
+  }
+}
 //
 // // Function to add options to dropdown list
 // function addOption(selectbox, text, value) {
@@ -687,7 +687,7 @@ async function openDropdownPrompt(dropdown) {
     }
   } else if (dropdown === "dataset") {
     var bfDataset = "";
-    
+
     // if users edit Current dataset
     datasetPermissionDiv.style.display = "block";
     $(datasetPermissionDiv)
@@ -696,11 +696,11 @@ async function openDropdownPrompt(dropdown) {
       .empty()
       .append('<option value="Select dataset">Select dataset</option>')
       .val("Select dataset");
-    
+
     $(datasetPermissionDiv)
       .find("#div-filter-datasets-progress-2")
       .css("display", "block");
-    
+
     $("#bf-dataset-select-header").css("display", "none")
     //$("#curatebfdatasetlist").selectpicker("hide");
     //$("#bf-dataset-select-div").hide();
@@ -716,7 +716,7 @@ async function openDropdownPrompt(dropdown) {
       .find("#curatebfdatasetlist")
       .val("Select dataset")
       .trigger("change");
-    
+
     //initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
     $("#curatebfdatasetlist").selectpicker("hide");
@@ -780,7 +780,7 @@ async function openDropdownPrompt(dropdown) {
         }
       },
     });
-    
+
     // check return value
     if (bfDS) {
       $("#current-bf-dataset").text(bfDataset);
@@ -922,10 +922,10 @@ const updateDatasetList = (bfaccount) => {
 
   $("#div-filter-datasets-progress-2").css("display", "block");
 
-  
+
   removeOptions(curateDatasetDropdown);
   addOption(curateDatasetDropdown, "Select dataset", "Select dataset");
-  
+
   initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
   $("#bf-dataset-select-header").css("display", "none");
@@ -940,7 +940,7 @@ const updateDatasetList = (bfaccount) => {
     var myPermission = $(datasetPermissionDiv)
       .find("#select-permission-list-2")
       .val();
-    
+
     if (!myPermission) {
       myPermission = "All";
     }
