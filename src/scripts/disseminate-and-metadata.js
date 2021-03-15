@@ -29,7 +29,7 @@ const unshareDataset = (option) => {
   }
 };
 
-if (ipcRenderer) {
+$(document).ready(function() {
   ipcRenderer.on("warning-share-with-curation-team-selection", (event, index) => {
     if (index === 0) {
       var account = $("#current-bf-account").text();
@@ -48,8 +48,7 @@ if (ipcRenderer) {
       $("#share-with-sparc-consortium-spinner").show();
     }
   });
-}
-
+})
 
 const disseminateCurationTeam = (account, dataset, share_status = "") => {
   var selectedTeam = "SPARC Data Curation Team";
@@ -734,7 +733,7 @@ function generateSubmissionFile() {
   ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
 }
 
-if (ipcRenderer) {
+$(document).ready(function() {
   ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
     if (dirpath.length > 0) {
       $("#generate-submission-spinner").show();
@@ -789,7 +788,7 @@ if (ipcRenderer) {
     }
     $("#generate-submission-spinner").hide();
   });
-}
+})
 
 // prepare dataset description each section (go in and out effects)
 $(".button-individual-dd-section.remove").click(function () {
