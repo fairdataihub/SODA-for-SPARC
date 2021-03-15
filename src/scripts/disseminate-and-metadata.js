@@ -29,26 +29,27 @@ const unshareDataset = (option) => {
   }
 };
 
+if (ipcRenderer) {
+  ipcRenderer.on("warning-share-with-curation-team-selection", (event, index) => {
+    if (index === 0) {
+      var account = $("#current-bf-account").text();
+      var dataset = $(".bf-dataset-span").html();
+      disseminateCurationTeam(account, dataset);
+    } else {
+      $("#share-curation-team-spinner").hide();
+    }
+  });
+  ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
+    if (index === 0) {
+      var account = $("#current-bf-account").text();
+      var dataset = $(".bf-dataset-span").html();
+      disseminateConsortium(account, dataset);
+    } else {
+      $("#share-with-sparc-consortium-spinner").show();
+    }
+  });
+}
 
-ipcRenderer.on("warning-share-with-curation-team-selection", (event, index) => {
-  if (index === 0) {
-    var account = $("#current-bf-account").text();
-    var dataset = $(".bf-dataset-span").html();
-    disseminateCurationTeam(account, dataset);
-  } else {
-    $("#share-curation-team-spinner").hide();
-  }
-});
-
-ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
-  if (index === 0) {
-    var account = $("#current-bf-account").text();
-    var dataset = $(".bf-dataset-span").html();
-    disseminateConsortium(account, dataset);
-  } else {
-    $("#share-with-sparc-consortium-spinner").show();
-  }
-});
 
 const disseminateCurationTeam = (account, dataset, share_status = "") => {
   var selectedTeam = "SPARC Data Curation Team";
@@ -108,9 +109,9 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
                 "color",
                 "var(--color-light-green)"
               );
-              
+
               $("#share-curation-team-spinner").hide();
-              
+
               if (share_status === "unshare")
               {
                 $("#para-share-curation_team-status").text(`Success - Removed the Curation Team's manager permissions and set dataset status to "Work In Progress"`);
@@ -210,7 +211,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status="") {
                 $("#sparc-consortium-unshare-btn").show();
                 $("#sparc-consortium-share-btn").hide();
               }
-              
+
               curation_consortium_check('update')
               showCurrentPermission();
               showCurrentDatasetStatus();
@@ -732,60 +733,63 @@ function generateSubmissionFile() {
   document.getElementById("para-save-submission-status").innerHTML = "";
   ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
 }
-ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
-  if (dirpath.length > 0) {
-    $("#generate-submission-spinner").show();
-    var destinationPath = path.join(dirpath[0], filename);
-    if (fs.existsSync(destinationPath)) {
-      var emessage = "File " + filename + " already exists in " + dirpath[0];
-      ipcRenderer.send("open-error-metadata-file-exits", emessage);
-    } else {
-      var awardRes = $("#submission-SPARC-award-span").text();
-      var dateRes = $("#submission-completion-date-span").text();
-      var milestonesRes = $("#submission-milestones-span").text();
-      var milestoneValue = milestonesRes.split(", \n");
-      var json_arr = [];
-      json_arr.push({
-        award: awardRes,
-        date: dateRes,
-        milestone: milestoneValue[0],
-      });
-      if (milestoneValue.length > 0) {
-        for (var index = 1; index < milestoneValue.length; index++) {
-          json_arr.push({
-            award: "",
-            date: "",
-            milestone: milestoneValue[index],
-          });
+
+if (ipcRenderer) {
+  ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
+    if (dirpath.length > 0) {
+      $("#generate-submission-spinner").show();
+      var destinationPath = path.join(dirpath[0], filename);
+      if (fs.existsSync(destinationPath)) {
+        var emessage = "File " + filename + " already exists in " + dirpath[0];
+        ipcRenderer.send("open-error-metadata-file-exits", emessage);
+      } else {
+        var awardRes = $("#submission-SPARC-award-span").text();
+        var dateRes = $("#submission-completion-date-span").text();
+        var milestonesRes = $("#submission-milestones-span").text();
+        var milestoneValue = milestonesRes.split(", \n");
+        var json_arr = [];
+        json_arr.push({
+          award: awardRes,
+          date: dateRes,
+          milestone: milestoneValue[0],
+        });
+        if (milestoneValue.length > 0) {
+          for (var index = 1; index < milestoneValue.length; index++) {
+            json_arr.push({
+              award: "",
+              date: "",
+              milestone: milestoneValue[index],
+            });
+          }
+        }
+        json_str = JSON.stringify(json_arr);
+        if (dirpath != null) {
+          client.invoke(
+            "api_save_submission_file",
+            destinationPath,
+            json_str,
+            (error, res) => {
+              if (error) {
+                var emessage = userError(error);
+                log.error(error);
+                console.error(error);
+                document.getElementById("para-save-submission-status").innerHTML =
+                  "<span style='color: red;'> " + emessage + "</span>";
+              } else {
+                document.getElementById("para-save-submission-status").innerHTML =
+                  "<span style='color: black ;'>" +
+                  "Done!" +
+                  smileyCan +
+                  "</span>";
+              }
+            }
+          );
         }
       }
-      json_str = JSON.stringify(json_arr);
-      if (dirpath != null) {
-        client.invoke(
-          "api_save_submission_file",
-          destinationPath,
-          json_str,
-          (error, res) => {
-            if (error) {
-              var emessage = userError(error);
-              log.error(error);
-              console.error(error);
-              document.getElementById("para-save-submission-status").innerHTML =
-                "<span style='color: red;'> " + emessage + "</span>";
-            } else {
-              document.getElementById("para-save-submission-status").innerHTML =
-                "<span style='color: black ;'>" +
-                "Done!" +
-                smileyCan +
-                "</span>";
-            }
-          }
-        );
-      }
     }
-  }
-  $("#generate-submission-spinner").hide();
-});
+    $("#generate-submission-spinner").hide();
+  });
+}
 
 // prepare dataset description each section (go in and out effects)
 $(".button-individual-dd-section.remove").click(function () {
