@@ -9142,14 +9142,14 @@ const curation_consortium_check = (mode = "") => {
         $("#curation-team-share-btn").hide();
         $("#sparc-consortium-share-btn").hide();
       }
-      
+
       $(".spinner.post-curation").hide();
     } else {
       // remove html tags from response
       res = res.replace(/<[^>]*>?/gm, "");
 
       if (res.search("SPARC Consortium") == -1) {
-        
+
         $("#current_curation_team_status").text("None");
         $("#current_sparc_consortium_status").text("None");
 
@@ -9236,7 +9236,7 @@ const curation_consortium_check = (mode = "") => {
                   $("#curation-team-unshare-btn").hide();
                 }
               }
-              
+
               if (consortium_return_status)
               {
                 if (mode != "update") {
@@ -9244,7 +9244,7 @@ const curation_consortium_check = (mode = "") => {
                   $("#sparc-consortium-share-btn").show();
                 }
               }
-              
+
               if (curation_return_status && consortium_return_status) {
                 $("#sparc-consortium-unshare-btn").hide();
                 $("#sparc-consortium-share-btn").show();
@@ -9334,7 +9334,7 @@ const curation_consortium_check = (mode = "") => {
                       $(".spinner.post-curation").hide();
                       return;
                     }
-                    
+
                     $(".spinner.post-curation").hide();
                   }
                 }

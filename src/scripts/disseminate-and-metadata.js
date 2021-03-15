@@ -1084,12 +1084,11 @@ function checkEmptyConRowInfo(table, row) {
         if ($(cell).find(item).length > 0) {
           if ($(cell).find(item).val() == "" || $(cell).find(item).val() == "Select an option" || $(cell).find(item).val() == "Select") {
             empty = true
-            break
+            $(cell).find(item).addClass("invalid")
+          } else {
+            $(cell).find(item).removeClass("invalid")
           }
         }
-      }
-      if (empty) {
-        break;
       }
     }
   }
