@@ -1084,9 +1084,15 @@ function checkEmptyConRowInfo(table, row) {
         if ($(cell).find(item).length > 0) {
           if ($(cell).find(item).val() == "" || $(cell).find(item).val() == "Select an option" || $(cell).find(item).val() == "Select") {
             empty = true
-            $(cell).find(item).addClass("invalid")
+            $(cell).find(item).addClass("invalid");
+            if ($(cell).find("tags").length > 0) {
+              $(cell).find("tags").addClass("invalid")
+            }
           } else {
             $(cell).find(item).removeClass("invalid")
+            if ($(cell).find("tags").length > 0) {
+              $(cell).find("tags").removeClass("invalid")
+            }
           }
         }
       }

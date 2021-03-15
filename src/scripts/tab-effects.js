@@ -1394,7 +1394,11 @@ async function transitionSubQuestionsButton(
       return;
     } else {
       sodaJSONObj = result[1][0];
-      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+      if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
+        datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+      } else {
+        datasetStructureJSONObj = { folders: {}, files: {} };
+      }
       populate_existing_folders(datasetStructureJSONObj);
       populate_existing_metadata(sodaJSONObj);
       $("#nextBtn").prop("disabled", false);
