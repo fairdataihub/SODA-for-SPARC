@@ -89,9 +89,35 @@
 }
 
 .main-tabs-section {
-  display: none;
+  /* display: none; */
+  position: absolute;
+  top: 100px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   padding-top: 40px;
-  margin-left: -20px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* margin-left: -10px; */
+}
+
+.hide{
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: visibility 0s 0.12s linear, opacity 0.12s ease-in,
+    transform 0.12s ease-in-out;
+}
+
+.show {
+  pointer-events: auto;
+  visibility: visible;
+  opacity: 1;
+  z-index: 1000;
+  transform: translateX(0);
+  transition: visibility 0s 0s linear, opacity 0.36s ease-out,
+    transform 0.36s ease-out;
 }
 
 .flex-main-container {
