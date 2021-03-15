@@ -4029,6 +4029,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
 
 // Generate dataset
 bfUploadDatasetList.addEventListener("change", () => {
+  /* multiple calls
   var listSelectedIndex = bfUploadDatasetList.selectedIndex;
   bfDatasetListMetadata.selectedIndex = listSelectedIndex;
   metadataDatasetlistChange();
@@ -4045,6 +4046,7 @@ bfUploadDatasetList.addEventListener("change", () => {
   postCurationListChange();
   datasetDescriptionFileDataset.selectedIndex = listSelectedIndex;
   showDatasetDescription();
+  */
 });
 
 selectLocalDsSubmit.addEventListener("click", function () {
@@ -4110,6 +4112,7 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
 
 // Upload local dataset
 bfDatasetList.addEventListener("change", () => {
+  /* multiple calls
   var listSelectedIndex = bfDatasetList.selectedIndex;
   bfDatasetListMetadata.selectedIndex = listSelectedIndex;
   metadataDatasetlistChange();
@@ -4126,6 +4129,7 @@ bfDatasetList.addEventListener("change", () => {
   postCurationListChange();
   datasetDescriptionFileDataset.selectedIndex = listSelectedIndex;
   showDatasetDescription();
+  */
 });
 
 // Rename dataset
@@ -4145,6 +4149,7 @@ function renameDatasetlistChange() {
 
 // Add metadata to Blackfynn dataset
 bfDatasetListMetadata.addEventListener("change", () => {
+  /* multiple calls
   var listSelectedIndex = bfDatasetListMetadata.selectedIndex;
   bfDatasetListPermission.selectedIndex = listSelectedIndex;
   permissionDatasetlistChange();
@@ -4161,6 +4166,7 @@ bfDatasetListMetadata.addEventListener("change", () => {
   postCurationListChange();
   datasetDescriptionFileDataset.selectedIndex = listSelectedIndex;
   showDatasetDescription();
+  */
 });
 
 const metadataDatasetlistChange = () => {
@@ -4197,6 +4203,7 @@ bfDatasetListPermission.addEventListener("change", () => {
 });
 
 const permissionDatasetlistChange = () => {
+  console.log("permission")
   bfCurrentPermissionProgress.style.display = "block";
   bfAddEditCurrentPermissionProgress.style.display = "block";
   showCurrentPermission();
@@ -4269,6 +4276,7 @@ const syncDatasetDropdownOption = (dropdown) => {
 
 // Change dataset status
 bfDatasetListDatasetStatus.addEventListener("change", () => {
+  /* multiple calls
   var listSelectedIndex = bfDatasetListDatasetStatus.selectedIndex;
   bfDatasetListMetadata.selectedIndex = listSelectedIndex;
   metadataDatasetlistChange();
@@ -4285,6 +4293,7 @@ bfDatasetListDatasetStatus.addEventListener("change", () => {
   postCurationListChange();
   datasetDescriptionFileDataset.selectedIndex = listSelectedIndex;
   showDatasetDescription();
+  */
 });
 
 function datasetStatusListChange() {
@@ -4296,6 +4305,7 @@ function datasetStatusListChange() {
 
 // Post-curation
 bfDatasetListPostCurationCuration.addEventListener("change", () => {
+  /* multiple calls
   var listSelectedIndex = bfDatasetListPostCurationCuration.selectedIndex;
   bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex;
   bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex;
@@ -4310,9 +4320,11 @@ bfDatasetListPostCurationCuration.addEventListener("change", () => {
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex;
   renameDatasetlistChange();
   postCurationListChange();
+  */
 });
 
 bfDatasetListPostCurationConsortium.addEventListener("change", () => {
+  /* multiple calls
   var listSelectedIndex = bfDatasetListPostCurationConsortium.selectedIndex;
   bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex;
   bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex;
@@ -4327,6 +4339,7 @@ bfDatasetListPostCurationConsortium.addEventListener("change", () => {
   bfDatasetListRenameDataset.selectedIndex = listSelectedIndex;
   renameDatasetlistChange();
   postCurationListChange();
+  */
 });
 
 function postCurationListChange() {
@@ -4692,8 +4705,8 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
   $("#bf-add-permission-pi-spinner").css("visibility", "visible");
   datasetPermissionStatusPI.innerHTML = "";
   disableform(bfPermissionForm);
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   //var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].text;
@@ -5728,6 +5741,7 @@ function changeDatasetRolePI(selectedDataset) {
 }
 
 function refreshDatasetList() {
+  console.log("here");
   var datasetPermission =
     datasetPermissionList.options[datasetPermissionList.selectedIndex].text;
 
@@ -5801,6 +5815,7 @@ const clearDatasetDropdowns = () => {
 
 /// populate the dropdowns with refreshed dataset list
 function populateDatasetDropdowns(mylist) {
+  console.log(mylist);
   clearDatasetDropdowns();
   for (myitem in mylist) {
     var myitemselect = mylist[myitem];
@@ -5819,6 +5834,7 @@ function populateDatasetDropdowns(mylist) {
     var option10 = option.cloneNode(true);
     var option11 = option.cloneNode(true);
 
+    /* multiple calls
     bfDatasetListMetadata.appendChild(option2);
     bfDatasetListPermission.appendChild(option3);
     bfUploadDatasetList.appendChild(option4);
@@ -5828,12 +5844,13 @@ function populateDatasetDropdowns(mylist) {
     bfDatasetListPostCurationCuration.appendChild(option8);
     bfDatasetListPostCurationConsortium.appendChild(option9);
     bfDatasetListPostCurationPublish.appendChild(option10);
+    */
     curateDatasetDropdown.appendChild(option11);
 
     renameDatasetlistChange();
     metadataDatasetlistChange();
     permissionDatasetlistChange();
-    curation_consortium_check();
+    //curation_consortium_check();
     postCurationListChange();
     datasetStatusListChange();
   }
@@ -9122,6 +9139,7 @@ const curation_consortium_check = (mode = "") => {
   $("#sparc-consortium-unshare-btn").hide();
   $("#curation-team-share-btn").hide();
   $("#sparc-consortium-share-btn").hide();
+  console.log(selected_account, mode);
 
   client.invoke("api_bf_account_details", selected_account, (error, res) => {
     $(".spinner.post-curation").show();

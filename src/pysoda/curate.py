@@ -2003,11 +2003,12 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     # Rename any folders that still exist.
     def recursive_folder_rename(folder, mode):
         for item in list(folder["folders"]):
-            if mode in folder["folders"][item]['action'] and folder["folders"][item]["type"] == "bf":
-                file = bf.get(folder["folders"][item]["path"])
-                if file is not None:
-                    file.name = item
-                    file.update()
+            if folder["folders"][item]["type"] == "bf":
+                if mode in folder["folders"][item]['action']:
+                    file = bf.get(folder["folders"][item]["path"])
+                    if file is not None:
+                        file.name = item
+                        file.update()
             else:
                 recursive_folder_rename(folder["folders"][item], mode)
 
