@@ -1541,7 +1541,7 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
   }
 
   if (ev.getAttribute("data-next") == "div-rename-bf-dataset") {
-    let dataset_name = $("bf-dataset-span").html();
+    let dataset_name = $("#rename_dataset_name").html();
     $("#bf-rename-dataset-name").val(dataset_name);
   }
 

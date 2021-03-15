@@ -5853,15 +5853,13 @@ function populateDatasetDropdowns(mylist) {
     bfDatasetListPostCurationPublish.appendChild(option10);
     */
     curateDatasetDropdown.appendChild(option11);
-
+  }
     renameDatasetlistChange();
     metadataDatasetlistChange();
     permissionDatasetlistChange();
     //curation_consortium_check();
     postCurationListChange();
     datasetStatusListChange();
-  }
-
 }
 
 datasetPermissionList.addEventListener("change",  (e) =>{
