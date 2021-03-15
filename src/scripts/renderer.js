@@ -1015,7 +1015,7 @@ function importMilestoneDocument() {
     document.getElementById("para-milestone-document-info").innerHTML = "";
     var filepath = document.getElementById("input-milestone-select")
     .placeholder;
-    if (filepath === "Select a file") {
+    if (filepath === "Browse here") {
       document.getElementById("para-milestone-document-info").innerHTML =
       "<span style='color: red ;'>" +
       "Please select a data deliverables document first!</span>";
@@ -1043,7 +1043,7 @@ function importMilestoneDocument() {
           document.getElementById("para-milestone-document-info").innerHTML =
           "<span style='color: black ;'>" + "Imported!</span>";
           document.getElementById("input-milestone-select").placeholder =
-          "Select a file";
+          "Browse here";
           removeOptions(descriptionDateInput);
           milestoneTagify1.removeAllTags();
           milestoneTagify1.settings.whitelist = [];
@@ -1061,6 +1061,8 @@ function importMilestoneDocument() {
 document
   .getElementById("input-milestone-select")
   .addEventListener("click", function () {
+    document.getElementById("para-milestone-document-info").innerHTML = "";
+    document.getElementById("para-milestone-document-info-long").innerHTML = "";
     document.getElementById("para-milestone-document-info-long").style.display =
       "none";
     ipcRenderer.send("open-file-dialog-milestone-doc");
@@ -1072,6 +1074,11 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
       document.getElementById("input-milestone-select").placeholder =
         filepath[0];
     }
+  }
+  if (document.getElementById("input-milestone-select").placeholder !== "Browse here") {
+    $("#button-import-milestone").show()
+  } else {
+    $("#button-import-milestone").hide()
   }
 });
 //
@@ -1303,7 +1310,7 @@ var defaultAward = loadDefaultAward();
 function loadMilestoneInfo(awardNumber) {
   document.getElementById("para-milestone-document-info").innerHTML = "";
   document.getElementById("input-milestone-select").placeholder =
-    "Select a file";
+    "Browse here";
 
   if (awardNumber === "Select") {
     document.getElementById(
@@ -1619,9 +1626,16 @@ function onchangeLastNames(no) {
   $('#ds-description-contributor-list-first-'+no.toString()).attr("disabled", true);
   var conLastname = $('#ds-description-contributor-list-last-'+no.toString()).val();
   removeOptions(document.getElementById('ds-description-contributor-list-first-'+no.toString()))
-  addOption(document.getElementById('ds-description-contributor-list-first-'+no.toString()), "Select an option", "Select an option")
   if (conLastname in globalContributorNameObject) {
     addOption(document.getElementById('ds-description-contributor-list-first-'+no.toString()), globalContributorNameObject[conLastname], globalContributorNameObject[conLastname])
+    $('#ds-description-contributor-list-first-'+no.toString()).val(globalContributorNameObject[conLastname]).trigger("onchange");
+
+    // delete contributor names from list after it's added
+    delete globalContributorNameObject[conLastname]
+    var newConLastNames = currentContributorsLastNames.filter(function(value, index, arr){
+       return value !== conLastname;
+     });
+    currentContributorsLastNames = newConLastNames
   }
   $('#ds-description-contributor-list-first-'+no.toString()).attr("disabled", false);
 }
@@ -1700,7 +1714,6 @@ function loadContributorInfo(no, lastName, firstName) {
       );
       leaveFieldsEmpty(conInfoObj["Affiliation"], document.getElementById("input-con-affiliation-"+no.toString()));
 
-      console.log(conInfoObj["Affiliation"])
       tagifyAffliation.addTags(conInfoObj["Affiliation"])
       tagifyRole.addTags(conInfoObj["Role"])
 
@@ -1720,6 +1733,13 @@ function loadContributorInfo(no, lastName, firstName) {
 //////////////////////// Current Contributor(s) /////////////////////
 
 function delete_current_con(no) {
+  // after a contributor is deleted, add their name back to the contributor last name dropdown list
+  if ($("#ds-description-contributor-list-last-"+no).length > 0 && $("#ds-description-contributor-list-first-"+no).length > 0) {
+    var deletedLastName = $("#ds-description-contributor-list-last-"+no).val();
+    var deletedFirstName = $("#ds-description-contributor-list-first-"+no).val();
+    globalContributorNameObject[deletedLastName] = deletedFirstName
+    currentContributorsLastNames.push(deletedLastName)
+  }
   document.getElementById("row-current-name" + no + "").outerHTML = "";
 }
 
@@ -3786,7 +3806,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
   } else {
     $("#bf-rename-dataset-spinner").css("visibility", "visible");
     bfRenameDatasetBtn.disabled = true;
-    bfRenameDatasetStatus.innerHTML = "Renaming...";
+    bfRenameDatasetStatus.innerHTML = "";
     client.invoke(
       "api_bf_rename_dataset",
       selectedbfaccount,
@@ -4117,7 +4137,7 @@ bfDatasetList.addEventListener("change", () => {
 
 // Rename dataset
 bfDatasetListRenameDataset.addEventListener("change", () => {
-  renameDatasetlistChange();
+  //renameDatasetlistChange();
   syncDatasetDropdownOption(bfDatasetListRenameDataset);
   bfRenameDatasetStatus.innerHTML = "";
 });
@@ -4187,6 +4207,7 @@ const permissionDatasetlistChange = () => {
   bfCurrentPermissionProgress.style.display = "block";
   bfAddEditCurrentPermissionProgress.style.display = "block";
   showCurrentPermission();
+  curation_consortium_check();
 }
 
 const syncDatasetDropdownOption = (dropdown) => {
@@ -4992,6 +5013,8 @@ function shareWithConsortium() {
 // })
 
 function submitReviewDatasetCheck(res) {
+  //$("#disseminate-publish-spinner").show();
+  $("#submit_prepublishing_review-spinner").show();
   var reviewstatus = res[0];
   var publishingStatus = res[1];
   if (publishingStatus === "PUBLISH_IN_PROGRESS") {
@@ -4999,11 +5022,15 @@ function submitReviewDatasetCheck(res) {
       "Your dataset is currently being published. Please wait until it is completed.";
     // publishDatasetStatus.innerHTML =
     //   "<span style='color: red;'> " + emessage + "</span>";
+    //$("#disseminate-publish-spinner").hide();
+    $("#submit_prepublishing_review-spinner").hide();
   } else if (reviewstatus === "requested") {
     emessage =
       "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.";
     // publishDatasetStatus.innerHTML =
     //   "<span style='color: red;'> " + emessage + "</span>";
+    //$("#disseminate-publish-spinner").hide();
+    $("#submit_prepublishing_review-spinner").hide();
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
     ipcRenderer.send("warning-publish-dataset-again");
   } else {
@@ -5015,16 +5042,20 @@ ipcRenderer.on("warning-publish-dataset-selection", (event, index) => {
   if (index === 0) {
     submitReviewDataset();
   }
+  //$("#disseminate-publish-spinner").hide();
+  $("#submit_prepublishing_review-spinner").hide();
 });
 
 ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   if (index === 0) {
     submitReviewDataset();
   }
+  //$("#disseminate-publish-spinner").hide();
+  $("#submit_prepublishing_review-spinner").hide();
 });
 
 function submitReviewDataset() {
-  $(disseminateStatusMessagePublish).text("")
+  $("#para-submit_prepublishing_review-status").text("")
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
@@ -5037,16 +5068,18 @@ function submitReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $(disseminateStatusMessagePublish).css("color", "red")
-        $(disseminateStatusMessagePublish).text(emessage)
+        $("#para-submit_prepublishing_review-status").css("color", "red")
+        $("#para-submit_prepublishing_review-status").text(emessage)
       } else {
-        $(disseminateStatusMessage).css("color", "var(--color-light-green)")
-        $(disseminateStatusMessage).text("Success: Dataset has been submitted for review to the Publishers within your organization")
+        $("#para-submit_prepublishing_review-status").css("color", "var(--color-light-green)")
+        $("#para-submit_prepublishing_review-status").text("Success: Dataset has been submitted for review to the Publishers within your organization")
         showPublishingStatus("noClear");
       }
       bfSubmitReviewDatasetBtn.disabled = false;
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
       bfWithdrawReviewDatasetBtn.disabled = false;
+      //$("#disseminate-publish-spinner").hide();
+      $("#submit_prepublishing_review-spinner").hide();
     }
   )
   ;
@@ -5054,6 +5087,8 @@ function submitReviewDataset() {
 
 // //Withdraw dataset from review
 function withdrawDatasetSubmission() {
+  //$("#disseminate-publish-spinner").show();
+  $("#submit_prepublishing_review-spinner").show();
   showPublishingStatus(withdrawDatasetCheck);
 }
 
@@ -5061,8 +5096,10 @@ function withdrawDatasetCheck(res) {
   var reviewstatus = res[0];
   if (reviewstatus !== "requested") {
     emessage = "Your dataset is not currently under review";
-    $(disseminateStatusMessagePublish).css("color", "red")
-    $(disseminateStatusMessagePublish).text(emessage)
+    $("#para-submit_prepublishing_review-status").css("color", "red")
+    $("#para-submit_prepublishing_review-status").text(emessage)
+    //$("#disseminate-publish-spinner").hide();
+    $("#submit_prepublishing_review-spinner").hide();
   } else {
     ipcRenderer.send("warning-withdraw-dataset");
   }
@@ -5072,6 +5109,8 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
   if (index === 0) {
     withdrawReviewDataset();
   }
+  //$("#disseminate-publish-spinner").hide();
+  $("#submit_prepublishing_review-spinner").hide();
 });
 
 function withdrawReviewDataset() {
@@ -5088,32 +5127,21 @@ function withdrawReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $(disseminateStatusMessagePublish).css("color", "red")
-        $(disseminateStatusMessagePublish).text(emessage)
+        $("#para-submit_prepublishing_review-status").css("color", "red")
+        $("#para-submit_prepublishing_review-status").text(emessage)
       } else {
-        $(disseminateStatusMessagePublish).css("color", "var(--color-light-green)")
-        $(disseminateStatusMessagePublish).text("Success: Dataset has been withdrawn from review")
+        $("#para-submit_prepublishing_review-status").css("color", "var(--color-light-green)")
+        $("#para-submit_prepublishing_review-status").text("Success: Dataset has been withdrawn from review")
         showPublishingStatus("noClear");
       }
       bfSubmitReviewDatasetBtn.disabled = false;
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
       bfWithdrawReviewDatasetBtn.disabled = false;
+      //$("#disseminate-publish-spinner").hide();
+      $("#submit_prepublishing_review-spinner").hide();
     }
   );
 }
-
-// Refresh publishing dataset status
-// bfRefreshPublishingDatasetStatusBtn.addEventListener("click", () => {
-//   var selectedBfDataset = $(".bf-dataset-span").html();
-//   if (selectedBfDataset === "None") {
-//     reviewDatasetInfo.innerHTML = "";
-//     emessage = "Please select a valid dataset";
-//     publishDatasetStatus.innerHTML =
-//       "<span style='color: red;'> " + emessage + "</span>";
-//   } else {
-//     showPublishingStatus();
-//   }
-// });
 
 //////////////////////////////////
 // Helper functions
@@ -5228,7 +5256,6 @@ function showCurrentDescription() {
     $(".synced-progress").css("display", "none");
     tuiInstance.setMarkdown("");
   } else {
-      console.log(selectedBfAccount, selectedBfDataset);
     client.invoke(
       "api_bf_get_description",
       selectedBfAccount,
@@ -5330,8 +5357,10 @@ function showCurrentLicense() {
           currentDatasetLicense.innerHTML = res;
           if (res === "No license is currently assigned to this dataset") {
             $("#button-add-license").show();
+            $("#assign-a-license-header").show();
           } else if (res === "Creative Commons Attribution") {
             $("#button-add-license").hide();
+            $("#assign-a-license-header").hide();
             $("#para-dataset-license-status").html(
               "You are all set. This dataset already has the correct license assigned."
             );
@@ -5408,9 +5437,7 @@ function refreshBfTeamsList(teamList) {
 function showCurrentPermission() {
   currentDatasetPermission.innerHTML = "Please wait...";
   currentAddEditDatasetPermission.innerHTML = "Please wait...";
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
   if (selectedBfDataset === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
@@ -5430,10 +5457,17 @@ function showCurrentPermission() {
           bfAddEditCurrentPermissionProgress.style.display = "none";
         } else {
           var permissionList = "";
+          let datasetOwner = ""
           for (var i in res) {
             permissionList = permissionList + res[i] + "<br>";
+            if (res[i].indexOf('owner') != -1)
+            {
+              let first_position = res[i].indexOf(':');
+              let second_position = res[i].indexOf(',');
+              datasetOwner = res[i].substring(first_position + 2, second_position);
+            }
           }
-          currentDatasetPermission.innerHTML = permissionList;
+          currentDatasetPermission.innerHTML = datasetOwner;
           currentAddEditDatasetPermission.innerHTML = permissionList;
           bfCurrentPermissionProgress.style.display = "none";
           bfAddEditCurrentPermissionProgress.style.display = "none";
@@ -5590,6 +5624,10 @@ function selectOptionColor(mylist) {
 
 function showAccountDetails(loadProgress) {
   /// load and get permission for account
+  $(".bf-dataset-span").css("color", "#bbb");
+  $(".svg-change-current-account.dataset").css("display", "none");
+  $(".ui.active.green.inline.loader.small").css("display", "block");
+
   client.invoke(
     "api_bf_account_details",
     bfAccountList.options[bfAccountList.selectedIndex].text,
@@ -5601,6 +5639,9 @@ function showAccountDetails(loadProgress) {
           "<span style='color: red;'> " + error + "</span>";
         bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML;
         loadProgress.style.display = "none";
+        $(".bf-dataset-span").css("color", "#000");
+        $(".svg-change-current-account.dataset").css("display", "block");
+        $(".ui.active.green.inline.loader.small").css("display", "none");
       } else {
         bfSelectAccountStatus.innerHTML = res;
         $("#para-account-detail-curate").html(res);
@@ -5625,6 +5666,9 @@ function showAccountDetails(loadProgress) {
               var emessage = error;
               document.getElementById("para-filter-datasets-status").innerHTML =
                 "<span style='color: red'>" + emessage + "</span>";
+                $(".bf-dataset-span").css("color", "#000");
+                $(".svg-change-current-account.dataset").css("display", "block");
+                $(".ui.active.green.inline.loader.small").css("display", "none");
             } else {
               datasetList = [];
               datasetList = result;
@@ -5636,6 +5680,9 @@ function showAccountDetails(loadProgress) {
               document.getElementById("para-filter-datasets-status").innerHTML =
                 "All datasets were loaded successfully in SODA's interface. " +
                 smileyCan;
+                $(".bf-dataset-span").css("color", "#000");
+                $(".svg-change-current-account.dataset").css("display", "block");
+                $(".ui.active.green.inline.loader.small").css("display", "none");
             }
           }
         );
@@ -5793,6 +5840,7 @@ function populateDatasetDropdowns(mylist) {
     renameDatasetlistChange();
     metadataDatasetlistChange();
     permissionDatasetlistChange();
+    curation_consortium_check();
     postCurationListChange();
     datasetStatusListChange();
   }
@@ -5963,10 +6011,11 @@ function showPublishingStatus(callback) {
   if (callback == "noClear") {
     var nothing;
   } else {
-    $(disseminateStatusMessage).text("")
+    $("#para-share-curation_team-status").text("");
+    $("#para-share-with-sparc-consortium-status").text("");
   }
   var selectedBfAccount = $("#current-bf-account").text();
-  var selectedBfDataset = $(".bf-dataset-span").html();;
+  var selectedBfDataset = $(".bf-dataset-span").html();
   if (selectedBfDataset === "None") {
   } else {
     client.invoke(
@@ -5978,8 +6027,8 @@ function showPublishingStatus(callback) {
           log.error(error);
           console.error(error);
           var emessage = userError(error);
-          $(disseminateStatusMessagePublish).css("color", "red")
-          $(disseminateStatusMessagePublish).text(emessage)
+          $("#para-submit_prepublishing_review-status").css("color", "red")
+          $("#para-submit_prepublishing_review-status").text(emessage)
         } else {
           $("#para-review-dataset-info-disseminate").text(publishStatusOutputConversion(res));
           if (
@@ -6720,7 +6769,7 @@ var highLevelFolderToolTip = {
   primary:
     "primary: This folder contains all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines 'raw' (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders.",
   protocol:
-    "protocol: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
+    "protocol: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
 };
 
 var datasetStructureJSONObj = {
@@ -6937,7 +6986,7 @@ function showDetailsFile() {
 
 var bfAddAccountBootboxMessage =
   "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='text' /></div></div></form>";
-  var bfaddaccountTitle = '<h3 style="float:left">Please specify a key name and enter your Blackfynn API key and secret below:<div style="padding-top:5px" class="tooltipnew"><img class="info" src="assets/img/info.png"><span class="tooltiptext">Please checkout the dedicated <a href="https://help.blackfynn.com/articles/1488536-creating-an-api-key-for-the-blackfynn-clients" style="color:white;"> Blackfynn Help page </a>for generating API key and secret and setting up your Blackfynn account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the "Select existing account" tab.</span></div></h3>'
+  var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Blackfynn API key and secret below:<i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Blackfynn-account-with-SODA'> help page </a>for generating API key and secret and setting up your Blackfynn account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`
 
 function addBFAccountInsideBootbox(myBootboxDialog) {
   var name = $("#bootbox-key-name").val();
@@ -6974,7 +7023,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
               icon: "error",
               text: "Something went wrong!",
               footer:
-                '<a href="https://help.blackfynn.com/en/articles/1488536-creating-an-api-key-for-the-blackfynn-clients">Why do I have this issue?</a>',
+                '<a target="_blank" href="https://help.blackfynn.com/en/articles/1488536-creating-an-api-key-for-the-blackfynn-clients">Why do I have this issue?</a>',
             });
             showHideDropdownButtons("account", "hide");
           } else {
@@ -7022,42 +7071,63 @@ function showBFAddAccountBootbox() {
     },
     size: "medium",
     centerVertical: true,
+    onShown: function(e){
+      $('.popover-tooltip').each(function () {
+        var $this = $(this);
+        $this.popover({
+            trigger: 'hover',
+            container: $this
+        })
+      });
+    }
   });
 }
 
 function showAddAirtableAccountBootbox() {
-  var htmlTitle =
-    '<h4>Please specify a key name and enter your Airtable API key below: <div class="tooltipnew"><img class="info" src="assets/img/info.png"><span class="tooltiptext">To obtain or re-generate your API key to connect to SODA during your first use, check out the dedicated <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a>. Note that the key will be stored locally on your computer and the SODA Team will not have access to it.</span></div></h4>';
+  var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
 
-  var bootb = bootbox.dialog({
-    title: htmlTitle,
-    message: airtableAccountBootboxMessage,
-    buttons: {
-      cancel: {
-        label: "Cancel",
-      },
-      confirm: {
-        label: "Add",
-        className: "btn btn-primary bootbox-add-airtable-class",
-        callback: function () {
-          addAirtableAccountInsideBootbox(bootb);
-          return false;
+  var bootb = bootbox
+    .dialog({
+      title: htmlTitle,
+      message: airtableAccountBootboxMessage,
+      buttons: {
+        cancel: {
+          label: "Cancel",
+        },
+        confirm: {
+          label: "Add",
+          className: "btn btn-primary bootbox-add-airtable-class",
+          callback: function () {
+            addAirtableAccountInsideBootbox(bootb);
+            return false;
+          },
         },
       },
-    },
-    size: "medium",
-    centerVertical: true,
-  });
+      size: "medium",
+      class: "api-width",
+      centerVertical: true,
+      onShown: function (e) {
+        $(".popover-tooltip").each(function () {
+          var $this = $(this);
+          $this.popover({
+            trigger: "hover",
+            container: $this,
+          });
+        });
+      },
+    })
+    // .find(".modal-dialog")
+    // .css("max-width", "600px");
 }
 
-function addAirtableAccountInsideBootbox(myBootboxDialog) {
+function addAirtableAccountInsideBootbox(myBootboxD) {
   var name = $("#bootbox-airtable-key-name").val();
   var key = $("#bootbox-airtable-key").val();
   if (name.length === 0 || key.length === 0) {
     var errorMessage =
       "<span style='color: red;'>Please fill in both required fields to add.</span>";
-    $(myBootboxDialog).find(".modal-footer span").remove();
-    myBootboxDialog
+    $(myBootboxD).find(".modal-footer span").remove();
+    myBootboxD
       .find(".modal-footer")
       .prepend(
         "<span style='color:red;padding-right:10px;display:inline-block;'>" +
@@ -7111,7 +7181,7 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
               $("#bootbox-airtable-key").val("");
               loadAwardData();
               ddNoAirtableMode("Off");
-              myBootboxDialog.modal("hide");
+              myBootboxD.modal("hide");
               $("#Question-prepare-submission-1").nextAll().removeClass("show").removeClass("prev");
               $("#Question-prepare-dd-1").nextAll().removeClass("show").removeClass("prev");
               Swal.fire({
@@ -7122,8 +7192,8 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
                 showConfirmButton: false,
               });
             } else if (res.statusCode === 403) {
-              $(myBootboxDialog).find(".modal-footer span").remove();
-              myBootboxDialog
+              $(myBootboxD).find(".modal-footer span").remove();
+              myBootboxD
                 .find(".modal-footer")
                 .prepend(
                   "<span style='color: red;'>Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!</span>"
@@ -7131,8 +7201,8 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
             } else {
               log.error(res);
               console.error(res);
-              $(myBootboxDialog).find(".modal-footer span").remove();
-              myBootboxDialog
+              $(myBootboxD).find(".modal-footer span").remove();
+              myBootboxD
                 .find(".modal-footer")
                 .prepend(
                   "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
@@ -7141,8 +7211,8 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
             res.on("error", (error) => {
               log.error(error);
               console.error(error);
-              $(myBootboxDialog).find(".modal-footer span").remove();
-              myBootboxDialog
+              $(myBootboxD).find(".modal-footer span").remove();
+              myBootboxD
                 .find(".modal-footer")
                 .prepend(
                   "<span style='color: red;'>Failed to connect to Airtable. Please check your API Key and try again!</span>"
@@ -7158,7 +7228,7 @@ function addAirtableAccountInsideBootbox(myBootboxDialog) {
 function editSPARCAwardsBootbox() {
   $(sparcAwardEditMessage).css("display", "block");
   var editSPARCAwardsTitle =
-    '<h3 style="float:left"> Search for your SPARC award(s): </h3><div style="padding-top:5px" class="tooltipnew"><img class="info" src="assets/img/info.png"><span class="tooltiptext">The list of active SPARC awards in this dropdown list is generated automatically from the SPARC Airtable sheet once SODA is connected with your Airtable account. Select your award(s) and click on "Add" to save it/them in SODA. You will only have to do this once. SODA will automatically load these awards next time you launch SODA.</span></div>';
+    '<h3 style="float:left"> Add/Remove your SPARC Award(s) below: </h3><div style="padding-top:5px" class="tooltipnew"><img class="info" src="assets/img/info.png"><span class="tooltiptext">The list of active SPARC awards in this dropdown list is generated automatically from the SPARC Airtable sheet once SODA is connected with your Airtable account. Select your award(s) and click on "Add" to save it/them in SODA. You will only have to do this once. SODA will automatically load these awards next time you launch SODA.</span></div>';
   var bootb = bootbox.dialog({
     title: editSPARCAwardsTitle,
     message: sparcAwardEditMessage,
@@ -8764,7 +8834,8 @@ function initiate_generate() {
           } else {
             datasetList = [];
             datasetList = result;
-            refreshDatasetList();
+            //refreshDatasetList();
+            tempDatasetListsSync();
           }
         }
       );
@@ -8782,7 +8853,8 @@ function initiate_generate() {
           } else {
             datasetList = [];
             datasetList = result;
-            refreshDatasetList();
+            //refreshDatasetList();
+            tempDatasetListsSync();
           }
         }
       );
@@ -8809,7 +8881,7 @@ function initiate_generate() {
         var main_total_generate_dataset_size = res[3];
         var main_generated_dataset_size = res[4];
         var elapsed_time_formatted = res[5];
-        
+
         console.log(`Data transferred (bytes): ${main_generated_dataset_size}`);
 
         if (start_generate === 1) {
@@ -9044,4 +9116,233 @@ var bf_request_and_populate_dataset = (sodaJSONObj) => {
   });
 };
 
-$('.ui.dropdown').dropdown();
+// When mode = "update", the buttons won't be hidden or shown to prevent button flickering effect
+const curation_consortium_check = (mode = "") => {
+  let selected_account = defaultBfAccount;
+  let selected_dataset = defaultBfDataset;
+
+  $(".spinner.post-curation").show();
+  $("#para-share-curation_team-status").css("color", "var(--color-light-green)");
+  $("#para-share-with-sparc-consortium-status").css("color", "var(--color-light-green)");
+
+  $("#curation-team-unshare-btn").hide();
+  $("#sparc-consortium-unshare-btn").hide();
+  $("#curation-team-share-btn").hide();
+  $("#sparc-consortium-share-btn").hide();
+
+  client.invoke("api_bf_account_details", selected_account, (error, res) => {
+    $(".spinner.post-curation").show();
+    if (error) {
+      log.error(error);
+      console.error(error);
+
+      if (mode != "update") {
+        $("#curation-team-unshare-btn").hide();
+        $("#sparc-consortium-unshare-btn").hide();
+        $("#curation-team-share-btn").hide();
+        $("#sparc-consortium-share-btn").hide();
+      }
+      
+      $(".spinner.post-curation").hide();
+    } else {
+      // remove html tags from response
+      res = res.replace(/<[^>]*>?/gm, "");
+
+      if (res.search("SPARC Consortium") == -1) {
+        
+        $("#current_curation_team_status").text("None");
+        $("#current_sparc_consortium_status").text("None");
+
+
+        $("#para-share-curation_team-status").css("color", "red");
+        $("#para-share-curation_team-status").text("This account is not in the SPARC Consortium organization. Please switch accounts and try again");
+        $("#para-share-with-sparc-consortium-status").css("color", "red");
+        $("#para-share-with-sparc-consortium-status").text("This account is not in the SPARC Consortium organization. Please switch accounts and try again");
+
+        if (mode != "update") {
+          $("#curation-team-unshare-btn").hide();
+          $("#sparc-consortium-unshare-btn").hide();
+          $("#curation-team-share-btn").hide();
+          $("#sparc-consortium-share-btn").hide();
+          $(".spinner.post-curation").hide();
+        }
+        return;
+      }
+
+      if (mode != "update") {
+        $("#curation-team-unshare-btn").hide();
+        $("#sparc-consortium-unshare-btn").hide();
+        $("#curation-team-share-btn").hide();
+        $("#sparc-consortium-share-btn").hide();
+      }
+
+      if (selected_dataset === "Select dataset") {
+        $("#current_curation_team_status").text("None");
+        $("#current_sparc_consortium_status").text("None");
+        $(".spinner.post-curation").hide();
+      } else {
+        client.invoke(
+          "api_bf_get_permission",
+          selected_account,
+          selected_dataset,
+          (error, res) => {
+            $(".spinner.post-curation").show();
+            if (error) {
+              log.error(error);
+              console.error(error);
+              if (mode != "update") {
+                $("#current_curation_team_status").text("None");
+                $("#current_sparc_consortium_status").text("None");
+              }
+              $(".spinner.post-curation").hide();
+            } else {
+              let curation_permission_satisfied = false;
+              let consortium_permission_satisfied = false;
+              let curation_return_status = false;
+              let consortium_return_status = false;
+
+              for (var i in res) {
+                let permission = String(res[i]);
+                if (permission.search("SPARC Data Curation Team") != -1) {
+                  if (permission.search("manager") != -1) {
+                    curation_permission_satisfied = true;
+                  }
+                }
+                if (
+                  permission.search("SPARC Embargoed Data Sharing Group") != -1
+                ) {
+                  if (permission.search("viewer") != -1) {
+                    consortium_permission_satisfied = true;
+                  }
+                }
+              }
+
+              if (!curation_permission_satisfied) {
+                $("#current_curation_team_status").text(
+                  "Not shared with the curation team"
+                );
+                curation_return_status = true;
+              }
+              if (!consortium_permission_satisfied) {
+                $("#current_sparc_consortium_status").text(
+                  "Not shared with the SPARC Consortium"
+                );
+                consortium_return_status = true;
+              }
+
+              if (curation_return_status) {
+                if (mode != "update") {
+                  $("#curation-team-share-btn").show();
+                  $("#curation-team-unshare-btn").hide();
+                }
+              }
+              
+              if (consortium_return_status)
+              {
+                if (mode != "update") {
+                  $("#sparc-consortium-unshare-btn").hide();
+                  $("#sparc-consortium-share-btn").show();
+                }
+              }
+              
+              if (curation_return_status && consortium_return_status) {
+                $("#sparc-consortium-unshare-btn").hide();
+                $("#sparc-consortium-share-btn").show();
+                $("#curation-team-unshare-btn").hide();
+                $("#curation-team-share-btn").show();
+                $(".spinner.post-curation").hide();
+                return;
+              }
+
+              client.invoke(
+                "api_bf_get_dataset_status",
+                defaultBfAccount,
+                defaultBfDataset,
+                (error, res) => {
+                  $(".spinner.post-curation").show();
+                  if (error) {
+                    log.error(error);
+                    console.error(error);
+                    $("#current_curation_team_status").text("None");
+                    $("#current_sparc_consortium_status").text("None");
+                    $(".spinner.post-curation").hide();
+                  } else {
+                    let dataset_status_value = res[1];
+                    let dataset_status = parseInt(
+                      dataset_status_value.substring(0, 2)
+                    );
+                    let curation_status_satisfied = false;
+                    let consortium_status_satisfied = false;
+
+                    if (dataset_status > 2) {
+                      curation_status_satisfied = true;
+                    }
+                    if (dataset_status > 10) {
+                      consortium_status_satisfied = true;
+                    }
+
+                    if (!curation_status_satisfied) {
+                      $("#current_curation_team_status").text(
+                        "Not shared with the curation team"
+                      );
+                      curation_return_status = true;
+                    }
+                    if (!consortium_status_satisfied) {
+                      $("#current_sparc_consortium_status").text(
+                        "Not shared with the SPARC Consortium"
+                      );
+                      consortium_return_status = true;
+                    }
+
+                    if (curation_return_status) {
+                      $("#curation-team-unshare-btn").hide();
+                      $("#curation-team-share-btn").show();
+                    } else {
+                      $("#current_curation_team_status").text(
+                        "Shared with the curation team"
+                      );
+                      $("#curation-team-unshare-btn").show();
+                      $("#curation-team-share-btn").hide();
+                      if (mode != "update") {
+                        $("#para-share-curation_team-status").text(
+                          "You are all set! This dataset has already been shared with the Curation team."
+                        );
+                      }
+                    }
+
+                    if (consortium_return_status) {
+                      $("#sparc-consortium-unshare-btn").hide();
+                      $("#sparc-consortium-share-btn").show();
+                    } else {
+                      $("#current_sparc_consortium_status").text(
+                        "Shared with the SPARC Consortium"
+                      );
+                      $("#sparc-consortium-unshare-btn").show();
+                      $("#sparc-consortium-share-btn").hide();
+                      if (mode != "update") {
+                        $("#para-share-with-sparc-consortium-status").text(
+                          "You are all set! This dataset has already been shared with the SPARC Consortium."
+                        );
+                      }
+                    }
+
+                    if (curation_return_status && consortium_return_status) {
+                      $("#sparc-consortium-unshare-btn").hide();
+                      $("#sparc-consortium-share-btn").show();
+                      $("#curation-team-unshare-btn").hide();
+                      $("#curation-team-share-btn").show();
+                      $(".spinner.post-curation").hide();
+                      return;
+                    }
+                    
+                    $(".spinner.post-curation").hide();
+                  }
+                }
+              );
+            }
+          }
+        );
+      }
+    }
+  });
+};

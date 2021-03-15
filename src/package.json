@@ -1,7 +1,7 @@
 {
   "name": "SODA",
   "productName": "SODA",
-  "version": "4.0.0",
+  "version": "4.0.0-beta",
   "description": "Keep Calm and Curate",
   "main": "main.js",
   "scripts": {
@@ -21,6 +21,7 @@
   "build": {
     "appId": "com.calmi2.soda",
     "asar": false,
+    "generateUpdatesFilesForAllChannels": true,
     "files": [
       "**/*",
       "!pysoda/",
@@ -36,7 +37,7 @@
         "dmg",
         "zip"
       ],
-      "icon": "assets/app-icon/mac/soda_icon.icns",
+      "icon": "assets/app-icon/mac/icon.png",
       "darkModeSupport": false,
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
@@ -45,7 +46,7 @@
     },
     "linux": {
       "target": "AppImage",
-      "icon": "assets/app-icon/png/soda_icon.png"
+      "icon": "assets/app-icon/png/icon.png"
     },
     "nsis": {
       "createDesktopShortcut": "always",

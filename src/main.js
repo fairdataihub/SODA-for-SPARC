@@ -12,8 +12,10 @@ const { JSONStorage } = require("node-localstorage");
 const { trackEvent } = require("./scripts/analytics");
 const { fstat } = require("fs");
 
+autoUpdater.channel = "beta"
 log.transports.console.level = false;
 global.trackEvent = trackEvent;
+
 const nodeStorage = new JSONStorage(app.getPath("userData"));
 /*************************************************************
  * Python Process
@@ -100,7 +102,7 @@ function initialize() {
 
   loadDemos();
   function createWindow() {
-    //mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     mainWindow.webContents.on('new-window', (event, url) => { 
       event.preventDefault();
@@ -175,6 +177,7 @@ function initialize() {
       width: 220,
       height: 190,
       frame: false,
+      icon: __dirname + "/assets/menu-icon/soda_icon.png",
       alwaysOnTop: true,
       transparent: true,
     });
@@ -272,11 +275,11 @@ ipcMain.on("resize-window", (event, dir) => {
 //ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
 ipcMain.on("track-event", (event, category, action, label, value) => {
   if (label == undefined && value == undefined) {
-    //trackEvent(category, action);
+    trackEvent(category, action);
   } else if (label != undefined && value == undefined) {
-    //trackEvent(category, action, label);
+    trackEvent(category, action, label);
   } else {
-    //trackEvent(category, action, label, value);
+    trackEvent(category, action, label, value);
   }
 });
 

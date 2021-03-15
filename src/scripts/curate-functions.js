@@ -563,8 +563,8 @@ async function openDropdownPrompt(dropdown) {
       if (Object.keys(bfAccountOptions).length === 1) {
         footerMessage = "No existing accounts to load. Please add an account.";
       } else {
-        footerMessage =
-          "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Blackfynn-account'>Need help?</a>";
+        // footerMessage = "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Blackfynn-account'>Need help?</a>";
+        footerMessage = "";
       }
     } else {
       footerMessage = bfAccountOptionsStatus;
@@ -717,7 +717,7 @@ async function openDropdownPrompt(dropdown) {
       .val("Select dataset")
       .trigger("change");
     
-    initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
+    //initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
     $("#curatebfdatasetlist").selectpicker("hide");
     $('#curatebfdatasetlist').selectpicker('refresh');
@@ -993,7 +993,7 @@ const updateDatasetList = (bfaccount) => {
         myPermission.toLowerCase() +
         " permissions were loaded successfully below.";
     }
-  }, 3000);
+  }, 100);
 };
 
 /// helper function to refresh live search dropdowns per dataset permission on change event

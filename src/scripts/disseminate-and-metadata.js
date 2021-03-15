@@ -1,35 +1,42 @@
-const disseminateStatusMessage = $("#para-disseminate-status");
-const disseminateStatusMessagePublish = $("#para-disseminate-status-publish");
-
-function disseminateDataset() {
-  if ($(".bf-dataset-span").html() === "None") {
-    $(disseminateStatusMessage).css("color", "red")
-    $(disseminateStatusMessage).text("Please select a dataset!");
-  } else {
-    // check radio button to see which share option users choose
-    // 1. Share with Curation Team
-    if ($('input[name="post-curation-1"]:checked')[0].id === "share-with-curation-team") {
-      $(disseminateStatusMessage).text("");
-      ipcRenderer.send("warning-share-with-curation-team", formBannerHeight.value);
-    }
-    // 2. Share with SPARC Consortium
-    if ($('input[name="post-curation-1"]:checked')[0].id === "share-with-sparc-consortium") {
-      $(disseminateStatusMessage).text("");
-      ipcRenderer.send("warning-share-with-consortium", formBannerHeight.value);
-    }
-    // 3. Submit for pre-publishing
-    if ($('input[name="post-curation-1"]:checked')[0].id === "submit-pre-publishing") {
-      $(disseminateStatusMessage).text("");
-      disseminatePublish()
-    }
+const disseminateDataset = (option) => {
+  if (option === "share-with-curation-team") {
+    $("#share-curation-team-spinner").show();
+    $("#para-share-curation_team-status").text("");
+    ipcRenderer.send(
+      "warning-share-with-curation-team",
+      formBannerHeight.value
+    );
+  } else if (option === "share-with-sparc-consortium") {
+    $("#share-with-sparc-consortium-spinner").show();
+    $("#para-share-with-sparc-consortium-status").text("");
+    ipcRenderer.send("warning-share-with-consortium", formBannerHeight.value);
+  } else if (option === "submit-pre-publishing") {
+    $("#submit_prepublishing_review-spinner").show();
+    $("#para-submit_prepublishing_review-status").text("");
+    disseminatePublish();
   }
+  return;
 }
+
+const unshareDataset = (option) => {
+  $(".spinner.post-curation").show();
+  if (option === "share-with-curation-team") {
+    $("#para-share-curation_team-status").text("");
+    disseminateCurationTeam(defaultBfAccount, defaultBfDataset, "unshare");
+  } else if (option === "share-with-sparc-consortium") {
+    $("#para-share-with-sparc-consortium-status").text("");
+    disseminateConsortium(defaultBfAccount, defaultBfDataset, "unshare");
+  }
+};
+
 
 ipcRenderer.on("warning-share-with-curation-team-selection", (event, index) => {
   if (index === 0) {
     var account = $("#current-bf-account").text();
     var dataset = $(".bf-dataset-span").html();
     disseminateCurationTeam(account, dataset);
+  } else {
+    $("#share-curation-team-spinner").hide();
   }
 });
 
@@ -38,13 +45,20 @@ ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
     var account = $("#current-bf-account").text();
     var dataset = $(".bf-dataset-span").html();
     disseminateConsortium(account, dataset);
+  } else {
+    $("#share-with-sparc-consortium-spinner").show();
   }
-})
+});
 
-function disseminateCurationTeam(account, dataset) {
-  $("#disseminate-spinner").show();
+const disseminateCurationTeam = (account, dataset, share_status = "") => {
   var selectedTeam = "SPARC Data Curation Team";
   var selectedRole = "manager";
+
+  if (share_status === "unshare")
+  {
+    selectedRole = "remove current permissions"
+  }
+
   client.invoke(
     "api_bf_add_permission_team",
     account,
@@ -56,12 +70,19 @@ function disseminateCurationTeam(account, dataset) {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $(disseminateStatusMessage).css("color", "red")
-        $(disseminateStatusMessage).text(emessage);
-        $("#disseminate-spinner").hide();
+        $("#para-share-curation_team-status").css("color", "red");
+        $("#para-share-curation_team-status").text(emessage);
+        $("#share-curation-team-spinner").hide();
+        $(".spinner.post-curation").hide();
       } else {
         disseminateShowCurrentPermission(account, dataset);
         var selectedStatusOption = "03. Ready for Curation (Investigator)";
+
+        if (share_status === "unshare")
+        {
+          selectedStatusOption = "02. Work In Progress (Investigator)"
+        }
+
         client.invoke(
           "api_bf_change_dataset_status",
           account,
@@ -72,19 +93,40 @@ function disseminateCurationTeam(account, dataset) {
               log.error(error);
               console.error(error);
               var emessage = userError(error);
-              $(disseminateStatusMessage).css("color", "red")
-              $(disseminateStatusMessage).text(emessage);
-              $("#disseminate-spinner").hide();
+              $("#para-share-curation_team-status").css("color", "red");
+              $("#para-share-curation_team-status").text(emessage);
+              $("#share-curation-team-spinner").hide();
               ipcRenderer.send(
                 "track-event",
                 "Error",
                 "Disseminate Dataset - Share with Curation Team",
                 dataset
               );
+              $(".spinner.post-curation").hide();
             } else {
-              $(disseminateStatusMessage).css("color", "var(--color-light-green)")
-              $(disseminateStatusMessage).text('Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"');
-              $("#disseminate-spinner").hide();
+              $("#para-share-curation_team-status").css(
+                "color",
+                "var(--color-light-green)"
+              );
+              
+              $("#share-curation-team-spinner").hide();
+              
+              if (share_status === "unshare")
+              {
+                $("#para-share-curation_team-status").text(`Success - Removed the Curation Team's manager permissions and set dataset status to "Work In Progress"`);
+                $("#curation-team-unshare-btn").hide();
+                $("#curation-team-share-btn").show();
+              }
+              else {
+                $("#para-share-curation_team-status").text('Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"');
+                $("#curation-team-unshare-btn").show();
+                $("#curation-team-share-btn").hide();
+              }
+
+              curation_consortium_check("update");
+              showCurrentPermission();
+              showCurrentDatasetStatus();
+
               ipcRenderer.send(
                 "track-event",
                 "Success",
@@ -92,6 +134,7 @@ function disseminateCurationTeam(account, dataset) {
                 dataset
               );
               disseminiateShowCurrentDatasetStatus("", account, dataset);
+              $(".spinner.post-curation").hide();
             }
           }
         );
@@ -100,10 +143,15 @@ function disseminateCurationTeam(account, dataset) {
   );
 }
 
-function disseminateConsortium(bfAcct, bfDS) {
-  $("#disseminate-spinner").show();
+function disseminateConsortium(bfAcct, bfDS, share_status="") {
   var selectedTeam = "SPARC Embargoed Data Sharing Group";
   var selectedRole = "viewer";
+
+  if (share_status === "unshare")
+  {
+    selectedRole = "remove current permissions"
+  }
+
   client.invoke(
     "api_bf_add_permission_team",
     bfAcct,
@@ -115,12 +163,19 @@ function disseminateConsortium(bfAcct, bfDS) {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $(disseminateStatusMessage).css("color", "red")
-        $(disseminateStatusMessage).text(emessage)
-        $("#disseminate-spinner").hide();
+        $("#para-share-with-sparc-consortium-status").css("color", "red");
+        $("#para-share-with-sparc-consortium-status").text(emessage);
+        $("#share-with-sparc-consortium-spinner").hide();
+        $(".spinner.post-curation").hide();
       } else {
         disseminateShowCurrentPermission(bfAcct, bfDS);
         var selectedStatusOption = "11. Complete, Under Embargo (Investigator)";
+
+        if (share_status === "unshare")
+        {
+          selectedStatusOption = "10. Curated & Awaiting PI Approval (Curators)"
+        }
+
         client.invoke(
           "api_bf_change_dataset_status",
           bfAcct,
@@ -131,20 +186,44 @@ function disseminateConsortium(bfAcct, bfDS) {
               log.error(error);
               console.error(error);
               var emessage = userError(error);
-              $(disseminateStatusMessage).css("color", "red")
-              $(disseminateStatusMessage).text(emessage)
-              $("#disseminate-spinner").hide();
+              $("#para-share-with-sparc-consortium-status").css("color", "red");
+              $("#para-share-with-sparc-consortium-status").text(emessage);
+              $("#share-with-sparc-consortium-spinner").hide();
+              $(".spinner.post-curation").hide();
             } else {
-              $(disseminateStatusMessage).css("color", "var(--color-light-green)")
-              $(disseminateStatusMessage).text('Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"')
-              $("#disseminate-spinner").hide();
+              $("#para-share-with-sparc-consortium-status").css(
+                "color",
+                "var(--color-light-green)"
+              );
+              $("#para-share-with-sparc-consortium-status").text(
+                'Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"'
+              );
+
+              if (share_status === "unshare")
+              {
+                $("#para-share-with-sparc-consortium-status").text(`Success - Removed the SPARC Consortium's viewer permissions and set dataset status to "Curated & Awaiting PI Approval"`);
+                $("#sparc-consortium-unshare-btn").hide();
+                $("#sparc-consortium-share-btn").show();
+              }
+              else {
+                $("#para-share-with-sparc-consortium-status").text('Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"');
+                $("#sparc-consortium-unshare-btn").show();
+                $("#sparc-consortium-share-btn").hide();
+              }
+              
+              curation_consortium_check('update')
+              showCurrentPermission();
+              showCurrentDatasetStatus();
+
               disseminiateShowCurrentDatasetStatus("", bfAcct, bfDS);
+              $("#share-with-sparc-consortium-spinner").hide();
+              $(".spinner.post-curation").hide();
             }
           }
-        )
+        );
       }
     }
-  )
+  );
 }
 
 function disseminatePublish() {
@@ -158,43 +237,45 @@ function refreshDatasetStatus() {
 }
 
 function disseminateShowPublishingStatus(callback, account, dataset) {
-  $("#disseminate-publish-spinner").show();
   if (dataset !== "None") {
     if (callback == "noClear") {
       var nothing;
     } else {
-      $(disseminateStatusMessagePublish).text("");
-      showPublishingStatus(submitReviewDatasetCheck);
+      $("#para-submit_prepublishing_review-status").text("");
+      showPublishingStatus("noClear");
     }
   }
+  //$("#disseminate-publish-spinner").hide();
+  $("#submit_prepublishing_review-spinner").hide();
 }
 
 function disseminateShowCurrentPermission(bfAcct, bfDS) {
-  $(disseminateStatusMessage).css("color", "#000")
+  $("#para-share-curation_team-status").css("color", "#000");
   currentDatasetPermission.innerHTML = "Please wait...";
   if (bfDS === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
     bfCurrentPermissionProgress.style.display = "none";
   } else {
-    client.invoke(
-      "api_bf_get_permission",
-      bfAcct,
-      bfDS,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          bfCurrentPermissionProgress.style.display = "none";
-        } else {
-          var permissionList = "";
-          for (var i in res) {
-            permissionList = permissionList + res[i] + "<br>";
+    client.invoke("api_bf_get_permission", bfAcct, bfDS, (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+        bfCurrentPermissionProgress.style.display = "none";
+      } else {
+        var permissionList = "";
+        let datasetOwner = "";
+        for (var i in res) {
+          permissionList = permissionList + res[i] + "<br>";
+          if (res[i].indexOf("owner") != -1) {
+            let first_position = res[i].indexOf(":");
+            let second_position = res[i].indexOf(",");
+            datasetOwner = res[i].substring(first_position, second_position);
           }
-          currentDatasetPermission.innerHTML = permissionList;
-          bfCurrentPermissionProgress.style.display = "none";
         }
+        currentDatasetPermission.innerHTML = datasetOwner;
+        bfCurrentPermissionProgress.style.display = "none";
       }
-    );
+    });
   }
 }
 
@@ -249,17 +330,20 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
 
 function checkDatasetDisseminate() {
   if ($(".bf-dataset-span.disseminate").html() !== "None") {
-    if ($("#Post-curation-question-1").hasClass("prev") && !$("#Post-curation-question-4").hasClass("show")) {
+    if (
+      $("#Post-curation-question-1").hasClass("prev") &&
+      !$("#Post-curation-question-4").hasClass("show")
+    ) {
       $("#disseminate-dataset-confirm-button").click();
     }
   }
 }
 
-$(".bf-dataset-span.disseminate").on('DOMSubtreeModified',function(){
-  checkDatasetDisseminate()
-})
+$(".bf-dataset-span.disseminate").on("DOMSubtreeModified", function () {
+  //checkDatasetDisseminate()
+});
 
-$(".bf-dataset-span.submit-review").on('DOMSubtreeModified',function(){
+$(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
   if ($(this).html() !== "None") {
     $("#div-confirm-submit-review").show();
     $("#div-confirm-submit-review button").show();
@@ -267,13 +351,21 @@ $(".bf-dataset-span.submit-review").on('DOMSubtreeModified',function(){
     $("#div-confirm-submit-review").hide();
     $("#div-confirm-submit-review button").hide();
   }
-})
+});
 
 function showDDDUploadDiv() {
+  document.getElementById("para-milestone-document-info").innerHTML = "";
+  document.getElementById("para-milestone-document-info-long").innerHTML = "";
   $("#Question-prepare-submission-DDD").removeClass("prev");
-  $("#Question-prepare-submission-DDD").nextAll().removeClass("show").removeClass("prev");
+  $("#Question-prepare-submission-DDD")
+    .nextAll()
+    .removeClass("show")
+    .removeClass("prev");
   $("#div-buttons-show-DDD").hide();
+  $("#input-milestone-select").prop("placeholder", "Browse here");
+  $("#button-import-milestone").hide();
   $("#div-upload-DDD").show();
+  $("#div-cancel-DDD-import").show();
 }
 
 var sparcAwards = [];
@@ -282,8 +374,18 @@ function checkAirtableStatus() {
   ///// config and load live data from Airtable
   var airKeyContent = parseJson(airtableConfigPath);
   if (Object.keys(airKeyContent).length === 0) {
-    changeAirtableDiv("div-field-already-connected-dd", "div-field-not-connected-dd", "div-airtable-confirm-button-dd", "div-airtable-award-button-dd")
-    changeAirtableDiv("div-field-already-connected", "div-field-not-connected", "div-airtable-confirm-button", "div-airtable-award-button")
+    changeAirtableDiv(
+      "div-field-already-connected-dd",
+      "div-field-not-connected-dd",
+      "div-airtable-confirm-button-dd",
+      "div-airtable-award-button-dd"
+    );
+    changeAirtableDiv(
+      "div-field-already-connected",
+      "div-field-not-connected",
+      "div-airtable-confirm-button",
+      "div-airtable-award-button"
+    );
   } else {
     var airKeyInput = airKeyContent["api-key"];
     var airKeyName = airKeyContent["key-name"];
@@ -294,45 +396,75 @@ function checkAirtableStatus() {
       });
       var base = Airtable.base("appiYd1Tz9Sv857GZ");
       base("sparc_members")
-      .select({
-        view: "All members (ungrouped)",
-      })
-      .eachPage(
-        function page(records, fetchNextPage) {
-          records.forEach(function (record) {
-            if (record.get("Project_title") !== undefined) {
-              item = record
-              .get("SPARC_Award_#")
-              .concat(" (", record.get("Project_title"), ")");
-              sparcAwards.push(item);
+        .select({
+          view: "All members (ungrouped)",
+        })
+        .eachPage(
+          function page(records, fetchNextPage) {
+            records.forEach(function (record) {
+              if (record.get("Project_title") !== undefined) {
+                item = record
+                  .get("SPARC_Award_#")
+                  .concat(" (", record.get("Project_title"), ")");
+                sparcAwards.push(item);
+              }
+            }),
+              fetchNextPage();
+          },
+          function done(err) {
+            document.getElementById("div-awards-load-progress").style.display =
+              "none";
+            if (err) {
+              changeAirtableDiv(
+                "div-field-already-connected",
+                "div-field-not-connected",
+                "div-airtable-confirm-button",
+                "div-airtable-award-button"
+              );
+              changeAirtableDiv(
+                "div-field-already-connected-dd",
+                "div-field-not-connected-dd",
+                "div-airtable-confirm-button-dd",
+                "div-airtable-award-button-dd"
+              );
+              log.error(err);
+              console.log(err);
+              return;
+            } else {
+              // create set to remove duplicates
+              $("#current-airtable-account").text(airKeyName);
+              $("#current-airtable-account-dd").text(airKeyName);
+              changeAirtableDiv(
+                "div-field-not-connected",
+                "div-field-already-connected",
+                "div-airtable-award-button",
+                "div-airtable-confirm-button"
+              );
+              changeAirtableDiv(
+                "div-field-not-connected-dd",
+                "div-field-already-connected-dd",
+                "div-airtable-award-button-dd",
+                "div-airtable-confirm-button-dd"
+              );
+              var awardSet = new Set(sparcAwards);
+              var resultArray = [...awardSet];
+              existingSPARCAwardsTagify.settings.whitelist = resultArray;
             }
-          }),
-          fetchNextPage();
-        },
-        function done(err) {
-          document.getElementById("div-awards-load-progress").style.display =
-          "none";
-          if (err) {
-            changeAirtableDiv("div-field-already-connected", "div-field-not-connected", "div-airtable-confirm-button", "div-airtable-award-button")
-            changeAirtableDiv("div-field-already-connected-dd", "div-field-not-connected-dd", "div-airtable-confirm-button-dd", "div-airtable-award-button-dd")
-            log.error(err);
-            console.log(err);
-            return;
-          } else {
-            // create set to remove duplicates
-            $("#current-airtable-account").text(airKeyName);
-            $("#current-airtable-account-dd").text(airKeyName);
-            changeAirtableDiv("div-field-not-connected", "div-field-already-connected", "div-airtable-award-button", "div-airtable-confirm-button")
-            changeAirtableDiv("div-field-not-connected-dd", "div-field-already-connected-dd", "div-airtable-award-button-dd", "div-airtable-confirm-button-dd")
-            var awardSet = new Set(sparcAwards);
-            var resultArray = [...awardSet];
-            existingSPARCAwardsTagify.settings.whitelist = resultArray;
           }
-        }
-      );
+        );
     } else {
-      changeAirtableDiv("div-field-already-connected", "div-field-not-connected", "div-airtable-confirm-button", "div-airtable-award-button")
-      changeAirtableDiv("div-field-already-connected-dd", "div-field-not-connected-dd", "div-airtable-confirm-button-dd", "div-airtable-award-button-dd")
+      changeAirtableDiv(
+        "div-field-already-connected",
+        "div-field-not-connected",
+        "div-airtable-confirm-button",
+        "div-airtable-award-button"
+      );
+      changeAirtableDiv(
+        "div-field-already-connected-dd",
+        "div-field-not-connected-dd",
+        "div-airtable-confirm-button-dd",
+        "div-airtable-award-button-dd"
+      );
     }
   }
   $("#submission-connect-Airtable").prop("disabled", false);
@@ -341,13 +473,13 @@ function checkAirtableStatus() {
   $("#dataset-description-no-airtable-mode").prop("disabled", false);
 }
 
-checkAirtableStatus()
+checkAirtableStatus();
 
 function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
-  $("#"+divHide).hide();
-  $("#"+buttonHide).hide();
-  $("#"+divShow).show();
-  $("#"+buttonShow).show();
+  $("#" + divHide).hide();
+  $("#" + buttonHide).hide();
+  $("#" + divShow).show();
+  $("#" + buttonShow).show();
   $("#submission-connect-Airtable").text("Yes, let's connect");
 }
 
@@ -355,16 +487,25 @@ function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
 // under Prepare metadata
 
 // 1A. Select SPARC award
-$("#select-presaved-grant-info-list").change(function() {
-  $("#Question-prepare-submission-3").nextAll().removeClass("show").removeClass("prev");
+$("#select-presaved-grant-info-list").change(function () {
+  $("#Question-prepare-submission-3")
+    .nextAll()
+    .removeClass("show")
+    .removeClass("prev");
   if ($("#select-presaved-grant-info-list").val() !== "Select") {
     $("#div-confirm-select-SPARC-awards").show();
     $($("#div-confirm-select-SPARC-awards").children()[0]).show();
     var existingDDDBoolean = changeAwardInput();
     if (existingDDDBoolean) {
-      $("#btn-confirm-select-SPARC-awards").attr("data-next", "Question-prepare-submission-4");
+      $("#btn-confirm-select-SPARC-awards").attr(
+        "data-next",
+        "Question-prepare-submission-4"
+      );
     } else {
-      $("#btn-confirm-select-SPARC-awards").attr("data-next", "Question-prepare-submission-DDD");
+      $("#btn-confirm-select-SPARC-awards").attr(
+        "data-next",
+        "Question-prepare-submission-DDD"
+      );
     }
   } else {
     $("#div-confirm-select-SPARC-awards").hide();
@@ -372,7 +513,7 @@ $("#select-presaved-grant-info-list").change(function() {
   }
 });
 // 1B. Manually enter SPARC award
-$("#textarea-SPARC-award-raw-input").keyup(function() {
+$("#textarea-SPARC-award-raw-input").keyup(function () {
   if ($("#textarea-SPARC-award-raw-input").val() !== "") {
     $("#div-confirm-enter-SPARC-award").show();
     $($("#div-confirm-enter-SPARC-award").children()[0]).show();
@@ -380,12 +521,12 @@ $("#textarea-SPARC-award-raw-input").keyup(function() {
     $("#div-confirm-enter-SPARC-award").hide();
     $($("#div-confirm-enter-SPARC-award").children()[0]).hide();
   }
-})
+});
 
 // 3A. Select a completion date
 
-$("#input-milestone-date").change(function() {
-  if ($(this).val() !== ""){
+$("#input-milestone-date").change(function () {
+  if ($(this).val() !== "") {
     if (!$("#Question-prepare-submission-6").hasClass("prev")) {
       $("#div-confirm-completion-date").show();
       $($("#div-confirm-completion-date").children()[0]).show();
@@ -404,9 +545,9 @@ $("#input-milestone-date").change(function() {
   } else {
     $("#div-confirm-completion-date").hide();
   }
-})
+});
 
-$("#selected-milestone-date").change(function() {
+$("#selected-milestone-date").change(function () {
   document.getElementById("input-milestone-date").value = "";
   if ($("#selected-milestone-date").val() !== "") {
     if (descriptionDateInput.value === "Enter a date") {
@@ -434,7 +575,7 @@ $("#selected-milestone-date").change(function() {
   }
 });
 // 3B. Manually type a completion date
-$("#input-milestone-date-raw").change(function() {
+$("#input-milestone-date-raw").change(function () {
   if ($("#input-milestone-date-raw").val() !== "mm/dd/yyyy") {
     if (!$("#Question-prepare-submission-no-skip-3").hasClass("prev")) {
       $("#div-confirm-completion-date-raw").show();
@@ -455,20 +596,22 @@ $("#input-milestone-date-raw").change(function() {
     $("#div-confirm-completion-date-raw").hide();
   }
 });
-$("#btn-cancel-DDD-import").click(function() {
+$("#btn-cancel-DDD-import").click(function () {
   $("#div-cancel-DDD-import").hide();
   $("#div-upload-DDD").hide();
-  $("#div-buttons-show-DDD").show()
-})
+  $("#div-buttons-show-DDD").show();
+});
 
-$("#a-SPARC-awards-not-listed").click(editSPARCAwardsBootbox)
+$("#a-SPARC-awards-not-listed").click(editSPARCAwardsBootbox);
 
-$("#reupload-DDD").click(function() {
+$("#reupload-DDD").click(function () {
   // 1. current individual question hide & reupload individual question added (maybe onclick on transitionFreeFormMode)
-  $("#Question-prepare-submission-4").removeClass("show prev")
-  $("#Question-prepare-submission-4").nextAll().removeClass("show prev")
+  $("#Question-prepare-submission-4").removeClass("show prev");
+  $("#Question-prepare-submission-4").nextAll().removeClass("show prev");
   // first, handle target or the next div to show
-  var target = document.getElementById("Question-prepare-submission-reupload-DDD");
+  var target = document.getElementById(
+    "Question-prepare-submission-reupload-DDD"
+  );
   // display the target tab (data-next tab)
   if (!$(target).hasClass("show")) {
     $(target).addClass("show");
@@ -476,16 +619,18 @@ $("#reupload-DDD").click(function() {
   // append to parentDiv
   document.getElementById("create_submission-tab").appendChild(target);
   // auto-scroll to bottom of div
-  document.getElementById("create_submission-tab").scrollTop = document.getElementById(
+  document.getElementById(
     "create_submission-tab"
-  ).scrollHeight;
-  $("#div-cancel-reupload-DDD").show()
-})
+  ).scrollTop = document.getElementById("create_submission-tab").scrollHeight;
+  $("#div-cancel-reupload-DDD").show();
+});
 // 2. clone import DDD button
-$("#button-import-milestone-reupload").click(function() {
-  document.getElementById("para-milestone-document-info-long-reupload").style.display =
-    "none";
-  document.getElementById("para-milestone-document-info-reupload").innerHTML = "";
+$("#button-import-milestone-reupload").click(function () {
+  document.getElementById(
+    "para-milestone-document-info-long-reupload"
+  ).style.display = "none";
+  document.getElementById("para-milestone-document-info-reupload").innerHTML =
+    "";
   var filepath = document.getElementById("input-milestone-select-reupload")
     .placeholder;
   if (filepath === "Select a file") {
@@ -515,43 +660,45 @@ $("#button-import-milestone-reupload").click(function() {
         informationJson = parseJson(milestonePath);
         informationJson[award] = milestoneObj;
         fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-        document.getElementById("para-milestone-document-info-reupload").innerHTML =
-          "<span style='color: black ;'>" + "Imported!</span>";
+        document.getElementById(
+          "para-milestone-document-info-reupload"
+        ).innerHTML = "<span style='color: black ;'>" + "Imported!</span>";
         document.getElementById("input-milestone-select-reupload").placeholder =
           "Select a file";
         removeOptions(descriptionDateInput);
         milestoneTagify1.removeAllTags();
-        changeAwardInput()
+        changeAwardInput();
         $("#div-confirm-DDD-reupload").show();
-        $("#div-cancel-reupload-DDD").hide()
+        $("#div-cancel-reupload-DDD").hide();
         $($("#div-confirm-DDD-reupload").children()[0]).show();
       }
     });
   }
-})
-$("#input-milestone-select-reupload").click(function() {
-  document.getElementById("para-milestone-document-info-long-reupload").style.display =
-    "none";
+});
+$("#input-milestone-select-reupload").click(function () {
+  document.getElementById(
+    "para-milestone-document-info-long-reupload"
+  ).style.display = "none";
   ipcRenderer.send("open-file-dialog-milestone-doc-reupload");
-  });
-  ipcRenderer.on("selected-milestonedocreupload", (event, filepath) => {
+});
+ipcRenderer.on("selected-milestonedocreupload", (event, filepath) => {
   if (filepath.length > 0) {
     if (filepath != null) {
       // used to communicate value to button-import-milestone click event-listener
       document.getElementById("input-milestone-select-reupload").placeholder =
         filepath[0];
       $("#div-confirm-select-SPARC-awards").show();
-      $("#div-cancel-reupload-DDD").hide()
+      $("#div-cancel-reupload-DDD").hide();
     }
   }
-})
+});
 
-$("#cancel-reupload-DDD").click(function() {
+$("#cancel-reupload-DDD").click(function () {
   $("#Question-prepare-submission-reupload-DDD").removeClass("show prev");
-  $("#div-confirm-select-SPARC-awards").show()
-  $("#div-confirm-select-SPARC-awards button").show()
-  $("#div-confirm-select-SPARC-awards button").click()
-})
+  $("#div-confirm-select-SPARC-awards").show();
+  $("#div-confirm-select-SPARC-awards button").show();
+  $("#div-confirm-select-SPARC-awards button").click();
+});
 
 // Preview submission file entries before Generating
 function showPreviewSubmission() {
@@ -564,28 +711,25 @@ function showPreviewSubmission() {
     } else if (div.id == "Question-prepare-submission-no-skip-1") {
       sparcAwardRes = $("#textarea-SPARC-award-raw-input").val();
     } else if (div.id == "Question-prepare-submission-6") {
-        if (
-          $("#selected-milestone-date").val() ===
-          "Enter a date"
-        ) {
-          dateRes = $("#input-milestone-date").val();
-        } else {
-          dateRes = $("#selected-milestone-date").val();
-        }
+      if ($("#selected-milestone-date").val() === "Enter a date") {
+        dateRes = $("#input-milestone-date").val();
+      } else {
+        dateRes = $("#selected-milestone-date").val();
+      }
     } else if (div.id == "Question-prepare-submission-no-skip-3") {
       dateRes = $("#input-milestone-date-raw").val();
     } else if (div.id == "Question-prepare-submission-no-skip-2") {
-      milestonesRes = milestoneTagify2.value
+      milestonesRes = milestoneTagify2.value;
     } else if (div.id == "Question-prepare-submission-4") {
-      milestonesRes = milestoneTagify1.value
+      milestonesRes = milestoneTagify1.value;
     }
   }
-  return {"awards": sparcAwardRes, "date": dateRes, "milestones": milestonesRes}
+  return { awards: sparcAwardRes, date: dateRes, milestones: milestonesRes };
 }
 
 // generateSubmissionFile function takes all the values from the preview card's spans
 function generateSubmissionFile() {
-  document.getElementById("para-save-submission-status").innerHTML = ""
+  document.getElementById("para-save-submission-status").innerHTML = "";
   ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
 }
 ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
@@ -640,16 +784,20 @@ ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
       }
     }
   }
-  $("#generate-submission-spinner").hide()
-})
+  $("#generate-submission-spinner").hide();
+});
 
 // prepare dataset description each section (go in and out effects)
 $(".button-individual-dd-section.remove").click(function () {
   var metadataFileStatus = $($(this).parents()[1]).find(
     ".para-metadata-file-status"
   );
-  $($(this).parents()[1]).find(".div-dd-section-confirm").css("display", "none");
-  $($(this).parents()[1]).find(".div-dd-section-go-back").css("display", "flex");
+  $($(this).parents()[1])
+    .find(".div-dd-section-confirm")
+    .css("display", "none");
+  $($(this).parents()[1])
+    .find(".div-dd-section-go-back")
+    .css("display", "flex");
 });
 
 $(".prepare-dd-cards").click(function () {
@@ -702,18 +850,18 @@ function addNewRow(table) {
       var newRowIndex = checkForUniqueRowID("row-current-name", rowIndex);
       if (noAirtable) {
         var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +newRowIndex +"'><td class='grab'><input id='ds-description-raw-contributor-list-last-"+newRowIndex+"' class='form-container-input-bf' type='text'></input></td><td class='grab'><input id='ds-description-raw-contributor-list-first-"+newRowIndex+"' type='text' class='form-container-input-bf'></input></td><td class='grab'><input type='text' id='input-con-ID-"+newRowIndex+"' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+newRowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+newRowIndex+"'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel("+newRowIndex+")' id='ds-contact-person-"+newRowIndex+"' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-        rowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+        newRowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
         createConsRoleTagify("input-con-role-"+newRowIndex.toString())
         createConsAffliationTagify("input-con-affiliation-"+newRowIndex.toString())
       } else {
         if ($("#add-other-contributors").text() == "Cancel manual typing") {
           var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +newRowIndex +"'><td class='grab'><input placeholder='Type here' id='ds-description-raw-contributor-list-last-"+newRowIndex+"' class='form-container-input-bf' type='text'></input></td><td class='grab'><input placeholder='Type here' id='ds-description-raw-contributor-list-first-"+newRowIndex+"' type='text' class='form-container-input-bf'></input></td><td class='grab'><input type='text' id='input-con-ID-"+newRowIndex+"' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+newRowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+newRowIndex+"'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel("+newRowIndex+")' id='ds-contact-person-"+newRowIndex+"' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-          rowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+          newRowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
           createConsRoleTagify("input-con-role-"+newRowIndex.toString())
           createConsAffliationTagify("input-con-affiliation-"+newRowIndex.toString())
         } else {
           var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +newRowIndex +"'><td class='grab'><select id='ds-description-contributor-list-last-"+newRowIndex+"' onchange='onchangeLastNames("+newRowIndex+")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select disabled id='ds-description-contributor-list-first-"+newRowIndex+"' onchange='onchangeFirstNames("+newRowIndex+")' disabled class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' id='input-con-ID-"+newRowIndex+"' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+newRowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+newRowIndex+"'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel("+newRowIndex+")' id='ds-contact-person-"+newRowIndex+"' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-          rowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+          newRowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
           cloneConNamesSelect('ds-description-contributor-list-last-'+newRowIndex.toString())
           }
         }
@@ -721,33 +869,43 @@ function addNewRow(table) {
 }
 
 function checkForUniqueRowID(rowID, no) {
-  if ($("#"+rowID+no.toString()).length == 0) {
-    return no
+  if ($("#" + rowID + no.toString()).length == 0) {
+    return no;
   } else {
-    no = no + 1
-    return checkForUniqueRowID(rowID, no)
+    no = no + 1;
+    return checkForUniqueRowID(rowID, no);
   }
 }
 
 // check for duplicates in names of contributors
 function checkContributorNameDuplicates(table, currentRow) {
   var duplicate = false;
-  var currentConLastName = $("#"+currentRow.cells[0].children[0].id).val();
-  var currentConFirstName = $("#"+currentRow.cells[1].children[0].id).val();
+  var currentConLastName = $("#" + currentRow.cells[0].children[0].id).val();
+  var currentConFirstName = $("#" + currentRow.cells[1].children[0].id).val();
   var rowcount = document.getElementById(table).rows.length;
   for (var i = 1; i < rowcount - 1; i++) {
-    if ($("#"+document.getElementById(table).rows[i].cells[0].children[0].id).val() === currentConLastName
-      && $("#"+document.getElementById(table).rows[i].cells[1].children[0].id).val()  === currentConFirstName) {
+    if (
+      $(
+        "#" + document.getElementById(table).rows[i].cells[0].children[0].id
+      ).val() === currentConLastName &&
+      $(
+        "#" + document.getElementById(table).rows[i].cells[1].children[0].id
+      ).val() === currentConFirstName
+    ) {
       duplicate = true;
       break;
     }
   }
-  return duplicate
+  return duplicate;
 }
 
 function cloneConNamesSelect(selectLast) {
   removeOptions(document.getElementById(selectLast));
-  addOption(document.getElementById(selectLast), "Select an option", "Select an option");
+  addOption(
+    document.getElementById(selectLast),
+    "Select an option",
+    "Select an option"
+  );
   for (var i = 0; i < currentContributorsLastNames.length; i++) {
     var opt = currentContributorsLastNames[i];
     if (document.getElementById(selectLast)) {
@@ -760,13 +918,33 @@ function createConsRoleTagify(inputField) {
   var input = document.getElementById(inputField);
   // initialize Tagify on the above input node reference
   var tagify = new Tagify(input, {
-    whitelist: ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
+    whitelist: [
+      "PrincipleInvestigator",
+      "Creator",
+      "CoInvestigator",
+      "DataCollector",
+      "DataCurator",
+      "DataManager",
+      "Distributor",
+      "Editor",
+      "Producer",
+      "ProjectLeader",
+      "ProjectManager",
+      "ProjectMember",
+      "RelatedPerson",
+      "Researcher",
+      "ResearchGroup",
+      "Sponsor",
+      "Supervisor",
+      "WorkPackageLeader",
+      "Other",
+    ],
     enforceWhitelist: true,
-    dropdown : {
-       enabled   : 1,
-       closeOnSelect: true,
-      }
-  })
+    dropdown: {
+      enabled: 1,
+      closeOnSelect: true,
+    },
+  });
 }
 
 function createConsAffliationTagify(inputField) {
@@ -778,48 +956,72 @@ function createConsAffliationTagify(inputField) {
       maxItems: 25,
       closeOnSelect: true, // keep the dropdown open after selecting a suggestion
     },
-    duplicates: false
-  })
+    duplicates: false,
+  });
 }
 
-$(document).ready(function() {
-  $("#add-other-contributors").on("click", function() {
+$(document).ready(function () {
+  $("#add-other-contributors").on("click", function () {
     if ($(this).text() == "Add contributors not listed above") {
       addOtherContributors("table-current-contributors");
-      $(this).text("Cancel manual typing")
+      $(this).text("Cancel manual typing");
     } else {
-      cancelOtherContributors("table-current-contributors")
-      $(this).text("Add contributors not listed above")
+      cancelOtherContributors("table-current-contributors");
+      $(this).text("Add contributors not listed above");
     }
-  })
-})
+  });
+});
 
 function cancelOtherContributors(table) {
   var rowcount = document.getElementById(table).rows.length;
   var rowIndex = rowcount - 1;
-  var currentRow = document.getElementById(table).rows[document.getElementById(table).rows.length-1]
-  currentRow.cells[0].outerHTML = "<td class='grab'><select id='ds-description-contributor-list-last-"+rowIndex+"' onchange='onchangeLastNames("+rowIndex+")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td>"
-  currentRow.cells[1].outerHTML = "<td class='grab'><select disabled id='ds-description-contributor-list-first-"+rowIndex+"' onchange='onchangeFirstNames("+rowIndex+")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td>"
-  cloneConNamesSelect('ds-description-contributor-list-last-'+rowIndex.toString())
+  var currentRow = document.getElementById(table).rows[
+    document.getElementById(table).rows.length - 1
+  ];
+  currentRow.cells[0].outerHTML =
+    "<td class='grab'><select id='ds-description-contributor-list-last-" +
+    rowIndex +
+    "' onchange='onchangeLastNames(" +
+    rowIndex +
+    ")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td>";
+  currentRow.cells[1].outerHTML =
+    "<td class='grab'><select disabled id='ds-description-contributor-list-first-" +
+    rowIndex +
+    "' onchange='onchangeFirstNames(" +
+    rowIndex +
+    ")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td>";
+  cloneConNamesSelect(
+    "ds-description-contributor-list-last-" + rowIndex.toString()
+  );
 }
 
 function addOtherContributors(table) {
   var rowcount = document.getElementById(table).rows.length;
   var rowIndex = rowcount;
-  var currentRow = document.getElementById(table).rows[document.getElementById(table).rows.length-1]
-  currentRow.cells[0].outerHTML = "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-last-"+rowIndex+"'></input></td>"
-  currentRow.cells[1].outerHTML = "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-first-"+rowIndex+"'></input></td>"
-  createConsRoleTagify("input-con-role-"+currentRow.rowIndex.toString())
-  createConsAffliationTagify("input-con-affiliation-"+currentRow.rowIndex.toString())
+  var currentRow = document.getElementById(table).rows[
+    document.getElementById(table).rows.length - 1
+  ];
+  currentRow.cells[0].outerHTML =
+    "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-last-" +
+    rowIndex +
+    "'></input></td>";
+  currentRow.cells[1].outerHTML =
+    "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-first-" +
+    rowIndex +
+    "'></input></td>";
+  createConsRoleTagify("input-con-role-" + currentRow.rowIndex.toString());
+  createConsAffliationTagify(
+    "input-con-affiliation-" + currentRow.rowIndex.toString()
+  );
 }
 
 function convertDropdownToTextBox(dropdown) {
   if (document.getElementById(dropdown)) {
-      $($("#"+dropdown).parents()[1]).css("display", "none");
-      if (dropdown == "ds-description-award-list") {
-        $("#SPARC-Award-raw-input-div-dd").css("display", "flex")
-      }
+    $($("#" + dropdown).parents()[1]).css("display", "none");
+    if (dropdown == "ds-description-award-list") {
+      $("#SPARC-Award-raw-input-div-dd").css("display", "flex");
     }
+  }
 }
 
 function ddNoAirtableMode(action) {
@@ -829,25 +1031,26 @@ function ddNoAirtableMode(action) {
     convertDropdownToTextBox("ds-description-award-list");
     convertDropdownToTextBox("ds-description-contributor-list-last-1");
     convertDropdownToTextBox("ds-description-contributor-list-first-1");
-    $("#table-current-contributors").find('tr').slice(1).remove();
+    $("#table-current-contributors").find("tr").slice(1).remove();
     rowIndex = 1;
     newRowIndex = 1;
     var row = document.getElementById("table-current-contributors").insertRow(rowIndex).outerHTML="<tr id='row-current-name" +newRowIndex +"'><td class='grab'><input id='ds-description-raw-contributor-list-last-"+newRowIndex+"' class='form-container-input-bf' type='text'></input></td><td class='grab'><input id='ds-description-raw-contributor-list-first-"+newRowIndex+"' type='text' class='form-container-input-bf'></input></td><td class='grab'><input type='text' id='input-con-ID-"+newRowIndex+"' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+newRowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+newRowIndex+"'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel("+newRowIndex+")' id='ds-contact-person-"+newRowIndex+"' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-    rowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+    newRowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
     createConsRoleTagify("input-con-role-"+newRowIndex.toString())
     createConsAffliationTagify("input-con-affiliation-"+newRowIndex.toString())
   } else if (action == "Off") {
     noAirtable = false;
-    resetDDUI("table-current-contributors")
-    loadAwards()
+    resetDDUI("table-current-contributors");
+    loadAwards();
   }
 }
 
 function resetDDUI(table) {
-
   var rowcount = document.getElementById(table).rows.length;
   var rowIndex = rowcount - 1;
-  var currentRow = document.getElementById(table).rows[document.getElementById(table).rows.length-1]
+  var currentRow = document.getElementById(table).rows[
+    document.getElementById(table).rows.length - 1
+  ];
 
   $("#SPARC-Award-raw-input-div-dd").css("display", "none");
   $("#dd-description-raw-contributor-list-last-1").css("display", "none");
@@ -856,13 +1059,13 @@ function resetDDUI(table) {
   $("#dd-description-raw-contributor-list-first-1").css("display", "none");
   $($("#ds-description-award-list").parents()[1]).css("display", "flex");
   $("#add-other-contributors").css("display", "block");
-  $("#add-other-contributors").text("Add contributors not listed above")
-  $("#table-current-contributors").find('tr').slice(1).remove();
+  $("#add-other-contributors").text("Add contributors not listed above");
+  $("#table-current-contributors").find("tr").slice(1).remove();
 
   rowIndex = 1;
   newRowIndex = 1;
   var row = document.getElementById(table).insertRow(rowIndex).outerHTML="<tr id='row-current-name" +newRowIndex +"'><td class='grab'><select id='ds-description-contributor-list-last-"+newRowIndex+"' onchange='onchangeLastNames("+newRowIndex+")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select disabled id='ds-description-contributor-list-first-"+newRowIndex+"' onchange='onchangeFirstNames("+newRowIndex+")'  class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' id='input-con-ID-"+newRowIndex+"' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-"+newRowIndex+"' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-"+newRowIndex+"'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel("+newRowIndex+")' id='ds-contact-person-"+newRowIndex+"' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-  rowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
+  newRowIndex +")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>";
   changeAwardInputDsDescription()
   cloneConNamesSelect('ds-description-contributor-list-last-'+rowIndex.toString())
 }
@@ -870,32 +1073,32 @@ function resetDDUI(table) {
 function checkEmptyConRowInfo(table, row) {
   var empty = false;
   var type = ["select", "input"];
-  for (var i=0; i< row.cells.length - 2; i++) {
+  for (var i = 0; i < row.cells.length - 2; i++) {
     if (row.cells[i].style.display !== "none") {
       var cell = $(row.cells[i]);
       for (var item of type) {
         if ($(cell).find(item).length > 0) {
           if ($(cell).find(item).val() == "" || $(cell).find(item).val() == "Select an option" || $(cell).find(item).val() == "Select") {
             empty = true
-            console.log(cell)
-            console.log($(cell).find(item).val())
             break
           }
         }
       }
       if (empty) {
-        break
+        break;
       }
     }
   }
-  return empty
+  return empty;
 }
 
 function onChangeContactLabel(no) {
   $("#para-save-contributor-status").text("");
   var contactPersonBoolean = contactPersonCheck();
   if (contactPersonBoolean) {
-    $("#ds-contact-person-"+no).prop("checked", false);
-    $("#para-save-contributor-status").text("One contact person is already added above. Only one contact person is allowed for a dataset.")
+    $("#ds-contact-person-" + no).prop("checked", false);
+    $("#para-save-contributor-status").text(
+      "One contact person is already added above. Only one contact person is allowed for a dataset."
+    );
   }
 }

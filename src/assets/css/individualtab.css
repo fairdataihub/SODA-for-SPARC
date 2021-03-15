@@ -1439,10 +1439,23 @@
   text-align: left
 }
 
+.api-width > .modal-dialog {
+  width: 600px !important;
+  max-width: 600px !important;
+}
+
 .need-help-div a {
   text-decoration: underline;
   width: 30%;
   padding-top: 12px;
   border-bottom: none !important;
   text-align: right;
+}
+
+#para-review-dataset-info-disseminate {
+  color:#000;
+  font-weight:600;
+  margin-left:8px;
+  font-size:15px;
+  width: 70%;
 }
