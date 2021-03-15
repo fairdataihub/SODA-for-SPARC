@@ -543,7 +543,7 @@ $(document).ready(function () {
           } else {
             datasetList = [];
             datasetList = result;
-            refreshDatasetList();
+            //refreshDatasetList();
           }
         }
       );
@@ -889,6 +889,7 @@ function checkPrevDivForConfirmButton(category) {
 }
 
 function tempDatasetListsSync() {
+  /*
   $("#bfdatasetlist_renamedataset").val(defaultBfDataset);
   var listSelectedIndex = bfDatasetListRenameDataset.selectedIndex;
 
@@ -907,6 +908,7 @@ function tempDatasetListsSync() {
   for (var list of currentDatasetDropdowns) {
     list.selectedIndex = listSelectedIndex;
   }
+  */
   postCurationListChange();
   showDatasetDescription();
   metadataDatasetlistChange();

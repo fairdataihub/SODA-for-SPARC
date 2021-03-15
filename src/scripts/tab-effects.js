@@ -1541,7 +1541,7 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
   }
 
   if (ev.getAttribute("data-next") == "div-rename-bf-dataset") {
-    let dataset_name = $("#rename_dataset_name").html();
+    let dataset_name = $("#rename_dataset_name").text();
     $("#bf-rename-dataset-name").val(dataset_name);
   }
 
@@ -2593,10 +2593,8 @@ const description_text = {
 $("input:radio[name=main_tabs]").click(function () {
   let option = $(this).val();
   $("#tab_info_text").text(description_text[option]);
-  $(".main-tabs-section").removeClass("show");
-  $(".main-tabs-section").addClass("hide");
-  document.getElementById(option).classList.remove("hide");
-  document.getElementById(option).classList.add("show");
+  $(".main-tabs-section").hide();
+  $(`#${option}`).show();
 });
 
 $(document).ready(() => {

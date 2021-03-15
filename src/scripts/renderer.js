@@ -3792,8 +3792,8 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
 
 // Rename dataset on bf //
 bfRenameDatasetBtn.addEventListener("click", () => {
-  var selectedbfaccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedbfaccount = defaultBfAccount
+    //bfAccountList.options[bfAccountList.selectedIndex].text;
   var currentDatasetName = defaultBfDataset;
   // var currentDatasetName =
   //   bfDatasetListRenameDataset.options[bfDatasetListRenameDataset.selectedIndex]
@@ -4147,6 +4147,7 @@ bfDatasetListRenameDataset.addEventListener("change", () => {
 });
 
 function renameDatasetlistChange() {
+  return;
   if (bfDatasetListRenameDataset.value === "Select dataset") {
     renameDatasetName.value = "";
   } else {
@@ -4210,14 +4211,15 @@ bfDatasetListPermission.addEventListener("change", () => {
 });
 
 const permissionDatasetlistChange = () => {
-  console.log("permission")
+  //console.log("permission")
   bfCurrentPermissionProgress.style.display = "block";
   bfAddEditCurrentPermissionProgress.style.display = "block";
   showCurrentPermission();
-  curation_consortium_check();
+  
 }
 
 const syncDatasetDropdownOption = (dropdown) => {
+  return;
   var value;
 
   // sync dataset under Organize dataset
@@ -4742,10 +4744,12 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
           showCurrentPermission();
           enableform(bfPermissionForm);
           changeDatasetRolePI(selectedBfDataset);
+          /*
           refreshDatasetListChooseOption(
             "#bfdatasetlist_permission",
             selectedBfDataset
           );
+          */
           syncDatasetDropdownOption(bfDatasetListPermission);
         }
       }
@@ -5484,6 +5488,7 @@ function showCurrentPermission() {
           currentAddEditDatasetPermission.innerHTML = permissionList;
           bfCurrentPermissionProgress.style.display = "none";
           bfAddEditCurrentPermissionProgress.style.display = "none";
+          curation_consortium_check();
         }
       }
     );
@@ -5531,10 +5536,11 @@ function addPermissionUser(
                   datasetList[i].role = "manager";
                 }
               }
+              /*
               refreshDatasetListChooseOption(
                 "#bfdatasetlist_permission",
                 selectedBfDataset
-              );
+              );*/
               syncDatasetDropdownOption(bfDatasetListPermission);
             }
 
@@ -5546,10 +5552,11 @@ function addPermissionUser(
                 }
               }
               /// set permission back to All and refresh dataset list, and select the original dataset option
+              /*
               refreshDatasetListChooseOption(
                 "#bfdatasetlist_permission",
                 selectedBfDataset
-              );
+              );*/
               syncDatasetDropdownOption(bfDatasetListPermission);
             }
             $("#bf-add-permission-user-spinner").css("visibility", "hidden");
@@ -5718,7 +5725,7 @@ function getDatasetList() {
       } else {
         datasetList = [];
         datasetList = res["datasets"];
-        var numberOfDatasets = refreshDatasetList();
+        //var numberOfDatasets = refreshDatasetList();
       }
     }
   );
@@ -5748,7 +5755,7 @@ function changeDatasetRolePI(selectedDataset) {
 }
 
 function refreshDatasetList() {
-  console.log("here");
+  //console.log("here");
   var datasetPermission =
     datasetPermissionList.options[datasetPermissionList.selectedIndex].text;
 
@@ -5886,7 +5893,7 @@ datasetPermissionList.addEventListener("change",  (e) =>{
       addOption(list, "Select dataset", "Select dataset");
     }
 
-    var numberOfDatasetsRetrieved = refreshDatasetList();
+    var numberOfDatasetsRetrieved = 0;//refreshDatasetList();
     $("#div-permission-list").css("display", "block");
     $("#div-filter-datasets-progress").css("display", "none");
     $("#para-filter-datasets-status").html(`${numberOfDatasetsRetrieved} +
