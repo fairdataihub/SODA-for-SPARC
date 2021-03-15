@@ -476,10 +476,11 @@ function checkAirtableStatus() {
 checkAirtableStatus();
 
 function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
-  $("#" + divHide).hide();
-  $("#" + buttonHide).hide();
-  $("#" + divShow).show();
-  $("#" + buttonShow).show();
+  $("#" + divHide).css("display", "none");
+  $("#" + buttonHide).css("display", "none");
+  $("#" + divShow).css("display", "flex");
+  $("#" + buttonShow).css("display", "flex");
+  $("#" + buttonShow + " button").show();
   $("#submission-connect-Airtable").text("Yes, let's connect");
 }
 
@@ -1109,4 +1110,28 @@ function onChangeContactLabel(no) {
       "One contact person is already added above. Only one contact person is allowed for a dataset."
     );
   }
+}
+
+function resetSubmission() {
+  // 1. remove Prev and Show from all individual-question except for the first one
+  // 2. empty all input, textarea, select, placeholder, para-elements
+  // 3. Set back Preview (if necessary)
+  $("#Question-prepare-submission-1").removeClass("prev");
+  $("#Question-prepare-submission-1").nextAll().removeClass("show");
+  $("#Question-prepare-submission-1").nextAll().removeClass("prev");
+
+  var inputFields = $("#Question-prepare-submission-1").nextAll().find("input")
+  var textAreaFields = $("#Question-prepare-submission-1").nextAll().find("textarea")
+  var selectFields = $("#Question-prepare-submission-1").nextAll().find("select")
+
+  for (var field of inputFields) {$(field).val("")};
+  for (var field of textAreaFields) {$(field).val("")};
+  milestoneTagify2.removeAllTags();
+  milestoneTagify1.removeAllTags();
+  for (var field of selectFields) {$(field).val("Select")};
+
+  document.getElementById("para-milestone-document-info").innerHTML = "";
+  document.getElementById("para-milestone-document-info-long").innerHTML = "";
+  document.getElementById("para-save-submission-status").innerHTML = "";
+  checkAirtableStatus()
 }
