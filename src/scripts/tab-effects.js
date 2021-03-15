@@ -2593,8 +2593,10 @@ const description_text = {
 $("input:radio[name=main_tabs]").click(function () {
   let option = $(this).val();
   $("#tab_info_text").text(description_text[option]);
-  $(".main-tabs-section").hide();
-  $(`#${option}`).show();
+  $(".main-tabs-section").removeClass('show');
+  $(".main-tabs-section").addClass('hide');
+  document.getElementById(option).classList.remove('hide');
+  document.getElementById(option).classList.add('show');
 });
 
 $(document).ready(() => {
