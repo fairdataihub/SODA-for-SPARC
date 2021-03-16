@@ -473,7 +473,10 @@ function checkAirtableStatus() {
   $("#dataset-description-no-airtable-mode").prop("disabled", false);
 }
 
-checkAirtableStatus();
+$(document).ready(function() {
+  checkAirtableStatus();
+})
+
 
 function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
   $("#" + divHide).css("display", "none");

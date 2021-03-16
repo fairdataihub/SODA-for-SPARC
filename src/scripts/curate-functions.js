@@ -525,7 +525,9 @@ const importOrganizeProgressPrompt = () => {
   }
 }
 
-importOrganizeProgressPrompt();
+$(document).ready(function() {
+  importOrganizeProgressPrompt();
+})
 
 $(document).ready(function () {
   var accountDetails = $("#para-account-detail-curate");
