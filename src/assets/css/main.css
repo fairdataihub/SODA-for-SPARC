@@ -17,6 +17,7 @@ button:focus {
   margin-top: 5px;
 }
 
+
 .div-organize-items {
   min-height: 420px;
   padding-top: 0;
@@ -59,6 +60,11 @@ button[disabled] {
   background-color: #6c6c6c !important;
   border: 1px #6c6c6c solid !important;
   color: white !important;
+}
+
+button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id="bf_list_teams"], button[data-id="bf_list_roles_team"]{
+  border: 1px solid rgba(34,36,38,.15);
+  border-radius: 7px;
 }
 
 .sidebar {
