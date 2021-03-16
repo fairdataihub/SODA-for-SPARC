@@ -8905,6 +8905,7 @@ function initiate_generate() {
         var elapsed_time_formatted = res[5];
 
         console.log(`Data transferred (bytes): ${main_generated_dataset_size}`);
+        console.log(res);
 
         if (start_generate === 1) {
           divGenerateProgressBar.style.display = "block";

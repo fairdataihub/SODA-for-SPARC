@@ -2003,7 +2003,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     # Rename any folders that still exist.
     def recursive_folder_rename(folder, mode):
         for item in list(folder["folders"]):
-            if folder["folders"][item]["type"] == "bf":
+            if folder["folders"][item]["type"] == "bf" and 'action' in folder["folders"][item].keys():
                 if mode in folder["folders"][item]['action']:
                     file = bf.get(folder["folders"][item]["path"])
                     if file is not None:
@@ -2021,7 +2021,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     main_curate_progress_message = "Files on Blackfynn marked for deletion have been deleted"
 
     # 2. Rename any deleted folders on Blackfynn to allow for replacements.
-    mai1n_curate_progress_message = "Setting up folders on Blackfynn for deletion"
+    main_curate_progress_message = "Setting up folders on Blackfynn for deletion"
     dataset_structure = soda_json_structure["dataset-structure"]
     recursive_folder_rename(dataset_structure, "deleted")
     main_curate_progress_message = "Folders on Blackfynn have been marked for deletion"
@@ -2640,11 +2640,11 @@ def main_curate_function(soda_json_structure):
                 #     add_local_manifest_files(manifest_files_structure, datasetpath)
 
             if soda_json_structure["generate-dataset"]["destination"] == "bf":
+                main_generate_destination = soda_json_structure["generate-dataset"]["destination"] 
                 if generate_option == "new":
                     if "dataset-name" in soda_json_structure["generate-dataset"]:
                         dataset_name = soda_json_structure["generate-dataset"]["dataset-name"]
                         myds = bf_create_new_dataset(dataset_name, bf)
-                    main_generate_destination = soda_json_structure["generate-dataset"]["destination"]
                     bf_generate_new_dataset(soda_json_structure, bf, myds)
                     # if "manifest-files" in main_keys:
                     #     main_curate_progress_message = "Generating manifest files"
@@ -2666,30 +2666,6 @@ def main_curate_function_progress():
     """
     Function frequently called by front end to help keep track of the dataset generation progress
     """
-    def check_progress_stream_output(progress_output_list):
-        total_size_uploaded = 0
-        current_total_size = 0
-        for i in range(len(progress_output_list)):
-            if "completed-size" in progress_output_list[i].keys():
-                total_size_uploaded += progress_output_list[i]["completed-size"]
-            else:
-                out_log_file_path = os.path.join(pathlib.Path.home(), ".blackfynn", "out.log")
-                #out_log_file = open(out_log_file_path, "r")
-                files_dict = progress_output_list[i]["files"]
-                for file in files_dict.keys():
-                    bytes_sent = 0
-                    for line in reversed(list(open(out_log_file_path, "r"))):
-                        file_index = line.find(file)
-                        if (file_index != -1):
-                            bytes_sent_index = line.find("bytes_sent")
-                            if (bytes_sent_index != -1):
-                                bytes_sent_end_index = line.find(",", bytes_sent_index)
-                                bytes_sent = max(int(line[bytes_sent_index + 11:bytes_sent_end_index]), bytes_sent)
-                            if (line.find("FileQueuedForUpload") != -1):
-                                current_total_size += bytes_sent
-                                break
-
-        return (total_size_uploaded + current_total_size)
 
     global main_curate_status # empty if curate on going, "Done" when main curate function stopped (error or completed)
     global main_curate_progress_message
@@ -2704,16 +2680,13 @@ def main_curate_function_progress():
 
     elapsed_time = time.time() - generate_start_time
     elapsed_time_formatted = time_format(elapsed_time)
-    return_percentage_value = ""
-    text_stream = ""
 
     if start_generate == 1:
-        if main_generate_destination == "bf":
+        if main_generate_destination == "bf":  
             main_generated_dataset_size = bf_dataset_size() - main_initial_bfdataset_size
-            #main_generated_dataset_size = check_progress_stream_output(progress_percentage_array)
 
 
-    return (main_curate_status, start_generate, main_curate_progress_message, main_total_generate_dataset_size, main_generated_dataset_size, elapsed_time_formatted)
+    return (main_curate_status, start_generate, main_curate_progress_message, main_total_generate_dataset_size, main_generated_dataset_size, elapsed_time_formatted, temp, main_initial_bfdataset_size)
 
 
 def preview_dataset(soda_json_structure):
