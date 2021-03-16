@@ -1116,52 +1116,83 @@ function onChangeContactLabel(no) {
 }
 
 function resetSubmission() {
-  // 1. remove Prev and Show from all individual-question except for the first one
-  // 2. empty all input, textarea, select, para-elements
-  $("#Question-prepare-submission-1").removeClass("prev");
-  $("#Question-prepare-submission-1").nextAll().removeClass("show");
-  $("#Question-prepare-submission-1").nextAll().removeClass("prev");
 
-  var inputFields = $("#Question-prepare-submission-1").nextAll().find("input")
-  var textAreaFields = $("#Question-prepare-submission-1").nextAll().find("textarea")
-  var selectFields = $("#Question-prepare-submission-1").nextAll().find("select")
+  bootbox.confirm({
+    message:
+      "<h4>Are you sure you want to start over and reset your propress?</h4>",
+    centerVertical: true,
+    button: {
+      ok: {
+        label: "Yes",
+        className: "btn-primary",
+      },
+    },
+    callback: function (r) {
+      if (r !== null && r === true) {
+        // 1. remove Prev and Show from all individual-question except for the first one
+        // 2. empty all input, textarea, select, para-elements
+        $("#Question-prepare-submission-1").removeClass("prev");
+        $("#Question-prepare-submission-1").nextAll().removeClass("show");
+        $("#Question-prepare-submission-1").nextAll().removeClass("prev");
 
-  for (var field of inputFields) {$(field).val("")};
-  for (var field of textAreaFields) {$(field).val("")};
-  milestoneTagify2.removeAllTags();
-  milestoneTagify1.removeAllTags();
-  for (var field of selectFields) {$(field).val("Select")};
+        var inputFields = $("#Question-prepare-submission-1").nextAll().find("input")
+        var textAreaFields = $("#Question-prepare-submission-1").nextAll().find("textarea")
+        var selectFields = $("#Question-prepare-submission-1").nextAll().find("select")
 
-  document.getElementById("para-milestone-document-info").innerHTML = "";
-  document.getElementById("para-milestone-document-info-long").innerHTML = "";
-  document.getElementById("para-save-submission-status").innerHTML = "";
-  checkAirtableStatus()
+        for (var field of inputFields) {$(field).val("")};
+        for (var field of textAreaFields) {$(field).val("")};
+        milestoneTagify2.removeAllTags();
+        milestoneTagify1.removeAllTags();
+        for (var field of selectFields) {$(field).val("Select")};
+
+        document.getElementById("para-milestone-document-info").innerHTML = "";
+        document.getElementById("para-milestone-document-info-long").innerHTML = "";
+        document.getElementById("para-save-submission-status").innerHTML = "";
+        checkAirtableStatus()
+      }
+    },
+  });
 }
 
 function resetDD() {
-  // 1. empty all input, textarea, select, para-elements
-  // 2. delete all rows from table Contributor
-  // 3. delete all rows from table Links
-  var inputFields = $("#Question-prepare-dd-4-sections").find("input")
-  var textAreaFields = $("#Question-prepare-dd-4-sections").find("textarea")
-  var selectFields = $("#Question-prepare-dd-4-sections").find("select")
+  bootbox.confirm({
+    message:
+      "<h4>Are you sure you want to start over and reset your propress?</h4>",
+    centerVertical: true,
+    button: {
+      ok: {
+        label: "Yes",
+        className: "btn-primary",
+      },
+    },
+    callback: function (r) {
+      if (r !== null && r === true) {
+        // 1. empty all input, textarea, select, para-elements
+        // 2. delete all rows from table Contributor
+        // 3. delete all rows from table Links
+        var inputFields = $("#Question-prepare-dd-4-sections").find("input")
+        var textAreaFields = $("#Question-prepare-dd-4-sections").find("textarea")
+        var selectFields = $("#Question-prepare-dd-4-sections").find("select")
 
-  for (var field of inputFields) {$(field).val("")};
-  for (var field of textAreaFields) {$(field).val("")};
-  for (var field of selectFields) {
-    $(field).prop("selectedIndex", 0);
-  };
+        for (var field of inputFields) {$(field).val("")};
+        for (var field of textAreaFields) {$(field).val("")};
+        for (var field of selectFields) {
+          $(field).prop("selectedIndex", 0);
+        };
 
-  keywordTagify.removeAllTags();
-  otherFundingTagify.removeAllTags();
-  parentDSTagify.removeAllTags();
-  completenessTagify.removeAllTags();
+        keywordTagify.removeAllTags();
+        otherFundingTagify.removeAllTags();
+        parentDSTagify.removeAllTags();
+        completenessTagify.removeAllTags();
 
-  // 3. deleting table rows
-  changeAwardInputDsDescription();
-  $("#doi-table").find('tr').slice(1,-1).remove();
+        // 3. deleting table rows
+        changeAwardInputDsDescription();
+        $("#doi-table").find('tr').slice(1,-1).remove();
 
-  document.getElementById("para-generate-description-status").innerHTML = "";
-  document.getElementById("para-save-contributor-status").innerHTML = "";
-  document.getElementById("para-save-link-status").innerHTML = "";
+        document.getElementById("para-generate-description-status").innerHTML = "";
+        document.getElementById("para-save-contributor-status").innerHTML = "";
+        document.getElementById("para-save-link-status").innerHTML = "";
+      }
+    },
+  });
 }
