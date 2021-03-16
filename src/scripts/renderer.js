@@ -2460,6 +2460,12 @@ ipcRenderer.on(
                   "para-generate-description-status"
                 ).innerHTML =
                   "<span style='color: red;'> " + emessage + "</span>";
+                  ipcRenderer.send(
+                    "track-event",
+                    "Error",
+                    "Prepare Metadata - Create dataset_description",
+                    selectedBfDataset
+                  );
               } else {
                 document.getElementById(
                   "para-generate-description-status"
@@ -2468,6 +2474,12 @@ ipcRenderer.on(
                   "Done!" +
                   smileyCan +
                   "</span>";
+                ipcRenderer.send(
+                  "track-event",
+                  "Success",
+                  "Prepare Metadata - Create dataset_description",
+                  selectedBfDataset
+                );
               }
             }
           );

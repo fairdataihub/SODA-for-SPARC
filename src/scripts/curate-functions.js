@@ -706,8 +706,6 @@ async function openDropdownPrompt(dropdown) {
       .css("display", "block");
 
     $("#bf-dataset-select-header").css("display", "none")
-    //$("#curatebfdatasetlist").selectpicker("hide");
-    //$("#bf-dataset-select-div").hide();
 
     $(datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
     $("#para-continue-bf-dataset-getting-started").text("");

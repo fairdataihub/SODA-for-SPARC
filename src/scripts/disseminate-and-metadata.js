@@ -778,12 +778,24 @@ $(document).ready(function() {
                 console.error(error);
                 document.getElementById("para-save-submission-status").innerHTML =
                   "<span style='color: red;'> " + emessage + "</span>";
+                  ipcRenderer.send(
+                    "track-event",
+                    "Error",
+                    "Prepare Metadata - Create Submission",
+                    selectedBfDataset
+                  );
               } else {
                 document.getElementById("para-save-submission-status").innerHTML =
                   "<span style='color: black ;'>" +
                   "Done!" +
                   smileyCan +
                   "</span>";
+                ipcRenderer.send(
+                  "track-event",
+                  "Success",
+                  "Prepare Metadata - Create Submission",
+                  selectedBfDataset
+                );
               }
             }
           );
