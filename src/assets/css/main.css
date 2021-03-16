@@ -79,12 +79,14 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
   margin-top: 0px;
   font-size: 11px;
   font-weight: 900;
+  user-select: none;
   -webkit-user-select: none;
 }
 .sidebar_links {
   list-style-type: none;
   padding: 0;
   margin: 0;
+  user-select: none;
   -webkit-user-select: none;
 }
 
@@ -292,6 +294,7 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
 }
 
 .single-item:active {
+  transform: all 3s;
   -webkit-transform: all 3s;
 }
 
@@ -357,6 +360,7 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  user-select: none;
   -webkit-user-select: none;
   padding: 0px 4px 0px 4px;
   /* word-wrap: break-word; */

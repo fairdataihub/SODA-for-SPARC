@@ -2013,8 +2013,8 @@ $(currentConTable).mousedown(function (e) {
 
 ///// grab datalist name and auto-load current description
 const showDatasetDescription = () => {
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   let temp = datasetDescriptionFileDataset.selectedIndex;
   // var selectedBfDataset =
   //   datasetDescriptionFileDataset.options[
@@ -3674,8 +3674,8 @@ bfAccountList.addEventListener("change", () => {
   currentAddEditDatasetPermission.innerHTML = "";
   datasetPermissionList.selectedIndex = 0;
 
-  var selectedbfaccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedbfaccount = defaultBfAccount;
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   if (selectedbfaccount == "Select") {
     bfSelectAccountStatus.innerHTML = "";
     bfUploadSelectAccountStatus.innerHTML = "";
@@ -3732,8 +3732,8 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
   disableform(bfNewDatasetForm);
   //bfCreateNewDatasetStatus.innerHTML = "Adding...";
   $("#bf-create-new-dataset-spinner").css("visibility", "visible");
-  var selectedbfaccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedbfaccount = defaultBfAccount;
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   client.invoke(
     "api_bf_new_dataset_folder",
     bfNewDatasetName.value,
@@ -3874,7 +3874,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
           $("#bf-rename-dataset-spinner").css("visibility", "hidden");
           client.invoke(
             "api_bf_dataset_account",
-            bfAccountList.options[bfAccountList.selectedIndex].text,
+            defaultBfAccount,
             (error, result) => {
               if (error) {
                 log.error(error);
@@ -3907,8 +3907,8 @@ bfSubmitDatasetBtn.addEventListener("click", ()  => {
   var completionStatus = "Solving";
   document.getElementById("para-progress-bar-status").innerHTML =
     "Preparing files ...";
-  var selectedbfaccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedbfaccount = defaultBfAccount
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   //var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text;
   var selectedbfdataset = defaultBfDataset;
   client.invoke(
@@ -4375,8 +4375,8 @@ $(bfListDatasetStatus).on("change", () => {
   $("#bf-dataset-status-spinner").css("display", "block");
   datasetStatusStatus.innerHTML = "";
   selectOptionColor(bfListDatasetStatus);
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   //var selectedBfDataset = bfDatasetListDatasetStatus.options[bfDatasetListDatasetStatus.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var selectedStatusOption =
@@ -4417,8 +4417,8 @@ bfAddSubtitleBtn.addEventListener("click", () => {
   $("#bf-add-subtitle-dataset-spinner").show();
   //datasetSubtitleStatus.innerHTML = "Please wait...";
   disableform(bfMetadataForm);
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   //var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var inputSubtitle = bfDatasetSubtitle.value;
@@ -4468,8 +4468,8 @@ bfAddDescriptionBtn.addEventListener("click", () => {
   $("#bf-add-description-dataset-spinner").show();
   //datasetDescriptionStatus.innerHTML = "Please wait...";
   disableform(bfMetadataForm);
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   // var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var markdownDescription = tuiInstance.getMarkdown();
@@ -4583,8 +4583,8 @@ function uploadBannerImage() {
   var croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then( () => {
     if (fs.statSync(imagePath)["size"] < 5 * 1024 * 1024) {
-      var selectedBfAccount =
-        bfAccountList.options[bfAccountList.selectedIndex].text;
+      var selectedBfAccount = defaultBfAccount;
+      //  bfAccountList.options[bfAccountList.selectedIndex].text;
       //var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
       var selectedBfDataset = defaultBfDataset;
       client.invoke(
@@ -4672,8 +4672,8 @@ bfAddLicenseBtn.addEventListener("click", () => {
   $("#bf-add-license-dataset-spinner").show();
   datasetLicenseStatus.innerHTML = "Please wait...";
   disableform(bfMetadataForm);
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   //var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   /*var selectedLicense = bfListLicense.options[bfListLicense.selectedIndex].text*/
@@ -4776,13 +4776,13 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
 
 // Add permission for user //
 bfAddPermissionBtn.addEventListener("click", () => {
-  $("#bf-add-permission-user-spinner").css("visibility", "visible");
+  $("#bf-add-permission-user-spinner").show();
   datasetPermissionStatus.innerHTML = "";
   bfCurrentPermissionProgress.style.display = "block";
   bfAddEditCurrentPermissionProgress.style.display = "block";
   disableform(bfPermissionForm);
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   //var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text;
@@ -4802,8 +4802,8 @@ bfAddPermissionBtn.addEventListener("click", () => {
 
 ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
   datasetPermissionStatus.innerHTML = "";
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   //var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text;
@@ -4815,9 +4815,9 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
       selectedUser,
       selectedRole
     );
-    $("#bf-add-permission-user-spinner").css("visibility", "hidden");
+    $("#bf-add-permission-user-spinner").hide();
   } else {
-    $("#bf-add-permission-user-spinner").css("visibility", "hidden");
+    $("#bf-add-permission-user-spinner").hide();
     bfCurrentPermissionProgress.style.display = "none";
     bfAddEditCurrentPermissionProgress.style.display = "none";
     enableform(bfPermissionForm);
@@ -4826,14 +4826,12 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
 
 // Add permission for team
 bfAddPermissionTeamBtn.addEventListener("click", () => {
-  $("#bf-add-permission-team-spinner").css("visibility", "visible");
+  $("#bf-add-permission-team-spinner").show();
   datasetPermissionStatusTeam.innerHTML = "";
   bfCurrentPermissionProgress.style.display = "block";
   bfAddEditCurrentPermissionProgress.style.display = "block";
   disableform(bfPermissionForm);
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
-  // var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
   var selectedTeam = bfListTeams.options[bfListTeams.selectedIndex].text;
   var selectedRole =
@@ -4849,14 +4847,14 @@ bfAddPermissionTeamBtn.addEventListener("click", () => {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $("#bf-add-permission-team-spinner").css("visibility", "hidden");
+        $("#bf-add-permission-team-spinner").hide();
         datasetPermissionStatusTeam.innerHTML =
           "<span style='color: red;'> " + emessage + "</span>";
         bfCurrentPermissionProgress.style.display = "none";
         bfAddEditCurrentPermissionProgress.style.display = "none";
         enableform(bfPermissionForm);
       } else {
-        $("#bf-add-permission-team-spinner").css("visibility", "hidden");
+        $("#bf-add-permission-team-spinner").hide();
         datasetPermissionStatusTeam.innerHTML = res;
         showCurrentPermission();
         enableform(bfPermissionForm);
@@ -4882,8 +4880,8 @@ function shareWithCurationTeam() {
   bfPostCurationProgressCuration.style.display = "block";
   // disableform(bfPermissionForm)
   bfAddPermissionCurationTeamBtn.disabled = true;
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
+  // bfAccountList.options[bfAccountList.selectedIndex].text;
   //var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var selectedTeam = "SPARC Data Curation Team";
@@ -4963,8 +4961,8 @@ function shareWithCurationTeam() {
 function shareWithConsortium() {
   shareConsortiumStatus.innerHTML = "Please wait...";
   bfShareConsortiumBtn.disabled = true;
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var selectedTeam = "SPARC Embargoed Data Sharing Group";
   var selectedRole = "viewer";
@@ -5218,7 +5216,8 @@ function userError(error) {
 
 function refreshBfDatasetList(bfdstlist, bfAccountList) {
   removeOptions(bfdstlist);
-  var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text;
+  var accountSelected = defaultBfAccount;
+  //bfAccountList.options[bfAccountList.selectedIndex].text;
   if (accountSelected === "Select") {
     var optionSelect = document.createElement("option");
     optionSelect.textContent = "Select dataset";
@@ -5226,7 +5225,7 @@ function refreshBfDatasetList(bfdstlist, bfAccountList) {
   } else {
     client.invoke(
       "api_bf_dataset_account",
-      bfAccountList.options[bfAccountList.selectedIndex].text,
+      accountSelected,
       (error, res) => {
         if (error) {
           log.error(error);
@@ -5250,8 +5249,8 @@ function refreshAllBfDatasetLists() {
 }
 
 function showCurrentSubtitle() {
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   //var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
   if (selectedBfDataset === "Select dataset") {
@@ -5277,8 +5276,8 @@ function showCurrentSubtitle() {
 }
 
 function showCurrentDescription() {
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
+    //bfAccountList.options[bfAccountList.selectedIndex].text;
     //var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
     var selectedBfDataset = defaultBfDataset;
     if (selectedBfDataset === "Select dataset") {
@@ -5303,8 +5302,8 @@ function showCurrentDescription() {
 }
 
 const showCurrentBannerImage = () => {
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   //var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   if (selectedBfDataset === "Select dataset") {
@@ -5364,8 +5363,8 @@ const showCurrentBannerImage = () => {
 
 function showCurrentLicense() {
   currentDatasetLicense.innerHTML = "Please wait...";
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   //var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   if (selectedBfDataset === "Select dataset") {
@@ -5404,7 +5403,8 @@ function showCurrentLicense() {
 }
 
 function refreshBfUsersList() {
-  var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text;
+  var accountSelected = defaultBfAccount;
+  //bfAccountList.options[bfAccountList.selectedIndex].text;
 
   removeOptions(bfListUsers);
   var optionUser = document.createElement("option");
@@ -5438,14 +5438,15 @@ function refreshBfUsersList() {
 
 function refreshBfTeamsList(teamList) {
   removeOptions(teamList);
-  var accountSelected = bfAccountList.options[bfAccountList.selectedIndex].text;
+  var accountSelected = defaultBfAccount;
+  //bfAccountList.options[bfAccountList.selectedIndex].text;
   var optionTeam = document.createElement("option");
   optionTeam.textContent = "Select team";
   teamList.appendChild(optionTeam);
   if (accountSelected !== "Select") {
     client.invoke(
       "api_bf_get_teams",
-      bfAccountList.options[bfAccountList.selectedIndex].text,
+      accountSelected,
       (error, res) => {
         if (error) {
           log.error(error);
@@ -5522,7 +5523,7 @@ function addPermissionUser(
     selectedRole,
     (error, res) => {
       if (error) {
-        $("#bf-add-permission-user-spinner").css("visibility", "hidden");
+        $("#bf-add-permission-user-spinner").hide();
         log.error(error);
         console.error(error);
         var emessage = userError(error);
@@ -5539,7 +5540,7 @@ function addPermissionUser(
         // refresh dataset lists with filter
         client.invoke("api_get_username", selectedBfAccount, (error, res1) => {
           if (error) {
-            $("#bf-add-permission-user-spinner").css("visibility", "hidden");
+            $("#bf-add-permission-user-spinner").hide();
             log.error(error);
             console.error(error);
           } else {
@@ -5572,7 +5573,7 @@ function addPermissionUser(
               );*/
               syncDatasetDropdownOption(bfDatasetListPermission);
             }
-            $("#bf-add-permission-user-spinner").css("visibility", "hidden");
+            $("#bf-add-permission-user-spinner").hide();
           }
         });
       }
@@ -5592,8 +5593,8 @@ const addRadioOption = (ul, text, val) => {
 };
 
 function showCurrentDatasetStatus(callback) {
-  var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   //var selectedBfDataset = bfDatasetListDatasetStatus.options[bfDatasetListDatasetStatus.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   if (selectedBfDataset === "Select dataset") {
@@ -5663,7 +5664,7 @@ function showAccountDetails(loadProgress) {
 
   client.invoke(
     "api_bf_account_details",
-    bfAccountList.options[bfAccountList.selectedIndex].text,
+    defaultBfAccount,
     (error, res) => {
       if (error) {
         log.error(error);
@@ -5691,7 +5692,7 @@ function showAccountDetails(loadProgress) {
         datasetPermissionList.disabled = true;
         client.invoke(
           "api_bf_dataset_account",
-          bfAccountList.options[bfAccountList.selectedIndex].text,
+          defaultBfAccount,
           (error, result) => {
             if (error) {
               log.error(error);
@@ -5730,7 +5731,7 @@ function showAccountDetails(loadProgress) {
 function getDatasetList() {
   client.invoke(
     "api_bf_account_details",
-    bfAccountList.options[bfAccountList.selectedIndex].text,
+    defaultBfAccount,
     (error, res) => {
       if (error) {
         log.error(error);
@@ -5885,7 +5886,7 @@ datasetPermissionList.addEventListener("change",  (e) =>{
   var datasetPermission =
     datasetPermissionList.options[datasetPermissionList.selectedIndex].text;
 
-  if (bfAccountList.options[bfAccountList.selectedIndex].text === "Select") {
+  if (defaultBfAccount === "Select") {
     document.getElementById("para-filter-datasets-status").innerHTML =
       "<span style='color:red'>Please select an account first!</span>";
   } else {
@@ -6013,7 +6014,7 @@ function showCurrentDOI() {
   reserveDOIStatus.innerHTML = "";
   bfPostCurationProgressDOI.style.display = "block";
   var selectedBfAccount =
-    bfAccountList.options[bfAccountList.selectedIndex].text;
+    defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
   if (selectedBfDataset === "Select dataset") {
     currentDOI.value = "-------";
@@ -8859,7 +8860,7 @@ function initiate_generate() {
       // forceActionSidebar('show');
       client.invoke(
         "api_bf_dataset_account",
-        bfAccountList.options[bfAccountList.selectedIndex].text,
+        defaultBfAccount,
         (error, result) => {
           if (error) {
             log.error(error);
@@ -8878,7 +8879,7 @@ function initiate_generate() {
       console.log("Completed curate function");
       client.invoke(
         "api_bf_dataset_account",
-        bfAccountList.options[bfAccountList.selectedIndex].text,
+        defaultBfAccount,
         (error, result) => {
           if (error) {
             log.error(error);
