@@ -1337,7 +1337,7 @@
                 <button onclick="unshareDataset('share-with-sparc-consortium')" id="sparc-consortium-unshare-btn" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 140px;height:40px;background:#fff;color:red;font-weight:600;border:1px solid red;font-size:15px; display: none;">
                   <i class="fas fa-share" style="padding-right:5px"></i>
                   Unshare</button>
-                <button id="sparc-consortium-share-btn" onclick="disseminateDataset('share-with-sparc-consortium')" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:15px display: none;">
+                <button id="sparc-consortium-share-btn" onclick="disseminateDataset('share-with-sparc-consortium')" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:15px; display: none;">
                   <i class="fas fa-share" style="padding-right:5px"></i>
                   Share now</button>
               </div>
@@ -6004,27 +6004,28 @@
           <div class="ui form" style="width: 500px">
             <div class="grouped fields">
               <div class="field" style="display: flex; width: 500px; margin: auto">
-                <button
-                  id="button-submit-dataset"
-                  class="demo-button"
-                  onclick="transitionFreeFormMode(this, 'upload_local_dataset_final_question_div', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-content="Push all the files/folders from the selected local folder into the selected Blackfynn dataset. Local folder structure will be preserved. The progress bar located below will provide a live update on the upload." rel="popover" data-placement="right" data-trigger="hover"
-                  data-next="upload_local_dataset_progress_div"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 140px;
-                    height: 40px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 15px;
-                  "
-                >
-                  Upload dataset
-                </button>
+                <div class="coming-soon-div" data-content="Push all the files/folders from the selected local folder into the selected Blackfynn dataset. Local folder structure will be preserved. The progress bar located below will provide a live update on the upload." rel="popover" data-placement="right" data-trigger="hover">
+                  <button
+                    id="button-submit-dataset"
+                    class="demo-button"
+                    onclick="transitionFreeFormMode(this, 'upload_local_dataset_final_question_div', 'upload_local_dataset_parent-tab', '', 'individual-question manage-dataset')"
+                    data-next="upload_local_dataset_progress_div"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 140px;
+                      height: 40px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 15px;
+                    "
+                  >
+                    Upload dataset
+                  </button>
+                </div>
               </div>
             </div>
           </div>
