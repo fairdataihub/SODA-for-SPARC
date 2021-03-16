@@ -525,7 +525,9 @@ const importOrganizeProgressPrompt = () => {
   }
 }
 
-importOrganizeProgressPrompt();
+$(document).ready(function() {
+  importOrganizeProgressPrompt();
+})
 
 $(document).ready(function () {
   var accountDetails = $("#para-account-detail-curate");
@@ -686,6 +688,8 @@ async function openDropdownPrompt(dropdown) {
       showBFAddAccountBootbox();
     }
   } else if (dropdown === "dataset") {
+    // disable the Continue btn first
+    $("#nextBtn").prop("disabled", true);
     var bfDataset = "";
 
     // if users edit Current dataset

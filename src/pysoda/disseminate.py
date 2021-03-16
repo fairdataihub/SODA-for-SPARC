@@ -34,17 +34,6 @@ import pathlib
 
 from datetime import datetime, timezone
 from pysoda import bf_get_current_user_permission
-# 
-# makedirs(join(userpath, 'SODA', 'python-log'), exist_ok=True)
-# logpath = join(userpath, 'SODA', 'python-log', f"{__name__}.log")
-#
-# logging.basicConfig(level=logging.DEBUG, filename=logpath)
-# logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
-# handler = logging.FileHandler(logpath)
-# handler.setLevel(logging.DEBUG)
-# logger.addHandler(handler)
-
 
 """
     Function to get current doi for a selected dataset

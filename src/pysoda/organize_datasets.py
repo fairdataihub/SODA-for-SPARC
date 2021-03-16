@@ -59,7 +59,6 @@ start_time_bf_upload = 0
 start_submit = 0
 metadatapath = join(userpath, 'SODA', 'SODA_metadata')
 
-# makedirs(join(userpath, 'SODA', 'python-log'), exist_ok=True)
 logpath = join(userpath, 'SODA', 'python-log', f"{__name__}.log")
 
 logging.basicConfig(level=logging.DEBUG, filename=logpath)

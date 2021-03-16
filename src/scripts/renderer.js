@@ -2124,7 +2124,7 @@ function grabDSInfoEntries() {
     name = "N/A";
   } else {
     name = rawName.value;
-    if (name === "Select dataset") {
+    if (name === "Select") {
       name = "N/A";
     }
   }
@@ -4216,7 +4216,7 @@ const permissionDatasetlistChange = () => {
   bfCurrentPermissionProgress.style.display = "block";
   bfAddEditCurrentPermissionProgress.style.display = "block";
   showCurrentPermission();
-  
+
 }
 
 const syncDatasetDropdownOption = (dropdown) => {
@@ -5830,7 +5830,6 @@ const clearDatasetDropdowns = () => {
 
 /// populate the dropdowns with refreshed dataset list
 function populateDatasetDropdowns(mylist) {
-  console.log(mylist);
   clearDatasetDropdowns();
   for (myitem in mylist) {
     var myitemselect = mylist[myitem];
@@ -9152,7 +9151,6 @@ const curation_consortium_check = (mode = "") => {
   $("#sparc-consortium-unshare-btn").hide();
   $("#curation-team-share-btn").hide();
   $("#sparc-consortium-share-btn").hide();
-  console.log(selected_account, mode);
 
   client.invoke("api_bf_account_details", selected_account, (error, res) => {
     $(".spinner.post-curation").show();
