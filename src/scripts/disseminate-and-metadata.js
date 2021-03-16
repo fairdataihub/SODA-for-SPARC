@@ -1114,8 +1114,7 @@ function onChangeContactLabel(no) {
 
 function resetSubmission() {
   // 1. remove Prev and Show from all individual-question except for the first one
-  // 2. empty all input, textarea, select, placeholder, para-elements
-  // 3. Set back Preview (if necessary)
+  // 2. empty all input, textarea, select, para-elements
   $("#Question-prepare-submission-1").removeClass("prev");
   $("#Question-prepare-submission-1").nextAll().removeClass("show");
   $("#Question-prepare-submission-1").nextAll().removeClass("prev");
@@ -1134,4 +1133,32 @@ function resetSubmission() {
   document.getElementById("para-milestone-document-info-long").innerHTML = "";
   document.getElementById("para-save-submission-status").innerHTML = "";
   checkAirtableStatus()
+}
+
+function resetDD() {
+  // 1. empty all input, textarea, select, para-elements
+  // 2. delete all rows from table Contributor
+  // 3. delete all rows from table Links
+  var inputFields = $("#Question-prepare-dd-4-sections").find("input")
+  var textAreaFields = $("#Question-prepare-dd-4-sections").find("textarea")
+  var selectFields = $("#Question-prepare-dd-4-sections").find("select")
+
+  for (var field of inputFields) {$(field).val("")};
+  for (var field of textAreaFields) {$(field).val("")};
+  for (var field of selectFields) {
+    $(field).prop("selectedIndex", 0);
+  };
+
+  keywordTagify.removeAllTags();
+  otherFundingTagify.removeAllTags();
+  parentDSTagify.removeAllTags();
+  completenessTagify.removeAllTags();
+
+  // 3. deleting table rows
+  changeAwardInputDsDescription();
+  $("#doi-table").find('tr').slice(1,-1).remove();
+
+  document.getElementById("para-generate-description-status").innerHTML = "";
+  document.getElementById("para-save-contributor-status").innerHTML = "";
+  document.getElementById("para-save-link-status").innerHTML = "";
 }

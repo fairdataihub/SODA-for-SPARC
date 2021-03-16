@@ -2124,7 +2124,7 @@ function grabDSInfoEntries() {
     name = "N/A";
   } else {
     name = rawName.value;
-    if (name === "Select dataset") {
+    if (name === "Select") {
       name = "N/A";
     }
   }
@@ -4215,7 +4215,7 @@ const permissionDatasetlistChange = () => {
   bfCurrentPermissionProgress.style.display = "block";
   bfAddEditCurrentPermissionProgress.style.display = "block";
   showCurrentPermission();
-  
+
 }
 
 const syncDatasetDropdownOption = (dropdown) => {
