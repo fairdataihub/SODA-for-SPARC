@@ -3894,13 +3894,14 @@ bfRenameDatasetBtn.addEventListener("click", () => {
 });
 
 // Submit dataset to bf //
-bfSubmitDatasetBtn.addEventListener("click", () => {
+bfSubmitDatasetBtn.addEventListener("click", ()  => {
   var totalFileSize;
   document.getElementById("para-please-wait-manage-dataset").innerHTML =
     "Please wait...";
   document.getElementById("para-progress-bar-error-status").innerHTML = "";
   progressBarUploadBf.value = 0;
   bfSubmitDatasetBtn.disabled = true;
+  $("#button-submit-dataset").popover("hide");
   pathSubmitDataset.disabled = true;
   var err = false;
   var completionStatus = "Solving";
@@ -8916,7 +8917,6 @@ function initiate_generate() {
         var elapsed_time_formatted = res[5];
 
         console.log(`Data transferred (bytes): ${main_generated_dataset_size}`);
-        console.log(res);
 
         if (start_generate === 1) {
           divGenerateProgressBar.style.display = "block";
