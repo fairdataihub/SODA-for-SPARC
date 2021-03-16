@@ -4310,15 +4310,16 @@
                   "
                 >
                   <select
-                    class="my-dropdown"
-                    style="width: 60%; padding: 8px 12px; height: 38px"
+                    class="selectpicker"
+                    data-live-search="true"
+                    style="width: 60%; padding: 8px 12px; height: 38px;border-radius: 5px;border:1px solid black;"
                     id="bf_list_users"
                   >
                     <option>Select user</option>
                   </select>
 
                   <select
-                    class="my-dropdown"
+                    class="selectpicker"
                     id="bf_list_roles"
                     style="width: 35%; padding: 8px 12px; height: 38px"
                   >
@@ -4415,7 +4416,9 @@
                   "
                 >
                   <select
-                    class="my-dropdown"
+                    class="selectpicker"
+                    data-live-search="true"
+                    data-width="true"
                     style="width: 60%; padding: 8px 12px; height: 38px"
                     id="bf_list_teams"
                   >
@@ -4423,7 +4426,7 @@
                   </select>
 
                   <select
-                    class="my-dropdown"
+                    class="selectpicker"
                     id="bf_list_roles_team"
                     style="width: 35%; padding: 8px 12px; height: 38px"
                   >
@@ -6001,7 +6004,7 @@
         >
           <div class="ui form" style="width: 500px">
             <div class="grouped fields">
-              <div class="field" style="display: flex; width: 500px; margin: auto">
+              <div class="field" style="display: flex; width: 500px; margin: auto;justify-content: center;">
                 <div class="coming-soon-div" data-content="Push all the files/folders from the selected local folder into the selected Blackfynn dataset. Local folder structure will be preserved. The progress bar located below will provide a live update on the upload." rel="popover" data-placement="right" data-trigger="hover">
                   <button
                     id="button-submit-dataset"
