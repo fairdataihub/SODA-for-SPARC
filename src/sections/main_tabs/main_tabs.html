@@ -3223,7 +3223,7 @@
         </div>
       </header>
 
-      <div id="create_new_bf_dataset-tab" style="overflow-y: auto; height: calc(100% - 150px)">
+      <div id="create_new_bf_dataset-tab" style="overflow-y: auto; height: calc(100% - 150px); margin-left: -70px;">
         <div
           class="individual-question manage-dataset show"
           id="create_empty_dataset_BF_account_tab" style="height: auto"
@@ -3259,10 +3259,11 @@
                       margin-bottom: 15px;
                     "
                   >
+                  <div class="card-container manage-dataset">
                     <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current account:
-                        <span
+                      <h5 class="card-left" style="text-align: right; color: #808080; font-size: 15px; padding-right: 5px;">
+                        Current account:</h5>
+                        <h5 class="card-right bf-dataset-span"
                           style="
                             color: #000;
                             font-weight: 600;
@@ -3270,10 +3271,9 @@
                             font-size: 15px;
                           "
                           id="create_empty_dataset_BF_account_span"
-                          >None</span
-                        >
-                      </h5>
+                          >None</h5>
                     </div>
+                  </div>
                     <svg
                       class="svg-change-current-account"
                       onclick="openDropdownPrompt('bf')"
@@ -3296,10 +3296,12 @@
                       margin-bottom: 15px;
                     "
                   >
-                    <h5 style="color: #808080; font-size: 15px">
+                  <div class="card-container manage-dataset">
+                    <div>
+                    <h5 class="card-left" style="text-align:right; color: #808080; font-size: 15px; padding-right: 5px;">
                       Account details:
                     </h5>
-                    <p
+                    <h5 class="card-right bf-dataset-span"
                       style="
                         color: #000;
                         font-weight: 600;
@@ -3309,7 +3311,9 @@
                       id="para_create_empty_dataset_BF_account"
                     >
                       None
-                    </p>
+                  </h5>
+                </div>
+              </div>
                   </div>
                 </div>
               </div>
