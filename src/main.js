@@ -12,7 +12,7 @@ const { JSONStorage } = require("node-localstorage");
 const { trackEvent } = require("./scripts/analytics");
 const { fstat } = require("fs");
 
-autoUpdater.channel = "beta"
+autoUpdater.channel = "beta";
 log.transports.console.level = false;
 global.trackEvent = trackEvent;
 
@@ -104,10 +104,10 @@ function initialize() {
   function createWindow() {
     mainWindow.webContents.openDevTools();
 
-    mainWindow.webContents.on('new-window', (event, url) => { 
+    mainWindow.webContents.on("new-window", (event, url) => {
       event.preventDefault();
       shell.openExternal(url);
-    })
+    });
 
     mainWindow.webContents.once("dom-ready", () => {
       if (updatechecked == false) {

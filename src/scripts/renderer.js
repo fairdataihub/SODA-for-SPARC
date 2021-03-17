@@ -24,6 +24,7 @@ const bootbox = require("bootbox");
 const DragSelect = require("dragselect");
 const excelToJson = require("convert-excel-to-json");
 const csvToJson = require("convert-csv-to-json");
+
 const app = remote.app;
 var noAirtable = false;
 
@@ -60,14 +61,14 @@ client.invoke("echo", "server ready", (error, res) => {
 // Log file settings //
 log.transports.console.level = false;
 log.transports.file.maxSize = 1024 * 1024 * 10;
-var homeDirectory = app.getPath("home");
+const homeDirectory = app.getPath("home");
 
 // Check default radio buttons //
 document.getElementById("selectAccount").click();
-document.getElementById("createDataset").click();
-document.getElementById("add-edit-subtitle").click();
-document.getElementById("pi-owner").click();
-document.getElementById("cloud-dataset").click();
+//document.getElementById("createDataset").click();
+//document.getElementById("add-edit-subtitle").click();
+//document.getElementById("pi-owner").click();
+// document.getElementById("cloud-dataset").click();
 document.getElementById("organize-dataset").click();
 
 //log user's OS version //
@@ -166,6 +167,7 @@ function checkNewAppVersion() {
     })
 }
 */
+
 //////////////////////////////////
 // Get html elements from UI
 //////////////////////////////////
@@ -335,7 +337,7 @@ const validateSODAProgressBar = document.getElementById(
 // Generate dataset //
 const createNewStatus = document.querySelector("#create-newdataset");
 const modifyExistingStatus = document.querySelector("#existing-dataset");
-const bfUploadDirectlyStatus = document.querySelector("#cloud-dataset");
+// const bfUploadDirectlyStatus = document.querySelector("#cloud-dataset");
 const selectnewDatasetBtn = document.getElementById("selected-new-dataset");
 const importnewDatasetBtn = document.getElementById(
   "button-select-new-dataset"
@@ -367,8 +369,8 @@ const bfAccountLoadProgressCurate = document.querySelector(
 const datasetPermissionList = document.getElementById("select-permission-list");
 var myitem;
 var datasetList = [];
-const bfDatasetList = document.querySelector("#bfdatasetlist");
-const bfUploadDatasetList = document.querySelector("#bfuploaddatasetlist");
+//const bfDatasetList = document.querySelector("#bfdatasetlist");
+//const bfUploadDatasetList = document.querySelector("#bfuploaddatasetlist");
 const bfSelectAccountStatus = document.getElementById(
   "para-select-account-status"
 );
@@ -406,9 +408,7 @@ const pathSubmitDataset = document.querySelector(
 );
 const progressUploadBf = document.getElementById("div-progress-submit");
 const progressBarUploadBf = document.getElementById("progress-bar-upload-bf");
-const bfDatasetListRenameDataset = document.querySelector(
-  "#bfdatasetlist_renamedataset"
-);
+//const bfDatasetListRenameDataset = document.querySelector("#bfdatasetlist_renamedataset");
 const bfRenameDatasetBtn = document.getElementById("button-rename-dataset");
 const bfRefreshDatasetRenameDatasetBtn = document.getElementById(
   "button-refresh-dataset-renamedataset-list"
@@ -421,7 +421,7 @@ const datasetPermissionDiv = document.getElementById("div-permission-list-2");
 
 // Blackfynn dataset metadata //
 const bfMetadataForm = document.querySelector("#bf-add-metadata-form");
-const bfDatasetListMetadata = document.querySelector("#bfdatasetlist_metadata");
+//const bfDatasetListMetadata = document.querySelector("#bfdatasetlist_metadata");
 const bfCurrentMetadataProgress = document.querySelector(
   "#div-bf-current-metadata-progress"
 );
@@ -458,10 +458,8 @@ const datasetLicenseStatus = document.querySelector(
 );
 
 // Blackfynn dataset permission //
-const bfPermissionForm = document.querySelector("#blackfynn-permission-form");
-const bfDatasetListPermission = document.querySelector(
-  "#bfdatasetlist_permission"
-);
+//const bfPermissionForm = document.querySelector("#blackfynn-permission-form");
+//const bfDatasetListPermission = document.querySelector("#bfdatasetlist_permission");
 const currentDatasetPermission = document.querySelector(
   "#para-dataset-permission-current"
 );
@@ -503,9 +501,7 @@ const datasetPermissionStatusTeam = document.querySelector(
 );
 
 //Blackfynn dataset status
-const bfDatasetListDatasetStatus = document.querySelector(
-  "#bfdatasetlist_dataset_status"
-);
+//const bfDatasetListDatasetStatus = document.querySelector("#bfdatasetlist_dataset_status");
 const bfCurrentDatasetStatusProgress = document.querySelector(
   "#div-bf-current-dataset-status-progress"
 );
@@ -522,42 +518,14 @@ const bfRefreshDatasetStatusBtn = document.getElementById(
 const bfDatasetListPostCurationDOI = document.querySelector(
   "#bfdatasetlist_postcuration-doi"
 );
-const bfDatasetListPostCurationCuration = document.querySelector(
-  "#bfdatasetlist-postcuration-curation"
-);
-const bfDatasetListPostCurationConsortium = document.querySelector(
-  "#bfdatasetlist-postcuration-consortium"
-);
-const bfDatasetListPostCurationPublish = document.querySelector(
-  "#bfdatasetlist-postcuration-publish"
-);
+//const bfDatasetListPostCurationCuration = document.querySelector("#bfdatasetlist-postcuration-curation");
+//const bfDatasetListPostCurationConsortium = document.querySelector("#bfdatasetlist-postcuration-consortium");
+//const bfDatasetListPostCurationPublish = document.querySelector("#bfdatasetlist-postcuration-publish");
 
 const bfPostCurationProgressCuration = document.querySelector(
   "#div-bf-post-curation-progress-curation"
 );
-// const bfPostCurationProgressConsortium = document.querySelector(
-//   "#div-bf-post-curation-progress-consortium"
-// );
-// const bfPostCurationProgressPublish = document.querySelector(
-//   "#div-bf-post-curation-progress-publish"
-// );
-// const bfPostCurationProgressDOI = document.querySelector(
-//   "#div-bf-post-curation-progress-doi"
-// );
 
-// const bfShareConsortiumBtn = document.querySelector("#button-share-consortium");
-// const sharedWithConsortiumStatus = document.querySelector(
-//   "#shared-with-consortium-status"
-// );
-// const shareConsortiumStatus = document.querySelector(
-//   "#para-share-consortium-status"
-// );
-
-// const bfReserveDOIBtn = document.querySelector("#button-reserve-doi");
-// const currentDOI = document.querySelector("#input-current-doi");
-// const reserveDOIStatus = document.querySelector("#para-reserve-doi-status");
-//
-// const bfPublishDatasetBtn = document.querySelector("#button-publish-dataset");
 const bfSubmitReviewDatasetBtn = document.querySelector(
   "#button-submit-review-dataset"
 );
@@ -567,11 +535,6 @@ const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
 const bfWithdrawReviewDatasetBtn = document.querySelector(
   "#button-withdraw-review-dataset"
 );
-// const reviewDatasetInfo = document.querySelector("#para-review-dataset-info");
-// const publishingStatus = document.querySelector("#input-publishing-status");
-// const publishDatasetStatus = document.querySelector(
-//   "#para-publish-dataset-status"
-// );
 
 //////////////////////////////////
 // Constant parameters
@@ -837,7 +800,7 @@ ipcRenderer.on("selected-metadata-download-folder", (event, path, filename) => {
 
 const a_DDD_click_function = () => {
   ipcRenderer.send("open-folder-dialog-save-DDD", templateArray[5]);
-}
+};
 
 ipcRenderer.on("selected-DDD-download-folder", (event, path, filename) => {
   if (path.length > 0) {
@@ -862,7 +825,6 @@ var milestoneTagify1 = new Tagify(milestoneInput1, {
     closeOnSelect: true,
   },
 });
-
 
 milestoneTagify1.on("add", function () {
   var buttonDiv = $($("#selected-milestone-1").parents()[1]).find(
@@ -1004,24 +966,24 @@ const existingSPARCAwardsTagify = new Tagify(existingSPARCAwards, {
   dropdown: {
     enabled: 0,
     closeOnSelect: true,
-  }
+  },
 });
 
 //// when users click on Import
 function importMilestoneDocument() {
   if (event.currentTarget.id == "button-import-milestone") {
     document.getElementById("para-milestone-document-info-long").style.display =
-    "none";
+      "none";
     document.getElementById("para-milestone-document-info").innerHTML = "";
     var filepath = document.getElementById("input-milestone-select")
-    .placeholder;
+      .placeholder;
     if (filepath === "Browse here") {
       document.getElementById("para-milestone-document-info").innerHTML =
-      "<span style='color: red ;'>" +
-      "Please select a data deliverables document first!</span>";
+        "<span style='color: red ;'>" +
+        "Please select a data deliverables document first!</span>";
     } else {
       var award =
-      presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
+        presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
       client.invoke("api_extract_milestone_info", filepath, (error, res) => {
         if (error) {
           var emessage = userError(error);
@@ -1041,16 +1003,16 @@ function importMilestoneDocument() {
           informationJson[award] = milestoneObj;
           fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
           document.getElementById("para-milestone-document-info").innerHTML =
-          "<span style='color: black ;'>" + "Imported!</span>";
+            "<span style='color: black ;'>" + "Imported!</span>";
           document.getElementById("input-milestone-select").placeholder =
-          "Browse here";
+            "Browse here";
           removeOptions(descriptionDateInput);
           milestoneTagify1.removeAllTags();
           milestoneTagify1.settings.whitelist = [];
           milestoneTagify2.settings.whitelist = [];
           changeAwardInput();
           $("#div-cancel-DDD-import").hide();
-          $("#div-confirm-DDD-import button").click()
+          $("#div-confirm-DDD-import button").click();
         }
       });
     }
@@ -1075,10 +1037,13 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
         filepath[0];
     }
   }
-  if (document.getElementById("input-milestone-select").placeholder !== "Browse here") {
-    $("#button-import-milestone").show()
+  if (
+    document.getElementById("input-milestone-select").placeholder !==
+    "Browse here"
+  ) {
+    $("#button-import-milestone").show();
   } else {
-    $("#button-import-milestone").hide()
+    $("#button-import-milestone").hide();
   }
 });
 //
@@ -1139,7 +1104,10 @@ function loadAwards() {
     addOption(presavedAwardArray1, eval(JSON.stringify(awards[key])), key);
     addOption(presavedAwardArray2, eval(JSON.stringify(awards[key])), key);
     addOption(dsAwardArray, eval(JSON.stringify(awards[key])), key);
-    awardList.push({"value": eval(JSON.stringify(awards[key])), "award-number": key});
+    awardList.push({
+      value: eval(JSON.stringify(awards[key])),
+      "award-number": key,
+    });
     awardSpan = awardSpan + eval(JSON.stringify(awards[key])) + "\n\n";
   }
   existingSPARCAwardsTagify.removeAllTags();
@@ -1189,29 +1157,30 @@ function addSPARCAwards() {
       awardNoAray.push(keyValuePair);
     }
 
-    removeOptions(presavedAwardArray1)
-    removeOptions(presavedAwardArray2)
-    removeOptions(dsAwardArray)
+    removeOptions(presavedAwardArray1);
+    removeOptions(presavedAwardArray2);
+    removeOptions(dsAwardArray);
 
     awardsJson = {};
     for (var keyValuePair of awardNoAray) {
-        addOption(
-          presavedAwardArray1,
-          keyValuePair["award-full-title"],
-          keyValuePair["award-number"]
-        );
-        addOption(
-          presavedAwardArray2,
-          keyValuePair["award-full-title"],
-          keyValuePair["award-number"]
-        );
-        addOption(
-          dsAwardArray,
-          keyValuePair["award-full-title"],
-          keyValuePair["award-number"]
-        );
-        spanMessage = spanMessage + keyValuePair["award-full-title"] + "\n\n";
-        awardsJson[keyValuePair["award-number"]] = keyValuePair["award-full-title"];
+      addOption(
+        presavedAwardArray1,
+        keyValuePair["award-full-title"],
+        keyValuePair["award-number"]
+      );
+      addOption(
+        presavedAwardArray2,
+        keyValuePair["award-full-title"],
+        keyValuePair["award-number"]
+      );
+      addOption(
+        dsAwardArray,
+        keyValuePair["award-full-title"],
+        keyValuePair["award-number"]
+      );
+      spanMessage = spanMessage + keyValuePair["award-full-title"] + "\n\n";
+      awardsJson[keyValuePair["award-number"]] =
+        keyValuePair["award-full-title"];
     }
 
     fs.writeFileSync(awardPath, JSON.stringify(awardsJson));
@@ -1219,7 +1188,7 @@ function addSPARCAwards() {
     $("#current-users-awards-dd").text(spanMessage);
   }
 
-  loadAwards()
+  loadAwards();
   return message;
 }
 
@@ -1309,8 +1278,7 @@ var defaultAward = loadDefaultAward();
 
 function loadMilestoneInfo(awardNumber) {
   document.getElementById("para-milestone-document-info").innerHTML = "";
-  document.getElementById("input-milestone-select").placeholder =
-    "Browse here";
+  document.getElementById("input-milestone-select").placeholder = "Browse here";
 
   if (awardNumber === "Select") {
     document.getElementById(
@@ -1427,34 +1395,34 @@ function loadAwardData() {
       });
       var base = Airtable.base("appiYd1Tz9Sv857GZ");
       base("sparc_members")
-      .select({
-        view: "All members (ungrouped)",
-      })
-      .eachPage(
-        function page(records, fetchNextPage) {
-          records.forEach(function (record) {
-            if (record.get("Project_title") !== undefined) {
-              item = record
-              .get("SPARC_Award_#")
-              .concat(" (", record.get("Project_title"), ")");
-              awardResultArray.push(item);
+        .select({
+          view: "All members (ungrouped)",
+        })
+        .eachPage(
+          function page(records, fetchNextPage) {
+            records.forEach(function (record) {
+              if (record.get("Project_title") !== undefined) {
+                item = record
+                  .get("SPARC_Award_#")
+                  .concat(" (", record.get("Project_title"), ")");
+                awardResultArray.push(item);
+              }
+            }),
+              fetchNextPage();
+          },
+          function done(err) {
+            if (err) {
+              log.error(err);
+              console.log(err);
+              return;
+            } else {
+              // create set to remove duplicates
+              var awardSet = new Set(awardResultArray);
+              var resultArray = [...awardSet];
+              existingSPARCAwardsTagify.settings.whitelist = resultArray;
             }
-          }),
-          fetchNextPage();
-        },
-        function done(err) {
-          if (err) {
-            log.error(err);
-            console.log(err);
-            return;
-          } else {
-            // create set to remove duplicates
-            var awardSet = new Set(awardResultArray);
-            var resultArray = [...awardSet];
-            existingSPARCAwardsTagify.settings.whitelist = resultArray;
           }
-        }
-      );
+        );
     }
   }
 }
@@ -1519,7 +1487,6 @@ function changeAwardInput() {
   return ddBolean;
 }
 
-
 const submissionDateInput = document.getElementById("input-milestone-date");
 
 function actionEnterNewDate(action) {
@@ -1565,24 +1532,47 @@ function changeAwardInputDsDescription() {
   }
   if (dsContributorArrayFirst1) {
     removeOptions(dsContributorArrayFirst1);
-    addOption(dsContributorArrayFirst1, "Select an option", "Select an option")
+    addOption(dsContributorArrayFirst1, "Select an option", "Select an option");
   }
 
   currentContributorsLastNames = [];
   currentContributorsFirstNames = [];
-  globalContributorNameObject = {}
+  globalContributorNameObject = {};
 
   /// delete old table
-  $("#table-current-contributors").find('tr').slice(1,-1).remove();
-  for (var i=0; i<document.getElementById("table-current-contributors").rows[1].cells.length;i++) {
-    $($($("#table-current-contributors").find('tr')[1].cells[i]).find("input")[0]).val("")
-    $($($("#table-current-contributors").find('tr')[1].cells[i]).find("textarea")[0]).val("")
+  $("#table-current-contributors").find("tr").slice(1, -1).remove();
+  for (
+    var i = 0;
+    i <
+    document.getElementById("table-current-contributors").rows[1].cells.length;
+    i++
+  ) {
+    $(
+      $($("#table-current-contributors").find("tr")[1].cells[i]).find(
+        "input"
+      )[0]
+    ).val("");
+    $(
+      $($("#table-current-contributors").find("tr")[1].cells[i]).find(
+        "textarea"
+      )[0]
+    ).val("");
   }
 
-  var selectID = document.getElementById($($($("#table-current-contributors").find('tr')[1].cells[1]).find("select")[0]).prop("id"));
+  var selectID = document.getElementById(
+    $(
+      $($("#table-current-contributors").find("tr")[1].cells[1]).find(
+        "select"
+      )[0]
+    ).prop("id")
+  );
   if (selectID) {
-    removeOptions(selectID)
-    $($($("#table-current-contributors").find('tr')[1].cells[1]).find("select")[0]).prop("disabled", true)
+    removeOptions(selectID);
+    $(
+      $($("#table-current-contributors").find("tr")[1].cells[1]).find(
+        "select"
+      )[0]
+    ).prop("disabled", true);
   }
 
   var awardVal = dsAwardArray.options[dsAwardArray.selectedIndex].value;
@@ -1605,83 +1595,140 @@ function changeAwardInputDsDescription() {
           globalContributorNameObject[lastName] = firstName;
           currentContributorsLastNames.push(lastName);
         }),
-        fetchNextPage();
-        var currentRowLeftID = $($($("#table-current-contributors").find('tr')[1].cells[0]).find("select")[0]).prop("id");
-        if(currentRowLeftID) {
+          fetchNextPage();
+        var currentRowLeftID = $(
+          $($("#table-current-contributors").find("tr")[1].cells[0]).find(
+            "select"
+          )[0]
+        ).prop("id");
+        if (currentRowLeftID) {
           cloneConNamesSelect(currentRowLeftID);
-          }
-        })
-      function done(err) {
-        if (err) {
-          log.error(err);
-          console.error(err);
-          return;
         }
-      };
+      });
+    function done(err) {
+      if (err) {
+        log.error(err);
+        console.error(err);
+        return;
+      }
+    }
   }
 }
 
 // on change event when users choose a contributor's last name
 function onchangeLastNames(no) {
-  $('#ds-description-contributor-list-first-'+no.toString()).attr("disabled", true);
-  var conLastname = $('#ds-description-contributor-list-last-'+no.toString()).val();
-  removeOptions(document.getElementById('ds-description-contributor-list-first-'+no.toString()))
+  $("#ds-description-contributor-list-first-" + no.toString()).attr(
+    "disabled",
+    true
+  );
+  var conLastname = $(
+    "#ds-description-contributor-list-last-" + no.toString()
+  ).val();
+  removeOptions(
+    document.getElementById(
+      "ds-description-contributor-list-first-" + no.toString()
+    )
+  );
   if (conLastname in globalContributorNameObject) {
-    addOption(document.getElementById('ds-description-contributor-list-first-'+no.toString()), globalContributorNameObject[conLastname], globalContributorNameObject[conLastname])
-    $('#ds-description-contributor-list-first-'+no.toString()).val(globalContributorNameObject[conLastname]).trigger("onchange");
+    addOption(
+      document.getElementById(
+        "ds-description-contributor-list-first-" + no.toString()
+      ),
+      globalContributorNameObject[conLastname],
+      globalContributorNameObject[conLastname]
+    );
+    $("#ds-description-contributor-list-first-" + no.toString())
+      .val(globalContributorNameObject[conLastname])
+      .trigger("onchange");
 
     // delete contributor names from list after it's added
-    delete globalContributorNameObject[conLastname]
-    var newConLastNames = currentContributorsLastNames.filter(function(value, index, arr){
-       return value !== conLastname;
-     });
-    currentContributorsLastNames = newConLastNames
+    delete globalContributorNameObject[conLastname];
+    var newConLastNames = currentContributorsLastNames.filter(function (
+      value,
+      index,
+      arr
+    ) {
+      return value !== conLastname;
+    });
+    currentContributorsLastNames = newConLastNames;
   }
-  $('#ds-description-contributor-list-first-'+no.toString()).attr("disabled", false);
+  $("#ds-description-contributor-list-first-" + no.toString()).attr(
+    "disabled",
+    false
+  );
 }
 
 // on change event when users choose a contributor's first name -> Load con info
 function onchangeFirstNames(no) {
-  var conLastname = $('#ds-description-contributor-list-last-'+no.toString()).val();
-  var conFirstname = $('#ds-description-contributor-list-first-'+no.toString()).val();
+  var conLastname = $(
+    "#ds-description-contributor-list-last-" + no.toString()
+  ).val();
+  var conFirstname = $(
+    "#ds-description-contributor-list-first-" + no.toString()
+  ).val();
   if (conFirstname !== "Select an option") {
-    loadContributorInfo(no, conLastname, conFirstname)
+    loadContributorInfo(no, conLastname, conFirstname);
   }
 }
 
 // Auto populate once a contributor is selected
 function loadContributorInfo(no, lastName, firstName) {
-
   // first destroy old tagifies
-  $($('#input-con-affiliation-'+no.toString()).siblings()[0]).remove()
-  $($('#input-con-role-'+no.toString()).siblings()[0]).remove()
+  $($("#input-con-affiliation-" + no.toString()).siblings()[0]).remove();
+  $($("#input-con-role-" + no.toString()).siblings()[0]).remove();
 
-  var tagifyRole = new Tagify(document.getElementById('input-con-role-'+no.toString()), {
-    whitelist: ["PrincipleInvestigator", "Creator", "CoInvestigator", "DataCollector", "DataCurator", "DataManager", "Distributor", "Editor", "Producer", "ProjectLeader", "ProjectManager", "ProjectMember", "RelatedPerson", "Researcher", "ResearchGroup", "Sponsor", "Supervisor", "WorkPackageLeader", "Other"],
-    enforceWhitelist: true,
-    dropdown : {
-       enabled   : 0,
-       closeOnSelect: true,
-     }
-  })
-  var tagifyAffliation = new Tagify(document.getElementById('input-con-affiliation-'+no.toString()), {
-    dropdown: {
-      classname: "color-blue",
-      enabled: 0, // show the dropdown immediately on focus
-      maxItems: 25,
-      closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-    },
-    delimiters: null,
-    duplicates: false
-  })
+  var tagifyRole = new Tagify(
+    document.getElementById("input-con-role-" + no.toString()),
+    {
+      whitelist: [
+        "PrincipleInvestigator",
+        "Creator",
+        "CoInvestigator",
+        "DataCollector",
+        "DataCurator",
+        "DataManager",
+        "Distributor",
+        "Editor",
+        "Producer",
+        "ProjectLeader",
+        "ProjectManager",
+        "ProjectMember",
+        "RelatedPerson",
+        "Researcher",
+        "ResearchGroup",
+        "Sponsor",
+        "Supervisor",
+        "WorkPackageLeader",
+        "Other",
+      ],
+      enforceWhitelist: true,
+      dropdown: {
+        enabled: 0,
+        closeOnSelect: true,
+      },
+    }
+  );
+  var tagifyAffliation = new Tagify(
+    document.getElementById("input-con-affiliation-" + no.toString()),
+    {
+      dropdown: {
+        classname: "color-blue",
+        enabled: 0, // show the dropdown immediately on focus
+        maxItems: 25,
+        closeOnSelect: true, // keep the dropdown open after selecting a suggestion
+      },
+      delimiters: null,
+      duplicates: false,
+    }
+  );
   tagifyRole.removeAllTags();
   tagifyAffliation.removeAllTags();
-  var contactLabel = $("#ds-contact-person-"+no.toString());
-  $(contactLabel).prop("checked", false)
-  document.getElementById("input-con-ID-"+no.toString()).value = "Loading...";
+  var contactLabel = $("#ds-contact-person-" + no.toString());
+  $(contactLabel).prop("checked", false);
+  document.getElementById("input-con-ID-" + no.toString()).value = "Loading...";
 
-  tagifyAffliation.loading(true).dropdown.hide.call(tagifyAffliation)
-  tagifyRole.loading(true).dropdown.hide.call(tagifyRole)
+  tagifyAffliation.loading(true).dropdown.hide.call(tagifyAffliation);
+  tagifyRole.loading(true).dropdown.hide.call(tagifyRole);
 
   var airKeyContent = parseJson(airtableConfigPath);
   var airKeyInput = airKeyContent["api-key"];
@@ -1706,19 +1753,22 @@ function loadContributorInfo(no, lastName, firstName) {
       // if no records found, leave fields empty
       leaveFieldsEmpty(
         conInfoObj["ID"],
-        document.getElementById("input-con-ID-"+no.toString())
+        document.getElementById("input-con-ID-" + no.toString())
       );
       leaveFieldsEmpty(
         conInfoObj["Role"],
-        document.getElementById("input-con-role-"+no.toString())
+        document.getElementById("input-con-role-" + no.toString())
       );
-      leaveFieldsEmpty(conInfoObj["Affiliation"], document.getElementById("input-con-affiliation-"+no.toString()));
+      leaveFieldsEmpty(
+        conInfoObj["Affiliation"],
+        document.getElementById("input-con-affiliation-" + no.toString())
+      );
 
-      tagifyAffliation.addTags(conInfoObj["Affiliation"])
-      tagifyRole.addTags(conInfoObj["Role"])
+      tagifyAffliation.addTags(conInfoObj["Affiliation"]);
+      tagifyRole.addTags(conInfoObj["Role"]);
 
-      tagifyAffliation.loading(false).dropdown.show.call(tagifyAffliation)
-      tagifyRole.loading(false)
+      tagifyAffliation.loading(false).dropdown.show.call(tagifyAffliation);
+      tagifyRole.loading(false);
     }),
     function done(err) {
       if (err) {
@@ -1729,16 +1779,22 @@ function loadContributorInfo(no, lastName, firstName) {
     };
 }
 
-
 //////////////////////// Current Contributor(s) /////////////////////
 
 function delete_current_con(no) {
   // after a contributor is deleted, add their name back to the contributor last name dropdown list
-  if ($("#ds-description-contributor-list-last-"+no).length > 0 && $("#ds-description-contributor-list-first-"+no).length > 0) {
-    var deletedLastName = $("#ds-description-contributor-list-last-"+no).val();
-    var deletedFirstName = $("#ds-description-contributor-list-first-"+no).val();
-    globalContributorNameObject[deletedLastName] = deletedFirstName
-    currentContributorsLastNames.push(deletedLastName)
+  if (
+    $("#ds-description-contributor-list-last-" + no).length > 0 &&
+    $("#ds-description-contributor-list-first-" + no).length > 0
+  ) {
+    var deletedLastName = $(
+      "#ds-description-contributor-list-last-" + no
+    ).val();
+    var deletedFirstName = $(
+      "#ds-description-contributor-list-first-" + no
+    ).val();
+    globalContributorNameObject[deletedLastName] = deletedFirstName;
+    currentContributorsLastNames.push(deletedLastName);
   }
   document.getElementById("row-current-name" + no + "").outerHTML = "";
 }
@@ -1973,7 +2029,7 @@ function createTagsInput(field) {
 }
 
 $(currentConTable).mousedown(function (e) {
-  var length = currentConTable.rows.length - 1
+  var length = currentConTable.rows.length - 1;
   var tr = $(e.target).closest("tr"),
     sy = e.pageY,
     drag;
@@ -2014,13 +2070,13 @@ $(currentConTable).mousedown(function (e) {
 ///// grab datalist name and auto-load current description
 const showDatasetDescription = () => {
   var selectedBfAccount = defaultBfAccount;
-  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   let temp = datasetDescriptionFileDataset.selectedIndex;
   var selectedBfDataset =
      datasetDescriptionFileDataset.options[
        datasetDescriptionFileDataset.selectedIndex
      ].text;
   //var selectedBfDataset = defaultBfDataset;
+
   if (selectedBfDataset === "Select dataset") {
     bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
@@ -2041,7 +2097,6 @@ const showDatasetDescription = () => {
           log.error(error);
           console.error(error);
         } else {
-          // plainText = removeMd(res)
           document.getElementById("ds-description").innerHTML = res;
           setTimeout(() => {
             document.getElementById("description_header_label").scrollIntoView({
@@ -2078,14 +2133,15 @@ const emptyDSInfoEntries = () => {
     }
   }
   return [fieldSatisfied, emptyFieldArray];
-}
+};
 
 function emptyLinkInfo() {
   var tableCurrentLinks = document.getElementById("doi-table");
   var fieldSatisfied = false;
   for (var i = 0; i < tableCurrentLinks.rows.length - 1; i++) {
     if (
-      $(tableCurrentLinks.rows[i].cells[0]).find("select").val() == "Protocol URL or DOI*"
+      $(tableCurrentLinks.rows[i].cells[0]).find("select").val() ==
+      "Protocol URL or DOI*"
     ) {
       fieldSatisfied = true;
     }
@@ -2105,7 +2161,11 @@ function contactPersonCheck() {
   var rowcount = currentConTable.rows.length;
 
   for (var i = 0; i < rowcount - 1; i++) {
-    var contactLabel = $(currentConTable.rows[i].cells[currentConTable.rows[i].cells.length-2]).find("label").find("input")[0];
+    var contactLabel = $(
+      currentConTable.rows[i].cells[currentConTable.rows[i].cells.length - 2]
+    )
+      .find("label")
+      .find("input")[0];
     if (contactLabel && contactLabel.checked) {
       contactPersonExists = true;
       break;
@@ -2143,7 +2203,7 @@ function grabDSInfoEntries() {
 
 function grabConInfoEntries() {
   if (noAirtable) {
-    var funding = $("#ds-description-award-raw-input-dd").val().trim()
+    var funding = $("#ds-description-award-raw-input-dd").val().trim();
   } else {
     var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
   }
@@ -2165,14 +2225,14 @@ function grabConInfoEntries() {
   }
   /// grab entries from contributor table
   var rowcountCon = currentConTable.rows.length;
-  var cellRowCount = currentConTable.rows[1].cells.length
+  var cellRowCount = currentConTable.rows[1].cells.length;
   var res;
 
   // there are 2 cases: when cells.length = 7 (normal) OR cell.length = 9 (abnormal)
   if (cellRowCount == 7) {
-    res = grabCellConInfo("normal", rowcountCon)
+    res = grabCellConInfo("normal", rowcountCon);
   } else if (cellRowCount == 9) {
-    res = grabCellConInfo("abnormal", rowcountCon)
+    res = grabCellConInfo("abnormal", rowcountCon);
   }
 
   contributorObj["funding"] = fundingArray;
@@ -2204,35 +2264,54 @@ function grabCellConInfo(type, rowcountCon) {
     var conLastName;
     var conFirstName;
     if ($($(currentConTable.rows[i].cells[0])[0]).find("select").length > 0) {
-      conLastName = $($(currentConTable.rows[i].cells[0])[0]).find("select").val();
-      conFirstName = $($(currentConTable.rows[i].cells[1])[0]).find("select").val();
+      conLastName = $($(currentConTable.rows[i].cells[0])[0])
+        .find("select")
+        .val();
+      conFirstName = $($(currentConTable.rows[i].cells[1])[0])
+        .find("select")
+        .val();
     } else {
-      conLastName = $($(currentConTable.rows[i].cells[0])[0]).find("input").val().trim();
-      conFirstName = $($(currentConTable.rows[i].cells[1])[0]).find("input").val().trim();
+      conLastName = $($(currentConTable.rows[i].cells[0])[0])
+        .find("input")
+        .val()
+        .trim();
+      conFirstName = $($(currentConTable.rows[i].cells[1])[0])
+        .find("input")
+        .val()
+        .trim();
     }
 
-    var conRoleTagify = $(currentConTable.rows[i].cells[roleCell]).find("tag").toArray();
+    var conRoleTagify = $(currentConTable.rows[i].cells[roleCell])
+      .find("tag")
+      .toArray();
     var conRoleInfo = [];
-    if (conRoleTagify.length>0) {
+    if (conRoleTagify.length > 0) {
       conRoleTagify.forEach((item, i) => {
-        conRoleInfo.push($(conRoleTagify)[i].innerText)
+        conRoleInfo.push($(conRoleTagify)[i].innerText);
       });
     }
-    var conAffliationTagify = $(currentConTable.rows[i].cells[affCel]).find("tag").toArray();
+    var conAffliationTagify = $(currentConTable.rows[i].cells[affCel])
+      .find("tag")
+      .toArray();
     var conAffliationInfo = [];
-    if (conAffliationTagify.length>0) {
+    if (conAffliationTagify.length > 0) {
       conAffliationTagify.forEach((item, i) => {
-        conAffliationInfo.push($(conAffliationTagify)[i].innerText)
+        conAffliationInfo.push($(conAffliationTagify)[i].innerText);
       });
     }
 
-    var contactLabel = $(currentConTable.rows[i].cells[contactCell]).find("label").find("input")[0];
+    var contactLabel = $(currentConTable.rows[i].cells[contactCell])
+      .find("label")
+      .find("input")[0];
     var contactCheck = "No";
     if (contactLabel && contactLabel.checked) {
-      contactCheck = "Yes"
+      contactCheck = "Yes";
     }
 
-    var conID = $($(currentConTable.rows[i].cells[idCell])[0]).find("input").val().trim();
+    var conID = $($(currentConTable.rows[i].cells[idCell])[0])
+      .find("input")
+      .val()
+      .trim();
     var myCurrentCon = {
       conName: conLastName + ", " + conFirstName,
       conID: conID,
@@ -2242,7 +2321,7 @@ function grabCellConInfo(type, rowcountCon) {
     };
     currentConInfo.push(myCurrentCon);
   }
-  return currentConInfo
+  return currentConInfo;
 }
 
 function grabProtocolSection() {
@@ -2252,9 +2331,15 @@ function grabProtocolSection() {
   var addlLinkInfo = [];
   for (i = 1; i < rowcountLink - 1; i++) {
     var addlLink = {
-      "link type": $(document.getElementById("doi-table").rows[i].cells[0]).find("select").val(),
-      link: $(document.getElementById("doi-table").rows[i].cells[1]).find("input").val(),
-      description: $(document.getElementById("doi-table").rows[i].cells[2]).find("input").val(),
+      "link type": $(document.getElementById("doi-table").rows[i].cells[0])
+        .find("select")
+        .val(),
+      link: $(document.getElementById("doi-table").rows[i].cells[1])
+        .find("input")
+        .val(),
+      description: $(document.getElementById("doi-table").rows[i].cells[2])
+        .find("input")
+        .val(),
     };
     addlLinkInfo.push(addlLink);
   }
@@ -2306,7 +2391,7 @@ function grabCompletenessInfo() {
 datasetDescriptionFileDataset.addEventListener("change", function () {
   document.getElementById("ds-description").disabled = true;
   document.getElementById("ds-description").innerHTML = "Loading...";
-  syncDatasetDropdownOption(datasetDescriptionFileDataset);
+  //syncDatasetDropdownOption(datasetDescriptionFileDataset);
   showDatasetDescription();
 });
 
@@ -2364,7 +2449,7 @@ function detectEmptyRequiredFields(funding) {
 generateDSBtn.addEventListener("click", (event) => {
   document.getElementById("para-generate-description-status").innerHTML = "";
   if (noAirtable) {
-    var funding = $("#ds-description-award-list").val().trim()
+    var funding = $("#ds-description-award-list").val().trim();
   } else {
     var funding = dsAwardArray.options[dsAwardArray.selectedIndex].value;
   }
@@ -2398,7 +2483,7 @@ ipcRenderer.on(
   "selected-metadata-ds-description",
   (event, dirpath, filename) => {
     if (dirpath.length > 0) {
-      $("#generate-dd-spinner").show()
+      $("#generate-dd-spinner").show();
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage = "File " + filename + " already exists in " + dirpath[0];
@@ -2423,7 +2508,7 @@ ipcRenderer.on(
         //// grab entries from contributor info section and pass values to conSectionArray
         var contributorObj = grabConInfoEntries();
 
-        console.log(contributorObj)
+        console.log(contributorObj);
 
         /// grab entries from other misc info section
         var miscObj = grabProtocolSection();
@@ -2438,8 +2523,7 @@ ipcRenderer.on(
         json_str_con = JSON.stringify(contributorObj);
 
         /// get current, selected Blackfynn account
-        var bfaccountname =
-          $("#current-bf-account").text();
+        var bfaccountname = $("#current-bf-account").text();
 
         /// call python function to save file
         if (dirpath != null) {
@@ -2460,12 +2544,12 @@ ipcRenderer.on(
                   "para-generate-description-status"
                 ).innerHTML =
                   "<span style='color: red;'> " + emessage + "</span>";
-                  ipcRenderer.send(
-                    "track-event",
-                    "Error",
-                    "Prepare Metadata - Create dataset_description",
-                    selectedBfDataset
-                  );
+                ipcRenderer.send(
+                  "track-event",
+                  "Error",
+                  "Prepare Metadata - Create dataset_description",
+                  selectedBfDataset
+                );
               } else {
                 document.getElementById(
                   "para-generate-description-status"
@@ -2486,7 +2570,7 @@ ipcRenderer.on(
         }
       }
     }
-    $("#generate-dd-spinner").hide()
+    $("#generate-dd-spinner").hide();
   }
 );
 
@@ -3055,8 +3139,8 @@ curateDatasetBtn.addEventListener("click", () => {
     destinationDataset = "upload to blackfynn";
     pathDatasetValue =
       bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text;
-    newDatasetNameVar =
-      bfUploadDatasetList.options[bfUploadDatasetList.selectedIndex].text;
+    //newDatasetNameVar =
+      //bfUploadDatasetList.options[bfUploadDatasetList.selectedIndex].text;
   }
 
   // Initiate curation by calling Python funtion
@@ -3707,6 +3791,8 @@ bfRefreshDatasetBtn.addEventListener("click", () => {
   currentAddEditDatasetPermission.innerHTML = "";
   // refreshAllBfDatasetLists()
 });
+
+/*
 bfUploadRefreshDatasetBtn.addEventListener("click", () => {
   // refreshAllBfDatasetLists()
 });
@@ -3725,6 +3811,7 @@ bfRefreshDatasetRenameDatasetBtn.addEventListener("click", () => {
   // renameDatasetName.value = ""
   // refreshAllBfDatasetLists()
 });
+*/
 
 // Add new dataset folder (empty) on bf //
 bfCreateNewDatasetBtn.addEventListener("click", () => {
@@ -3776,7 +3863,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
           "Success",
           "Manage Dataset - Create Empty Dataset",
           bfNewDatasetName.value
-          );
+        );
         client.invoke(
           "api_bf_dataset_account",
           defaultBfAccount,
@@ -3804,13 +3891,10 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
 
 // Rename dataset on bf //
 bfRenameDatasetBtn.addEventListener("click", () => {
-  var selectedbfaccount = defaultBfAccount
-    //bfAccountList.options[bfAccountList.selectedIndex].text;
+  var selectedbfaccount = defaultBfAccount;
   var currentDatasetName = defaultBfDataset;
-  // var currentDatasetName =
-  //   bfDatasetListRenameDataset.options[bfDatasetListRenameDataset.selectedIndex]
-  //     .text;
   var renamedDatasetName = renameDatasetName.value;
+
   if (currentDatasetName === "Select dataset") {
     emessage = "Please select a valid dataset";
     bfRenameDatasetStatus.innerHTML =
@@ -3842,18 +3926,6 @@ bfRenameDatasetBtn.addEventListener("click", () => {
         } else {
           defaultBfDataset = renamedDatasetName;
           $(".bf-dataset-span").html(renamedDatasetName);
-          //renameDatasetInList(currentDatasetName, renamedDatasetName);
-          //tempDatasetListsSync();
-          //var numDatasets = refreshDatasetList();
-          // refreshDatasetListChooseOption(
-          //   "#bfdatasetlist_renamedataset",
-          //   renamedDatasetName
-          // );
-          // refreshDatasetListChooseOption(
-          //   "#curatebfdatasetlist",
-          //   "Select dataset"
-          // );
-          //syncDatasetDropdownOption(bfDatasetListRenameDataset);
           renameDatasetName.value = renamedDatasetName;
           bfRenameDatasetStatus.innerHTML =
             "Success: renamed dataset" +
@@ -3883,7 +3955,6 @@ bfRenameDatasetBtn.addEventListener("click", () => {
               } else {
                 datasetList = [];
                 datasetList = result;
-                //refreshDatasetList();
               }
             }
           );
@@ -3894,23 +3965,25 @@ bfRenameDatasetBtn.addEventListener("click", () => {
 });
 
 // Submit dataset to bf //
-bfSubmitDatasetBtn.addEventListener("click", ()  => {
+bfSubmitDatasetBtn.addEventListener("click", () => {
   var totalFileSize;
+
   document.getElementById("para-please-wait-manage-dataset").innerHTML =
     "Please wait...";
   document.getElementById("para-progress-bar-error-status").innerHTML = "";
+
   progressBarUploadBf.value = 0;
   bfSubmitDatasetBtn.disabled = true;
-  $("#button-submit-dataset").popover("hide");
   pathSubmitDataset.disabled = true;
+  $("#button-submit-dataset").popover("hide");
+
   var err = false;
   var completionStatus = "Solving";
   document.getElementById("para-progress-bar-status").innerHTML =
     "Preparing files ...";
-  var selectedbfaccount = defaultBfAccount
-  //  bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedbfdataset = bfDatasetList.options[bfDatasetList.selectedIndex].text;
+  var selectedbfaccount = defaultBfAccount;
   var selectedbfdataset = defaultBfDataset;
+
   client.invoke(
     "api_bf_submit_dataset",
     selectedbfaccount,
@@ -3924,7 +3997,6 @@ bfSubmitDatasetBtn.addEventListener("click", ()  => {
         document.getElementById("para-progress-bar-error-status").innerHTML =
           "<span style='color: red;'>" + emessage + sadCan + "</span>";
         document.getElementById("para-progress-bar-status").innerHTML = "";
-        //progressUploadBf.style.display = "none";
         $("#div-progress-submit").css("display", "none");
         progressBarUploadBf.value = 0;
         err = true;
@@ -3943,7 +4015,6 @@ bfSubmitDatasetBtn.addEventListener("click", ()  => {
         bfSubmitDatasetBtn.disabled = false;
         pathSubmitDataset.disabled = false;
       } else {
-        // document.getElementById("para-please-wait-manage-dataset").innerHTML = "Please wait..."
         $("#upload_local_dataset_progress_div")[0].scrollIntoView({
           behavior: "smooth",
           block: "start",
@@ -3982,7 +4053,6 @@ bfSubmitDatasetBtn.addEventListener("click", ()  => {
         totalFileSize = res[3];
         var uploadedFileSize = res[4];
         if (submitprintstatus === "Uploading") {
-          //progressUploadBf.style.display = "block";
           $("#div-progress-submit").css("display", "block");
           if (res[0].includes("Success: COMPLETED!")) {
             progressBarUploadBf.value = 100;
@@ -4043,30 +4113,6 @@ bfSubmitDatasetBtn.addEventListener("click", ()  => {
       }
     }
   }
-});
-
-// Change selected dataset from dropdown lists //
-
-// Generate dataset
-bfUploadDatasetList.addEventListener("change", () => {
-  /* multiple calls
-  var listSelectedIndex = bfUploadDatasetList.selectedIndex;
-  bfDatasetListMetadata.selectedIndex = listSelectedIndex;
-  metadataDatasetlistChange();
-  bfDatasetListPermission.selectedIndex = listSelectedIndex;
-  permissionDatasetlistChange();
-  bfDatasetList.selectedIndex = listSelectedIndex;
-  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex;
-  datasetStatusListChange();
-  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex;
-  renameDatasetlistChange();
-  bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex;
-  bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex;
-  bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex;
-  postCurationListChange();
-  datasetDescriptionFileDataset.selectedIndex = listSelectedIndex;
-  showDatasetDescription();
-  */
 });
 
 selectLocalDsSubmit.addEventListener("click", function () {
@@ -4130,66 +4176,6 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
   }
 });
 
-// Upload local dataset
-bfDatasetList.addEventListener("change", () => {
-  /* multiple calls
-  var listSelectedIndex = bfDatasetList.selectedIndex;
-  bfDatasetListMetadata.selectedIndex = listSelectedIndex;
-  metadataDatasetlistChange();
-  bfDatasetListPermission.selectedIndex = listSelectedIndex;
-  permissionDatasetlistChange();
-  bfUploadDatasetList.selectedIndex = listSelectedIndex;
-  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex;
-  datasetStatusListChange();
-  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex;
-  renameDatasetlistChange();
-  bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex;
-  bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex;
-  bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex;
-  postCurationListChange();
-  datasetDescriptionFileDataset.selectedIndex = listSelectedIndex;
-  showDatasetDescription();
-  */
-});
-
-// Rename dataset
-bfDatasetListRenameDataset.addEventListener("change", () => {
-  //renameDatasetlistChange();
-  syncDatasetDropdownOption(bfDatasetListRenameDataset);
-  bfRenameDatasetStatus.innerHTML = "";
-});
-
-function renameDatasetlistChange() {
-  return;
-  if (bfDatasetListRenameDataset.value === "Select dataset") {
-    renameDatasetName.value = "";
-  } else {
-    renameDatasetName.value = bfDatasetListRenameDataset.value;
-  }
-}
-
-// Add metadata to Blackfynn dataset
-bfDatasetListMetadata.addEventListener("change", () => {
-  /* multiple calls
-  var listSelectedIndex = bfDatasetListMetadata.selectedIndex;
-  bfDatasetListPermission.selectedIndex = listSelectedIndex;
-  permissionDatasetlistChange();
-  bfUploadDatasetList.selectedIndex = listSelectedIndex;
-  bfDatasetList.selectedIndex = listSelectedIndex;
-  metadataDatasetlistChange();
-  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex;
-  datasetStatusListChange();
-  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex;
-  renameDatasetlistChange();
-  bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex;
-  bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex;
-  bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex;
-  postCurationListChange();
-  datasetDescriptionFileDataset.selectedIndex = listSelectedIndex;
-  showDatasetDescription();
-  */
-});
-
 const metadataDatasetlistChange = () => {
   bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
@@ -4202,9 +4188,10 @@ const metadataDatasetlistChange = () => {
   showCurrentDescription();
   showCurrentLicense();
   showCurrentBannerImage();
-}
+};
 
 // Manage dataset permission
+/*
 bfDatasetListPermission.addEventListener("change", () => {
   document.getElementById("para-dataset-permission-status").innerHTML = "";
   document.getElementById("para-dataset-permission-current").innerHTML = "";
@@ -4222,15 +4209,16 @@ bfDatasetListPermission.addEventListener("change", () => {
 
   syncDatasetDropdownOption(bfDatasetListPermission);
 });
+*/
 
 const permissionDatasetlistChange = () => {
   //console.log("permission")
   bfCurrentPermissionProgress.style.display = "block";
   bfAddEditCurrentPermissionProgress.style.display = "block";
   showCurrentPermission();
+};
 
-}
-
+/*
 const syncDatasetDropdownOption = (dropdown) => {
   return;
   var value;
@@ -4267,12 +4255,7 @@ const syncDatasetDropdownOption = (dropdown) => {
     var listSelectedIndex = bfDatasetListRenameDataset.selectedIndex;
     bfDatasetListMetadata.selectedIndex = listSelectedIndex;
     bfUploadDatasetList.selectedIndex = listSelectedIndex;
-    bfDatasetList.selectedIndex = listSelectedIndex;
-    bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex;
-    bfDatasetListPermission.selectedIndex = listSelectedIndex;
-    bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex;
-    bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex;
-    bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex;
+
     datasetDescriptionFileDataset.selectedIndex = listSelectedIndex;
     metadataDatasetlistChange();
     permissionDatasetlistChange();
@@ -4294,75 +4277,14 @@ const syncDatasetDropdownOption = (dropdown) => {
     datasetStatusListChange();
     showDatasetDescription();
   }
-}
-
-// Change dataset status
-bfDatasetListDatasetStatus.addEventListener("change", () => {
-  /* multiple calls
-  var listSelectedIndex = bfDatasetListDatasetStatus.selectedIndex;
-  bfDatasetListMetadata.selectedIndex = listSelectedIndex;
-  metadataDatasetlistChange();
-  bfUploadDatasetList.selectedIndex = listSelectedIndex;
-  bfDatasetList.selectedIndex = listSelectedIndex;
-  bfDatasetListPermission.selectedIndex = listSelectedIndex;
-  permissionDatasetlistChange();
-  datasetStatusListChange();
-  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex;
-  renameDatasetlistChange();
-  bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex;
-  bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex;
-  bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex;
-  postCurationListChange();
-  datasetDescriptionFileDataset.selectedIndex = listSelectedIndex;
-  showDatasetDescription();
-  */
-});
+};
+*/
 
 function datasetStatusListChange() {
-  //bfCurrentDatasetStatusProgress.style.display = "block";
   $(bfCurrentDatasetStatusProgress).css("visibility", "visible");
   $("#bf-dataset-status-spinner").css("display", "block");
   showCurrentDatasetStatus();
 }
-
-// Post-curation
-bfDatasetListPostCurationCuration.addEventListener("change", () => {
-  /* multiple calls
-  var listSelectedIndex = bfDatasetListPostCurationCuration.selectedIndex;
-  bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex;
-  bfDatasetListPostCurationConsortium.selectedIndex = listSelectedIndex;
-  bfDatasetListMetadata.selectedIndex = listSelectedIndex;
-  metadataDatasetlistChange();
-  bfUploadDatasetList.selectedIndex = listSelectedIndex;
-  bfDatasetList.selectedIndex = listSelectedIndex;
-  bfDatasetListPermission.selectedIndex = listSelectedIndex;
-  permissionDatasetlistChange();
-  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex;
-  datasetStatusListChange();
-  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex;
-  renameDatasetlistChange();
-  postCurationListChange();
-  */
-});
-
-bfDatasetListPostCurationConsortium.addEventListener("change", () => {
-  /* multiple calls
-  var listSelectedIndex = bfDatasetListPostCurationConsortium.selectedIndex;
-  bfDatasetListPostCurationPublish.selectedIndex = listSelectedIndex;
-  bfDatasetListPostCurationCuration.selectedIndex = listSelectedIndex;
-  bfDatasetListMetadata.selectedIndex = listSelectedIndex;
-  metadataDatasetlistChange();
-  bfUploadDatasetList.selectedIndex = listSelectedIndex;
-  bfDatasetList.selectedIndex = listSelectedIndex;
-  bfDatasetListPermission.selectedIndex = listSelectedIndex;
-  permissionDatasetlistChange();
-  bfDatasetListDatasetStatus.selectedIndex = listSelectedIndex;
-  datasetStatusListChange();
-  bfDatasetListRenameDataset.selectedIndex = listSelectedIndex;
-  renameDatasetlistChange();
-  postCurationListChange();
-  */
-});
 
 function postCurationListChange() {
   showPublishingStatus();
@@ -4370,17 +4292,17 @@ function postCurationListChange() {
 
 // Change dataset status option change
 $(bfListDatasetStatus).on("change", () => {
-  //bfCurrentDatasetStatusProgress.style.display = "block";
   $(bfCurrentDatasetStatusProgress).css("visibility", "visible");
   $("#bf-dataset-status-spinner").css("display", "block");
+  
   datasetStatusStatus.innerHTML = "";
   selectOptionColor(bfListDatasetStatus);
-  var selectedBfAccount = defaultBfAccount
-  //  bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListDatasetStatus.options[bfDatasetListDatasetStatus.selectedIndex].text;
+
+  var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
   var selectedStatusOption =
     bfListDatasetStatus.options[bfListDatasetStatus.selectedIndex].text;
+
   client.invoke(
     "api_bf_change_dataset_status",
     selectedBfAccount,
@@ -4394,13 +4316,11 @@ $(bfListDatasetStatus).on("change", () => {
         function showErrorDatasetStatus() {
           datasetStatusStatus.innerHTML =
             "<span style='color: red;'> " + emessage + "</span>";
-          //bfCurrentDatasetStatusProgress.style.display = "none";
           $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
           $("#bf-dataset-status-spinner").css("display", "none");
         }
         showCurrentDatasetStatus(showErrorDatasetStatus);
       } else {
-        //bfCurrentDatasetStatusProgress.style.display = "none";
         $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
         $("#bf-dataset-status-spinner").css("display", "none");
         datasetStatusStatus.innerHTML = res;
@@ -4409,19 +4329,17 @@ $(bfListDatasetStatus).on("change", () => {
   );
 });
 
-
 // Add subtitle //
 bfAddSubtitleBtn.addEventListener("click", () => {
   bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
   $("#bf-add-subtitle-dataset-spinner").show();
-  //datasetSubtitleStatus.innerHTML = "Please wait...";
   disableform(bfMetadataForm);
+
   var selectedBfAccount = defaultBfAccount;
-  //  bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var inputSubtitle = bfDatasetSubtitle.value;
+
   client.invoke(
     "api_bf_add_subtitle",
     selectedBfAccount,
@@ -4434,7 +4352,7 @@ bfAddSubtitleBtn.addEventListener("click", () => {
         var emessage = userError(error);
         $("#bf-add-subtitle-dataset-spinner").hide();
         datasetSubtitleStatus.innerHTML =
-        "<span style='color: red;'> " + emessage + "</span>";
+          "<span style='color: red;'> " + emessage + "</span>";
         bfCurrentMetadataProgress.style.display = "none";
         $(".synced-progress").css("display", "none");
         enableform(bfMetadataForm);
@@ -4443,8 +4361,8 @@ bfAddSubtitleBtn.addEventListener("click", () => {
           "Error",
           "Manage Dataset - Add/Edit Subtitle",
           selectedBfDataset
-          );
-        } else {
+        );
+      } else {
         $("#bf-add-subtitle-dataset-spinner").hide();
         datasetSubtitleStatus.innerHTML = res;
         bfCurrentMetadataProgress.style.display = "none";
@@ -4466,13 +4384,12 @@ bfAddDescriptionBtn.addEventListener("click", () => {
   bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
   $("#bf-add-description-dataset-spinner").show();
-  //datasetDescriptionStatus.innerHTML = "Please wait...";
   disableform(bfMetadataForm);
+
   var selectedBfAccount = defaultBfAccount;
-  //  bfAccountList.options[bfAccountList.selectedIndex].text;
-  // var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var markdownDescription = tuiInstance.getMarkdown();
+
   client.invoke(
     "api_bf_add_description",
     selectedBfAccount,
@@ -4485,7 +4402,7 @@ bfAddDescriptionBtn.addEventListener("click", () => {
         var emessage = userError(error);
         $("#bf-add-description-dataset-spinner").hide();
         datasetDescriptionStatus.innerHTML =
-        "<span style='color: red;'> " + emessage + "</span>";
+          "<span style='color: red;'> " + emessage + "</span>";
         bfCurrentMetadataProgress.style.display = "none";
         $(".synced-progress").css("display", "none");
         enableform(bfMetadataForm);
@@ -4494,8 +4411,8 @@ bfAddDescriptionBtn.addEventListener("click", () => {
           "Error",
           "Manage Dataset - Add/Edit Description",
           selectedBfDataset
-          );
-        } else {
+        );
+      } else {
         $("#bf-add-description-dataset-spinner").hide();
         datasetDescriptionStatus.innerHTML = res;
         bfCurrentMetadataProgress.style.display = "none";
@@ -4581,12 +4498,11 @@ function uploadBannerImage() {
   }
   var imagePath = path.join(imageFolder, "banner-image-SODA." + imageExtension);
   var croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
-  imageDataURI.outputFile(croppedImageDataURI, imagePath).then( () => {
+  imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {
     if (fs.statSync(imagePath)["size"] < 5 * 1024 * 1024) {
       var selectedBfAccount = defaultBfAccount;
-      //  bfAccountList.options[bfAccountList.selectedIndex].text;
-      //var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
       var selectedBfDataset = defaultBfDataset;
+
       client.invoke(
         "api_bf_add_banner_image",
         selectedBfAccount,
@@ -4672,12 +4588,11 @@ bfAddLicenseBtn.addEventListener("click", () => {
   $("#bf-add-license-dataset-spinner").show();
   datasetLicenseStatus.innerHTML = "Please wait...";
   disableform(bfMetadataForm);
+
   var selectedBfAccount = defaultBfAccount;
-  //  bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
-  /*var selectedLicense = bfListLicense.options[bfListLicense.selectedIndex].text*/
   var selectedLicense = "Creative Commons Attribution";
+
   client.invoke(
     "api_bf_add_license",
     selectedBfAccount,
@@ -4690,7 +4605,7 @@ bfAddLicenseBtn.addEventListener("click", () => {
         var emessage = userError(error);
         $("#bf-add-license-dataset-spinner").hide();
         datasetLicenseStatus.innerHTML =
-        "<span style='color: red;'> " + emessage + "</span>";
+          "<span style='color: red;'> " + emessage + "</span>";
         bfCurrentMetadataProgress.style.display = "none";
         $(".synced-progress").css("display", "none");
         ipcRenderer.send(
@@ -4698,9 +4613,9 @@ bfAddLicenseBtn.addEventListener("click", () => {
           "Error",
           "Manage Dataset - Assign License",
           selectedBfDataset
-          );
-          enableform(bfMetadataForm);
-        } else {
+        );
+        enableform(bfMetadataForm);
+      } else {
         $("#bf-add-license-dataset-spinner").hide();
         datasetLicenseStatus.innerHTML = res;
         showCurrentLicense();
@@ -4726,13 +4641,13 @@ bfAddPermissionPIBtn.addEventListener("click", () => {
 ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
   $("#bf-add-permission-pi-spinner").css("visibility", "visible");
   datasetPermissionStatusPI.innerHTML = "";
-  disableform(bfPermissionForm);
+  //disableform(bfPermissionForm);
+
   var selectedBfAccount = defaultBfAccount;
-  //  bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].text;
   var selectedRole = "owner";
+
   if (index === 0) {
     client.invoke(
       "api_bf_add_permission",
@@ -4750,27 +4665,20 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
             "<span style='color: red;'> " + emessage + "</span>";
           bfCurrentPermissionProgress.style.display = "none";
           bfAddEditCurrentPermissionProgress.style.display = "none";
-          enableform(bfPermissionForm);
+          //enableform(bfPermissionForm);
         } else {
           $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
           datasetPermissionStatusPI.innerHTML = res;
           showCurrentPermission();
-          enableform(bfPermissionForm);
+          //enableform(bfPermissionForm);
           changeDatasetRolePI(selectedBfDataset);
-          /*
-          refreshDatasetListChooseOption(
-            "#bfdatasetlist_permission",
-            selectedBfDataset
-          );
-          */
-          syncDatasetDropdownOption(bfDatasetListPermission);
         }
       }
     );
   } else {
     bfCurrentPermissionProgress.style.display = "none";
     bfAddEditCurrentPermissionProgress.style.display = "none";
-    enableform(bfPermissionForm);
+    //enableform(bfPermissionForm);
   }
 });
 
@@ -4780,13 +4688,13 @@ bfAddPermissionBtn.addEventListener("click", () => {
   datasetPermissionStatus.innerHTML = "";
   bfCurrentPermissionProgress.style.display = "block";
   bfAddEditCurrentPermissionProgress.style.display = "block";
-  disableform(bfPermissionForm);
+  //disableform(bfPermissionForm);
+
   var selectedBfAccount = defaultBfAccount;
-  //  bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text;
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text;
+
   if (selectedRole === "owner") {
     ipcRenderer.send("warning-add-permission-owner");
   } else {
@@ -4796,18 +4704,18 @@ bfAddPermissionBtn.addEventListener("click", () => {
       selectedUser,
       selectedRole
     );
-    //$("#bf-add-permission-user-spinner").css("visibility", "hidden");
   }
 });
 
 ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
-  datasetPermissionStatus.innerHTML = "";
+  
   var selectedBfAccount = defaultBfAccount;
-  //  bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text;
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text;
+  
+  datasetPermissionStatus.innerHTML = "";
+
   if (index === 0) {
     addPermissionUser(
       selectedBfAccount,
@@ -4820,7 +4728,7 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
     $("#bf-add-permission-user-spinner").hide();
     bfCurrentPermissionProgress.style.display = "none";
     bfAddEditCurrentPermissionProgress.style.display = "none";
-    enableform(bfPermissionForm);
+    //enableform(bfPermissionForm);
   }
 });
 
@@ -4830,7 +4738,7 @@ bfAddPermissionTeamBtn.addEventListener("click", () => {
   datasetPermissionStatusTeam.innerHTML = "";
   bfCurrentPermissionProgress.style.display = "block";
   bfAddEditCurrentPermissionProgress.style.display = "block";
-  disableform(bfPermissionForm);
+  //disableform(bfPermissionForm);
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
   var selectedTeam = bfListTeams.options[bfListTeams.selectedIndex].text;
@@ -4852,12 +4760,12 @@ bfAddPermissionTeamBtn.addEventListener("click", () => {
           "<span style='color: red;'> " + emessage + "</span>";
         bfCurrentPermissionProgress.style.display = "none";
         bfAddEditCurrentPermissionProgress.style.display = "none";
-        enableform(bfPermissionForm);
+        //enableform(bfPermissionForm);
       } else {
         $("#bf-add-permission-team-spinner").hide();
         datasetPermissionStatusTeam.innerHTML = res;
         showCurrentPermission();
-        enableform(bfPermissionForm);
+        //enableform(bfPermissionForm);
       }
     }
   );
@@ -4878,14 +4786,13 @@ ipcRenderer.on("warning-share-with-curation-team-selection", (event, index) => {
 function shareWithCurationTeam() {
   datasetPermissionStatusCurationTeam.innerHTML = "Please wait...";
   bfPostCurationProgressCuration.style.display = "block";
-  // disableform(bfPermissionForm)
   bfAddPermissionCurationTeamBtn.disabled = true;
+  
   var selectedBfAccount = defaultBfAccount;
-  // bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListPermission.options[bfdatasetlist_permission.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
   var selectedTeam = "SPARC Data Curation Team";
   var selectedRole = "manager";
+
   client.invoke(
     "api_bf_add_permission_team",
     selectedBfAccount,
@@ -4900,7 +4807,7 @@ function shareWithCurationTeam() {
         datasetPermissionStatusCurationTeam.innerHTML =
           "<span style='color: red;'> " + emessage + "</span>";
         bfPostCurationProgressCuration.style.display = "none";
-        enableform(bfPermissionForm);
+        //enableform(bfPermissionForm);
         bfAddPermissionCurationTeamBtn.disabled = false;
       } else {
         showCurrentPermission();
@@ -4934,7 +4841,7 @@ function shareWithCurationTeam() {
                 "Disseminate Dataset - Share with Curation Team",
                 selectedBfDataset
               );
-              enableform(bfPermissionForm);
+              //enableform(bfPermissionForm);
               showCurrentDatasetStatus();
               bfPostCurationProgressCuration.style.display = "none";
               bfAddPermissionCurationTeamBtn.disabled = false;
@@ -5013,51 +4920,17 @@ function shareWithConsortium() {
   );
 }
 
-// // Reserve DOI
-// bfReserveDOIBtn.addEventListener('click', () => {
-//   // disableform(bfPostCurationForm)
-//   bfReserveDOIBtn.disabled = true
-//   reserveDOIStatus.innerHTML = "Please wait..."
-//   bfPostCurationProgressDOI.style.display = 'block'
-//   var selectedBfAccount = bfAccountList.options[bfAccountList.selectedIndex].text
-//   var selectedBfDataset = bfDatasetListPostCuration.options[bfDatasetListPostCuration.selectedIndex].text
-//   client.invoke("api_bf_reserve_doi", selectedBfAccount, selectedBfDataset,
-//     (error, res) => {
-//     if(error) {
-//       log.error(error)
-//       console.error(error)
-//       var emessage = userError(error)
-//       reserveDOIStatus.innerHTML = "<span style='color: red;'> " + emessage + "</span>"
-//       bfPostCurationProgressDOI.style.display = 'none'
-//       // enableform(bfPostCurationForm)
-//       bfReserveDOIBtn.disabled = false
-//     } else {
-//       reserveDOIStatus.innerHTML = res
-//       showCurrentDOI()
-//       // enableform(bfPostCurationForm)
-//       bfReserveDOIBtn.disabled = false
-//     }
-//   })
-// })
-
 function submitReviewDatasetCheck(res) {
-  //$("#disseminate-publish-spinner").show();
   $("#submit_prepublishing_review-spinner").show();
   var reviewstatus = res[0];
   var publishingStatus = res[1];
   if (publishingStatus === "PUBLISH_IN_PROGRESS") {
     emessage =
       "Your dataset is currently being published. Please wait until it is completed.";
-    // publishDatasetStatus.innerHTML =
-    //   "<span style='color: red;'> " + emessage + "</span>";
-    //$("#disseminate-publish-spinner").hide();
     $("#submit_prepublishing_review-spinner").hide();
   } else if (reviewstatus === "requested") {
     emessage =
       "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.";
-    // publishDatasetStatus.innerHTML =
-    //   "<span style='color: red;'> " + emessage + "</span>";
-    //$("#disseminate-publish-spinner").hide();
     $("#submit_prepublishing_review-spinner").hide();
   } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
     ipcRenderer.send("warning-publish-dataset-again");
@@ -5070,7 +4943,6 @@ ipcRenderer.on("warning-publish-dataset-selection", (event, index) => {
   if (index === 0) {
     submitReviewDataset();
   }
-  //$("#disseminate-publish-spinner").hide();
   $("#submit_prepublishing_review-spinner").hide();
 });
 
@@ -5078,12 +4950,11 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   if (index === 0) {
     submitReviewDataset();
   }
-  //$("#disseminate-publish-spinner").hide();
   $("#submit_prepublishing_review-spinner").hide();
 });
 
 function submitReviewDataset() {
-  $("#para-submit_prepublishing_review-status").text("")
+  $("#para-submit_prepublishing_review-status").text("");
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
@@ -5096,26 +4967,28 @@ function submitReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $("#para-submit_prepublishing_review-status").css("color", "red")
-        $("#para-submit_prepublishing_review-status").text(emessage)
+        $("#para-submit_prepublishing_review-status").css("color", "red");
+        $("#para-submit_prepublishing_review-status").text(emessage);
       } else {
-        $("#para-submit_prepublishing_review-status").css("color", "var(--color-light-green)")
-        $("#para-submit_prepublishing_review-status").text("Success: Dataset has been submitted for review to the Publishers within your organization")
+        $("#para-submit_prepublishing_review-status").css(
+          "color",
+          "var(--color-light-green)"
+        );
+        $("#para-submit_prepublishing_review-status").text(
+          "Success: Dataset has been submitted for review to the Publishers within your organization"
+        );
         showPublishingStatus("noClear");
       }
       bfSubmitReviewDatasetBtn.disabled = false;
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
       bfWithdrawReviewDatasetBtn.disabled = false;
-      //$("#disseminate-publish-spinner").hide();
       $("#submit_prepublishing_review-spinner").hide();
     }
-  )
-  ;
+  );
 }
 
 // //Withdraw dataset from review
 function withdrawDatasetSubmission() {
-  //$("#disseminate-publish-spinner").show();
   $("#submit_prepublishing_review-spinner").show();
   showPublishingStatus(withdrawDatasetCheck);
 }
@@ -5124,9 +4997,8 @@ function withdrawDatasetCheck(res) {
   var reviewstatus = res[0];
   if (reviewstatus !== "requested") {
     emessage = "Your dataset is not currently under review";
-    $("#para-submit_prepublishing_review-status").css("color", "red")
-    $("#para-submit_prepublishing_review-status").text(emessage)
-    //$("#disseminate-publish-spinner").hide();
+    $("#para-submit_prepublishing_review-status").css("color", "red");
+    $("#para-submit_prepublishing_review-status").text(emessage);
     $("#submit_prepublishing_review-spinner").hide();
   } else {
     ipcRenderer.send("warning-withdraw-dataset");
@@ -5137,7 +5009,6 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
   if (index === 0) {
     withdrawReviewDataset();
   }
-  //$("#disseminate-publish-spinner").hide();
   $("#submit_prepublishing_review-spinner").hide();
 });
 
@@ -5155,17 +5026,21 @@ function withdrawReviewDataset() {
         log.error(error);
         console.error(error);
         var emessage = userError(error);
-        $("#para-submit_prepublishing_review-status").css("color", "red")
-        $("#para-submit_prepublishing_review-status").text(emessage)
+        $("#para-submit_prepublishing_review-status").css("color", "red");
+        $("#para-submit_prepublishing_review-status").text(emessage);
       } else {
-        $("#para-submit_prepublishing_review-status").css("color", "var(--color-light-green)")
-        $("#para-submit_prepublishing_review-status").text("Success: Dataset has been withdrawn from review")
+        $("#para-submit_prepublishing_review-status").css(
+          "color",
+          "var(--color-light-green)"
+        );
+        $("#para-submit_prepublishing_review-status").text(
+          "Success: Dataset has been withdrawn from review"
+        );
         showPublishingStatus("noClear");
       }
       bfSubmitReviewDatasetBtn.disabled = false;
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
       bfWithdrawReviewDatasetBtn.disabled = false;
-      //$("#disseminate-publish-spinner").hide();
       $("#submit_prepublishing_review-spinner").hide();
     }
   );
@@ -5202,10 +5077,12 @@ function clearStrings() {
   document.getElementById("para-selected-dataset").innerHTML = "";
 }
 
+/*
 function clearPermissionsStrings() {
   document.getElementById("para-save-file-organization-status").innerHTML = "";
   document.getElementById("para-selected-dataset").innerHTML = "";
 }
+*/
 
 function userError(error) {
   var myerror = error.message;
@@ -5213,7 +5090,7 @@ function userError(error) {
 }
 
 // Manage Datasets //
-
+/*
 function refreshBfDatasetList(bfdstlist, bfAccountList) {
   removeOptions(bfdstlist);
   var accountSelected = defaultBfAccount;
@@ -5223,36 +5100,34 @@ function refreshBfDatasetList(bfdstlist, bfAccountList) {
     optionSelect.textContent = "Select dataset";
     bfdstlist.appendChild(optionSelect);
   } else {
-    client.invoke(
-      "api_bf_dataset_account",
-      accountSelected,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-        } else {
-          for (myitem in res) {
-            var myitemselect = res[myitem];
-            var option = document.createElement("option");
-            option.textContent = myitemselect;
-            option.value = myitemselect;
-            bfdstlist.appendChild(option);
-          }
+    client.invoke("api_bf_dataset_account", accountSelected, (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+      } else {
+        for (myitem in res) {
+          var myitemselect = res[myitem];
+          var option = document.createElement("option");
+          option.textContent = myitemselect;
+          option.value = myitemselect;
+          bfdstlist.appendChild(option);
         }
       }
-    );
+    });
   }
 }
+*/
 
+/*
 function refreshAllBfDatasetLists() {
   refreshDatasetList();
 }
+*/
 
 function showCurrentSubtitle() {
   var selectedBfAccount = defaultBfAccount;
-  //  bfAccountList.options[bfAccountList.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
-  //var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
+
   if (selectedBfDataset === "Select dataset") {
     bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
@@ -5277,10 +5152,9 @@ function showCurrentSubtitle() {
 
 function showCurrentDescription() {
   var selectedBfAccount = defaultBfAccount;
-    //bfAccountList.options[bfAccountList.selectedIndex].text;
-    //var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
-    var selectedBfDataset = defaultBfDataset;
-    if (selectedBfDataset === "Select dataset") {
+  var selectedBfDataset = defaultBfDataset;
+
+  if (selectedBfDataset === "Select dataset") {
     bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
     tuiInstance.setMarkdown("");
@@ -5302,10 +5176,9 @@ function showCurrentDescription() {
 }
 
 const showCurrentBannerImage = () => {
-  var selectedBfAccount = defaultBfAccount
-  //  bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
+  var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
+
   if (selectedBfDataset === "Select dataset") {
     bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
@@ -5347,11 +5220,6 @@ const showCurrentBannerImage = () => {
           } else {
             document.getElementById("para-current-banner-img").innerHTML = "";
             bfCurrentBannerImg.src = res;
-            // setTimeout(() => {
-            //   document
-            //     .getElementById("edit_banner_image_button")
-            //     .scrollIntoView({ behavior: "smooth", block: "center" });
-            // }, 400);
           }
           bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");
@@ -5362,11 +5230,11 @@ const showCurrentBannerImage = () => {
 };
 
 function showCurrentLicense() {
-  currentDatasetLicense.innerHTML = "Please wait...";
   var selectedBfAccount = defaultBfAccount;
-  //  bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListMetadata.options[bfDatasetListMetadata.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
+  
+  currentDatasetLicense.innerHTML = "Please wait...";
+
   if (selectedBfDataset === "Select dataset") {
     currentDatasetLicense.innerHTML = "None";
     bfCurrentMetadataProgress.style.display = "none";
@@ -5404,7 +5272,6 @@ function showCurrentLicense() {
 
 function refreshBfUsersList() {
   var accountSelected = defaultBfAccount;
-  //bfAccountList.options[bfAccountList.selectedIndex].text;
 
   removeOptions(bfListUsers);
   var optionUser = document.createElement("option");
@@ -5438,38 +5305,38 @@ function refreshBfUsersList() {
 
 function refreshBfTeamsList(teamList) {
   removeOptions(teamList);
+
   var accountSelected = defaultBfAccount;
-  //bfAccountList.options[bfAccountList.selectedIndex].text;
   var optionTeam = document.createElement("option");
+  
   optionTeam.textContent = "Select team";
   teamList.appendChild(optionTeam);
+  
   if (accountSelected !== "Select") {
-    client.invoke(
-      "api_bf_get_teams",
-      accountSelected,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-        } else {
-          for (var myItem in res) {
-            var myTeam = res[myItem];
-            var optionTeam = document.createElement("option");
-            optionTeam.textContent = myTeam;
-            optionTeam.value = myTeam;
-            teamList.appendChild(optionTeam);
-          }
+    client.invoke("api_bf_get_teams", accountSelected, (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+      } else {
+        for (var myItem in res) {
+          var myTeam = res[myItem];
+          var optionTeam = document.createElement("option");
+          optionTeam.textContent = myTeam;
+          optionTeam.value = myTeam;
+          teamList.appendChild(optionTeam);
         }
       }
-    );
+    });
   }
 }
 
 function showCurrentPermission() {
-  currentDatasetPermission.innerHTML = "Please wait...";
-  currentAddEditDatasetPermission.innerHTML = "Please wait...";
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
+
+  currentDatasetPermission.innerHTML = "Please wait...";
+  currentAddEditDatasetPermission.innerHTML = "Please wait...";
+  
   if (selectedBfDataset === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
     currentAddEditDatasetPermission.innerHTML = "None";
@@ -5488,14 +5355,16 @@ function showCurrentPermission() {
           bfAddEditCurrentPermissionProgress.style.display = "none";
         } else {
           var permissionList = "";
-          let datasetOwner = ""
+          let datasetOwner = "";
           for (var i in res) {
             permissionList = permissionList + res[i] + "<br>";
-            if (res[i].indexOf('owner') != -1)
-            {
-              let first_position = res[i].indexOf(':');
-              let second_position = res[i].indexOf(',');
-              datasetOwner = res[i].substring(first_position + 2, second_position);
+            if (res[i].indexOf("owner") != -1) {
+              let first_position = res[i].indexOf(":");
+              let second_position = res[i].indexOf(",");
+              datasetOwner = res[i].substring(
+                first_position + 2,
+                second_position
+              );
             }
           }
           currentDatasetPermission.innerHTML = datasetOwner;
@@ -5531,11 +5400,11 @@ function addPermissionUser(
           "<span style='color: red;'> " + emessage + "</span>";
         bfCurrentPermissionProgress.style.display = "none";
         bfAddEditCurrentPermissionProgress.style.display = "none";
-        enableform(bfPermissionForm);
+        //enableform(bfPermissionForm);
       } else {
         datasetPermissionStatus.innerHTML = res;
         showCurrentPermission();
-        enableform(bfPermissionForm);
+        //enableform(bfPermissionForm);
 
         // refresh dataset lists with filter
         client.invoke("api_get_username", selectedBfAccount, (error, res1) => {
@@ -5550,12 +5419,6 @@ function addPermissionUser(
                   datasetList[i].role = "manager";
                 }
               }
-              /*
-              refreshDatasetListChooseOption(
-                "#bfdatasetlist_permission",
-                selectedBfDataset
-              );*/
-              syncDatasetDropdownOption(bfDatasetListPermission);
             }
 
             if (selectedUser === res1) {
@@ -5565,13 +5428,6 @@ function addPermissionUser(
                   datasetList[i].role = selectedRole.toLowerCase();
                 }
               }
-              /// set permission back to All and refresh dataset list, and select the original dataset option
-              /*
-              refreshDatasetListChooseOption(
-                "#bfdatasetlist_permission",
-                selectedBfDataset
-              );*/
-              syncDatasetDropdownOption(bfDatasetListPermission);
             }
             $("#bf-add-permission-user-spinner").hide();
           }
@@ -5594,11 +5450,9 @@ const addRadioOption = (ul, text, val) => {
 
 function showCurrentDatasetStatus(callback) {
   var selectedBfAccount = defaultBfAccount;
-  //  bfAccountList.options[bfAccountList.selectedIndex].text;
-  //var selectedBfDataset = bfDatasetListDatasetStatus.options[bfDatasetListDatasetStatus.selectedIndex].text;
   var selectedBfDataset = defaultBfDataset;
+
   if (selectedBfDataset === "Select dataset") {
-    //bfCurrentDatasetStatusProgress.style.display = "none";
     $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
     datasetStatusStatus.innerHTML = "";
@@ -5618,20 +5472,23 @@ function showCurrentDatasetStatus(callback) {
           var emessage = userError(error);
           datasetStatusStatus.innerHTML =
             "<span style='color: red;'> " + emessage + "</span>";
-          //bfCurrentDatasetStatusProgress.style.display = "none";
           $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
           $("#bf-dataset-status-spinner").css("display", "none");
         } else {
           var myitemselect = [];
           removeOptions(bfListDatasetStatus);
-          removeRadioOptions("dataset_status_ul")
+          removeRadioOptions("dataset_status_ul");
           for (var item in res[0]) {
             var option = document.createElement("option");
             option.textContent = res[0][item]["displayName"];
             option.value = res[0][item]["name"];
             option.style.color = res[0][item]["color"];
             bfListDatasetStatus.appendChild(option);
-            addRadioOption("dataset_status_ul", res[0][item]["displayName"], res[0][item]["name"]);
+            addRadioOption(
+              "dataset_status_ul",
+              res[0][item]["displayName"],
+              res[0][item]["name"]
+            );
           }
           bfListDatasetStatus.value = res[1];
           $(`input[name=dataset_status_radio][value=${res[1]}]`).prop(
@@ -5639,7 +5496,6 @@ function showCurrentDatasetStatus(callback) {
             true
           );
           selectOptionColor(bfListDatasetStatus);
-          //bfCurrentDatasetStatusProgress.style.display = "none";
           $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
           $("#bf-dataset-status-spinner").css("display", "none");
           datasetStatusStatus.innerHTML = "";
@@ -5662,87 +5518,79 @@ function showAccountDetails(loadProgress) {
   $(".svg-change-current-account.dataset").css("display", "none");
   $(".ui.active.green.inline.loader.small").css("display", "block");
 
-  client.invoke(
-    "api_bf_account_details",
-    defaultBfAccount,
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        bfSelectAccountStatus.innerHTML =
-          "<span style='color: red;'> " + error + "</span>";
-        bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML;
-        loadProgress.style.display = "none";
-        $(".bf-dataset-span").css("color", "#000");
-        $(".svg-change-current-account.dataset").css("display", "block");
-        $(".ui.active.green.inline.loader.small").css("display", "none");
-      } else {
-        bfSelectAccountStatus.innerHTML = res;
-        $("#para-account-detail-curate").html(res);
-        $("#para-account-detail-curate-generate").html(res);
-        $("#para_create_empty_dataset_BF_account").html(res);
-        $(".bf-account-details-span").html(res);
-        bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML;
-        loadProgress.style.display = "none";
-        document.getElementById("div-permission-list").style.display = "block";
-        document.getElementById("div-filter-datasets-progress").style.display =
-          "block";
-        document.getElementById("para-filter-datasets-status").innerHTML =
-          "Loading datasets from your account ...";
-        datasetPermissionList.disabled = true;
-        client.invoke(
-          "api_bf_dataset_account",
-          defaultBfAccount,
-          (error, result) => {
-            if (error) {
-              log.error(error);
-              console.log(error);
-              var emessage = error;
-              document.getElementById("para-filter-datasets-status").innerHTML =
-                "<span style='color: red'>" + emessage + "</span>";
-                $(".bf-dataset-span").css("color", "#000");
-                $(".svg-change-current-account.dataset").css("display", "block");
-                $(".ui.active.green.inline.loader.small").css("display", "none");
-            } else {
-              datasetList = [];
-              datasetList = result;
-              refreshDatasetList();
-              document.getElementById(
-                "div-filter-datasets-progress"
-              ).style.display = "none";
-              datasetPermissionList.disabled = false;
-              document.getElementById("para-filter-datasets-status").innerHTML =
-                "All datasets were loaded successfully in SODA's interface. " +
-                smileyCan;
-                $(".bf-dataset-span").css("color", "#000");
-                $(".svg-change-current-account.dataset").css("display", "block");
-                $(".ui.active.green.inline.loader.small").css("display", "none");
-            }
+  client.invoke("api_bf_account_details", defaultBfAccount, (error, res) => {
+    if (error) {
+      log.error(error);
+      console.error(error);
+      bfSelectAccountStatus.innerHTML =
+        "<span style='color: red;'> " + error + "</span>";
+      bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML;
+      loadProgress.style.display = "none";
+      $(".bf-dataset-span").css("color", "#000");
+      $(".svg-change-current-account.dataset").css("display", "block");
+      $(".ui.active.green.inline.loader.small").css("display", "none");
+    } else {
+      bfSelectAccountStatus.innerHTML = res;
+      $("#para-account-detail-curate").html(res);
+      $("#para-account-detail-curate-generate").html(res);
+      $("#para_create_empty_dataset_BF_account").html(res);
+      $(".bf-account-details-span").html(res);
+      bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML;
+      loadProgress.style.display = "none";
+      document.getElementById("div-permission-list").style.display = "block";
+      document.getElementById("div-filter-datasets-progress").style.display =
+        "block";
+      document.getElementById("para-filter-datasets-status").innerHTML =
+        "Loading datasets from your account ...";
+      datasetPermissionList.disabled = true;
+
+      client.invoke(
+        "api_bf_dataset_account",
+        defaultBfAccount,
+        (error, result) => {
+          if (error) {
+            log.error(error);
+            console.log(error);
+            var emessage = error;
+            document.getElementById("para-filter-datasets-status").innerHTML =
+              "<span style='color: red'>" + emessage + "</span>";
+            $(".bf-dataset-span").css("color", "#000");
+            $(".svg-change-current-account.dataset").css("display", "block");
+            $(".ui.active.green.inline.loader.small").css("display", "none");
+          } else {
+            datasetList = [];
+            datasetList = result;
+            refreshDatasetList();
+            document.getElementById(
+              "div-filter-datasets-progress"
+            ).style.display = "none";
+            datasetPermissionList.disabled = false;
+            document.getElementById("para-filter-datasets-status").innerHTML =
+              "All datasets were loaded successfully in SODA's interface. " +
+              smileyCan;
+            $(".bf-dataset-span").css("color", "#000");
+            $(".svg-change-current-account.dataset").css("display", "block");
+            $(".ui.active.green.inline.loader.small").css("display", "none");
           }
-        );
-      }
+        }
+      );
     }
-  );
+  });
 }
 
 ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 function getDatasetList() {
-  client.invoke(
-    "api_bf_account_details",
-    defaultBfAccount,
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-      } else {
-        datasetList = [];
-        datasetList = res["datasets"];
-        //var numberOfDatasets = refreshDatasetList();
-      }
+  client.invoke("api_bf_account_details", defaultBfAccount, (error, res) => {
+    if (error) {
+      log.error(error);
+      console.error(error);
+    } else {
+      datasetList = [];
+      datasetList = res["datasets"];
     }
-  );
+  });
 }
 
 /// rename datasets in place without calling Python
@@ -5822,24 +5670,14 @@ function selectOptionDropdown(dropdown, selectedDataset) {
 //// De-populate dataset dropdowns to clear options
 const clearDatasetDropdowns = () => {
   for (let list of [
-    bfDatasetList,
-    bfDatasetListMetadata,
-    bfDatasetListMetadata,
-    bfUploadDatasetList,
-    bfDatasetListDatasetStatus,
-    bfDatasetListRenameDataset,
-    bfDatasetListPostCurationPublish,
-    bfDatasetListPostCurationCuration,
-    bfDatasetListPostCurationConsortium,
     datasetDescriptionFileDataset,
-    bfDatasetListPermission,
     curateDatasetDropdown,
   ]) {
     removeOptions(list);
     addOption(list, "Select dataset", "Select dataset");
     list.options[0].disabled = true;
   }
-}
+};
 
 /// populate the dropdowns with refreshed dataset list
 function populateDatasetDropdowns(mylist) {
@@ -5849,40 +5687,21 @@ function populateDatasetDropdowns(mylist) {
     var option = document.createElement("option");
     option.textContent = myitemselect;
     option.value = myitemselect;
-    bfDatasetList.appendChild(option);
-    var option2 = option.cloneNode(true);
-    var option3 = option.cloneNode(true);
-    var option4 = option.cloneNode(true);
-    var option5 = option.cloneNode(true);
-    var option6 = option.cloneNode(true);
+    //bfDatasetList.appendChild(option);
     var option7 = option.cloneNode(true);
-    var option8 = option.cloneNode(true);
-    var option9 = option.cloneNode(true);
-    var option10 = option.cloneNode(true);
     var option11 = option.cloneNode(true);
-
-    /* multiple calls
-    bfDatasetListMetadata.appendChild(option2);
-    bfDatasetListPermission.appendChild(option3);
-    bfUploadDatasetList.appendChild(option4);
-    bfDatasetListDatasetStatus.appendChild(option5);
-    bfDatasetListRenameDataset.appendChild(option6);
-    bfDatasetListPostCurationCuration.appendChild(option8);
-    bfDatasetListPostCurationConsortium.appendChild(option9);
-    bfDatasetListPostCurationPublish.appendChild(option10);
-    */
-   datasetDescriptionFileDataset.appendChild(option7);
+    datasetDescriptionFileDataset.appendChild(option7);
     curateDatasetDropdown.appendChild(option11);
   }
-    renameDatasetlistChange();
-    metadataDatasetlistChange();
-    permissionDatasetlistChange();
-    //curation_consortium_check();
-    postCurationListChange();
-    datasetStatusListChange();
+  // renameDatasetlistChange();
+  metadataDatasetlistChange();
+  permissionDatasetlistChange();
+  //curation_consortium_check();
+  postCurationListChange();
+  datasetStatusListChange();
 }
 
-datasetPermissionList.addEventListener("change",  (e) =>{
+datasetPermissionList.addEventListener("change", (e) => {
   var datasetPermission =
     datasetPermissionList.options[datasetPermissionList.selectedIndex].text;
 
@@ -5891,29 +5710,20 @@ datasetPermissionList.addEventListener("change",  (e) =>{
       "<span style='color:red'>Please select an account first!</span>";
   } else {
     for (let list of [
-      bfDatasetList,
-      bfDatasetListMetadata,
-      bfDatasetListMetadata,
-      bfUploadDatasetList,
-      bfDatasetListDatasetStatus,
-      bfDatasetListRenameDataset,
-      bfDatasetListPostCurationCuration,
-      bfDatasetListPostCurationPublish,
-      bfDatasetListPostCurationConsortium,
-      datasetDescriptionFileDataset,
+      datasetDescriptionFileDataset
     ]) {
       removeOptions(list);
       addOption(list, "Select dataset", "Select dataset");
     }
 
-    var numberOfDatasetsRetrieved = 0;//refreshDatasetList();
+    var numberOfDatasetsRetrieved = 0; //refreshDatasetList();
     $("#div-permission-list").css("display", "block");
     $("#div-filter-datasets-progress").css("display", "none");
     $("#para-filter-datasets-status").html(`${numberOfDatasetsRetrieved} +
     " dataset(s) where you have " +
     ${datasetPermission.toLowerCase()} +
     " permissions were loaded successfully in SODA's interface. " +
-    ${smileyCan};`)
+    ${smileyCan};`);
   }
 });
 
@@ -5950,11 +5760,9 @@ function loadDefaultAccount() {
         option.textContent = myitemselect;
         option.value = myitemselect;
         bfAccountList.appendChild(option);
-        // var selectedbfaccount = bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text
         datasetPermissionList.disabled = true;
         bfSelectAccountStatus.innerHTML =
           "No existing accounts to load. Please add a new account!";
-        // bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML
         bfAccountLoadProgress.style.display = "none";
       }
     }
@@ -5993,28 +5801,26 @@ function updateBfAccountList() {
       bfAccountList.options[0].disabled = true;
       // loadAllBFAccounts()
       loadDefaultAccount();
-    if (res[0] === "Select" && res.length === 1) {
-      bfSelectAccountStatus.innerHTML =
-        "No existing accounts to switch. Please add a new account!";
-      bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML;
-      datasetPermissionList.disabled = true;
-      // loadAllBFAccounts()
+      if (res[0] === "Select" && res.length === 1) {
+        bfSelectAccountStatus.innerHTML =
+          "No existing accounts to switch. Please add a new account!";
+        bfUploadSelectAccountStatus.innerHTML = bfSelectAccountStatus.innerHTML;
+        datasetPermissionList.disabled = true;
       }
     }
     bfSelectAccountStatus.innerHTML = "";
     bfAccountLoadProgress.style.display = "none";
-    // refreshAllBfDatasetLists()
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
   });
 }
 
+/*
 function showCurrentDOI() {
   currentDOI.value = "Please wait...";
   reserveDOIStatus.innerHTML = "";
   bfPostCurationProgressDOI.style.display = "block";
-  var selectedBfAccount =
-    defaultBfAccount;
+  var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
   if (selectedBfDataset === "Select dataset") {
     currentDOI.value = "-------";
@@ -6041,6 +5847,7 @@ function showCurrentDOI() {
     );
   }
 }
+*/
 
 function showPublishingStatus(callback) {
   if (callback == "noClear") {
@@ -6062,10 +5869,12 @@ function showPublishingStatus(callback) {
           log.error(error);
           console.error(error);
           var emessage = userError(error);
-          $("#para-submit_prepublishing_review-status").css("color", "red")
-          $("#para-submit_prepublishing_review-status").text(emessage)
+          $("#para-submit_prepublishing_review-status").css("color", "red");
+          $("#para-submit_prepublishing_review-status").text(emessage);
         } else {
-          $("#para-review-dataset-info-disseminate").text(publishStatusOutputConversion(res));
+          $("#para-review-dataset-info-disseminate").text(
+            publishStatusOutputConversion(res)
+          );
           if (
             callback === submitReviewDatasetCheck ||
             callback === withdrawDatasetCheck
@@ -7021,75 +6830,69 @@ function showDetailsFile() {
 
 var bfAddAccountBootboxMessage =
   "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='text' /></div></div></form>";
-  var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Blackfynn API key and secret below:<i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Blackfynn-account-with-SODA'> help page </a>for generating API key and secret and setting up your Blackfynn account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`
+var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Blackfynn API key and secret below:<i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Blackfynn-account-with-SODA'> help page </a>for generating API key and secret and setting up your Blackfynn account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
 function addBFAccountInsideBootbox(myBootboxDialog) {
   var name = $("#bootbox-key-name").val();
   var apiKey = $("#bootbox-api-key").val();
   var apiSecret = $("#bootbox-api-secret").val();
-  client.invoke(
-    "api_bf_add_account",
-    name,
-    apiKey,
-    apiSecret,
-    (error, res) => {
-      if (error) {
-        $(myBootboxDialog).find(".modal-footer span").remove();
-        myBootboxDialog
-          .find(".modal-footer")
-          .prepend(
-            "<span style='color:red;padding-right:10px;display:inline-block;'>" +
-              error +
-              "</span>"
-          );
-        log.error(error);
-        console.error(error);
-      } else {
-        $("#bootbox-key-name").val("");
-        $("#bootbox-api-key").val("");
-        $("#bootbox-api-secret").val("");
-        bfAccountOptions[name] = name;
-        updateBfAccountList();
-        client.invoke("api_bf_account_details", name, (error, res) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
-            Swal.fire({
-              icon: "error",
-              text: "Something went wrong!",
-              footer:
-                '<a target="_blank" href="https://help.blackfynn.com/en/articles/1488536-creating-an-api-key-for-the-blackfynn-clients">Why do I have this issue?</a>',
-            });
-            showHideDropdownButtons("account", "hide");
-          } else {
-            $("#para-account-detail-curate").html(res);
-            $("#current-bf-account").text(name);
-            $("#current-bf-account-generate").text(name);
-            $("#create_empty_dataset_BF_account_span").text(name);
-            $(".bf-account-span").text(name);
-            $("#current-bf-dataset").text("None");
-            $("#current-bf-dataset-generate").text("None");
-            $(".bf-dataset-span").html("None");
-            $("#para-account-detail-curate-generate").html(res);
-            $("#para_create_empty_dataset_BF_account").html(res);
-            $(".bf-account-details-span").html(res);
+  client.invoke("api_bf_add_account", name, apiKey, apiSecret, (error, res) => {
+    if (error) {
+      $(myBootboxDialog).find(".modal-footer span").remove();
+      myBootboxDialog
+        .find(".modal-footer")
+        .prepend(
+          "<span style='color:red;padding-right:10px;display:inline-block;'>" +
+            error +
+            "</span>"
+        );
+      log.error(error);
+      console.error(error);
+    } else {
+      $("#bootbox-key-name").val("");
+      $("#bootbox-api-key").val("");
+      $("#bootbox-api-secret").val("");
+      bfAccountOptions[name] = name;
+      updateBfAccountList();
+      client.invoke("api_bf_account_details", name, (error, res) => {
+        if (error) {
+          log.error(error);
+          console.error(error);
+          Swal.fire({
+            icon: "error",
+            text: "Something went wrong!",
+            footer:
+              '<a target="_blank" href="https://help.blackfynn.com/en/articles/1488536-creating-an-api-key-for-the-blackfynn-clients">Why do I have this issue?</a>',
+          });
+          showHideDropdownButtons("account", "hide");
+        } else {
+          $("#para-account-detail-curate").html(res);
+          $("#current-bf-account").text(name);
+          $("#current-bf-account-generate").text(name);
+          $("#create_empty_dataset_BF_account_span").text(name);
+          $(".bf-account-span").text(name);
+          $("#current-bf-dataset").text("None");
+          $("#current-bf-dataset-generate").text("None");
+          $(".bf-dataset-span").html("None");
+          $("#para-account-detail-curate-generate").html(res);
+          $("#para_create_empty_dataset_BF_account").html(res);
+          $(".bf-account-details-span").html(res);
 
-            showHideDropdownButtons("account", "show");
-          }
-        });
-        myBootboxDialog.modal("hide");
-        bootbox.alert({
-          message: "Successfully added!",
-          centerVertical: true,
-        });
-      }
+          showHideDropdownButtons("account", "show");
+        }
+      });
+      myBootboxDialog.modal("hide");
+      bootbox.alert({
+        message: "Successfully added!",
+        centerVertical: true,
+      });
     }
-  );
+  });
 }
 
 function showBFAddAccountBootbox() {
   var bootb = bootbox.dialog({
-    title:bfaddaccountTitle,
+    title: bfaddaccountTitle,
     message: bfAddAccountBootboxMessage,
     buttons: {
       cancel: {
@@ -7106,53 +6909,52 @@ function showBFAddAccountBootbox() {
     },
     size: "medium",
     centerVertical: true,
-    onShown: function(e){
-      $('.popover-tooltip').each(function () {
+    onShown: function (e) {
+      $(".popover-tooltip").each(function () {
         var $this = $(this);
         $this.popover({
-            trigger: 'hover',
-            container: $this
-        })
+          trigger: "hover",
+          container: $this,
+        });
       });
-    }
+    },
   });
 }
 
 function showAddAirtableAccountBootbox() {
   var htmlTitle = `<h4 style="text-align:center">Please specify a key name and enter your Airtable API key below: <i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Airtable-account-with-SODA' target='_blank'> help page</a> for assistance. Note that the key will be stored locally on your computer and the SODA Team will not have access to it." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h4>`;
 
-  var bootb = bootbox
-    .dialog({
-      title: htmlTitle,
-      message: airtableAccountBootboxMessage,
-      buttons: {
-        cancel: {
-          label: "Cancel",
-        },
-        confirm: {
-          label: "Add",
-          className: "btn btn-primary bootbox-add-airtable-class",
-          callback: function () {
-            addAirtableAccountInsideBootbox(bootb);
-            return false;
-          },
+  var bootb = bootbox.dialog({
+    title: htmlTitle,
+    message: airtableAccountBootboxMessage,
+    buttons: {
+      cancel: {
+        label: "Cancel",
+      },
+      confirm: {
+        label: "Add",
+        className: "btn btn-primary bootbox-add-airtable-class",
+        callback: function () {
+          addAirtableAccountInsideBootbox(bootb);
+          return false;
         },
       },
-      size: "medium",
-      class: "api-width",
-      centerVertical: true,
-      onShown: function (e) {
-        $(".popover-tooltip").each(function () {
-          var $this = $(this);
-          $this.popover({
-            trigger: "hover",
-            container: $this,
-          });
+    },
+    size: "medium",
+    class: "api-width",
+    centerVertical: true,
+    onShown: function (e) {
+      $(".popover-tooltip").each(function () {
+        var $this = $(this);
+        $this.popover({
+          trigger: "hover",
+          container: $this,
         });
-      },
-    })
-    // .find(".modal-dialog")
-    // .css("max-width", "600px");
+      });
+    },
+  });
+  // .find(".modal-dialog")
+  // .css("max-width", "600px");
 }
 
 function addAirtableAccountInsideBootbox(myBootboxD) {
@@ -7209,7 +7011,10 @@ function addAirtableAccountInsideBootbox(myBootboxD) {
               $("#submission-connect-Airtable").prop("disabled", "true");
               $("#dd-connect-Airtable").prop("disabled", "true");
               $("#submission-no-airtable-mode").prop("disabled", "true");
-              $("#dataset-description-no-airtable-mode").prop("disabled", "true");
+              $("#dataset-description-no-airtable-mode").prop(
+                "disabled",
+                "true"
+              );
               $("#current-airtable-account").text(name);
               $("#current-airtable-account-dd").text(name);
               $("#bootbox-airtable-key-name").val("");
@@ -7217,10 +7022,17 @@ function addAirtableAccountInsideBootbox(myBootboxD) {
               loadAwardData();
               ddNoAirtableMode("Off");
               myBootboxD.modal("hide");
-              $("#Question-prepare-submission-1").nextAll().removeClass("show").removeClass("prev");
-              $("#Question-prepare-dd-1").nextAll().removeClass("show").removeClass("prev");
+              $("#Question-prepare-submission-1")
+                .nextAll()
+                .removeClass("show")
+                .removeClass("prev");
+              $("#Question-prepare-dd-1")
+                .nextAll()
+                .removeClass("show")
+                .removeClass("prev");
               Swal.fire({
-                title: "Successfully connected. Loading your Airtable account...",
+                title:
+                  "Successfully connected. Loading your Airtable account...",
                 timer: 2500,
                 timerProgressBar: true,
                 allowEscapeKey: false,
@@ -7278,8 +7090,11 @@ function editSPARCAwardsBootbox() {
           $(bootb).find(".modal-footer span").remove();
           var message = addSPARCAwards();
           bootb.find(".modal-footer").prepend(message);
-          if ($(".bootbox-add-airtable-class").text() == "Confirm" && $(bootb).find(".modal-footer span").text() == "") {
-            return true
+          if (
+            $(".bootbox-add-airtable-class").text() == "Confirm" &&
+            $(bootb).find(".modal-footer span").text() == ""
+          ) {
+            return true;
           } else {
             return false;
           }
@@ -8434,25 +8249,6 @@ function addDetailsForFile(ev) {
   }
 }
 
-//// Select to choose a local dataset
-// document.getElementById("location-new-dataset").addEventListener("click", function() {
-//   document.getElementById("location-new-dataset").placeholder = "Browse here"
-//   ipcRenderer.send('open-file-dialog-newdataset-curate');
-// })
-//
-// ipcRenderer.on('selected-new-datasetCurate', (event, filepath) => {
-//   if (filepath.length > 0) {
-//     if (filepath != null){
-//       document.getElementById("location-new-dataset").placeholder = filepath[0];
-//       document.getElementById("div-confirm-location-new-dataset").style.display = "flex";
-//     }
-//   }
-// })
-
-// document.getElementById('inputNewNameDataset').addEventListener('keydown', function() {
-//   // document.getElementById('para-new-name-dataset-message').innerHTML = ""
-// })
-
 $("#bf-rename-dataset-name").keyup(function () {
   let newName = $("#bf-rename-dataset-name").val().trim();
 
@@ -8467,8 +8263,7 @@ $("#bf-rename-dataset-name").keyup(function () {
       $("#button-rename-dataset").show();
     }
   } else {
-    if(newName == "")
-    {
+    if (newName == "") {
       $("#para-rename-dataset-message").html("");
     }
     $("#button-rename-dataset").hide();
@@ -8869,7 +8664,6 @@ function initiate_generate() {
           } else {
             datasetList = [];
             datasetList = result;
-            //refreshDatasetList();
             tempDatasetListsSync();
           }
         }
@@ -8888,7 +8682,6 @@ function initiate_generate() {
           } else {
             datasetList = [];
             datasetList = result;
-            //refreshDatasetList();
             tempDatasetListsSync();
           }
         }
@@ -9117,22 +8910,6 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   }
 });
 
-/*
-document
-  .getElementById("button-preview-dataset")
-  .addEventListener("click", function () {
-    client.invoke("api_preview_dataset", sodaJSONObj, (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-      } else {
-        console.log(res);
-      }
-    });
-  });
-*/
-
 var bf_request_and_populate_dataset = (sodaJSONObj) => {
   return new Promise((resolve, reject) => {
     client.invoke(
@@ -9157,8 +8934,14 @@ const curation_consortium_check = (mode = "") => {
   let selected_dataset = defaultBfDataset;
 
   $(".spinner.post-curation").show();
-  $("#para-share-curation_team-status").css("color", "var(--color-light-green)");
-  $("#para-share-with-sparc-consortium-status").css("color", "var(--color-light-green)");
+  $("#para-share-curation_team-status").css(
+    "color",
+    "var(--color-light-green)"
+  );
+  $("#para-share-with-sparc-consortium-status").css(
+    "color",
+    "var(--color-light-green)"
+  );
 
   $("#curation-team-unshare-btn").hide();
   $("#sparc-consortium-unshare-btn").hide();
@@ -9184,15 +8967,17 @@ const curation_consortium_check = (mode = "") => {
       res = res.replace(/<[^>]*>?/gm, "");
 
       if (res.search("SPARC Consortium") == -1) {
-
         $("#current_curation_team_status").text("None");
         $("#current_sparc_consortium_status").text("None");
 
-
         $("#para-share-curation_team-status").css("color", "red");
-        $("#para-share-curation_team-status").text("This account is not in the SPARC Consortium organization. Please switch accounts and try again");
+        $("#para-share-curation_team-status").text(
+          "This account is not in the SPARC Consortium organization. Please switch accounts and try again"
+        );
         $("#para-share-with-sparc-consortium-status").css("color", "red");
-        $("#para-share-with-sparc-consortium-status").text("This account is not in the SPARC Consortium organization. Please switch accounts and try again");
+        $("#para-share-with-sparc-consortium-status").text(
+          "This account is not in the SPARC Consortium organization. Please switch accounts and try again"
+        );
 
         if (mode != "update") {
           $("#curation-team-unshare-btn").hide();
@@ -9272,8 +9057,7 @@ const curation_consortium_check = (mode = "") => {
                 }
               }
 
-              if (consortium_return_status)
-              {
+              if (consortium_return_status) {
                 if (mode != "update") {
                   $("#sparc-consortium-unshare-btn").hide();
                   $("#sparc-consortium-share-btn").show();
