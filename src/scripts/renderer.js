@@ -2016,11 +2016,11 @@ const showDatasetDescription = () => {
   var selectedBfAccount = defaultBfAccount;
   //  bfAccountList.options[bfAccountList.selectedIndex].text;
   let temp = datasetDescriptionFileDataset.selectedIndex;
-  // var selectedBfDataset =
-  //   datasetDescriptionFileDataset.options[
-  //     datasetDescriptionFileDataset.selectedIndex
-  //   ].text;
-  var selectedBfDataset = defaultBfDataset;
+  var selectedBfDataset =
+     datasetDescriptionFileDataset.options[
+       datasetDescriptionFileDataset.selectedIndex
+     ].text;
+  //var selectedBfDataset = defaultBfDataset;
   if (selectedBfDataset === "Select dataset") {
     bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
@@ -5867,11 +5867,11 @@ function populateDatasetDropdowns(mylist) {
     bfUploadDatasetList.appendChild(option4);
     bfDatasetListDatasetStatus.appendChild(option5);
     bfDatasetListRenameDataset.appendChild(option6);
-    datasetDescriptionFileDataset.appendChild(option7);
     bfDatasetListPostCurationCuration.appendChild(option8);
     bfDatasetListPostCurationConsortium.appendChild(option9);
     bfDatasetListPostCurationPublish.appendChild(option10);
     */
+   datasetDescriptionFileDataset.appendChild(option7);
     curateDatasetDropdown.appendChild(option11);
   }
     renameDatasetlistChange();
