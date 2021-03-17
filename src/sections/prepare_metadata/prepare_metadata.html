@@ -1,114 +1,247 @@
 <!DOCTYPE html>
 <template class="task-template">
-  <section id="prepare_metadata-section" class="section js-section u-category-windows">
+  <section
+    id="prepare_metadata-section"
+    class="section js-section u-category-windows"
+  >
     <header class="section-header">
-
       <div class="section-wrapper">
         <h1>
-          <svg style="margin-right: 10px; margin-bottom:-3px;" width="22px" height="22px" viewBox="0 0 16 16" class="bi bi-file-text-fill" fill=var(--color-teal) xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+          <svg
+            style="margin-right: 10px; margin-bottom: -3px"
+            width="22px"
+            height="22px"
+            viewBox="0 0 16 16"
+            class="bi bi-file-text-fill"
+            fill="var(--color-teal)"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"
+            />
           </svg>
           Prepare Metadata
         </h1>
-        <h3>This interface will help you in preparing the SPARC metadata files (currently submission and dataset_description files) for your dataset.
-         </h3>
+        <h3>
+          This interface will help you in preparing the SPARC metadata files
+          (currently submission and dataset_description files) for your dataset.
+        </h3>
       </div>
     </header>
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-save-grant-info-demo-toggle" class="js-container-target demo-toggle-button">Connect to Airtable
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Connect-to-Airtable">
-            <img class="nav-video" src="assets/img/documentation-icon.png">
+        <button
+          id="button-save-grant-info-demo-toggle"
+          class="js-container-target demo-toggle-button"
+        >
+          Connect to Airtable
+          <a
+            style="padding: 0px 0px 0px 10px"
+            class="github-wiki-link"
+            href="https://github.com/bvhpatel/SODA/wiki/Connect-to-Airtable"
+          >
+            <img class="nav-video" src="assets/img/documentation-icon.png" />
           </a>
-          <div class="demo-meta u-avoid-clicks"> Connect your Airtable account with SODA  </div>
+          <div class="demo-meta u-avoid-clicks">
+            Connect your Airtable account with SODA
+          </div>
         </button>
 
-      <div class="demo-box">
-        <div id="div-add-airtable-key">
-          <h5> Enter your Airtable API key and specify a key name to connect your Airtable account:
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">
-                SODA make use of the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;"> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
-                <br><br>
-                To achieve that, create an Airtable account and request access to the <a href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide" style="color:white;">SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href="mailto:chorn@pitt.edu" style='color: white'> chorn@pitt.edu</a>)
-                <br><br>
-                Then, provide a keyname of your choice and enter your Airtable API key in the dedicated SODA interface. Checkout the <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a> to learn how to obtain or re-generate your API key.
-<!--                 <br><br>
+        <div class="demo-box">
+          <div id="div-add-airtable-key">
+            <h5>
+              Enter your Airtable API key and specify a key name to connect your
+              Airtable account:
+              <div class="tooltipnew">
+                <img class="info" src="assets/img/info.png" />
+                <span class="tooltiptext">
+                  SODA make use of the
+                  <a
+                    href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide"
+                    style="color: white"
+                  >
+                    SPARC Airtable sheet</a
+                  >
+                  to automatically get award numbers and contributors
+                  information such that you don't have to enter them manually in
+                  your metadata files. To enable this, you have to connect your
+                  Airtable account with SODA (only necessary one time).
+                  <br /><br />
+                  To achieve that, create an Airtable account and request access
+                  to the
+                  <a
+                    href="https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide"
+                    style="color: white"
+                    >SPARC Airtable sheet</a
+                  >
+                  if you have not already (contact Dr. Charles Horn at
+                  <a href="mailto:chorn@pitt.edu" style="color: white">
+                    chorn@pitt.edu</a
+                  >) <br /><br />
+                  Then, provide a keyname of your choice and enter your Airtable
+                  API key in the dedicated SODA interface. Checkout the
+                  <a
+                    href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key"
+                    style="color: white"
+                  >
+                    Airtable Help page</a
+                  >
+                  to learn how to obtain or re-generate your API key.
+                  <!--                 <br><br>
                 The account will then be remembered by SODA for all subsequent uses and you can move on directly to the "Provide award information" feature. Note that the account key will be stored on your computer only, so neither the SODA Team nor anyone else besides you will have access to your Airtable account.
                 <br><br>
                 Please keep your group information up to date in the Airtable sheet, especially contributors' name, email, affiliation, and ORCID to help SODA help you! -->
+                </span>
+              </div>
+            </h5>
+            <br />
+
+            <div class="form-container">
+              <font color="black"> Key name: </font>
+            </div>
+            <div class="tooltipnew">
+              <img class="info" src="assets/img/info.png" />
+              <span class="tooltiptext">
+                Provide a name of your choice for your Airtable API Key. Your
+                API Key will be stored under this key name.
               </span>
             </div>
-          </h5> <br>
-
-          <div class="form-container"><font color="black"> Key name: </font> </div>
-          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-            <span class="tooltiptext">
-              Provide a name of your choice for your Airtable API Key. Your API Key will be stored under this key name.
-            </span>
-          </div>
-          <div class="demo-controls">
-            <input class="form-container-input-bf" id="airtable-key-name" />
-          </div>
-          <div class="form-container"><font color="black"> API Key: </font> </div>
-          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-            <span class="tooltiptext">
-              To obtain or re-generate your API key to connect to SODA during your first use, check out the dedicated <a href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key" style="color:white;"> Airtable Help page</a>. Note that the key will be stored locally on your computer and the SODA Team will not have access to it.
-            </span>
-          </div>
-          <div class="demo-controls">
-            <input type="password" class="form-container-input-bf" id="airtable-api-key" />
-          </div>
-          <br>
-          <div class="demo-controls">
-            <button class="demo-button" id="button-add-airtable-key"> Connect </button>
-            <div style="display:none" id="div-airtable-connect-load-progress" class="progressdiv">
-              <div class="indeterminatebar"></div>
+            <div class="demo-controls">
+              <input class="form-container-input-bf" id="airtable-key-name" />
             </div>
-            <p id="para-add-airtable-key"  style="float:right;margin: 0 0;padding: 3 3;"></p>
+            <div class="form-container">
+              <font color="black"> API Key: </font>
+            </div>
+            <div class="tooltipnew">
+              <img class="info" src="assets/img/info.png" />
+              <span class="tooltiptext">
+                To obtain or re-generate your API key to connect to SODA during
+                your first use, check out the dedicated
+                <a
+                  href="https://support.airtable.com/hc/en-us/articles/219046777-How-do-I-get-my-API-key"
+                  style="color: white"
+                >
+                  Airtable Help page</a
+                >. Note that the key will be stored locally on your computer and
+                the SODA Team will not have access to it.
+              </span>
+            </div>
+            <div class="demo-controls">
+              <input
+                type="password"
+                class="form-container-input-bf"
+                id="airtable-api-key"
+              />
+            </div>
+            <br />
+            <div class="demo-controls">
+              <button class="demo-button" id="button-add-airtable-key">
+                Connect
+              </button>
+              <div
+                style="display: none"
+                id="div-airtable-connect-load-progress"
+                class="progressdiv"
+              >
+                <div class="indeterminatebar"></div>
+              </div>
+              <p
+                id="para-add-airtable-key"
+                style="float: right; margin: 0 0; padding: 3 3"
+              ></p>
+            </div>
           </div>
-
-         </div>
-       </div>
+        </div>
       </div>
     </div>
 
-<!-- Provide info about award -->
+    <!-- Provide info about award -->
 
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-save-grant-info-demo-toggle" class="js-container-target demo-toggle-button">Provide award information
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Provide-award-information">
-            <img class="nav-video" src="assets/img/documentation-icon.png">
+        <button
+          id="button-save-grant-info-demo-toggle"
+          class="js-container-target demo-toggle-button"
+        >
+          Provide award information
+          <a
+            style="padding: 0px 0px 0px 10px"
+            class="github-wiki-link"
+            href="https://github.com/bvhpatel/SODA/wiki/Provide-award-information"
+          >
+            <img class="nav-video" src="assets/img/documentation-icon.png" />
           </a>
-          <div class="demo-meta u-avoid-clicks"> Provide relevant information about your SPARC award </div>
+          <div class="demo-meta u-avoid-clicks">
+            Provide relevant information about your SPARC award
+          </div>
         </button>
 
-      <div class="demo-box">
-          <form id = 'grant-information'>
-            <div style = "padding:10px 0px">
-              <input class="input-switch" id="addGrant" type="radio" name="tabs">
-              <label class="label-switch" style="width:220px;font-size:15px;padding-top: 6px;" for="addGrant">Add SPARC award(s)</label>
-              <input class="input-switch" id="selectGrant" type="radio" name="tabs" checked>
-              <label class="label-switch" style="width:230px;font-size:15px;padding-top: 6px;"for="selectGrant">View your SPARC award(s)</label>
+        <div class="demo-box">
+          <form id="grant-information">
+            <div style="padding: 10px 0px">
+              <input
+                class="input-switch"
+                id="addGrant"
+                type="radio"
+                name="tabs"
+              />
+              <label
+                class="label-switch"
+                style="width: 220px; font-size: 15px; padding-top: 6px"
+                for="addGrant"
+                >Add SPARC award(s)</label
+              >
+              <input
+                class="input-switch"
+                id="selectGrant"
+                type="radio"
+                name="tabs"
+                checked
+              />
+              <label
+                class="label-switch"
+                style="width: 230px; font-size: 15px; padding-top: 6px"
+                for="selectGrant"
+                >View your SPARC award(s)</label
+              >
             </div>
-         </form>
+          </form>
 
-          <div id="div-add-new-grant" class="datasetsaveoption" style="display:none;margin-top:70px;margin-left:10px">
+          <div
+            id="div-add-new-grant"
+            class="datasetsaveoption"
+            style="display: none; margin-top: 70px; margin-left: 10px"
+          >
+            <h5>
+              Airtable connection status (<button
+                id="button-refresh-airtable-status"
+                style="font-size: 10; border: none"
+              >
+                Refresh</button
+              >):
 
-            <h5> Airtable connection status (<button id="button-refresh-airtable-status" style="font-size: 10; border: none"> Refresh </button>):
-
-            <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-              <span class="tooltiptext">
-                If SODA fails to connect to your Airtable account, make sure that you have entered a valid API key in the "Connect to Airtable" feature or that you are connected to the internet.
-              </span>
-            </div>
+              <div class="tooltipnew">
+                <img class="info" src="assets/img/info.png" />
+                <span class="tooltiptext">
+                  If SODA fails to connect to your Airtable account, make sure
+                  that you have entered a valid API key in the "Connect to
+                  Airtable" feature or that you are connected to the internet.
+                </span>
+              </div>
             </h5>
 
-            <span style="color:black;margin-top:5px" id="para-add-airtable-key-status"></span>
+            <span
+              style="color: black; margin-top: 5px"
+              id="para-add-airtable-key-status"
+            ></span>
 
-            <div class="demo-controls" id="div-search-for-awards" style="display:none; margin-top: 25px">
+            <div
+              class="demo-controls"
+              id="div-search-for-awards"
+              style="display: none; margin-top: 25px"
+            >
               <!-- <h5> Search for award(s):
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
                   <span class="tooltiptext">
@@ -121,7 +254,7 @@
                 <!-- <datalist id="select-grant-info-list" style="overflow-x: hidden; overflow: scroll; width: 100%; height:500px">
                   <option disabled>Select</option>
                 </datalist> -->
-                <!-- <button id="button-add-award" class="demo-button" style="height:35px;width:150px;padding:0 0;margin: 0 0 0 10px">Add</button>
+              <!-- <button id="button-add-award" class="demo-button" style="height:35px;width:150px;padding:0 0;margin: 0 0 0 10px">Add</button>
               </div>  -->
               <!-- <p style="margin-top:7px;margin-bottom:7px" id="para-save-award-info"></p> -->
             </div>
@@ -130,25 +263,46 @@
             </div>
           </div>
 
-          <div id="div-select-existing-grant" class="datasetsaveoption" style="display:block;margin-top:70px;margin-left:10px">
-            <h5> Select award:
-              <div class="tooltipnew"><img class="info" src="assets/img/info.png">
+          <div
+            id="div-select-existing-grant"
+            class="datasetsaveoption"
+            style="display: block; margin-top: 70px; margin-left: 10px"
+          >
+            <h5>
+              Select award:
+              <div class="tooltipnew">
+                <img class="info" src="assets/img/info.png" />
                 <span class="tooltiptext">
-                  Select an award to provide additional information about it. You can delete an existing award from the list by clicking on the "Delete award" button. This will remove the award from your list of awards as well as delete any associated milestone information.
+                  Select an award to provide additional information about it.
+                  You can delete an existing award from the list by clicking on
+                  the "Delete award" button. This will remove the award from
+                  your list of awards as well as delete any associated milestone
+                  information.
                 </span>
               </div>
             </h5>
-            <div class="demo-controls" style="margin-top:20px">
+            <div class="demo-controls" style="margin-top: 20px">
               <!-- <select id="select-presaved-grant-info-list-old" class="my-dropdown-metadata" style="width:100%; height:35px;line-height:2;padding: 6px 8px; font-size:14px">
                 <option value="Select">Select an option</option>
               </select> -->
-              <br>
-              <button id="button-delete-award-old" class="demo-button" style="height:35px;width:150px;padding:0 0;margin-left:10px">Delete award</button>
+              <br />
+              <button
+                id="button-delete-award-old"
+                class="demo-button"
+                style="
+                  height: 35px;
+                  width: 150px;
+                  padding: 0 0;
+                  margin-left: 10px;
+                "
+              >
+                Delete award
+              </button>
             </div>
             <div>
-              <p id='para-delete-award-status' style="margin:10px 0px"></p>
+              <p id="para-delete-award-status" style="margin: 10px 0px"></p>
             </div>
-          <!-- <div class="demo-controls" id="div-milestone-info">
+            <!-- <div class="demo-controls" id="div-milestone-info">
             <div id="div-show-milestone-info-no-existing" class="pathtable" style="display:none;width:100%">
               <h5>Data Deliverables document:
                 <div class="tooltipnew"><img class="info" src="assets/img/info.png">
@@ -167,7 +321,7 @@
               <h5></h5>
               <div class="container-milestone-upload" style="display:flex;">
                  <button type="button" style="width:40%;float:left" class="button-milestone-upload">Select a file</button> -->
-                <!-- <input class="milestone-upload-text" id="input-milestone-select" style="width:50%;text-align:center;height:40px" type="text" readonly placeholder="Select a file">
+            <!-- <input class="milestone-upload-text" id="input-milestone-select" style="width:50%;text-align:center;height:40px" type="text" readonly placeholder="Select a file">
                 <button id="button-import-milestone" type="button" style="width:15%;height:40px" class="button-milestone-upload"><b>Import</b></button>
                 <p id="para-milestone-document-info" style="float:right;margin-top:0;margin-left:7px;padding: 0 0;height:34px;width:300px;text-align:left;vertical-align:middle;"></p>
               </div>
@@ -194,9 +348,7 @@
                </tr>
               </table>
             </div> -->
-
           </div>
-
         </div>
       </div>
     </div>
@@ -204,47 +356,90 @@
     <!-- Prepare submission file -->
     <div class="demo">
       <div class="demo-wrapper">
-        <button id="button-submission-demo-toggle" class="js-container-target demo-toggle-button"> Prepare your submission file
-          <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Prepare-your-submission-file">
-            <img class="nav-video" src="assets/img/documentation-icon.png">
+        <button
+          id="button-submission-demo-toggle"
+          class="js-container-target demo-toggle-button"
+        >
+          Prepare your submission file
+          <a
+            style="padding: 0px 0px 0px 10px"
+            class="github-wiki-link"
+            href="https://github.com/bvhpatel/SODA/wiki/Prepare-your-submission-file"
+          >
+            <img class="nav-video" src="assets/img/documentation-icon.png" />
           </a>
-          <div class="demo-meta u-avoid-clicks"> The submission file is mandatory for all SPARC datasets </div>
+          <div class="demo-meta u-avoid-clicks">
+            The submission file is mandatory for all SPARC datasets
+          </div>
         </button>
-      <div class="demo-box">
-        <div class="demo-controls">
-        <div id="div-generate-submission-file" class="pathtable" style="width:100%;">
-          <h5 align="center"> Populate the items below and generate your submission file</h5>
-          <br>
-          <div class="form-container-ds"><font color="black"> SPARC Award Number: </font> </div>
-          <div class="tooltipnew"><img class="info" src="assets/img/info.png" style="visibility:hidden">
-            <span class="tooltiptext" style="display:none;" class="tooltiptext">
-            </span>
-          </div>
+        <div class="demo-box">
           <div class="demo-controls">
-          <select id="presaved-award-list" class="form-container-input-bf" style="line-height: 2;font-size:13px;height:28px;">
-            <option value="Select">Select an option</option>
-          </select>
-          </div>
-          <div class="form-container-ds"> <font color="black"> Milestone: </font> </div>
-           <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-            <span class="tooltiptext">
-              Choose a milestone from the list compiled from the Data Deliverables document imported to SODA in the feature "Provide award information". Choose "Not specified in the Data Deliverables document" if this dataset isn't associated with any milestone initially planned.
-            </span>
-          </div>
-          <div class="demo-controls">
-            <!-- <textarea id="selected-milestone" class="form-container-textarea" style="width: 95%"></textarea> -->
-          </div>
-          <div class="form-container-ds"><font color="black"> Completion Date: </font> </div>
-          <div class="tooltipnew"><img class="info" src="assets/img/info.png">
-            <span class="tooltiptext">
-              This date is filled automatically using extracted information from the Data Deliverables document and based on the milestone/description of data selected above.
-            </span>
-          </div>
-          <div class="demo-controls">
-            <!-- <select style="font-size:13px;height:28px;width:100%" id="selected-milestone-date" class="form-container-input-bf"></select> -->
-          </div>
+            <div
+              id="div-generate-submission-file"
+              class="pathtable"
+              style="width: 100%"
+            >
+              <h5 align="center">
+                Populate the items below and generate your submission file
+              </h5>
+              <br />
+              <div class="form-container-ds">
+                <font color="black"> SPARC Award Number: </font>
+              </div>
+              <div class="tooltipnew">
+                <img
+                  class="info"
+                  src="assets/img/info.png"
+                  style="visibility: hidden"
+                />
+                <span
+                  class="tooltiptext"
+                  style="display: none"
+                  class="tooltiptext"
+                >
+                </span>
+              </div>
+              <div class="demo-controls">
+                <select
+                  id="presaved-award-list"
+                  class="form-container-input-bf"
+                  style="line-height: 2; font-size: 13px; height: 28px"
+                >
+                  <option value="Select">Select an option</option>
+                </select>
+              </div>
+              <div class="form-container-ds">
+                <font color="black"> Milestone: </font>
+              </div>
+              <div class="tooltipnew">
+                <img class="info" src="assets/img/info.png" />
+                <span class="tooltiptext">
+                  Choose a milestone from the list compiled from the Data
+                  Deliverables document imported to SODA in the feature "Provide
+                  award information". Choose "Not specified in the Data
+                  Deliverables document" if this dataset isn't associated with
+                  any milestone initially planned.
+                </span>
+              </div>
+              <div class="demo-controls">
+                <!-- <textarea id="selected-milestone" class="form-container-textarea" style="width: 95%"></textarea> -->
+              </div>
+              <div class="form-container-ds">
+                <font color="black"> Completion Date: </font>
+              </div>
+              <div class="tooltipnew">
+                <img class="info" src="assets/img/info.png" />
+                <span class="tooltiptext">
+                  This date is filled automatically using extracted information
+                  from the Data Deliverables document and based on the
+                  milestone/description of data selected above.
+                </span>
+              </div>
+              <div class="demo-controls">
+                <!-- <select style="font-size:13px;height:28px;width:100%" id="selected-milestone-date" class="form-container-input-bf"></select> -->
+              </div>
 
-          <!-- <div style='display:none;' id="div-submission-enter-different-date-1" class="form-container-ds"><font color="black"> Enter Date: </font> </div>
+              <!-- <div style='display:none;' id="div-submission-enter-different-date-1" class="form-container-ds"><font color="black"> Enter Date: </font> </div>
           <div class="tooltipnew" style='display:none;' id="div-submission-enter-different-date-2"><img class="info" src="assets/img/info.png">
             <span class="tooltiptext">
               This date is filled automatically using extracted information from the Data Deliverables document and based on the milestone/description of data selected above.
@@ -254,17 +449,23 @@
             <input type="date" id="input-milestone-date" style="font-family: inherit" class="form-container-input-bf"></input>
           </div> -->
 
-          <br>
-          <div align="right">
-            <button class="demo-button" style="margin-right:0;width:140px;float:right" id="generate-submission"> Generate </button>
-            <!-- <p id='para-save-submission-status' style="float:right;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p> -->
+              <br />
+              <div align="right">
+                <button
+                  class="demo-button"
+                  style="margin-right: 0; width: 140px; float: right"
+                  id="generate-submission"
+                >
+                  Generate
+                </button>
+                <!-- <p id='para-save-submission-status' style="float:right;padding-top:0;margin-right:5px;margin-bottom:0;margin-top:0"></p> -->
+              </div>
+            </div>
           </div>
-        </div>
-        </div>
         </div>
       </div>
     </div>
-  <!-- Prepare dataset-description file -->
+    <!-- Prepare dataset-description file -->
     <!-- <div class="demo">
        <div class="demo-wrapper">
         <button id="button-ds-description-demo-toggle" class="js-container-target demo-toggle-button"> Prepare your dataset description file
@@ -277,23 +478,32 @@
         </div>
       </div> -->
 
-
-        <!-- Download Metadata -->
-      <div class="demo">
-        <div class="demo-wrapper">
-          <button id="button-new-window-login-demo-toggle" class="js-container-target demo-toggle-button">Download templates
-            <a style="padding:0px 0px 0px 10px" class="github-wiki-link" href="https://github.com/bvhpatel/SODA/wiki/Download-templates">
-              <img class="nav-video" src="assets/img/documentation-icon.png">
-            </a>
-            <div class="demo-meta u-avoid-clicks"> Get the templates provided by the SPARC Curation Team to manually fill out metadata files </div>
-          </button>
-            </div>
+    <!-- Download Metadata -->
+    <div class="demo">
+      <div class="demo-wrapper">
+        <button
+          id="button-new-window-login-demo-toggle"
+          class="js-container-target demo-toggle-button"
+        >
+          Download templates
+          <a
+            style="padding: 0px 0px 0px 10px"
+            class="github-wiki-link"
+            href="https://github.com/bvhpatel/SODA/wiki/Download-templates"
+          >
+            <img class="nav-video" src="assets/img/documentation-icon.png" />
+          </a>
+          <div class="demo-meta u-avoid-clicks">
+            Get the templates provided by the SPARC Curation Team to manually
+            fill out metadata files
+          </div>
+        </button>
       </div>
+    </div>
 
-
-      <script type="text/javascript">
-      require('./renderer-process/native-ui/dialogs/save')
-      require('./renderer-process/prepare-metadata/save-information.js')
-      </script>
+    <script type="text/javascript">
+      require("./renderer-process/native-ui/dialogs/save");
+      require("./renderer-process/prepare-metadata/save-information.js");
+    </script>
   </section>
 </template>

@@ -241,7 +241,7 @@ const importGenerateDatasetStep = (object) => {
           $($("#generate-BF-dataset-options-existing").parents()[2]).click();
           var bfDatasetSelected =
             sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-          setTimeout( () => {
+          setTimeout(() => {
             $("#current-bf-dataset-generate").text(bfDatasetSelected);
             $("#button-confirm-bf-dataset").click();
             // Step 4: Handle existing files and folders
@@ -291,7 +291,7 @@ const importGenerateDatasetStep = (object) => {
       exitCurate();
     }
   }
-}
+};
 
 // check metadata files
 function populateMetadataProgress(
@@ -397,8 +397,9 @@ function loadProgressFile(ev) {
 
 const verify_missing_files = (mode) => {
   let missing_files = missing_metadata_files.concat(missing_dataset_files);
-  let message_text = ""
-  message_text = "The following files have been moved or deleted since this progress file was saved. Would you like SODA to ignore these files and continue? <br><br><ul>";
+  let message_text = "";
+  message_text =
+    "The following files have been moved or deleted since this progress file was saved. Would you like SODA to ignore these files and continue? <br><br><ul>";
 
   for (let item in missing_files) {
     message_text += `<li>${missing_files[item]}</li>`;
@@ -435,7 +436,7 @@ const verify_missing_files = (mode) => {
         }
       } else {
         document.getElementById("div-progress-file-loader").style.display =
-        "none";
+          "none";
         document.getElementById("para-progress-file-status").innerHTML = "";
       }
     },
@@ -523,9 +524,9 @@ const importOrganizeProgressPrompt = () => {
     document.getElementById("para-progress-file-status").innerHTML =
       "<span style='color:var(--color)'>There is no existing progress to load. Please choose one of the other options above!</span>";
   }
-}
+};
 
-$(document).ready(function() {
+$(document).ready(function () {
   importOrganizeProgressPrompt();
   $("#bf_list_users").selectpicker();
   $("#bf_list_users").selectpicker("refresh");
@@ -535,7 +536,7 @@ $(document).ready(function() {
   $("#bf_list_teams").selectpicker("refresh");
   $("#bf_list_roles_team").selectpicker();
   $("#bf_list_roles_team").selectpicker("refresh");
-})
+});
 
 $(document).ready(function () {
   var accountDetails = $("#para-account-detail-curate");
@@ -713,7 +714,7 @@ async function openDropdownPrompt(dropdown) {
       .find("#div-filter-datasets-progress-2")
       .css("display", "block");
 
-    $("#bf-dataset-select-header").css("display", "none")
+    $("#bf-dataset-select-header").css("display", "none");
 
     $(datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
     $("#para-continue-bf-dataset-getting-started").text("");
@@ -730,9 +731,9 @@ async function openDropdownPrompt(dropdown) {
     //initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
     $("#curatebfdatasetlist").selectpicker("hide");
-    $('#curatebfdatasetlist').selectpicker('refresh');
-    $('.selectpicker').selectpicker('hide');
-    $('.selectpicker').selectpicker('refresh');
+    $("#curatebfdatasetlist").selectpicker("refresh");
+    $(".selectpicker").selectpicker("hide");
+    $(".selectpicker").selectpicker("refresh");
     $("#bf-dataset-select-div").hide();
 
     const { value: bfDS } = await Swal.fire({
@@ -820,7 +821,6 @@ async function openDropdownPrompt(dropdown) {
       showHideDropdownButtons("dataset", "show");
     }
     $("body").removeClass("waiting");
-
   }
 }
 
@@ -828,11 +828,11 @@ $("#select-permission-list-2").change((e) => {
   // updateDatasetList(defaultBfAccount);
   $("#div-filter-datasets-progress-2").css("display", "block");
 
-  $("#bf-dataset-select-header").css("display", "none")
+  $("#bf-dataset-select-header").css("display", "none");
   $("#curatebfdatasetlist").selectpicker("hide");
-  $('#curatebfdatasetlist').selectpicker('refresh');
-  $('.selectpicker').selectpicker('hide');
-  $('.selectpicker').selectpicker('refresh');
+  $("#curatebfdatasetlist").selectpicker("refresh");
+  $(".selectpicker").selectpicker("hide");
+  $(".selectpicker").selectpicker("refresh");
   $("#bf-dataset-select-div").hide();
 
   // var datasetPermission = $("#select-permission-list-2").val();
@@ -848,9 +848,9 @@ $("#select-permission-list-2").change((e) => {
 
     //$("#bf-dataset-select-header").css("display", "block")
     $("#curatebfdatasetlist").selectpicker("show");
-    $('#curatebfdatasetlist').selectpicker('refresh');
-    $('.selectpicker').selectpicker('show');
-    $('.selectpicker').selectpicker('refresh');
+    $("#curatebfdatasetlist").selectpicker("refresh");
+    $(".selectpicker").selectpicker("show");
+    $(".selectpicker").selectpicker("refresh");
     $("#bf-dataset-select-div").show();
   } else {
     $("#curatebfdatasetlist").selectpicker();
@@ -934,7 +934,6 @@ const updateDatasetList = (bfaccount) => {
 
   $("#div-filter-datasets-progress-2").css("display", "block");
 
-
   removeOptions(curateDatasetDropdown);
   addOption(curateDatasetDropdown, "Select dataset", "Select dataset");
 
@@ -942,9 +941,9 @@ const updateDatasetList = (bfaccount) => {
 
   $("#bf-dataset-select-header").css("display", "none");
   $("#curatebfdatasetlist").selectpicker("hide");
-  $('#curatebfdatasetlist').selectpicker('refresh');
-  $('.selectpicker').selectpicker('hide');
-  $('.selectpicker').selectpicker('refresh');
+  $("#curatebfdatasetlist").selectpicker("refresh");
+  $(".selectpicker").selectpicker("hide");
+  $(".selectpicker").selectpicker("refresh");
   $("#bf-dataset-select-div").hide();
 
   // waiting for dataset list to load first before initiating BF dataset dropdown list
@@ -993,9 +992,9 @@ const updateDatasetList = (bfaccount) => {
     $("#div-filter-datasets-progress-2").css("display", "none");
     //$("#bf-dataset-select-header").css("display", "block")
     $("#curatebfdatasetlist").selectpicker("show");
-    $('#curatebfdatasetlist').selectpicker('refresh');
-    $('.selectpicker').selectpicker('show');
-    $('.selectpicker').selectpicker('refresh');
+    $("#curatebfdatasetlist").selectpicker("refresh");
+    $(".selectpicker").selectpicker("show");
+    $(".selectpicker").selectpicker("refresh");
     $("#bf-dataset-select-div").show();
 
     if (document.getElementById("div-permission-list-2")) {
@@ -1022,7 +1021,7 @@ const initializeBootstrapSelect = (dropdown, action) => {
     $(".dropdown.bootstrap-select button").removeClass("disabled");
     $(".dropdown.bootstrap-select").removeClass("disabled");
   }
-}
+};
 
 // function to show dataset or account Confirm buttons
 const showHideDropdownButtons = (category, action) => {
@@ -1065,7 +1064,7 @@ const showHideDropdownButtons = (category, action) => {
       $("#div-bf-account-btns-getting-started button").hide();
     }
   }
-}
+};
 
 function create_child_node(
   oldFormatNode,
@@ -1203,7 +1202,11 @@ function create_child_node(
             newFormatNode["children"].push(new_node);
           }
         } else {
-          var new_node = { text: key, state: { disabled: true }, type: nodeType };
+          var new_node = {
+            text: key,
+            state: { disabled: true },
+            type: nodeType,
+          };
           newFormatNode["children"].push(new_node);
         }
       }
@@ -1670,7 +1673,10 @@ function showTreeViewPreview(new_dataset_name) {
 // per change event of current dataset span text
 $(".bf-dataset-span").on("DOMSubtreeModified", function () {
   let temp = $(".bf-dataset-span").html();
-  if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
+  if (
+    $(".bf-dataset-span").html() == "None" ||
+    $(".bf-dataset-span").html() == ""
+  ) {
     $($(this).parents().find(".field").find(".div-confirm-button")).css(
       "display",
       "none"
