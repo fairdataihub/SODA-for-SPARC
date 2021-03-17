@@ -1445,11 +1445,14 @@
 }
 
 .need-help-div a {
-  text-decoration: underline;
+  text-decoration: none;
   width: 30%;
   padding-top: 12px;
   border-bottom: none !important;
   text-align: right;
+}
+.need-help-div a:hover{
+  text-decoration: underline;
 }
 
 #para-review-dataset-info-disseminate {
