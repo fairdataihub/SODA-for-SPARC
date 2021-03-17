@@ -1693,9 +1693,8 @@ pre {
   .form-control:focus {
     color: #495057;
     background-color: #fff;
-    border-color: #bdd4fe;
+    border: 1px solid var(--color-light-green);
     outline: 0;
-    -webkit-box-shadow: 0 0 0 0.2rem rgba(63, 132, 252, 0.25);
             box-shadow: 0 0 0 0.2rem rgba(63, 132, 252, 0.25); }
   .form-control::-webkit-input-placeholder {
     color: #6c757d;
@@ -2786,7 +2785,7 @@ input[type="button"].btn-block {
   .dropdown-item.active, .dropdown-item:active {
     color: #fff;
     text-decoration: none;
-    background-color: #3F84FC; }
+    background-color: var(--color-light-green); }
   .dropdown-item.disabled, .dropdown-item:disabled {
     color: #6c757d;
     pointer-events: none;

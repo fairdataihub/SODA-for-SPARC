@@ -9,43 +9,46 @@
   max-height: 100%;
   margin-right: 0;
   padding: 0;
-  padding-top:7px;
+  padding-top: 7px;
   padding-left: 30px;
   box-sizing: border-box;
   overflow-x: hidden;
   overflow-y: auto;
   color: var(--color-accent);
   background-color: var(--color-section);
-
   /* Hide */
   pointer-events: none;
   visibility: hidden;
   opacity: 0;
   transform: translateX(-20px);
-  transition: visibility 0s .12s linear , opacity .12s ease-in, transform .12s ease-in-out;
+  transition: visibility 0s 0.12s linear, opacity 0.12s ease-in,
+    transform 0.12s ease-in-out;
 }
 .section.is-shown {
   pointer-events: auto;
   visibility: visible;
   opacity: 1;
+  z-index: 1000;
   transform: translateX(0);
-  transition: visibility 0s 0s linear , opacity .36s ease-out, transform .36s ease-out;
+  transition: visibility 0s 0s linear, opacity 0.36s ease-out,
+    transform 0.36s ease-out;
 }
 
 .section.fullShown {
-  left: 190px;
-max-width: 100%;
+  left: 210px;
+  max-width: 100%;
+  transition: all 0.25s linear;
 }
 
 .section h3,
 .section p {
   color: var(--color);
 }
-.section h1{
+.section h1 {
   font-size: 20px;
 }
 
-.section h3{
+.section h3 {
   padding-bottom: 30px;
   font-size: 16px;
 }
@@ -67,5 +70,5 @@ max-width: 100%;
   width: 32px;
   height: 32px;
   vertical-align: sub;
-  margin-right: .5em;
+  margin-right: 0.5em;
 }

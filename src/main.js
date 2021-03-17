@@ -1,221 +1,239 @@
-const {app, BrowserWindow, dialog} = require('electron')
-app.showExitPrompt = true
-const path = require('path')
-const glob = require('glob')
-const os = require("os")
-const contextMenu = require('electron-context-menu');
-const log  = require("electron-log");
-require('v8-compile-cache')
-const {ipcMain} = require('electron')
+const { app, BrowserWindow, dialog, shell } = require("electron");
+app.showExitPrompt = true;
+const path = require("path");
+const glob = require("glob");
+const os = require("os");
+const contextMenu = require("electron-context-menu");
+const log = require("electron-log");
+require("v8-compile-cache");
+const { ipcMain } = require("electron");
 const { autoUpdater } = require("electron-updater");
-const { JSONStorage } = require('node-localstorage');
-const { trackEvent } = require('./scripts/analytics');
-const { fstat } = require('fs');
+const { JSONStorage } = require("node-localstorage");
+const { trackEvent } = require("./scripts/analytics");
+const { fstat } = require("fs");
 
-log.transports.console.level = false
+autoUpdater.channel = "beta"
+log.transports.console.level = false;
 global.trackEvent = trackEvent;
-const nodeStorage = new JSONStorage(app.getPath('userData'));
+
+const nodeStorage = new JSONStorage(app.getPath("userData"));
 /*************************************************************
  * Python Process
  *************************************************************/
 
-const PY_DIST_FOLDER = 'pysodadist'
-const PY_FOLDER = 'pysoda'
-const PY_MODULE = 'api' // without .py suffix
+const PY_DIST_FOLDER = "pysodadist";
+const PY_FOLDER = "pysoda";
+const PY_MODULE = "api"; // without .py suffix
 
-let pyProc = null
-let pyPort = null
+let pyProc = null;
+let pyPort = null;
 
 const guessPackaged = () => {
-  const fullPath = path.join(__dirname, PY_DIST_FOLDER)
-  return require('fs').existsSync(fullPath)
-}
+  const fullPath = path.join(__dirname, PY_DIST_FOLDER);
+  return require("fs").existsSync(fullPath);
+};
 
 const getScriptPath = () => {
   if (!guessPackaged()) {
-    return path.join(__dirname, PY_FOLDER, PY_MODULE + '.py')
+    return path.join(__dirname, PY_FOLDER, PY_MODULE + ".py");
   }
-  if (process.platform === 'win32') {
-    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + '.exe')
+  if (process.platform === "win32") {
+    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE + ".exe");
   }
 
-    return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
-}
+  return path.join(__dirname, PY_DIST_FOLDER, PY_MODULE, PY_MODULE);
+};
 
 const selectPort = () => {
-  pyPort = 4242
-  return pyPort
-}
+  pyPort = 4242;
+  return pyPort;
+};
 
 const createPyProc = () => {
-  let script = getScriptPath()
-  let port = '' + selectPort()
+  let script = getScriptPath();
+  let port = "" + selectPort();
 
   log.info(script);
-  if (require('fs').existsSync(script))
-  {
+  if (require("fs").existsSync(script)) {
     log.info("file exists");
-  }
-  else
-  {
+  } else {
     log.info("file does not exist");
   }
   if (guessPackaged()) {
     log.info("execFile");
-    pyProc = require('child_process').execFile(script, [port], { stdio: 'ignore' })
+    pyProc = require("child_process").execFile(script, [port], {
+      stdio: "ignore",
+    });
   } else {
     log.info("spawn");
-    pyProc = require('child_process').spawn('python', [script, port], { stdio: 'ignore' })
+    pyProc = require("child_process").spawn("python", [script, port], {
+      stdio: "ignore",
+    });
   }
 
   log.info(pyProc);
   if (pyProc != null) {
-    console.log('child process success on port ' + port)
-    log.info('child process success on port ' + port)
+    console.log("child process success on port " + port);
+    log.info("child process success on port " + port);
   } else {
-    console.error('child process failed to start on port' + port)
+    console.error("child process failed to start on port" + port);
   }
-}
+};
 
 const exitPyProc = () => {
-  pyProc.kill()
-  pyProc = null
-  pyPort = null
-}
+  pyProc.kill();
+  pyProc = null;
+  pyPort = null;
+};
 
-app.on('ready', createPyProc)
-app.on('will-quit', exitPyProc)
-
+app.on("ready", createPyProc);
+app.on("will-quit", exitPyProc);
 
 /*************************************************************
  * Main app window
  *************************************************************/
 
-let mainWindow = null
+let mainWindow = null;
 let user_restart_confirmed = false;
 let updatechecked = false;
 
-function initialize () {
-  makeSingleInstance()
+function initialize() {
+  makeSingleInstance();
 
-  loadDemos()
-  function createWindow () {
+  loadDemos();
+  function createWindow() {
+    mainWindow.webContents.openDevTools();
 
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.on('new-window', (event, url) => { 
+      event.preventDefault();
+      shell.openExternal(url);
+    })
 
-    mainWindow.webContents.once('dom-ready', () => {
-      if (updatechecked == false)
-      {
+    mainWindow.webContents.once("dom-ready", () => {
+      if (updatechecked == false) {
         autoUpdater.checkForUpdatesAndNotify();
       }
     });
 
-    mainWindow.on('close', (e) => {
+    mainWindow.on("close", (e) => {
       if (!user_restart_confirmed) {
         if (app.showExitPrompt) {
-          e.preventDefault() // Prevents the window from closing
-          dialog.showMessageBox(BrowserWindow.getFocusedWindow(), {
-            type: 'question',
-            buttons: ['Yes', 'No'],
-            title: 'Confirm',
-            message: 'Any running proccess will be stopped. Are you sure you want to quit?'
-          }, function (response) {
-            if (response === 0) { // Runs the following if 'Yes' is clicked
-              quit_app();
+          e.preventDefault(); // Prevents the window from closing
+          dialog.showMessageBox(
+            BrowserWindow.getFocusedWindow(),
+            {
+              type: "question",
+              buttons: ["Yes", "No"],
+              title: "Confirm",
+              message:
+                "Any running proccess will be stopped. Are you sure you want to quit?",
+            },
+            function (response) {
+              if (response === 0) {
+                // Runs the following if 'Yes' is clicked
+                quit_app();
+              }
             }
-          })
+          );
         }
-      }
-      else {
-        var first_launch = nodeStorage.getItem('firstlaunch');
-        nodeStorage.setItem('firstlaunch', true);
+      } else {
+        var first_launch = nodeStorage.getItem("firstlaunch");
+        nodeStorage.setItem("firstlaunch", true);
         exitPyProc();
         app.exit();
       }
-    })
-
+    });
   }
 
   const quit_app = () => {
-    app.showExitPrompt = false
-    mainWindow.close()
+    app.showExitPrompt = false;
+    mainWindow.close();
     /// feedback form iframe prevents closing gracefully
     /// so force close
     if (!mainWindow.closed) {
-      mainWindow.destroy()
+      mainWindow.destroy();
     }
-  }
+  };
 
-
-  app.on('ready', () => {
+  app.on("ready", () => {
     const windowOptions = {
-      minWidth: 1080,
-      minHeight: 680,
-      width: 1080,
-      height: 720,
+      minWidth: 1110,
+      minHeight: 735,
+      width: 1110,
+      height: 735,
       center: true,
       show: false,
-      icon: __dirname + '/assets/menu-icon/soda_icon.png',
+      icon: __dirname + "/assets/menu-icon/soda_icon.png",
       webPreferences: {
         nodeIntegration: true,
-        enableRemoteModule: true
-      }
-    }
+        enableRemoteModule: true,
+      },
+    };
 
-    mainWindow = new BrowserWindow(windowOptions)
-    mainWindow.loadURL(path.join('file://', __dirname, '/index.html'))
+    mainWindow = new BrowserWindow(windowOptions);
+    mainWindow.loadURL(path.join("file://", __dirname, "/index.html"));
 
-    const splash = new BrowserWindow({ width: 220, height: 190, frame: false, alwaysOnTop: true, transparent: true });
-    splash.loadURL(path.join('file://', __dirname, '/splash-screen.html'));
+    const splash = new BrowserWindow({
+      width: 220,
+      height: 190,
+      frame: false,
+      icon: __dirname + "/assets/menu-icon/soda_icon.png",
+      alwaysOnTop: true,
+      transparent: true,
+    });
+    splash.loadURL(path.join("file://", __dirname, "/splash-screen.html"));
     //
     // // if main window is ready to show, then destroy the splash window and show up the main window
-    mainWindow.once('ready-to-show', () => {
-    setTimeout(function(){
+    mainWindow.once("ready-to-show", () => {
+      setTimeout(function () {
         splash.close();
+        //mainWindow.maximize();
         mainWindow.show();
         createWindow();
-        var first_launch = nodeStorage.getItem('firstlaunch');
-        if (first_launch == true || first_launch == undefined)
-        {
+        var first_launch = nodeStorage.getItem("firstlaunch");
+        if (first_launch == true || first_launch == undefined) {
           mainWindow.reload();
           mainWindow.focus();
-          nodeStorage.setItem('firstlaunch', false);
+          nodeStorage.setItem("firstlaunch", false);
         }
         autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
-      }, 5000);
+      }, 6000);
     });
-  })
+  });
 
-  app.on('ready', () => {
+  app.on("ready", () => {
     //createWindow()
-    trackEvent('Success', 'App Launched - OS',  os.platform() + "-" + os.release());
-    trackEvent('Success', 'App Launched - SODA',  app.getVersion());
-  })
+    trackEvent(
+      "Success",
+      "App Launched - OS",
+      os.platform() + "-" + os.release()
+    );
+    trackEvent("Success", "App Launched - SODA", app.getVersion());
+  });
 
-  app.on('window-all-closed', () => {
+  app.on("window-all-closed", () => {
     // if (process.platform !== 'darwin') {
-      app.quit()
+    app.quit();
     // }
-  })
+  });
 }
 
 // Make this app a single instance app.
-const gotTheLock = app.requestSingleInstanceLock()
+const gotTheLock = app.requestSingleInstanceLock();
 
-function makeSingleInstance () {
-  if (process.mas) return
+function makeSingleInstance() {
+  if (process.mas) return;
 
   if (!gotTheLock) {
-    app.quit()
+    app.quit();
   } else {
-
-    app.on('second-instance', () => {
+    app.on("second-instance", () => {
       if (mainWindow) {
-        if (mainWindow.isMinimized()) mainWindow.restore()
-        mainWindow.focus()
+        if (mainWindow.isMinimized()) mainWindow.restore();
+        mainWindow.focus();
       }
-    })
+    });
   }
 }
 
@@ -225,29 +243,30 @@ If you check your download folder, you'll see it there.
 See: https://github.com/nteract/nteract/issues/1655
 showSaveImageAs prompts the users where they want to save the image.
 */
-contextMenu()
+contextMenu();
 
 // Require each JS file in the main-process dir
-function loadDemos () {
-  const files = glob.sync(path.join(__dirname, 'main-process/**/*.js'))
-  files.forEach((file) => { require(file) })
+function loadDemos() {
+  const files = glob.sync(path.join(__dirname, "main-process/**/*.js"));
+  files.forEach((file) => {
+    require(file);
+  });
 }
 
-initialize()
+initialize();
 
-
-ipcMain.on('resize-window', (event, dir) => {
-  var x = mainWindow.getSize()[0]
-  var y = mainWindow.getSize()[1]
-  if (dir === 'up'){
-    x = x+1
-    y = y+1
+ipcMain.on("resize-window", (event, dir) => {
+  var x = mainWindow.getSize()[0];
+  var y = mainWindow.getSize()[1];
+  if (dir === "up") {
+    x = x + 1;
+    y = y + 1;
   } else {
-    x = x-1
-    y = y-1
+    x = x - 1;
+    y = y - 1;
   }
-  mainWindow.setSize(x, y)
-})
+  mainWindow.setSize(x, y);
+});
 
 // Google analytics tracking function
 // To use, category and action is required. Label and value can be left out
@@ -255,16 +274,11 @@ ipcMain.on('resize-window', (event, dir) => {
 //ipcRenderer.send('track-event', "App Backend", "Python Connection Established");
 //ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
 ipcMain.on("track-event", (event, category, action, label, value) => {
-  if (label == undefined && value == undefined)
-  {
+  if (label == undefined && value == undefined) {
     trackEvent(category, action);
-  }
-  else if (label != undefined && value == undefined)
-  {
+  } else if (label != undefined && value == undefined) {
     trackEvent(category, action, label);
-  }
-  else
-  {
+  } else {
     trackEvent(category, action, label, value);
   }
 });
@@ -274,20 +288,35 @@ ipcMain.on("app_version", (event) => {
 });
 
 autoUpdater.on("update-available", () => {
-  trackEvent("App Update", "Update Requested", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
-  log.info('update_available');
+  trackEvent(
+    "App Update",
+    "Update Requested",
+    "User OS",
+    os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion()
+  );
+  log.info("update_available");
   mainWindow.webContents.send("update_available");
 });
 
 autoUpdater.on("update-downloaded", () => {
-  trackEvent("App Update", "Update Downloaded", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
-  log.info('update_downloaded');
+  trackEvent(
+    "App Update",
+    "Update Downloaded",
+    "User OS",
+    os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion()
+  );
+  log.info("update_downloaded");
   mainWindow.webContents.send("update_downloaded");
 });
 
 ipcMain.on("restart_app", () => {
   user_restart_confirmed = true;
-  trackEvent("App Update", "App Restarted", "User OS", os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion());
-  log.info('quitAndInstall');
+  trackEvent(
+    "App Update",
+    "App Restarted",
+    "User OS",
+    os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion()
+  );
+  log.info("quitAndInstall");
   autoUpdater.quitAndInstall();
 });

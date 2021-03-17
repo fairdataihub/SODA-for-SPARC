@@ -1,4 +1,4 @@
-const {ipcRenderer} = require('electron')
+const { ipcRenderer } = require("electron");
 
 // const selectnewDatasetBtn = document.getElementById('button-select-new-dataset')
 // selectnewDatasetBtn.addEventListener('click', (event) => {

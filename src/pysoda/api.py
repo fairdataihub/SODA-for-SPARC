@@ -17,7 +17,7 @@ from curate import curate_dataset_progress, save_file_organization, import_file_
 
 from prepare_metadata import save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone
 
-from organize_datasets import generate_dataset_locally
+from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
 
 import sys
 import zerorpc
@@ -305,6 +305,12 @@ class SodaApi(object):
     def api_preview_dataset(self, soda_json_structure):
         try:
             return preview_dataset(soda_json_structure)
+        except Exception as e:
+            raise e
+    
+    def api_bf_get_dataset_files_folders(self, soda_json_structure, requested_sparc_only = True):
+        try:
+            return bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only)
         except Exception as e:
             raise e
 

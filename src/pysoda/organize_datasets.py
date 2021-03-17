@@ -37,6 +37,9 @@ from docx import Document
 
 from datetime import datetime, timezone
 
+from pysoda import bf_get_current_user_permission
+
+
 ### Global variables
 curateprogress = ' '
 curatestatus = ' '
@@ -56,7 +59,6 @@ start_time_bf_upload = 0
 start_submit = 0
 metadatapath = join(userpath, 'SODA', 'SODA_metadata')
 
-# makedirs(join(userpath, 'SODA', 'python-log'), exist_ok=True)
 logpath = join(userpath, 'SODA', 'python-log', f"{__name__}.log")
 
 logging.basicConfig(level=logging.DEBUG, filename=logpath)
@@ -517,3 +519,205 @@ def create_dataset(recursivePath, jsonStructure, listallfiles):
                 curateprogress = 'Copying ' + str(srcfile)
 
                 mycopyfile_with_metadata(srcfile, distfile)
+
+def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = True):
+    """
+    Function for importing blackfynn data files info into the "dataset-structure" key of the soda json structure,
+    including metadata from any existing manifest files in the high-level folders
+    (name, id, timestamp, description, additional metadata)
+
+    Args:
+        soda_json_structure: soda structure with bf account and dataset info available
+    Output:
+        same soda structure with blackfyn data file info included under the "dataset-structure" key
+    """
+
+    high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
+    manifest_sparc = ["manifest.xlsx", "manifest.csv"]
+    high_level_metadata_sparc = ['submission.xlsx', 'submission.csv', 'submission.json', 'dataset_description.xlsx', 'dataset_description.csv', 'dataset_description.json', 'subjects.xlsx', 'subjects.csv', 'subjects.json', 'samples.xlsx', 'samples.csv', 'samples.json', 'README.txt', 'CHANGES.txt']
+    f = open("demofile2.txt", "a")
+
+    def verify_file_name(item_name, file_name):
+        from curate import bf_recognized_file_extensions
+        filename, file_extension = os.path.splitext(file_name)
+        if file_extension in bf_recognized_file_extensions:
+            return item_name 
+        else:
+            return file_name
+
+    # Add a new key containing the path to all the files and folders on the
+    # local data structure..
+    def recursive_item_path_create(folder, path):
+        if "files" in folder.keys():
+            for item in list(folder["files"]):
+                if "bfpath" not in folder["files"][item]:
+                    folder["files"][item]['bfpath'] = path[:]
+
+        if "folders" in folder.keys():
+            for item in list(folder["folders"]):
+                if "bfpath" not in folder["folders"][item]:
+                    folder["folders"][item]['bfpath'] = path[:]
+                    folder["folders"][item]['bfpath'].append(item)
+                recursive_item_path_create(folder["folders"][item], folder["folders"][item]['bfpath'][:])
+        return
+
+    level = 0
+
+    def recursive_dataset_import(my_item, dataset_folder, metadata_files, my_folder_name, my_level, manifest_dict):
+        level = 0
+        col_count = 0
+        file_count = 0
+
+        for item in my_item:
+            if item.type == "Collection":
+                if "folders" not in dataset_folder:
+                    dataset_folder["folders"] = {}
+                if "files" not in dataset_folder:
+                    dataset_folder["files"] = {}
+                col_count += 1
+                folder_name = item.name
+                if my_level == 0 and folder_name not in high_level_sparc_folders and requested_sparc_only:  # only import SPARC folders
+                    continue
+                if col_count == 1:
+                    level = my_level + 1
+                dataset_folder["folders"][folder_name] = {
+                    "type": "bf", "action": ["existing"], "path": item.id}
+                sub_folder = dataset_folder["folders"][folder_name]
+                if "folders" not in sub_folder:
+                    sub_folder["folders"] = {}
+                if "files" not in sub_folder:
+                    sub_folder["files"] = {}
+                recursive_dataset_import(
+                    item, sub_folder, metadata_files, folder_name, level, manifest_dict)
+            else:
+                if "folders" not in dataset_folder:
+                    dataset_folder["folders"] = {}
+                if "files" not in dataset_folder:
+                    dataset_folder["files"] = {}
+                package_id = item.id
+                file_details = bf._api._get(
+                    '/packages/' + str(package_id) + '/view')
+                file_name = file_details[0]["content"]["name"]
+                result = str(file_details[0]["content"]) 
+                f.write(result)
+                f.write("\n")
+
+                if my_level == 0 and file_name in high_level_metadata_sparc:
+                    metadata_files[file_name] = {
+                        "type": "bf", "action": ["existing"], "path": item.id}
+
+                else:
+                    file_count += 1
+                    if my_level == 1 and file_name in manifest_sparc:
+                        file_id = file_details[0]["content"]["id"]
+                        manifest_url = bf._api._get(
+                            '/packages/' + str(package_id) + '/files/' + str(file_id))
+                        df = pd.read_excel(manifest_url['url'])
+                        manifest_dict[my_folder_name] = df
+                    else:
+                        timestamp = file_details[0]["content"]["updatedAt"]
+                        dataset_folder["files"][file_name] = {
+                            "type": "bf","action": ["existing"], "path": item.id, "timestamp": timestamp}
+
+    def recursive_manifest_info_import(my_folder, my_relative_path, manifest_df):
+
+        if "files" in my_folder.keys():
+            for file_key, file in my_folder["files"].items():
+                    filename = join(my_relative_path, file_key)
+                    colum_headers = manifest_df.columns.tolist()
+                    filename.replace("\\","/")
+
+                    if filename in list(manifest_df["filename"].values):
+                        if "description" in colum_headers:
+                            mydescription = manifest_df[manifest_df['filename'] == filename]["description"].values[0]
+                            if mydescription:
+                                file["description"] = mydescription
+                        if "Additional Metadata" in colum_headers:
+                            my_additional_medata = manifest_df[manifest_df['filename'] == filename]["Additional Metadata"].values[0]
+                            if mydescription:
+                                file["additional-metadata"] = my_additional_medata
+                        if "timestamp" in colum_headers:
+                            my_timestamp = manifest_df[manifest_df['filename'] == filename]["timestamp"].values[0]
+                            if my_timestamp:
+                                file["timestamp"] = my_timestamp
+
+        if "folders" in my_folder.keys():
+            for folder_key, folder in my_folder["folders"].items():
+                relative_path = join(my_relative_path, folder_key)
+
+                recursive_manifest_info_import(folder, relative_path, manifest_df)
+
+    # START
+
+    error = []
+
+    # check that the blackfynn account is valid
+    try:
+        bf_account_name = soda_json_structure["bf-account-selected"]["account-name"]
+    except Exception as e:
+        raise e
+
+    try:
+        bf = Blackfynn(bf_account_name)
+    except Exception as e:
+        error.append('Error: Please select a valid Blackfynn account')
+        raise Exception(error)
+
+    # check that the blackfynn dataset is valid
+    try:
+        bf_dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+    except Exception as e:
+        raise e
+    try:
+        myds = bf.get_dataset(bf_dataset_name)
+    except Exception as e:
+        error.append('Error: Please select a valid Blackfynn dataset')
+        raise Exception(error)
+
+    # check that the user has permission to edit this dataset
+    try:
+        role = bf_get_current_user_permission(bf, myds)
+        if role not in ['owner', 'manager', 'editor']:
+            curatestatus = 'Done'
+            error.append("Error: You don't have permissions for uploading to this Blackfynn dataset")
+            raise Exception(error)
+    except Exception as e:
+        raise e
+
+    try:
+        # import files and folders in the soda json structure
+        soda_json_structure["dataset-structure"] = {}
+        soda_json_structure["metadata-files"] = {}
+        dataset_folder = soda_json_structure["dataset-structure"]
+        metadata_files = soda_json_structure["metadata-files"]
+        manifest_dict = {}
+        folder_name = ""
+        recursive_dataset_import(myds, dataset_folder, metadata_files, folder_name, level, manifest_dict)
+
+        
+        f.close()
+
+        #remove metadata files keys if empty
+        metadata_files = soda_json_structure["metadata-files"]
+        if not metadata_files:
+            del soda_json_structure['metadata-files']
+
+        dataset_folder = soda_json_structure["dataset-structure"]
+        # pull information from the manifest files if they satisfy the SPARC format
+        if "folders" in dataset_folder.keys():
+            for folder_key in manifest_dict.keys():
+                manifest_df = manifest_dict[folder_key]
+                manifest_df = manifest_df.fillna('')
+                colum_headers = manifest_df.columns.tolist()
+                folder = dataset_folder["folders"][folder_key]
+                if "filename" in colum_headers:
+                    if "description" in colum_headers or "Additional Metadata" in colum_headers:
+                        relative_path = ""
+                        recursive_manifest_info_import(folder, relative_path, manifest_df)
+
+        recursive_item_path_create(soda_json_structure["dataset-structure"], [])
+        success_message = "Data files under a valid high-level SPARC folders have been imported"
+        return [soda_json_structure, success_message]
+
+    except Exception as e:
+        raise e

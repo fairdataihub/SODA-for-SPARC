@@ -7,7 +7,7 @@
   --color-strong:   hsl(0,0%,11%);
   --color-link:     hsl(0,0%,22%);
   --color-bg:       hsl(0,0%,96%);
-  --color-sidebar:  #000;
+  --color-sidebar:  #e8e8e8;
   --color-sidebar-hyperlink-hover: #292929;
 
   --color-border:         hsl(0,0%,88%);
@@ -15,7 +15,7 @@
   --color-bg-plum-light:       #dd1058;
   --color-bg-plum-very-light:      #fcdbe7;
   --color-strong-white:   hsl(0,100%,100%);
-  --color-light-green:     #20b2aa ;
+  --color-light-green:     #13716D;
   --color-bg-white: #fff;
   --color-teal: #258193;
   --color-bg-light-green-button: #d2efee;
