@@ -899,34 +899,26 @@ function checkPrevDivForConfirmButton(category) {
 }
 
 function tempDatasetListsSync() {
-  
+  // For tram: the rename dropdown will be gone for dd dropdown
+  /*
   $("#bfdatasetlist_renamedataset").val(defaultBfDataset);
   var listSelectedIndex = bfDatasetListRenameDataset.selectedIndex;
 
   currentDatasetDropdowns = [
-    bfDatasetListMetadata,
-    bfUploadDatasetList,
     bfDatasetList,
-    bfDatasetListDatasetStatus,
-    bfDatasetListPermission,
-    bfDatasetListPostCurationCuration,
-    bfDatasetListPostCurationConsortium,
-    bfDatasetListPostCurationPublish,
-    datasetDescriptionFileDataset,
+     datasetDescriptionFileDataset
   ];
 
   for (var list of currentDatasetDropdowns) {
     list.selectedIndex = listSelectedIndex;
   }
-  
+  */
+
   postCurationListChange();
   showDatasetDescription();
   metadataDatasetlistChange();
   permissionDatasetlistChange();
   datasetStatusListChange();
-  renameDatasetlistChange();
-  postCurationListChange();
-  showDatasetDescription();
 }
 
 const updateDatasetList = (bfaccount) => {
