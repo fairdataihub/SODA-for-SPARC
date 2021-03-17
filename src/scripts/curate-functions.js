@@ -525,7 +525,17 @@ const importOrganizeProgressPrompt = () => {
   }
 }
 
-importOrganizeProgressPrompt();
+$(document).ready(function() {
+  importOrganizeProgressPrompt();
+  $("#bf_list_users").selectpicker();
+  $("#bf_list_users").selectpicker("refresh");
+  $("#bf_list_roles").selectpicker();
+  $("#bf_list_roles").selectpicker("refresh");
+  $("#bf_list_teams").selectpicker();
+  $("#bf_list_teams").selectpicker("refresh");
+  $("#bf_list_roles_team").selectpicker();
+  $("#bf_list_roles_team").selectpicker("refresh");
+})
 
 $(document).ready(function () {
   var accountDetails = $("#para-account-detail-curate");
@@ -686,6 +696,8 @@ async function openDropdownPrompt(dropdown) {
       showBFAddAccountBootbox();
     }
   } else if (dropdown === "dataset") {
+    // disable the Continue btn first
+    $("#nextBtn").prop("disabled", true);
     var bfDataset = "";
 
     // if users edit Current dataset
@@ -702,8 +714,6 @@ async function openDropdownPrompt(dropdown) {
       .css("display", "block");
 
     $("#bf-dataset-select-header").css("display", "none")
-    //$("#curatebfdatasetlist").selectpicker("hide");
-    //$("#bf-dataset-select-div").hide();
 
     $(datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
     $("#para-continue-bf-dataset-getting-started").text("");

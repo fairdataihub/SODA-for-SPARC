@@ -17,11 +17,16 @@ const showParentTab = (tabNow, nextOrPrev) => {
   $("#nextBtn").prop("disabled", true);
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
-    $("#save-progress-btn").css("display", "block");
+    // check if users are Continuing with an existing BF ds. If so, hide Save progress btn
+    if ($('input[name="getting-started-1"]:checked').prop("id") === "existing-bf") {
+      $("#save-progress-btn").css("display", "none");
+    } else {
+      $("#save-progress-btn").css("display", "block");
+    }
     $("#start-over-btn").css("display", "inline-block");
   } else {
-    $("#save-progress-btn").css("display", "none");
-    $("#start-over-btn").css("display", "none");
+      $("#save-progress-btn").css("display", "none");
+      $("#start-over-btn").css("display", "none");
   }
 
   // This function will display the specified tab of the form ...
@@ -1394,7 +1399,11 @@ async function transitionSubQuestionsButton(
       return;
     } else {
       sodaJSONObj = result[1][0];
-      datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+      if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
+        datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+      } else {
+        datasetStructureJSONObj = { folders: {}, files: {} };
+      }
       populate_existing_folders(datasetStructureJSONObj);
       populate_existing_metadata(sodaJSONObj);
       $("#nextBtn").prop("disabled", false);

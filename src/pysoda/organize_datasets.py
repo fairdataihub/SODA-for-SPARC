@@ -59,7 +59,6 @@ start_time_bf_upload = 0
 start_submit = 0
 metadatapath = join(userpath, 'SODA', 'SODA_metadata')
 
-# makedirs(join(userpath, 'SODA', 'python-log'), exist_ok=True)
 logpath = join(userpath, 'SODA', 'python-log', f"{__name__}.log")
 
 logging.basicConfig(level=logging.DEBUG, filename=logpath)
@@ -536,6 +535,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
     high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
     manifest_sparc = ["manifest.xlsx", "manifest.csv"]
     high_level_metadata_sparc = ['submission.xlsx', 'submission.csv', 'submission.json', 'dataset_description.xlsx', 'dataset_description.csv', 'dataset_description.json', 'subjects.xlsx', 'subjects.csv', 'subjects.json', 'samples.xlsx', 'samples.csv', 'samples.json', 'README.txt', 'CHANGES.txt']
+    f = open("demofile2.txt", "a")
 
     def verify_file_name(item_name, file_name):
         from curate import bf_recognized_file_extensions
@@ -598,6 +598,9 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 file_details = bf._api._get(
                     '/packages/' + str(package_id) + '/view')
                 file_name = file_details[0]["content"]["name"]
+                result = str(file_details[0]["content"]) 
+                f.write(result)
+                f.write("\n")
 
                 if my_level == 0 and file_name in high_level_metadata_sparc:
                     metadata_files[file_name] = {
@@ -690,6 +693,9 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         manifest_dict = {}
         folder_name = ""
         recursive_dataset_import(myds, dataset_folder, metadata_files, folder_name, level, manifest_dict)
+
+        
+        f.close()
 
         #remove metadata files keys if empty
         metadata_files = soda_json_structure["metadata-files"]

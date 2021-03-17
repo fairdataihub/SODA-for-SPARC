@@ -914,6 +914,11 @@
   text-align: center;
 }
 
+.invalid {
+  border-color: #e0b4b4 !important;
+  background: #fff6f6 !important;
+}
+
 /* Manifest toggle button */
 
 .labelradiocurate {
