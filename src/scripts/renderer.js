@@ -24,6 +24,7 @@ const bootbox = require("bootbox");
 const DragSelect = require("dragselect");
 const excelToJson = require("convert-excel-to-json");
 const csvToJson = require("convert-csv-to-json");
+
 const app = remote.app;
 var noAirtable = false;
 
@@ -60,7 +61,7 @@ client.invoke("echo", "server ready", (error, res) => {
 // Log file settings //
 log.transports.console.level = false;
 log.transports.file.maxSize = 1024 * 1024 * 10;
-var homeDirectory = app.getPath("home");
+const homeDirectory = app.getPath("home");
 
 // Check default radio buttons //
 document.getElementById("selectAccount").click();
@@ -166,6 +167,7 @@ function checkNewAppVersion() {
     })
 }
 */
+
 //////////////////////////////////
 // Get html elements from UI
 //////////////////////////////////
@@ -535,29 +537,7 @@ const bfDatasetListPostCurationPublish = document.querySelector(
 const bfPostCurationProgressCuration = document.querySelector(
   "#div-bf-post-curation-progress-curation"
 );
-// const bfPostCurationProgressConsortium = document.querySelector(
-//   "#div-bf-post-curation-progress-consortium"
-// );
-// const bfPostCurationProgressPublish = document.querySelector(
-//   "#div-bf-post-curation-progress-publish"
-// );
-// const bfPostCurationProgressDOI = document.querySelector(
-//   "#div-bf-post-curation-progress-doi"
-// );
 
-// const bfShareConsortiumBtn = document.querySelector("#button-share-consortium");
-// const sharedWithConsortiumStatus = document.querySelector(
-//   "#shared-with-consortium-status"
-// );
-// const shareConsortiumStatus = document.querySelector(
-//   "#para-share-consortium-status"
-// );
-
-// const bfReserveDOIBtn = document.querySelector("#button-reserve-doi");
-// const currentDOI = document.querySelector("#input-current-doi");
-// const reserveDOIStatus = document.querySelector("#para-reserve-doi-status");
-//
-// const bfPublishDatasetBtn = document.querySelector("#button-publish-dataset");
 const bfSubmitReviewDatasetBtn = document.querySelector(
   "#button-submit-review-dataset"
 );
@@ -567,11 +547,6 @@ const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
 const bfWithdrawReviewDatasetBtn = document.querySelector(
   "#button-withdraw-review-dataset"
 );
-// const reviewDatasetInfo = document.querySelector("#para-review-dataset-info");
-// const publishingStatus = document.querySelector("#input-publishing-status");
-// const publishDatasetStatus = document.querySelector(
-//   "#para-publish-dataset-status"
-// );
 
 //////////////////////////////////
 // Constant parameters
@@ -2109,11 +2084,11 @@ const showDatasetDescription = () => {
   var selectedBfAccount = defaultBfAccount;
   //  bfAccountList.options[bfAccountList.selectedIndex].text;
   let temp = datasetDescriptionFileDataset.selectedIndex;
-  // var selectedBfDataset =
-  //   datasetDescriptionFileDataset.options[
-  //     datasetDescriptionFileDataset.selectedIndex
-  //   ].text;
-  var selectedBfDataset = defaultBfDataset;
+  var selectedBfDataset =
+    datasetDescriptionFileDataset.options[
+      datasetDescriptionFileDataset.selectedIndex
+    ].text;
+  //var selectedBfDataset = defaultBfDataset;
   if (selectedBfDataset === "Select dataset") {
     bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
@@ -5986,11 +5961,11 @@ function populateDatasetDropdowns(mylist) {
     bfUploadDatasetList.appendChild(option4);
     bfDatasetListDatasetStatus.appendChild(option5);
     bfDatasetListRenameDataset.appendChild(option6);
-    datasetDescriptionFileDataset.appendChild(option7);
     bfDatasetListPostCurationCuration.appendChild(option8);
     bfDatasetListPostCurationConsortium.appendChild(option9);
     bfDatasetListPostCurationPublish.appendChild(option10);
     */
+    datasetDescriptionFileDataset.appendChild(option7);
     curateDatasetDropdown.appendChild(option11);
   }
   renameDatasetlistChange();
@@ -8560,25 +8535,6 @@ function addDetailsForFile(ev) {
   }
 }
 
-//// Select to choose a local dataset
-// document.getElementById("location-new-dataset").addEventListener("click", function() {
-//   document.getElementById("location-new-dataset").placeholder = "Browse here"
-//   ipcRenderer.send('open-file-dialog-newdataset-curate');
-// })
-//
-// ipcRenderer.on('selected-new-datasetCurate', (event, filepath) => {
-//   if (filepath.length > 0) {
-//     if (filepath != null){
-//       document.getElementById("location-new-dataset").placeholder = filepath[0];
-//       document.getElementById("div-confirm-location-new-dataset").style.display = "flex";
-//     }
-//   }
-// })
-
-// document.getElementById('inputNewNameDataset').addEventListener('keydown', function() {
-//   // document.getElementById('para-new-name-dataset-message').innerHTML = ""
-// })
-
 $("#bf-rename-dataset-name").keyup(function () {
   let newName = $("#bf-rename-dataset-name").val().trim();
 
@@ -9241,22 +9197,6 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
     }
   }
 });
-
-/*
-document
-  .getElementById("button-preview-dataset")
-  .addEventListener("click", function () {
-    client.invoke("api_preview_dataset", sodaJSONObj, (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-      } else {
-        console.log(res);
-      }
-    });
-  });
-*/
 
 var bf_request_and_populate_dataset = (sodaJSONObj) => {
   return new Promise((resolve, reject) => {
