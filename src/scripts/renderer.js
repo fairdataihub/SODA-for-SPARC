@@ -2070,7 +2070,13 @@ $(currentConTable).mousedown(function (e) {
 ///// grab datalist name and auto-load current description
 const showDatasetDescription = () => {
   var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
+  let temp = datasetDescriptionFileDataset.selectedIndex;
+  var selectedBfDataset =
+     datasetDescriptionFileDataset.options[
+       datasetDescriptionFileDataset.selectedIndex
+     ].text;
+  //var selectedBfDataset = defaultBfDataset;
+
   if (selectedBfDataset === "Select dataset") {
     bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
@@ -5684,7 +5690,6 @@ function populateDatasetDropdowns(mylist) {
     //bfDatasetList.appendChild(option);
     var option7 = option.cloneNode(true);
     var option11 = option.cloneNode(true);
-
     datasetDescriptionFileDataset.appendChild(option7);
     curateDatasetDropdown.appendChild(option11);
   }
