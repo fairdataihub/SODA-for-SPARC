@@ -1298,260 +1298,6 @@
           </div>
         </div>
       </section>
-
-      <!--<section class="main-tabs-section" id="disseminate_dataset_section" style="margin-top: 32px;">
-        <div class="main-tabs show" id="post-curation-tab">
-         <div class="individual-question post-curation show" id="Post-curation-question-1">
-             <div class="ui form" style="width:100%">
-               <div class="grouped fields">
-                  <label style="font-size:16px;text-align:center;color: #000">
-                   How would you like to disseminate your dataset? <br>
-                 <span style="font-size:13px;text-align:center;color: #696969">Please select one:</span></label>
-                 <div style="display:flex;flex-direction:row;justify-content:center">
-                   <div class = "option-card-disseminate-dataset" style="margin:15px 0;"
-                        data-content="Share your dataset with the Curation team for review. <br/><a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Share-with-curation-team'>Need help?</a>" rel="popover" data-html="true" data-placement="bottom" data-trigger="hover">
-                     <div class="option-card radio-button getting-started-1st-question" data-next="Post-curation-question-2" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
-                         <div class="card-head">
-                           <div class="folder-checkbox">
-                             <input class="folder-input-check" id="share-with-curation-team" name="post-curation-1" type="radio">
-                             <label for="share-with-curation-team"></label>
-                           </div>
-                         </div>
-                         <div class="card-body">
-                          <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="40px"
-                          height="40px"
-                          class="bi bi-people"
-                          viewBox="0 0 16 16"
-                        >
-                        <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" fill="#13716D"/>
-                        <path d="M6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z" fill="#B80D49"/>
-                        </svg>
-                           <h2>Share with Curation Team</h2>
-                         </div>
-                       </div>
-                   </div>
-
-                   <div class = "option-card-disseminate-dataset" style="margin:15px 0;"
-                   data-content="Share your dataset as embargoed dataset with the SPARC consortium. <br/><a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Share-with-SPARC-Consortium'>Need help?</a>" rel="popover" data-html="true" data-placement="bottom" data-trigger="hover">
-                     <div class="option-card radio-button getting-started-1st-question" data-next="Post-curation-question-2" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
-                         <div class="card-head">
-                           <div class="folder-checkbox">
-                             <input class="folder-input-check" id="share-with-sparc-consortium" name="post-curation-1" type="radio">
-                             <label for="share-with-sparc-consortium"></label>
-                           </div>
-                         </div>
-                         <div class="card-body">
-                           <i class="fab fa-connectdevelop" style="color:#B80D49"></i>
-                           <h2>Share with SPARC Consortium </h2>
-                         </div>
-                     </div>
-                   </div>
-
-                   <div class = "option-card-disseminate-dataset" style="margin:15px 0;"
-                   data-content="Submit your dataset to the Curation team for a final review before it is made public. <br/><a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Submit-for-pre-publishing-review'>Need help?</a>" data-html="true" rel="popover" data-placement="bottom" data-trigger="hover">
-                     <div class="option-card radio-button getting-started-1st-question"
-                           data-next="Post-curation-question-4" onclick="transitionFreeFormMode(this, 'Post-curation-question-1', 'post-curation-tab', '', 'individual-question post-curation')">
-                         <div class="card-head">
-                           <div class="folder-checkbox">
-                             <input class="folder-input-check" id="submit-pre-publishing" name="post-curation-1" type="radio">
-                             <label for="submit-pre-publishing"></label>
-                           </div>
-                         </div>
-                         <div class="card-body">
-                          <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="40px"
-                          height="40px"
-                          fill="#13716D"
-                          class="bi bi-book"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z"
-                          />
-                        </svg>
-                           <h2>Submit for pre-publishing review</h2>
-                         </div>
-                       </div>
-                     </div>
-                 </div>
-               </div>
-           </div>
-         </div>
-
-         <div class="individual-question post-curation" id="Post-curation-question-2" style="margin-bottom:10px">
-             <div class="ui form" style="width:100%">
-               <div class="grouped fields">
-                 <label style="font-size:17px;color:var(--color-bg-plum);">
-                 Select a dataset</label>
-                 <div class="field-disseminate-dataset">
-                   <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
-                    <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                      margin-bottom: 15px;
-                    "
-                  >
-                    <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current account:
-                        <span
-                          style="color: #000; font-weight: 600; margin-left: 8px; font-size: 15px"
-                          class= "bf-account-span"
-                          >None</span
-                        >
-                      </h5>
-                    </div>
-                    <svg
-                      class="svg-change-current-account"
-                      onclick="openDropdownPrompt('bf')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      class="bi bi-pencil-fill"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
-                  </div>
-                  <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                    <h5 style="color: #808080; font-size: 15px">Account details:</h5>
-                    <p
-                      style="color: #000; font-weight: 600; margin-left: 15px; font-size: 15px"
-                      class="bf-account-details-span"
-                    >
-                      None
-                    </p>
-                  </div>
-                     <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
-                       <div>
-                         <h5 style="color:#808080;font-size:15px">Current dataset:
-                         <span style="color:#000;font-weight:600;margin-left:8px;font-size:15px" class="bf-dataset-span disseminate">None</span></h5>
-                       </div>
-                       <svg class="svg-change-current-account" onclick="openDropdownPrompt('dataset')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
-                         <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
-                       </svg>
-                     </div>
-                   </div>
-                   <div style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
-                     <button id="disseminate-dataset-confirm-button" onclick="transitionFreeFormMode(this, 'Post-curation-question-2', 'post-curation-tab', '', 'individual-question post-curation')" data-next="Post-curation-question-3" style="display:none;cursor:pointer;border-radius: 8px;margin:10px auto; width: 100px;height:30px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:13px">Confirm</button>
-                   </div>
-                 </div>
-               </div>
-             </div>
-           </div>
-
-           <div class="individual-question post-curation" id="Post-curation-question-4">
-               <div class="ui form" style="width:100%">
-                 <div class="grouped fields">
-                   <label style="font-size:17px;color:var(--color-bg-plum);">
-                   Select a dataset </label>
-                   <div class="field-disseminate-dataset">
-                     <div style="display:flex; flex-direction:column; justify-content:space-between;margin-top:15px;height:auto;box-shadow:0px 0px 10px #d5d5d5;padding:15px 25px;border-radius:5px">
-                      <div
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-between;
-                      margin-bottom: 15px;
-                    "
-                  >
-                    <div>
-                      <h5 style="color: #808080; font-size: 15px">
-                        Current account:
-                        <span
-                          style="color: #000; font-weight: 600; margin-left: 8px; font-size: 15px"
-                          class= "bf-account-span"
-                          >None</span
-                        >
-                      </h5>
-                    </div>
-                    <svg
-                      class="svg-change-current-account"
-                      onclick="openDropdownPrompt('bf')"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      fill="#000"
-                      class="bi bi-pencil-fill"
-                      viewBox="0 0 16 16"
-                    >
-                      <path
-                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                      />
-                    </svg>
-                  </div>
-                  <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                    <h5 style="color: #808080; font-size: 15px">Account details:</h5>
-                    <p
-                      style="color: #000; font-weight: 600; margin-left: 15px; font-size: 15px"
-                      class="bf-account-details-span"
-                    >
-                      None
-                    </p>
-                  </div>
-                       <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
-                         <div>
-                           <h5 style="color:#808080;font-size:15px">Current dataset:
-                           <span style="color:#000;font-weight:600;margin-left:8px;font-size:15px" class="bf-dataset-span submit-review">None</span></h5>
-                         </div>
-                         <svg class="svg-change-current-account" onclick="openDropdownPrompt('dataset')" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" class="bi bi-pencil-fill" viewBox="0 0 16 16">
-                           <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
-                         </svg>
-                       </div>
-                       <div style="display:flex; flex-direction:row; justify-content:space-between;margin-bottom:15px">
-                         <div>
-                           <h5 style="color:#808080;font-size:15px">Review status:
-                           <span id='para-review-dataset-info-disseminate' style="color:#000;font-weight:600;margin-left:8px;font-size:15px">None</span></h5>
-                         </div>
-                         <i class="fas fa-sync svg-change-current-account" id="button-refresh-publishing-status" onclick="refreshDatasetStatus()" style="color:#000"></i>
-                       </div>
-                     </div>
-                     <div id="div-confirm-submit-review" style="display: none;flex-direction:row;justify-content:center;margin:10px auto">
-                         <button id="button-withdraw-review-dataset" onclick="withdrawDatasetSubmission()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background:#fff;color:red;font-weight:600;border:1px solid red;font-size:14px">
-                           <i class="fas fa-ban" style="padding-right:5px"></i>
-                           Withdraw from review</button>
-                         <button id="button-submit-review-dataset" onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:20px 10px; width: 200px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:14px">
-                           <i class="fas fa-sign-in-alt" style="padding-right:5px"></i>
-                           Submit</button>
-                     </div>
-                     <p id="para-disseminate-status-publish" style="color:red;text-align:center; margin-top:10px"></p>
-                     <div id="disseminate-publish-spinner" class="spinner" style="display:none;margin:10px auto;width:100%">
-                      <div class="rect1"></div>
-                      <div class="rect2"></div>
-                      <div class="rect3"></div>
-                      <div class="rect4"></div>
-                      <div class="rect5"></div>
-                    </div>
-                   </div>
-                 </div>
-               </div>
-             </div>
-
-           <div class="individual-question post-curation" id="Post-curation-question-3">
-               <div class="ui form" style="width:100%;display:flex;flex-direction:column;justify-content: center;align-items: center;">
-                 <button onclick="disseminateDataset()" style="cursor:pointer;border-radius: 8px;margin:10px auto; width: 140px;height:40px;background: var(--color-light-green);color:#fff;font-weight:600;border:none;font-size:15px">
-                   <i class="fas fa-share" style="padding-right:5px"></i>
-                   Share now</button>
-                 <p id="para-disseminate-status" style="color:red;margin-top:10px;text-align:center"></p>
-                 <div id="disseminate-spinner" class="spinner" style="display: none;">
-                  <div class="rect1"></div>
-                  <div class="rect2"></div>
-                  <div class="rect3"></div>
-                  <div class="rect4"></div>
-                  <div class="rect5"></div>
-                </div>
-               </div>
-             </div>
-         </div>
-      </section>-->
     </div>
   </section>
 
@@ -6463,12 +6209,6 @@
         </div>
       </div>
     </div>
-
-    <!--
-      button-rename-dataset - button-rename-datasett
-      bf-rename-dataset-name - bf-rename-dataset-namee
-      para-rename-dataset-status - para-rename-dataset-statuss
-    -->
   </section>
 
   <section
@@ -10053,12 +9793,51 @@
       </div>
     </div>
   </section>
+
+ <script>window.$ = window.jQuery = require('jquery');</script>
+ <script src="node_modules/jquery/dist/jquery.js"></script>
   <script
     src="./scripts/disseminate-and-metadata.js"
-    type="text/javascript"
-  ></script>
+    type="text/javascript">
+  </script>
   <script
     src="./renderer-process/prepare-metadata/save-information.js"
     type="text/javascript"
   ></script>
+   <script type="text/javascript">
+     require('./renderer-process/native-ui/dialogs/open-file')
+     // require('./renderer-process/native-ui/dialogs/s ave')
+     // require('./renderer-process/manage_submit/blackfynn_account')
+   </script>
+   <script type="text/javascript">
+     require("./renderer-process/curate/radio-buttons-display");
+   </script>
+   <!-- <script
+     type="text/javascript"
+     src="./renderer-process/curate/table-script.js"
+   ></script> -->
+
+   <script type="text/javascript">
+     //Manifest file label color change if checked
+     function updateManifestLabelColor(el) {
+       document.getElementById("label-manifest").style.color = el.checked
+         ? "inherit"
+         : "#303030";
+       document.getElementById("label-manifest").style.fontWeight = el.checked
+         ? "bold"
+         : "normal";
+       document.getElementById("label-manifest").style.fontSize = el.checked
+         ? "1.1em"
+         : "1em";
+     }
+   </script>
+<!--
+     <script type="text/javascript">
+       // require("./renderer-process/native-ui/dialogs/save");
+       // require("./renderer-process/prepare-metadata/save-information.js");
+     </script> -->
+
+   <script src="node_modules/cropperjs/dist/cropper.js"></script>
+   <script src="node_modules/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+
 </template>
