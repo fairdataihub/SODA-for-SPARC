@@ -64,7 +64,7 @@ log.transports.file.maxSize = 1024 * 1024 * 10;
 const homeDirectory = app.getPath("home");
 
 // Check default radio buttons //
-document.getElementById("selectAccount").click();
+//document.getElementById("selectAccount").click();
 //document.getElementById("createDataset").click();
 //document.getElementById("add-edit-subtitle").click();
 //document.getElementById("pi-owner").click();
@@ -173,9 +173,9 @@ function checkNewAppVersion() {
 //////////////////////////////////
 
 // Navigator button //
-const buttonSidebar = document.getElementById("button-hamburger");
+// const buttonSidebar = document.getElementById("button-hamburger");
 const buttonSidebarIcon = document.getElementById("button-soda-icon");
-const buttonSidebarBigIcon = document.getElementById("button-soda-big-icon");
+// const buttonSidebarBigIcon = document.getElementById("button-soda-big-icon");
 
 // Metadata Templates //
 const downloadSubmission = document.getElementById("a-submission");
@@ -231,13 +231,13 @@ const dsContributorArrayFirst1 = document.getElementById(
 
 var contributorRoles = document.getElementById("input-con-role-1");
 const affiliationInput = document.getElementById("input-con-affiliation-1");
-const addCurrentContributorsBtn = document.getElementById(
-  "button-ds-add-contributor"
-);
+// const addCurrentContributorsBtn = document.getElementById(
+//   "button-ds-add-contributor"
+// );
 const contactPerson = document.getElementById("ds-contact-person");
 const currentConTable = document.getElementById("table-current-contributors");
 const generateDSBtn = document.getElementById("button-generate-ds-description");
-const addAdditionalLinkBtn = document.getElementById("button-ds-add-link");
+// const addAdditionalLinkBtn = document.getElementById("button-ds-add-link");
 const datasetDescriptionFileDataset = document.getElementById("ds-name");
 const parentDSDropdown = document.getElementById("input-parent-ds");
 
@@ -253,7 +253,7 @@ const fullNameValue = document.querySelector(".hoverFullName");
 // const resetProgress = document.getElementById("clear-progress")
 // const saveProgress = document.getElementById("save-progress")
 // const importProgress = document.getElementById("import-progress")
-const homePathButton = document.getElementById("home-path");
+// const homePathButton = document.getElementById("home-path");
 const menuFolder = document.querySelector(".menu.reg-folder");
 const menuFile = document.querySelector(".menu.file");
 const menuHighLevelFolders = document.querySelector(".menu.high-level-folder");
@@ -268,13 +268,13 @@ var defaultBfDataset = "Select dataset";
 var bfAccountOptionsStatus;
 
 // Organize dataset //
-const bfAccountCheckBtn = document.getElementById(
-  "button-check-bf-account-details"
-);
-const bfUploadAccountCheckBtn = document.getElementById(
-  "button-upload-check-bf-account-details"
-);
-const selectDatasetBtn = document.getElementById("button-select-dataset");
+// const bfAccountCheckBtn = document.getElementById(
+//   "button-check-bf-account-details"
+// );
+// const bfUploadAccountCheckBtn = document.getElementById(
+//   "button-upload-check-bf-account-details"
+// );
+// const selectDatasetBtn = document.getElementById("button-select-dataset");
 const pathDataset = document.querySelector("#para-selected-dataset");
 const tableOrganized = document.getElementById("table-organized");
 let tableOrganizedCount = 0;
@@ -282,45 +282,45 @@ const tableNotOrganized = document.getElementById("code_table");
 let tableNotOrganizedCount = 0;
 const alreadyOrganizedStatus = document.querySelector("#preorganized-dataset");
 const organizeDatasetStatus = document.querySelector("#organize-dataset");
-const clearTableBtn = document.getElementById("button-clear-table");
-const selectSaveFileOrganizationBtn = document.getElementById(
-  "button-select-save-file-organization"
-);
-const selectPreviewBtn = document.getElementById(
-  "button-preview-file-organization"
-);
-const selectImportFileOrganizationBtn = document.getElementById(
-  "button-select-upload-file-organization"
-);
-const selectPreviewMetadataBtn = document.getElementById(
-  "button-preview-file-organization-metadata"
-);
+// const clearTableBtn = document.getElementById("button-clear-table");
+// const selectSaveFileOrganizationBtn = document.getElementById(
+//   "button-select-save-file-organization"
+// );
+// const selectPreviewBtn = document.getElementById(
+//   "button-preview-file-organization"
+// );
+// const selectImportFileOrganizationBtn = document.getElementById(
+//   "button-select-upload-file-organization"
+// );
+// const selectPreviewMetadataBtn = document.getElementById(
+//   "button-preview-file-organization-metadata"
+// );
 const tableMetadata = document.getElementById("metadata-table");
 let tableMetadataCount = 0;
-const previewProgressBar = document.getElementById(
-  "div-dataset-preview-progress"
-);
-const previewMetadataProgressBar = document.getElementById(
-  "div-metadata-preview-progress"
-);
-const selectSaveFileOrganizationMetadataBtn = document.getElementById(
-  "button-select-save-file-organization-metadata"
-);
+// const previewProgressBar = document.getElementById(
+//   "div-dataset-preview-progress"
+// );
+// const previewMetadataProgressBar = document.getElementById(
+//   "div-metadata-preview-progress"
+// );
+// const selectSaveFileOrganizationMetadataBtn = document.getElementById(
+//   "button-select-save-file-organization-metadata"
+// );
 
 // Validate dataset //
-const validateCurrentDSBtn = document.getElementById(
-  "button-validate-current-ds"
-);
-const previewCurrentDsValidate = document.getElementById(
-  "button-preview-local-ds"
-);
+// const validateCurrentDSBtn = document.getElementById(
+//   "button-validate-current-ds"
+// );
+// const previewCurrentDsValidate = document.getElementById(
+//   "button-preview-local-ds"
+// );
 const validateCurrentDatasetReport = document.querySelector(
   "#textarea-validate-current-dataset"
 );
-const currentDatasetReportBtn = document.getElementById(
-  "button-generate-report-current-ds"
-);
-const validateLocalDSBtn = document.getElementById("button-validate-local-ds");
+// const currentDatasetReportBtn = document.getElementById(
+//   "button-generate-report-current-ds"
+// );
+// const validateLocalDSBtn = document.getElementById("button-validate-local-ds");
 const validateLocalDatasetReport = document.querySelector(
   "#textarea-validate-local-dataset"
 );
@@ -335,29 +335,29 @@ const validateSODAProgressBar = document.getElementById(
 );
 
 // Generate dataset //
-const createNewStatus = document.querySelector("#create-newdataset");
-const modifyExistingStatus = document.querySelector("#existing-dataset");
+// const createNewStatus = document.querySelector("#create-newdataset");
+// const modifyExistingStatus = document.querySelector("#existing-dataset");
 // const bfUploadDirectlyStatus = document.querySelector("#cloud-dataset");
-const selectnewDatasetBtn = document.getElementById("selected-new-dataset");
-const importnewDatasetBtn = document.getElementById(
-  "button-select-new-dataset"
-);
+// const selectnewDatasetBtn = document.getElementById("selected-new-dataset");
+// const importnewDatasetBtn = document.getElementById(
+//   "button-select-new-dataset"
+// );
 // const pathNewDataset = document.querySelector('#selected-new-dataset')
-const newDatasetName = document.querySelector("#new-dataset-name");
+// const newDatasetName = document.querySelector("#new-dataset-name");
 const manifestStatus = document.querySelector("#generate-manifest");
-const curationForm = document.querySelector("#dataset-curate-form");
-const progressBarCurate = document.getElementById("progress-bar-curate");
-const progressCurateUpload = document.getElementById("div-curate-progress");
-const curateDatasetBtn = document.getElementById("button-curate-dataset");
-const bfUploadDatasetBtn = document.getElementById("button-upload-dataset");
+// const curationForm = document.querySelector("#dataset-curate-form");
+// const progressBarCurate = document.getElementById("progress-bar-curate");
+// const progressCurateUpload = document.getElementById("div-curate-progress");
+// const curateDatasetBtn = document.getElementById("button-curate-dataset");
+// const bfUploadDatasetBtn = document.getElementById("button-upload-dataset");
 
 // Manage datasets //
-const keyName = document.querySelector("#bf-key-name");
-const key = document.querySelector("#bf-key");
-const secret = document.querySelector("#bf-secret");
-const bfAddAccountBtn = document.getElementById("add-bf-account");
-const bfAddAccountStatus = document.querySelector("#para-add-account-status");
-const bfAddAccountInfo = document.querySelector("#add-account-progress");
+// const keyName = document.querySelector("#bf-key-name");
+// const key = document.querySelector("#bf-key");
+// const secret = document.querySelector("#bf-secret");
+// const bfAddAccountBtn = document.getElementById("add-bf-account");
+// const bfAddAccountStatus = document.querySelector("#para-add-account-status");
+// const bfAddAccountInfo = document.querySelector("#add-account-progress");
 const bfAccountList = document.querySelector("#bfaccountlist");
 const bfUploadAccountList = document.querySelector("#bfuploadaccountlist");
 const bfAccountLoadProgress = document.querySelector(
@@ -380,16 +380,16 @@ const bfUploadSelectAccountStatus = document.getElementById(
 const bfRefreshDatasetBtn = document.getElementById(
   "button-refresh-dataset-list"
 );
-const bfRefreshDatasetMetadataBtn = document.getElementById(
-  "button-refresh-dataset-list-metadata"
-);
-const bfRefreshDatasetPermissionBtn = document.getElementById(
-  "button-refresh-dataset-list-permission"
-);
-const bfUploadRefreshDatasetBtn = document.getElementById(
-  "button-upload-refresh-dataset-list"
-);
-const bfNewDatasetForm = document.getElementById("blackfynn-new-dataset-form");
+// const bfRefreshDatasetMetadataBtn = document.getElementById(
+//   "button-refresh-dataset-list-metadata"
+// );
+// const bfRefreshDatasetPermissionBtn = document.getElementById(
+//   "button-refresh-dataset-list-permission"
+// );
+// const bfUploadRefreshDatasetBtn = document.getElementById(
+//   "button-upload-refresh-dataset-list"
+// );
+// const bfNewDatasetForm = document.getElementById("blackfynn-new-dataset-form");
 const bfNewDatasetName = document.querySelector("#bf-new-dataset-name");
 const bfCreateNewDatasetBtn = document.getElementById(
   "button-create-bf-new-dataset"
@@ -402,17 +402,17 @@ const selectLocalDsSubmit = document.getElementById(
   "selected-local-dataset-submit"
 );
 // const importLocalDsSubmit = document.getElementById("button-import-local-ds-submit")
-const bfSubmitDatasetInfo = document.querySelector("#progresssubmit");
+// const bfSubmitDatasetInfo = document.querySelector("#progresssubmit");
 const pathSubmitDataset = document.querySelector(
   "#selected-local-dataset-submit"
 );
-const progressUploadBf = document.getElementById("div-progress-submit");
+// const progressUploadBf = document.getElementById("div-progress-submit");
 const progressBarUploadBf = document.getElementById("progress-bar-upload-bf");
 //const bfDatasetListRenameDataset = document.querySelector("#bfdatasetlist_renamedataset");
 const bfRenameDatasetBtn = document.getElementById("button-rename-dataset");
-const bfRefreshDatasetRenameDatasetBtn = document.getElementById(
-  "button-refresh-dataset-renamedataset-list"
-);
+// const bfRefreshDatasetRenameDatasetBtn = document.getElementById(
+//   "button-refresh-dataset-renamedataset-list"
+// );
 const renameDatasetName = document.querySelector("#bf-rename-dataset-name");
 const bfRenameDatasetStatus = document.getElementById(
   "para-rename-dataset-status"
@@ -451,7 +451,7 @@ const formBannerHeight = document.getElementById("form-banner-height");
 const currentDatasetLicense = document.querySelector(
   "#para-dataset-license-current"
 );
-const bfListLicense = document.querySelector("#bf-license-list");
+// const bfListLicense = document.querySelector("#bf-license-list");
 const bfAddLicenseBtn = document.getElementById("button-add-license");
 const datasetLicenseStatus = document.querySelector(
   "#para-dataset-license-status"
@@ -479,12 +479,12 @@ const bfAddPermissionPIBtn = document.getElementById(
 const datasetPermissionStatusPI = document.querySelector(
   "#para-dataset-permission-status-pi"
 );
-const bfAddPermissionCurationTeamBtn = document.getElementById(
-  "button-add-permission-curation-team"
-);
-const datasetPermissionStatusCurationTeam = document.querySelector(
-  "#para-dataset-permission-status-curation-team"
-);
+// const bfAddPermissionCurationTeamBtn = document.getElementById(
+//   "button-add-permission-curation-team"
+// );
+// const datasetPermissionStatusCurationTeam = document.querySelector(
+//   "#para-dataset-permission-status-curation-team"
+// );
 const bfListUsers = document.querySelector("#bf_list_users");
 const bfListRoles = document.querySelector("#bf_list_roles");
 const bfAddPermissionBtn = document.getElementById("button-add-permission");
@@ -509,22 +509,22 @@ const bfListDatasetStatus = document.querySelector("#bf_list_dataset_status");
 const datasetStatusStatus = document.querySelector(
   "#para-dataset-status-status"
 );
-const bfRefreshDatasetStatusBtn = document.getElementById(
-  "button-refresh-dataset-status"
-);
+// const bfRefreshDatasetStatusBtn = document.getElementById(
+//   "button-refresh-dataset-status"
+// );
 
 //Blackfynn post curation
 // const bfPostCurationForm = document.querySelector('#blackfynn-post-curation')
-const bfDatasetListPostCurationDOI = document.querySelector(
-  "#bfdatasetlist_postcuration-doi"
-);
+// const bfDatasetListPostCurationDOI = document.querySelector(
+//   "#bfdatasetlist_postcuration-doi"
+// );
 //const bfDatasetListPostCurationCuration = document.querySelector("#bfdatasetlist-postcuration-curation");
 //const bfDatasetListPostCurationConsortium = document.querySelector("#bfdatasetlist-postcuration-consortium");
 //const bfDatasetListPostCurationPublish = document.querySelector("#bfdatasetlist-postcuration-publish");
 
-const bfPostCurationProgressCuration = document.querySelector(
-  "#div-bf-post-curation-progress-curation"
-);
+// const bfPostCurationProgressCuration = document.querySelector(
+//   "#div-bf-post-curation-progress-curation"
+// );
 
 const bfSubmitReviewDatasetBtn = document.querySelector(
   "#button-submit-review-dataset"
@@ -539,8 +539,8 @@ const bfWithdrawReviewDatasetBtn = document.querySelector(
 //////////////////////////////////
 // Constant parameters
 //////////////////////////////////
-const blackColor = "#000000";
-const redColor = "#ff1a1a";
+// const blackColor = "#000000";
+// const redColor = "#ff1a1a";
 const sparcFolderNames = [
   "code",
   "derivative",
@@ -557,22 +557,22 @@ const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">';
 //////////////////////////////////
 
 // Sidebar Navigation //
-var open = false;
-const openSidebar = (buttonElement) => {
-  if (!open) {
-    ipcRenderer.send("resize-window", "up");
-    $("#main-nav").css("width", "250px");
-    $("#SODA-logo").css("display", "block");
-    $(buttonSidebarIcon).css("display", "none");
-    open = true;
-  } else {
-    ipcRenderer.send("resize-window", "down");
-    $("#main-nav").css("width", "70px");
-    $("#SODA-logo").css("display", "block");
-    $(buttonSidebarIcon).css("display", "none");
-    open = false;
-  }
-};
+// var open = false;
+// const openSidebar = (buttonElement) => {
+//   if (!open) {
+//     ipcRenderer.send("resize-window", "up");
+//     $("#main-nav").css("width", "250px");
+//     $("#SODA-logo").css("display", "block");
+//     $(buttonSidebarIcon).css("display", "none");
+//     open = true;
+//   } else {
+//     ipcRenderer.send("resize-window", "down");
+//     $("#main-nav").css("width", "70px");
+//     $("#SODA-logo").css("display", "block");
+//     $(buttonSidebarIcon).css("display", "none");
+//     open = false;
+//   }
+// };
 
 // Assign dragable area in the code to allow for dragging and selecting items//
 let drag_event_fired = false;
@@ -592,42 +592,42 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
   select_items_ctrl(items, event, isDragging);
 });
 
-// Button selection to move on to next step under Prepare Dataset //
-document
-  .getElementById("button-organize-next-step")
-  .addEventListener("click", (event) => {
-    $("#button-specfy-dataset-demo-toggle").click();
-    if (
-      getComputedStyle(document.getElementById("div-specify-metadata"), null)
-        .display === "none"
-    ) {
-      $("#button-specify-metadata-demo-toggle").click();
-    }
-  });
+// // Button selection to move on to next step under Prepare Dataset //
+// document
+//   .getElementById("button-organize-next-step")
+//   .addEventListener("click", (event) => {
+//     $("#button-specfy-dataset-demo-toggle").click();
+//     if (
+//       getComputedStyle(document.getElementById("div-specify-metadata"), null)
+//         .display === "none"
+//     ) {
+//       $("#button-specify-metadata-demo-toggle").click();
+//     }
+//   });
 
-document
-  .getElementById("button-specify-metadata-next-step")
-  .addEventListener("click", (event) => {
-    $("#button-specify-metadata-demo-toggle").click();
-    if (
-      getComputedStyle(document.getElementById("div-validate-dataset"), null)
-        .display === "none"
-    ) {
-      $("#button-validate-dataset-demo-toggle").click();
-    }
-  });
+// document
+//   .getElementById("button-specify-metadata-next-step")
+//   .addEventListener("click", (event) => {
+//     $("#button-specify-metadata-demo-toggle").click();
+//     if (
+//       getComputedStyle(document.getElementById("div-validate-dataset"), null)
+//         .display === "none"
+//     ) {
+//       $("#button-validate-dataset-demo-toggle").click();
+//     }
+//   });
 
-document
-  .getElementById("button-validate-dataset-next-step")
-  .addEventListener("click", (event) => {
-    $("#button-validate-dataset-demo-toggle").click();
-    if (
-      getComputedStyle(document.getElementById("div-generate-dataset"), null)
-        .display === "none"
-    ) {
-      $("#button-generate-dataset-demo-toggle").click();
-    }
-  });
+// document
+//   .getElementById("button-validate-dataset-next-step")
+//   .addEventListener("click", (event) => {
+//     $("#button-validate-dataset-demo-toggle").click();
+//     if (
+//       getComputedStyle(document.getElementById("div-generate-dataset"), null)
+//         .display === "none"
+//     ) {
+//       $("#button-generate-dataset-demo-toggle").click();
+//     }
+//   });
 
 ///////////////////// Prepare Metadata Section ////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1119,17 +1119,17 @@ function loadAwards() {
 loadAwards();
 
 /// function to grab row index
-function getRowIndex(table) {
-  var rowcount = table.rows.length;
-  if (rowcount === 2) {
-    // start at 1 to skip the header
-    var rowIndex = 1;
-  } else {
-    /// append row to table from the bottom
-    var rowIndex = rowcount - 1;
-  }
-  return rowIndex;
-}
+// function getRowIndex(table) {
+//   var rowcount = table.rows.length;
+//   if (rowcount === 2) {
+//     // start at 1 to skip the header
+//     var rowIndex = 1;
+//   } else {
+//     /// append row to table from the bottom
+//     var rowIndex = rowcount - 1;
+//   }
+//   return rowIndex;
+// }
 
 // Save grant information
 function addSPARCAwards() {
@@ -1193,14 +1193,14 @@ function addSPARCAwards() {
 }
 
 /////// Delete an Award///////////
-function deleteOptionByValue(dropdown, value) {
-  for (var i = 0; i < dropdown.length; i++) {
-    if (dropdown.options[i].value === value) {
-      dropdown.remove(i);
-    }
-  }
-  return null;
-}
+// function deleteOptionByValue(dropdown, value) {
+//   for (var i = 0; i < dropdown.length; i++) {
+//     if (dropdown.options[i].value === value) {
+//       dropdown.remove(i);
+//     }
+//   }
+//   return null;
+// }
 
 // deleteAwardBtn.addEventListener("click", function () {
 //   award = presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
@@ -1276,101 +1276,101 @@ function loadDefaultAward() {
 var defaultAward = loadDefaultAward();
 // loadMilestoneInfo(defaultAward);
 
-function loadMilestoneInfo(awardNumber) {
-  document.getElementById("para-milestone-document-info").innerHTML = "";
-  document.getElementById("input-milestone-select").placeholder = "Browse here";
+// function loadMilestoneInfo(awardNumber) {
+//   document.getElementById("para-milestone-document-info").innerHTML = "";
+//   document.getElementById("input-milestone-select").placeholder = "Browse here";
 
-  if (awardNumber === "Select") {
-    document.getElementById(
-      "div-show-milestone-info-no-existing"
-    ).style.display = "none";
-    document.getElementById("div-show-current-milestones").style.display =
-      "none";
-  } else {
-    ///// first, make the selected award the default so next time SODA will auto-load it.
-    makeDefaultAward(awardNumber);
-    /// clear old table before loading new table
-    while (milestoneArray.rows.length > 1) {
-      milestoneArray.deleteRow(1);
-    }
-    //// Start loading milestone table
-    var awardJson = parseJson(awardPath);
-    if (awardNumber in awardJson) {
-      presavedAwardArray1.value = awardNumber;
-      ///// populate submission award drop-down
-      for (var i = 0; i < presavedAwardArray2.length; i++) {
-        if (presavedAwardArray2.options[i].value === awardNumber) {
-          presavedAwardArray2.value = presavedAwardArray2.options[i].value;
-          changeAwardInput();
-          break;
-        }
-      }
-      //// populate dataset contribution award drop-down
-      for (var i = 0; i < dsAwardArray.length; i++) {
-        if (dsAwardArray.options[i].value === awardNumber) {
-          dsAwardArray.value = dsAwardArray.options[i].value;
-          changeAwardInputDsDescription();
-          break;
-        }
-      }
-    }
-    //// get content from milestone.json file and load it up
-    var milestoneJson = parseJson(milestonePath);
-    if (awardNumber in milestoneJson) {
-      var milestoneObj = milestoneJson[awardNumber];
-      // start at 1 to skip the header
-      var rowIndex = 1;
-      var milestoneKey = Object.keys(milestoneObj);
-      for (var i = 0; i < milestoneKey.length; i++) {
-        var milestone = milestoneObj[milestoneKey[i]];
-        // var span = milestoneObj[milestoneKey[i]].length
-        for (var j = 0; j < milestone.length; j++) {
-          // console.log(milestoneObj[milestoneKey[i]])
-          var description = milestone[j]["Description of data"];
-          var date = milestone[j]["Expected date of completion"];
-          var row = (milestoneArray.insertRow(rowIndex).outerHTML =
-            "<tr id='row-milestone" +
-            rowIndex +
-            "'style='color: #000000;'><td id='name-row-milestone" +
-            rowIndex +
-            "'>" +
-            milestoneKey[i] +
-            "</td><td id='name-row-description" +
-            rowIndex +
-            "'>" +
-            description +
-            "</td><td id='name-row-date" +
-            rowIndex +
-            "'>" +
-            date +
-            "</td></tr>");
-        }
-        rowIndex++;
-      }
-      document.getElementById("div-show-current-milestones").style.display =
-        "block";
-      document.getElementById(
-        "div-show-milestone-info-no-existing"
-      ).style.display = "block";
-      document.getElementById("table-current-milestones").style.display =
-        "block";
-      document.getElementById("para-current-milestones").style.display = "none";
-      return milestoneArray;
-    } else {
-      document.getElementById(
-        "div-show-milestone-info-no-existing"
-      ).style.display = "block";
-      document.getElementById("div-show-current-milestones").style.display =
-        "block";
-      document.getElementById("table-current-milestones").style.display =
-        "none";
-      document.getElementById("para-current-milestones").style.display =
-        "block";
-      document.getElementById("para-current-milestones").innerHTML =
-        "There is no existing milestone information. Please import your data deliverable document!";
-    }
-  }
-}
+//   if (awardNumber === "Select") {
+//     document.getElementById(
+//       "div-show-milestone-info-no-existing"
+//     ).style.display = "none";
+//     document.getElementById("div-show-current-milestones").style.display =
+//       "none";
+//   } else {
+//     ///// first, make the selected award the default so next time SODA will auto-load it.
+//     makeDefaultAward(awardNumber);
+//     /// clear old table before loading new table
+//     while (milestoneArray.rows.length > 1) {
+//       milestoneArray.deleteRow(1);
+//     }
+//     //// Start loading milestone table
+//     var awardJson = parseJson(awardPath);
+//     if (awardNumber in awardJson) {
+//       presavedAwardArray1.value = awardNumber;
+//       ///// populate submission award drop-down
+//       for (var i = 0; i < presavedAwardArray2.length; i++) {
+//         if (presavedAwardArray2.options[i].value === awardNumber) {
+//           presavedAwardArray2.value = presavedAwardArray2.options[i].value;
+//           changeAwardInput();
+//           break;
+//         }
+//       }
+//       //// populate dataset contribution award drop-down
+//       for (var i = 0; i < dsAwardArray.length; i++) {
+//         if (dsAwardArray.options[i].value === awardNumber) {
+//           dsAwardArray.value = dsAwardArray.options[i].value;
+//           changeAwardInputDsDescription();
+//           break;
+//         }
+//       }
+//     }
+//     //// get content from milestone.json file and load it up
+//     var milestoneJson = parseJson(milestonePath);
+//     if (awardNumber in milestoneJson) {
+//       var milestoneObj = milestoneJson[awardNumber];
+//       // start at 1 to skip the header
+//       var rowIndex = 1;
+//       var milestoneKey = Object.keys(milestoneObj);
+//       for (var i = 0; i < milestoneKey.length; i++) {
+//         var milestone = milestoneObj[milestoneKey[i]];
+//         // var span = milestoneObj[milestoneKey[i]].length
+//         for (var j = 0; j < milestone.length; j++) {
+//           // console.log(milestoneObj[milestoneKey[i]])
+//           var description = milestone[j]["Description of data"];
+//           var date = milestone[j]["Expected date of completion"];
+//           var row = (milestoneArray.insertRow(rowIndex).outerHTML =
+//             "<tr id='row-milestone" +
+//             rowIndex +
+//             "'style='color: #000000;'><td id='name-row-milestone" +
+//             rowIndex +
+//             "'>" +
+//             milestoneKey[i] +
+//             "</td><td id='name-row-description" +
+//             rowIndex +
+//             "'>" +
+//             description +
+//             "</td><td id='name-row-date" +
+//             rowIndex +
+//             "'>" +
+//             date +
+//             "</td></tr>");
+//         }
+//         rowIndex++;
+//       }
+//       document.getElementById("div-show-current-milestones").style.display =
+//         "block";
+//       document.getElementById(
+//         "div-show-milestone-info-no-existing"
+//       ).style.display = "block";
+//       document.getElementById("table-current-milestones").style.display =
+//         "block";
+//       document.getElementById("para-current-milestones").style.display = "none";
+//       return milestoneArray;
+//     } else {
+//       document.getElementById(
+//         "div-show-milestone-info-no-existing"
+//       ).style.display = "block";
+//       document.getElementById("div-show-current-milestones").style.display =
+//         "block";
+//       document.getElementById("table-current-milestones").style.display =
+//         "none";
+//       document.getElementById("para-current-milestones").style.display =
+//         "block";
+//       document.getElementById("para-current-milestones").innerHTML =
+//         "There is no existing milestone information. Please import your data deliverable document!";
+//     }
+//   }
+// }
 
 // ///// Load Milestone info
 // /// check if no award is selected, then show no current milestones.
@@ -1803,208 +1803,208 @@ function delete_link(no) {
   document.getElementById("row-current-link" + no + "").outerHTML = "";
 }
 
-function createCurrentConTable(table) {
-  var conVal =
-    dsContributorArray.options[dsContributorArray.selectedIndex].value;
-  var name;
-  if (conVal === "Other collaborators not listed") {
-    name = document.getElementById("input-con-others").value;
-  } else {
-    name = conVal;
-  }
-  var id = document.getElementById("input-con-ID").value;
-  var affiliation = currentAffliationtagify.value;
-  var role = currentContributortagify.value;
-  //// check if any field is empty
-  if (
-    name.length === 0 ||
-    id.length === 0 ||
-    affiliation.length === 0 ||
-    role.length === 0
-  ) {
-    document.getElementById("para-save-contributor-status").innerHTML =
-      "<span style='color: red;'>Please fill in all the fields to add!</span>";
-  } else {
-    var roleVal = [];
-    for (var i = 0; i < role.length; i++) {
-      roleVal.push(role[i].value);
-    }
-    var affliationVal = [];
-    for (var i = 0; i < affiliation.length; i++) {
-      affliationVal.push(affiliation[i].value);
-    }
-    var contactPersonStatus = "No";
-    if (contactPerson.checked) {
-      var contactPersonStatus = "Yes";
-    }
-    /// Construct table
-    var rowcount = table.rows.length;
-    if (rowcount === 1) {
-      // start at 1 to skip the header
-      var rowIndex = 1;
-    } else {
-      /// append row to table from the bottom
-      var rowIndex = rowcount;
-    }
+// function createCurrentConTable(table) {
+//   var conVal =
+//     dsContributorArray.options[dsContributorArray.selectedIndex].value;
+//   var name;
+//   if (conVal === "Other collaborators not listed") {
+//     name = document.getElementById("input-con-others").value;
+//   } else {
+//     name = conVal;
+//   }
+//   var id = document.getElementById("input-con-ID").value;
+//   var affiliation = currentAffliationtagify.value;
+//   var role = currentContributortagify.value;
+//   //// check if any field is empty
+//   if (
+//     name.length === 0 ||
+//     id.length === 0 ||
+//     affiliation.length === 0 ||
+//     role.length === 0
+//   ) {
+//     document.getElementById("para-save-contributor-status").innerHTML =
+//       "<span style='color: red;'>Please fill in all the fields to add!</span>";
+//   } else {
+//     var roleVal = [];
+//     for (var i = 0; i < role.length; i++) {
+//       roleVal.push(role[i].value);
+//     }
+//     var affliationVal = [];
+//     for (var i = 0; i < affiliation.length; i++) {
+//       affliationVal.push(affiliation[i].value);
+//     }
+//     var contactPersonStatus = "No";
+//     if (contactPerson.checked) {
+//       var contactPersonStatus = "Yes";
+//     }
+//     /// Construct table
+//     var rowcount = table.rows.length;
+//     if (rowcount === 1) {
+//       // start at 1 to skip the header
+//       var rowIndex = 1;
+//     } else {
+//       /// append row to table from the bottom
+//       var rowIndex = rowcount;
+//     }
 
-    // check for duplicates
-    var duplicate = false;
-    for (var i = 0; i < rowcount; i++) {
-      if (table.rows[i].cells[0].innerHTML === name) {
-        duplicate = true;
-        break;
-      }
-    }
-    var existingContactPersonStatus = false;
-    for (var i = 0; i < rowcount; i++) {
-      if (table.rows[i].cells[4].innerHTML === "Yes") {
-        existingContactPersonStatus = true;
-        break;
-      }
-    }
-    if (!duplicate) {
-      if (contactPersonStatus === "Yes") {
-        if (!existingContactPersonStatus) {
-          roleVal.push("ContactPerson");
-          var row = (table.insertRow(rowIndex).outerHTML =
-            "<tr id='row-current-name" +
-            rowIndex +
-            "'style='color: #000000;'><td class='grab' id='name-row" +
-            rowIndex +
-            "'>" +
-            name +
-            "</td><td id='orcid-id-row" +
-            rowIndex +
-            "'>" +
-            id +
-            "</td><td id='affiliation-row" +
-            rowIndex +
-            "'>" +
-            affliationVal.join("; ") +
-            "</td><td id='role-row" +
-            rowIndex +
-            "'>" +
-            roleVal.join(", ") +
-            "</td><td id='contact-person-row" +
-            rowIndex +
-            "'>" +
-            contactPersonStatus +
-            "</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con(" +
-            rowIndex +
-            ")'></td></tr>");
-          document.getElementById("div-current-contributors").style.display =
-            "block";
-          return table;
-        } else {
-          document.getElementById("para-save-contributor-status").innerHTML =
-            "<span style='color: red;'>One contact person is already added below. Only one contact person is allowed for a dataset.</span>";
-        }
-      } else {
-        var row = (table.insertRow(rowIndex).outerHTML =
-          "<tr  id='row-current-name" +
-          rowIndex +
-          "'style='color: #000000;'><td class='grab' id='name-row" +
-          rowIndex +
-          "'>" +
-          name +
-          "</td><td id='orcid-id-row" +
-          rowIndex +
-          "'>" +
-          id +
-          "</td><td id='affiliation-row" +
-          rowIndex +
-          "'>" +
-          affliationVal.join("; ") +
-          "</td><td id='role-row" +
-          rowIndex +
-          "'>" +
-          roleVal.join(", ") +
-          "</td><td id='contact-person-row" +
-          rowIndex +
-          "'>" +
-          contactPersonStatus +
-          "</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con(" +
-          rowIndex +
-          ")'></td></tr>");
+//     // check for duplicates
+//     var duplicate = false;
+//     for (var i = 0; i < rowcount; i++) {
+//       if (table.rows[i].cells[0].innerHTML === name) {
+//         duplicate = true;
+//         break;
+//       }
+//     }
+//     var existingContactPersonStatus = false;
+//     for (var i = 0; i < rowcount; i++) {
+//       if (table.rows[i].cells[4].innerHTML === "Yes") {
+//         existingContactPersonStatus = true;
+//         break;
+//       }
+//     }
+//     if (!duplicate) {
+//       if (contactPersonStatus === "Yes") {
+//         if (!existingContactPersonStatus) {
+//           roleVal.push("ContactPerson");
+//           var row = (table.insertRow(rowIndex).outerHTML =
+//             "<tr id='row-current-name" +
+//             rowIndex +
+//             "'style='color: #000000;'><td class='grab' id='name-row" +
+//             rowIndex +
+//             "'>" +
+//             name +
+//             "</td><td id='orcid-id-row" +
+//             rowIndex +
+//             "'>" +
+//             id +
+//             "</td><td id='affiliation-row" +
+//             rowIndex +
+//             "'>" +
+//             affliationVal.join("; ") +
+//             "</td><td id='role-row" +
+//             rowIndex +
+//             "'>" +
+//             roleVal.join(", ") +
+//             "</td><td id='contact-person-row" +
+//             rowIndex +
+//             "'>" +
+//             contactPersonStatus +
+//             "</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con(" +
+//             rowIndex +
+//             ")'></td></tr>");
+//           document.getElementById("div-current-contributors").style.display =
+//             "block";
+//           return table;
+//         } else {
+//           document.getElementById("para-save-contributor-status").innerHTML =
+//             "<span style='color: red;'>One contact person is already added below. Only one contact person is allowed for a dataset.</span>";
+//         }
+//       } else {
+//         var row = (table.insertRow(rowIndex).outerHTML =
+//           "<tr  id='row-current-name" +
+//           rowIndex +
+//           "'style='color: #000000;'><td class='grab' id='name-row" +
+//           rowIndex +
+//           "'>" +
+//           name +
+//           "</td><td id='orcid-id-row" +
+//           rowIndex +
+//           "'>" +
+//           id +
+//           "</td><td id='affiliation-row" +
+//           rowIndex +
+//           "'>" +
+//           affliationVal.join("; ") +
+//           "</td><td id='role-row" +
+//           rowIndex +
+//           "'>" +
+//           roleVal.join(", ") +
+//           "</td><td id='contact-person-row" +
+//           rowIndex +
+//           "'>" +
+//           contactPersonStatus +
+//           "</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_current_con(" +
+//           rowIndex +
+//           ")'></td></tr>");
 
-        document.getElementById("div-current-contributors").style.display =
-          "block";
-        return table;
-      }
-    } else {
-      document.getElementById("para-save-contributor-status").innerHTML =
-        "<span style='color: red;'>Contributor already added!</span>";
-    }
-  }
-}
+//         document.getElementById("div-current-contributors").style.display =
+//           "block";
+//         return table;
+//       }
+//     } else {
+//       document.getElementById("para-save-contributor-status").innerHTML =
+//         "<span style='color: red;'>Contributor already added!</span>";
+//     }
+//   }
+// }
 
 //////////////////////// Article(s) and Protocol(s) /////////////////////
-function createAdditionalLinksTable() {
-  document.getElementById("para-save-link-status").innerHTML = "";
-  var linkTable = document.getElementById("doi-table");
-  var linkType = document.getElementById("select-misc-link").value;
-  var link = document.getElementById("input-misc-links").value;
-  var description = document.getElementById("input-misc-link-description")
-    .value;
+// function createAdditionalLinksTable() {
+//   document.getElementById("para-save-link-status").innerHTML = "";
+//   var linkTable = document.getElementById("doi-table");
+//   var linkType = document.getElementById("select-misc-link").value;
+//   var link = document.getElementById("input-misc-links").value;
+//   var description = document.getElementById("input-misc-link-description")
+//     .value;
 
-  /// Construct table
-  var rowcount = linkTable.rows.length;
-  if (rowcount === 1) {
-    // start at 1 to skip the header
-    var rowIndex = 1;
-  } else {
-    /// append row to table from the bottom
-    var rowIndex = rowcount;
-  }
+//   /// Construct table
+//   var rowcount = linkTable.rows.length;
+//   if (rowcount === 1) {
+//     // start at 1 to skip the header
+//     var rowIndex = 1;
+//   } else {
+//     /// append row to table from the bottom
+//     var rowIndex = rowcount;
+//   }
 
-  //// check for duplicate links
-  var duplicate = false;
-  for (var i = 0; i < rowcount; i++) {
-    if (linkTable.rows[i].cells[1].innerHTML === link) {
-      duplicate = true;
-      break;
-    }
-  }
+//   //// check for duplicate links
+//   var duplicate = false;
+//   for (var i = 0; i < rowcount; i++) {
+//     if (linkTable.rows[i].cells[1].innerHTML === link) {
+//       duplicate = true;
+//       break;
+//     }
+//   }
 
-  /// Check for empty entry before adding to table
-  var empty = false;
-  if (link === "" || linkType === "Select") {
-    empty = true;
-  }
+//   /// Check for empty entry before adding to table
+//   var empty = false;
+//   if (link === "" || linkType === "Select") {
+//     empty = true;
+//   }
 
-  /// construct table
-  if (!empty) {
-    if (!duplicate) {
-      var row = (linkTable.insertRow(rowIndex).outerHTML =
-        "<tr id='row-current-link" +
-        rowIndex +
-        "'style='color: #000000;'><td id='link-row" +
-        rowIndex +
-        "'>" +
-        linkType +
-        "</td><td id='link-row" +
-        rowIndex +
-        "'>" +
-        link +
-        "</td><td id='link-description-row" +
-        rowIndex +
-        "'>" +
-        description +
-        "</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_link(" +
-        rowIndex +
-        ")'></td></tr>");
-      document.getElementById("div-current-additional-links").style.display =
-        "block";
-      return linkTable;
-    } else {
-      document.getElementById("para-save-link-status").innerHTML =
-        "<span style='color: red;'>Link already added below!</span>";
-    }
-  } else {
-    document.getElementById("para-save-link-status").innerHTML =
-      "<span style='color: red;'>Please specify a link to add!</span>";
-  }
-}
+//   /// construct table
+//   if (!empty) {
+//     if (!duplicate) {
+//       var row = (linkTable.insertRow(rowIndex).outerHTML =
+//         "<tr id='row-current-link" +
+//         rowIndex +
+//         "'style='color: #000000;'><td id='link-row" +
+//         rowIndex +
+//         "'>" +
+//         linkType +
+//         "</td><td id='link-row" +
+//         rowIndex +
+//         "'>" +
+//         link +
+//         "</td><td id='link-description-row" +
+//         rowIndex +
+//         "'>" +
+//         description +
+//         "</td><td><input type='button' value='Delete' class='demo-button-table' onclick='delete_link(" +
+//         rowIndex +
+//         ")'></td></tr>");
+//       document.getElementById("div-current-additional-links").style.display =
+//         "block";
+//       return linkTable;
+//     } else {
+//       document.getElementById("para-save-link-status").innerHTML =
+//         "<span style='color: red;'>Link already added below!</span>";
+//     }
+//   } else {
+//     document.getElementById("para-save-link-status").innerHTML =
+//       "<span style='color: red;'>Please specify a link to add!</span>";
+//   }
+// }
 
 //// when link type is changed, clear other values
 document
@@ -2024,9 +2024,9 @@ function leaveFieldsEmpty(field, element) {
 }
 
 /// Create tags input for multi-answer fields
-function createTagsInput(field) {
-  return new Tagify(field);
-}
+// function createTagsInput(field) {
+//   return new Tagify(field);
+// }
 
 $(currentConTable).mousedown(function (e) {
   var length = currentConTable.rows.length - 1;
@@ -2070,7 +2070,13 @@ $(currentConTable).mousedown(function (e) {
 ///// grab datalist name and auto-load current description
 const showDatasetDescription = () => {
   var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
+  //  bfAccountList.options[bfAccountList.selectedIndex].text;
+  let temp = datasetDescriptionFileDataset.selectedIndex;
+  var selectedBfDataset =
+    datasetDescriptionFileDataset.options[
+      datasetDescriptionFileDataset.selectedIndex
+    ].text;
+  //var selectedBfDataset = defaultBfDataset;
   if (selectedBfDataset === "Select dataset") {
     bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
@@ -2091,6 +2097,7 @@ const showDatasetDescription = () => {
           log.error(error);
           console.error(error);
         } else {
+          // plainText = removeMd(res)
           document.getElementById("ds-description").innerHTML = res;
           setTimeout(() => {
             document.getElementById("description_header_label").scrollIntoView({
@@ -2572,199 +2579,199 @@ ipcRenderer.on(
 //////////////// //////////////// //////////////// //////////////// ////////////////////////
 
 // Select organized dataset folder and populate table //
-selectDatasetBtn.addEventListener("click", (event) => {
-  clearStrings();
-  ipcRenderer.send("open-file-dialog-dataset");
-});
+// selectDatasetBtn.addEventListener("click", (event) => {
+//   clearStrings();
+//   ipcRenderer.send("open-file-dialog-dataset");
+// });
 
-ipcRenderer.on("selected-dataset", (event, path) => {
-  if (path.length > 0) {
-    clearTable(tableOrganized);
-    pathDataset.innerHTML = "";
-    var folderChecking = checkFolderStruture(path[0]);
-    if (folderChecking == true) {
-      pathDataset.innerHTML = path;
-      var jsonFolder = organizedFolderToJson(path[0]);
-      jsonToTableOrganized(tableOrganized, jsonFolder);
-    } else {
-      pathDataset.innerHTML =
-        "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>" +
-        sadCan;
-    }
-  }
-});
+// ipcRenderer.on("selected-dataset", (event, path) => {
+//   if (path.length > 0) {
+//     clearTable(tableOrganized);
+//     pathDataset.innerHTML = "";
+//     var folderChecking = checkFolderStruture(path[0]);
+//     if (folderChecking == true) {
+//       pathDataset.innerHTML = path;
+//       var jsonFolder = organizedFolderToJson(path[0]);
+//       jsonToTableOrganized(tableOrganized, jsonFolder);
+//     } else {
+//       pathDataset.innerHTML =
+//         "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>" +
+//         sadCan;
+//     }
+//   }
+// });
 
 //Select files/folders to be added to table for organizing //
 
 //code
-const selectCodeBtn = document.getElementById("button-select-code");
-selectCodeBtn.addEventListener("click", (event) => {
-  ipcRenderer.send("open-file-dialog-code");
-});
-const selectCodeDirectoryBtn = document.getElementById(
-  "button-select-code-directory"
-);
-selectCodeDirectoryBtn.addEventListener("click", (event) => {
-  ipcRenderer.send("open-folder-dialog-code");
-});
-ipcRenderer.on("selected-code", (event, path) => {
-  insertFileToTable(tableNotOrganized, path, "code");
-});
+// const selectCodeBtn = document.getElementById("button-select-code");
+// selectCodeBtn.addEventListener("click", (event) => {
+//   ipcRenderer.send("open-file-dialog-code");
+// });
+// const selectCodeDirectoryBtn = document.getElementById(
+//   "button-select-code-directory"
+// );
+// selectCodeDirectoryBtn.addEventListener("click", (event) => {
+//   ipcRenderer.send("open-folder-dialog-code");
+// });
+// ipcRenderer.on("selected-code", (event, path) => {
+//   insertFileToTable(tableNotOrganized, path, "code");
+// });
 //
 // //derivative
-const selectderivativeBtn = document.getElementById("button-select-derivative");
-selectderivativeBtn.addEventListener("click", (event) => {
-  ipcRenderer.send("open-file-dialog-derivative");
-});
-const selectderivativeDirectoryBtn = document.getElementById(
-  "button-select-derivative-directory"
-);
-selectderivativeDirectoryBtn.addEventListener("click", (event) => {
-  ipcRenderer.send("open-folder-dialog-derivative");
-});
-ipcRenderer.on("selected-derivative", (event, path) => {
-  insertFileToTable(tableNotOrganized, path, "derivative");
-});
+// const selectderivativeBtn = document.getElementById("button-select-derivative");
+// selectderivativeBtn.addEventListener("click", (event) => {
+//   ipcRenderer.send("open-file-dialog-derivative");
+// });
+// const selectderivativeDirectoryBtn = document.getElementById(
+//   "button-select-derivative-directory"
+// );
+// selectderivativeDirectoryBtn.addEventListener("click", (event) => {
+//   ipcRenderer.send("open-folder-dialog-derivative");
+// });
+// ipcRenderer.on("selected-derivative", (event, path) => {
+//   insertFileToTable(tableNotOrganized, path, "derivative");
+// });
 
 // //docs
-const selectDocsBtn = document.getElementById("button-select-docs");
-selectDocsBtn.addEventListener("click", (event) => {
-  ipcRenderer.send("open-file-dialog-docs");
-});
-const selectDocsDirectoryBtn = document.getElementById(
-  "button-select-docs-directory"
-);
-selectDocsDirectoryBtn.addEventListener("click", (event) => {
-  ipcRenderer.send("open-folder-dialog-docs");
-});
-ipcRenderer.on("selected-docs", (event, path) => {
-  insertFileToTable(tableNotOrganized, path, "docs");
-});
+// const selectDocsBtn = document.getElementById("button-select-docs");
+// selectDocsBtn.addEventListener("click", (event) => {
+//   ipcRenderer.send("open-file-dialog-docs");
+// });
+// const selectDocsDirectoryBtn = document.getElementById(
+//   "button-select-docs-directory"
+// );
+// selectDocsDirectoryBtn.addEventListener("click", (event) => {
+//   ipcRenderer.send("open-folder-dialog-docs");
+// });
+// ipcRenderer.on("selected-docs", (event, path) => {
+//   insertFileToTable(tableNotOrganized, path, "docs");
+// });
 
-// //primary
-const selectPrimaryBtn = document.getElementById("button-select-primary");
-selectPrimaryBtn.addEventListener("click", (event) => {
-  ipcRenderer.send("open-file-dialog-primary");
-});
-const selectPrimaryDirectoryBtn = document.getElementById(
-  "button-select-primary-directory"
-);
-selectPrimaryDirectoryBtn.addEventListener("click", (event) => {
-  ipcRenderer.send("open-folder-dialog-primary");
-});
-ipcRenderer.on("selected-primary", (event, path) => {
-  insertFileToTable(tableNotOrganized, path, "primary");
-});
+// // //primary
+// const selectPrimaryBtn = document.getElementById("button-select-primary");
+// selectPrimaryBtn.addEventListener("click", (event) => {
+//   ipcRenderer.send("open-file-dialog-primary");
+// });
+// const selectPrimaryDirectoryBtn = document.getElementById(
+//   "button-select-primary-directory"
+// );
+// selectPrimaryDirectoryBtn.addEventListener("click", (event) => {
+//   ipcRenderer.send("open-folder-dialog-primary");
+// });
+// ipcRenderer.on("selected-primary", (event, path) => {
+//   insertFileToTable(tableNotOrganized, path, "primary");
+// });
 
 // //protocol
-const selectProtocolBtn = document.getElementById("button-select-protocol");
-selectProtocolBtn.addEventListener("click", (event) => {
-  ipcRenderer.send("open-file-dialog-protocol");
-});
-const selectProtocolDirectoryBtn = document.getElementById(
-  "button-select-protocol-directory"
-);
-selectProtocolDirectoryBtn.addEventListener("click", (event) => {
-  ipcRenderer.send("open-folder-dialog-protocol");
-});
+// const selectProtocolBtn = document.getElementById("button-select-protocol");
+// selectProtocolBtn.addEventListener("click", (event) => {
+//   ipcRenderer.send("open-file-dialog-protocol");
+// });
+// const selectProtocolDirectoryBtn = document.getElementById(
+//   "button-select-protocol-directory"
+// );
+// selectProtocolDirectoryBtn.addEventListener("click", (event) => {
+//   ipcRenderer.send("open-folder-dialog-protocol");
+// });
 
-ipcRenderer.on("selected-protocol", (event, path) => {
-  insertFileToTable(tableNotOrganized, path, "protocol");
-});
-//
-// //source
-const selectSourceBtn = document.getElementById("button-select-source");
-selectSourceBtn.addEventListener("click", (event) => {
-  ipcRenderer.send("open-file-dialog-source");
-});
-const selectSourceDirectoryBtn = document.getElementById(
-  "button-select-source-directory"
-);
-selectSourceDirectoryBtn.addEventListener("click", (event) => {
-  ipcRenderer.send("open-folder-dialog-source");
-});
-ipcRenderer.on("selected-source", (event, path) => {
-  insertFileToTable(tableNotOrganized, path, "source");
-});
+// ipcRenderer.on("selected-protocol", (event, path) => {
+//   insertFileToTable(tableNotOrganized, path, "protocol");
+// });
+// //
+// // //source
+// const selectSourceBtn = document.getElementById("button-select-source");
+// selectSourceBtn.addEventListener("click", (event) => {
+//   ipcRenderer.send("open-file-dialog-source");
+// });
+// const selectSourceDirectoryBtn = document.getElementById(
+//   "button-select-source-directory"
+// );
+// selectSourceDirectoryBtn.addEventListener("click", (event) => {
+//   ipcRenderer.send("open-folder-dialog-source");
+// });
+// ipcRenderer.on("selected-source", (event, path) => {
+//   insertFileToTable(tableNotOrganized, path, "source");
+// });
 //
 // // Drag and drop //
-var holderCode = document.getElementById("code");
-holderCode.addEventListener("drop", (event) => {
-  event.preventDefault();
-  var myID = holderCode.id;
-  dropAddToTable(event, myID);
-});
+// var holderCode = document.getElementById("code");
+// holderCode.addEventListener("drop", (event) => {
+//   event.preventDefault();
+//   var myID = holderCode.id;
+//   dropAddToTable(event, myID);
+// });
 
-var holderderivative = document.getElementById("derivative");
-holderderivative.addEventListener("drop", (event) => {
-  event.preventDefault();
-  var myID = holderderivative.id;
-  dropAddToTable(event, myID);
-});
+// var holderderivative = document.getElementById("derivative");
+// holderderivative.addEventListener("drop", (event) => {
+//   event.preventDefault();
+//   var myID = holderderivative.id;
+//   dropAddToTable(event, myID);
+// });
 
-var holderDocs = document.getElementById("docs");
-holderDocs.addEventListener("drop", (event) => {
-  event.preventDefault();
-  var myID = holderDocs.id;
-  dropAddToTable(event, myID);
-});
+// var holderDocs = document.getElementById("docs");
+// holderDocs.addEventListener("drop", (event) => {
+//   event.preventDefault();
+//   var myID = holderDocs.id;
+//   dropAddToTable(event, myID);
+// });
 
-var holderPrimary = document.getElementById("primary");
-holderPrimary.addEventListener("drop", (event) => {
-  event.preventDefault();
-  var myID = holderPrimary.id;
-  dropAddToTable(event, myID);
-});
+// var holderPrimary = document.getElementById("primary");
+// holderPrimary.addEventListener("drop", (event) => {
+//   event.preventDefault();
+//   var myID = holderPrimary.id;
+//   dropAddToTable(event, myID);
+// });
 
-var holderProtocol = document.getElementById("protocol");
-holderProtocol.addEventListener("drop", (event) => {
-  event.preventDefault();
-  var myID = holderProtocol.id;
-  dropAddToTable(event, myID);
-});
+// var holderProtocol = document.getElementById("protocol");
+// holderProtocol.addEventListener("drop", (event) => {
+//   event.preventDefault();
+//   var myID = holderProtocol.id;
+//   dropAddToTable(event, myID);
+// });
 
-var holderSource = document.getElementById("source");
-holderSource.addEventListener("drop", (event) => {
-  event.preventDefault();
-  var myID = holderSource.id;
-  dropAddToTable(event, myID);
-});
+// var holderSource = document.getElementById("source");
+// holderSource.addEventListener("drop", (event) => {
+//   event.preventDefault();
+//   var myID = holderSource.id;
+//   dropAddToTable(event, myID);
+// });
 //
 // //Clear table //
-clearTableBtn.addEventListener("click", () => {
-  // Generate warning before continuing
-  clearStrings();
-  ipcRenderer.send("warning-clear-table");
-});
-ipcRenderer.on("warning-clear-table-selection", (event, index) => {
-  if (index === 0) {
-    if (alreadyOrganizedStatus.checked) {
-      clearTable(tableOrganized);
-      pathDataset.innerHTML = "";
-    } else if (organizeDatasetStatus.checked) {
-      clearTable(tableNotOrganized);
-      clearStrings();
-    }
-  }
-});
+// clearTableBtn.addEventListener("click", () => {
+//   // Generate warning before continuing
+//   clearStrings();
+//   ipcRenderer.send("warning-clear-table");
+// });
+// ipcRenderer.on("warning-clear-table-selection", (event, index) => {
+//   if (index === 0) {
+//     if (alreadyOrganizedStatus.checked) {
+//       clearTable(tableOrganized);
+//       pathDataset.innerHTML = "";
+//     } else if (organizeDatasetStatus.checked) {
+//       clearTable(tableNotOrganized);
+//       clearStrings();
+//     }
+//   }
+// });
 
 //Select files to be added to metadata files table //
-const selectMetadataBtn = document.getElementById("button-select-metadata");
-selectMetadataBtn.addEventListener("click", (event) => {
-  document.getElementById(
-    "para-preview-organization-status-metadata"
-  ).innerHTML = "";
-  ipcRenderer.send("open-file-dialog-metadata");
-});
-ipcRenderer.on("selected-metadata", (event, path) => {
-  insertFileToMetadataTable(tableMetadata, path);
-});
-var holderMetadata = document.getElementById("metadata");
-holderMetadata.addEventListener("drop", (event) => {
-  event.preventDefault();
-  var myID = holderMetadata.id;
-  dropAddToTableMetadata(event, myID);
-});
+// const selectMetadataBtn = document.getElementById("button-select-metadata");
+// selectMetadataBtn.addEventListener("click", (event) => {
+//   document.getElementById(
+//     "para-preview-organization-status-metadata"
+//   ).innerHTML = "";
+//   ipcRenderer.send("open-file-dialog-metadata");
+// });
+// ipcRenderer.on("selected-metadata", (event, path) => {
+//   insertFileToMetadataTable(tableMetadata, path);
+// });
+// var holderMetadata = document.getElementById("metadata");
+// holderMetadata.addEventListener("drop", (event) => {
+//   event.preventDefault();
+//   var myID = holderMetadata.id;
+//   dropAddToTableMetadata(event, myID);
+// });
 
 // New instance for description editor
 const tuiInstance = new Editor({
@@ -2800,532 +2807,532 @@ bfDatasetSubtitle.addEventListener("keyup", function () {
 //////////////////////////////////
 
 function disablePrepareDatasetButtons() {
-  selectSaveFileOrganizationBtn.disabled = true;
-  selectImportFileOrganizationBtn.disabled = true;
-  clearTableBtn.disabled = true;
-  selectPreviewBtn.disabled = true;
-  selectPreviewMetadataBtn.disabled = true;
-  selectSaveFileOrganizationMetadataBtn.disabled = true;
-  curateDatasetBtn.disabled = true;
+  // selectSaveFileOrganizationBtn.disabled = true;
+  // selectImportFileOrganizationBtn.disabled = true;
+  // clearTableBtn.disabled = true;
+  // selectPreviewBtn.disabled = true;
+  // selectPreviewMetadataBtn.disabled = true;
+  // selectSaveFileOrganizationMetadataBtn.disabled = true;
+  // curateDatasetBtn.disabled = true;
 }
 
 function enablePrepareDatasetButtons() {
-  selectSaveFileOrganizationBtn.disabled = false;
-  selectImportFileOrganizationBtn.disabled = false;
-  clearTableBtn.disabled = false;
-  selectPreviewBtn.disabled = false;
-  selectPreviewMetadataBtn.disabled = false;
-  selectSaveFileOrganizationMetadataBtn.disabled = false;
-  curateDatasetBtn.disabled = false;
+  // selectSaveFileOrganizationBtn.disabled = false;
+  // selectImportFileOrganizationBtn.disabled = false;
+  // clearTableBtn.disabled = false;
+  // selectPreviewBtn.disabled = false;
+  // selectPreviewMetadataBtn.disabled = false;
+  // selectSaveFileOrganizationMetadataBtn.disabled = false;
+  // curateDatasetBtn.disabled = false;
 }
 
 // Action when user click on "Save" file organization button //
-selectSaveFileOrganizationBtn.addEventListener("click", (event) => {
-  ipcRenderer.send("save-file-dialog-saveorganization", "dataset");
-  clearStrings();
-});
-selectSaveFileOrganizationMetadataBtn.addEventListener("click", (event) => {
-  ipcRenderer.send("save-file-dialog-saveorganization", "metadata");
-  clearStrings();
-});
-ipcRenderer.on("selected-saveorganizationfile", (event, path, location) => {
-  if (path.length > 0) {
-    if (alreadyOrganizedStatus.checked == true) {
-      var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized);
-    } else {
-      var jsonvect = tableToJsonWithDescription(tableNotOrganized);
-    }
-    var jsonpath = jsonvect[0];
-    var jsondescription = jsonvect[1];
-    var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
-    if (location === "dataset") {
-      document.getElementById("para-save-file-organization-status").innerHTML =
-        "Please wait...";
-    } else if (location === "metadata") {
-      document.getElementById(
-        "para-preview-organization-status-metadata"
-      ).innerHTML = "Please wait...";
-    }
-    // Call python to save
-    if (path != null) {
-      disablePrepareDatasetButtons();
-      client.invoke(
-        "api_save_file_organization",
-        jsonpath,
-        jsondescription,
-        jsonpathMetadata,
-        path,
-        (error, res) => {
-          if (error) {
-            log.error(error);
-            console.error(error);
-            var emessage = userError(error);
-            if (location === "dataset") {
-              document.getElementById(
-                "para-save-file-organization-status"
-              ).innerHTML =
-                "<span style='color: red;'> " + emessage + "</span>";
-            } else if (location === "metadata") {
-              document.getElementById(
-                "para-preview-organization-status-metadata"
-              ).innerHTML =
-                "<span style='color: red;'> " + emessage + "</span>";
-            }
-            enablePrepareDatasetButtons();
-          } else {
-            if (location === "dataset") {
-              document.getElementById(
-                "para-save-file-organization-status"
-              ).innerHTML = "Saved!";
-            } else if (location === "metadata") {
-              document.getElementById(
-                "para-preview-organization-status-metadata"
-              ).innerHTML = "Saved!";
-            }
-            enablePrepareDatasetButtons();
-          }
-        }
-      );
-    }
-  }
-});
+// selectSaveFileOrganizationBtn.addEventListener("click", (event) => {
+//   ipcRenderer.send("save-file-dialog-saveorganization", "dataset");
+//   clearStrings();
+// });
+// selectSaveFileOrganizationMetadataBtn.addEventListener("click", (event) => {
+//   ipcRenderer.send("save-file-dialog-saveorganization", "metadata");
+//   clearStrings();
+// });
+// ipcRenderer.on("selected-saveorganizationfile", (event, path, location) => {
+//   if (path.length > 0) {
+//     if (alreadyOrganizedStatus.checked == true) {
+//       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized);
+//     } else {
+//       var jsonvect = tableToJsonWithDescription(tableNotOrganized);
+//     }
+//     var jsonpath = jsonvect[0];
+//     var jsondescription = jsonvect[1];
+//     var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
+//     if (location === "dataset") {
+//       document.getElementById("para-save-file-organization-status").innerHTML =
+//         "Please wait...";
+//     } else if (location === "metadata") {
+//       document.getElementById(
+//         "para-preview-organization-status-metadata"
+//       ).innerHTML = "Please wait...";
+//     }
+//     // Call python to save
+//     if (path != null) {
+//       disablePrepareDatasetButtons();
+//       client.invoke(
+//         "api_save_file_organization",
+//         jsonpath,
+//         jsondescription,
+//         jsonpathMetadata,
+//         path,
+//         (error, res) => {
+//           if (error) {
+//             log.error(error);
+//             console.error(error);
+//             var emessage = userError(error);
+//             if (location === "dataset") {
+//               document.getElementById(
+//                 "para-save-file-organization-status"
+//               ).innerHTML =
+//                 "<span style='color: red;'> " + emessage + "</span>";
+//             } else if (location === "metadata") {
+//               document.getElementById(
+//                 "para-preview-organization-status-metadata"
+//               ).innerHTML =
+//                 "<span style='color: red;'> " + emessage + "</span>";
+//             }
+//             enablePrepareDatasetButtons();
+//           } else {
+//             if (location === "dataset") {
+//               document.getElementById(
+//                 "para-save-file-organization-status"
+//               ).innerHTML = "Saved!";
+//             } else if (location === "metadata") {
+//               document.getElementById(
+//                 "para-preview-organization-status-metadata"
+//               ).innerHTML = "Saved!";
+//             }
+//             enablePrepareDatasetButtons();
+//           }
+//         }
+//       );
+//     }
+//   }
+// });
 
 // // Action when user click on "Import" button //
-selectImportFileOrganizationBtn.addEventListener("click", (event) => {
-  ipcRenderer.send("open-file-dialog-uploadorganization");
-  clearStrings();
-});
-ipcRenderer.on("selected-uploadorganization", (event, path) => {
-  if (path.length > 0) {
-    disablePrepareDatasetButtons();
-    document.getElementById("para-save-file-organization-status").innerHTML =
-      "Please wait...";
-    var headerNames = sparcFolderNames.slice();
-    var lennames = headerNames.length;
-    for (var i = 0; i < lennames; i++) {
-      headerNames.push(headerNames[i] + "_description");
-    }
-    headerNames.push("metadata");
-    client.invoke(
-      "api_import_file_organization",
-      path[0],
-      headerNames,
-      (error, res) => {
-        if (error) {
-          log.error(error);
-          console.error(error);
-          var emessage = userError(error);
-          document.getElementById(
-            "para-save-file-organization-status"
-          ).innerHTML = "<span style='color: red;'> " + emessage + "</span>";
-          enablePrepareDatasetButtons();
-        } else {
-          var jsonpath = res[0];
-          jsonToTableWithDescription(tableNotOrganized, jsonpath);
-          var jsonpathMetadata = res[1];
-          jsonToTableMetadata(tableMetadata, jsonpathMetadata);
-          document.getElementById(
-            "para-save-file-organization-status"
-          ).innerHTML = "Imported!";
-          enablePrepareDatasetButtons();
-        }
-      }
-    );
-  }
-});
+// selectImportFileOrganizationBtn.addEventListener("click", (event) => {
+//   ipcRenderer.send("open-file-dialog-uploadorganization");
+//   clearStrings();
+// });
+// ipcRenderer.on("selected-uploadorganization", (event, path) => {
+//   if (path.length > 0) {
+//     disablePrepareDatasetButtons();
+//     document.getElementById("para-save-file-organization-status").innerHTML =
+//       "Please wait...";
+//     var headerNames = sparcFolderNames.slice();
+//     var lennames = headerNames.length;
+//     for (var i = 0; i < lennames; i++) {
+//       headerNames.push(headerNames[i] + "_description");
+//     }
+//     headerNames.push("metadata");
+//     client.invoke(
+//       "api_import_file_organization",
+//       path[0],
+//       headerNames,
+//       (error, res) => {
+//         if (error) {
+//           log.error(error);
+//           console.error(error);
+//           var emessage = userError(error);
+//           document.getElementById(
+//             "para-save-file-organization-status"
+//           ).innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+//           enablePrepareDatasetButtons();
+//         } else {
+//           var jsonpath = res[0];
+//           jsonToTableWithDescription(tableNotOrganized, jsonpath);
+//           var jsonpathMetadata = res[1];
+//           jsonToTableMetadata(tableMetadata, jsonpathMetadata);
+//           document.getElementById(
+//             "para-save-file-organization-status"
+//           ).innerHTML = "Imported!";
+//           enablePrepareDatasetButtons();
+//         }
+//       }
+//     );
+//   }
+// });
 //
-// // Action when user click on "Preview" file organization button //
-selectPreviewBtn.addEventListener("click", () => {
-  previewProgressBar.style.display = "block";
-  disablePrepareDatasetButtons();
-  clearStrings();
-  document.getElementById("para-save-file-organization-status").innerHTML =
-    "Please wait...";
-  var jsonvect = tableToJsonWithDescription(tableNotOrganized);
-  var jsonpath = jsonvect[0];
-  if (manifestStatus.checked) {
-    var keyvect = sparcFolderNames.slice();
-    for (var j = 0; j < keyvect.length; j++) {
-      var folder = keyvect[j];
-      var folderPaths = jsonpath[folder];
-      if (folderPaths.length > 0) {
-        folderPaths.push(
-          path.join(__dirname, "file_templates", "manifest.xlsx")
-        );
-      }
-    }
-  }
-  var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
-  jsonpath["main"] = jsonpathMetadata["metadata"];
-  client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
-    if (error) {
-      log.error(error);
-      console.error(error);
-      var emessage = userError(error);
-      document.getElementById("para-save-file-organization-status").innerHTML =
-        "<span style='color: red;'>" + emessage + "</span>";
-      enablePrepareDatasetButtons();
-      previewProgressBar.style.display = "none";
-    } else {
-      document.getElementById("para-save-file-organization-status").innerHTML =
-        "Preview folder is available in a new file explorer window!";
-      selectPreviewBtn.disabled = false;
-      selectPreviewMetadataBtn.disabled = false;
-      enablePrepareDatasetButtons();
-      previewProgressBar.style.display = "none";
-    }
-  });
-});
-//
-selectPreviewMetadataBtn.addEventListener("click", () => {
-  previewMetadataProgressBar.style.display = "block";
-  disablePrepareDatasetButtons();
-  clearStrings();
-  document.getElementById(
-    "para-preview-organization-status-metadata"
-  ).innerHTML = "Please wait...";
-  if (alreadyOrganizedStatus.checked) {
-    var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized);
-  } else if (organizeDatasetStatus.checked) {
-    var jsonvect = tableToJsonWithDescription(tableNotOrganized);
-  }
-  var jsonpath = jsonvect[0];
-  if (manifestStatus.checked) {
-    var keyvect = sparcFolderNames.slice();
-    for (var j = 0; j < keyvect.length; j++) {
-      var folder = keyvect[j];
-      var folderPaths = jsonpath[folder];
-      if (folderPaths.length > 0) {
-        folderPaths.push(
-          path.join(__dirname, "file_templates", "manifest.xlsx")
-        );
-      }
-    }
-  }
-  var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
-  jsonpath["main"] = jsonpathMetadata["metadata"];
-  client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
-    if (error) {
-      log.error(error);
-      console.error(error);
-      var emessage = userError(error);
-      document.getElementById(
-        "para-preview-organization-status-metadata"
-      ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
-      enablePrepareDatasetButtons();
-      previewMetadataProgressBar.style.display = "none";
-    } else {
-      document.getElementById(
-        "para-preview-organization-status-metadata"
-      ).innerHTML =
-        "Preview folder is available in a new file explorer window!";
-      enablePrepareDatasetButtons();
-      previewMetadataProgressBar.style.display = "none";
-    }
-  });
-});
+// Action when user click on "Preview" file organization button //
+// selectPreviewBtn.addEventListener("click", () => {
+//   previewProgressBar.style.display = "block";
+//   disablePrepareDatasetButtons();
+//   clearStrings();
+//   document.getElementById("para-save-file-organization-status").innerHTML =
+//     "Please wait...";
+//   var jsonvect = tableToJsonWithDescription(tableNotOrganized);
+//   var jsonpath = jsonvect[0];
+//   if (manifestStatus.checked) {
+//     var keyvect = sparcFolderNames.slice();
+//     for (var j = 0; j < keyvect.length; j++) {
+//       var folder = keyvect[j];
+//       var folderPaths = jsonpath[folder];
+//       if (folderPaths.length > 0) {
+//         folderPaths.push(
+//           path.join(__dirname, "file_templates", "manifest.xlsx")
+//         );
+//       }
+//     }
+//   }
+//   var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
+//   jsonpath["main"] = jsonpathMetadata["metadata"];
+//   client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
+//     if (error) {
+//       log.error(error);
+//       console.error(error);
+//       var emessage = userError(error);
+//       document.getElementById("para-save-file-organization-status").innerHTML =
+//         "<span style='color: red;'>" + emessage + "</span>";
+//       enablePrepareDatasetButtons();
+//       previewProgressBar.style.display = "none";
+//     } else {
+//       document.getElementById("para-save-file-organization-status").innerHTML =
+//         "Preview folder is available in a new file explorer window!";
+//       selectPreviewBtn.disabled = false;
+//       selectPreviewMetadataBtn.disabled = false;
+//       enablePrepareDatasetButtons();
+//       previewProgressBar.style.display = "none";
+//     }
+//   });
+// });
+
+// selectPreviewMetadataBtn.addEventListener("click", () => {
+//   previewMetadataProgressBar.style.display = "block";
+//   disablePrepareDatasetButtons();
+//   clearStrings();
+//   document.getElementById(
+//     "para-preview-organization-status-metadata"
+//   ).innerHTML = "Please wait...";
+//   if (alreadyOrganizedStatus.checked) {
+//     var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized);
+//   } else if (organizeDatasetStatus.checked) {
+//     var jsonvect = tableToJsonWithDescription(tableNotOrganized);
+//   }
+//   var jsonpath = jsonvect[0];
+//   if (manifestStatus.checked) {
+//     var keyvect = sparcFolderNames.slice();
+//     for (var j = 0; j < keyvect.length; j++) {
+//       var folder = keyvect[j];
+//       var folderPaths = jsonpath[folder];
+//       if (folderPaths.length > 0) {
+//         folderPaths.push(
+//           path.join(__dirname, "file_templates", "manifest.xlsx")
+//         );
+//       }
+//     }
+//   }
+//   var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
+//   jsonpath["main"] = jsonpathMetadata["metadata"];
+//   client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
+//     if (error) {
+//       log.error(error);
+//       console.error(error);
+//       var emessage = userError(error);
+//       document.getElementById(
+//         "para-preview-organization-status-metadata"
+//       ).innerHTML = "<span style='color: red;'>" + emessage + "</span>";
+//       enablePrepareDatasetButtons();
+//       previewMetadataProgressBar.style.display = "none";
+//     } else {
+//       document.getElementById(
+//         "para-preview-organization-status-metadata"
+//       ).innerHTML =
+//         "Preview folder is available in a new file explorer window!";
+//       enablePrepareDatasetButtons();
+//       previewMetadataProgressBar.style.display = "none";
+//     }
+//   });
+// });
 
 //// Select to generate a local dataset
-selectnewDatasetBtn.addEventListener("click", function () {
-  ipcRenderer.send("open-file-dialog-newdataset");
-});
-ipcRenderer.on("selected-new-dataset", (event, filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null) {
-      document.getElementById("para-info-new-dataset").innerHTML = "";
-      document.getElementById("selected-new-dataset").placeholder = filepath[0];
-    }
-  }
-});
+// selectnewDatasetBtn.addEventListener("click", function () {
+//   ipcRenderer.send("open-file-dialog-newdataset");
+// });
+// ipcRenderer.on("selected-new-dataset", (event, filepath) => {
+//   if (filepath.length > 0) {
+//     if (filepath != null) {
+//       document.getElementById("para-info-new-dataset").innerHTML = "";
+//       document.getElementById("selected-new-dataset").placeholder = filepath[0];
+//     }
+//   }
+// });
 
-importnewDatasetBtn.addEventListener("click", function () {
-  var filepath = document.getElementById("selected-new-dataset").placeholder;
-  if (filepath === "Select destination") {
-    document.getElementById("para-info-new-dataset").innerHTML =
-      "<span style='color: red ;'>" + "Please select a destination!</span>";
-  } else {
-    document.getElementById("para-info-new-dataset").innerHTML = "Selected!";
-  }
-});
+// importnewDatasetBtn.addEventListener("click", function () {
+//   var filepath = document.getElementById("selected-new-dataset").placeholder;
+//   if (filepath === "Select destination") {
+//     document.getElementById("para-info-new-dataset").innerHTML =
+//       "<span style='color: red ;'>" + "Please select a destination!</span>";
+//   } else {
+//     document.getElementById("para-info-new-dataset").innerHTML = "Selected!";
+//   }
+// });
 
 // Generate dataset //
 var displaySize = 1000;
 
-curateDatasetBtn.addEventListener("click", () => {
-  document.getElementById("para-please-wait-curate").innerHTML =
-    "Please wait...";
-  document.getElementById("para-curate-progress-bar-error-status").innerHTML =
-    "";
-  document.getElementById("para-preview-current-ds").innerHTML = "";
-  progressBarCurate.value = 0;
+// curateDatasetBtn.addEventListener("click", () => {
+//   document.getElementById("para-please-wait-curate").innerHTML =
+//     "Please wait...";
+//   document.getElementById("para-curate-progress-bar-error-status").innerHTML =
+//     "";
+//   document.getElementById("para-preview-current-ds").innerHTML = "";
+//   progressBarCurate.value = 0;
 
-  // Disable curate button to prevent multiple clicks
-  curateDatasetBtn.disabled = true;
-  disableform(curationForm);
-  var sourceDataset = "";
+//   // Disable curate button to prevent multiple clicks
+//   curateDatasetBtn.disabled = true;
+//   disableform(curationForm);
+//   var sourceDataset = "";
 
-  // Convert table content into json format for transferring to Python
-  if (alreadyOrganizedStatus.checked) {
-    if (fs.existsSync(pathDataset.innerHTML)) {
-      var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized);
-      sourceDataset = "already organized";
-    } else {
-      var emessage = "Error: Select a valid dataset folder";
-      document.getElementById(
-        "para-curate-progress-bar-error-status"
-      ).innerHTML =
-        "<span style='color: red;'> " + emessage + sadCan + "</span>";
-      document.getElementById("para-please-wait-curate").innerHTML = "";
-      curateDatasetBtn.disabled = false;
-      enableform(curationForm);
-      console.error(emessage);
-      log.error(emessage);
-      return;
-    }
-  } else if (organizeDatasetStatus.checked) {
-    var jsonvect = tableToJsonWithDescription(tableNotOrganized);
-    var error = true;
-    for (var keys in jsonvect[0]) {
-      if (jsonvect[0][keys].length > 0) {
-        error = false;
-      }
-    }
-    if (error) {
-      var emessage = "Error: Please add files to your dataset";
-      document.getElementById(
-        "para-curate-progress-bar-error-status"
-      ).innerHTML =
-        "<span style='color: red;'> " + emessage + sadCan + "</span>";
-      document.getElementById("para-please-wait-curate").innerHTML = "";
-      curateDatasetBtn.disabled = false;
-      enableform(curationForm);
-      console.error(emessage);
-      log.error(emessage);
-      return;
-    }
-    sourceDataset = "not organized";
-  } else {
-    var emessage = 'Error: Please select an option under "Organize dataset" ';
-    document.getElementById("para-curate-progress-bar-error-status").innerHTML =
-      "<span style='color: red;'> " + emessage + sadCan + "</span>";
-    document.getElementById("para-please-wait-curate").innerHTML = "";
-    curateDatasetBtn.disabled = false;
-    enableform(curationForm);
-    return;
-  }
-  var jsonpath = jsonvect[0];
-  var jsondescription = jsonvect[1];
-  var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
-  jsonpath["main"] = jsonpathMetadata["metadata"];
+//   // Convert table content into json format for transferring to Python
+//   if (alreadyOrganizedStatus.checked) {
+//     if (fs.existsSync(pathDataset.innerHTML)) {
+//       var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized);
+//       sourceDataset = "already organized";
+//     } else {
+//       var emessage = "Error: Select a valid dataset folder";
+//       document.getElementById(
+//         "para-curate-progress-bar-error-status"
+//       ).innerHTML =
+//         "<span style='color: red;'> " + emessage + sadCan + "</span>";
+//       document.getElementById("para-please-wait-curate").innerHTML = "";
+//       curateDatasetBtn.disabled = false;
+//       enableform(curationForm);
+//       console.error(emessage);
+//       log.error(emessage);
+//       return;
+//     }
+//   } else if (organizeDatasetStatus.checked) {
+//     var jsonvect = tableToJsonWithDescription(tableNotOrganized);
+//     var error = true;
+//     for (var keys in jsonvect[0]) {
+//       if (jsonvect[0][keys].length > 0) {
+//         error = false;
+//       }
+//     }
+//     if (error) {
+//       var emessage = "Error: Please add files to your dataset";
+//       document.getElementById(
+//         "para-curate-progress-bar-error-status"
+//       ).innerHTML =
+//         "<span style='color: red;'> " + emessage + sadCan + "</span>";
+//       document.getElementById("para-please-wait-curate").innerHTML = "";
+//       curateDatasetBtn.disabled = false;
+//       enableform(curationForm);
+//       console.error(emessage);
+//       log.error(emessage);
+//       return;
+//     }
+//     sourceDataset = "not organized";
+//   } else {
+//     var emessage = 'Error: Please select an option under "Organize dataset" ';
+//     document.getElementById("para-curate-progress-bar-error-status").innerHTML =
+//       "<span style='color: red;'> " + emessage + sadCan + "</span>";
+//     document.getElementById("para-please-wait-curate").innerHTML = "";
+//     curateDatasetBtn.disabled = false;
+//     enableform(curationForm);
+//     return;
+//   }
+//   var jsonpath = jsonvect[0];
+//   var jsondescription = jsonvect[1];
+//   var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
+//   jsonpath["main"] = jsonpathMetadata["metadata"];
 
-  //Get dataset destination info (local or Blackfynn)
-  var destinationDataset = "";
-  var pathDatasetValue = "";
-  var newDatasetNameVar = "";
-  if (modifyExistingStatus.checked) {
-    destinationDataset = "modify existing";
-    pathDatasetValue = String(pathDataset.innerHTML);
-  } else if (createNewStatus.checked) {
-    destinationDataset = "create new";
-    pathDatasetValue = selectnewDatasetBtn.placeholder;
-    newDatasetNameVar = newDatasetName.value;
-  } else if (bfUploadDirectlyStatus.checked) {
-    destinationDataset = "upload to blackfynn";
-    pathDatasetValue =
-      bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text;
-    //newDatasetNameVar =
-      //bfUploadDatasetList.options[bfUploadDatasetList.selectedIndex].text;
-  }
+//   //Get dataset destination info (local or Blackfynn)
+//   var destinationDataset = "";
+//   var pathDatasetValue = "";
+//   var newDatasetNameVar = "";
+//   if (modifyExistingStatus.checked) {
+//     destinationDataset = "modify existing";
+//     pathDatasetValue = String(pathDataset.innerHTML);
+//   } else if (createNewStatus.checked) {
+//     destinationDataset = "create new";
+//     pathDatasetValue = selectnewDatasetBtn.placeholder;
+//     newDatasetNameVar = newDatasetName.value;
+//   } else if (bfUploadDirectlyStatus.checked) {
+//     destinationDataset = "upload to blackfynn";
+//     pathDatasetValue =
+//       bfUploadAccountList.options[bfUploadAccountList.selectedIndex].text;
+//     //newDatasetNameVar =
+//       //bfUploadDatasetList.options[bfUploadDatasetList.selectedIndex].text;
+//   }
 
-  // Initiate curation by calling Python funtion
-  var err = false;
-  var curatestatus = "Solving";
-  document.getElementById("para-curate-progress-bar-status").innerHTML =
-    "Preparing files ...";
-  client.invoke(
-    "api_curate_dataset",
-    sourceDataset,
-    destinationDataset,
-    pathDatasetValue,
-    newDatasetNameVar,
-    manifestStatus.checked,
-    jsonpath,
-    jsondescription,
-    (error, res) => {
-      if (error) {
-        document.getElementById("para-please-wait-curate").innerHTML = "";
-        var emessage = userError(error);
-        document.getElementById(
-          "para-curate-progress-bar-error-status"
-        ).innerHTML =
-          "<span style='color: red;'> " + emessage + sadCan + "</span>";
-        document.getElementById("para-curate-progress-bar-status").innerHTML =
-          "";
-        document.getElementById("para-please-wait-curate").innerHTML = "";
-        progressCurateUpload.style.display = "none";
-        progressBarCurate.value = 0;
-        err = true;
-        log.error(error);
-        console.error(error);
-        curateDatasetBtn.disabled = false;
-        enableform(curationForm);
-      } else {
-        document.getElementById("para-please-wait-curate").innerHTML =
-          "Please wait...";
-        log.info("Completed curate function");
-        console.log("Completed curate function");
-      }
-    }
-  );
+//   // Initiate curation by calling Python funtion
+//   var err = false;
+//   var curatestatus = "Solving";
+//   document.getElementById("para-curate-progress-bar-status").innerHTML =
+//     "Preparing files ...";
+//   client.invoke(
+//     "api_curate_dataset",
+//     sourceDataset,
+//     destinationDataset,
+//     pathDatasetValue,
+//     newDatasetNameVar,
+//     manifestStatus.checked,
+//     jsonpath,
+//     jsondescription,
+//     (error, res) => {
+//       if (error) {
+//         document.getElementById("para-please-wait-curate").innerHTML = "";
+//         var emessage = userError(error);
+//         document.getElementById(
+//           "para-curate-progress-bar-error-status"
+//         ).innerHTML =
+//           "<span style='color: red;'> " + emessage + sadCan + "</span>";
+//         document.getElementById("para-curate-progress-bar-status").innerHTML =
+//           "";
+//         document.getElementById("para-please-wait-curate").innerHTML = "";
+//         progressCurateUpload.style.display = "none";
+//         progressBarCurate.value = 0;
+//         err = true;
+//         log.error(error);
+//         console.error(error);
+//         curateDatasetBtn.disabled = false;
+//         enableform(curationForm);
+//       } else {
+//         document.getElementById("para-please-wait-curate").innerHTML =
+//           "Please wait...";
+//         log.info("Completed curate function");
+//         console.log("Completed curate function");
+//       }
+//     }
+//   );
 
-  // Progress tracking function
-  var countDone = 0;
-  var timerProgress = setInterval(progressfunction, 1000);
-  function progressfunction() {
-    curateDatasetBtn.disabled = true;
-    disableform(curationForm);
-    client.invoke("api_curate_dataset_progress", (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        document.getElementById(
-          "para-curate-progress-bar-error-status"
-        ).innerHTML =
-          "<span style='color: red;'> " + emessage + sadCan + "</span>";
-        log.error(error);
-        console.error(error);
-        document.getElementById("para-curate-progress-bar-status").innerHTML =
-          "";
-      } else {
-        curatestatus = res[1];
-        var curateprintstatus = res[2];
-        var totalDatasetSize = res[3];
-        var curatedDatasetSize = res[4];
-        if (curateprintstatus === "Curating") {
-          progressCurateUpload.style.display = "block";
-          if (res[0].includes("Success: COMPLETED!")) {
-            progressBarCurate.value = 100;
-            document.getElementById("para-please-wait-curate").innerHTML = "";
-            document.getElementById(
-              "para-curate-progress-bar-status"
-            ).innerHTML = res[0] + smileyCan;
-          } else {
-            var value = (curatedDatasetSize / totalDatasetSize) * 100;
-            progressBarCurate.value = value;
-            if (totalDatasetSize < displaySize) {
-              var totalSizePrint = totalDatasetSize.toFixed(2) + " B";
-            } else if (totalDatasetSize < displaySize * displaySize) {
-              var totalSizePrint =
-                (totalDatasetSize / displaySize).toFixed(2) + " KB";
-            } else if (
-              totalDatasetSize <
-              displaySize * displaySize * displaySize
-            ) {
-              var totalSizePrint =
-                (totalDatasetSize / displaySize / displaySize).toFixed(2) +
-                " MB";
-            } else {
-              var totalSizePrint =
-                (
-                  totalDatasetSize /
-                  displaySize /
-                  displaySize /
-                  displaySize
-                ).toFixed(2) + " GB";
-            }
-            document.getElementById(
-              "para-curate-progress-bar-status"
-            ).innerHTML =
-              res[0] +
-              "Progress: " +
-              value.toFixed(2) +
-              "%" +
-              " (total size: " +
-              totalSizePrint +
-              ")";
-            // console.log(value, totalDatasetSize, curatedDatasetSize)
-          }
-        }
-      }
-    });
-    if (curatestatus === "Done") {
-      countDone++;
-      if (countDone > 1) {
-        log.info("Done curate track");
-        console.log("Done curate track");
-        document.getElementById("para-please-wait-curate").innerHTML = "";
-        clearInterval(timerProgress);
-        curateDatasetBtn.disabled = false;
-        enableform(curationForm);
-      }
-    }
-  }
-});
+//   // Progress tracking function
+//   var countDone = 0;
+//   var timerProgress = setInterval(progressfunction, 1000);
+//   function progressfunction() {
+//     curateDatasetBtn.disabled = true;
+//     disableform(curationForm);
+//     client.invoke("api_curate_dataset_progress", (error, res) => {
+//       if (error) {
+//         var emessage = userError(error);
+//         document.getElementById(
+//           "para-curate-progress-bar-error-status"
+//         ).innerHTML =
+//           "<span style='color: red;'> " + emessage + sadCan + "</span>";
+//         log.error(error);
+//         console.error(error);
+//         document.getElementById("para-curate-progress-bar-status").innerHTML =
+//           "";
+//       } else {
+//         curatestatus = res[1];
+//         var curateprintstatus = res[2];
+//         var totalDatasetSize = res[3];
+//         var curatedDatasetSize = res[4];
+//         if (curateprintstatus === "Curating") {
+//           progressCurateUpload.style.display = "block";
+//           if (res[0].includes("Success: COMPLETED!")) {
+//             progressBarCurate.value = 100;
+//             document.getElementById("para-please-wait-curate").innerHTML = "";
+//             document.getElementById(
+//               "para-curate-progress-bar-status"
+//             ).innerHTML = res[0] + smileyCan;
+//           } else {
+//             var value = (curatedDatasetSize / totalDatasetSize) * 100;
+//             progressBarCurate.value = value;
+//             if (totalDatasetSize < displaySize) {
+//               var totalSizePrint = totalDatasetSize.toFixed(2) + " B";
+//             } else if (totalDatasetSize < displaySize * displaySize) {
+//               var totalSizePrint =
+//                 (totalDatasetSize / displaySize).toFixed(2) + " KB";
+//             } else if (
+//               totalDatasetSize <
+//               displaySize * displaySize * displaySize
+//             ) {
+//               var totalSizePrint =
+//                 (totalDatasetSize / displaySize / displaySize).toFixed(2) +
+//                 " MB";
+//             } else {
+//               var totalSizePrint =
+//                 (
+//                   totalDatasetSize /
+//                   displaySize /
+//                   displaySize /
+//                   displaySize
+//                 ).toFixed(2) + " GB";
+//             }
+//             document.getElementById(
+//               "para-curate-progress-bar-status"
+//             ).innerHTML =
+//               res[0] +
+//               "Progress: " +
+//               value.toFixed(2) +
+//               "%" +
+//               " (total size: " +
+//               totalSizePrint +
+//               ")";
+//             // console.log(value, totalDatasetSize, curatedDatasetSize)
+//           }
+//         }
+//       }
+//     });
+//     if (curatestatus === "Done") {
+//       countDone++;
+//       if (countDone > 1) {
+//         log.info("Done curate track");
+//         console.log("Done curate track");
+//         document.getElementById("para-please-wait-curate").innerHTML = "";
+//         clearInterval(timerProgress);
+//         curateDatasetBtn.disabled = false;
+//         enableform(curationForm);
+//       }
+//     }
+//   }
+// });
 
 ////////////////// Validate current datasets ////////////////////////////////
 
 //// when users click on "Preview", show preview dataset in explorer
-previewCurrentDsValidate.addEventListener("click", function () {
-  document.getElementById("para-preview-current-ds").innerHTML = "";
-  document.getElementById("para-preview-current-ds").innerHTML =
-    "Please wait...";
-  previewCurrentDsValidate.disabled = true;
-  if (alreadyOrganizedStatus.checked) {
-    var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized);
-  } else if (organizeDatasetStatus.checked) {
-    var jsonvect = tableToJsonWithDescription(tableNotOrganized);
-  }
-  var jsonpath = jsonvect[0];
-  if (manifestStatus.checked) {
-    var keyvect = sparcFolderNames.slice();
-    for (var j = 0; j < keyvect.length; j++) {
-      var folder = keyvect[j];
-      var folderPaths = jsonpath[folder];
-      if (folderPaths.length > 0) {
-        folderPaths.push(
-          path.join(__dirname, "file_templates", "manifest.xlsx")
-        );
-      }
-    }
-  }
-  var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
-  jsonpath["main"] = jsonpathMetadata["metadata"];
-  client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
-    if (error) {
-      log.error(error);
-      console.error(error);
-      var emessage = userError(error);
-      document.getElementById("para-preview-current-ds").innerHTML =
-        "<span style='color: red;'>" + emessage + "</span>";
-    } else {
-      document.getElementById("para-preview-current-ds").innerHTML =
-        "Preview folder is available in a new file explorer window!";
-    }
-    previewCurrentDsValidate.disabled = false;
-  });
-});
+// previewCurrentDsValidate.addEventListener("click", function () {
+//   document.getElementById("para-preview-current-ds").innerHTML = "";
+//   document.getElementById("para-preview-current-ds").innerHTML =
+//     "Please wait...";
+//   previewCurrentDsValidate.disabled = true;
+//   if (alreadyOrganizedStatus.checked) {
+//     var jsonvect = tableToJsonWithDescriptionOrganized(tableOrganized);
+//   } else if (organizeDatasetStatus.checked) {
+//     var jsonvect = tableToJsonWithDescription(tableNotOrganized);
+//   }
+//   var jsonpath = jsonvect[0];
+//   if (manifestStatus.checked) {
+//     var keyvect = sparcFolderNames.slice();
+//     for (var j = 0; j < keyvect.length; j++) {
+//       var folder = keyvect[j];
+//       var folderPaths = jsonpath[folder];
+//       if (folderPaths.length > 0) {
+//         folderPaths.push(
+//           path.join(__dirname, "file_templates", "manifest.xlsx")
+//         );
+//       }
+//     }
+//   }
+//   var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
+//   jsonpath["main"] = jsonpathMetadata["metadata"];
+//   client.invoke("api_preview_file_organization", jsonpath, (error, res) => {
+//     if (error) {
+//       log.error(error);
+//       console.error(error);
+//       var emessage = userError(error);
+//       document.getElementById("para-preview-current-ds").innerHTML =
+//         "<span style='color: red;'>" + emessage + "</span>";
+//     } else {
+//       document.getElementById("para-preview-current-ds").innerHTML =
+//         "Preview folder is available in a new file explorer window!";
+//     }
+//     previewCurrentDsValidate.disabled = false;
+//   });
+// });
 
 /////// Convert table content into json format for transferring to Python
-function grabCurrentDSValidator() {
-  var jsonvect = tableToJsonWithDescription(tableNotOrganized);
-  var jsonpath = jsonvect[0];
-  var jsondescription = jsonvect[1];
-  var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
-  jsonpath["main"] = jsonpathMetadata["metadata"];
-  return [jsonpath, jsondescription];
-}
+// function grabCurrentDSValidator() {
+//   var jsonvect = tableToJsonWithDescription(tableNotOrganized);
+//   var jsonpath = jsonvect[0];
+//   var jsondescription = jsonvect[1];
+//   var jsonpathMetadata = tableToJsonMetadata(tableMetadata);
+//   jsonpath["main"] = jsonpathMetadata["metadata"];
+//   return [jsonpath, jsondescription];
+// }
 
-//// Check for empty JSON object and remove then
-function checkJSONObj(jsonObj) {
-  var empty = true;
-  for (var key of Object.keys(jsonObj)) {
-    if (jsonObj[key].length !== 0) {
-      empty = false;
-    } else {
-      if (key !== "main") delete jsonObj[key];
-    }
-  }
-  return [empty, jsonObj];
-}
+// //// Check for empty JSON object and remove then
+// function checkJSONObj(jsonObj) {
+//   var empty = true;
+//   for (var key of Object.keys(jsonObj)) {
+//     if (jsonObj[key].length !== 0) {
+//       empty = false;
+//     } else {
+//       if (key !== "main") delete jsonObj[key];
+//     }
+//   }
+//   return [empty, jsonObj];
+// }
 
 ///////// Clicking on Validate current DS
 var checkCategory0 = "High-level folder structure";
@@ -3345,288 +3352,288 @@ var checkCategories = [
   checkCategory6,
 ];
 
-validateCurrentDSBtn.addEventListener("click", function () {
-  document.getElementById("div-validation-report-current").style.display =
-    "none";
-  document.getElementById("para-preview-current-ds").innerHTML = "";
-  document.getElementById("para-validate-current-ds").innerHTML = "";
-  document.getElementById("para-generate-report-current-ds").innerHTML = "";
-  var jsonvect = grabCurrentDSValidator();
-  var jsonpath = jsonvect[0];
-  var jsondescription = jsonvect[1];
-  var outCheck = checkJSONObj(jsonpath);
-  var empty = outCheck[0];
-  if (empty === true) {
-    document.getElementById("para-validate-current-ds").innerHTML =
-      "<span style='color: red;'>Please add files or folders to your dataset first!</span>";
-  } else {
-    validateCurrentDSBtn.disabled = true;
-    if (manifestStatus.checked) {
-      validateSODAProgressBar.style.display = "block";
-      client.invoke(
-        "api_create_folder_level_manifest",
-        jsonpath,
-        jsondescription,
-        (error, res) => {
-          if (error) {
-            console.error(error);
-            log.error(error);
-            var emessage = userError(error);
-            document.getElementById("para-validate-current-ds").innerHTML =
-              "<span style='color: red;'>" + emessage + "</span>";
-            validateCurrentDSBtn.disabled = false;
-            validateSODAProgressBar.style.display = "none";
-          } else {
-            var validatorInput = res;
-            localValidator(validatorInput);
-          }
-        }
-      );
-    } else {
-      var validatorInput = jsonpath;
-      console.log(validatorInput);
-      localValidator(validatorInput);
-    }
-  }
-});
+// validateCurrentDSBtn.addEventListener("click", function () {
+//   document.getElementById("div-validation-report-current").style.display =
+//     "none";
+//   document.getElementById("para-preview-current-ds").innerHTML = "";
+//   document.getElementById("para-validate-current-ds").innerHTML = "";
+//   document.getElementById("para-generate-report-current-ds").innerHTML = "";
+//   var jsonvect = grabCurrentDSValidator();
+//   var jsonpath = jsonvect[0];
+//   var jsondescription = jsonvect[1];
+//   var outCheck = checkJSONObj(jsonpath);
+//   var empty = outCheck[0];
+//   if (empty === true) {
+//     document.getElementById("para-validate-current-ds").innerHTML =
+//       "<span style='color: red;'>Please add files or folders to your dataset first!</span>";
+//   } else {
+//     validateCurrentDSBtn.disabled = true;
+//     if (manifestStatus.checked) {
+//       validateSODAProgressBar.style.display = "block";
+//       client.invoke(
+//         "api_create_folder_level_manifest",
+//         jsonpath,
+//         jsondescription,
+//         (error, res) => {
+//           if (error) {
+//             console.error(error);
+//             log.error(error);
+//             var emessage = userError(error);
+//             document.getElementById("para-validate-current-ds").innerHTML =
+//               "<span style='color: red;'>" + emessage + "</span>";
+//             validateCurrentDSBtn.disabled = false;
+//             validateSODAProgressBar.style.display = "none";
+//           } else {
+//             var validatorInput = res;
+//             localValidator(validatorInput);
+//           }
+//         }
+//       );
+//     } else {
+//       var validatorInput = jsonpath;
+//       console.log(validatorInput);
+//       localValidator(validatorInput);
+//     }
+//   }
+// });
 
-function localValidator(validatorInput) {
-  var messageDisplay = "";
-  client.invoke("api_validate_dataset", validatorInput, (error, res) => {
-    if (error) {
-      console.error(error);
-      log.error(error);
-      var emessage = userError(error);
-      document.getElementById("para-validate-current-ds").innerHTML =
-        "<span style='color: red;'>" + emessage + "</span>";
-      validateCurrentDSBtn.disabled = false;
-      validateSODAProgressBar.style.display = "none";
-    } else {
-      for (var i = 0; i < res.length; i++) {
-        messageDisplay = errorMessageCategory(
-          res[i],
-          checkCategories[i],
-          messageDisplay
-        );
-      }
-      document.getElementById("div-validation-report-current").style.display =
-        "block";
-      document.getElementById("div-report-current").style.display = "block";
-      document.getElementById("para-validate-current-ds").innerHTML =
-        "Done, see report below!";
-      validateCurrentDatasetReport.innerHTML = messageDisplay;
-      validateCurrentDSBtn.disabled = false;
-      validateSODAProgressBar.style.display = "none";
-    }
-  });
-}
+// function localValidator(validatorInput) {
+//   var messageDisplay = "";
+//   client.invoke("api_validate_dataset", validatorInput, (error, res) => {
+//     if (error) {
+//       console.error(error);
+//       log.error(error);
+//       var emessage = userError(error);
+//       document.getElementById("para-validate-current-ds").innerHTML =
+//         "<span style='color: red;'>" + emessage + "</span>";
+//       validateCurrentDSBtn.disabled = false;
+//       validateSODAProgressBar.style.display = "none";
+//     } else {
+//       for (var i = 0; i < res.length; i++) {
+//         messageDisplay = errorMessageCategory(
+//           res[i],
+//           checkCategories[i],
+//           messageDisplay
+//         );
+//       }
+//       document.getElementById("div-validation-report-current").style.display =
+//         "block";
+//       document.getElementById("div-report-current").style.display = "block";
+//       document.getElementById("para-validate-current-ds").innerHTML =
+//         "Done, see report below!";
+//       validateCurrentDatasetReport.innerHTML = messageDisplay;
+//       validateCurrentDSBtn.disabled = false;
+//       validateSODAProgressBar.style.display = "none";
+//     }
+//   });
+// }
 ///// Generate pdf validator file
-currentDatasetReportBtn.addEventListener("click", function () {
-  document.getElementById("para-generate-report-current-ds").innerHTML = "";
-  ipcRenderer.send("save-file-dialog-validator-current");
-});
-ipcRenderer.on("selected-savedvalidatorcurrent", (event, filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null) {
-      document.getElementById("para-generate-report-current-ds").innerHTML =
-        "Please wait...";
-      currentDatasetReportBtn.disabled = true;
-      // obtain canvas and print to pdf
-      const domElement = validateCurrentDatasetReport;
-      // obtain canvas and print to pdf
-      html2canvas(domElement).then((canvas) => {
-        const img = canvas.toDataURL("image/png", 1.0);
-        var data = img.replace(/^data:image\/\w+;base64,/, "");
-        var buf = new Buffer(data, "base64");
+// currentDatasetReportBtn.addEventListener("click", function () {
+//   document.getElementById("para-generate-report-current-ds").innerHTML = "";
+//   ipcRenderer.send("save-file-dialog-validator-current");
+// });
+// ipcRenderer.on("selected-savedvalidatorcurrent", (event, filepath) => {
+//   if (filepath.length > 0) {
+//     if (filepath != null) {
+//       document.getElementById("para-generate-report-current-ds").innerHTML =
+//         "Please wait...";
+//       currentDatasetReportBtn.disabled = true;
+//       // obtain canvas and print to pdf
+//       const domElement = validateCurrentDatasetReport;
+//       // obtain canvas and print to pdf
+//       html2canvas(domElement).then((canvas) => {
+//         const img = canvas.toDataURL("image/png", 1.0);
+//         var data = img.replace(/^data:image\/\w+;base64,/, "");
+//         var buf = new Buffer(data, "base64");
 
-        // obtain canvas and print to pdf
-        pdf = new PDFDocument({ autoFirstPage: false });
-        var image = pdf.openImage(buf);
-        pdf.addPage({ size: [image.width + 100, image.height + 25] });
-        pdf.pipe(fs.createWriteStream(filepath));
-        pdf.image(image, 25, 25);
+//         // obtain canvas and print to pdf
+//         pdf = new PDFDocument({ autoFirstPage: false });
+//         var image = pdf.openImage(buf);
+//         pdf.addPage({ size: [image.width + 100, image.height + 25] });
+//         pdf.pipe(fs.createWriteStream(filepath));
+//         pdf.image(image, 25, 25);
 
-        pdf.end();
+//         pdf.end();
 
-        document.getElementById("para-generate-report-current-ds").innerHTML =
-          "Report saved!";
-      });
-    }
-  }
-  currentDatasetReportBtn.disabled = false;
-});
+//         document.getElementById("para-generate-report-current-ds").innerHTML =
+//           "Report saved!";
+//       });
+//     }
+//   }
+//   currentDatasetReportBtn.disabled = false;
+// });
 
 /////////////////////// Validate local datasets //////////////////////////////
 
 //// when users click on Import local dataset
-document
-  .getElementById("input-local-ds-select")
-  .addEventListener("click", function () {
-    document.getElementById("para-generate-report-local-ds").innerHTML = "";
-    document.getElementById("div-report-local").style.display = "none";
-    ipcRenderer.send("open-file-dialog-validate-local-ds");
-  });
-ipcRenderer.on("selected-validate-local-dataset", (event, filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null) {
-      document.getElementById("para-local-ds-info").innerHTML = "";
-      document.getElementById("div-validation-report-local").style.display =
-        "none";
-      // used to communicate value to button-import-local-ds click eventlistener
-      document.getElementById("input-local-ds-select").placeholder =
-        filepath[0];
-    } else {
-      document.getElementById("para-local-ds-info").innerHTML =
-        "<span style='color: red ;'>Please select a valid local dataset!</span>";
-    }
-  }
-});
+// document
+//   .getElementById("input-local-ds-select")
+//   .addEventListener("click", function () {
+//     document.getElementById("para-generate-report-local-ds").innerHTML = "";
+//     document.getElementById("div-report-local").style.display = "none";
+//     ipcRenderer.send("open-file-dialog-validate-local-ds");
+//   });
+// ipcRenderer.on("selected-validate-local-dataset", (event, filepath) => {
+//   if (filepath.length > 0) {
+//     if (filepath != null) {
+//       document.getElementById("para-local-ds-info").innerHTML = "";
+//       document.getElementById("div-validation-report-local").style.display =
+//         "none";
+//       // used to communicate value to button-import-local-ds click eventlistener
+//       document.getElementById("input-local-ds-select").placeholder =
+//         filepath[0];
+//     } else {
+//       document.getElementById("para-local-ds-info").innerHTML =
+//         "<span style='color: red ;'>Please select a valid local dataset!</span>";
+//     }
+//   }
+// });
 
-validateLocalDSBtn.addEventListener("click", function () {
-  document.getElementById("para-local-ds-info").innerHTML = "";
-  document.getElementById("para-generate-report-local-ds").innerHTML = "";
-  var datasetPath = document.getElementById("input-local-ds-select")
-    .placeholder;
-  var messageDisplay = "";
-  if (datasetPath === "Select a folder") {
-    document.getElementById("para-local-ds-info").innerHTML =
-      "<span style='color: red ;'>Please select a local dataset first</span>";
-  } else {
-    if (datasetPath != null) {
-      validateLocalProgressBar.style.display = "block";
-      validateLocalDSBtn.disabled = true;
-      validatorInput = datasetPath;
-      client.invoke("api_validate_dataset", validatorInput, (error, res) => {
-        if (error) {
-          console.error(error);
-          log.error(error);
-          validateLocalProgressBar.style.display = "none";
-        } else {
-          for (var i = 0; i < res.length; i++) {
-            if (res[i] !== "N/A") {
-              messageDisplay = errorMessageCategory(
-                res[i],
-                checkCategories[i],
-                messageDisplay
-              );
-            }
-          }
-          document.getElementById("div-validation-report-local").style.display =
-            "block";
-          document.getElementById("div-report-local").style.display = "block";
-          document.getElementById("para-local-ds-info").innerHTML =
-            "Done, see report below!";
-          validateLocalDatasetReport.innerHTML = messageDisplay;
-          validateLocalProgressBar.style.display = "none";
-        }
-      });
-      validateLocalDSBtn.disabled = false;
-    }
-  }
-});
+// validateLocalDSBtn.addEventListener("click", function () {
+//   document.getElementById("para-local-ds-info").innerHTML = "";
+//   document.getElementById("para-generate-report-local-ds").innerHTML = "";
+//   var datasetPath = document.getElementById("input-local-ds-select")
+//     .placeholder;
+//   var messageDisplay = "";
+//   if (datasetPath === "Select a folder") {
+//     document.getElementById("para-local-ds-info").innerHTML =
+//       "<span style='color: red ;'>Please select a local dataset first</span>";
+//   } else {
+//     if (datasetPath != null) {
+//       validateLocalProgressBar.style.display = "block";
+//       validateLocalDSBtn.disabled = true;
+//       validatorInput = datasetPath;
+//       client.invoke("api_validate_dataset", validatorInput, (error, res) => {
+//         if (error) {
+//           console.error(error);
+//           log.error(error);
+//           validateLocalProgressBar.style.display = "none";
+//         } else {
+//           for (var i = 0; i < res.length; i++) {
+//             if (res[i] !== "N/A") {
+//               messageDisplay = errorMessageCategory(
+//                 res[i],
+//                 checkCategories[i],
+//                 messageDisplay
+//               );
+//             }
+//           }
+//           document.getElementById("div-validation-report-local").style.display =
+//             "block";
+//           document.getElementById("div-report-local").style.display = "block";
+//           document.getElementById("para-local-ds-info").innerHTML =
+//             "Done, see report below!";
+//           validateLocalDatasetReport.innerHTML = messageDisplay;
+//           validateLocalProgressBar.style.display = "none";
+//         }
+//       });
+//       validateLocalDSBtn.disabled = false;
+//     }
+//   }
+// });
 
-function validateMessageTransform(inString, classSelection, colorSelection) {
-  //outString = inString.split("--").join("<br>")
-  outString = inString.split("--");
-  var msg =
-    "<li class=" +
-    classSelection +
-    ">" +
-    "<span style='color:" +
-    colorSelection +
-    ";'>";
-  msg += outString[0];
-  msg += "</span>" + "</li>";
-  if (outString.length > 1) {
-    msg += "<ul style='margin-top:-10px';>";
-    for (var i = 1; i < outString.length; i++) {
-      msg +=
-        "<li>" +
-        "<span style='color:" +
-        colorSelection +
-        ";'>" +
-        outString[i] +
-        "</span>" +
-        "</li>";
-    }
-    msg += "</ul>";
-  }
-  return msg;
-}
+// function validateMessageTransform(inString, classSelection, colorSelection) {
+//   //outString = inString.split("--").join("<br>")
+//   outString = inString.split("--");
+//   var msg =
+//     "<li class=" +
+//     classSelection +
+//     ">" +
+//     "<span style='color:" +
+//     colorSelection +
+//     ";'>";
+//   msg += outString[0];
+//   msg += "</span>" + "</li>";
+//   if (outString.length > 1) {
+//     msg += "<ul style='margin-top:-10px';>";
+//     for (var i = 1; i < outString.length; i++) {
+//       msg +=
+//         "<li>" +
+//         "<span style='color:" +
+//         colorSelection +
+//         ";'>" +
+//         outString[i] +
+//         "</span>" +
+//         "</li>";
+//     }
+//     msg += "</ul>";
+//   }
+//   return msg;
+// }
 
-function errorMessageGenerator(resitem, category, messageDisplay) {
-  if (resitem[category]) {
-    var messageCategory = resitem[category];
-    if (messageCategory.length > 0) {
-      if (category === "fatal") {
-        var colorSelection = "red";
-        var classSelection = "bulleterror";
-      } else if (category === "warnings") {
-        var colorSelection = "#F4B800";
-        var classSelection = "bulletwarning";
-      } else if (category === "pass") {
-        var colorSelection = "green";
-        var classSelection = "bulletpass";
-      }
-      for (var i = 0; i < messageCategory.length; i++) {
-        var message = validateMessageTransform(
-          messageCategory[i],
-          classSelection,
-          colorSelection
-        );
-        messageDisplay += message;
-      }
-    }
-  }
-  return messageDisplay;
-}
+// function errorMessageGenerator(resitem, category, messageDisplay) {
+//   if (resitem[category]) {
+//     var messageCategory = resitem[category];
+//     if (messageCategory.length > 0) {
+//       if (category === "fatal") {
+//         var colorSelection = "red";
+//         var classSelection = "bulleterror";
+//       } else if (category === "warnings") {
+//         var colorSelection = "#F4B800";
+//         var classSelection = "bulletwarning";
+//       } else if (category === "pass") {
+//         var colorSelection = "green";
+//         var classSelection = "bulletpass";
+//       }
+//       for (var i = 0; i < messageCategory.length; i++) {
+//         var message = validateMessageTransform(
+//           messageCategory[i],
+//           classSelection,
+//           colorSelection
+//         );
+//         messageDisplay += message;
+//       }
+//     }
+//   }
+//   return messageDisplay;
+// }
 
-function errorMessageCategory(resitem, checkCategory, messageDisplay) {
-  messageDisplay += "<b>" + checkCategory + "</b>";
-  messageDisplay += "<ul class='validatelist' id='" + checkCategory + "'>";
-  var category = "fatal";
-  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
-  category = "warnings";
-  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
-  category = "pass";
-  messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
-  messageDisplay += "</ul>";
-  return messageDisplay;
-}
+// function errorMessageCategory(resitem, checkCategory, messageDisplay) {
+//   messageDisplay += "<b>" + checkCategory + "</b>";
+//   messageDisplay += "<ul class='validatelist' id='" + checkCategory + "'>";
+//   var category = "fatal";
+//   messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
+//   category = "warnings";
+//   messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
+//   category = "pass";
+//   messageDisplay = errorMessageGenerator(resitem, category, messageDisplay);
+//   messageDisplay += "</ul>";
+//   return messageDisplay;
+// }
 
 ///// Generate pdf report for local validator report
-localDatasetReportBtn.addEventListener("click", function () {
-  document.getElementById("para-generate-report-local-ds").innerHTML = "";
-  ipcRenderer.send("save-file-dialog-validator-local");
-});
-ipcRenderer.on("selected-savedvalidatorlocal", (event, filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null) {
-      document.getElementById("para-generate-report-local-ds").innerHTML =
-        "Please wait...";
-      localDatasetReportBtn.disabled = true;
-      const domElement = validateLocalDatasetReport;
-      html2canvas(domElement).then((canvas) => {
-        const img = canvas.toDataURL("image/png", 1.0);
-        var data = img.replace(/^data:image\/\w+;base64,/, "");
-        var buf = new Buffer(data, "base64");
+// localDatasetReportBtn.addEventListener("click", function () {
+//   document.getElementById("para-generate-report-local-ds").innerHTML = "";
+//   ipcRenderer.send("save-file-dialog-validator-local");
+// });
+// ipcRenderer.on("selected-savedvalidatorlocal", (event, filepath) => {
+//   if (filepath.length > 0) {
+//     if (filepath != null) {
+//       document.getElementById("para-generate-report-local-ds").innerHTML =
+//         "Please wait...";
+//       localDatasetReportBtn.disabled = true;
+//       const domElement = validateLocalDatasetReport;
+//       html2canvas(domElement).then((canvas) => {
+//         const img = canvas.toDataURL("image/png", 1.0);
+//         var data = img.replace(/^data:image\/\w+;base64,/, "");
+//         var buf = new Buffer(data, "base64");
 
-        // obtain canvas and print to pdf
-        pdf = new PDFDocument({ autoFirstPage: false });
-        var image = pdf.openImage(buf);
-        pdf.addPage({ size: [image.width + 100, image.height + 25] });
-        pdf.pipe(fs.createWriteStream(filepath));
-        pdf.image(image, 25, 25);
+//         // obtain canvas and print to pdf
+//         pdf = new PDFDocument({ autoFirstPage: false });
+//         var image = pdf.openImage(buf);
+//         pdf.addPage({ size: [image.width + 100, image.height + 25] });
+//         pdf.pipe(fs.createWriteStream(filepath));
+//         pdf.image(image, 25, 25);
 
-        pdf.end();
+//         pdf.end();
 
-        document.getElementById("para-generate-report-local-ds").innerHTML =
-          "Report saved!";
-      });
-    }
-  }
-  localDatasetReportBtn.disabled = false;
-});
+//         document.getElementById("para-generate-report-local-ds").innerHTML =
+//           "Report saved!";
+//       });
+//     }
+//   }
+//   localDatasetReportBtn.disabled = false;
+// });
 
 //////////////////////////////////
 // Manage Dataset
@@ -3641,42 +3648,42 @@ ipcRenderer.on("selected-savedvalidatorlocal", (event, filepath) => {
 /// Add all BF accounts to the dropdown list, and then choose by default one option ('global' account)
 const curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
 
-function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
-  client.invoke(
-    "api_bf_dataset_account",
-    bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text,
-    (error, result) => {
-      if (error) {
-        log.error(error);
-        console.log(error);
-        var emessage = error;
-        curateBFAccountLoadStatus.innerHTML =
-          "<span style='color: red'>" + emessage + "</span>";
-      } else {
-        // clear and populate dataset list
-        populateDatasetDropdownCurate(datasetDropdown, result);
-      }
-    }
-  );
-}
+// function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
+//   client.invoke(
+//     "api_bf_dataset_account",
+//     bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text,
+//     (error, result) => {
+//       if (error) {
+//         log.error(error);
+//         console.log(error);
+//         var emessage = error;
+//         curateBFAccountLoadStatus.innerHTML =
+//           "<span style='color: red'>" + emessage + "</span>";
+//       } else {
+//         // clear and populate dataset list
+//         populateDatasetDropdownCurate(datasetDropdown, result);
+//       }
+//     }
+//   );
+// }
 
 //// De-populate dataset dropdowns to clear options for CURATE
-function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
-  removeOptions(datasetDropdown);
+// function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
+//   removeOptions(datasetDropdown);
 
-  /// making the first option: "Select" disabled
-  addOption(datasetDropdown, "Select dataset", "Select dataset");
-  var options = datasetDropdown.getElementsByTagName("option");
-  options[0].disabled = true;
+//   /// making the first option: "Select" disabled
+//   addOption(datasetDropdown, "Select dataset", "Select dataset");
+//   var options = datasetDropdown.getElementsByTagName("option");
+//   options[0].disabled = true;
 
-  for (var myitem of datasetlist) {
-    var myitemselect = myitem.name;
-    var option = document.createElement("option");
-    option.textContent = myitemselect;
-    option.value = myitemselect;
-    datasetDropdown.appendChild(option);
-  }
-}
+//   for (var myitem of datasetlist) {
+//     var myitemselect = myitem.name;
+//     var option = document.createElement("option");
+//     option.textContent = myitemselect;
+//     option.value = myitemselect;
+//     datasetDropdown.appendChild(option);
+//   }
+// }
 ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
 //
@@ -3693,56 +3700,56 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 //   clearDatasetDropdowns()
 // })
 
-bfUploadAccountCheckBtn.addEventListener("click", (event) => {
-  bfSelectAccountStatus.innerHTML = "Please wait...";
-  bfAccountLoadProgress.style.display = "block";
-  bfAccountLoadProgressCurate.style.display = "block";
-  datasetPermissionList.selectedIndex = 0;
-  document.getElementById("para-filter-datasets-status").innerHTML = "";
-  updateBfAccountList();
-});
+// bfUploadAccountCheckBtn.addEventListener("click", (event) => {
+//   bfSelectAccountStatus.innerHTML = "Please wait...";
+//   bfAccountLoadProgress.style.display = "block";
+//   bfAccountLoadProgressCurate.style.display = "block";
+//   datasetPermissionList.selectedIndex = 0;
+//   document.getElementById("para-filter-datasets-status").innerHTML = "";
+//   updateBfAccountList();
+// });
 
 // Add new bf account //
-bfAddAccountBtn.addEventListener("click", () => {
-  bfAddAccountBtn.disabled = true;
-  bfAddAccountStatus.innerHTML = "";
-  client.invoke(
-    "api_bf_add_account",
-    keyName.value,
-    key.value,
-    secret.value,
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        var emessage = userError(error);
-        bfAddAccountStatus.innerHTML =
-          "<span style='color: red;'> " + emessage + "</span>" + sadCan;
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Manage Dataset - Connect to your Blackfynn account",
-          error
-        );
-      } else {
-        bfAddAccountStatus.innerHTML =
-          res + smileyCan + ". Please select your account!";
-        bfAccountLoadProgress.style.display = "block";
-        updateBfAccountList();
-        // updateAllBfAccountList(curateBFaccountList);
-        keyName.value = "";
-        key.value = "";
-        secret.value = "";
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Manage Dataset - Connect to your Blackfynn account"
-        );
-      }
-      bfAddAccountBtn.disabled = false;
-    }
-  );
-});
+// bfAddAccountBtn.addEventListener("click", () => {
+//   bfAddAccountBtn.disabled = true;
+//   bfAddAccountStatus.innerHTML = "";
+//   client.invoke(
+//     "api_bf_add_account",
+//     keyName.value,
+//     key.value,
+//     secret.value,
+//     (error, res) => {
+//       if (error) {
+//         log.error(error);
+//         console.error(error);
+//         var emessage = userError(error);
+//         bfAddAccountStatus.innerHTML =
+//           "<span style='color: red;'> " + emessage + "</span>" + sadCan;
+//         ipcRenderer.send(
+//           "track-event",
+//           "Error",
+//           "Manage Dataset - Connect to your Blackfynn account",
+//           error
+//         );
+//       } else {
+//         bfAddAccountStatus.innerHTML =
+//           res + smileyCan + ". Please select your account!";
+//         bfAccountLoadProgress.style.display = "block";
+//         updateBfAccountList();
+//         // updateAllBfAccountList(curateBFaccountList);
+//         keyName.value = "";
+//         key.value = "";
+//         secret.value = "";
+//         ipcRenderer.send(
+//           "track-event",
+//           "Success",
+//           "Manage Dataset - Connect to your Blackfynn account"
+//         );
+//       }
+//       bfAddAccountBtn.disabled = false;
+//     }
+//   );
+// });
 
 // Select bf account from dropdownlist and show existing dataset //
 bfAccountList.addEventListener("change", () => {
@@ -3810,7 +3817,7 @@ bfRefreshDatasetRenameDatasetBtn.addEventListener("click", () => {
 // Add new dataset folder (empty) on bf //
 bfCreateNewDatasetBtn.addEventListener("click", () => {
   bfCreateNewDatasetBtn.disabled = true;
-  disableform(bfNewDatasetForm);
+  // disableform(bfNewDatasetForm);
   //bfCreateNewDatasetStatus.innerHTML = "Adding...";
   $("#bf-create-new-dataset-spinner").css("visibility", "visible");
   var selectedbfaccount = defaultBfAccount;
@@ -3828,7 +3835,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         bfCreateNewDatasetStatus.innerHTML =
           "<span style='color: red;'> " + emessage + "</span>" + sadCan;
         bfCreateNewDatasetBtn.disabled = false;
-        enableform(bfNewDatasetForm);
+        // enableform(bfNewDatasetForm);
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -3877,7 +3884,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         $(".bf-dataset-span").html(bfNewDatasetName.value);
         $(".confirm-button").click();
         bfNewDatasetName.value = "";
-        enableform(bfNewDatasetForm);
+        // enableform(bfNewDatasetForm);
       }
     }
   );
@@ -4702,7 +4709,6 @@ bfAddPermissionBtn.addEventListener("click", () => {
 });
 
 ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
-  
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text;
@@ -4766,86 +4772,86 @@ bfAddPermissionTeamBtn.addEventListener("click", () => {
 });
 
 // Share with Curation Team //
-bfAddPermissionCurationTeamBtn.addEventListener("click", () => {
-  datasetPermissionStatusCurationTeam.innerHTML = "";
-  ipcRenderer.send("warning-share-with-curation-team", formBannerHeight.value);
-});
+// bfAddPermissionCurationTeamBtn.addEventListener("click", () => {
+//   datasetPermissionStatusCurationTeam.innerHTML = "";
+//   ipcRenderer.send("warning-share-with-curation-team", formBannerHeight.value);
+// });
 
-ipcRenderer.on("warning-share-with-curation-team-selection", (event, index) => {
-  if (index === 0) {
-    shareWithCurationTeam();
-  }
-});
+// ipcRenderer.on("warning-share-with-curation-team-selection", (event, index) => {
+//   if (index === 0) {
+//     shareWithCurationTeam();
+//   }
+// });
 
-function shareWithCurationTeam() {
-  datasetPermissionStatusCurationTeam.innerHTML = "Please wait...";
-  bfPostCurationProgressCuration.style.display = "block";
-  bfAddPermissionCurationTeamBtn.disabled = true;
+// function shareWithCurationTeam() {
+//   datasetPermissionStatusCurationTeam.innerHTML = "Please wait...";
+//   bfPostCurationProgressCuration.style.display = "block";
+//   bfAddPermissionCurationTeamBtn.disabled = true;
   
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
-  var selectedTeam = "SPARC Data Curation Team";
-  var selectedRole = "manager";
+//   var selectedBfAccount = defaultBfAccount;
+//   var selectedBfDataset = defaultBfDataset;
+//   var selectedTeam = "SPARC Data Curation Team";
+//   var selectedRole = "manager";
 
-  client.invoke(
-    "api_bf_add_permission_team",
-    selectedBfAccount,
-    selectedBfDataset,
-    selectedTeam,
-    selectedRole,
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        var emessage = userError(error);
-        datasetPermissionStatusCurationTeam.innerHTML =
-          "<span style='color: red;'> " + emessage + "</span>";
-        bfPostCurationProgressCuration.style.display = "none";
-        //enableform(bfPermissionForm);
-        bfAddPermissionCurationTeamBtn.disabled = false;
-      } else {
-        showCurrentPermission();
-        var selectedStatusOption = "03. Ready for Curation (Investigator)";
-        client.invoke(
-          "api_bf_change_dataset_status",
-          selectedBfAccount,
-          selectedBfDataset,
-          selectedStatusOption,
-          (error, res) => {
-            if (error) {
-              log.error(error);
-              console.error(error);
-              var emessage = userError(error);
-              datasetPermissionStatusCurationTeam.innerHTML =
-                "<span style='color: red;'> " + emessage + "</span>";
-              ipcRenderer.send(
-                "track-event",
-                "Error",
-                "Disseminate Dataset - Share with Curation Team",
-                selectedBfDataset
-              );
-              bfPostCurationProgressCuration.style.display = "none";
-              bfAddPermissionCurationTeamBtn.disabled = false;
-            } else {
-              datasetPermissionStatusCurationTeam.innerHTML =
-                'Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"';
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                "Disseminate Dataset - Share with Curation Team",
-                selectedBfDataset
-              );
-              //enableform(bfPermissionForm);
-              showCurrentDatasetStatus();
-              bfPostCurationProgressCuration.style.display = "none";
-              bfAddPermissionCurationTeamBtn.disabled = false;
-            }
-          }
-        );
-      }
-    }
-  );
-}
+//   client.invoke(
+//     "api_bf_add_permission_team",
+//     selectedBfAccount,
+//     selectedBfDataset,
+//     selectedTeam,
+//     selectedRole,
+//     (error, res) => {
+//       if (error) {
+//         log.error(error);
+//         console.error(error);
+//         var emessage = userError(error);
+//         datasetPermissionStatusCurationTeam.innerHTML =
+//           "<span style='color: red;'> " + emessage + "</span>";
+//         bfPostCurationProgressCuration.style.display = "none";
+//         //enableform(bfPermissionForm);
+//         bfAddPermissionCurationTeamBtn.disabled = false;
+//       } else {
+//         showCurrentPermission();
+//         var selectedStatusOption = "03. Ready for Curation (Investigator)";
+//         client.invoke(
+//           "api_bf_change_dataset_status",
+//           selectedBfAccount,
+//           selectedBfDataset,
+//           selectedStatusOption,
+//           (error, res) => {
+//             if (error) {
+//               log.error(error);
+//               console.error(error);
+//               var emessage = userError(error);
+//               datasetPermissionStatusCurationTeam.innerHTML =
+//                 "<span style='color: red;'> " + emessage + "</span>";
+//               ipcRenderer.send(
+//                 "track-event",
+//                 "Error",
+//                 "Disseminate Dataset - Share with Curation Team",
+//                 selectedBfDataset
+//               );
+//               bfPostCurationProgressCuration.style.display = "none";
+//               bfAddPermissionCurationTeamBtn.disabled = false;
+//             } else {
+//               datasetPermissionStatusCurationTeam.innerHTML =
+//                 'Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"';
+//               ipcRenderer.send(
+//                 "track-event",
+//                 "Success",
+//                 "Disseminate Dataset - Share with Curation Team",
+//                 selectedBfDataset
+//               );
+//               //enableform(bfPermissionForm);
+//               showCurrentDatasetStatus();
+//               bfPostCurationProgressCuration.style.display = "none";
+//               bfAddPermissionCurationTeamBtn.disabled = false;
+//             }
+//           }
+//         );
+//       }
+//     }
+//   );
+// }
 
 // // Share with Consortium
 // bfShareConsortiumBtn.addEventListener("click", () => {
@@ -4859,60 +4865,60 @@ function shareWithCurationTeam() {
 //   }
 // });
 
-function shareWithConsortium() {
-  shareConsortiumStatus.innerHTML = "Please wait...";
-  bfShareConsortiumBtn.disabled = true;
-  var selectedBfAccount = defaultBfAccount;
-  //  bfAccountList.options[bfAccountList.selectedIndex].text;
-  var selectedBfDataset = defaultBfDataset;
-  var selectedTeam = "SPARC Embargoed Data Sharing Group";
-  var selectedRole = "viewer";
-  client.invoke(
-    "api_bf_add_permission_team",
-    selectedBfAccount,
-    selectedBfDataset,
-    selectedTeam,
-    selectedRole,
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        var emessage = userError(error);
-        shareConsortiumStatus.innerHTML =
-          "<span style='color: red;'> " + emessage + "</span>";
-        bfShareConsortiumBtn.disabled = false;
-      } else {
-        showCurrentPermission();
-        var selectedStatusOption = "11. Complete, Under Embargo (Investigator)";
-        client.invoke(
-          "api_bf_change_dataset_status",
-          selectedBfAccount,
-          selectedBfDataset,
-          selectedStatusOption,
-          (error, res) => {
-            if (error) {
-              log.error(error);
-              console.error(error);
-              var emessage = userError(error);
-              shareConsortiumStatus.innerHTML =
-                "<span style='color: red;'> " + emessage + "</span>";
-              bfPostCurationProgressConsortium.style.display = "none";
-              // enableform(bfPostCurationForm)
-              bfShareConsortiumBtn.disabled = false;
-            } else {
-              shareConsortiumStatus.innerHTML =
-                'Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"';
-              showCurrentDatasetStatus();
-              bfPostCurationProgressConsortium.style.display = "none";
-              // enableform(bfPostCurationForm)
-              bfShareConsortiumBtn.disabled = false;
-            }
-          }
-        );
-      }
-    }
-  );
-}
+// function shareWithConsortium() {
+//   shareConsortiumStatus.innerHTML = "Please wait...";
+//   bfShareConsortiumBtn.disabled = true;
+//   var selectedBfAccount = defaultBfAccount;
+//   //  bfAccountList.options[bfAccountList.selectedIndex].text;
+//   var selectedBfDataset = defaultBfDataset;
+//   var selectedTeam = "SPARC Embargoed Data Sharing Group";
+//   var selectedRole = "viewer";
+//   client.invoke(
+//     "api_bf_add_permission_team",
+//     selectedBfAccount,
+//     selectedBfDataset,
+//     selectedTeam,
+//     selectedRole,
+//     (error, res) => {
+//       if (error) {
+//         log.error(error);
+//         console.error(error);
+//         var emessage = userError(error);
+//         shareConsortiumStatus.innerHTML =
+//           "<span style='color: red;'> " + emessage + "</span>";
+//         bfShareConsortiumBtn.disabled = false;
+//       } else {
+//         showCurrentPermission();
+//         var selectedStatusOption = "11. Complete, Under Embargo (Investigator)";
+//         client.invoke(
+//           "api_bf_change_dataset_status",
+//           selectedBfAccount,
+//           selectedBfDataset,
+//           selectedStatusOption,
+//           (error, res) => {
+//             if (error) {
+//               log.error(error);
+//               console.error(error);
+//               var emessage = userError(error);
+//               shareConsortiumStatus.innerHTML =
+//                 "<span style='color: red;'> " + emessage + "</span>";
+//               bfPostCurationProgressConsortium.style.display = "none";
+//               // enableform(bfPostCurationForm)
+//               bfShareConsortiumBtn.disabled = false;
+//             } else {
+//               shareConsortiumStatus.innerHTML =
+//                 'Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"';
+//               showCurrentDatasetStatus();
+//               bfPostCurationProgressConsortium.style.display = "none";
+//               // enableform(bfPostCurationForm)
+//               bfShareConsortiumBtn.disabled = false;
+//             }
+//           }
+//         );
+//       }
+//     }
+//   );
+// }
 
 function submitReviewDatasetCheck(res) {
   $("#submit_prepublishing_review-spinner").show();
@@ -5283,6 +5289,9 @@ function refreshBfUsersList() {
         log.error(error);
         console.error(error);
       } else {
+        // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
+        $("#bf_list_users").find("option:not(:first)").remove();
+        $("#bf_list_users_pi").find("option:not(:first)").remove();
         for (var myItem in res) {
           var myUser = res[myItem];
           var optionUser = document.createElement("option");
@@ -5312,6 +5321,8 @@ function refreshBfTeamsList(teamList) {
         log.error(error);
         console.error(error);
       } else {
+        // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
+        $("#bf_list_teams").find("option:not(:first)").remove();
         for (var myItem in res) {
           var myTeam = res[myItem];
           var optionTeam = document.createElement("option");
@@ -5575,26 +5586,26 @@ function showAccountDetails(loadProgress) {
 ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-function getDatasetList() {
-  client.invoke("api_bf_account_details", defaultBfAccount, (error, res) => {
-    if (error) {
-      log.error(error);
-      console.error(error);
-    } else {
-      datasetList = [];
-      datasetList = res["datasets"];
-    }
-  });
-}
+// function getDatasetList() {
+//   client.invoke("api_bf_account_details", defaultBfAccount, (error, res) => {
+//     if (error) {
+//       log.error(error);
+//       console.error(error);
+//     } else {
+//       datasetList = [];
+//       datasetList = res["datasets"];
+//     }
+//   });
+// }
 
 /// rename datasets in place without calling Python
-function renameDatasetInList(oldName, newName) {
-  for (var i = 0; i < datasetList.length; i++) {
-    if (datasetList[i].name === oldName) {
-      datasetList[i].name = newName;
-    }
-  }
-}
+// function renameDatasetInList(oldName, newName) {
+//   for (var i = 0; i < datasetList.length; i++) {
+//     if (datasetList[i].name === oldName) {
+//       datasetList[i].name = newName;
+//     }
+//   }
+// }
 
 /// add new datasets to dataset List without calling Python to retrieve new list from Blackfynn
 function addNewDatasetToList(newDataset) {
@@ -5638,28 +5649,28 @@ function refreshDatasetList() {
   return filteredDatasets.length;
 }
 
-function refreshDatasetListChooseOption(dropdown, selectedDataset) {
-  datasetPermissionList.selectedIndex = 0;
-  document.getElementById("para-filter-datasets-status").innerHTML = "";
+// function refreshDatasetListChooseOption(dropdown, selectedDataset) {
+//   datasetPermissionList.selectedIndex = 0;
+//   document.getElementById("para-filter-datasets-status").innerHTML = "";
 
-  var datasetListSorted = datasetList.sort();
+//   var datasetListSorted = datasetList.sort();
 
-  var filteredDatasets = [];
-  for (var i = 0; i < datasetListSorted.length; i++) {
-    filteredDatasets.push(datasetListSorted[i].name);
-  }
-  populateDatasetDropdowns(filteredDatasets);
-  selectOptionDropdown(dropdown, selectedDataset);
-}
+//   var filteredDatasets = [];
+//   for (var i = 0; i < datasetListSorted.length; i++) {
+//     filteredDatasets.push(datasetListSorted[i].name);
+//   }
+//   populateDatasetDropdowns(filteredDatasets);
+//   selectOptionDropdown(dropdown, selectedDataset);
+// }
 
-function selectOptionDropdown(dropdown, selectedDataset) {
-  var dropdownString = dropdown + " option";
-  $(dropdownString).each(function () {
-    if ($(this).text() == selectedDataset) {
-      $(this).prop("selected", true);
-    }
-  });
-}
+// function selectOptionDropdown(dropdown, selectedDataset) {
+//   var dropdownString = dropdown + " option";
+//   $(dropdownString).each(function () {
+//     if ($(this).text() == selectedDataset) {
+//       $(this).prop("selected", true);
+//     }
+//   });
+// }
 
 //// De-populate dataset dropdowns to clear options
 const clearDatasetDropdowns = () => {
@@ -5884,7 +5895,7 @@ function showPublishingStatus(callback) {
 
 function publishStatusOutputConversion(res) {
   var reviewStatus = res[0];
-  var publishStatus = res[1];
+  //var publishStatus = res[1];
 
   var outputMessage = "";
   if (reviewStatus === "draft" || reviewStatus === "cancelled") {
@@ -6128,61 +6139,61 @@ function insertFileToTable(table, pathlist, SPARCfolder) {
   }
 }
 
-function insertFileToMetadataTable(table, pathlist) {
-  var i;
-  var rowcount = 0;
-  var jsonvar = tableToJsonMetadata(table);
-  var emessage = "";
-  var count = 0;
-  var emessage2 = "";
-  var count2 = 0;
-  var SPARCfolder = "metadata";
+// function insertFileToMetadataTable(table, pathlist) {
+//   var i;
+//   var rowcount = 0;
+//   var jsonvar = tableToJsonMetadata(table);
+//   var emessage = "";
+//   var count = 0;
+//   var emessage2 = "";
+//   var count2 = 0;
+//   var SPARCfolder = "metadata";
 
-  var listfilePath = [];
-  for (let filePath of jsonvar[SPARCfolder]) {
-    var extension = path.extname(filePath);
-    var file = path.basename(filePath, extension);
-    listfilePath.push(file);
-  }
-  for (i = 0; i < pathlist.length; i++) {
-    var extension = path.extname(pathlist[i]);
-    var fileFull = path.basename(pathlist[i]);
-    var file = path.basename(pathlist[i], extension);
-    if (allowedMedataFiles.indexOf(fileFull) === -1) {
-      emessage2 =
-        emessage2 + file + " is not an expected SPARC metadata file" + "\n";
-      count2 += 1;
-    }
-    if (listfilePath.indexOf(file) > -1) {
-      emessage =
-        emessage + "File " + file + " already added to " + SPARCfolder + "\n";
-      count += 1;
-    }
-  }
+//   var listfilePath = [];
+//   for (let filePath of jsonvar[SPARCfolder]) {
+//     var extension = path.extname(filePath);
+//     var file = path.basename(filePath, extension);
+//     listfilePath.push(file);
+//   }
+//   for (i = 0; i < pathlist.length; i++) {
+//     var extension = path.extname(pathlist[i]);
+//     var fileFull = path.basename(pathlist[i]);
+//     var file = path.basename(pathlist[i], extension);
+//     if (allowedMedataFiles.indexOf(fileFull) === -1) {
+//       emessage2 =
+//         emessage2 + file + " is not an expected SPARC metadata file" + "\n";
+//       count2 += 1;
+//     }
+//     if (listfilePath.indexOf(file) > -1) {
+//       emessage =
+//         emessage + "File " + file + " already added to " + SPARCfolder + "\n";
+//       count += 1;
+//     }
+//   }
 
-  if (count > 0) {
-    ipcRenderer.send("open-error-file-exist", emessage);
-  } else if (count2 > 0) {
-    ipcRenderer.send("open-error-wrong-file", emessage2);
-  } else {
-    for (i = 0; i < pathlist.length; i++) {
-      tableMetadataCount = tableMetadataCount + 1;
-      var table_len = tableMetadataCount;
-      var rownum = rowcount + i + 1;
-      var row = (table.insertRow(rownum).outerHTML =
-        "<tr id='row_metadata" +
-        table_len +
-        "'style='color: #000000;'><td id='name_row_metadata" +
-        table_len +
-        "'>" +
-        pathlist[i] +
-        "</td><td> <input type='button' value='Delete row' class='delete' onclick='delete_row_metadata(" +
-        table_len +
-        ")'></td></tr>");
-    }
-  }
-  return table;
-}
+//   if (count > 0) {
+//     ipcRenderer.send("open-error-file-exist", emessage);
+//   } else if (count2 > 0) {
+//     ipcRenderer.send("open-error-wrong-file", emessage2);
+//   } else {
+//     for (i = 0; i < pathlist.length; i++) {
+//       tableMetadataCount = tableMetadataCount + 1;
+//       var table_len = tableMetadataCount;
+//       var rownum = rowcount + i + 1;
+//       var row = (table.insertRow(rownum).outerHTML =
+//         "<tr id='row_metadata" +
+//         table_len +
+//         "'style='color: #000000;'><td id='name_row_metadata" +
+//         table_len +
+//         "'>" +
+//         pathlist[i] +
+//         "</td><td> <input type='button' value='Delete row' class='delete' onclick='delete_row_metadata(" +
+//         table_len +
+//         ")'></td></tr>");
+//     }
+//   }
+//   return table;
+// }
 
 function tableToJson(table) {
   var jsonvar = {};
@@ -7190,58 +7201,58 @@ function hideMenu(category, menu1, menu2, menu3) {
   }
 }
 
-function changeStepOrganize(step) {
-  if (step.id === "button-organize-prev") {
-    document.getElementById("div-step-1-organize").style.display = "block";
-    document.getElementById("div-step-2-organize").style.display = "none";
-    document.getElementById("dash-title").innerHTML =
-      "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>High-level folders";
-    organizeNextStepBtn.style.display = "block";
-    organizePrevStepBtn.style.display = "none";
-  } else {
-    document.getElementById("div-step-1-organize").style.display = "none";
-    document.getElementById("div-step-2-organize").style.display = "block";
-    document.getElementById("dash-title").innerHTML =
-      "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>Generate dataset";
-    organizePrevStepBtn.style.display = "block";
-    organizeNextStepBtn.style.display = "none";
-  }
-}
+// function changeStepOrganize(step) {
+//   if (step.id === "button-organize-prev") {
+//     document.getElementById("div-step-1-organize").style.display = "block";
+//     document.getElementById("div-step-2-organize").style.display = "none";
+//     document.getElementById("dash-title").innerHTML =
+//       "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>High-level folders";
+//     organizeNextStepBtn.style.display = "block";
+//     organizePrevStepBtn.style.display = "none";
+//   } else {
+//     document.getElementById("div-step-1-organize").style.display = "none";
+//     document.getElementById("div-step-2-organize").style.display = "block";
+//     document.getElementById("dash-title").innerHTML =
+//       "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>Generate dataset";
+//     organizePrevStepBtn.style.display = "block";
+//     organizeNextStepBtn.style.display = "none";
+//   }
+// }
 
-var newDSName;
-function generateDataset(button) {
-  document.getElementById("para-organize-datasets-success").style.display =
-    "none";
-  document.getElementById("para-organize-datasets-error").style.display =
-    "none";
-  if (button.id === "btn-generate-locally") {
-    $("#btn-generate-BF").removeClass("active");
-    $(button).toggleClass("active");
-    bootbox.prompt({
-      title: "Generate dataset locally",
-      message: "Enter a name for the dataset:",
-      buttons: {
-        cancel: {
-          label: '<i class="fa fa-times"></i> Cancel',
-        },
-        confirm: {
-          label: '<i class="fa fa-check"></i> Confirm and Choose location',
-          className: "btn-success",
-        },
-      },
-      centerVertical: true,
-      callback: function (r) {
-        if (r !== null && r.trim() !== "") {
-          newDSName = r.trim();
-          ipcRenderer.send("open-file-dialog-newdataset");
-        }
-      },
-    });
-  } else {
-    $("#btn-generate-locally").removeClass("active");
-    $(button).toggleClass("active");
-  }
-}
+// var newDSName;
+// function generateDataset(button) {
+//   document.getElementById("para-organize-datasets-success").style.display =
+//     "none";
+//   document.getElementById("para-organize-datasets-error").style.display =
+//     "none";
+//   if (button.id === "btn-generate-locally") {
+//     $("#btn-generate-BF").removeClass("active");
+//     $(button).toggleClass("active");
+//     bootbox.prompt({
+//       title: "Generate dataset locally",
+//       message: "Enter a name for the dataset:",
+//       buttons: {
+//         cancel: {
+//           label: '<i class="fa fa-times"></i> Cancel',
+//         },
+//         confirm: {
+//           label: '<i class="fa fa-check"></i> Confirm and Choose location',
+//           className: "btn-success",
+//         },
+//       },
+//       centerVertical: true,
+//       callback: function (r) {
+//         if (r !== null && r.trim() !== "") {
+//           newDSName = r.trim();
+//           ipcRenderer.send("open-file-dialog-newdataset");
+//         }
+//       },
+//     });
+//   } else {
+//     $("#btn-generate-locally").removeClass("active");
+//     $(button).toggleClass("active");
+//   }
+// }
 
 ipcRenderer.on("selected-new-dataset", (event, filepath) => {
   if (filepath.length > 0) {
@@ -7590,15 +7601,15 @@ function drop(ev) {
 }
 
 // SAVE FILE ORG
-ipcRenderer.on("save-file-organization-dialog", (event) => {
-  const options = {
-    title: "Save File Organization",
-    filters: [{ name: "JSON", extensions: ["json"] }],
-  };
-  dialog.showSaveDialog(null, options, (filename) => {
-    event.sender.send("selected-saveorganizationfile", filename);
-  });
-});
+// ipcRenderer.on("save-file-organization-dialog", (event) => {
+//   const options = {
+//     title: "Save File Organization",
+//     filters: [{ name: "JSON", extensions: ["json"] }],
+//   };
+//   dialog.showSaveDialog(null, options, (filename) => {
+//     event.sender.send("selected-saveorganizationfile", filename);
+//   });
+// });
 
 //////////////////////////////////////////////////////////////////////////////
 /////////////////// CONTEXT MENU OPTIONS FOR FOLDERS AND FILES ///////////////
@@ -8156,10 +8167,10 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
   });
 }
 
-function sliceStringByValue(string, endingValue) {
-  var newString = string.slice(string.indexOf(endingValue) + 1);
-  return newString;
-}
+// function sliceStringByValue(string, endingValue) {
+//   var newString = string.slice(string.indexOf(endingValue) + 1);
+//   return newString;
+// }
 
 var fileNameForEdit;
 ///// Option to manage description for files
@@ -8321,7 +8332,7 @@ $("#inputNewNameDataset").keyup(function () {
 //// Select to choose a local dataset (getting started)
 document
   .getElementById("input-destination-getting-started-locally")
-  .addEventListener("click", function () {
+  .addEventListener("click", () => {
     $("#Question-getting-started-locally-destination")
       .nextAll()
       .removeClass("show");
@@ -8409,7 +8420,7 @@ ipcRenderer.on(
 //// Select to choose a local dataset (generate dataset)
 document
   .getElementById("input-destination-generate-dataset-locally")
-  .addEventListener("click", function () {
+  .addEventListener("click", () => {
     $("#Question-generate-dataset-locally-destination")
       .nextAll()
       .removeClass("show");
@@ -8453,7 +8464,7 @@ ipcRenderer.on(
 
 document
   .getElementById("button-generate-comeback")
-  .addEventListener("click", function () {
+  .addEventListener("click", () => {
     document.getElementById("generate-dataset-progress-tab").style.display =
       "none";
     document.getElementById("div-vertical-progress-bar").style.display = "flex";
@@ -8469,7 +8480,7 @@ document
   });
 
 // function to hide the sidebar and disable the sidebar expand button
-function forceActionSidebar(action) {
+const forceActionSidebar = (action) => {
   if (action === "hide") {
     if (!$("#main-nav").hasClass("active")) {
       $("#sidebarCollapse").click();
@@ -8655,7 +8666,7 @@ function initiate_generate() {
           if (error) {
             log.error(error);
             console.log(error);
-            var emessage = error;
+            // var emessage = error;
           } else {
             datasetList = [];
             datasetList = result;

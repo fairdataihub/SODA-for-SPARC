@@ -528,6 +528,8 @@ const importOrganizeProgressPrompt = () => {
 
 $(document).ready(function () {
   importOrganizeProgressPrompt();
+  $("#bf_list_users_pi").selectpicker();
+  $("#bf_list_users_pi").selectpicker("refresh");
   $("#bf_list_users").selectpicker();
   $("#bf_list_users").selectpicker("refresh");
   $("#bf_list_roles").selectpicker();
@@ -697,6 +699,8 @@ async function openDropdownPrompt(dropdown) {
       showBFAddAccountBootbox();
     }
   } else if (dropdown === "dataset") {
+    $(".svg-change-current-account.dataset").css("display", "none");
+    $(".ui.active.green.inline.loader.small").css("display", "block");
     // disable the Continue btn first
     $("#nextBtn").prop("disabled", true);
     var bfDataset = "";
@@ -821,6 +825,8 @@ async function openDropdownPrompt(dropdown) {
       showHideDropdownButtons("dataset", "show");
     }
     $("body").removeClass("waiting");
+    $(".svg-change-current-account.dataset").css("display", "block");
+    $(".ui.active.green.inline.loader.small").css("display", "none");
   }
 }
 

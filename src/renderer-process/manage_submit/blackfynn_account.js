@@ -1,24 +1,24 @@
 const { ipcRenderer } = require("electron");
 
-function showAddAccount() {
-  document.getElementById("div-add-account").style.display = "block";
-  document.getElementById("div-select-account").style.display = "none";
-  document.getElementById("para-add-account-status").innerHTML = "";
-}
+// function showAddAccount() {
+//   document.getElementById("div-add-account").style.display = "block";
+//   document.getElementById("div-select-account").style.display = "none";
+//   document.getElementById("para-add-account-status").innerHTML = "";
+// }
 
-function showSelectAccount() {
-  document.getElementById("div-add-account").style.display = "none";
-  document.getElementById("div-select-account").style.display = "block";
-  document.getElementById("para-add-account-status").innerHTML = "";
-}
+// function showSelectAccount() {
+//   document.getElementById("div-add-account").style.display = "none";
+//   document.getElementById("div-select-account").style.display = "block";
+//   document.getElementById("para-add-account-status").innerHTML = "";
+// }
 
-document.querySelector("#addAccount").addEventListener("click", () => {
-  showAddAccount();
-});
+// document.querySelector("#addAccount").addEventListener("click", () => {
+//   showAddAccount();
+// });
 
-document.querySelector("#selectAccount").addEventListener("click", () => {
-  showSelectAccount();
-});
+// document.querySelector("#selectAccount").addEventListener("click", () => {
+//   showSelectAccount();
+// });
 
 //Blackfynn manage datasets
 /*
@@ -46,40 +46,40 @@ document.querySelector("#renameDataset").addEventListener("click", () => {
 //
 // Blackfynn Metadata
 //
-/*
-function showAddEditSubtitle() {
-  document.getElementById("div-add-edit-subtitle").style.display = "block";
-  document.getElementById("div-add-edit-description").style.display = "none";
-  document.getElementById("div-add-edit-banner").style.display = "none";
-  document.getElementById("div-add-edit-license").style.display = "none";
-}
-function showAddEditDescription() {
-  document.getElementById("div-add-edit-subtitle").style.display = "none";
-  document.getElementById("div-add-edit-description").style.display = "block";
-  document.getElementById("div-add-edit-banner").style.display = "none";
-  document.getElementById("div-add-edit-license").style.display = "none";
-}
-function showAddEditBanner() {
-  document.getElementById("div-add-edit-subtitle").style.display = "none";
-  document.getElementById("div-add-edit-description").style.display = "none";
-  document.getElementById("div-add-edit-banner").style.display = "block";
-  document.getElementById("div-add-edit-license").style.display = "none";
-}
-function showAddEditLicense() {
-  document.getElementById("div-add-edit-subtitle").style.display = "none";
-  document.getElementById("div-add-edit-description").style.display = "none";
-  document.getElementById("div-add-edit-banner").style.display = "none";
-  document.getElementById("div-add-edit-license").style.display = "block";
-}
 
-document.querySelector("#add-edit-subtitle").addEventListener("click", () => {
-  document.getElementById("para-dataset-subtitle-status").innerHTML = "";
-  document.getElementById("para-dataset-description-status").innerHTML = "";
-  document.getElementById("para-dataset-banner-image-status").innerHTML = "";
-  document.getElementById("para-dataset-license-status").innerHTML = "";
-  showAddEditSubtitle();
-});
-*/
+// function showAddEditSubtitle() {
+//   document.getElementById("div-add-edit-subtitle").style.display = "block";
+//   document.getElementById("div-add-edit-description").style.display = "none";
+//   document.getElementById("div-add-edit-banner").style.display = "none";
+//   document.getElementById("div-add-edit-license").style.display = "none";
+// }
+// function showAddEditDescription() {
+//   document.getElementById("div-add-edit-subtitle").style.display = "none";
+//   document.getElementById("div-add-edit-description").style.display = "block";
+//   document.getElementById("div-add-edit-banner").style.display = "none";
+//   document.getElementById("div-add-edit-license").style.display = "none";
+// }
+// function showAddEditBanner() {
+//   document.getElementById("div-add-edit-subtitle").style.display = "none";
+//   document.getElementById("div-add-edit-description").style.display = "none";
+//   document.getElementById("div-add-edit-banner").style.display = "block";
+//   document.getElementById("div-add-edit-license").style.display = "none";
+// }
+// function showAddEditLicense() {
+//   document.getElementById("div-add-edit-subtitle").style.display = "none";
+//   document.getElementById("div-add-edit-description").style.display = "none";
+//   document.getElementById("div-add-edit-banner").style.display = "none";
+//   document.getElementById("div-add-edit-license").style.display = "block";
+// }
+
+// document.querySelector("#add-edit-subtitle").addEventListener("click", () => {
+//   document.getElementById("para-dataset-subtitle-status").innerHTML = "";
+//   document.getElementById("para-dataset-description-status").innerHTML = "";
+//   document.getElementById("para-dataset-banner-image-status").innerHTML = "";
+//   document.getElementById("para-dataset-license-status").innerHTML = "";
+//   showAddEditSubtitle();
+// });
+
 
 // document
 //   .querySelector("#add-edit-description")
