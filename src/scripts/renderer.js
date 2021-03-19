@@ -799,7 +799,7 @@ function importMilestoneDocument() {
           ).style.display = "block";
           document.getElementById(
             "para-milestone-document-info-long"
-          ).innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+          ).innerHTML = "<span style='color: red;'> " + emessage + ".</span>";
         } else {
           milestoneObj = res;
           createMetadataDir();
@@ -2379,7 +2379,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         var emessage = userError(error);
         $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
         bfCreateNewDatasetStatus.innerHTML =
-          "<span style='color: red;'> " + emessage + "</span>" + sadCan;
+          "<span style='color: red; font-size: 17px;'> " + emessage + ". </span>" + sadCan;
         bfCreateNewDatasetBtn.disabled = false;
         ipcRenderer.send(
           "track-event",
@@ -2393,10 +2393,10 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         defaultBfDataset = bfNewDatasetName.value;
         tempDatasetListsSync()
         bfCreateNewDatasetStatus.innerHTML =
-          "Success: created dataset" +
+          "<span style='font-size: 17px; color: #13716D;'>Success: Created dataset" +
           " '" +
           bfNewDatasetName.value +
-          "'" +
+          "'. </span>" +
           smileyCan;
         currentDatasetPermission.innerHTML = "";
         currentAddEditDatasetPermission.innerHTML = "";
@@ -2442,7 +2442,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
   if (currentDatasetName === "Select dataset") {
     emessage = "Please select a valid dataset";
     bfRenameDatasetStatus.innerHTML =
-      "<span style='color: red;'> " + emessage + "</span>" + sadCan;
+      "<span style='color: red;'> " + emessage + ". </span>" + sadCan;
   } else {
     $("#bf-rename-dataset-spinner").css("visibility", "visible");
     bfRenameDatasetBtn.disabled = true;
@@ -2459,7 +2459,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
           var emessage = userError(error);
           $("#bf-rename-dataset-spinner").css("visibility", "hidden");
           bfRenameDatasetStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>" + sadCan;
+            "<span style='color: red;'> " + emessage + ". </span>" + sadCan;
           bfRenameDatasetBtn.disabled = false;
           ipcRenderer.send(
             "track-event",
@@ -2474,14 +2474,15 @@ bfRenameDatasetBtn.addEventListener("click", () => {
           datasetDescriptionFileDataset.value = renamedDatasetName;
           renameDatasetName.value = renamedDatasetName;
           bfRenameDatasetStatus.innerHTML =
-            "Success: renamed dataset" +
+            "Success: Renamed dataset" +
             " '" +
             currentDatasetName +
             "'" +
             " to" +
             " '" +
             renamedDatasetName +
-            "'";
+            "'. " +
+            smileyCan;
           bfRenameDatasetBtn.disabled = false;
           ipcRenderer.send(
             "track-event",
@@ -3206,12 +3207,12 @@ bfAddPermissionTeamBtn.addEventListener("click", () => {
         var emessage = userError(error);
         $("#bf-add-permission-team-spinner").hide();
         datasetPermissionStatusTeam.innerHTML =
-          "<span style='color: red;'> " + emessage + "</span>";
+          "<span style='color: red;'> " + emessage + ". </span>" + sadCan;
         bfCurrentPermissionProgress.style.display = "none";
         bfAddEditCurrentPermissionProgress.style.display = "none";
       } else {
         $("#bf-add-permission-team-spinner").hide();
-        datasetPermissionStatusTeam.innerHTML = res;
+        datasetPermissionStatusTeam.innerHTML = res + ". " + smileyCan;
         showCurrentPermission();
       }
     }
