@@ -1759,6 +1759,7 @@ function grabCompletenessInfo() {
 datasetDescriptionFileDataset.addEventListener("change", function () {
   document.getElementById("ds-description").disabled = true;
   document.getElementById("ds-description").innerHTML = "Loading...";
+  defaultBfDataset = datasetDescriptionFileDataset.value
   showDatasetDescription();
 });
 
@@ -2382,6 +2383,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
         $(bfCreateNewDatasetBtn).hide();
         defaultBfDataset = bfNewDatasetName.value;
+        tempDatasetListsSync()
         bfCreateNewDatasetStatus.innerHTML =
           "Success: created dataset" +
           " '" +
@@ -2392,7 +2394,6 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         currentAddEditDatasetPermission.innerHTML = "";
         bfCreateNewDatasetBtn.disabled = false;
         addNewDatasetToList(bfNewDatasetName.value);
-        document.getElementById("para-filter-datasets-status").innerHTML = "";
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -2414,6 +2415,8 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
           }
         );
         $(".bf-dataset-span").html(bfNewDatasetName.value);
+        refreshDatasetList()
+        datasetDescriptionFileDataset.value = bfNewDatasetName.value
         $(".confirm-button").click();
         bfNewDatasetName.value = "";
       }
@@ -2457,7 +2460,9 @@ bfRenameDatasetBtn.addEventListener("click", () => {
           );
         } else {
           defaultBfDataset = renamedDatasetName;
+          tempDatasetListsSync()
           $(".bf-dataset-span").html(renamedDatasetName);
+          datasetDescriptionFileDataset.value = renamedDatasetName;
           renameDatasetName.value = renamedDatasetName;
           bfRenameDatasetStatus.innerHTML =
             "Success: renamed dataset" +
@@ -3804,7 +3809,6 @@ function refreshDatasetList() {
 }
 
 function refreshDatasetListChooseOption(dropdown, selectedDataset) {
-  document.getElementById("para-filter-datasets-status").innerHTML = "";
 
   var datasetListSorted = datasetList.sort();
   var filteredDatasets = [];

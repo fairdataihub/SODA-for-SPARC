@@ -642,6 +642,7 @@ async function openDropdownPrompt(dropdown) {
         $("#current-bf-dataset-generate").text("None");
         $(".bf-dataset-span").html("None");
         defaultBfDataset = "Select dataset";
+        document.getElementById("ds-description").innerHTML = "";
         tempDatasetListsSync();
         $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
           "display",
@@ -799,6 +800,7 @@ async function openDropdownPrompt(dropdown) {
       $(".bf-dataset-span").html(bfDataset);
 
       defaultBfDataset = bfDataset;
+      document.getElementById("ds-description").innerHTML = "";
 
       tempDatasetListsSync();
       $("#dataset-loaded-message").hide();
