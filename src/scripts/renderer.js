@@ -222,23 +222,11 @@ var defaultBfDataset = "Select dataset";
 var bfAccountOptionsStatus;
 
 // Organize dataset //
-const selectSaveFileOrganizationBtn = document.getElementById(
-  "button-select-save-file-organization"
-);
 const selectImportFileOrganizationBtn = document.getElementById(
   "button-select-upload-file-organization"
 );
 const tableMetadata = document.getElementById("metadata-table");
 let tableMetadataCount = 0;
-const previewProgressBar = document.getElementById(
-  "div-dataset-preview-progress"
-);
-const previewMetadataProgressBar = document.getElementById(
-  "div-metadata-preview-progress"
-);
-const selectSaveFileOrganizationMetadataBtn = document.getElementById(
-  "button-select-save-file-organization-metadata"
-);
 
 // Validate dataset //
 const validateCurrentDSBtn = document.getElementById(
@@ -3274,7 +3262,6 @@ function submitReviewDataset() {
         );
         showPublishingStatus("noClear");
       }
-      bfSubmitReviewDatasetBtn.disabled = false;
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
       bfWithdrawReviewDatasetBtn.disabled = false;
       $("#submit_prepublishing_review-spinner").hide();
@@ -3308,7 +3295,6 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
 });
 
 function withdrawReviewDataset() {
-  bfSubmitReviewDatasetBtn.disabled = true;
   bfWithdrawReviewDatasetBtn.disabled = true;
   var selectedBfAccount = $("#current-bf-dataset").text();
   var selectedBfDataset = $(".bf-dataset-span").html();
@@ -3333,7 +3319,6 @@ function withdrawReviewDataset() {
         );
         showPublishingStatus("noClear");
       }
-      bfSubmitReviewDatasetBtn.disabled = false;
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
       bfWithdrawReviewDatasetBtn.disabled = false;
       $("#submit_prepublishing_review-spinner").hide();
@@ -3361,13 +3346,6 @@ function clearStrings() {
   ).innerHTML = "";
   document.getElementById("para-selected-dataset").innerHTML = "";
 }
-
-/*
-function clearPermissionsStrings() {
-  document.getElementById("para-save-file-organization-status").innerHTML = "";
-  document.getElementById("para-selected-dataset").innerHTML = "";
-}
-*/
 
 function userError(error) {
   var myerror = error.message;
@@ -3822,7 +3800,6 @@ function refreshDatasetList() {
 
   populateDatasetDropdowns(filteredDatasets);
   parentDSTagify.settings.whitelist = getParentDatasets();
-  console.log(filteredDatasets);
   return filteredDatasets.length;
 }
 
@@ -3830,7 +3807,6 @@ function refreshDatasetListChooseOption(dropdown, selectedDataset) {
   document.getElementById("para-filter-datasets-status").innerHTML = "";
 
   var datasetListSorted = datasetList.sort();
-    console.log("here")
   var filteredDatasets = [];
   for (var i = 0; i < datasetListSorted.length; i++) {
     filteredDatasets.push(datasetListSorted[i].name);

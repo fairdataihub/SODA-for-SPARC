@@ -487,8 +487,6 @@ function checkAirtableStatus() {
               fetchNextPage();
           },
           function done(err) {
-            document.getElementById("div-awards-load-progress").style.display =
-              "none";
             if (err) {
               changeAirtableDiv(
                 "div-field-already-connected",
