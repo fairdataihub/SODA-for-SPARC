@@ -3349,13 +3349,6 @@ function removeOptions(selectbox) {
 //   document.getElementById("para-selected-dataset").innerHTML = "";
 // }
 
-/*
-function clearPermissionsStrings() {
-  document.getElementById("para-save-file-organization-status").innerHTML = "";
-  document.getElementById("para-selected-dataset").innerHTML = "";
-}
-*/
-
 function userError(error) {
   var myerror = error.message;
   return myerror;

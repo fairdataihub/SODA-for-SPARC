@@ -2639,7 +2639,7 @@ def main_curate_function(soda_json_structure):
                 #     add_local_manifest_files(manifest_files_structure, datasetpath)
 
             if soda_json_structure["generate-dataset"]["destination"] == "bf":
-                main_generate_destination = soda_json_structure["generate-dataset"]["destination"] 
+                main_generate_destination = soda_json_structure["generate-dataset"]["destination"]
                 if generate_option == "new":
                     if "dataset-name" in soda_json_structure["generate-dataset"]:
                         dataset_name = soda_json_structure["generate-dataset"]["dataset-name"]
@@ -2681,11 +2681,11 @@ def main_curate_function_progress():
     elapsed_time_formatted = time_format(elapsed_time)
 
     if start_generate == 1:
-        if main_generate_destination == "bf":  
+        if main_generate_destination == "bf":
             main_generated_dataset_size = bf_dataset_size() - main_initial_bfdataset_size
 
 
-    return (main_curate_status, start_generate, main_curate_progress_message, main_total_generate_dataset_size, main_generated_dataset_size, elapsed_time_formatted, temp, main_initial_bfdataset_size)
+    return (main_curate_status, start_generate, main_curate_progress_message, main_total_generate_dataset_size, main_generated_dataset_size, elapsed_time_formatted)
 
 
 def preview_dataset(soda_json_structure):
