@@ -2594,7 +2594,7 @@ ipcRenderer.on("selected-dataset", (event, path) => {
       jsonToTableOrganized(tableOrganized, jsonFolder);
     } else {
       pathDataset.innerHTML =
-        "<span style='color: red;'> Error: Please select a dataset with SPARC folder structure. </span>" +
+        "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>" +
         sadCan;
     }
   }
