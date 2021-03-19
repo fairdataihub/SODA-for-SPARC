@@ -699,13 +699,16 @@ async function openDropdownPrompt(dropdown) {
       showBFAddAccountBootbox();
     }
   } else if (dropdown === "dataset") {
+    console.log("hiding1")
     $(".svg-change-current-account.dataset").css("display", "none");
     $(".ui.active.green.inline.loader.small").css("display", "block");
-    setTimeout(async () => {
+    console.log("hiding2")
+
+    setTimeout(async function () {
       // disable the Continue btn first
       $("#nextBtn").prop("disabled", true);
       var bfDataset = "";
-
+  
       // if users edit Current dataset
       datasetPermissionDiv.style.display = "block";
       $(datasetPermissionDiv)
@@ -714,16 +717,16 @@ async function openDropdownPrompt(dropdown) {
         .empty()
         .append('<option value="Select dataset">Select dataset</option>')
         .val("Select dataset");
-
+  
       $(datasetPermissionDiv)
         .find("#div-filter-datasets-progress-2")
         .css("display", "block");
-
+  
       $("#bf-dataset-select-header").css("display", "none");
-
+  
       $(datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
       $("#para-continue-bf-dataset-getting-started").text("");
-
+  
       $(datasetPermissionDiv)
         .find("#select-permission-list-2")
         .val("All")
@@ -732,13 +735,15 @@ async function openDropdownPrompt(dropdown) {
         .find("#curatebfdatasetlist")
         .val("Select dataset")
         .trigger("change");
-
-      initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
-
-      $("#curatebfdatasetlist").selectpicker("render");
+  
+      //initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
+  
+      $("#curatebfdatasetlist").selectpicker("hide");
       $("#curatebfdatasetlist").selectpicker("refresh");
+      $(".selectpicker").selectpicker("hide");
+      $(".selectpicker").selectpicker("refresh");
       $("#bf-dataset-select-div").hide();
-
+  
       const { value: bfDS } = await Swal.fire({
         title:
           "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
@@ -755,38 +760,38 @@ async function openDropdownPrompt(dropdown) {
         },
         preConfirm: () => {
           $("body").addClass("waiting");
-
+  
           $(datasetPermissionDiv)
             .find("#div-filter-datasets-progress-2")
             .css("display", "block");
           $("#curatebfdatasetlist").selectpicker("hide");
           $("#curatebfdatasetlist").selectpicker("refresh");
           $("#bf-dataset-select-div").hide();
-
+  
           bfDataset = $("#curatebfdatasetlist").val();
-
+  
           if (!bfDataset) {
             Swal.showValidationMessage("Please select a dataset!");
-
+  
             $(datasetPermissionDiv)
               .find("#div-filter-datasets-progress-2")
               .css("display", "none");
             $("#curatebfdatasetlist").selectpicker("show");
             $("#curatebfdatasetlist").selectpicker("refresh");
             $("#bf-dataset-select-div").show();
-
+  
             return undefined;
           } else {
             if (bfDataset === "Select dataset") {
               Swal.showValidationMessage("Please select a dataset!");
-
+  
               $(datasetPermissionDiv)
                 .find("#div-filter-datasets-progress-2")
                 .css("display", "none");
               $("#curatebfdatasetlist").selectpicker("show");
               $("#curatebfdatasetlist").selectpicker("refresh");
               $("#bf-dataset-select-div").show();
-
+  
               return undefined;
             } else {
               return bfDataset;
@@ -794,38 +799,29 @@ async function openDropdownPrompt(dropdown) {
           }
         },
       });
-
+  
       // check return value
       if (bfDS) {
-        // console.log("firing")
-        // Swal.fire({
-        //   title: "Loading your dataset details...",
-        //   timer: 1000,
-        //   timerProgressBar: true,
-        //   allowEscapeKey: false,
-        //   showConfirmButton: false,
-        // });
-        // $("#current-bf-dataset").text(bfDataset);
-        // $("#current-bf-dataset-generate").text(bfDataset);
-        // $(".bf-dataset-span").html(bfDataset);
-        // console.log("firing done")
-        
+        $("#current-bf-dataset").text(bfDataset);
+        $("#current-bf-dataset-generate").text(bfDataset);
+        $(".bf-dataset-span").html(bfDataset);
+  
         defaultBfDataset = bfDataset;
-
+  
         tempDatasetListsSync();
         $("#dataset-loaded-message").hide();
-
+  
         showHideDropdownButtons("dataset", "show");
         // checkPrevDivForConfirmButton("dataset");
       }
-
+  
       // hide "Confirm" button if Current dataset set to None
       if ($("#current-bf-dataset-generate").text() === "None") {
         showHideDropdownButtons("dataset", "hide");
       } else {
         showHideDropdownButtons("dataset", "show");
       }
-
+  
       // hide "Confirm" button if Current dataset under Getting started set to None
       if ($("#current-bf-dataset").text() === "None") {
         showHideDropdownButtons("dataset", "hide");
@@ -836,6 +832,7 @@ async function openDropdownPrompt(dropdown) {
       $(".svg-change-current-account.dataset").css("display", "block");
       $(".ui.active.green.inline.loader.small").css("display", "none");
     }, 0);
+
   }
 }
 
@@ -846,6 +843,8 @@ $("#select-permission-list-2").change((e) => {
   $("#bf-dataset-select-header").css("display", "none");
   $("#curatebfdatasetlist").selectpicker("hide");
   $("#curatebfdatasetlist").selectpicker("refresh");
+  $(".selectpicker").selectpicker("hide");
+  $(".selectpicker").selectpicker("refresh");
   $("#bf-dataset-select-div").hide();
 
   // var datasetPermission = $("#select-permission-list-2").val();
