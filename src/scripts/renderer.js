@@ -140,9 +140,9 @@ const restartApp = () => {
 //////////////////////////////////
 
 // Navigator button //
-// const buttonSidebar = document.getElementById("button-hamburger");
+const buttonSidebar = document.getElementById("button-hamburger");
 const buttonSidebarIcon = document.getElementById("button-soda-icon");
-// const buttonSidebarBigIcon = document.getElementById("button-soda-big-icon");
+const buttonSidebarBigIcon = document.getElementById("button-soda-big-icon");
 
 // Metadata Templates //
 const downloadSubmission = document.getElementById("a-submission");
@@ -189,13 +189,13 @@ const dsContributorArrayFirst1 = document.getElementById(
 
 var contributorRoles = document.getElementById("input-con-role-1");
 const affiliationInput = document.getElementById("input-con-affiliation-1");
-// const addCurrentContributorsBtn = document.getElementById(
-//   "button-ds-add-contributor"
-// );
+const addCurrentContributorsBtn = document.getElementById(
+  "button-ds-add-contributor"
+);
 const contactPerson = document.getElementById("ds-contact-person");
 const currentConTable = document.getElementById("table-current-contributors");
 const generateDSBtn = document.getElementById("button-generate-ds-description");
-// const addAdditionalLinkBtn = document.getElementById("button-ds-add-link");
+const addAdditionalLinkBtn = document.getElementById("button-ds-add-link");
 const datasetDescriptionFileDataset = document.getElementById("ds-name");
 const parentDSDropdown = document.getElementById("input-parent-ds");
 
@@ -222,44 +222,11 @@ var defaultBfDataset = "Select dataset";
 var bfAccountOptionsStatus;
 
 // Organize dataset //
-// const bfAccountCheckBtn = document.getElementById(
-//   "button-check-bf-account-details"
-// );
-// const bfUploadAccountCheckBtn = document.getElementById(
-//   "button-upload-check-bf-account-details"
-// );
-// const selectDatasetBtn = document.getElementById("button-select-dataset");
-const pathDataset = document.querySelector("#para-selected-dataset");
-const tableOrganized = document.getElementById("table-organized");
-let tableOrganizedCount = 0;
-const tableNotOrganized = document.getElementById("code_table");
-let tableNotOrganizedCount = 0;
-const alreadyOrganizedStatus = document.querySelector("#preorganized-dataset");
-const organizeDatasetStatus = document.querySelector("#organize-dataset");
-// const clearTableBtn = document.getElementById("button-clear-table");
-// const selectSaveFileOrganizationBtn = document.getElementById(
-//   "button-select-save-file-organization"
-// );
-// const selectPreviewBtn = document.getElementById(
-//   "button-preview-file-organization"
-// );
-// const selectImportFileOrganizationBtn = document.getElementById(
-//   "button-select-upload-file-organization"
-// );
-// const selectPreviewMetadataBtn = document.getElementById(
-//   "button-preview-file-organization-metadata"
-// );
+const selectImportFileOrganizationBtn = document.getElementById(
+  "button-select-upload-file-organization"
+);
 const tableMetadata = document.getElementById("metadata-table");
 let tableMetadataCount = 0;
-// const previewProgressBar = document.getElementById(
-//   "div-dataset-preview-progress"
-// );
-// const previewMetadataProgressBar = document.getElementById(
-//   "div-metadata-preview-progress"
-// );
-// const selectSaveFileOrganizationMetadataBtn = document.getElementById(
-//   "button-select-save-file-organization-metadata"
-// );
 
 // Validate dataset //
 const validateCurrentDSBtn = document.getElementById(
@@ -268,10 +235,10 @@ const validateCurrentDSBtn = document.getElementById(
 const validateCurrentDatasetReport = document.querySelector(
   "#textarea-validate-current-dataset"
 );
-// const currentDatasetReportBtn = document.getElementById(
-//   "button-generate-report-current-ds"
-// );
-// const validateLocalDSBtn = document.getElementById("button-validate-local-ds");
+const currentDatasetReportBtn = document.getElementById(
+  "button-generate-report-current-ds"
+);
+const validateLocalDSBtn = document.getElementById("button-validate-local-ds");
 const validateLocalDatasetReport = document.querySelector(
   "#textarea-validate-local-dataset"
 );
@@ -309,7 +276,7 @@ const selectLocalDsSubmit = document.getElementById(
 const pathSubmitDataset = document.querySelector(
   "#selected-local-dataset-submit"
 );
-// const progressUploadBf = document.getElementById("div-progress-submit");
+const progressUploadBf = document.getElementById("div-progress-submit");
 const progressBarUploadBf = document.getElementById("progress-bar-upload-bf");
 const bfRenameDatasetBtn = document.getElementById("button-rename-dataset");
 const renameDatasetName = document.querySelector("#bf-rename-dataset-name");
@@ -348,7 +315,7 @@ const formBannerHeight = document.getElementById("form-banner-height");
 const currentDatasetLicense = document.querySelector(
   "#para-dataset-license-current"
 );
-// const bfListLicense = document.querySelector("#bf-license-list");
+const bfListLicense = document.querySelector("#bf-license-list");
 const bfAddLicenseBtn = document.getElementById("button-add-license");
 const datasetLicenseStatus = document.querySelector(
   "#para-dataset-license-status"
@@ -376,12 +343,12 @@ const bfAddPermissionPIBtn = document.getElementById(
 const datasetPermissionStatusPI = document.querySelector(
   "#para-dataset-permission-status-pi"
 );
-// const bfAddPermissionCurationTeamBtn = document.getElementById(
-//   "button-add-permission-curation-team"
-// );
-// const datasetPermissionStatusCurationTeam = document.querySelector(
-//   "#para-dataset-permission-status-curation-team"
-// );
+const bfAddPermissionCurationTeamBtn = document.getElementById(
+  "button-add-permission-curation-team"
+);
+const datasetPermissionStatusCurationTeam = document.querySelector(
+  "#para-dataset-permission-status-curation-team"
+);
 const bfListUsers = document.querySelector("#bf_list_users");
 const bfListRoles = document.querySelector("#bf_list_roles");
 const bfAddPermissionBtn = document.getElementById("button-add-permission");
@@ -435,22 +402,22 @@ const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">';
 //////////////////////////////////
 
 // Sidebar Navigation //
-// var open = false;
-// const openSidebar = (buttonElement) => {
-//   if (!open) {
-//     ipcRenderer.send("resize-window", "up");
-//     $("#main-nav").css("width", "250px");
-//     $("#SODA-logo").css("display", "block");
-//     $(buttonSidebarIcon).css("display", "none");
-//     open = true;
-//   } else {
-//     ipcRenderer.send("resize-window", "down");
-//     $("#main-nav").css("width", "70px");
-//     $("#SODA-logo").css("display", "block");
-//     $(buttonSidebarIcon).css("display", "none");
-//     open = false;
-//   }
-// };
+var open = false;
+const openSidebar = (buttonElement) => {
+  if (!open) {
+    ipcRenderer.send("resize-window", "up");
+    $("#main-nav").css("width", "250px");
+    $("#SODA-logo").css("display", "block");
+    $(buttonSidebarIcon).css("display", "none");
+    open = true;
+  } else {
+    ipcRenderer.send("resize-window", "down");
+    $("#main-nav").css("width", "70px");
+    $("#SODA-logo").css("display", "block");
+    $(buttonSidebarIcon).css("display", "none");
+    open = false;
+  }
+};
 
 // Assign dragable area in the code to allow for dragging and selecting items//
 let drag_event_fired = false;
@@ -1477,13 +1444,7 @@ $(currentConTable).mousedown(function (e) {
 ///// grab datalist name and auto-load current description
 const showDatasetDescription = () => {
   var selectedBfAccount = defaultBfAccount;
-  //  bfAccountList.options[bfAccountList.selectedIndex].text;
-  let temp = datasetDescriptionFileDataset.selectedIndex;
-  var selectedBfDataset =
-    datasetDescriptionFileDataset.options[
-      datasetDescriptionFileDataset.selectedIndex
-    ].text;
-  //var selectedBfDataset = defaultBfDataset;
+  var selectedBfDataset = defaultBfDataset;
   if (selectedBfDataset === "Select dataset") {
     bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
@@ -1504,7 +1465,6 @@ const showDatasetDescription = () => {
           log.error(error);
           console.error(error);
         } else {
-          // plainText = removeMd(res)
           document.getElementById("ds-description").innerHTML = res;
           setTimeout(() => {
             document.getElementById("description_header_label").scrollIntoView({
@@ -2029,35 +1989,35 @@ var displaySize = 1000;
 // }
 
 //// Check for empty JSON object and remove then
-function checkJSONObj(jsonObj) {
-  var empty = true;
-  for (var key of Object.keys(jsonObj)) {
-    if (jsonObj[key].length !== 0) {
-      empty = false;
-    } else {
-      if (key !== "main") delete jsonObj[key];
-    }
-  }
-  return [empty, jsonObj];
-}
+// function checkJSONObj(jsonObj) {
+//   var empty = true;
+//   for (var key of Object.keys(jsonObj)) {
+//     if (jsonObj[key].length !== 0) {
+//       empty = false;
+//     } else {
+//       if (key !== "main") delete jsonObj[key];
+//     }
+//   }
+//   return [empty, jsonObj];
+// }
 
 ///////// Clicking on Validate current DS
-var checkCategory0 = "High-level folder structure";
-var checkCategory1 = "High-level metadata files";
-var checkCategory2 = "Sub-level organization";
-var checkCategory3 = "submission file";
-var checkCategory4 = "dataset_description file";
-var checkCategory5 = "subjects file";
-var checkCategory6 = "samples file";
-var checkCategories = [
-  checkCategory0,
-  checkCategory1,
-  checkCategory2,
-  checkCategory3,
-  checkCategory4,
-  checkCategory5,
-  checkCategory6,
-];
+// var checkCategory0 = "High-level folder structure";
+// var checkCategory1 = "High-level metadata files";
+// var checkCategory2 = "Sub-level organization";
+// var checkCategory3 = "submission file";
+// var checkCategory4 = "dataset_description file";
+// var checkCategory5 = "subjects file";
+// var checkCategory6 = "samples file";
+// var checkCategories = [
+//   checkCategory0,
+//   checkCategory1,
+//   checkCategory2,
+//   checkCategory3,
+//   checkCategory4,
+//   checkCategory5,
+//   checkCategory6,
+// ];
 //
 // validateCurrentDSBtn.addEventListener("click", function () {
 //   document.getElementById("div-validation-report-current").style.display =
@@ -2134,7 +2094,9 @@ var checkCategories = [
 //     }
 //   });
 // }
-// ///// Generate pdf validator file
+//
+
+// Generate pdf validator file
 // currentDatasetReportBtn.addEventListener("click", function () {
 //   document.getElementById("para-generate-report-current-ds").innerHTML = "";
 //   ipcRenderer.send("save-file-dialog-validator-current");
@@ -2196,78 +2158,6 @@ var checkCategories = [
 //   }
 // });
 //
-// validateLocalDSBtn.addEventListener("click", function () {
-//   document.getElementById("para-local-ds-info").innerHTML = "";
-//   document.getElementById("para-generate-report-local-ds").innerHTML = "";
-//   var datasetPath = document.getElementById("input-local-ds-select")
-//     .placeholder;
-//   var messageDisplay = "";
-//   if (datasetPath === "Select a folder") {
-//     document.getElementById("para-local-ds-info").innerHTML =
-//       "<span style='color: red ;'>Please select a local dataset first</span>";
-//   } else {
-//     if (datasetPath != null) {
-//       validateLocalProgressBar.style.display = "block";
-//       validateLocalDSBtn.disabled = true;
-//       validatorInput = datasetPath;
-//       client.invoke("api_validate_dataset", validatorInput, (error, res) => {
-//         if (error) {
-//           console.error(error);
-//           log.error(error);
-//           validateLocalProgressBar.style.display = "none";
-//         } else {
-//           for (var i = 0; i < res.length; i++) {
-//             if (res[i] !== "N/A") {
-//               messageDisplay = errorMessageCategory(
-//                 res[i],
-//                 checkCategories[i],
-//                 messageDisplay
-//               );
-//             }
-//           }
-//           document.getElementById("div-validation-report-local").style.display =
-//             "block";
-//           document.getElementById("div-report-local").style.display = "block";
-//           document.getElementById("para-local-ds-info").innerHTML =
-//             "Done, see report below!";
-//           validateLocalDatasetReport.innerHTML = messageDisplay;
-//           validateLocalProgressBar.style.display = "none";
-//         }
-//       });
-//       validateLocalDSBtn.disabled = false;
-//     }
-//   }
-// });
-
-function validateMessageTransform(inString, classSelection, colorSelection) {
-  //outString = inString.split("--").join("<br>")
-  outString = inString.split("--");
-  var msg =
-    "<li class=" +
-    classSelection +
-    ">" +
-    "<span style='color:" +
-    colorSelection +
-    ";'>";
-  msg += outString[0];
-  msg += "</span>" + "</li>";
-  if (outString.length > 1) {
-    msg += "<ul style='margin-top:-10px';>";
-    for (var i = 1; i < outString.length; i++) {
-      msg +=
-        "<li>" +
-        "<span style='color:" +
-        colorSelection +
-        ";'>" +
-        outString[i] +
-        "</span>" +
-        "</li>";
-    }
-    msg += "</ul>";
-  }
-  return msg;
-}
-
 // validateLocalDSBtn.addEventListener("click", function () {
 //   document.getElementById("para-local-ds-info").innerHTML = "";
 //   document.getElementById("para-generate-report-local-ds").innerHTML = "";
@@ -2427,42 +2317,42 @@ function validateMessageTransform(inString, classSelection, colorSelection) {
 /// Add all BF accounts to the dropdown list, and then choose by default one option ('global' account)
 const curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
 
-// function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
-//   client.invoke(
-//     "api_bf_dataset_account",
-//     bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text,
-//     (error, result) => {
-//       if (error) {
-//         log.error(error);
-//         console.log(error);
-//         var emessage = error;
-//         curateBFAccountLoadStatus.innerHTML =
-//           "<span style='color: red'>" + emessage + "</span>";
-//       } else {
-//         // clear and populate dataset list
-//         populateDatasetDropdownCurate(datasetDropdown, result);
-//       }
-//     }
-//   );
-// }
+function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
+  client.invoke(
+    "api_bf_dataset_account",
+    bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text,
+    (error, result) => {
+      if (error) {
+        log.error(error);
+        console.log(error);
+        var emessage = error;
+        curateBFAccountLoadStatus.innerHTML =
+          "<span style='color: red'>" + emessage + "</span>";
+      } else {
+        // clear and populate dataset list
+        populateDatasetDropdownCurate(datasetDropdown, result);
+      }
+    }
+  );
+}
 
 //// De-populate dataset dropdowns to clear options for CURATE
-// function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
-//   removeOptions(datasetDropdown);
+function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
+  removeOptions(datasetDropdown);
 
-//   /// making the first option: "Select" disabled
-//   addOption(datasetDropdown, "Select dataset", "Select dataset");
-//   var options = datasetDropdown.getElementsByTagName("option");
-//   options[0].disabled = true;
+  /// making the first option: "Select" disabled
+  addOption(datasetDropdown, "Select dataset", "Select dataset");
+  var options = datasetDropdown.getElementsByTagName("option");
+  options[0].disabled = true;
 
-//   for (var myitem of datasetlist) {
-//     var myitemselect = myitem.name;
-//     var option = document.createElement("option");
-//     option.textContent = myitemselect;
-//     option.value = myitemselect;
-//     datasetDropdown.appendChild(option);
-//   }
-// }
+  for (var myitem of datasetlist) {
+    var myitemselect = myitem.name;
+    var option = document.createElement("option");
+    option.textContent = myitemselect;
+    option.value = myitemselect;
+    datasetDropdown.appendChild(option);
+  }
+}
 ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
 // Add new dataset folder (empty) on bf //
@@ -3255,149 +3145,11 @@ bfAddPermissionBtn.addEventListener("click", () => {
 });
 
 ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
+
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text;
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text;
-  
-  datasetPermissionStatus.innerHTML = "";
-
-  if (index === 0) {
-    addPermissionUser(
-      selectedBfAccount,
-      selectedBfDataset,
-      selectedUser,
-      selectedRole
-    );
-    $("#bf-add-permission-user-spinner").hide();
-  } else {
-    $("#bf-add-permission-user-spinner").hide();
-    bfCurrentPermissionProgress.style.display = "none";
-    bfAddEditCurrentPermissionProgress.style.display = "none";
-    //enableform(bfPermissionForm);
-  }
-});
-
-// Add permission for team
-bfAddPermissionTeamBtn.addEventListener("click", () => {
-  $("#bf-add-permission-team-spinner").show();
-  datasetPermissionStatusTeam.innerHTML = "";
-  bfCurrentPermissionProgress.style.display = "block";
-  bfAddEditCurrentPermissionProgress.style.display = "block";
-  //disableform(bfPermissionForm);
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
-  var selectedTeam = bfListTeams.options[bfListTeams.selectedIndex].text;
-  var selectedRole =
-    bfListRolesTeam.options[bfListRolesTeam.selectedIndex].text;
-  client.invoke(
-    "api_bf_add_permission_team",
-    selectedBfAccount,
-    selectedBfDataset,
-    selectedTeam,
-    selectedRole,
-    (error, res) => {
-      if (error) {
-        log.error(error);
-        console.error(error);
-        var emessage = userError(error);
-        $("#bf-add-permission-team-spinner").hide();
-        datasetPermissionStatusTeam.innerHTML =
-          "<span style='color: red;'> " + emessage + "</span>";
-        bfCurrentPermissionProgress.style.display = "none";
-        bfAddEditCurrentPermissionProgress.style.display = "none";
-        //enableform(bfPermissionForm);
-      } else {
-        $("#bf-add-permission-team-spinner").hide();
-        datasetPermissionStatusTeam.innerHTML = res;
-        showCurrentPermission();
-        //enableform(bfPermissionForm);
-      }
-    }
-  );
-});
-
-// Share with Curation Team //
-// bfAddPermissionCurationTeamBtn.addEventListener("click", () => {
-//   datasetPermissionStatusCurationTeam.innerHTML = "";
-//   ipcRenderer.send("warning-share-with-curation-team", formBannerHeight.value);
-// });
-
-// ipcRenderer.on("warning-share-with-curation-team-selection", (event, index) => {
-//   if (index === 0) {
-//     shareWithCurationTeam();
-//   }
-// });
-
-// function shareWithCurationTeam() {
-//   datasetPermissionStatusCurationTeam.innerHTML = "Please wait...";
-//   bfPostCurationProgressCuration.style.display = "block";
-//   bfAddPermissionCurationTeamBtn.disabled = true;
-  
-//   var selectedBfAccount = defaultBfAccount;
-//   var selectedBfDataset = defaultBfDataset;
-//   var selectedTeam = "SPARC Data Curation Team";
-//   var selectedRole = "manager";
-
-//   client.invoke(
-//     "api_bf_add_permission_team",
-//     selectedBfAccount,
-//     selectedBfDataset,
-//     selectedTeam,
-//     selectedRole,
-//     (error, res) => {
-//       if (error) {
-//         log.error(error);
-//         console.error(error);
-//         var emessage = userError(error);
-//         datasetPermissionStatusCurationTeam.innerHTML =
-//           "<span style='color: red;'> " + emessage + "</span>";
-//         bfPostCurationProgressCuration.style.display = "none";
-//         //enableform(bfPermissionForm);
-//         bfAddPermissionCurationTeamBtn.disabled = false;
-//       } else {
-//         showCurrentPermission();
-//         var selectedStatusOption = "03. Ready for Curation (Investigator)";
-//         client.invoke(
-//           "api_bf_change_dataset_status",
-//           selectedBfAccount,
-//           selectedBfDataset,
-//           selectedStatusOption,
-//           (error, res) => {
-//             if (error) {
-//               log.error(error);
-//               console.error(error);
-//               var emessage = userError(error);
-//               datasetPermissionStatusCurationTeam.innerHTML =
-//                 "<span style='color: red;'> " + emessage + "</span>";
-//               ipcRenderer.send(
-//                 "track-event",
-//                 "Error",
-//                 "Disseminate Dataset - Share with Curation Team",
-//                 selectedBfDataset
-//               );
-//               bfPostCurationProgressCuration.style.display = "none";
-//               bfAddPermissionCurationTeamBtn.disabled = false;
-//             } else {
-//               datasetPermissionStatusCurationTeam.innerHTML =
-//                 'Success - Shared with Curation Team: provided them manager permissions and set dataset status to "Ready for Curation"';
-//               ipcRenderer.send(
-//                 "track-event",
-//                 "Success",
-//                 "Disseminate Dataset - Share with Curation Team",
-//                 selectedBfDataset
-//               );
-//               //enableform(bfPermissionForm);
-//               showCurrentDatasetStatus();
-//               bfPostCurationProgressCuration.style.display = "none";
-//               bfAddPermissionCurationTeamBtn.disabled = false;
-//             }
-//           }
-//         );
-//       }
-//     }
-//   );
-// }
 
   datasetPermissionStatus.innerHTML = "";
 
@@ -3512,7 +3264,6 @@ function submitReviewDataset() {
         );
         showPublishingStatus("noClear");
       }
-      bfSubmitReviewDatasetBtn.disabled = false;
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
       bfWithdrawReviewDatasetBtn.disabled = false;
       $("#submit_prepublishing_review-spinner").hide();
@@ -3546,7 +3297,6 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
 });
 
 function withdrawReviewDataset() {
-  bfSubmitReviewDatasetBtn.disabled = true;
   bfWithdrawReviewDatasetBtn.disabled = true;
   var selectedBfAccount = $("#current-bf-dataset").text();
   var selectedBfDataset = $(".bf-dataset-span").html();
@@ -3571,7 +3321,6 @@ function withdrawReviewDataset() {
         );
         showPublishingStatus("noClear");
       }
-      bfSubmitReviewDatasetBtn.disabled = false;
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
       bfWithdrawReviewDatasetBtn.disabled = false;
       $("#submit_prepublishing_review-spinner").hide();
@@ -3592,13 +3341,13 @@ function removeOptions(selectbox) {
   }
 }
 
-function clearStrings() {
-  document.getElementById("para-save-file-organization-status").innerHTML = "";
-  document.getElementById(
-    "para-preview-organization-status-metadata"
-  ).innerHTML = "";
-  document.getElementById("para-selected-dataset").innerHTML = "";
-}
+// function clearStrings() {
+//   document.getElementById("para-save-file-organization-status").innerHTML = "";
+//   document.getElementById(
+//     "para-preview-organization-status-metadata"
+//   ).innerHTML = "";
+//   document.getElementById("para-selected-dataset").innerHTML = "";
+// }
 
 /*
 function clearPermissionsStrings() {
@@ -4008,20 +3757,20 @@ function selectOptionColor(mylist) {
 ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-function getDatasetList() {
-  client.invoke("api_bf_account_details", defaultBfAccount, (error, res) => {
-    if (error) {
-      log.error(error);
-      console.error(error);
-    } else {
-      datasetList = [];
-      datasetList = res["datasets"];
-      refreshDatasetList()
-    }
-  });
-}
+// function getDatasetList() {
+//   client.invoke("api_bf_account_details", defaultBfAccount, (error, res) => {
+//     if (error) {
+//       log.error(error);
+//       console.error(error);
+//     } else {
+//       datasetList = [];
+//       datasetList = res["datasets"];
+//       refreshDatasetList()
+//     }
+//   });
+// }
 
-/// rename datasets in place without calling Python
+// rename datasets in place without calling Python
 // function renameDatasetInList(oldName, newName) {
 //   for (var i = 0; i < datasetList.length; i++) {
 //     if (datasetList[i].name === oldName) {
@@ -4060,7 +3809,6 @@ function refreshDatasetList() {
 
   populateDatasetDropdowns(filteredDatasets);
   parentDSTagify.settings.whitelist = getParentDatasets();
-  console.log(filteredDatasets);
   return filteredDatasets.length;
 }
 
@@ -4068,7 +3816,6 @@ function refreshDatasetListChooseOption(dropdown, selectedDataset) {
   document.getElementById("para-filter-datasets-status").innerHTML = "";
 
   var datasetListSorted = datasetList.sort();
-    console.log("here")
   var filteredDatasets = [];
   for (var i = 0; i < datasetListSorted.length; i++) {
     filteredDatasets.push(datasetListSorted[i].name);
@@ -4077,22 +3824,14 @@ function refreshDatasetListChooseOption(dropdown, selectedDataset) {
   selectOptionDropdown(dropdown, selectedDataset);
 }
 
-//   var filteredDatasets = [];
-//   for (var i = 0; i < datasetListSorted.length; i++) {
-//     filteredDatasets.push(datasetListSorted[i].name);
-//   }
-//   populateDatasetDropdowns(filteredDatasets);
-//   selectOptionDropdown(dropdown, selectedDataset);
-// }
-
-// function selectOptionDropdown(dropdown, selectedDataset) {
-//   var dropdownString = dropdown + " option";
-//   $(dropdownString).each(function () {
-//     if ($(this).text() == selectedDataset) {
-//       $(this).prop("selected", true);
-//     }
-//   });
-// }
+function selectOptionDropdown(dropdown, selectedDataset) {
+  var dropdownString = dropdown + " option";
+  $(dropdownString).each(function () {
+    if ($(this).text() == selectedDataset) {
+      $(this).prop("selected", true);
+    }
+  });
+}
 
 /// populate the dropdowns with refreshed dataset list
 function populateDatasetDropdowns(mylist) {
@@ -4235,7 +3974,7 @@ function showPublishingStatus(callback) {
 
 function publishStatusOutputConversion(res) {
   var reviewStatus = res[0];
-  //var publishStatus = res[1];
+  var publishStatus = res[1];
 
   var outputMessage = "";
   if (reviewStatus === "draft" || reviewStatus === "cancelled") {
@@ -4636,8 +4375,6 @@ function showAddAirtableAccountBootbox() {
       });
     },
   });
-  // .find(".modal-dialog")
-  // .css("max-width", "600px");
 }
 
 function addAirtableAccountInsideBootbox(myBootboxD) {
@@ -4876,58 +4613,58 @@ function hideMenu(category, menu1, menu2, menu3) {
   }
 }
 
-// function changeStepOrganize(step) {
-//   if (step.id === "button-organize-prev") {
-//     document.getElementById("div-step-1-organize").style.display = "block";
-//     document.getElementById("div-step-2-organize").style.display = "none";
-//     document.getElementById("dash-title").innerHTML =
-//       "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>High-level folders";
-//     organizeNextStepBtn.style.display = "block";
-//     organizePrevStepBtn.style.display = "none";
-//   } else {
-//     document.getElementById("div-step-1-organize").style.display = "none";
-//     document.getElementById("div-step-2-organize").style.display = "block";
-//     document.getElementById("dash-title").innerHTML =
-//       "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>Generate dataset";
-//     organizePrevStepBtn.style.display = "block";
-//     organizeNextStepBtn.style.display = "none";
-//   }
-// }
+function changeStepOrganize(step) {
+  if (step.id === "button-organize-prev") {
+    document.getElementById("div-step-1-organize").style.display = "block";
+    document.getElementById("div-step-2-organize").style.display = "none";
+    document.getElementById("dash-title").innerHTML =
+      "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>High-level folders";
+    organizeNextStepBtn.style.display = "block";
+    organizePrevStepBtn.style.display = "none";
+  } else {
+    document.getElementById("div-step-1-organize").style.display = "none";
+    document.getElementById("div-step-2-organize").style.display = "block";
+    document.getElementById("dash-title").innerHTML =
+      "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>Generate dataset";
+    organizePrevStepBtn.style.display = "block";
+    organizeNextStepBtn.style.display = "none";
+  }
+}
 
-// var newDSName;
-// function generateDataset(button) {
-//   document.getElementById("para-organize-datasets-success").style.display =
-//     "none";
-//   document.getElementById("para-organize-datasets-error").style.display =
-//     "none";
-//   if (button.id === "btn-generate-locally") {
-//     $("#btn-generate-BF").removeClass("active");
-//     $(button).toggleClass("active");
-//     bootbox.prompt({
-//       title: "Generate dataset locally",
-//       message: "Enter a name for the dataset:",
-//       buttons: {
-//         cancel: {
-//           label: '<i class="fa fa-times"></i> Cancel',
-//         },
-//         confirm: {
-//           label: '<i class="fa fa-check"></i> Confirm and Choose location',
-//           className: "btn-success",
-//         },
-//       },
-//       centerVertical: true,
-//       callback: function (r) {
-//         if (r !== null && r.trim() !== "") {
-//           newDSName = r.trim();
-//           ipcRenderer.send("open-file-dialog-newdataset");
-//         }
-//       },
-//     });
-//   } else {
-//     $("#btn-generate-locally").removeClass("active");
-//     $(button).toggleClass("active");
-//   }
-// }
+var newDSName;
+function generateDataset(button) {
+  document.getElementById("para-organize-datasets-success").style.display =
+    "none";
+  document.getElementById("para-organize-datasets-error").style.display =
+    "none";
+  if (button.id === "btn-generate-locally") {
+    $("#btn-generate-BF").removeClass("active");
+    $(button).toggleClass("active");
+    bootbox.prompt({
+      title: "Generate dataset locally",
+      message: "Enter a name for the dataset:",
+      buttons: {
+        cancel: {
+          label: '<i class="fa fa-times"></i> Cancel',
+        },
+        confirm: {
+          label: '<i class="fa fa-check"></i> Confirm and Choose location',
+          className: "btn-success",
+        },
+      },
+      centerVertical: true,
+      callback: function (r) {
+        if (r !== null && r.trim() !== "") {
+          newDSName = r.trim();
+          ipcRenderer.send("open-file-dialog-newdataset");
+        }
+      },
+    });
+  } else {
+    $("#btn-generate-locally").removeClass("active");
+    $(button).toggleClass("active");
+  }
+}
 
 ipcRenderer.on("selected-new-dataset", (event, filepath) => {
   if (filepath.length > 0) {
@@ -5276,15 +5013,15 @@ function drop(ev) {
 }
 
 // SAVE FILE ORG
-// ipcRenderer.on("save-file-organization-dialog", (event) => {
-//   const options = {
-//     title: "Save File Organization",
-//     filters: [{ name: "JSON", extensions: ["json"] }],
-//   };
-//   dialog.showSaveDialog(null, options, (filename) => {
-//     event.sender.send("selected-saveorganizationfile", filename);
-//   });
-// });
+ipcRenderer.on("save-file-organization-dialog", (event) => {
+  const options = {
+    title: "Save File Organization",
+    filters: [{ name: "JSON", extensions: ["json"] }],
+  };
+  dialog.showSaveDialog(null, options, (filename) => {
+    event.sender.send("selected-saveorganizationfile", filename);
+  });
+});
 
 //////////////////////////////////////////////////////////////////////////////
 /////////////////// CONTEXT MENU OPTIONS FOR FOLDERS AND FILES ///////////////
@@ -5842,10 +5579,10 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
   });
 }
 
-// function sliceStringByValue(string, endingValue) {
-//   var newString = string.slice(string.indexOf(endingValue) + 1);
-//   return newString;
-// }
+function sliceStringByValue(string, endingValue) {
+  var newString = string.slice(string.indexOf(endingValue) + 1);
+  return newString;
+}
 
 var fileNameForEdit;
 ///// Option to manage description for files
@@ -6007,7 +5744,7 @@ $("#inputNewNameDataset").keyup(function () {
 //// Select to choose a local dataset (getting started)
 document
   .getElementById("input-destination-getting-started-locally")
-  .addEventListener("click", () => {
+  .addEventListener("click", function () {
     $("#Question-getting-started-locally-destination")
       .nextAll()
       .removeClass("show");
@@ -6095,7 +5832,7 @@ ipcRenderer.on(
 //// Select to choose a local dataset (generate dataset)
 document
   .getElementById("input-destination-generate-dataset-locally")
-  .addEventListener("click", () => {
+  .addEventListener("click", function () {
     $("#Question-generate-dataset-locally-destination")
       .nextAll()
       .removeClass("show");
@@ -6139,7 +5876,7 @@ ipcRenderer.on(
 
 document
   .getElementById("button-generate-comeback")
-  .addEventListener("click", () => {
+  .addEventListener("click", function () {
     document.getElementById("generate-dataset-progress-tab").style.display =
       "none";
     document.getElementById("div-vertical-progress-bar").style.display = "flex";
@@ -6155,7 +5892,7 @@ document
   });
 
 // function to hide the sidebar and disable the sidebar expand button
-const forceActionSidebar = (action) => {
+function forceActionSidebar(action) {
   if (action === "hide") {
     if (!$("#main-nav").hasClass("active")) {
       $("#sidebarCollapse").click();
@@ -6341,7 +6078,7 @@ function initiate_generate() {
           if (error) {
             log.error(error);
             console.log(error);
-            // var emessage = error;
+            var emessage = error;
           } else {
             datasetList = [];
             datasetList = result;
