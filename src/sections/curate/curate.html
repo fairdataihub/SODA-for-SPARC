@@ -2686,6 +2686,7 @@
                     <label
                       class="labelradiocurate-manifest yes"
                       style="padding-left: 10px"
+                      id="label-manifest"
                     >
                       Yes
                     </label>
@@ -4196,5 +4197,14 @@
     $(".button-generate-dataset i").bind("click", function () {
       $($(this).parents()[0]).click();
     });
+    //Manifest file label color change if checked
+    function updateManifestLabelColor(el) {
+      document.getElementById("label-manifest").style.color = el.checked
+        ? "var(--color-light-green)"
+        : "#303030";
+      document.getElementById("label-manifest").style.fontWeight = el.checked
+        ? "bold"
+        : "normal";
+    }
   </script>
 </template>
