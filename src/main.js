@@ -217,7 +217,14 @@ function initialize() {
     app.quit();
     // }
   });
+
+
+  app.on('uncaughtException', function(err) {
+    //log the message and stack trace
+    console.log(err)
+  });
 }
+
 
 // Make this app a single instance app.
 const gotTheLock = app.requestSingleInstanceLock();
