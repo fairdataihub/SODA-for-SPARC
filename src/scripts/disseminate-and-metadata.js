@@ -132,7 +132,7 @@ $(document).ready(function () {
                   "track-event",
                   "Error",
                   "Prepare Metadata - Create Submission",
-                  selectedBfDataset
+                  defaultBfDataset
                 );
               } else {
                 document.getElementById(
@@ -146,7 +146,7 @@ $(document).ready(function () {
                   "track-event",
                   "Success",
                   "Prepare Metadata - Create Submission",
-                  selectedBfDataset
+                  defaultBfDataset
                 );
               }
             }
@@ -282,7 +282,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
           "track-event",
           "Error",
           "Disseminate Dataset - Share with Consortium",
-          dataset
+          bfDS
         );
       } else {
         disseminateShowCurrentPermission(bfAcct, bfDS);
@@ -487,8 +487,6 @@ function checkAirtableStatus() {
               fetchNextPage();
           },
           function done(err) {
-            document.getElementById("div-awards-load-progress").style.display =
-              "none";
             if (err) {
               changeAirtableDiv(
                 "div-field-already-connected",
