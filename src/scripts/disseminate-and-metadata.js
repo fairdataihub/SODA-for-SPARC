@@ -5,7 +5,7 @@ function disseminatePublish() {
 
 function refreshDatasetStatus() {
   var account = $("#current-bf-account").text();
-  var dataset = $(".bf-dataset-span").html();
+  var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
   disseminateShowPublishingStatus("", account, dataset);
 }
 
@@ -69,7 +69,7 @@ $(document).ready(function () {
     (event, index) => {
       if (index === 0) {
         var account = $("#current-bf-account").text();
-        var dataset = $(".bf-dataset-span").html();
+        var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
         disseminateCurationTeam(account, dataset);
       } else {
         $("#share-curation-team-spinner").hide();
@@ -79,7 +79,7 @@ $(document).ready(function () {
   ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
     if (index === 0) {
       var account = $("#current-bf-account").text();
-      var dataset = $(".bf-dataset-span").html();
+      var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
       disseminateConsortium(account, dataset);
     } else {
       $("#share-with-sparc-consortium-spinner").show();
@@ -429,7 +429,7 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
 }
 
 function checkDatasetDisseminate() {
-  if ($(".bf-dataset-span.disseminate").html() !== "None") {
+  if ($(".bf-dataset-span.disseminate").html().replace(/^\s+|\s+$/g, '') !== "None") {
     if (
       $("#Post-curation-question-1").hasClass("prev") &&
       !$("#Post-curation-question-4").hasClass("show")

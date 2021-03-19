@@ -1570,7 +1570,7 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     }
     $(ev).hide();
   } else {
-    if ($("bf-dataset-span").html() !== "None") {
+    if ($("bf-dataset-span").html().replace(/^\s+|\s+$/g, '') !== "None") {
       $(target).children().find(".div-confirm-button button").show();
     }
   }
@@ -1866,11 +1866,11 @@ const hidePrevDivs = (currentDiv, category) => {
           ) {
             if (child.id === "bf-rename-dataset-name") {
               if (
-                $(".bf-dataset-span").html() == "None" ||
-                $(".bf-dataset-span").html() == ""
+                $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') == "None" ||
+                $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') == ""
               ) {
                 $("#bf-rename-dataset-name").val(
-                  `${$(".bf-dataset-span").html()}`
+                  `${$(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '')}`
                 );
               }
             } else {

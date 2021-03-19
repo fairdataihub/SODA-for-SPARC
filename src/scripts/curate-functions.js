@@ -1679,10 +1679,10 @@ function showTreeViewPreview(new_dataset_name) {
 
 // per change event of current dataset span text
 $(".bf-dataset-span").on("DOMSubtreeModified", function () {
-  let temp = $(".bf-dataset-span").html();
+  let temp = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
   if (
-    $(".bf-dataset-span").html() == "None" ||
-    $(".bf-dataset-span").html() == ""
+    $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') == "None" ||
+    $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') == ""
   ) {
     $($(this).parents().find(".field").find(".div-confirm-button")).css(
       "display",
