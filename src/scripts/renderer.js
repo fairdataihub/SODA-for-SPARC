@@ -994,7 +994,7 @@ function importMilestoneDocument() {
           ).style.display = "block";
           document.getElementById(
             "para-milestone-document-info-long"
-          ).innerHTML = "<span style='color: red;'> " + emessage + "</span>";
+          ).innerHTML = "<span style='color: red;'> " + emessage + ".</span>";
         } else {
           milestoneObj = res;
           createMetadataDir();
@@ -2594,7 +2594,7 @@ ipcRenderer.on("selected-dataset", (event, path) => {
       jsonToTableOrganized(tableOrganized, jsonFolder);
     } else {
       pathDataset.innerHTML =
-        "<span style='color: red;'> Error: please select a dataset with SPARC folder structure </span>" +
+        "<span style='color: red;'> Error: Please select a dataset with SPARC folder structure. </span>" +
         sadCan;
     }
   }
@@ -3832,7 +3832,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         var emessage = userError(error);
         $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
         bfCreateNewDatasetStatus.innerHTML =
-          "<span style='color: red;'> " + emessage + "</span>" + sadCan;
+          "<span style='color: red; font-size: 17px;'> " + emessage + ". </span>" + sadCan;
         bfCreateNewDatasetBtn.disabled = false;
         enableform(bfNewDatasetForm);
         ipcRenderer.send(
@@ -3846,10 +3846,10 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         $(bfCreateNewDatasetBtn).hide();
         defaultBfDataset = bfNewDatasetName.value;
         bfCreateNewDatasetStatus.innerHTML =
-          "Success: created dataset" +
+          "<span style='font-size: 17px; color: #13716D;'>Success: Created dataset" +
           " '" +
           bfNewDatasetName.value +
-          "'" +
+          "'. </span>" +
           smileyCan;
         currentDatasetPermission.innerHTML = "";
         currentAddEditDatasetPermission.innerHTML = "";
@@ -3898,7 +3898,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
   if (currentDatasetName === "Select dataset") {
     emessage = "Please select a valid dataset";
     bfRenameDatasetStatus.innerHTML =
-      "<span style='color: red;'> " + emessage + "</span>" + sadCan;
+      "<span style='color: red;'> " + emessage + ". </span>" + sadCan;
   } else {
     $("#bf-rename-dataset-spinner").css("visibility", "visible");
     bfRenameDatasetBtn.disabled = true;
@@ -3915,7 +3915,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
           var emessage = userError(error);
           $("#bf-rename-dataset-spinner").css("visibility", "hidden");
           bfRenameDatasetStatus.innerHTML =
-            "<span style='color: red;'> " + emessage + "</span>" + sadCan;
+            "<span style='color: red;'> " + emessage + ". </span>" + sadCan;
           bfRenameDatasetBtn.disabled = false;
           ipcRenderer.send(
             "track-event",
@@ -3928,14 +3928,15 @@ bfRenameDatasetBtn.addEventListener("click", () => {
           $(".bf-dataset-span").html(renamedDatasetName);
           renameDatasetName.value = renamedDatasetName;
           bfRenameDatasetStatus.innerHTML =
-            "Success: renamed dataset" +
+            "Success: Renamed dataset" +
             " '" +
             currentDatasetName +
             "'" +
             " to" +
             " '" +
             renamedDatasetName +
-            "'";
+            "'. " +
+            smileyCan;
           bfRenameDatasetBtn.disabled = false;
           ipcRenderer.send(
             "track-event",
