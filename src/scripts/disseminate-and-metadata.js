@@ -1,3 +1,27 @@
+// Main functions
+function disseminatePublish() {
+  showPublishingStatus(submitReviewDatasetCheck);
+}
+
+function refreshDatasetStatus() {
+  var account = $("#current-bf-account").text();
+  var dataset = $(".bf-dataset-span").html();
+  disseminateShowPublishingStatus("", account, dataset);
+}
+
+function disseminateShowPublishingStatus(callback, account, dataset) {
+  if (dataset !== "None") {
+    if (callback == "noClear") {
+      var nothing;
+    } else {
+      $("#para-submit_prepublishing_review-status").text("");
+      showPublishingStatus("noClear");
+    }
+  }
+  $("#submit_prepublishing_review-spinner").hide();
+}
+
+// Helper functions
 const disseminateDataset = (option) => {
   if (option === "share-with-curation-team") {
     $("#share-curation-team-spinner").show();
@@ -30,6 +54,16 @@ const unshareDataset = (option) => {
 };
 
 $(document).ready(function () {
+  $("#add-other-contributors").on("click", function () {
+    if ($(this).text() == "Add contributors not listed above") {
+      addOtherContributors("table-current-contributors");
+      $(this).text("Cancel manual typing");
+    } else {
+      cancelOtherContributors("table-current-contributors");
+      $(this).text("Add contributors not listed above");
+    }
+  });
+
   ipcRenderer.on(
     "warning-share-with-curation-team-selection",
     (event, index) => {
@@ -51,6 +85,78 @@ $(document).ready(function () {
       $("#share-with-sparc-consortium-spinner").show();
     }
   });
+  checkAirtableStatus();
+  ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
+    if (dirpath.length > 0) {
+      $("#generate-submission-spinner").show();
+      var destinationPath = path.join(dirpath[0], filename);
+      if (fs.existsSync(destinationPath)) {
+        var emessage = "File " + filename + " already exists in " + dirpath[0];
+        ipcRenderer.send("open-error-metadata-file-exits", emessage);
+      } else {
+        var awardRes = $("#submission-SPARC-award-span").text();
+        var dateRes = $("#submission-completion-date-span").text();
+        var milestonesRes = $("#submission-milestones-span").text();
+        var milestoneValue = milestonesRes.split(", \n");
+        var json_arr = [];
+        json_arr.push({
+          award: awardRes,
+          date: dateRes,
+          milestone: milestoneValue[0],
+        });
+        if (milestoneValue.length > 0) {
+          for (var index = 1; index < milestoneValue.length; index++) {
+            json_arr.push({
+              award: "",
+              date: "",
+              milestone: milestoneValue[index],
+            });
+          }
+        }
+        json_str = JSON.stringify(json_arr);
+        if (dirpath != null) {
+          client.invoke(
+            "api_save_submission_file",
+            destinationPath,
+            json_str,
+            (error, res) => {
+              if (error) {
+                var emessage = userError(error);
+                log.error(error);
+                console.error(error);
+                document.getElementById(
+                  "para-save-submission-status"
+                ).innerHTML =
+                  "<span style='color: red;'> " + emessage + "</span>";
+                ipcRenderer.send(
+                  "track-event",
+                  "Error",
+                  "Prepare Metadata - Create Submission",
+                  defaultBfDataset
+                );
+              } else {
+                document.getElementById(
+                  "para-save-submission-status"
+                ).innerHTML =
+                  "<span style='color: black ;'>" +
+                  "Done!" +
+                  smileyCan +
+                  "</span>";
+                ipcRenderer.send(
+                  "track-event",
+                  "Success",
+                  "Prepare Metadata - Create Submission",
+                  defaultBfDataset
+                );
+              }
+            }
+          );
+        }
+      }
+    }
+    $("#generate-submission-spinner").hide();
+  });
+
 });
 
 const disseminateCurationTeam = (account, dataset, share_status = "") => {
@@ -60,7 +166,6 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
   if (share_status === "unshare") {
     selectedRole = "remove current permissions";
   }
-
   client.invoke(
     "api_bf_add_permission_team",
     account,
@@ -76,6 +181,12 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
         $("#para-share-curation_team-status").text(emessage);
         $("#share-curation-team-spinner").hide();
         $(".spinner.post-curation").hide();
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Disseminate Dataset - Share with Curation Team",
+          dataset
+        );
       } else {
         disseminateShowCurrentPermission(account, dataset);
         var selectedStatusOption = "03. Ready for Curation (Investigator)";
@@ -149,11 +260,9 @@ const disseminateCurationTeam = (account, dataset, share_status = "") => {
 function disseminateConsortium(bfAcct, bfDS, share_status = "") {
   var selectedTeam = "SPARC Embargoed Data Sharing Group";
   var selectedRole = "viewer";
-
   if (share_status === "unshare") {
     selectedRole = "remove current permissions";
   }
-
   client.invoke(
     "api_bf_add_permission_team",
     bfAcct,
@@ -169,15 +278,19 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
         $("#para-share-with-sparc-consortium-status").text(emessage);
         $("#share-with-sparc-consortium-spinner").hide();
         $(".spinner.post-curation").hide();
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Disseminate Dataset - Share with Consortium",
+          bfDS
+        );
       } else {
         disseminateShowCurrentPermission(bfAcct, bfDS);
         var selectedStatusOption = "11. Complete, Under Embargo (Investigator)";
-
         if (share_status === "unshare") {
           selectedStatusOption =
             "10. Curated & Awaiting PI Approval (Curators)";
         }
-
         client.invoke(
           "api_bf_change_dataset_status",
           bfAcct,
@@ -200,7 +313,6 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
               $("#para-share-with-sparc-consortium-status").text(
                 'Success - Shared with Consortium: provided viewer permissions to Consortium members and set dataset status to "Under Embargo"'
               );
-
               if (share_status === "unshare") {
                 $("#para-share-with-sparc-consortium-status").text(
                   `Success - Removed the SPARC Consortium's viewer permissions and set dataset status to "Curated & Awaiting PI Approval"`
@@ -214,11 +326,9 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
                 $("#sparc-consortium-unshare-btn").show();
                 $("#sparc-consortium-share-btn").hide();
               }
-
               curation_consortium_check("update");
               showCurrentPermission();
               showCurrentDatasetStatus();
-
               disseminiateShowCurrentDatasetStatus("", bfAcct, bfDS);
               $("#share-with-sparc-consortium-spinner").hide();
               $(".spinner.post-curation").hide();
@@ -228,29 +338,6 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
       }
     }
   );
-}
-
-function disseminatePublish() {
-  showPublishingStatus(submitReviewDatasetCheck);
-}
-
-function refreshDatasetStatus() {
-  var account = $("#current-bf-account").text();
-  var dataset = $(".bf-dataset-span").html();
-  disseminateShowPublishingStatus("", account, dataset);
-}
-
-function disseminateShowPublishingStatus(callback, account, dataset) {
-  if (dataset !== "None") {
-    if (callback == "noClear") {
-      var nothing;
-    } else {
-      $("#para-submit_prepublishing_review-status").text("");
-      showPublishingStatus("noClear");
-    }
-  }
-  //$("#disseminate-publish-spinner").hide();
-  $("#submit_prepublishing_review-spinner").hide();
 }
 
 function disseminateShowCurrentPermission(bfAcct, bfDS) {
@@ -285,7 +372,6 @@ function disseminateShowCurrentPermission(bfAcct, bfDS) {
 
 function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
   if (dataset === "Select dataset") {
-    //bfCurrentDatasetStatusProgress.style.display = "none";
     $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
     datasetStatusStatus.innerHTML = "";
@@ -343,10 +429,6 @@ function checkDatasetDisseminate() {
   }
 }
 
-$(".bf-dataset-span.disseminate").on("DOMSubtreeModified", function () {
-  //checkDatasetDisseminate()
-});
-
 $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
   if ($(this).html() !== "None") {
     $("#div-confirm-submit-review").show();
@@ -357,25 +439,14 @@ $(".bf-dataset-span.submit-review").on("DOMSubtreeModified", function () {
   }
 });
 
-function showDDDUploadDiv() {
-  document.getElementById("para-milestone-document-info").innerHTML = "";
-  document.getElementById("para-milestone-document-info-long").innerHTML = "";
-  $("#Question-prepare-submission-DDD").removeClass("prev");
-  $("#Question-prepare-submission-DDD")
-    .nextAll()
-    .removeClass("show")
-    .removeClass("prev");
-  $("#div-buttons-show-DDD").hide();
-  $("#input-milestone-select").prop("placeholder", "Browse here");
-  $("#button-import-milestone").hide();
-  $("#div-upload-DDD").show();
-  $("#div-cancel-DDD-import").show();
-}
+                  /*
+                  The below is for Prepare metadata section
+                  */
 
+// Main function to check Airtable status upon loading soda
+///// config and load live data from Airtable
 var sparcAwards = [];
-
 function checkAirtableStatus() {
-  ///// config and load live data from Airtable
   var airKeyContent = parseJson(airtableConfigPath);
   if (Object.keys(airKeyContent).length === 0) {
     changeAirtableDiv(
@@ -477,139 +548,27 @@ function checkAirtableStatus() {
   $("#dataset-description-no-airtable-mode").prop("disabled", false);
 }
 
-$(document).ready(function () {
-  checkAirtableStatus();
-});
-
-function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
-  $("#" + divHide).css("display", "none");
-  $("#" + buttonHide).css("display", "none");
-  $("#" + divShow).css("display", "flex");
-  $("#" + buttonShow).css("display", "flex");
-  $("#" + buttonShow + " button").show();
-  $("#submission-connect-Airtable").text("Yes, let's connect");
-}
-
-// Below is all the actions that show/hide Confirm buttons per the onclick/onchange/keyup... events
-// under Prepare metadata
-
-// 1A. Select SPARC award
-$("#select-presaved-grant-info-list").change(function () {
-  $("#Question-prepare-submission-3")
+// Related to Upload DDD part (Show and Import and Cancel DDD upload)
+function showDDDUploadDiv() {
+  document.getElementById("para-milestone-document-info").innerHTML = "";
+  document.getElementById("para-milestone-document-info-long").innerHTML = "";
+  $("#Question-prepare-submission-DDD").removeClass("prev");
+  $("#Question-prepare-submission-DDD")
     .nextAll()
     .removeClass("show")
     .removeClass("prev");
-  if ($("#select-presaved-grant-info-list").val() !== "Select") {
-    $("#div-confirm-select-SPARC-awards").show();
-    $($("#div-confirm-select-SPARC-awards").children()[0]).show();
-    var existingDDDBoolean = changeAwardInput();
-    if (existingDDDBoolean) {
-      $("#btn-confirm-select-SPARC-awards").attr(
-        "data-next",
-        "Question-prepare-submission-4"
-      );
-    } else {
-      $("#btn-confirm-select-SPARC-awards").attr(
-        "data-next",
-        "Question-prepare-submission-DDD"
-      );
-    }
-  } else {
-    $("#div-confirm-select-SPARC-awards").hide();
-    $($("#div-confirm-select-SPARC-awards").children()[0]).hide();
-  }
-});
-// 1B. Manually enter SPARC award
-$("#textarea-SPARC-award-raw-input").keyup(function () {
-  if ($("#textarea-SPARC-award-raw-input").val() !== "") {
-    $("#div-confirm-enter-SPARC-award").show();
-    $($("#div-confirm-enter-SPARC-award").children()[0]).show();
-  } else {
-    $("#div-confirm-enter-SPARC-award").hide();
-    $($("#div-confirm-enter-SPARC-award").children()[0]).hide();
-  }
-});
+  $("#div-buttons-show-DDD").hide();
+  $("#input-milestone-select").prop("placeholder", "Browse here");
+  $("#button-import-milestone").hide();
+  $("#div-upload-DDD").show();
+  $("#div-cancel-DDD-import").show();
+}
 
-// 3A. Select a completion date
-
-$("#input-milestone-date").change(function () {
-  if ($(this).val() !== "") {
-    if (!$("#Question-prepare-submission-6").hasClass("prev")) {
-      $("#div-confirm-completion-date").show();
-      $($("#div-confirm-completion-date").children()[0]).show();
-    }
-    var res = showPreviewSubmission();
-    var awardRes = res["awards"];
-    var dateRes = res["date"];
-    var milestonesRes = res["milestones"];
-    var milestoneValues = [];
-    $("#submission-SPARC-award-span").text(awardRes);
-    $("#submission-completion-date-span").text(dateRes);
-    milestonesRes.forEach((item, i) => {
-      milestoneValues.push(milestonesRes[i].value);
-    });
-    $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-  } else {
-    $("#div-confirm-completion-date").hide();
-  }
-});
-
-$("#selected-milestone-date").change(function () {
-  document.getElementById("input-milestone-date").value = "";
-  if ($("#selected-milestone-date").val() !== "") {
-    if (descriptionDateInput.value === "Enter a date") {
-      actionEnterNewDate("flex");
-    } else {
-      actionEnterNewDate("none");
-      if (!$("#Question-prepare-submission-6").hasClass("prev")) {
-        $("#div-confirm-completion-date").show();
-        $($("#div-confirm-completion-date").children()[0]).show();
-      }
-      var res = showPreviewSubmission();
-      var awardRes = res["awards"];
-      var dateRes = res["date"];
-      var milestonesRes = res["milestones"];
-      var milestoneValues = [];
-      $("#submission-SPARC-award-span").text(awardRes);
-      $("#submission-completion-date-span").text(dateRes);
-      milestonesRes.forEach((item, i) => {
-        milestoneValues.push(milestonesRes[i].value);
-      });
-      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-    }
-  } else {
-    $("#div-confirm-completion-date").hide();
-  }
-});
-// 3B. Manually type a completion date
-$("#input-milestone-date-raw").change(function () {
-  if ($("#input-milestone-date-raw").val() !== "mm/dd/yyyy") {
-    if (!$("#Question-prepare-submission-no-skip-3").hasClass("prev")) {
-      $("#div-confirm-completion-date-raw").show();
-      $($("#div-confirm-completion-date-raw").children()[0]).show();
-    }
-    var res = showPreviewSubmission();
-    var awardRes = res["awards"];
-    var dateRes = res["date"];
-    var milestonesRes = res["milestones"];
-    var milestoneValues = [];
-    $("#submission-SPARC-award-span").text(awardRes);
-    $("#submission-completion-date-span").text(dateRes);
-    milestonesRes.forEach((item, i) => {
-      milestoneValues.push(milestonesRes[i].value);
-    });
-    $("#submission-milestones-span").text(milestoneValues.join(", \n"));
-  } else {
-    $("#div-confirm-completion-date-raw").hide();
-  }
-});
 $("#btn-cancel-DDD-import").click(function () {
   $("#div-cancel-DDD-import").hide();
   $("#div-upload-DDD").hide();
   $("#div-buttons-show-DDD").show();
 });
-
-$("#a-SPARC-awards-not-listed").click(editSPARCAwardsBootbox);
 
 $("#reupload-DDD").click(function () {
   // 1. current individual question hide & reupload individual question added (maybe onclick on transitionFreeFormMode)
@@ -707,6 +666,131 @@ $("#cancel-reupload-DDD").click(function () {
   $("#div-confirm-select-SPARC-awards button").click();
 });
 
+// show which Airtable first div to show -< based on Airtable connection status
+function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
+  $("#" + divHide).css("display", "none");
+  $("#" + buttonHide).css("display", "none");
+  $("#" + divShow).css("display", "flex");
+  $("#" + buttonShow).css("display", "flex");
+  $("#" + buttonShow + " button").show();
+  $("#submission-connect-Airtable").text("Yes, let's connect");
+}
+
+// Below is all the actions that show/hide Confirm buttons per the onclick/onchange/keyup... events
+// under Prepare metadata
+
+// 1A. Select SPARC award
+$("#select-presaved-grant-info-list").change(function () {
+  $("#Question-prepare-submission-3")
+    .nextAll()
+    .removeClass("show")
+    .removeClass("prev");
+  if ($("#select-presaved-grant-info-list").val() !== "Select") {
+    $("#div-confirm-select-SPARC-awards").show();
+    $($("#div-confirm-select-SPARC-awards").children()[0]).show();
+    var existingDDDBoolean = changeAwardInput();
+    if (existingDDDBoolean) {
+      $("#btn-confirm-select-SPARC-awards").attr(
+        "data-next",
+        "Question-prepare-submission-4"
+      );
+    } else {
+      $("#btn-confirm-select-SPARC-awards").attr(
+        "data-next",
+        "Question-prepare-submission-DDD"
+      );
+    }
+  } else {
+    $("#div-confirm-select-SPARC-awards").hide();
+    $($("#div-confirm-select-SPARC-awards").children()[0]).hide();
+  }
+});
+// 1B. Manually enter SPARC award
+$("#textarea-SPARC-award-raw-input").keyup(function () {
+  if ($("#textarea-SPARC-award-raw-input").val() !== "") {
+    $("#div-confirm-enter-SPARC-award").show();
+    $($("#div-confirm-enter-SPARC-award").children()[0]).show();
+  } else {
+    $("#div-confirm-enter-SPARC-award").hide();
+    $($("#div-confirm-enter-SPARC-award").children()[0]).hide();
+  }
+});
+
+// 3A. Select a completion date
+$("#input-milestone-date").change(function () {
+  if ($(this).val() !== "") {
+    if (!$("#Question-prepare-submission-6").hasClass("prev")) {
+      $("#div-confirm-completion-date").show();
+      $($("#div-confirm-completion-date").children()[0]).show();
+    }
+    var res = showPreviewSubmission();
+    var awardRes = res["awards"];
+    var dateRes = res["date"];
+    var milestonesRes = res["milestones"];
+    var milestoneValues = [];
+    $("#submission-SPARC-award-span").text(awardRes);
+    $("#submission-completion-date-span").text(dateRes);
+    milestonesRes.forEach((item, i) => {
+      milestoneValues.push(milestonesRes[i].value);
+    });
+    $("#submission-milestones-span").text(milestoneValues.join(", \n"));
+  } else {
+    $("#div-confirm-completion-date").hide();
+  }
+});
+
+$("#selected-milestone-date").change(function () {
+  document.getElementById("input-milestone-date").value = "";
+  if ($("#selected-milestone-date").val() !== "") {
+    if (descriptionDateInput.value === "Enter a date") {
+      actionEnterNewDate("flex");
+    } else {
+      actionEnterNewDate("none");
+      if (!$("#Question-prepare-submission-6").hasClass("prev")) {
+        $("#div-confirm-completion-date").show();
+        $($("#div-confirm-completion-date").children()[0]).show();
+      }
+      var res = showPreviewSubmission();
+      var awardRes = res["awards"];
+      var dateRes = res["date"];
+      var milestonesRes = res["milestones"];
+      var milestoneValues = [];
+      $("#submission-SPARC-award-span").text(awardRes);
+      $("#submission-completion-date-span").text(dateRes);
+      milestonesRes.forEach((item, i) => {
+        milestoneValues.push(milestonesRes[i].value);
+      });
+      $("#submission-milestones-span").text(milestoneValues.join(", \n"));
+    }
+  } else {
+    $("#div-confirm-completion-date").hide();
+  }
+});
+// 3B. Manually type a completion date
+$("#input-milestone-date-raw").change(function () {
+  if ($("#input-milestone-date-raw").val() !== "mm/dd/yyyy") {
+    if (!$("#Question-prepare-submission-no-skip-3").hasClass("prev")) {
+      $("#div-confirm-completion-date-raw").show();
+      $($("#div-confirm-completion-date-raw").children()[0]).show();
+    }
+    var res = showPreviewSubmission();
+    var awardRes = res["awards"];
+    var dateRes = res["date"];
+    var milestonesRes = res["milestones"];
+    var milestoneValues = [];
+    $("#submission-SPARC-award-span").text(awardRes);
+    $("#submission-completion-date-span").text(dateRes);
+    milestonesRes.forEach((item, i) => {
+      milestoneValues.push(milestonesRes[i].value);
+    });
+    $("#submission-milestones-span").text(milestoneValues.join(", \n"));
+  } else {
+    $("#div-confirm-completion-date-raw").hide();
+  }
+});
+
+$("#a-SPARC-awards-not-listed").click(editSPARCAwardsBootbox);
+
 // Preview submission file entries before Generating
 function showPreviewSubmission() {
   var sparcAwardRes = "";
@@ -740,79 +824,6 @@ function generateSubmissionFile() {
   ipcRenderer.send("open-folder-dialog-save-submission", "submission.xlsx");
 }
 
-$(document).ready(function () {
-  ipcRenderer.on("selected-metadata-submission", (event, dirpath, filename) => {
-    if (dirpath.length > 0) {
-      $("#generate-submission-spinner").show();
-      var destinationPath = path.join(dirpath[0], filename);
-      if (fs.existsSync(destinationPath)) {
-        var emessage = "File " + filename + " already exists in " + dirpath[0];
-        ipcRenderer.send("open-error-metadata-file-exits", emessage);
-      } else {
-        var awardRes = $("#submission-SPARC-award-span").text();
-        var dateRes = $("#submission-completion-date-span").text();
-        var milestonesRes = $("#submission-milestones-span").text();
-        var milestoneValue = milestonesRes.split(", \n");
-        var json_arr = [];
-        json_arr.push({
-          award: awardRes,
-          date: dateRes,
-          milestone: milestoneValue[0],
-        });
-        if (milestoneValue.length > 0) {
-          for (var index = 1; index < milestoneValue.length; index++) {
-            json_arr.push({
-              award: "",
-              date: "",
-              milestone: milestoneValue[index],
-            });
-          }
-        }
-        json_str = JSON.stringify(json_arr);
-        if (dirpath != null) {
-          client.invoke(
-            "api_save_submission_file",
-            destinationPath,
-            json_str,
-            (error, res) => {
-              if (error) {
-                var emessage = userError(error);
-                log.error(error);
-                console.error(error);
-                document.getElementById(
-                  "para-save-submission-status"
-                ).innerHTML =
-                  "<span style='color: red;'> " + emessage + "</span>";
-                ipcRenderer.send(
-                  "track-event",
-                  "Error",
-                  "Prepare Metadata - Create Submission",
-                  selectedBfDataset
-                );
-              } else {
-                document.getElementById(
-                  "para-save-submission-status"
-                ).innerHTML =
-                  "<span style='color: black ;'>" +
-                  "Done!" +
-                  smileyCan +
-                  "</span>";
-                ipcRenderer.send(
-                  "track-event",
-                  "Success",
-                  "Prepare Metadata - Create Submission",
-                  selectedBfDataset
-                );
-              }
-            }
-          );
-        }
-      }
-    }
-    $("#generate-submission-spinner").hide();
-  });
-});
-
 // prepare dataset description each section (go in and out effects)
 $(".button-individual-dd-section.remove").click(function () {
   var metadataFileStatus = $($(this).parents()[1]).find(
@@ -833,6 +844,7 @@ $(".prepare-dd-cards").click(function () {
   document.getElementById("prevBtn").style.display = "none";
 });
 
+// adding row for contributor table
 function addNewRow(table) {
   $("#para-save-link-status").text("");
   $("#para-save-contributor-status").text("");
@@ -985,6 +997,10 @@ function addNewRow(table) {
   }
 }
 
+/* The below function is needed because
+  when users add a row and then delete it, the ID for such row is deleted (row-name-2),
+  but the row count for the table (used for naming row ID) is changed and that messes up the naming and ID retrieval process
+*/
 function checkForUniqueRowID(rowID, no) {
   if ($("#" + rowID + no.toString()).length == 0) {
     return no;
@@ -1016,6 +1032,7 @@ function checkContributorNameDuplicates(table, currentRow) {
   return duplicate;
 }
 
+// clone Last names of contributors (from a global Airtable Contributor array) to subsequent selects so we don't have to keep calling Airtable API
 function cloneConNamesSelect(selectLast) {
   removeOptions(document.getElementById(selectLast));
   addOption(
@@ -1031,6 +1048,7 @@ function cloneConNamesSelect(selectLast) {
   }
 }
 
+// the below 2 functions initialize Tagify for each input field for a new added row (Role and Affiliation)
 function createConsRoleTagify(inputField) {
   var input = document.getElementById(inputField);
   // initialize Tagify on the above input node reference
@@ -1077,17 +1095,10 @@ function createConsAffliationTagify(inputField) {
   });
 }
 
-$(document).ready(function () {
-  $("#add-other-contributors").on("click", function () {
-    if ($(this).text() == "Add contributors not listed above") {
-      addOtherContributors("table-current-contributors");
-      $(this).text("Cancel manual typing");
-    } else {
-      cancelOtherContributors("table-current-contributors");
-      $(this).text("Add contributors not listed above");
-    }
-  });
-});
+/*
+cancelOtherContributors() and addOtherContributors() are needed when users want to
+manually type Contributor names instead of choosing from the Airtable retrieved dropdown list
+*/
 
 function cancelOtherContributors(table) {
   var rowcount = document.getElementById(table).rows.length;
@@ -1141,6 +1152,10 @@ function convertDropdownToTextBox(dropdown) {
   }
 }
 
+/* The functions ddNoAirtableMode() and resetDDUI() is needed to track when Airtable connection status is changed within
+  a SODA session -> SODA will accordingly update what to show under Submission and DD files
+*/
+
 function ddNoAirtableMode(action) {
   if (action == "On") {
     noAirtable = true;
@@ -1183,7 +1198,6 @@ function ddNoAirtableMode(action) {
     loadAwards();
   }
 }
-
 function resetDDUI(table) {
   var rowcount = document.getElementById(table).rows.length;
   var rowIndex = rowcount - 1;

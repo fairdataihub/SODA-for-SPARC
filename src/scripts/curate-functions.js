@@ -556,7 +556,7 @@ $(document).ready(function () {
           } else {
             datasetList = [];
             datasetList = result;
-            //refreshDatasetList();
+            refreshDatasetList();
           }
         }
       );
@@ -978,13 +978,16 @@ const updateDatasetList = (bfaccount) => {
 
     // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
     $("#curatebfdatasetlist").find("option:not(:first)").remove();
+    $("#ds-name").find("option:not(:first)").remove();
 
     for (myitem in filteredDatasets) {
       var myitemselect = filteredDatasets[myitem];
       var option = document.createElement("option");
       option.textContent = myitemselect;
       option.value = myitemselect;
+      var option2 = option.cloneNode(true);
       curateDatasetDropdown.appendChild(option);
+      datasetDescriptionFileDataset.appendChild(option2);
     }
 
     initializeBootstrapSelect("#curatebfdatasetlist", "show");
