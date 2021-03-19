@@ -156,7 +156,17 @@ $(document).ready(function () {
     }
     $("#generate-submission-spinner").hide();
   });
-
+  ipcRenderer.on("selected-milestonedocreupload", (event, filepath) => {
+    if (filepath.length > 0) {
+      if (filepath != null) {
+        // used to communicate value to button-import-milestone click event-listener
+        document.getElementById("input-milestone-select-reupload").placeholder =
+        filepath[0];
+        $("#div-confirm-select-SPARC-awards").show();
+        $("#div-cancel-reupload-DDD").hide();
+      }
+    }
+  });
 });
 
 const disseminateCurationTeam = (account, dataset, share_status = "") => {
@@ -645,17 +655,6 @@ $("#input-milestone-select-reupload").click(function () {
   ).style.display = "none";
   ipcRenderer.send("open-file-dialog-milestone-doc-reupload");
 });
-ipcRenderer.on("selected-milestonedocreupload", (event, filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null) {
-      // used to communicate value to button-import-milestone click event-listener
-      document.getElementById("input-milestone-select-reupload").placeholder =
-        filepath[0];
-      $("#div-confirm-select-SPARC-awards").show();
-      $("#div-cancel-reupload-DDD").hide();
-    }
-  }
-});
 
 $("#cancel-reupload-DDD").click(function () {
   $("#Question-prepare-submission-reupload-DDD").removeClass("show prev");
@@ -787,7 +786,9 @@ $("#input-milestone-date-raw").change(function () {
   }
 });
 
-$("#a-SPARC-awards-not-listed").click(editSPARCAwardsBootbox);
+$(document).ready(function() {
+  $("#a-SPARC-awards-not-listed").click(editSPARCAwardsBootbox);
+})
 
 // Preview submission file entries before Generating
 function showPreviewSubmission() {
