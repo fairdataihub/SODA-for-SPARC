@@ -700,10 +700,10 @@ async function openDropdownPrompt(dropdown) {
       showBFAddAccountBootbox();
     }
   } else if (dropdown === "dataset") {
-    console.log("hiding1")
+    console.log("hiding1");
     $(".svg-change-current-account.dataset").css("display", "none");
     $(".ui.active.green.inline.loader.small").css("display", "block");
-    console.log("hiding2")
+    console.log("hiding2");
 
     setTimeout(async function () {
       // disable the Continue btn first
@@ -755,7 +755,7 @@ async function openDropdownPrompt(dropdown) {
         confirmButtonText: "Confirm",
         cancelButtonText: "Cancel",
         willOpen: () => {
-          $("#curatebfdatasetlist").selectpicker("hide");
+          // $("#curatebfdatasetlist").selectpicker("hide");
           $("#curatebfdatasetlist").selectpicker("refresh");
           $("#bf-dataset-select-div").hide();
         },
@@ -765,8 +765,8 @@ async function openDropdownPrompt(dropdown) {
           $(datasetPermissionDiv)
             .find("#div-filter-datasets-progress-2")
             .css("display", "block");
-          $("#curatebfdatasetlist").selectpicker("hide");
-          $("#curatebfdatasetlist").selectpicker("refresh");
+          // $("#curatebfdatasetlist").selectpicker("hide");
+          // $("#curatebfdatasetlist").selectpicker("refresh");
           $("#bf-dataset-select-div").hide();
 
           bfDataset = $("#curatebfdatasetlist").val();
@@ -777,8 +777,8 @@ async function openDropdownPrompt(dropdown) {
             $(datasetPermissionDiv)
               .find("#div-filter-datasets-progress-2")
               .css("display", "none");
-            $("#curatebfdatasetlist").selectpicker("show");
-            $("#curatebfdatasetlist").selectpicker("refresh");
+            // $("#curatebfdatasetlist").selectpicker("show");
+            // $("#curatebfdatasetlist").selectpicker("refresh");
             $("#bf-dataset-select-div").show();
 
             return undefined;
@@ -789,8 +789,8 @@ async function openDropdownPrompt(dropdown) {
               $(datasetPermissionDiv)
                 .find("#div-filter-datasets-progress-2")
                 .css("display", "none");
-              $("#curatebfdatasetlist").selectpicker("show");
-              $("#curatebfdatasetlist").selectpicker("refresh");
+              // $("#curatebfdatasetlist").selectpicker("show");
+              // $("#curatebfdatasetlist").selectpicker("refresh");
               $("#bf-dataset-select-div").show();
 
               return undefined;
@@ -832,8 +832,7 @@ async function openDropdownPrompt(dropdown) {
       $("body").removeClass("waiting");
       $(".svg-change-current-account.dataset").css("display", "block");
       $(".ui.active.green.inline.loader.small").css("display", "none");
-    }, 0);
-
+    }, 10);
   }
 }
 
