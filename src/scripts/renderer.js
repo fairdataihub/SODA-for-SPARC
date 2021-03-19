@@ -2400,7 +2400,6 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         currentAddEditDatasetPermission.innerHTML = "";
         bfCreateNewDatasetBtn.disabled = false;
         addNewDatasetToList(bfNewDatasetName.value);
-        document.getElementById("para-filter-datasets-status").innerHTML = "";
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -2418,6 +2417,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
             } else {
               datasetList = [];
               datasetList = result;
+              tempDatasetListsSync();
             }
           }
         );
@@ -2495,6 +2495,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
               } else {
                 datasetList = [];
                 datasetList = result;
+                tempDatasetListsSync()
               }
             }
           );
@@ -3528,7 +3529,9 @@ function refreshBfUsersList() {
         console.error(error);
       } else {
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
+        $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
+        $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
         for (var myItem in res) {
           var myUser = res[myItem];
@@ -3560,6 +3563,7 @@ function refreshBfTeamsList(teamList) {
         console.error(error);
       } else {
         // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
+        $("#bf_list_teams").selectpicker("refresh");
         $("#bf_list_teams").find("option:not(:first)").remove();
         for (var myItem in res) {
           var myTeam = res[myItem];
@@ -3811,26 +3815,24 @@ function refreshDatasetList() {
   return filteredDatasets.length;
 }
 
-function refreshDatasetListChooseOption(dropdown, selectedDataset) {
-  document.getElementById("para-filter-datasets-status").innerHTML = "";
+// function refreshDatasetListChooseOption(dropdown, selectedDataset) {
+//   var datasetListSorted = datasetList.sort();
+//   var filteredDatasets = [];
+//   for (var i = 0; i < datasetListSorted.length; i++) {
+//     filteredDatasets.push(datasetListSorted[i].name);
+//   }
+//   populateDatasetDropdowns(filteredDatasets);
+//   selectOptionDropdown(dropdown, selectedDataset);
+// }
 
-  var datasetListSorted = datasetList.sort();
-  var filteredDatasets = [];
-  for (var i = 0; i < datasetListSorted.length; i++) {
-    filteredDatasets.push(datasetListSorted[i].name);
-  }
-  populateDatasetDropdowns(filteredDatasets);
-  selectOptionDropdown(dropdown, selectedDataset);
-}
-
-function selectOptionDropdown(dropdown, selectedDataset) {
-  var dropdownString = dropdown + " option";
-  $(dropdownString).each(function () {
-    if ($(this).text() == selectedDataset) {
-      $(this).prop("selected", true);
-    }
-  });
-}
+// function selectOptionDropdown(dropdown, selectedDataset) {
+//   var dropdownString = dropdown + " option";
+//   $(dropdownString).each(function () {
+//     if ($(this).text() == selectedDataset) {
+//       $(this).prop("selected", true);
+//     }
+//   });
+// }
 
 /// populate the dropdowns with refreshed dataset list
 function populateDatasetDropdowns(mylist) {
