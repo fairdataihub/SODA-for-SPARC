@@ -11,9 +11,8 @@ from pysoda import submit_dataset_progress,  \
 from disseminate import bf_get_doi, bf_reserve_doi, bf_get_publishing_status, bf_publish_dataset, \
                          bf_submit_review_dataset, bf_withdraw_review_dataset
 
-from curate import curate_dataset_progress, save_file_organization, import_file_organization, \
-    curate_dataset, preview_file_organization, delete_preview_file_organization, validate_dataset, create_folder_level_manifest, \
-    check_empty_files_folders, main_curate_function, main_curate_function_progress, preview_dataset
+from curate import validate_dataset, create_folder_level_manifest, \
+    check_empty_files_folders, main_curate_function, main_curate_function_progress
 
 from prepare_metadata import save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone
 
@@ -46,43 +45,43 @@ class SodaApi(object):
             raise e
 
     ### Curate dataset
-    def api_save_file_organization(self, jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization):
-        try:
-            return save_file_organization(jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization)
-        except Exception as e:
-            raise e
+    # def api_save_file_organization(self, jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization):
+    #     try:
+    #         return save_file_organization(jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization)
+    #     except Exception as e:
+    #         raise e
 
-    def api_import_file_organization(self, pathsavefileorganization, foldernames):
-        try:
-            return import_file_organization(pathsavefileorganization, foldernames)
-        except Exception as e:
-            raise e
+    # def api_import_file_organization(self, pathsavefileorganization, foldernames):
+    #     try:
+    #         return import_file_organization(pathsavefileorganization, foldernames)
+    #     except Exception as e:
+    #         raise e
 
-    def api_preview_file_organization(self, jsonpath):
-        try:
-            return preview_file_organization(jsonpath)
-        except Exception as e:
-            raise e
+    # def api_preview_file_organization(self, jsonpath):
+    #     try:
+    #         return preview_file_organization(jsonpath)
+    #     except Exception as e:
+    #         raise e
 
-    def api_delete_preview_file_organization(self):
-        try:
-            return delete_preview_file_organization()
-        except Exception as e:
-            raise e
+    # def api_delete_preview_file_organization(self):
+    #     try:
+    #         return delete_preview_file_organization()
+    #     except Exception as e:
+    #         raise e
 
-    def api_curate_dataset(self, sourcedataset, destinationdataset, pathdataset, newdatasetname,\
-                manifeststatus, jsonpath, jsondescription):
-        try:
-            curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetname,\
-                manifeststatus, jsonpath, jsondescription)
-        except Exception as e:
-            raise e
+    # def api_curate_dataset(self, sourcedataset, destinationdataset, pathdataset, newdatasetname,\
+    #             manifeststatus, jsonpath, jsondescription):
+    #     try:
+    #         curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetname,\
+    #             manifeststatus, jsonpath, jsondescription)
+    #     except Exception as e:
+    #         raise e
 
-    def api_curate_dataset_progress(self):
-        try:
-            return curate_dataset_progress()
-        except Exception as e:
-            raise e
+    # def api_curate_dataset_progress(self):
+    #     try:
+    #         return curate_dataset_progress()
+    #     except Exception as e:
+    #         raise e
 
     ### Validate dataset
     def api_create_folder_level_manifest(self, jsonpath, jsondescription):
@@ -302,11 +301,11 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    def api_preview_dataset(self, soda_json_structure):
-        try:
-            return preview_dataset(soda_json_structure)
-        except Exception as e:
-            raise e
+    # def api_preview_dataset(self, soda_json_structure):
+    #     try:
+    #         return preview_dataset(soda_json_structure)
+    #     except Exception as e:
+    #         raise e
     
     def api_bf_get_dataset_files_folders(self, soda_json_structure, requested_sparc_only = True):
         try:
