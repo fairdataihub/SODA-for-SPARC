@@ -2026,6 +2026,10 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     recursive_folder_rename(dataset_structure, "deleted")
     main_curate_progress_message = "Folders on Blackfynn have been marked for deletion"
 
+    main_curate_progress_message = "Renaming all folders requested by the user"
+    recursive_folder_rename(dataset_structure, "renamed")
+    main_curate_progress_message = "Renamed all folders requested by the user"
+
     # 3. Get the status of all files currently on Blackfynn and create
     # the folderpath for all items in both dataset structures.
     main_curate_progress_message = "Fetching files and folders from Blackfynn"
@@ -2053,7 +2057,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     main_curate_progress_message = "Deletion of additional folders complete"
 
     # 7. Rename any Blackfynn folders that are marked as renamed.
-    main_curate_progress_message = "Renaming all folderes requested by the user"
+    main_curate_progress_message = "Renaming all folders requested by the user"
     recursive_folder_rename(dataset_structure, "renamed")
     main_curate_progress_message = "Renamed all folders requested by the user"
 

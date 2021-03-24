@@ -4808,8 +4808,9 @@ function allowDrop(ev) {
   ev.preventDefault();
 }
 
-function drop(ev) {
+async function drop(ev) {
   // get global path
+  
   var currentPath = organizeDSglobalPath.value;
   var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.slice(1).filter(function (el) {
@@ -4822,6 +4823,7 @@ function drop(ev) {
   ev.preventDefault();
   var uiFiles = {};
   var uiFolders = {};
+  $("body").addClass("waiting");
 
   for (var file in myPath["files"]) {
     uiFiles[path.parse(file).name] = 1;
@@ -4975,6 +4977,12 @@ function drop(ev) {
       };
       // append "renamed" to "action" key if file is auto-renamed by UI
       var originalName = path.parse(myPath["folders"][element]["path"]).name;
+      let placeholderString =
+        '<div id="placeholder_element" class="single-item"><h1 class="folder file"><i class="fas fa-file-import"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">Loading ' +
+        element +
+        "... </div></div>";
+      $(placeholderString).appendTo(ev.target);
+      await listItems(myPath, "#items");
       if (element !== originalName) {
         myPath["folders"][element]["action"].push("renamed");
       }
@@ -4986,6 +4994,7 @@ function drop(ev) {
         '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         element +
         "</div></div>";
+      $("#placeholder_element").remove();
       $(appendString).appendTo(ev.target);
       listItems(myPath, "#items");
       getInFolder(
@@ -4998,6 +5007,8 @@ function drop(ev) {
       hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
     }
   }
+  $("body").removeClass("waiting");
+
 }
 
 // SAVE FILE ORG
