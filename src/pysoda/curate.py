@@ -2009,8 +2009,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
                     if file is not None:
                         file.name = item
                         file.update()
-            else:
-                recursive_folder_rename(folder["folders"][item], mode)
+            recursive_folder_rename(folder["folders"][item], mode)
 
         return
 
@@ -2026,6 +2025,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     recursive_folder_rename(dataset_structure, "deleted")
     main_curate_progress_message = "Folders on Blackfynn have been marked for deletion"
 
+    # 2.5 Rename folders that need to be in the final destination.
     main_curate_progress_message = "Renaming all folders requested by the user"
     recursive_folder_rename(dataset_structure, "renamed")
     main_curate_progress_message = "Renamed all folders requested by the user"

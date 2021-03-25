@@ -535,7 +535,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
     high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
     manifest_sparc = ["manifest.xlsx", "manifest.csv"]
     high_level_metadata_sparc = ['submission.xlsx', 'submission.csv', 'submission.json', 'dataset_description.xlsx', 'dataset_description.csv', 'dataset_description.json', 'subjects.xlsx', 'subjects.csv', 'subjects.json', 'samples.xlsx', 'samples.csv', 'samples.json', 'README.txt', 'CHANGES.txt']
-    f = open("demofile2.txt", "a")
+    f = open("dataset_contents.soda", "a")
 
     def verify_file_name(item_name, file_name):
         from curate import bf_recognized_file_extensions
