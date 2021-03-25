@@ -2424,7 +2424,8 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
           }
         );
         $(".bf-dataset-span").html(bfNewDatasetName.value);
-        refreshDatasetList()
+        // refreshDatasetList()
+        updateDatasetList();
         datasetDescriptionFileDataset.value = bfNewDatasetName.value
         $(".confirm-button").click();
         bfNewDatasetName.value = "";
@@ -2575,6 +2576,12 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           "Success",
           "Manage Dataset - Upload Local Dataset",
           selectedbfdataset,
+          totalFileSize
+        );
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          `Upload Local Dataset - ${selectedbfdataset}`,
           totalFileSize
         );
       }
@@ -4575,7 +4582,8 @@ function showDefaultBFAccount() {
 
               $("#div-bf-account-load-progress").css("display", "none");
               showHideDropdownButtons("account", "show");
-              refreshDatasetList()
+              // refreshDatasetList()
+              updateDatasetList();
             }
           }
         );
@@ -6051,12 +6059,23 @@ const generateProgressBar = document.getElementById("progress-bar-new-curate");
 
 function initiate_generate() {
   // Initiate curation by calling Python funtion
+  let manifest_files_requested = false;
   var main_curate_status = "Solving";
+
   document.getElementById("para-new-curate-progress-bar-status").innerHTML =
     "Preparing files ...";
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   document.getElementById("div-new-curate-progress").style.display = "block";
   document.getElementById("div-generate-comeback").style.display = "none";
+
+  if ("manifest-files" in sodaJSONObj) {
+    if ("destination" in sodaJSONObj["manifest-files"]) {
+      if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
+        manifest_files_requested = true;
+      }
+    }
+  }
+
   client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
     if (error) {
       var emessage = userError(error);
@@ -6087,6 +6106,14 @@ function initiate_generate() {
     } else {
       log.info("Completed curate function");
       console.log("Completed curate function");
+      if (manifest_files_requested) {
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Manifest Files Created",
+          defaultBfDataset
+        );
+      }
       client.invoke(
         "api_bf_dataset_account",
         defaultBfAccount,
