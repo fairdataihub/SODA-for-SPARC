@@ -2009,8 +2009,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
                     if file is not None:
                         file.name = item
                         file.update()
-            else:
-                recursive_folder_rename(folder["folders"][item], mode)
+            recursive_folder_rename(folder["folders"][item], mode)
 
         return
 
@@ -2025,6 +2024,11 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     dataset_structure = soda_json_structure["dataset-structure"]
     recursive_folder_rename(dataset_structure, "deleted")
     main_curate_progress_message = "Folders on Blackfynn have been marked for deletion"
+
+    # 2.5 Rename folders that need to be in the final destination.
+    main_curate_progress_message = "Renaming all folders requested by the user"
+    recursive_folder_rename(dataset_structure, "renamed")
+    main_curate_progress_message = "Renamed all folders requested by the user"
 
     # 3. Get the status of all files currently on Blackfynn and create
     # the folderpath for all items in both dataset structures.
@@ -2688,76 +2692,116 @@ def main_curate_function_progress():
     return (main_curate_status, start_generate, main_curate_progress_message, main_total_generate_dataset_size, main_generated_dataset_size, elapsed_time_formatted)
 
 
-# def preview_dataset(soda_json_structure):
-#     """
-#     Associated with 'Preview' button in the SODA interface
-#     Creates a folder for preview and adds mock files based on the files specified in the UI by the user (same name as origin but 0 kb in size)
-#     Opens the dialog box to showcase the files / folders added
+def preview_dataset(soda_json_structure):
+    """
+    Associated with 'Preview' button in the SODA interface
+    Creates a folder for preview and adds mock files based on the files specified in the UI by the user (same name as origin but 0 kb in size)
+    Opens the dialog box to showcase the files / folders added
 
-#     Args:
-#         soda_json_structure: soda dict with information about all specified files and folders
-#     Action:
-#         Opens the dialog box at preview_path
-#     Returns:
-#         preview_path: path of the folder where the preview files are located
-#     """
+    Args:
+        soda_json_structure: soda dict with information about all specified files and folders
+    Action:
+        Opens the dialog box at preview_path
+    Returns:
+        preview_path: path of the folder where the preview files are located
+    """
 
-#     preview_path = join(userpath, "SODA", "Preview_dataset")
+    preview_path = join(userpath, "SODA", "Preview_dataset")
 
-#     # remove empty files and folders from dataset
-#     try:
-#         check_empty_files_folders(soda_json_structure)
-#     except Exception as e:
-#         raise e
+    # remove empty files and folders from dataset
+    try:
+        check_empty_files_folders(soda_json_structure)
+    except Exception as e:
+        raise e
 
-#     # create Preview_dataset folder
-#     try:
-#         if isdir(preview_path):
-#             shutil.rmtree(preview_path, ignore_errors=True)
-#         makedirs(preview_path)
-#     except Exception as e:
-#         raise e
+    # create Preview_dataset folder
+    try:
+        if isdir(preview_path):
+            shutil.rmtree(preview_path, ignore_errors=True)
+        makedirs(preview_path)
+    except Exception as e:
+        raise e
 
-#     try:
+    try:
 
-#         if "dataset-structure" in soda_json_structure.keys():
-#             # create folder structure
-#             def recursive_create_mock_folder_structure(my_folder, my_folderpath):
-#                 if "folders" in my_folder.keys():
-#                     for folder_key, folder in my_folder["folders"].items():
-#                         folderpath = join(my_folderpath, folder_key)
-#                         if not isdir(folderpath):
-#                             mkdir(folderpath)
-#                         recursive_create_mock_folder_structure(folder, folderpath)
+        if "dataset-structure" in soda_json_structure.keys():
+            # create folder structure
+            def recursive_create_mock_folder_structure(my_folder, my_folderpath):
+                if "folders" in my_folder.keys():
+                    for folder_key, folder in my_folder["folders"].items():
+                        folderpath = join(my_folderpath, folder_key)
+                        if not isdir(folderpath):
+                            mkdir(folderpath)
+                        recursive_create_mock_folder_structure(folder, folderpath)
 
-#                 if "files" in my_folder.keys():
-#                     for file_key, file in my_folder["files"].items():
-#                         if not "deleted" in file["action"]:
-#                             open(join(my_folderpath, file_key), 'a').close()
+                if "files" in my_folder.keys():
+                    for file_key, file in my_folder["files"].items():
+                        if not "deleted" in file["action"]:
+                            open(join(my_folderpath, file_key), 'a').close()
 
-#             dataset_structure = soda_json_structure["dataset-structure"]
-#             folderpath = preview_path
-#             recursive_create_mock_folder_structure(dataset_structure, folderpath)
+            dataset_structure = soda_json_structure["dataset-structure"]
+            folderpath = preview_path
+            recursive_create_mock_folder_structure(dataset_structure, folderpath)
 
-#             if "manifest-files" in soda_json_structure.keys():
-#                 if "folders" in dataset_structure.keys():
-#                     for folder_key, folder in dataset_structure["folders"].items():
-#                         manifest_path = join(preview_path, folder_key, "manifest.xlsx")
-#                         if not isfile(manifest_path):
-#                             open(manifest_path, 'a').close()
+            if "manifest-files" in soda_json_structure.keys():
+                if "folders" in dataset_structure.keys():
+                    for folder_key, folder in dataset_structure["folders"].items():
+                        manifest_path = join(preview_path, folder_key, "manifest.xlsx")
+                        if not isfile(manifest_path):
+                            open(manifest_path, 'a').close()
 
-#         if "metadata-files" in soda_json_structure.keys():
-#             for metadata_key in soda_json_structure["metadata-files"].keys():
-#                 open(join(preview_path, metadata_key), 'a').close()
+        if "metadata-files" in soda_json_structure.keys():
+            for metadata_key in soda_json_structure["metadata-files"].keys():
+                open(join(preview_path, metadata_key), 'a').close()
 
-#         if len(listdir(preview_path)) > 0:
-#             folder_in_preview = listdir(preview_path)[0]
-#             open_file(join(preview_path, folder_in_preview))
-#         else:
-#             open_file(preview_path)
+        if len(listdir(preview_path)) > 0:
+            folder_in_preview = listdir(preview_path)[0]
+            open_file(join(preview_path, folder_in_preview))
+        else:
+            open_file(preview_path)
 
 
-#         return preview_path
+        return preview_path
 
-#     except Exception as e:
-#         raise e
+    except Exception as e:
+        raise e
+
+def generate_manifest_file_locally(soda_json_structure):
+    """
+    Function to generate manifest files locally
+    """
+    
+    def recursive_item_path_create(folder, path):
+        if "files" in folder.keys():
+            for item in list(folder["files"]):
+                if "folderpath" not in folder["files"][item]:
+                    folder["files"][item]['folderpath'] = path[:]
+
+        if "folders" in folder.keys():
+            for item in list(folder["folders"]):
+                if "folderpath" not in folder["folders"][item]:
+                    folder["folders"][item]['folderpath'] = path[:]
+                    folder["folders"][item]['folderpath'].append(item)
+                recursive_item_path_create(folder["folders"][item], folder["folders"][item]['folderpath'][:])
+
+        return
+    
+    def copytree(src, dst, symlinks=False, ignore=None):
+        for item in os.listdir(src):
+            s = os.path.join(src, item)
+            d = os.path.join(dst, item)
+            if os.path.isdir(s):
+                shutil.copytree(s, d, symlinks, ignore)
+            else:
+                shutil.copy2(s, d)
+
+    dataset_structure = soda_json_structure["dataset-structure"]
+    starting_point = soda_json_structure["starting-point"]["type"]
+    manifest_destination = soda_json_structure["manifest-files"]["local-destination"]
+
+    recursive_item_path_create(dataset_structure, [])
+    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure)
+    manifest_destination = return_new_path(os.path.join(manifest_destination, "SODA Manifest Files"))
+    copytree(manifest_folder_path, manifest_destination)
+    open_file(manifest_destination)
+    return "success"

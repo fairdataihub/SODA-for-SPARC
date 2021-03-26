@@ -533,3 +533,11 @@ ipcMain.on("open-folders-organize-datasets-dialog", (event) => {
     }
   );
 });
+
+// Generate manifest file locally
+ipcMain.on("open-folder-dialog-save-manifest-local", async (event, arg) => {
+  const result = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+    properties: ["openDirectory"],
+  });
+  event.sender.send("selected-manifest-folder", result);
+});
