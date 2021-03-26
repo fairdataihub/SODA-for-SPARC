@@ -2765,3 +2765,43 @@ def preview_dataset(soda_json_structure):
 
     except Exception as e:
         raise e
+
+def generate_manifest_file_locally(soda_json_structure):
+    """
+    Function to generate manifest files locally
+    """
+    
+    def recursive_item_path_create(folder, path):
+        if "files" in folder.keys():
+            for item in list(folder["files"]):
+                if "folderpath" not in folder["files"][item]:
+                    folder["files"][item]['folderpath'] = path[:]
+
+        if "folders" in folder.keys():
+            for item in list(folder["folders"]):
+                if "folderpath" not in folder["folders"][item]:
+                    folder["folders"][item]['folderpath'] = path[:]
+                    folder["folders"][item]['folderpath'].append(item)
+                recursive_item_path_create(folder["folders"][item], folder["folders"][item]['folderpath'][:])
+
+        return
+    
+    def copytree(src, dst, symlinks=False, ignore=None):
+        for item in os.listdir(src):
+            s = os.path.join(src, item)
+            d = os.path.join(dst, item)
+            if os.path.isdir(s):
+                shutil.copytree(s, d, symlinks, ignore)
+            else:
+                shutil.copy2(s, d)
+
+    dataset_structure = soda_json_structure["dataset-structure"]
+    starting_point = soda_json_structure["starting-point"]["type"]
+    manifest_destination = soda_json_structure["manifest-files"]["local-destination"]
+
+    recursive_item_path_create(dataset_structure, [])
+    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure)
+    manifest_destination = return_new_path(os.path.join(manifest_destination, "SODA Manifest Files"))
+    copytree(manifest_folder_path, manifest_destination)
+    open_file(manifest_destination)
+    return "success"

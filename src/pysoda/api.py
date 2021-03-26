@@ -13,7 +13,7 @@ from disseminate import bf_get_doi, bf_reserve_doi, bf_get_publishing_status, bf
 
 from curate import curate_dataset_progress, save_file_organization, import_file_organization, \
     curate_dataset, preview_file_organization, delete_preview_file_organization, validate_dataset, create_folder_level_manifest, \
-    check_empty_files_folders, main_curate_function, main_curate_function_progress, preview_dataset
+    check_empty_files_folders, main_curate_function, main_curate_function_progress, preview_dataset, generate_manifest_file_locally
 
 from prepare_metadata import save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone
 
@@ -313,8 +313,14 @@ class SodaApi(object):
             return bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only)
         except Exception as e:
             raise e
+    
+    def api_generate_manifest_file_locally(self, soda_json_structure):
+        try:
+            return generate_manifest_file_locally(soda_json_structure)
+        except Exception as e:
+            raise e
 
-    ### Check Login to Python Server
+    ### Check Login to Python Server 
     def echo(self, text):
         """echo any text"""
         return text

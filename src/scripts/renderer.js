@@ -9383,3 +9383,37 @@ const curation_consortium_check = (mode = "") => {
     }
   });
 };
+
+$("#button-generate-manifest-locally").click(() => {
+  ipcRenderer.send("open-folder-dialog-save-manifest-local");
+});
+
+ipcRenderer.on("selected-manifest-folder", (event, result) => {
+  if (!result["canceled"])
+  {
+    let manifest_destination = result["filePaths"][0];
+    let manifest_state = {}
+
+    if ("manifest-files" in sodaJSONObj)
+    {
+      manifest_state = sodaJSONObj["manifest-files"];
+      sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination
+    }
+    else
+    {
+      manifest_state = {}
+      sodaJSONObj["manifest-files"] = {}
+      sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination
+    }
+
+    client.invoke("api_generate_manifest_file_locally", sodaJSONObj, (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+      } else {
+        console.log(res);
+      }
+    });
+  }
+});
