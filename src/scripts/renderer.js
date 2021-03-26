@@ -1764,6 +1764,10 @@ datasetDescriptionFileDataset.addEventListener("change", function () {
   document.getElementById("ds-description").innerHTML = "Loading...";
   defaultBfDataset = datasetDescriptionFileDataset.value
   showDatasetDescription();
+  $("#current-bf-dataset").text(defaultBfDataset);
+  $("#current-bf-dataset-generate").text(defaultBfDataset);
+  $(".bf-dataset-span").html(defaultBfDataset);
+  refreshDatasetList()
 });
 
 /// detect empty required fields and raise a warning
@@ -1916,7 +1920,7 @@ ipcRenderer.on(
                   "track-event",
                   "Error",
                   "Prepare Metadata - Create dataset_description",
-                  selectedBfDataset
+                  defaultBfDataset
                 );
               } else {
                 document.getElementById(
@@ -1930,7 +1934,7 @@ ipcRenderer.on(
                   "track-event",
                   "Success",
                   "Prepare Metadata - Create dataset_description",
-                  selectedBfDataset
+                  defaultBfDataset
                 );
               }
             }
@@ -2572,7 +2576,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           "track-event",
           "Success",
           "Manage Dataset - Upload Local Dataset",
-          selectedbfdataset,
+          defaultBfDataset,
           totalFileSize
         );
       }
@@ -2822,7 +2826,7 @@ bfAddSubtitleBtn.addEventListener("click", () => {
           "track-event",
           "Error",
           "Manage Dataset - Add/Edit Subtitle",
-          selectedBfDataset
+          defaultBfDataset
         );
       } else {
         $("#bf-add-subtitle-dataset-spinner").hide();
@@ -2833,7 +2837,7 @@ bfAddSubtitleBtn.addEventListener("click", () => {
           "track-event",
           "Success",
           "Manage Dataset - Add/Edit Subtitle",
-          selectedBfDataset
+          defaultBfDataset
         );
       }
     }

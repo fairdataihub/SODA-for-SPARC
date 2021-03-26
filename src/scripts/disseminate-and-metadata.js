@@ -292,7 +292,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
           "track-event",
           "Error",
           "Disseminate Dataset - Share with Consortium",
-          bfDS
+          defaultBfDataset
         );
       } else {
         disseminateShowCurrentPermission(bfAcct, bfDS);
