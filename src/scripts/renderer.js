@@ -2469,7 +2469,6 @@ bfRenameDatasetBtn.addEventListener("click", () => {
           defaultBfDataset = renamedDatasetName;
           $(".bf-dataset-span").html(renamedDatasetName);
           refreshDatasetList();
-          tempDatasetListsSync()
           datasetDescriptionFileDataset.value = renamedDatasetName;
           renameDatasetName.value = renamedDatasetName;
           bfRenameDatasetStatus.innerHTML =

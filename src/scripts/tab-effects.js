@@ -1570,7 +1570,7 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     }
     $(ev).hide();
   } else {
-    if ($("bf-dataset-span").html().replace(/^\s+|\s+$/g, '') !== "None") {
+    if ($(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') !== "None") {
       $(target).children().find(".div-confirm-button button").show();
     }
   }
