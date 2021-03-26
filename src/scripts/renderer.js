@@ -2469,7 +2469,6 @@ bfRenameDatasetBtn.addEventListener("click", () => {
           defaultBfDataset = renamedDatasetName;
           $(".bf-dataset-span").html(renamedDatasetName);
           refreshDatasetList();
-          tempDatasetListsSync()
           datasetDescriptionFileDataset.value = renamedDatasetName;
           renameDatasetName.value = renamedDatasetName;
           bfRenameDatasetStatus.innerHTML =
@@ -3843,7 +3842,8 @@ function populateDatasetDropdowns(mylist) {
 }
 
 function changeDatasetUnderDD() {
-  datasetDescriptionFileDataset.value = defaultBfDataset
+  datasetDescriptionFileDataset.value = defaultBfDataset;
+  showDatasetDescription();
 }
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
