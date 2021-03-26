@@ -62,178 +62,178 @@ ipcMain.on("open-file-dialog-local-destination-curate-generate", (event) => {
 ///// SPARC folders
 
 //code
-ipcMain.on("open-file-dialog-code", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openFile", "multiSelections"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-code", files);
-      }
-    }
-  );
-});
+// ipcMain.on("open-file-dialog-code", (event) => {
+//   dialog.showOpenDialog(
+//     BrowserWindow.getFocusedWindow(),
+//     {
+//       properties: ["openFile", "multiSelections"],
+//     },
+//     (files) => {
+//       if (files) {
+//         event.sender.send("selected-code", files);
+//       }
+//     }
+//   );
+// });
 
-ipcMain.on("open-folder-dialog-code", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openDirectory", "multiSelections"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-code", files);
-      }
-    }
-  );
-});
+// ipcMain.on("open-folder-dialog-code", (event) => {
+//   dialog.showOpenDialog(
+//     BrowserWindow.getFocusedWindow(),
+//     {
+//       properties: ["openDirectory", "multiSelections"],
+//     },
+//     (files) => {
+//       if (files) {
+//         event.sender.send("selected-code", files);
+//       }
+//     }
+//   );
+// });
 
 //derivative
-ipcMain.on("open-file-dialog-derivative", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openFile", "multiSelections"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-derivative", files);
-      }
-    }
-  );
-});
+// ipcMain.on("open-file-dialog-derivative", (event) => {
+//   dialog.showOpenDialog(
+//     BrowserWindow.getFocusedWindow(),
+//     {
+//       properties: ["openFile", "multiSelections"],
+//     },
+//     (files) => {
+//       if (files) {
+//         event.sender.send("selected-derivative", files);
+//       }
+//     }
+//   );
+// });
 
-ipcMain.on("open-folder-dialog-derivative", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openDirectory", "multiSelections"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-derivative", files);
-      }
-    }
-  );
-});
+// ipcMain.on("open-folder-dialog-derivative", (event) => {
+//   dialog.showOpenDialog(
+//     BrowserWindow.getFocusedWindow(),
+//     {
+//       properties: ["openDirectory", "multiSelections"],
+//     },
+//     (files) => {
+//       if (files) {
+//         event.sender.send("selected-derivative", files);
+//       }
+//     }
+//   );
+// });
 
 //docs
-ipcMain.on("open-file-dialog-docs", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openFile", "multiSelections"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-docs", files);
-      }
-    }
-  );
-});
+// ipcMain.on("open-file-dialog-docs", (event) => {
+//   dialog.showOpenDialog(
+//     BrowserWindow.getFocusedWindow(),
+//     {
+//       properties: ["openFile", "multiSelections"],
+//     },
+//     (files) => {
+//       if (files) {
+//         event.sender.send("selected-docs", files);
+//       }
+//     }
+//   );
+// });
 
-ipcMain.on("open-folder-dialog-docs", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openDirectory", "multiSelections"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-docs", files);
-      }
-    }
-  );
-});
+// ipcMain.on("open-folder-dialog-docs", (event) => {
+//   dialog.showOpenDialog(
+//     BrowserWindow.getFocusedWindow(),
+//     {
+//       properties: ["openDirectory", "multiSelections"],
+//     },
+//     (files) => {
+//       if (files) {
+//         event.sender.send("selected-docs", files);
+//       }
+//     }
+//   );
+// });
 
 //primary
-ipcMain.on("open-file-dialog-primary", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openFile", "multiSelections"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-primary", files);
-      }
-    }
-  );
-});
+// ipcMain.on("open-file-dialog-primary", (event) => {
+//   dialog.showOpenDialog(
+//     BrowserWindow.getFocusedWindow(),
+//     {
+//       properties: ["openFile", "multiSelections"],
+//     },
+//     (files) => {
+//       if (files) {
+//         event.sender.send("selected-primary", files);
+//       }
+//     }
+//   );
+// });
 
-ipcMain.on("open-folder-dialog-primary", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openDirectory", "multiSelections"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-primary", files);
-      }
-    }
-  );
-});
+// ipcMain.on("open-folder-dialog-primary", (event) => {
+//   dialog.showOpenDialog(
+//     BrowserWindow.getFocusedWindow(),
+//     {
+//       properties: ["openDirectory", "multiSelections"],
+//     },
+//     (files) => {
+//       if (files) {
+//         event.sender.send("selected-primary", files);
+//       }
+//     }
+//   );
+// });
 
 //protocol
-ipcMain.on("open-file-dialog-protocol", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openFile", "multiSelections"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-protocol", files);
-      }
-    }
-  );
-});
+// ipcMain.on("open-file-dialog-protocol", (event) => {
+//   dialog.showOpenDialog(
+//     BrowserWindow.getFocusedWindow(),
+//     {
+//       properties: ["openFile", "multiSelections"],
+//     },
+//     (files) => {
+//       if (files) {
+//         event.sender.send("selected-protocol", files);
+//       }
+//     }
+//   );
+// });
 
-ipcMain.on("open-folder-dialog-protocol", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openDirectory", "multiSelections"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-protocol", files);
-      }
-    }
-  );
-});
+// ipcMain.on("open-folder-dialog-protocol", (event) => {
+//   dialog.showOpenDialog(
+//     BrowserWindow.getFocusedWindow(),
+//     {
+//       properties: ["openDirectory", "multiSelections"],
+//     },
+//     (files) => {
+//       if (files) {
+//         event.sender.send("selected-protocol", files);
+//       }
+//     }
+//   );
+// });
 
 //source
-ipcMain.on("open-file-dialog-source", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openFile", "multiSelections"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-source", files);
-      }
-    }
-  );
-});
+// ipcMain.on("open-file-dialog-source", (event) => {
+//   dialog.showOpenDialog(
+//     BrowserWindow.getFocusedWindow(),
+//     {
+//       properties: ["openFile", "multiSelections"],
+//     },
+//     (files) => {
+//       if (files) {
+//         event.sender.send("selected-source", files);
+//       }
+//     }
+//   );
+// });
 
-ipcMain.on("open-folder-dialog-source", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openDirectory", "multiSelections"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-source", files);
-      }
-    }
-  );
-});
+// ipcMain.on("open-folder-dialog-source", (event) => {
+//   dialog.showOpenDialog(
+//     BrowserWindow.getFocusedWindow(),
+//     {
+//       properties: ["openDirectory", "multiSelections"],
+//     },
+//     (files) => {
+//       if (files) {
+//         event.sender.send("selected-source", files);
+//       }
+//     }
+//   );
+// });
 
 /////
 ipcMain.on("open-file-dialog-uploadorganization", (event) => {
@@ -253,19 +253,19 @@ ipcMain.on("open-file-dialog-uploadorganization", (event) => {
 
 // Metadata
 
-ipcMain.on("open-file-dialog-metadata", (event) => {
-  dialog.showOpenDialog(
-    BrowserWindow.getFocusedWindow(),
-    {
-      properties: ["openFile", "multiSelections"],
-    },
-    (files) => {
-      if (files) {
-        event.sender.send("selected-metadata", files);
-      }
-    }
-  );
-});
+// ipcMain.on("open-file-dialog-metadata", (event) => {
+//   dialog.showOpenDialog(
+//     BrowserWindow.getFocusedWindow(),
+//     {
+//       properties: ["openFile", "multiSelections"],
+//     },
+//     (files) => {
+//       if (files) {
+//         event.sender.send("selected-metadata", files);
+//       }
+//     }
+//   );
+// });
 
 ipcMain.on("open-file-dialog-metadata-curate", (event) => {
   dialog.showOpenDialog(

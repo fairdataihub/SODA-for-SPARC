@@ -1,7 +1,7 @@
-const electron = require('electron');
-const ua = require('universal-analytics');
-const { v4: uuid } = require('uuid');
-const { JSONStorage } = require('node-localstorage');
+const electron = require("electron");
+const ua = require("universal-analytics");
+const { v4: uuid } = require("uuid");
+const { JSONStorage } = require("node-localstorage");
 
 const app = electron.app;
 const nodeStorage = new JSONStorage(app.getPath("userData"));
@@ -11,7 +11,7 @@ const userId = nodeStorage.getItem("userid") || uuid();
 //console.log(userId);
 
 // (re)save the userid, so it persists for the next app session.
-nodeStorage.setItem('userid', userId);
+nodeStorage.setItem("userid", userId);
 
 let usr = ua("UA-171625608-1", userId);
 //console.log("Packaged App");
@@ -40,6 +40,6 @@ const trackEvent = (category, action, label, value) => {
       ev: value,
     })
     .send();
-}
- 
+};
+
 module.exports = { trackEvent };

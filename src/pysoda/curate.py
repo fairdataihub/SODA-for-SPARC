@@ -331,186 +331,186 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
 
 
 ### Prepare dataset
-def save_file_organization(jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization):
-    """
-    Associated with 'Save' button in the SODA interface
-    Saves the paths and associated descriptions from the interface table to a CSV file for future use
-    Each json key (SPARC foler name) becomes a header in the CSV
+# def save_file_organization(jsonpath, jsondescription, jsonpathmetadata, pathsavefileorganization):
+#     """
+#     Associated with 'Save' button in the SODA interface
+#     Saves the paths and associated descriptions from the interface table to a CSV file for future use
+#     Each json key (SPARC foler name) becomes a header in the CSV
 
-    Args:
-        jsonpath: paths of all files (dictionary)
-        jsondescription: description associated with each file (dictionary)
-        pathsavefileorganization: destination path for CSV file to be saved (string)
-    Action:
-        Creates CSV file with path and description for files in SPARC folders
-    """
-    try:
-        mydict = jsonpath
-        mydict2 = jsondescription
-        mydict3 = jsonpathmetadata
-        mydict.update(mydict2)
-        mydict.update(mydict3)
-        dictkeys = list(mydict.keys())
-        dictkeys.sort()
-        df = pd.DataFrame(columns=[dictkeys[0]])
-        df[dictkeys[0]] = mydict[dictkeys[0]]
-        for i in range(1,len(dictkeys)):
-            dfnew = pd.DataFrame(columns=[dictkeys[i]])
-            dfnew[dictkeys[i]] = mydict[dictkeys[i]]
-            df = pd.concat([df, dfnew], axis=1)
-        df = df.replace(np.nan, '', regex=True)
-        csvsavepath = join(pathsavefileorganization)
-        df.to_csv(csvsavepath, index = None, header=True)
-        return 'Saved!'
-    except Exception as e:
-        raise e
-
-
-def import_file_organization(pathuploadfileorganization, headernames):
-    """
-    Associated with 'Import' button in the SODA interface
-    Import previously saved progress (CSV file) for viewing in the SODA interface
-
-    Args:
-        pathuploadfileorganization: path of previously saved CSV file (string)
-        headernames: names of SPARC folder (list of strings)
-    Returns:
-        mydict: dictionary with headers of CSV file as keys and cell contents as list of strings for each key
-    """
-    try:
-        csvsavepath = join(pathuploadfileorganization)
-        df = pd.read_csv(csvsavepath)
-        dfnan = df.isnull()
-        mydict = {}
-        mydictmetadata ={}
-        dictkeys = df.columns
-        compare = lambda x, y: collections.Counter(x) == collections.Counter(y)
-        if not compare(dictkeys, headernames):
-            raise Exception("Error: Please select a valid file")
-        rowcount = len(df.index)
-        for i in range(len(dictkeys)):
-            pathvect = []
-            for j in range(rowcount):
-                pathval = df.at[j, dictkeys[i]]
-                if not dfnan.at[j, dictkeys[i]]:
-                    pathvect.append(pathval)
-                else:
-                    pathvect.append("")
-            if dictkeys[i] == 'metadata':
-                mydictmetadata[dictkeys[i]] = pathvect
-            else:
-                mydict[dictkeys[i]] = pathvect
-        return [mydict, mydictmetadata]
-    except Exception as e:
-        raise e
+#     Args:
+#         jsonpath: paths of all files (dictionary)
+#         jsondescription: description associated with each file (dictionary)
+#         pathsavefileorganization: destination path for CSV file to be saved (string)
+#     Action:
+#         Creates CSV file with path and description for files in SPARC folders
+#     """
+#     try:
+#         mydict = jsonpath
+#         mydict2 = jsondescription
+#         mydict3 = jsonpathmetadata
+#         mydict.update(mydict2)
+#         mydict.update(mydict3)
+#         dictkeys = list(mydict.keys())
+#         dictkeys.sort()
+#         df = pd.DataFrame(columns=[dictkeys[0]])
+#         df[dictkeys[0]] = mydict[dictkeys[0]]
+#         for i in range(1,len(dictkeys)):
+#             dfnew = pd.DataFrame(columns=[dictkeys[i]])
+#             dfnew[dictkeys[i]] = mydict[dictkeys[i]]
+#             df = pd.concat([df, dfnew], axis=1)
+#         df = df.replace(np.nan, '', regex=True)
+#         csvsavepath = join(pathsavefileorganization)
+#         df.to_csv(csvsavepath, index = None, header=True)
+#         return 'Saved!'
+#     except Exception as e:
+#         raise e
 
 
-def create_preview_files(paths, folder_path):
-    """
-    Creates folders and empty files from original 'paths' to the destination 'folder_path'
+# def import_file_organization(pathuploadfileorganization, headernames):
+#     """
+#     Associated with 'Import' button in the SODA interface
+#     Import previously saved progress (CSV file) for viewing in the SODA interface
 
-    Args:
-        paths: paths of all the files that need to be copied (list of strings)
-        folder_path: Destination to which the files / folders need to be copied (string)
-    Action:
-        Creates folders and empty files at the given 'folder_path'
-    """
-    try:
-        for p in paths:
-            gevent.sleep(0)
-            if isfile(p):
-                file = basename(p)
-                open(join(folder_path, file), 'a').close()
-            else:
-                all_files = listdir(p)
-                all_files_path = []
-                for f in all_files:
-                    all_files_path.append(join(p, f))
-
-                pname = basename(p)
-                new_folder_path = join(folder_path, pname)
-                makedirs(new_folder_path)
-                create_preview_files(all_files_path, new_folder_path)
-        return
-    except Exception as e:
-        raise e
-
-
-def preview_file_organization(jsonpath):
-    """
-    Associated with 'Preview' button in the SODA interface
-    Creates a folder for preview and adds mock files from SODA table (same name as origin but 0 kb in size)
-    Opens the dialog box to showcase the files / folders added
-
-    Args:
-        jsonpath: dictionary containing all paths (keys are SPARC folder names)
-    Action:
-        Opens the dialog box at preview_path
-    Returns:
-        preview_path: path of the folder where the preview files are located
-    """
-    mydict = jsonpath
-    preview_path = join(userpath, "SODA", "Preview")
-    try:
-        if isdir(preview_path):
-            delete_preview_file_organization()
-            makedirs(preview_path)
-        else:
-            makedirs(preview_path)
-    except Exception as e:
-        raise e
-
-    try:
-
-        folderrequired = []
-        for i in mydict.keys():
-            if mydict[i] != []:
-                folderrequired.append(i)
-                if i != 'main':
-                    makedirs(join(preview_path, i))
-
-        def preview_func(folderrequired, preview_path):
-            for i in folderrequired:
-                paths = mydict[i]
-                if (i == 'main'):
-                    create_preview_files(paths, join(preview_path))
-                else:
-                    create_preview_files(paths, join(preview_path, i))
-        output = []
-        output.append(gevent.spawn(preview_func, folderrequired, preview_path))
-        gevent.sleep(0)
-        gevent.joinall(output)
-
-        if len(listdir(preview_path)) > 0:
-            folder_in_preview = listdir(preview_path)[0]
-
-            open_file(join(preview_path, folder_in_preview))
-
-        else:
-            open_file(preview_path)
-
-        return preview_path
-
-    except Exception as e:
-        raise e
+#     Args:
+#         pathuploadfileorganization: path of previously saved CSV file (string)
+#         headernames: names of SPARC folder (list of strings)
+#     Returns:
+#         mydict: dictionary with headers of CSV file as keys and cell contents as list of strings for each key
+#     """
+#     try:
+#         csvsavepath = join(pathuploadfileorganization)
+#         df = pd.read_csv(csvsavepath)
+#         dfnan = df.isnull()
+#         mydict = {}
+#         mydictmetadata ={}
+#         dictkeys = df.columns
+#         compare = lambda x, y: collections.Counter(x) == collections.Counter(y)
+#         if not compare(dictkeys, headernames):
+#             raise Exception("Error: Please select a valid file")
+#         rowcount = len(df.index)
+#         for i in range(len(dictkeys)):
+#             pathvect = []
+#             for j in range(rowcount):
+#                 pathval = df.at[j, dictkeys[i]]
+#                 if not dfnan.at[j, dictkeys[i]]:
+#                     pathvect.append(pathval)
+#                 else:
+#                     pathvect.append("")
+#             if dictkeys[i] == 'metadata':
+#                 mydictmetadata[dictkeys[i]] = pathvect
+#             else:
+#                 mydict[dictkeys[i]] = pathvect
+#         return [mydict, mydictmetadata]
+#     except Exception as e:
+#         raise e
 
 
-def delete_preview_file_organization():
-    """
-    Associated with 'Delete Preview Folder' button of the SODA interface
+# def create_preview_files(paths, folder_path):
+#     """
+#     Creates folders and empty files from original 'paths' to the destination 'folder_path'
 
-    Action:
-        Deletes the 'Preview' folder from the disk
-    """
-    try:
-        userpath = expanduser("~")
-        preview_path = join(userpath, "SODA", "Preview")
-        if isdir(preview_path):
-            shutil.rmtree(preview_path, ignore_errors=True)
-        else:
-            raise Exception("Error: Preview folder not present or already deleted!")
-    except Exception as e:
-        raise e
+#     Args:
+#         paths: paths of all the files that need to be copied (list of strings)
+#         folder_path: Destination to which the files / folders need to be copied (string)
+#     Action:
+#         Creates folders and empty files at the given 'folder_path'
+#     """
+#     try:
+#         for p in paths:
+#             gevent.sleep(0)
+#             if isfile(p):
+#                 file = basename(p)
+#                 open(join(folder_path, file), 'a').close()
+#             else:
+#                 all_files = listdir(p)
+#                 all_files_path = []
+#                 for f in all_files:
+#                     all_files_path.append(join(p, f))
+
+#                 pname = basename(p)
+#                 new_folder_path = join(folder_path, pname)
+#                 makedirs(new_folder_path)
+#                 create_preview_files(all_files_path, new_folder_path)
+#         return
+#     except Exception as e:
+#         raise e
+
+
+# def preview_file_organization(jsonpath):
+#     """
+#     Associated with 'Preview' button in the SODA interface
+#     Creates a folder for preview and adds mock files from SODA table (same name as origin but 0 kb in size)
+#     Opens the dialog box to showcase the files / folders added
+
+#     Args:
+#         jsonpath: dictionary containing all paths (keys are SPARC folder names)
+#     Action:
+#         Opens the dialog box at preview_path
+#     Returns:
+#         preview_path: path of the folder where the preview files are located
+#     """
+#     mydict = jsonpath
+#     preview_path = join(userpath, "SODA", "Preview")
+#     try:
+#         if isdir(preview_path):
+#             delete_preview_file_organization()
+#             makedirs(preview_path)
+#         else:
+#             makedirs(preview_path)
+#     except Exception as e:
+#         raise e
+
+#     try:
+
+#         folderrequired = []
+#         for i in mydict.keys():
+#             if mydict[i] != []:
+#                 folderrequired.append(i)
+#                 if i != 'main':
+#                     makedirs(join(preview_path, i))
+
+#         def preview_func(folderrequired, preview_path):
+#             for i in folderrequired:
+#                 paths = mydict[i]
+#                 if (i == 'main'):
+#                     create_preview_files(paths, join(preview_path))
+#                 else:
+#                     create_preview_files(paths, join(preview_path, i))
+#         output = []
+#         output.append(gevent.spawn(preview_func, folderrequired, preview_path))
+#         gevent.sleep(0)
+#         gevent.joinall(output)
+
+#         if len(listdir(preview_path)) > 0:
+#             folder_in_preview = listdir(preview_path)[0]
+
+#             open_file(join(preview_path, folder_in_preview))
+
+#         else:
+#             open_file(preview_path)
+
+#         return preview_path
+
+#     except Exception as e:
+#         raise e
+
+
+# def delete_preview_file_organization():
+#     """
+#     Associated with 'Delete Preview Folder' button of the SODA interface
+
+#     Action:
+#         Deletes the 'Preview' folder from the disk
+#     """
+#     try:
+#         userpath = expanduser("~")
+#         preview_path = join(userpath, "SODA", "Preview")
+#         if isdir(preview_path):
+#             shutil.rmtree(preview_path, ignore_errors=True)
+#         else:
+#             raise Exception("Error: Preview folder not present or already deleted!")
+#     except Exception as e:
+#         raise e
 
 
 def create_dataset(jsonpath, pathdataset):
@@ -596,259 +596,259 @@ def bf_get_current_user_permission(bf, myds):
         raise e
 
 
-def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetname,\
-        manifeststatus, jsonpath, jsondescription):
-    """
-    Associated with 'Generate' button in the 'Generate dataset' section of SODA interface
-    Checks validity of files / paths / folders and then generates the files and folders
-    as requested along with progress status
+# def curate_dataset(sourcedataset, destinationdataset, pathdataset, newdatasetname,\
+#         manifeststatus, jsonpath, jsondescription):
+#     """
+#     Associated with 'Generate' button in the 'Generate dataset' section of SODA interface
+#     Checks validity of files / paths / folders and then generates the files and folders
+#     as requested along with progress status
 
-    Args:
-        sourcedataset: state of the source dataset ('already organized' or 'not organized')
-        destinationdataset: type of destination dataset ('modify existing', 'create new', or 'upload to blackfynn')
-        pathdataset: destination path of new dataset if created locally or name of blackfynn account (string)
-        newdatasetname: name of the local dataset or name of the dataset on blackfynn (string)
-        manifeststatus: boolean to check if user request manifest files
-        jsonpath: path of the files to be included in the dataset (dictionary)
-        jsondescription: associated description to be included in manifest file (dictionary)
-    """
-    global curatestatus #set to 'Done' when completed or error to stop progress tracking from front-end
-    global curateprogress #GUI messages shown to user to provide update on progress
-    global curateprintstatus # If = "Curating" Progress messages are shown to user
-    global total_dataset_size # total size of the dataset to be generated
-    global curated_dataset_size # total size of the dataset generated (locally or on blackfynn) at a given time
-    global start_time
-    global bf
-    global myds
-    global upload_directly_to_bf
-    global start_submit
-    global initial_bfdataset_size
+#     Args:
+#         sourcedataset: state of the source dataset ('already organized' or 'not organized')
+#         destinationdataset: type of destination dataset ('modify existing', 'create new', or 'upload to blackfynn')
+#         pathdataset: destination path of new dataset if created locally or name of blackfynn account (string)
+#         newdatasetname: name of the local dataset or name of the dataset on blackfynn (string)
+#         manifeststatus: boolean to check if user request manifest files
+#         jsonpath: path of the files to be included in the dataset (dictionary)
+#         jsondescription: associated description to be included in manifest file (dictionary)
+#     """
+#     global curatestatus #set to 'Done' when completed or error to stop progress tracking from front-end
+#     global curateprogress #GUI messages shown to user to provide update on progress
+#     global curateprintstatus # If = "Curating" Progress messages are shown to user
+#     global total_dataset_size # total size of the dataset to be generated
+#     global curated_dataset_size # total size of the dataset generated (locally or on blackfynn) at a given time
+#     global start_time
+#     global bf
+#     global myds
+#     global upload_directly_to_bf
+#     global start_submit
+#     global initial_bfdataset_size
 
-    curateprogress = ' '
-    curatestatus = ''
-    curateprintstatus = ' '
-    error, c = '', 0
-    curated_dataset_size = 0
-    start_time = 0
-    upload_directly_to_bf = 0
-    start_submit = 0
-    initial_bfdataset_size = 0
+#     curateprogress = ' '
+#     curatestatus = ''
+#     curateprintstatus = ' '
+#     error, c = '', 0
+#     curated_dataset_size = 0
+#     start_time = 0
+#     upload_directly_to_bf = 0
+#     start_submit = 0
+#     initial_bfdataset_size = 0
 
-    # if sourcedataset == 'already organized':
-    #     if not isdir(pathdataset):
-    #         curatestatus = 'Done'
-    #         raise Exception('Error: Please select a valid dataset folder')
+#     # if sourcedataset == 'already organized':
+#     #     if not isdir(pathdataset):
+#     #         curatestatus = 'Done'
+#     #         raise Exception('Error: Please select a valid dataset folder')
 
-    if destinationdataset == 'create new':
-        if not isdir(pathdataset):
-            curatestatus = 'Done'
-            raise Exception('Error: Please select a valid folder for new dataset')
-        if not newdatasetname:
-            curatestatus = 'Done'
-            raise Exception('Error: Please enter a valid name for new dataset folder')
-        if check_forbidden_characters(newdatasetname):
-            curatestatus = 'Done'
-            raise Exception('Error: A folder name cannot contain any of the following characters ' + forbidden_characters)
+#     if destinationdataset == 'create new':
+#         if not isdir(pathdataset):
+#             curatestatus = 'Done'
+#             raise Exception('Error: Please select a valid folder for new dataset')
+#         if not newdatasetname:
+#             curatestatus = 'Done'
+#             raise Exception('Error: Please enter a valid name for new dataset folder')
+#         if check_forbidden_characters(newdatasetname):
+#             curatestatus = 'Done'
+#             raise Exception('Error: A folder name cannot contain any of the following characters ' + forbidden_characters)
 
-    # check if path in jsonpath are valid and calculate total dataset size
-    error, c = '', 0
-    total_dataset_size = 1
-    for folders in jsonpath.keys():
-        if jsonpath[folders] != []:
-            for path in jsonpath[folders]:
-                if exists(path):
+#     # check if path in jsonpath are valid and calculate total dataset size
+#     error, c = '', 0
+#     total_dataset_size = 1
+#     for folders in jsonpath.keys():
+#         if jsonpath[folders] != []:
+#             for path in jsonpath[folders]:
+#                 if exists(path):
 
-                    if isfile(path):
-                        mypathsize =  getsize(path)
-                        if mypathsize == 0:
-                            c += 1
-                            error = error + path + ' is 0 KB <br>'
-                        else:
-                            total_dataset_size += mypathsize
-                    else:
+#                     if isfile(path):
+#                         mypathsize =  getsize(path)
+#                         if mypathsize == 0:
+#                             c += 1
+#                             error = error + path + ' is 0 KB <br>'
+#                         else:
+#                             total_dataset_size += mypathsize
+#                     else:
 
-                        myfoldersize = folder_size(path)
-                        if myfoldersize == 0:
-                            c += 1
-                            error = error + path + ' is empty <br>'
-                        else:
-                            for path, dirs, files in walk(path):
-                                for f in files:
-                                    fp = join(path, f)
-                                    mypathsize =  getsize(fp)
-                                    if mypathsize == 0:
-                                        c += 1
-                                        error = error + fp + ' is 0 KB <br>'
-                                    else:
-                                        total_dataset_size += mypathsize
-                                for d in dirs:
-                                    dp = join(path,d)
-                                    myfoldersize = folder_size(dp)
-                                    if myfoldersize == 0:
-                                        c += 1
-                                        error = error + dp + ' is empty <br>'
-                else:
-                    c += 1
-                    error = error + path + ' does not exist <br>'
+#                         myfoldersize = folder_size(path)
+#                         if myfoldersize == 0:
+#                             c += 1
+#                             error = error + path + ' is empty <br>'
+#                         else:
+#                             for path, dirs, files in walk(path):
+#                                 for f in files:
+#                                     fp = join(path, f)
+#                                     mypathsize =  getsize(fp)
+#                                     if mypathsize == 0:
+#                                         c += 1
+#                                         error = error + fp + ' is 0 KB <br>'
+#                                     else:
+#                                         total_dataset_size += mypathsize
+#                                 for d in dirs:
+#                                     dp = join(path,d)
+#                                     myfoldersize = folder_size(dp)
+#                                     if myfoldersize == 0:
+#                                         c += 1
+#                                         error = error + dp + ' is empty <br>'
+#                 else:
+#                     c += 1
+#                     error = error + path + ' does not exist <br>'
 
-    if c > 0:
-        error = error + '<br>Please remove invalid files/folders from your dataset and try again'
-        curatestatus = 'Done'
-        raise Exception(error)
+#     if c > 0:
+#         error = error + '<br>Please remove invalid files/folders from your dataset and try again'
+#         curatestatus = 'Done'
+#         raise Exception(error)
 
-    total_dataset_size = total_dataset_size - 1
+#     total_dataset_size = total_dataset_size - 1
 
-    # Add metadata to jsonpath
-    curateprogress = 'Generating metadata'
+#     # Add metadata to jsonpath
+#     curateprogress = 'Generating metadata'
 
-    if manifeststatus:
-        try:
-            jsonpath = create_folder_level_manifest(jsonpath, jsondescription)
-        except Exception as e:
-            curatestatus = 'Done'
-            raise e
+#     if manifeststatus:
+#         try:
+#             jsonpath = create_folder_level_manifest(jsonpath, jsondescription)
+#         except Exception as e:
+#             curatestatus = 'Done'
+#             raise e
 
-    # CREATE NEW
-    if destinationdataset == 'create new':
-        try:
-            pathnewdatasetfolder = join(pathdataset, newdatasetname)
-            pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
-            open_file(pathnewdatasetfolder)
+#     # CREATE NEW
+#     if destinationdataset == 'create new':
+#         try:
+#             pathnewdatasetfolder = join(pathdataset, newdatasetname)
+#             pathnewdatasetfolder  = return_new_path(pathnewdatasetfolder)
+#             open_file(pathnewdatasetfolder)
 
-            curateprogress = 'Started'
-            curateprintstatus = 'Curating'
-            start_time = time.time()
-            start_submit = 1
+#             curateprogress = 'Started'
+#             curateprintstatus = 'Curating'
+#             start_time = time.time()
+#             start_submit = 1
 
-            pathdataset = pathnewdatasetfolder
-            mkdir(pathdataset)
-            create_dataset(jsonpath, pathdataset)
+#             pathdataset = pathnewdatasetfolder
+#             mkdir(pathdataset)
+#             create_dataset(jsonpath, pathdataset)
 
-            curateprogress = 'New dataset created'
-            curateprogress = 'Success: COMPLETED!'
-            curatestatus = 'Done'
-            shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
+#             curateprogress = 'New dataset created'
+#             curateprogress = 'Success: COMPLETED!'
+#             curatestatus = 'Done'
+#             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
 
-        except Exception as e:
-            curatestatus = 'Done'
-            shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
-            raise e
+#         except Exception as e:
+#             curatestatus = 'Done'
+#             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
+#             raise e
 
-    # UPLOAD TO BLACKFYNN
-    elif destinationdataset == 'upload to blackfynn':
-        error, c = '', 0
-        accountname = pathdataset
-        bfdataset = newdatasetname
-        upload_directly_to_bf = 1
+#     # UPLOAD TO BLACKFYNN
+#     elif destinationdataset == 'upload to blackfynn':
+#         error, c = '', 0
+#         accountname = pathdataset
+#         bfdataset = newdatasetname
+#         upload_directly_to_bf = 1
 
-        try:
-            bf = Blackfynn(accountname)
-        except Exception as e:
-            curatestatus = 'Done'
-            error = error + 'Error: Please select a valid Blackfynn account<br>'
-            c += 1
+#         try:
+#             bf = Blackfynn(accountname)
+#         except Exception as e:
+#             curatestatus = 'Done'
+#             error = error + 'Error: Please select a valid Blackfynn account<br>'
+#             c += 1
 
-        try:
-            myds = bf.get_dataset(bfdataset)
-        except Exception as e:
-            curatestatus = 'Done'
-            error = error + 'Error: Please select a valid Blackfynn dataset<br>'
-            c += 1
+#         try:
+#             myds = bf.get_dataset(bfdataset)
+#         except Exception as e:
+#             curatestatus = 'Done'
+#             error = error + 'Error: Please select a valid Blackfynn dataset<br>'
+#             c += 1
 
-        if c>0:
-            shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
-            raise Exception(error)
+#         if c>0:
+#             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
+#             raise Exception(error)
 
-        try:
-            role = bf_get_current_user_permission(bf, myds)
-            if role not in ['owner', 'manager', 'editor']:
-                curatestatus = 'Done'
-                error = "Error: You don't have permissions for uploading to this Blackfynn dataset"
-                raise Exception(error)
-        except Exception as e:
-            raise e
+#         try:
+#             role = bf_get_current_user_permission(bf, myds)
+#             if role not in ['owner', 'manager', 'editor']:
+#                 curatestatus = 'Done'
+#                 error = "Error: You don't have permissions for uploading to this Blackfynn dataset"
+#                 raise Exception(error)
+#         except Exception as e:
+#             raise e
 
-        clear_queue()
-        try:
-            agent_running()
-            def calluploaddirectly():
+#         clear_queue()
+#         try:
+#             agent_running()
+#             def calluploaddirectly():
 
-                try:
-                    global curateprogress
-                    global curatestatus
+#                 try:
+#                     global curateprogress
+#                     global curatestatus
 
-                    myds = bf.get_dataset(bfdataset)
+#                     myds = bf.get_dataset(bfdataset)
 
-                    for folder in jsonpath.keys():
-                        if jsonpath[folder] != []:
-                            if folder != 'main':
-                                mybffolder = myds.create_collection(folder)
-                            else:
-                                mybffolder = myds
-                            for mypath in jsonpath[folder]:
-                                if isdir(mypath):
-                                    curateprogress = "Uploading folder '%s' to dataset '%s' " %(mypath, bfdataset)
-                                    mybffolder.upload(mypath, recursive=True, use_agent=True)
-                                else:
-                                    curateprogress = "Uploading file '%s' to dataset '%s' " %(mypath, bfdataset)
-                                    mybffolder.upload(mypath, use_agent=True)
+#                     for folder in jsonpath.keys():
+#                         if jsonpath[folder] != []:
+#                             if folder != 'main':
+#                                 mybffolder = myds.create_collection(folder)
+#                             else:
+#                                 mybffolder = myds
+#                             for mypath in jsonpath[folder]:
+#                                 if isdir(mypath):
+#                                     curateprogress = "Uploading folder '%s' to dataset '%s' " %(mypath, bfdataset)
+#                                     mybffolder.upload(mypath, recursive=True, use_agent=True)
+#                                 else:
+#                                     curateprogress = "Uploading file '%s' to dataset '%s' " %(mypath, bfdataset)
+#                                     mybffolder.upload(mypath, use_agent=True)
 
-                    curateprogress = 'Success: COMPLETED!'
-                    curatestatus = 'Done'
-                    shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
+#                     curateprogress = 'Success: COMPLETED!'
+#                     curatestatus = 'Done'
+#                     shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
 
-                except Exception as e:
-                    shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
-                    raise e
+#                 except Exception as e:
+#                     shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
+#                     raise e
 
 
-            curateprintstatus = 'Curating'
-            start_time = time.time()
-            initial_bfdataset_size = bf_dataset_size()
-            start_submit = 1
-            gev = []
-            gev.append(gevent.spawn(calluploaddirectly))
-            gevent.sleep(0)
-            gevent.joinall(gev) #wait for gevent to finish before exiting the function
-            curatestatus = 'Done'
+#             curateprintstatus = 'Curating'
+#             start_time = time.time()
+#             initial_bfdataset_size = bf_dataset_size()
+#             start_submit = 1
+#             gev = []
+#             gev.append(gevent.spawn(calluploaddirectly))
+#             gevent.sleep(0)
+#             gevent.joinall(gev) #wait for gevent to finish before exiting the function
+#             curatestatus = 'Done'
 
-            try:
-                return gev[0].get()
-            except Exception as e:
-                raise e
+#             try:
+#                 return gev[0].get()
+#             except Exception as e:
+#                 raise e
 
-        except Exception as e:
-            curatestatus = 'Done'
-            shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
-            raise e
+#         except Exception as e:
+#             curatestatus = 'Done'
+#             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
+#             raise e
 
-def curate_dataset_progress():
-    """
-    Function frequently called by front end to help keep track of the dataset generation progress
-    """
-    global curateprogress
-    global curatestatus
-    global curateprintstatus
-    global total_dataset_size
-    global curated_dataset_size
-    global start_time
-    global upload_directly_to_bf
-    global start_submit
-    global initial_bfdataset_size
+# def curate_dataset_progress():
+#     """
+#     Function frequently called by front end to help keep track of the dataset generation progress
+#     """
+#     global curateprogress
+#     global curatestatus
+#     global curateprintstatus
+#     global total_dataset_size
+#     global curated_dataset_size
+#     global start_time
+#     global upload_directly_to_bf
+#     global start_submit
+#     global initial_bfdataset_size
 
-    if start_submit == 1:
-        if upload_directly_to_bf == 1:
-            curated_dataset_size = bf_dataset_size() - initial_bfdataset_size
-        elapsed_time = time.time() - start_time
-        elapsed_time_formatted = time_format(elapsed_time)
-        elapsed_time_formatted_display = '<br>' + 'Elapsed time: ' + elapsed_time_formatted + '<br>'
-    else:
-        if upload_directly_to_bf == 1:
-            curated_dataset_size = 0
-        elapsed_time_formatted = 0
-        elapsed_time_formatted_display = '<br>' + 'Initiating...' + '<br>'
+#     if start_submit == 1:
+#         if upload_directly_to_bf == 1:
+#             curated_dataset_size = bf_dataset_size() - initial_bfdataset_size
+#         elapsed_time = time.time() - start_time
+#         elapsed_time_formatted = time_format(elapsed_time)
+#         elapsed_time_formatted_display = '<br>' + 'Elapsed time: ' + elapsed_time_formatted + '<br>'
+#     else:
+#         if upload_directly_to_bf == 1:
+#             curated_dataset_size = 0
+#         elapsed_time_formatted = 0
+#         elapsed_time_formatted_display = '<br>' + 'Initiating...' + '<br>'
 
-    return (curateprogress+elapsed_time_formatted_display, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time_formatted)
+#     return (curateprogress+elapsed_time_formatted_display, curatestatus, curateprintstatus, total_dataset_size, curated_dataset_size, elapsed_time_formatted)
 
 ### Validate dataset
 def validate_dataset(validator_input):
@@ -1237,94 +1237,94 @@ def create_high_level_manifest_files(soda_json_structure):
     except Exception as e:
         raise e
 
-def add_local_manifest_files(manifest_files_structure, datasetpath):
-    try:
-        for key in manifest_files_structure.keys():
-            manifestpath = manifest_files_structure[key]
-            destination_folder = join(datasetpath, key)
-            if isdir(destination_folder):
-                dst = join(destination_folder, "manifest.xlsx")
-                mycopyfile_with_metadata(manifestpath, dst)
+# def add_local_manifest_files(manifest_files_structure, datasetpath):
+#     try:
+#         for key in manifest_files_structure.keys():
+#             manifestpath = manifest_files_structure[key]
+#             destination_folder = join(datasetpath, key)
+#             if isdir(destination_folder):
+#                 dst = join(destination_folder, "manifest.xlsx")
+#                 mycopyfile_with_metadata(manifestpath, dst)
 
-        shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
+#         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
-    except Exception as e:
-        raise e
+#     except Exception as e:
+#         raise e
 
-def bf_add_manifest_files(manifest_files_structure, ds):
-    try:
-        for key in manifest_files_structure.keys():
-            manifestpath = manifest_files_structure[key]
-            for item in ds:
-                if item.name == key and item.type == "Collection":
-                    destination_folder_id = item.id
-                    #delete existing manifest files
-                    for subitem in item:
-                        if subitem.name == "manifest":
-                            subitem.delete()
-                    #upload new manifest files
-                    bf_upload_file(item, manifestpath)
-                    break
-        shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
+# def bf_add_manifest_files(manifest_files_structure, ds):
+#     try:
+#         for key in manifest_files_structure.keys():
+#             manifestpath = manifest_files_structure[key]
+#             for item in ds:
+#                 if item.name == key and item.type == "Collection":
+#                     destination_folder_id = item.id
+#                     #delete existing manifest files
+#                     for subitem in item:
+#                         if subitem.name == "manifest":
+#                             subitem.delete()
+#                     #upload new manifest files
+#                     bf_upload_file(item, manifestpath)
+#                     break
+#         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
-    except Exception as e:
-        raise e
+#     except Exception as e:
+#         raise e
 
-def bf_upload_file(item, path):
-    item.upload(path)
+# def bf_upload_file(item, path):
+#     item.upload(path)
 
 
-def get_generate_dataset_size(soda_json_structure):
-    """
-    Function to get the size of the data to be generated (not existing at the local or Blackfynn destination)
+# def get_generate_dataset_size(soda_json_structure):
+#     """
+#     Function to get the size of the data to be generated (not existing at the local or Blackfynn destination)
 
-    Args:
-        soda_json_structure: soda dict with information about all specified files and folders
-        manifest_files_structure: soda dict with information about the manifest files (if requested)
-    Output:
-        generate_dataset_size: total size of data to be generated (in bytes)
-    """
+#     Args:
+#         soda_json_structure: soda dict with information about all specified files and folders
+#         manifest_files_structure: soda dict with information about the manifest files (if requested)
+#     Output:
+#         generate_dataset_size: total size of data to be generated (in bytes)
+#     """
 
-    def recursive_dataset_size(my_folder):
-        total_size = 0
+#     def recursive_dataset_size(my_folder):
+#         total_size = 0
 
-        if "folders" in my_folder.keys():
-            for folder_key, folder in my_folder["folders"].items():
-                total_size += recursive_dataset_size(folder)
-        if "files" in my_folder.keys():
-            for file_key, file in my_folder["files"].items():
-                file_type = file["type"]
-                if file_type == "local":
-                    if "new" in file["action"]:
-                        file_path = file["path"]
-                        if isfile(file_path):
-                            total_size += getsize(file_path)
-        return total_size
+#         if "folders" in my_folder.keys():
+#             for folder_key, folder in my_folder["folders"].items():
+#                 total_size += recursive_dataset_size(folder)
+#         if "files" in my_folder.keys():
+#             for file_key, file in my_folder["files"].items():
+#                 file_type = file["type"]
+#                 if file_type == "local":
+#                     if "new" in file["action"]:
+#                         file_path = file["path"]
+#                         if isfile(file_path):
+#                             total_size += getsize(file_path)
+#         return total_size
 
-    try:
-        dataset_structure = soda_json_structure["dataset-structure"]
+#     try:
+#         dataset_structure = soda_json_structure["dataset-structure"]
 
-        generate_dataset_size = 0
-        for folder_key, folder in dataset_structure["folders"].items():
-            generate_dataset_size += recursive_dataset_size(folder)
+#         generate_dataset_size = 0
+#         for folder_key, folder in dataset_structure["folders"].items():
+#             generate_dataset_size += recursive_dataset_size(folder)
 
-        if manifest_files_structure:
-            for key in manifest_files_structure.keys():
-                manifest_path = manifest_files_structure[key]
-                generate_dataset_size += getsize(manifest_path)
+#         if manifest_files_structure:
+#             for key in manifest_files_structure.keys():
+#                 manifest_path = manifest_files_structure[key]
+#                 generate_dataset_size += getsize(manifest_path)
 
-        if "metadata-files" in soda_json_structure.keys():
-            metadata_files = soda_json_structure["metadata-files"]
-            for file_key, file in metadata_files.items():
-                if file["type"] == "local":
-                    if "new" in file["action"]:
-                        metadata_path = file["path"]
-                        generate_dataset_size += getsize(metadata_path)
+#         if "metadata-files" in soda_json_structure.keys():
+#             metadata_files = soda_json_structure["metadata-files"]
+#             for file_key, file in metadata_files.items():
+#                 if file["type"] == "local":
+#                     if "new" in file["action"]:
+#                         metadata_path = file["path"]
+#                         generate_dataset_size += getsize(metadata_path)
 
-        return generate_dataset_size
+#         return generate_dataset_size
 
-    except Exception as e:
-        raise e
+#     except Exception as e:
+#         raise e
 
 def generate_dataset_locally(soda_json_structure):
 
@@ -2643,7 +2643,7 @@ def main_curate_function(soda_json_structure):
                 #     add_local_manifest_files(manifest_files_structure, datasetpath)
 
             if soda_json_structure["generate-dataset"]["destination"] == "bf":
-                main_generate_destination = soda_json_structure["generate-dataset"]["destination"] 
+                main_generate_destination = soda_json_structure["generate-dataset"]["destination"]
                 if generate_option == "new":
                     if "dataset-name" in soda_json_structure["generate-dataset"]:
                         dataset_name = soda_json_structure["generate-dataset"]["dataset-name"]
@@ -2685,11 +2685,11 @@ def main_curate_function_progress():
     elapsed_time_formatted = time_format(elapsed_time)
 
     if start_generate == 1:
-        if main_generate_destination == "bf":  
+        if main_generate_destination == "bf":
             main_generated_dataset_size = bf_dataset_size() - main_initial_bfdataset_size
 
 
-    return (main_curate_status, start_generate, main_curate_progress_message, main_total_generate_dataset_size, main_generated_dataset_size, elapsed_time_formatted, temp, main_initial_bfdataset_size)
+    return (main_curate_status, start_generate, main_curate_progress_message, main_total_generate_dataset_size, main_generated_dataset_size, elapsed_time_formatted)
 
 
 def preview_dataset(soda_json_structure):
