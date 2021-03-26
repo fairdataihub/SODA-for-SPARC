@@ -163,6 +163,7 @@ body.waiting * {
 .div-dd-info {
   display: flex;
   flex-direction: row;
+  align-items: center;
   justify-content: space-between;
   margin: 10px 0
 }
@@ -177,7 +178,7 @@ body.waiting * {
   margin: 10px 0;
   /* padding-right: 10px; */
   padding: 4px 6px;
-  text-align: left;
+  text-align: right;
   vertical-align: middle;
   color: #a0a0a0;
   font: bold;
@@ -185,11 +186,14 @@ body.waiting * {
 }
 
 .demo-controls-body {
+  display: flex;
   width: 75%;
   float:right;
+  height:fit-content;
 }
 
 .demo-controls-end {
+  display: flex;
   width: 30px;
   height:30px;
 }
@@ -1082,7 +1086,7 @@ input::-webkit-calendar-picker-indicator {
   width: 100%;
   border: 1px solid #c0c0c0;
   /* border-left: 2px solid var(--color-light-green); */
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
   border-radius: 5px;
   transition: var(--color-light-green) 0.25s ease-out;
   padding: 4px 6px;
@@ -1126,7 +1130,7 @@ input::-webkit-calendar-picker-indicator {
   background-clip: padding-box;
   line-height: 1.5;
   width: 100%;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
   border: 1px solid #c0c0c0;
   border-left: 2px solid var(--color-light-green);
   border-radius: 5px;
