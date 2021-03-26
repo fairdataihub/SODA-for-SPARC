@@ -3842,7 +3842,8 @@ function populateDatasetDropdowns(mylist) {
 }
 
 function changeDatasetUnderDD() {
-  datasetDescriptionFileDataset.value = defaultBfDataset
+  datasetDescriptionFileDataset.value = defaultBfDataset;
+  showDatasetDescription();
 }
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
