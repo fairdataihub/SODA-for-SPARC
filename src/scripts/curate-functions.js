@@ -700,10 +700,8 @@ async function openDropdownPrompt(dropdown) {
       showBFAddAccountBootbox();
     }
   } else if (dropdown === "dataset") {
-    console.log("hiding1");
     $(".svg-change-current-account.dataset").css("display", "none");
     $(".ui.active.green.inline.loader.small").css("display", "block");
-    console.log("hiding2");
 
     setTimeout(async function () {
       // disable the Continue btn first
