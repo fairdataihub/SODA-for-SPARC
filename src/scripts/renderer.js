@@ -2471,8 +2471,8 @@ bfRenameDatasetBtn.addEventListener("click", () => {
           );
         } else {
           defaultBfDataset = renamedDatasetName;
-          tempDatasetListsSync()
           $(".bf-dataset-span").html(renamedDatasetName);
+          tempDatasetListsSync()
           datasetDescriptionFileDataset.value = renamedDatasetName;
           renameDatasetName.value = renamedDatasetName;
           bfRenameDatasetStatus.innerHTML =
@@ -6579,6 +6579,7 @@ $("#button-generate-manifest-locally").click(() => {
 ipcRenderer.on("selected-manifest-folder", (event, result) => {
   if (!result["canceled"])
   {
+    $("body").addClass("waiting")
     let manifest_destination = result["filePaths"][0];
     let manifest_state = {}
 
@@ -6599,8 +6600,10 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
         var emessage = userError(error);
         log.error(error);
         console.error(error);
+        $("body").removeClass("waiting")
       } else {
         console.log(res);
+        $("body").removeClass("waiting")
       }
     });
   }
