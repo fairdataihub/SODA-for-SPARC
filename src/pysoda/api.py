@@ -8,11 +8,10 @@ from pysoda import submit_dataset_progress,  \
     bf_add_description, bf_get_banner_image, bf_add_banner_image, bf_get_license, bf_add_license, \
     bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load, get_username
 
-from disseminate import bf_get_doi, bf_reserve_doi, bf_get_publishing_status, bf_publish_dataset, \
-                         bf_submit_review_dataset, bf_withdraw_review_dataset
+from disseminate import bf_get_doi, bf_reserve_doi, bf_get_publishing_status, bf_publish_dataset, bf_submit_review_dataset, bf_withdraw_review_dataset
 
 from curate import validate_dataset, create_folder_level_manifest, \
-    check_empty_files_folders, main_curate_function, main_curate_function_progress
+    check_empty_files_folders, main_curate_function, main_curate_function_progress, generate_manifest_file_locally
 
 from prepare_metadata import save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone
 
@@ -312,8 +311,14 @@ class SodaApi(object):
             return bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only)
         except Exception as e:
             raise e
+    
+    def api_generate_manifest_file_locally(self, soda_json_structure):
+        try:
+            return generate_manifest_file_locally(soda_json_structure)
+        except Exception as e:
+            raise e
 
-    ### Check Login to Python Server
+    ### Check Login to Python Server 
     def echo(self, text):
         """echo any text"""
         return text

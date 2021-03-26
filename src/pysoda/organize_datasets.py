@@ -595,8 +595,12 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 if "files" not in dataset_folder:
                     dataset_folder["files"] = {}
                 package_id = item.id
+<<<<<<< HEAD
                 package_details = bf._api._get(
                     '/packages/' + str(package_id))
+=======
+                package_details = bf._api._get('/packages/' + str(package_id))
+>>>>>>> testmerge5.0
                 file_name = package_details["content"]["name"]
                 result = str(package_details["content"]) 
                 f.write(result)

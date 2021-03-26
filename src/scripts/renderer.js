@@ -1445,10 +1445,7 @@ $(currentConTable).mousedown(function (e) {
 const showDatasetDescription = () => {
   var selectedBfAccount = defaultBfAccount;
   let temp = datasetDescriptionFileDataset.selectedIndex;
-  var selectedBfDataset =
-     datasetDescriptionFileDataset.options[
-       datasetDescriptionFileDataset.selectedIndex
-     ].text;
+  var selectedBfDataset = defaultBfDataset;
   //var selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
@@ -2366,6 +2363,8 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 bfCreateNewDatasetBtn.addEventListener("click", () => {
   bfCreateNewDatasetBtn.disabled = true;
   //bfCreateNewDatasetStatus.innerHTML = "Adding...";
+  $("#para-new-name-dataset-message").html("");
+  $("#para-add-new-dataset-status").html("");
   $("#bf-create-new-dataset-spinner").css("visibility", "visible");
   var selectedbfaccount = defaultBfAccount;
   client.invoke(
@@ -2391,7 +2390,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
         $(bfCreateNewDatasetBtn).hide();
         defaultBfDataset = bfNewDatasetName.value;
-        tempDatasetListsSync()
+        refreshDatasetList()
         bfCreateNewDatasetStatus.innerHTML =
           "<span style='font-size: 17px; color: #13716D;'>Success: Created dataset" +
           " '" +
@@ -2419,7 +2418,6 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
             } else {
               datasetList = [];
               datasetList = result;
-              tempDatasetListsSync();
             }
           }
         );
@@ -2470,8 +2468,8 @@ bfRenameDatasetBtn.addEventListener("click", () => {
           );
         } else {
           defaultBfDataset = renamedDatasetName;
-          tempDatasetListsSync()
           $(".bf-dataset-span").html(renamedDatasetName);
+          refreshDatasetList();
           datasetDescriptionFileDataset.value = renamedDatasetName;
           renameDatasetName.value = renamedDatasetName;
           bfRenameDatasetStatus.innerHTML =
@@ -2503,7 +2501,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
               } else {
                 datasetList = [];
                 datasetList = result;
-                tempDatasetListsSync()
+                refreshDatasetList()
               }
             }
           );
@@ -3847,6 +3845,12 @@ function populateDatasetDropdowns(mylist) {
   permissionDatasetlistChange();
   postCurationListChange();
   datasetStatusListChange();
+  changeDatasetUnderDD();
+}
+
+function changeDatasetUnderDD() {
+  datasetDescriptionFileDataset.value = defaultBfDataset;
+  showDatasetDescription();
 }
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
@@ -6607,3 +6611,40 @@ const curation_consortium_check = (mode = "") => {
     }
   });
 };
+
+$("#button-generate-manifest-locally").click(() => {
+  ipcRenderer.send("open-folder-dialog-save-manifest-local");
+});
+
+ipcRenderer.on("selected-manifest-folder", (event, result) => {
+  if (!result["canceled"])
+  {
+    $("body").addClass("waiting")
+    let manifest_destination = result["filePaths"][0];
+    let manifest_state = {}
+
+    if ("manifest-files" in sodaJSONObj)
+    {
+      manifest_state = sodaJSONObj["manifest-files"];
+      sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination
+    }
+    else
+    {
+      manifest_state = {}
+      sodaJSONObj["manifest-files"] = {}
+      sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination
+    }
+
+    client.invoke("api_generate_manifest_file_locally", sodaJSONObj, (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        log.error(error);
+        console.error(error);
+        $("body").removeClass("waiting")
+      } else {
+        console.log(res);
+        $("body").removeClass("waiting")
+      }
+    });
+  }
+});

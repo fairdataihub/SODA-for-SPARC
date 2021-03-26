@@ -644,7 +644,8 @@ async function openDropdownPrompt(dropdown) {
         $("#current-bf-dataset-generate").text("None");
         $(".bf-dataset-span").html("None");
         defaultBfDataset = "Select dataset";
-        tempDatasetListsSync();
+        document.getElementById("ds-description").innerHTML = "";
+        refreshDatasetList()
         $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
           "display",
           "none"
@@ -685,7 +686,7 @@ async function openDropdownPrompt(dropdown) {
               } else {
                 datasetList = [];
                 datasetList = result;
-                updateDatasetList();
+                refreshDatasetList();
               }
             });
             showHideDropdownButtons("account", "hide");
@@ -700,10 +701,8 @@ async function openDropdownPrompt(dropdown) {
       showBFAddAccountBootbox();
     }
   } else if (dropdown === "dataset") {
-    console.log("hiding1")
     $(".svg-change-current-account.dataset").css("display", "none");
     $(".ui.active.green.inline.loader.small").css("display", "block");
-    console.log("hiding2")
 
     setTimeout(async function () {
       // disable the Continue btn first
@@ -808,8 +807,8 @@ async function openDropdownPrompt(dropdown) {
         $(".bf-dataset-span").html(bfDataset);
   
         defaultBfDataset = bfDataset;
-  
-        tempDatasetListsSync();
+        document.getElementById("ds-description").innerHTML = "";
+        refreshDatasetList()
         $("#dataset-loaded-message").hide();
   
         showHideDropdownButtons("dataset", "show");
@@ -909,29 +908,6 @@ function checkPrevDivForConfirmButton(category) {
       $("#button-confirm-bf-dataset-getting-started").hide();
     }
   }
-}
-
-function tempDatasetListsSync() {
-  // For tram: the rename dropdown will be gone for dd dropdown
-  /*
-  $("#bfdatasetlist_renamedataset").val(defaultBfDataset);
-  var listSelectedIndex = bfDatasetListRenameDataset.selectedIndex;
-
-  currentDatasetDropdowns = [
-    bfDatasetList,
-     datasetDescriptionFileDataset
-  ];
-
-  for (var list of currentDatasetDropdowns) {
-    list.selectedIndex = listSelectedIndex;
-  }
-  */
-
-  postCurationListChange();
-  showDatasetDescription();
-  metadataDatasetlistChange();
-  permissionDatasetlistChange();
-  datasetStatusListChange();
 }
 
 const updateDatasetList = (bfaccount) => {
