@@ -645,7 +645,7 @@ async function openDropdownPrompt(dropdown) {
         $(".bf-dataset-span").html("None");
         defaultBfDataset = "Select dataset";
         document.getElementById("ds-description").innerHTML = "";
-        tempDatasetListsSync();
+        refreshDatasetList()
         $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
           "display",
           "none"
@@ -809,8 +809,7 @@ async function openDropdownPrompt(dropdown) {
 
         defaultBfDataset = bfDataset;
         document.getElementById("ds-description").innerHTML = "";
-
-        tempDatasetListsSync();
+        refreshDatasetList()
         $("#dataset-loaded-message").hide();
 
         showHideDropdownButtons("dataset", "show");
@@ -908,29 +907,6 @@ function checkPrevDivForConfirmButton(category) {
       $("#button-confirm-bf-dataset-getting-started").hide();
     }
   }
-}
-
-function tempDatasetListsSync() {
-  // For tram: the rename dropdown will be gone for dd dropdown
-  /*
-  $("#bfdatasetlist_renamedataset").val(defaultBfDataset);
-  var listSelectedIndex = bfDatasetListRenameDataset.selectedIndex;
-
-  currentDatasetDropdowns = [
-    bfDatasetList,
-     datasetDescriptionFileDataset
-  ];
-
-  for (var list of currentDatasetDropdowns) {
-    list.selectedIndex = listSelectedIndex;
-  }
-  */
-
-  postCurationListChange();
-  showDatasetDescription();
-  metadataDatasetlistChange();
-  permissionDatasetlistChange();
-  datasetStatusListChange();
 }
 
 const updateDatasetList = (bfaccount) => {
@@ -1707,4 +1683,3 @@ $(".bf-dataset-span").on("DOMSubtreeModified", function () {
     }
   }
 });
-

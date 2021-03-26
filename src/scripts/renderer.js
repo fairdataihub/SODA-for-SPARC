@@ -1445,10 +1445,7 @@ $(currentConTable).mousedown(function (e) {
 const showDatasetDescription = () => {
   var selectedBfAccount = defaultBfAccount;
   let temp = datasetDescriptionFileDataset.selectedIndex;
-  var selectedBfDataset =
-     datasetDescriptionFileDataset.options[
-       datasetDescriptionFileDataset.selectedIndex
-     ].text;
+  var selectedBfDataset = defaultBfDataset;
   //var selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
@@ -2393,7 +2390,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
         $(bfCreateNewDatasetBtn).hide();
         defaultBfDataset = bfNewDatasetName.value;
-        tempDatasetListsSync()
+        refreshDatasetList()
         bfCreateNewDatasetStatus.innerHTML =
           "<span style='font-size: 17px; color: #13716D;'>Success: Created dataset" +
           " '" +
@@ -2421,7 +2418,6 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
             } else {
               datasetList = [];
               datasetList = result;
-              tempDatasetListsSync();
             }
           }
         );
@@ -2471,7 +2467,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
           );
         } else {
           defaultBfDataset = renamedDatasetName;
-          tempDatasetListsSync()
+          refreshDatasetList();
           $(".bf-dataset-span").html(renamedDatasetName);
           datasetDescriptionFileDataset.value = renamedDatasetName;
           renameDatasetName.value = renamedDatasetName;
@@ -2504,7 +2500,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
               } else {
                 datasetList = [];
                 datasetList = result;
-                tempDatasetListsSync()
+                refreshDatasetList()
               }
             }
           );
@@ -3842,6 +3838,11 @@ function populateDatasetDropdowns(mylist) {
   permissionDatasetlistChange();
   postCurationListChange();
   datasetStatusListChange();
+  changeDatasetUnderDD();
+}
+
+function changeDatasetUnderDD() {
+  datasetDescriptionFileDataset.value = defaultBfDataset
 }
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
