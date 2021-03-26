@@ -5,7 +5,7 @@ function disseminatePublish() {
 
 function refreshDatasetStatus() {
   var account = $("#current-bf-account").text();
-  var dataset = $(".bf-dataset-span").html();
+  var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
   disseminateShowPublishingStatus("", account, dataset);
 }
 
@@ -69,7 +69,7 @@ $(document).ready(function () {
     (event, index) => {
       if (index === 0) {
         var account = $("#current-bf-account").text();
-        var dataset = $(".bf-dataset-span").html();
+        var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
         disseminateCurationTeam(account, dataset);
       } else {
         $("#share-curation-team-spinner").hide();
@@ -79,7 +79,7 @@ $(document).ready(function () {
   ipcRenderer.on("warning-share-with-consortium-selection", (event, index) => {
     if (index === 0) {
       var account = $("#current-bf-account").text();
-      var dataset = $(".bf-dataset-span").html();
+      var dataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
       disseminateConsortium(account, dataset);
     } else {
       $("#share-with-sparc-consortium-spinner").show();
@@ -156,7 +156,17 @@ $(document).ready(function () {
     }
     $("#generate-submission-spinner").hide();
   });
-
+  ipcRenderer.on("selected-milestonedocreupload", (event, filepath) => {
+    if (filepath.length > 0) {
+      if (filepath != null) {
+        // used to communicate value to button-import-milestone click event-listener
+        document.getElementById("input-milestone-select-reupload").placeholder =
+        filepath[0];
+        $("#div-confirm-select-SPARC-awards").show();
+        $("#div-cancel-reupload-DDD").hide();
+      }
+    }
+  });
 });
 
 const disseminateCurationTeam = (account, dataset, share_status = "") => {
@@ -419,7 +429,7 @@ function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
 }
 
 function checkDatasetDisseminate() {
-  if ($(".bf-dataset-span.disseminate").html() !== "None") {
+  if ($(".bf-dataset-span.disseminate").html().replace(/^\s+|\s+$/g, '') !== "None") {
     if (
       $("#Post-curation-question-1").hasClass("prev") &&
       !$("#Post-curation-question-4").hasClass("show")
@@ -645,17 +655,6 @@ $("#input-milestone-select-reupload").click(function () {
   ).style.display = "none";
   ipcRenderer.send("open-file-dialog-milestone-doc-reupload");
 });
-ipcRenderer.on("selected-milestonedocreupload", (event, filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null) {
-      // used to communicate value to button-import-milestone click event-listener
-      document.getElementById("input-milestone-select-reupload").placeholder =
-        filepath[0];
-      $("#div-confirm-select-SPARC-awards").show();
-      $("#div-cancel-reupload-DDD").hide();
-    }
-  }
-});
 
 $("#cancel-reupload-DDD").click(function () {
   $("#Question-prepare-submission-reupload-DDD").removeClass("show prev");
@@ -787,7 +786,9 @@ $("#input-milestone-date-raw").change(function () {
   }
 });
 
-$("#a-SPARC-awards-not-listed").click(editSPARCAwardsBootbox);
+$(document).ready(function() {
+  $("#a-SPARC-awards-not-listed").click(editSPARCAwardsBootbox);
+})
 
 // Preview submission file entries before Generating
 function showPreviewSubmission() {

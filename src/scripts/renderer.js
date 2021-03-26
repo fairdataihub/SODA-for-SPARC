@@ -3313,7 +3313,7 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
 function withdrawReviewDataset() {
   bfWithdrawReviewDatasetBtn.disabled = true;
   var selectedBfAccount = $("#current-bf-dataset").text();
-  var selectedBfDataset = $(".bf-dataset-span").html();
+  var selectedBfDataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
   client.invoke(
     "api_bf_withdraw_review_dataset",
     selectedBfAccount,
@@ -3930,7 +3930,7 @@ function showPublishingStatus(callback) {
     $("#para-share-with-sparc-consortium-status").text("");
   }
   var selectedBfAccount = $("#current-bf-account").text();
-  var selectedBfDataset = $(".bf-dataset-span").html();
+  var selectedBfDataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
   if (selectedBfDataset === "None") {
   } else {
     client.invoke(

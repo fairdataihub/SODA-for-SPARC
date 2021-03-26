@@ -1,417 +1,943 @@
 <!DOCTYPE html>
 <template class="task-template">
   <section
-    id="post_curation-section"
+    id="share_curation_team-section"
     class="section js-section u-category-windows"
+    style="padding-left: 15px; overflow-y: hidden"
   >
-    <header class="section-header">
-      <div class="section-wrapper">
-        <h1>
-          <svg
-            style="margin-right: 10px; margin-bottom: -3px"
-            width="22px"
-            height="22px"
-            viewBox="0 0 16 16"
-            class="bi bi-share-fill"
-            fill="var(--color-teal)"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"
-            />
-          </svg>
-          Disseminate Dataset
-        </h1>
-        <h3>
-          This interface provides a convenient window to complete tasks required
-          once your dataset has been organized and uploaded on Blackfynn.
-          <br />
-          <br />
-        </h3>
-      </div>
-    </header>
-
-    <div class="demo" style="display: none">
-      <div class="demo-wrapper">
-        <button
-          id="button-new-window-annotate-demo-toggle"
-          class="js-container-target demo-toggle-button"
+    <div
+      class="main-tabs show"
+      style="display: flex; height: 100%; overflow-y: hidden"
+    >
+      <header class="section-header">
+        <div
+          style="
+            display: inline-flex;
+            align-items: center;
+            flex-direction: row;
+            width: 94.5%;
+            padding-right: 20px;
+            margin-bottom: 50px;
+          "
         >
-          Reserve DOI
-          <a
-            style="padding: 0px 0px 0px 10px"
-            class="github-wiki-link"
-            href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps"
-          >
-            <img class="nav-video" src="assets/img/documentation-icon.png" />
-          </a>
-          <div class="demo-meta u-avoid-clicks">Reserve DOI</div>
-        </button>
-
-        <div class="demo-box">
-          <div id="div-reserve-doi" style="margin-left: 20px">
-            <h5>Select Blackfynn dataset</h5>
-            <div class="demo-controls" style="margin-top: 15px">
-              <select
-                class="my-dropdown"
-                style="width: 80%"
-                id="bfdatasetlist_postcuration-doi"
-              >
-                <option>Select dataset</option>
-              </select>
-            </div>
-
-            <div id="div-bf-post-curation-progress-doi" class="progressdiv">
-              <div class="indeterminatebar"></div>
-            </div>
-
-            <br />
-
-            <div class="demo-controls" style="margin-top: -30px">
-              <div style="width: 200px; float: left">
-                <h5>Click to reserve DOI (optional)</h5>
-                <button
-                  id="button-reserve-doi"
-                  class="demo-button"
-                  style="width: 300px"
-                >
-                  Reserve DataCite DOI
-                </button>
-              </div>
-              <div style="margin-left: 200px">
-                <h5>Currently reserved DOI</h5>
-                <input
-                  id="input-current-doi"
-                  class="demo-response"
-                  value="-------"
-                  disabled
-                />
-              </div>
-
-              <div style="position: absolute; right: 30px">
-                <h5>
-                  <div class="tooltipnew">
-                    <img class="info" src="assets/img/info.png" />
-                    <span class="tooltiptext">
-                      A Digital Object Identifier (DOI), is a string of numbers,
-                      letters and symbols used to permanently identify your
-                      dataset on the web.
-                      <br /><br />
-                      The Blackfynn platform uses DataCite to help locate,
-                      identify, manage, and cite your research data.
-                      <br /><br />
-                      A DOI can optionally be reserved prior to publication.
-                      Otherwise, it will be reserved automatically when you
-                      publish the dataset.
-                      <br /><br />
-                      Note: You must have "owner" or "manager" permissions on
-                      the dataset to view/reserve a DOI. See feature "Manage
-                      dataset permissions" of SODA and our associated
-                      <a
-                        href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions"
-                        style="color: white"
-                      >
-                        documentation</a
-                      >
-                      for more information.
-                    </span>
-                  </div>
-                </h5>
-              </div>
-            </div>
-
-            <p id="para-reserve-doi-status"></p>
+          <div class="need-help-div">
+            <h2>Disseminate Datasets - Share with Curation Team</h2>
+            <a
+              target="_blank"
+              href="https://github.com/bvhpatel/SODA/wiki/Share-with-curation-team"
+              >Need help?</a
+            >
           </div>
         </div>
-      </div>
-    </div>
+      </header>
 
-    <div class="demo">
-      <div class="demo-wrapper">
-        <button
-          id="button-new-window-annotate-demo-toggle"
-          class="js-container-target demo-toggle-button"
+      <div id="share_curation_team-tab" style="overflow-y: auto; height: 70%">
+        <div
+          class="individual-question post-curation show"
+          id="share_curation_team-question-1"
+          style="height: auto"
         >
-          Share with Curation team
-          <a
-            style="padding: 0px 0px 0px 10px"
-            class="github-wiki-link"
-            href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps"
-          >
-            <img class="nav-video" src="assets/img/documentation-icon.png" />
-          </a>
-          <div class="demo-meta u-avoid-clicks">
-            Share your dataset with the Curation team for review
-          </div>
-        </button>
-
-        <div class="demo-box">
-          <h5>Select Blackfynn dataset</h5>
-          <div class="demo-controls" style="margin-top: 15px">
-            <select
-              class="my-dropdown"
-              style="width: 80%"
-              id="bfdatasetlist-postcuration-curation"
-            >
-              <option>Select dataset</option>
-            </select>
-          </div>
-
-          <div id="div-bf-post-curation-progress-curation" class="progressdiv">
-            <div class="indeterminatebar"></div>
-          </div>
-
-          <br />
-          <h5>
-            Share:
-            <div class="tooltipnew">
-              <img class="info" src="assets/img/info.png" />
-              <span class="tooltiptext">
-                Sharing with the SPARC Curation Team will assign them "manager"
-                role, which is necessary for them to access your dataset when it
-                is ready to be reviewed, and set the dataset status to "03.
-                Ready for Curation" thus adding the dataset to the Curation
-                Team's queue for review. It is then highly recommended to not
-                make any changes to your dataset.
-                <br /><br />
-                Note: You must have "owner" or "manager" permissions on the
-                dataset to share with the SPARC consortium. See feature "Manage
-                dataset permissions" of SODA and our associated
-                <a
-                  href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions"
-                  style="color: white"
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Select a dataset:
+              </label>
+              <div class="field" style="margin: auto; width: 500px">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                  "
                 >
-                  documentation</a
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Current account:
+                        </h5>
+                        <h5 class="card-right bf-account-span">None</h5>
+                      </div>
+                    </div>
+                    <svg
+                      class="svg-change-current-account"
+                      onclick="openDropdownPrompt('bf')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      class="bi bi-pencil-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      margin-bottom: 15px;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Account details:
+                        </h5>
+                        <h5 class="card-right bf-account-details-span">None</h5>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Current dataset:
+                        </h5>
+                        <h5
+                          id="rename_dataset_name"
+                          class="card-right bf-dataset-span"
+                        >None</h5>
+                      </div>
+                    </div>
+                    <svg
+                      class="svg-change-current-account dataset"
+                      onclick="openDropdownPrompt('dataset')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      class="bi bi-pencil-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                    <div
+                      class="ui active green inline loader small"
+                      style="display: none"
+                    ></div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Current status:
+                        </h5>
+                        <h5
+                          id="current_curation_team_status"
+                          class="card-right"
+                          style="
+                            width: auto;
+                            margin-left: 0px;
+                            margin-top: 0px;
+                            padding-left: 5px;
+                          "
+                        >None</h5>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="div-confirm-button"
+                  style="
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 10px auto;
+                  "
                 >
-                for more information.
-              </span>
+                  <button
+                    id="button-share-curation-team-confirm"
+                    onclick="transitionFreeFormMode(this, 'share_curation_team-question-1', 'share_curation_team-tab', 'delete', 'individual-question post-curation')"
+                    data-next="share_curation_team-question-2"
+                    class="confirm-button"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
             </div>
-          </h5>
+          </div>
+        </div>
 
-          <div id="div-bf-share-curation-team">
-            <div class="demo-controls">
-              <button
-                id="button-add-permission-curation-team"
-                class="demo-button"
-                style="width: 250px"
+        <div
+          class="individual-question disseminate-dataset"
+          id="share_curation_team-question-2"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <label
+                style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
+                "
+              ></label>
+              <div
+                id="div-confirm-share_curation_team"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                  margin: 0 auto;
+                "
               >
-                Share with Curation Team
-              </button>
-              <br />
+                <div style="display: flex; justify-content: space-between">
+                  <button
+                    onclick="unshareDataset('share-with-curation-team')"
+                    id="curation-team-unshare-btn"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 140px;
+                      height: 40px;
+                      background: #fff;
+                      color: red;
+                      font-weight: 600;
+                      border: 1px solid red;
+                      font-size: 15px;
+                      display: none;
+                    "
+                  >
+                    <i class="fas fa-share" style="padding-right: 5px"></i>
+                    Unshare
+                  </button>
+                  <button
+                    id="curation-team-share-btn"
+                    onclick="disseminateDataset('share-with-curation-team')"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 140px;
+                      height: 40px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 15px;
+                      display: none;
+                    "
+                  >
+                    <i class="fas fa-share" style="padding-right: 5px"></i>
+                    Share now
+                  </button>
+                </div>
+                <div
+                  id="share-curation-team-spinner"
+                  class="spinner post-curation"
+                  style="display: none"
+                >
+                  <div class="rect1"></div>
+                  <div class="rect2"></div>
+                  <div class="rect3"></div>
+                  <div class="rect4"></div>
+                  <div class="rect5"></div>
+                </div>
+              </div>
               <p
-                id="para-dataset-permission-status-curation-team"
-                style="padding: 0 0; margin: 0 0"
+                id="para-share-curation_team-status"
+                style="color: red; margin-top: 10px; text-align: center"
               ></p>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="demo">
-      <div class="demo-wrapper">
-        <button
-          id="button-new-window-annotate-demo-toggle"
-          class="js-container-target demo-toggle-button"
-        >
-          Share with SPARC Consortium
-          <a
-            style="padding: 0px 0px 0px 10px"
-            class="github-wiki-link"
-            href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps"
+      <div class="footer-div">
+        <div style="display: flex; flex-direction: row; width: 110px">
+          <button
+            type="button"
+            class="transition-btn prev"
+            data-section="main_tabs"
           >
-            <img class="nav-video" src="assets/img/documentation-icon.png" />
-          </a>
-          <div class="demo-meta u-avoid-clicks">
-            Share your dataset as embargoed dataset with the SPARC Consortium
-          </div>
-        </button>
-
-        <div class="demo-box">
-          <!-- <div id="div-post-curation-display-2"> -->
-          <h5>Select Blackfynn dataset</h5>
-          <div class="demo-controls" style="margin-top: 15px">
-            <select
-              class="my-dropdown"
-              style="width: 80%"
-              id="bfdatasetlist-postcuration-consortium"
-            >
-              <option>Select dataset</option>
-            </select>
-          </div>
-
-          <div
-            id="div-bf-post-curation-progress-consortium"
-            class="progressdiv"
-          >
-            <div class="indeterminatebar"></div>
-          </div>
-
-          <br />
-          <h5>
-            Share:
-            <div class="tooltipnew">
-              <img class="info" src="assets/img/info.png" />
-              <span class="tooltiptext">
-                Once your dataset is approved by the Curation Team, it is ready
-                to be shared with the SPARC Consortium as embargoed dataset.
-                Sharing will give "viewer" permissions to any SPARC investigator
-                who has signed the SPARC Non-disclosure form and will allow them
-                to see your data.
-                <br /><br />
-                Note: You must have "owner" or "manager" permissions on the
-                dataset to share with the SPARC consortium. See feature "Manage
-                dataset permissions" of SODA and our associated
-                <a
-                  href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions"
-                  style="color: white"
-                >
-                  documentation</a
-                >
-                for more information.
-              </span>
-            </div>
-          </h5>
-          <div class="demo-controls">
-            <button
-              id="button-share-consortium"
-              class="demo-button"
-              style="width: 250px"
-            >
-              Share with SPARC Consortium
-            </button>
-
-            <p
-              id="para-share-consortium-status"
-              style="padding: 0 0; margin: 0 0"
-            ></p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="demo">
-      <div class="demo-wrapper">
-        <button
-          id="button-new-window-annotate-demo-toggle"
-          class="js-container-target demo-toggle-button"
-        >
-          Submit dataset for pre-publishing review
-          <a
-            style="padding: 0px 0px 0px 10px"
-            class="github-wiki-link"
-            href="https://github.com/bvhpatel/SODA/wiki/Complete-post-curation-steps"
-          >
-            <img class="nav-video" src="assets/img/documentation-icon.png" />
-          </a>
-          <div class="demo-meta u-avoid-clicks">
-            Submit your dataset to the Curation Team for a final review before
-            it is made public
-          </div>
-        </button>
-
-        <div class="demo-box">
-          <!--           <div id="div-post-curation-display">
-        <p>Coming soon... </p>
-      </div> -->
-
-          <div id="div-publish-dataset">
-            <!-- <div id="div-post-curation-display-2"> -->
-            <h5>Select Blackfynn dataset</h5>
-            <div class="demo-controls" style="margin-top: 15px">
-              <select
-                class="my-dropdown"
-                style="width: 80%"
-                id="bfdatasetlist-postcuration-publish"
-              >
-                <option value="Select dataset">Select dataset</option>
-              </select>
-            </div>
-
-            <div id="div-bf-post-curation-progress-publish" class="progressdiv">
-              <div class="indeterminatebar"></div>
-            </div>
-
-            <br />
-
-            <div style="width:100%, padding-top:-60px">
-              <h5>
-                <div class="tooltipnew">
-                  <img class="info" src="assets/img/info.png" />
-                  <span class="tooltiptext">
-                    One year after the dataset completion date (as per the Data
-                    Deliverables document) or right after publishing results
-                    from the dataset, whichever comes first, you must publish
-                    your dataset to Blackfynn Discover, which populates the
-                    public SPARC Data Portal.
-                    <br /><br />
-                    As per the SPARC publishing process, you must submit your
-                    dataset for review to the Curation Team who will make a
-                    final check of your dataset and accept or reject the
-                    publication request (and inform you).
-                    <br /><br />
-                    To do so, simply select your dataset and click on "Submit
-                    for review". The dataset could also be withdrawn from review
-                    by clicking on "Withdraw from review".
-                    <br /><br />
-                    Note: You must be dataset "owner" and have your ORCID linked
-                    on Blackfynn in order to submit for review. See feature
-                    "Manage dataset permissions" of SODA and our associated
-                    <a
-                      href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions"
-                      style="color: white"
-                    >
-                      documentation</a
-                    >
-                    for more information.
-                  </span>
-                </div>
-              </h5>
-            </div>
-
-            <div style="display: flex; position: relative">
-              <div style="width: 400px">
-                <h5></h5>
-                <h5>Click to submit or withdraw</h5>
-                <button
-                  id="button-submit-review-dataset-old"
-                  class="demo-button"
-                  style="width: 250px"
-                >
-                  Submit for review
-                </button>
-                <!-- <br>
-              <h5> </h5>
-              <button id="button-refresh-publishing-status" class="demo-button" style="width: 250px"> Refresh review status </button> -->
-                <br />
-                <h5></h5>
-                <button
-                  id="button-withdraw-review-dataset-old"
-                  class="demo-button"
-                  style="width: 250px"
-                >
-                  Withdraw from review
-                </button>
-              </div>
-
-              <div style="flex-grow: 1">
-                <h5>
-                  Review status (<button
-                    id="button-refresh-publishing-status-old"
-                    style="font-size: 10; border: none"
-                  >
-                    Refresh</button
-                  >):
-                </h5>
-                <p id="para-review-dataset-info-old"></p>
-              </div>
-            </div>
-
-            <p id="para-publish-dataset-status-old"></p>
-          </div>
+            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+          </button>
         </div>
       </div>
     </div>
   </section>
+
+  <section
+    id="share_sparc_consortium-section"
+    class="section js-section u-category-windows"
+    style="padding-left: 15px; overflow-y: hidden"
+  >
+    <div
+      class="main-tabs show"
+      style="display: flex; height: 100%; overflow-y: hidden"
+    >
+      <header class="section-header">
+        <div
+          style="
+            display: inline-flex;
+            align-items: center;
+            flex-direction: row;
+            width: 94.5%;
+            padding-right: 20px;
+            margin-bottom: 50px;
+          "
+        >
+          <div class="need-help-div">
+            <h2>Disseminate Datasets - Share with SPARC Consortium</h2>
+            <a
+              target="_blank"
+              href="https://github.com/bvhpatel/SODA/wiki/Share-with-SPARC-Consortium"
+              >Need help?</a
+            >
+          </div>
+        </div>
+      </header>
+
+      <div
+        id="share_sparc_consortium-tab"
+        style="overflow-y: auto; height: 70%"
+      >
+        <div
+          class="individual-question post-curation show"
+          id="share_sparc_consortium-question-1"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Select a dataset:
+              </label>
+              <div class="field" style="margin: auto; width: 500px">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                  "
+                >
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Current account:
+                        </h5>
+                        <h5 class="card-right bf-account-span">None</h5>
+                      </div>
+                    </div>
+                    <svg
+                      class="svg-change-current-account"
+                      onclick="openDropdownPrompt('bf')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      class="bi bi-pencil-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      margin-bottom: 15px;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Account details:
+                        </h5>
+                        <h5 class="card-right bf-account-details-span">None</h5>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Current dataset:
+                        </h5>
+                        <h5 class="card-right bf-dataset-span">None</h5>
+                      </div>
+                    </div>
+                    <svg
+                      class="svg-change-current-account dataset"
+                      onclick="openDropdownPrompt('dataset')"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      fill="#000"
+                      class="bi bi-pencil-fill"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                      />
+                    </svg>
+                    <div
+                      class="ui active green inline loader small"
+                      style="display: none"
+                    ></div>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: space-between;
+                    "
+                  >
+                    <div class="card-container manage-dataset">
+                      <div>
+                        <h5
+                          class="card-left"
+                          style="text-align: right; padding-right: 5px"
+                        >
+                          Current status:
+                        </h5>
+                        <h5
+                          id="current_sparc_consortium_status"
+                          class="card-right"
+                          style="
+                            width: auto;
+                            margin-left: 0px;
+                            margin-top: 0px;
+                            padding-left: 5px;
+                            white-space: pre-line;
+                          "
+                        >None</h5>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="div-confirm-button"
+                  style="
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 10px auto;
+                  "
+                >
+                  <button
+                    id="button-share-curation-team-confirm"
+                    onclick="transitionFreeFormMode(this, 'share_sparc_consortium-question-1', 'share_sparc_consortium-tab', 'delete', 'individual-question post-curation')"
+                    data-next="share_sparc_consortium-question-2"
+                    class="confirm-button"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question post-curation"
+          id="share_sparc_consortium-question-2"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <label
+                style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
+                "
+              ></label>
+              <div
+                id="div-confirm-share_sparc_consortium"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                  margin: 0 auto;
+                "
+              >
+                <div style="display: flex; justify-content: space-between">
+                  <button
+                    onclick="unshareDataset('share-with-sparc-consortium')"
+                    id="sparc-consortium-unshare-btn"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 20px 10px;
+                      width: 140px;
+                      height: 40px;
+                      background: #fff;
+                      color: red;
+                      font-weight: 600;
+                      border: 1px solid red;
+                      font-size: 15px;
+                      display: none;
+                    "
+                  >
+                    <i class="fas fa-share" style="padding-right: 5px"></i>
+                    Unshare
+                  </button>
+                  <button
+                    id="sparc-consortium-share-btn"
+                    onclick="disseminateDataset('share-with-sparc-consortium')"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 140px;
+                      height: 40px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 15px;
+                      display: none;
+                    "
+                  >
+                    <i class="fas fa-share" style="padding-right: 5px"></i>
+                    Share now
+                  </button>
+                </div>
+                <div
+                  id="share-with-sparc-consortium-spinner"
+                  class="spinner post-curation"
+                  style="display: none"
+                >
+                  <div class="rect1"></div>
+                  <div class="rect2"></div>
+                  <div class="rect3"></div>
+                  <div class="rect4"></div>
+                  <div class="rect5"></div>
+                </div>
+              </div>
+              <p
+                id="para-share-with-sparc-consortium-status"
+                style="color: red; margin-top: 10px; text-align: center"
+              ></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-div">
+        <div style="display: flex; flex-direction: row; width: 110px">
+          <button
+            type="button"
+            class="transition-btn prev"
+            data-section="main_tabs"
+          >
+            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <section
+      id="submit_prepublishing_review-section"
+      class="section js-section u-category-windows"
+      style="padding-left: 15px; overflow-y: hidden"
+    >
+      <div
+        class="main-tabs show"
+        style="display: flex; height: 100%; overflow-y: hidden"
+      >
+        <header class="section-header">
+          <div
+            style="
+              display: inline-flex;
+              align-items: center;
+              flex-direction: row;
+              width: 94.5%;
+              padding-right: 20px;
+              margin-bottom: 50px;
+            "
+          >
+            <div class="need-help-div">
+              <h2>Disseminate Datasets - Submit for pre-publishing review</h2>
+              <a
+                target="_blank"
+                href="https://github.com/bvhpatel/SODA/wiki/Submit-for-pre-publishing-review"
+                >Need help?</a
+              >
+            </div>
+          </div>
+        </header>
+
+        <div
+          id="submit_prepublishing_review-tab"
+          style="overflow-y: auto; height: 70%"
+        >
+          <div
+            class="individual-question post-curation show"
+            id="submit_prepublishing_review-question-1"
+            style="height: auto"
+          >
+            <div class="ui form" style="width: 100%">
+              <div class="grouped fields">
+                <label style="font-size: 17px; color: var(--color-bg-plum)"
+                  >Select a dataset:
+                </label>
+                <div class="field" style="margin: auto; width: 500px">
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: space-between;
+                      margin-top: 15px;
+                      height: auto;
+                      box-shadow: 0px 0px 10px #d5d5d5;
+                      padding: 15px 25px;
+                      border-radius: 5px;
+                    "
+                  >
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                      "
+                    >
+                      <div class="card-container manage-dataset">
+                        <div>
+                          <h5
+                            class="card-left"
+                            style="text-align: right; padding-right: 5px"
+                          >
+                            Current account:
+                          </h5>
+                          <h5 class="card-right bf-account-span">None</h5>
+                        </div>
+                      </div>
+                      <svg
+                        class="svg-change-current-account"
+                        onclick="openDropdownPrompt('bf')"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        class="bi bi-pencil-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: row;
+                        margin-bottom: 15px;
+                      "
+                    >
+                      <div class="card-container manage-dataset">
+                        <div>
+                          <h5
+                            class="card-left"
+                            style="text-align: right; padding-right: 5px"
+                          >
+                            Account details:
+                          </h5>
+                          <h5 class="card-right bf-account-details-span">None</h5>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                      "
+                    >
+                      <div class="card-container manage-dataset">
+                        <div>
+                          <h5
+                            class="card-left"
+                            style="text-align: right; padding-right: 5px"
+                          >
+                            Current dataset:
+                          </h5>
+                          <h5
+                            id="rename_dataset_name"
+                            class="card-right bf-dataset-span"
+                          >None</h5>
+                        </div>
+                      </div>
+                      <svg
+                        class="svg-change-current-account dataset"
+                        onclick="openDropdownPrompt('dataset')"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        class="bi bi-pencil-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
+                      <div
+                        class="ui active green inline loader small"
+                        style="display: none"
+                      ></div>
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+                        margin-bottom: 15px;
+                      "
+                    >
+                      <div>
+                        <h5 style="color: #808080; font-size: 15px">
+                          Review status:
+                          <span
+                            id="para-review-dataset-info-disseminate"
+                            style="
+                              color: #000;
+                              font-weight: 600;
+                              margin-left: 8px;
+                              font-size: 15px;
+                            "
+                            >None</span
+                          >
+                        </h5>
+                      </div>
+                      <i
+                        class="fas fa-sync svg-change-current-account"
+                        id="button-refresh-publishing-status"
+                        onclick="refreshDatasetStatus()"
+                        style="color: #000"
+                      ></i>
+                    </div>
+                  </div>
+                  <div
+                    class="div-confirm-button"
+                    style="
+                      display: none;
+                      flex-direction: row;
+                      justify-content: center;
+                      margin: 10px auto;
+                    "
+                  >
+                    <button
+                      id="button-share-curation-team-confirm"
+                      onclick="transitionFreeFormMode(this, 'submit_prepublishing_review-question-1', 'submit_prepublishing_review-tab', 'delete', 'individual-question post-curation')"
+                      data-next="submit_prepublishing_review-question-2"
+                      class="confirm-button"
+                      style="
+                        cursor: pointer;
+                        border-radius: 8px;
+                        margin: 10px auto;
+                        width: 100px;
+                        height: 30px;
+                        background: var(--color-light-green);
+                        color: #fff;
+                        font-weight: 600;
+                        border: none;
+                        font-size: 13px;
+                      "
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="individual-question post-curation"
+            id="submit_prepublishing_review-question-2"
+            style="height: auto"
+          >
+            <div class="ui form" style="width: 450px">
+              <div class="grouped fields">
+                <label
+                  style="
+                    font-size: 17px;
+                    color: var(--color-bg-plum);
+                    width: 100%;
+                    text-align: center;
+                  "
+                ></label>
+                <div
+                  id="div-confirm-submit-review"
+                  style="
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                    margin: 0 auto;
+                  "
+                >
+                  <button
+                    id="button-withdraw-review-dataset"
+                    onclick="withdrawDatasetSubmission()"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 20px 10px;
+                      width: 200px;
+                      height: 40px;
+                      background: #fff;
+                      color: red;
+                      font-weight: 600;
+                      border: 1px solid red;
+                      font-size: 14px;
+                    "
+                  >
+                    <i class="fas fa-ban" style="padding-right: 5px"></i>
+                    Withdraw from review
+                  </button>
+                  <button
+                    onclick="disseminateDataset('submit-pre-publishing')"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 20px 10px;
+                      width: 200px;
+                      height: 40px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 14px;
+                    "
+                  >
+                    <i class="fas fa-sign-in-alt" style="padding-right: 5px"></i>
+                    Submit
+                  </button>
+                  <div
+                    id="submit_prepublishing_review-spinner"
+                    class="spinner"
+                    style="display: none"
+                  >
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
+                  </div>
+                </div>
+                <p
+                  id="para-submit_prepublishing_review-status"
+                  style="color: red; margin-top: 10px; text-align: center"
+                ></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-div">
+          <div style="display: flex; flex-direction: row; width: 110px">
+            <button
+              type="button"
+              class="transition-btn prev"
+              data-section="main_tabs"
+            >
+              <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </section>
 </template>
