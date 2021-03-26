@@ -2366,6 +2366,8 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 bfCreateNewDatasetBtn.addEventListener("click", () => {
   bfCreateNewDatasetBtn.disabled = true;
   //bfCreateNewDatasetStatus.innerHTML = "Adding...";
+  $("#para-new-name-dataset-message").html("");
+  $("#para-add-new-dataset-status").html("");
   $("#bf-create-new-dataset-spinner").css("visibility", "visible");
   var selectedbfaccount = defaultBfAccount;
   client.invoke(
