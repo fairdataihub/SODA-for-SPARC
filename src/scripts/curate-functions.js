@@ -556,7 +556,7 @@ $(document).ready(function () {
           } else {
             datasetList = [];
             datasetList = result;
-            refreshDatasetList();
+            //refreshDatasetList();
           }
         }
       );
@@ -708,7 +708,7 @@ async function openDropdownPrompt(dropdown) {
       // disable the Continue btn first
       $("#nextBtn").prop("disabled", true);
       var bfDataset = "";
-
+  
       // if users edit Current dataset
       datasetPermissionDiv.style.display = "block";
       $(datasetPermissionDiv)
@@ -717,16 +717,16 @@ async function openDropdownPrompt(dropdown) {
         .empty()
         .append('<option value="Select dataset">Select dataset</option>')
         .val("Select dataset");
-
+  
       $(datasetPermissionDiv)
         .find("#div-filter-datasets-progress-2")
         .css("display", "block");
-
+  
       $("#bf-dataset-select-header").css("display", "none");
-
+  
       $(datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
       $("#para-continue-bf-dataset-getting-started").text("");
-
+  
       $(datasetPermissionDiv)
         .find("#select-permission-list-2")
         .val("All")
@@ -735,15 +735,15 @@ async function openDropdownPrompt(dropdown) {
         .find("#curatebfdatasetlist")
         .val("Select dataset")
         .trigger("change");
-
+  
       //initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
-
+  
       $("#curatebfdatasetlist").selectpicker("hide");
       $("#curatebfdatasetlist").selectpicker("refresh");
       $(".selectpicker").selectpicker("hide");
       $(".selectpicker").selectpicker("refresh");
       $("#bf-dataset-select-div").hide();
-
+  
       const { value: bfDS } = await Swal.fire({
         title:
           "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
@@ -760,38 +760,38 @@ async function openDropdownPrompt(dropdown) {
         },
         preConfirm: () => {
           $("body").addClass("waiting");
-
+  
           $(datasetPermissionDiv)
             .find("#div-filter-datasets-progress-2")
             .css("display", "block");
           $("#curatebfdatasetlist").selectpicker("hide");
           $("#curatebfdatasetlist").selectpicker("refresh");
           $("#bf-dataset-select-div").hide();
-
+  
           bfDataset = $("#curatebfdatasetlist").val();
-
+  
           if (!bfDataset) {
             Swal.showValidationMessage("Please select a dataset!");
-
+  
             $(datasetPermissionDiv)
               .find("#div-filter-datasets-progress-2")
               .css("display", "none");
             $("#curatebfdatasetlist").selectpicker("show");
             $("#curatebfdatasetlist").selectpicker("refresh");
             $("#bf-dataset-select-div").show();
-
+  
             return undefined;
           } else {
             if (bfDataset === "Select dataset") {
               Swal.showValidationMessage("Please select a dataset!");
-
+  
               $(datasetPermissionDiv)
                 .find("#div-filter-datasets-progress-2")
                 .css("display", "none");
               $("#curatebfdatasetlist").selectpicker("show");
               $("#curatebfdatasetlist").selectpicker("refresh");
               $("#bf-dataset-select-div").show();
-
+  
               return undefined;
             } else {
               return bfDataset;
@@ -799,28 +799,29 @@ async function openDropdownPrompt(dropdown) {
           }
         },
       });
-
+  
       // check return value
       if (bfDS) {
         $("#current-bf-dataset").text(bfDataset);
         $("#current-bf-dataset-generate").text(bfDataset);
         $(".bf-dataset-span").html(bfDataset);
-
+  
         defaultBfDataset = bfDataset;
         document.getElementById("ds-description").innerHTML = "";
         refreshDatasetList()
         $("#dataset-loaded-message").hide();
-
+  
         showHideDropdownButtons("dataset", "show");
+        // checkPrevDivForConfirmButton("dataset");
       }
-
+  
       // hide "Confirm" button if Current dataset set to None
       if ($("#current-bf-dataset-generate").text() === "None") {
         showHideDropdownButtons("dataset", "hide");
       } else {
         showHideDropdownButtons("dataset", "show");
       }
-
+  
       // hide "Confirm" button if Current dataset under Getting started set to None
       if ($("#current-bf-dataset").text() === "None") {
         showHideDropdownButtons("dataset", "hide");
@@ -830,7 +831,8 @@ async function openDropdownPrompt(dropdown) {
       $("body").removeClass("waiting");
       $(".svg-change-current-account.dataset").css("display", "block");
       $(".ui.active.green.inline.loader.small").css("display", "none");
-    }, 10);
+    }, 0);
+
   }
 }
 
@@ -953,16 +955,13 @@ const updateDatasetList = (bfaccount) => {
 
     // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
     $("#curatebfdatasetlist").find("option:not(:first)").remove();
-    $("#ds-name").find("option:not(:first)").remove();
 
     for (myitem in filteredDatasets) {
       var myitemselect = filteredDatasets[myitem];
       var option = document.createElement("option");
       option.textContent = myitemselect;
       option.value = myitemselect;
-      var option2 = option.cloneNode(true);
       curateDatasetDropdown.appendChild(option);
-      datasetDescriptionFileDataset.appendChild(option2);
     }
 
     initializeBootstrapSelect("#curatebfdatasetlist", "show");
@@ -1654,10 +1653,10 @@ function showTreeViewPreview(new_dataset_name) {
 
 // per change event of current dataset span text
 $(".bf-dataset-span").on("DOMSubtreeModified", function () {
-  let temp = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
+  let temp = $(".bf-dataset-span").html();
   if (
-    $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') == "None" ||
-    $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') == ""
+    $(".bf-dataset-span").html() == "None" ||
+    $(".bf-dataset-span").html() == ""
   ) {
     $($(this).parents().find(".field").find(".div-confirm-button")).css(
       "display",

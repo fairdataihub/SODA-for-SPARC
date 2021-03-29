@@ -1764,6 +1764,10 @@ datasetDescriptionFileDataset.addEventListener("change", function () {
   document.getElementById("ds-description").innerHTML = "Loading...";
   defaultBfDataset = datasetDescriptionFileDataset.value
   showDatasetDescription();
+  $("#current-bf-dataset").text(defaultBfDataset);
+  $("#current-bf-dataset-generate").text(defaultBfDataset);
+  $(".bf-dataset-span").html(defaultBfDataset);
+  refreshDatasetList()
 });
 
 /// detect empty required fields and raise a warning
@@ -1916,7 +1920,7 @@ ipcRenderer.on(
                   "track-event",
                   "Error",
                   "Prepare Metadata - Create dataset_description",
-                  selectedBfDataset
+                  defaultBfDataset
                 );
               } else {
                 document.getElementById(
@@ -1930,7 +1934,7 @@ ipcRenderer.on(
                   "track-event",
                   "Success",
                   "Prepare Metadata - Create dataset_description",
-                  selectedBfDataset
+                  defaultBfDataset
                 );
               }
             }
@@ -2422,7 +2426,8 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
           }
         );
         $(".bf-dataset-span").html(bfNewDatasetName.value);
-        refreshDatasetList()
+        // refreshDatasetList()
+        updateDatasetList();
         datasetDescriptionFileDataset.value = bfNewDatasetName.value
         $(".confirm-button").click();
         bfNewDatasetName.value = "";
@@ -2572,7 +2577,13 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           "track-event",
           "Success",
           "Manage Dataset - Upload Local Dataset",
-          selectedbfdataset,
+          defaultBfDataset,
+          totalFileSize
+        );
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          `Upload Local Dataset - ${selectedbfdataset}`,
           totalFileSize
         );
       }
@@ -2822,7 +2833,7 @@ bfAddSubtitleBtn.addEventListener("click", () => {
           "track-event",
           "Error",
           "Manage Dataset - Add/Edit Subtitle",
-          selectedBfDataset
+          defaultBfDataset
         );
       } else {
         $("#bf-add-subtitle-dataset-spinner").hide();
@@ -2833,7 +2844,7 @@ bfAddSubtitleBtn.addEventListener("click", () => {
           "track-event",
           "Success",
           "Manage Dataset - Add/Edit Subtitle",
-          selectedBfDataset
+          defaultBfDataset
         );
       }
     }
@@ -4579,7 +4590,8 @@ function showDefaultBFAccount() {
 
               $("#div-bf-account-load-progress").css("display", "none");
               showHideDropdownButtons("account", "show");
-              refreshDatasetList()
+              // refreshDatasetList()
+              updateDatasetList();
             }
           }
         );
@@ -4812,8 +4824,9 @@ function allowDrop(ev) {
   ev.preventDefault();
 }
 
-function drop(ev) {
+async function drop(ev) {
   // get global path
+  
   var currentPath = organizeDSglobalPath.value;
   var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.slice(1).filter(function (el) {
@@ -4826,6 +4839,7 @@ function drop(ev) {
   ev.preventDefault();
   var uiFiles = {};
   var uiFolders = {};
+  $("body").addClass("waiting");
 
   for (var file in myPath["files"]) {
     uiFiles[path.parse(file).name] = 1;
@@ -4979,6 +4993,12 @@ function drop(ev) {
       };
       // append "renamed" to "action" key if file is auto-renamed by UI
       var originalName = path.parse(myPath["folders"][element]["path"]).name;
+      let placeholderString =
+        '<div id="placeholder_element" class="single-item"><h1 class="folder file"><i class="fas fa-file-import"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">Loading ' +
+        element +
+        "... </div></div>";
+      $(placeholderString).appendTo(ev.target);
+      await listItems(myPath, "#items");
       if (element !== originalName) {
         myPath["folders"][element]["action"].push("renamed");
       }
@@ -4990,6 +5010,7 @@ function drop(ev) {
         '<div class="single-item"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="folderContextMenu(this)" style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
         element +
         "</div></div>";
+      $("#placeholder_element").remove();
       $(appendString).appendTo(ev.target);
       listItems(myPath, "#items");
       getInFolder(
@@ -5002,6 +5023,8 @@ function drop(ev) {
       hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
     }
   }
+  $("body").removeClass("waiting");
+
 }
 
 // SAVE FILE ORG
@@ -6044,12 +6067,23 @@ const generateProgressBar = document.getElementById("progress-bar-new-curate");
 
 function initiate_generate() {
   // Initiate curation by calling Python funtion
+  let manifest_files_requested = false;
   var main_curate_status = "Solving";
+
   document.getElementById("para-new-curate-progress-bar-status").innerHTML =
     "Preparing files ...";
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   document.getElementById("div-new-curate-progress").style.display = "block";
   document.getElementById("div-generate-comeback").style.display = "none";
+
+  if ("manifest-files" in sodaJSONObj) {
+    if ("destination" in sodaJSONObj["manifest-files"]) {
+      if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
+        manifest_files_requested = true;
+      }
+    }
+  }
+
   client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
     if (error) {
       var emessage = userError(error);
@@ -6080,6 +6114,14 @@ function initiate_generate() {
     } else {
       log.info("Completed curate function");
       console.log("Completed curate function");
+      if (manifest_files_requested) {
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Manifest Files Created",
+          defaultBfDataset
+        );
+      }
       client.invoke(
         "api_bf_dataset_account",
         defaultBfAccount,
