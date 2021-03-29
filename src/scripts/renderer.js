@@ -24,6 +24,7 @@ const bootbox = require("bootbox");
 const DragSelect = require("dragselect");
 const excelToJson = require("convert-excel-to-json");
 const csvToJson = require("convert-csv-to-json");
+const Jimp = require("jimp");
 
 const app = remote.app;
 var noAirtable = false;
@@ -1955,6 +1956,8 @@ const tuiInstance = new Editor({
   initialEditType: "wysiwyg",
   previewStyle: "vertical",
   height: "400px",
+  hideModeSwitch: true,
+  placeholder: "Add your description here",
   toolbarItems: [
     "heading",
     "bold",
@@ -1972,6 +1975,7 @@ function countCharacters(textelement, pelement) {
   var textEntered = textelement.value;
   var counter = 256 - textEntered.length;
   pelement.innerHTML = counter + " characters remaining";
+  return textEntered.length;
 }
 
 bfDatasetSubtitle.addEventListener("keyup", function () {
@@ -2917,12 +2921,28 @@ var cropOptions = {
   // preview: '.preview',
   viewMode: 1,
   responsive: true,
-  crop: function (e) {
-    var data = e.detail;
-    formBannerHeight.value = Math.round(data.height);
+  crop: function (event) {
+    var data = event.detail;
+    let image_height = Math.round(data.height);
+
+    formBannerHeight.value = image_height;
+
+    if (image_height < 512) {
+      $("#save-banner-image").prop("disabled", true);
+      $("#form-banner-height").css("color", "red");
+      $("#form-banner-height").css("border", "1px solid red");
+      $(".crop-image-text").css("color", "red");
+    } else {
+      $("#save-banner-image").prop("disabled", false);
+      $("#form-banner-height").css("color", "black");
+      $("#form-banner-height").css("border", "1px solid black");
+      $(".crop-image-text").css("color", "black");
+    }
+
     // formBannerWidth.value = Math.round(data.width)
   },
 };
+
 var imageExtension;
 var myCropper = new Cropper(bfViewImportedImage, cropOptions);
 // Action when user click on "Import image" button for banner image
@@ -2931,16 +2951,127 @@ bfImportBannerImageBtn.addEventListener("click", (event) => {
   ipcRenderer.send("open-file-dialog-import-banner-image");
 });
 
-ipcRenderer.on("selected-banner-image", (event, path) => {
+ipcRenderer.on("selected-banner-image", async (event, path) => {
   if (path.length > 0) {
-    document.getElementById("div-img-container-holder").style.display = "none";
-    document.getElementById("div-img-container").style.display = "block";
-    datasetBannerImagePath.innerHTML = path;
+    let original_image_path = path[0];
+    let image_path = original_image_path;
+    let destination_image_path = require("path").join(
+      homeDirectory,
+      "SODA",
+      "banner-image-conversion"
+    );
+    let converted_image_file = require("path").join(
+      destination_image_path,
+      "converted-tiff.jpg"
+    );
+    let conversion_success = true;
     imageExtension = path[0].split(".").pop();
-    bfViewImportedImage.src = path[0];
-    myCropper.destroy();
-    myCropper = new Cropper(bfViewImportedImage, cropOptions);
-    $("#save-banner-image").css("visibility", "visible");
+
+    if (imageExtension.toLowerCase() == "tiff") {
+      $("body").addClass("waiting");
+      Swal.fire({
+        title: "Image conversion in progress!",
+        html:
+          "Blackfynn does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
+        timer: 4000,
+        timerProgressBar: true,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {
+        /* Read more about handling dismissals below */
+        if (result.dismiss === Swal.DismissReason.timer) {
+          console.log("I was closed by the timer");
+        }
+      });
+
+      await Jimp.read(original_image_path)
+        .then(async (file) => {
+          if (!fs.existsSync(destination_image_path)) {
+            fs.mkdirSync(destination_image_path);
+          }
+
+          try {
+            if (fs.existsSync(converted_image_file)) {
+              fs.unlinkSync(converted_image_file);
+            }
+          } catch (err) {
+            conversion_success = false;
+            console.error(err);
+          }
+
+          return file.write(converted_image_file, async () => {
+            if (fs.existsSync(converted_image_file)) {
+              let stats = fs.statSync(converted_image_file);
+              let fileSizeInBytes = stats.size;
+              let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+              if (fileSizeInMegabytes > 5) {
+                fs.unlinkSync(converted_image_file);
+
+                await Jimp.read(original_image_path)
+                  .then((file) => {
+                    return file
+                      .resize(1024, 1024)
+                      .write(converted_image_file, () => {
+                        document.getElementById(
+                          "div-img-container-holder"
+                        ).style.display = "none";
+                        document.getElementById(
+                          "div-img-container"
+                        ).style.display = "block";
+
+                        datasetBannerImagePath.innerHTML = image_path;
+                        bfViewImportedImage.src = converted_image_file;
+                        myCropper.destroy();
+                        myCropper = new Cropper(
+                          bfViewImportedImage,
+                          cropOptions
+                        );
+                        $("#save-banner-image").css("visibility", "visible");
+                        $("body").removeClass("waiting");
+                      });
+                  })
+                  .catch((err) => {
+                    conversion_success = false;
+                    console.error(err);
+                  });
+                if (fs.existsSync(converted_image_file)) {
+                  let stats = fs.statSync(converted_image_file);
+                  let fileSizeInBytes = stats.size;
+                  let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+                  if (fileSizeInMegabytes > 5) {
+                    console.log("File size is too big", fileSizeInMegabytes);
+                    conversion_success = false;
+                    // SHOW ERROR
+                  }
+                }
+              }
+              image_path = converted_image_file;
+              imageExtension = "jpg";
+            }
+          });
+        })
+        .catch((err) => {
+          conversion_success = false;
+          console.error(err);
+        });
+      if (conversion_success == false) {
+        $("body").removeClass("waiting");
+        return;
+      }
+    } else {
+      document.getElementById("div-img-container-holder").style.display =
+        "none";
+      document.getElementById("div-img-container").style.display = "block";
+
+      datasetBannerImagePath.innerHTML = image_path;
+      bfViewImportedImage.src = image_path;
+      myCropper.destroy();
+      myCropper = new Cropper(bfViewImportedImage, cropOptions);
+      $("#save-banner-image").css("visibility", "visible");
+    }
   } else {
     if ($("#para-current-banner-img").text() === "None") {
       $("#save-banner-image").css("visibility", "hidden");
@@ -3398,7 +3529,15 @@ function showCurrentSubtitle() {
           console.error(error);
         } else {
           bfDatasetSubtitle.value = res;
-          countCharacters(bfDatasetSubtitle, bfDatasetSubtitleCharCount);
+          let result = countCharacters(
+            bfDatasetSubtitle,
+            bfDatasetSubtitleCharCount
+          );
+          if (result === 0) {
+            $("#button-add-subtitle").html("Add subtitle");
+          } else {
+            $("#button-add-subtitle").html("Edit subtitle");
+          }
         }
       }
     );
@@ -3424,6 +3563,11 @@ function showCurrentDescription() {
           console.error(error);
         } else {
           tuiInstance.setMarkdown(res);
+          if ((res = "")) {
+            $("#button-add-description").html("Add description");
+          } else {
+            $("#button-add-description").html("Edit description");
+          }
         }
       }
     );
