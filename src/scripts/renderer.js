@@ -4426,7 +4426,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
           $("#para-account-detail-curate-generate").html(res);
           $("#para_create_empty_dataset_BF_account").html(res);
           $(".bf-account-details-span").html(res);
-
+          $("#para-continue-bf-dataset-getting-started").text("");
           showHideDropdownButtons("account", "show");
         }
       });

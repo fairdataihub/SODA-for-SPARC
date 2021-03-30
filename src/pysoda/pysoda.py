@@ -136,7 +136,7 @@ def bf_keep_only_account(keyname):
     config = ConfigParser()
     config.read(configpath)
     config_sections = config.sections()
-    
+
     for section in config_sections:
         if (section != 'agent' and section != 'global' and section != keyname):
             config.remove_section(section)
@@ -211,25 +211,26 @@ def bf_add_account(keyname, key, secret):
     except:
         bf_delete_account(keyname)
         raise Exception('Authentication Error: please check that key name, key, and secret are entered properly')
-    
+
     # Check that the blackfynn account is in the SPARC Consortium organization
     try:
         acc_details = bf.context.name
-        
+
         if acc_details.find('SPARC Consortium') == -1:
             raise Exception('Error: Please check that your account is within the SPARC Consortium Organization')
-        
+
         if not config.has_section("global"):
             config.add_section("global")
-        
+
         default_acc = config["global"]
         default_acc["default_profile"] = keyname
 
         with open(configpath, 'w') as configfile:
             config.write(configfile)
-        return 'Successfully added account ' + str(bf)
 
         bf_keep_only_account(keyname)
+
+        return 'Successfully added account ' + str(bf)
 
     except Exception as e:
         bf_delete_account(keyname)
@@ -291,18 +292,18 @@ def bf_remove_additional_accounts():
     """
     first_consortium_found = False
     consortium_keyname = "agent"
-    
+
     config = ConfigParser()
     config.read(configpath)
     config_sections = config.sections()
-    
+
     for section in config_sections:
         print(section)
         if (section != 'agent' and section != 'global'):
-            try: 
+            try:
                 bf = Blackfynn(section)
                 acc_details = bf.context.name
-        
+
                 if acc_details.find('SPARC Consortium') != -1:
                     first_consortium_found = True
                     consortium_keyname = section
@@ -311,7 +312,7 @@ def bf_remove_additional_accounts():
                         config.add_section("global")
 
                     default_acc = config["global"]
-                    default_acc["default_profile"] = keyname
+                    default_acc["default_profile"] = consortium_keyname
 
                     with open(configpath, 'w+') as configfile:
                         config.write(configfile)
