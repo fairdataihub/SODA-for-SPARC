@@ -5866,8 +5866,7 @@ $("#inputNewNameDataset").keyup(function () {
       $("#nextBtn").prop("disabled", true);
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
     } else {
-      document.getElementById("div-confirm-inputNewNameDataset").style.display =
-        "flex";
+      $("#div-confirm-inputNewNameDataset").css("display", "flex");
       $("#btn-confirm-new-dataset-name").show();
       $("#Question-generate-dataset-generate-div").show();
       $("#Question-generate-dataset-generate-div").children().show();

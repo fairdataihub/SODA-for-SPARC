@@ -1117,6 +1117,7 @@ function create_child_node(
             );
           }
           newFormatNode["children"].push(new_node);
+          newFormatNode["children"].sort((a, b) => (a.text > b.text) ? 1 : -1)
         }
       } else {
         if (key === selectedOriginalLocation) {
@@ -1149,6 +1150,7 @@ function create_child_node(
           );
         }
         newFormatNode["children"].push(new_node);
+        newFormatNode["children"].sort((a, b) => (a.text > b.text) ? 1 : -1)
       }
     }
     if ("files" in oldFormatNode) {
@@ -1183,6 +1185,7 @@ function create_child_node(
               type: nodeType,
             };
             newFormatNode["children"].push(new_node);
+            newFormatNode["children"].sort((a, b) => (a.text > b.text) ? 1 : -1)
           }
         } else {
           var new_node = {
@@ -1191,6 +1194,7 @@ function create_child_node(
             type: nodeType,
           };
           newFormatNode["children"].push(new_node);
+          newFormatNode["children"].sort((a, b) => (a.text > b.text) ? 1 : -1)
         }
       }
     }
