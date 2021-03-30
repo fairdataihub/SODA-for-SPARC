@@ -941,7 +941,7 @@ progress.progresstrack[value]::-webkit-progress-value {
 .container-cropped-image {
   display: flex;
   font-weight: bold;
-  width: 270px;
+  /* width: 270px; */
   height: 35px;
   float: left;
   color: black;

@@ -2691,14 +2691,14 @@ $("#edit_banner_image_button").click(async () => {
 
       if (new_position != -1) {
         imageExtension = new_img_src.substring(new_position + 1);
-        if (imageExtension == "png") {
+        if (imageExtension.toLowerCase() == "png") {
           $("#image-banner").attr("src", "data:image/png;base64," + img_base64);
-        } else if (imageExtension == "jpeg") {
+        } else if (imageExtension.toLowerCase() == "jpeg") {
           $("#image-banner").attr(
             "src",
-            "data:image/jpeg;base64," + img_base64
+            "data:image/jpg;base64," + img_base64
           );
-        } else if (imageExtension == "jpg") {
+        } else if (imageExtension.toLowerCase() == "jpg") {
           $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
         } else {
           console.log(`An error happened: ${img_src}`);
