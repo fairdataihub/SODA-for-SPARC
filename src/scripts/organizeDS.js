@@ -599,7 +599,7 @@ function addFilesfunction(
     if (slashCount === 1) {
       bootbox.alert({
         message:
-          "<p>SPARC metadata files can be imported in the next step!</p>",
+          "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
         centerVertical: true,
       });
       break;
