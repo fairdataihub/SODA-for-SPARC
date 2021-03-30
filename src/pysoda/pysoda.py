@@ -738,7 +738,8 @@ def bf_get_users(selected_bfaccount):
         list_users = bf._api._get('/organizations/' + str(organization_id) + '/members')
         list_users_first_last = []
         for i in range(len(list_users)):
-                first_last = list_users[i]['firstName'] + ' ' + list_users[i]['lastName']
+                #first_last = list_users[i]['firstName'] + ' ' + list_users[i]['lastName']
+                first_last = list_users[i]['firstName'] + " " + list_users[i]['lastName'] + " <" + list_users[i]['email'] + "> !|**|!" + list_users[i]['id']
                 list_users_first_last.append(first_last)
         list_users_first_last.sort() # Returning the list of users in alphabetical order
         return list_users_first_last
@@ -876,8 +877,10 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
     Return:
         success or error message (string)
     """
-
+    selected_user_id = selected_user
+    user_present = False
     error = ''
+
     try:
         bf = Blackfynn(selected_bfaccount)
     except Exception as e:
@@ -895,12 +898,16 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
         organization_name = bf.context.name
         organization_id = bf.context.id
         list_users = bf._api._get('/organizations/' + str(organization_id) + '/members')
-        dict_users = {}
-        list_users_firstlast = []
+        # dict_users = {}
+        # list_users_firstlast = []
         for i in range(len(list_users)):
-            list_users_firstlast.append(list_users[i]['firstName'] + ' ' + list_users[i]['lastName'] )
-            dict_users[list_users_firstlast[i]] = list_users[i]['id']
-        if selected_user not in list_users_firstlast:
+            selected_user = list_users[i]['firstName'] + ' ' + list_users[i]['lastName']
+            if selected_user_id == list_users[i]['id']:
+                user_present = True
+                break
+            # dict_users[list_users_firstlast[i]] = list_users[i]['id']
+            # dict_users[list_users[i]['id']] = list_users_firstlast[i]
+        if user_present == False:
             error = error + 'Error: Please select a valid user' + '<br>'
             c += 1
     except Exception as e:
@@ -915,7 +922,7 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
     else:
         try:
             selected_dataset_id = myds.id
-            selected_user_id = dict_users[selected_user]
+            #selected_user_id = selected_user_id #dict_users[selected_user]
 
             # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
             current_user = bf._api._get('/user')
