@@ -3920,28 +3920,6 @@ function selectOptionColor(mylist) {
 ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-// function getDatasetList() {
-//   client.invoke("api_bf_account_details", defaultBfAccount, (error, res) => {
-//     if (error) {
-//       log.error(error);
-//       console.error(error);
-//     } else {
-//       datasetList = [];
-//       datasetList = res["datasets"];
-//       refreshDatasetList()
-//     }
-//   });
-// }
-
-// rename datasets in place without calling Python
-// function renameDatasetInList(oldName, newName) {
-//   for (var i = 0; i < datasetList.length; i++) {
-//     if (datasetList[i].name === oldName) {
-//       datasetList[i].name = newName;
-//     }
-//   }
-// }
-
 /// add new datasets to dataset List without calling Python to retrieve new list from Blackfynn
 function addNewDatasetToList(newDataset) {
   datasetList.push({ name: newDataset, role: "owner" });
