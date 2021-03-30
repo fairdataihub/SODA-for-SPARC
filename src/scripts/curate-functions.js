@@ -603,6 +603,7 @@ async function openDropdownPrompt(dropdown) {
         $("#bfaccountdropdown").wrap("<div class='search-select-box'></div>");
         $("#bfaccountdropdown").selectpicker();
         $("#bfaccountdropdown").attr("disabled", false);
+        $(".swal2-deny.swal2-styled").click();
       },
       inputValidator: (value) => {
         value = $("#bfaccountdropdown").val();
@@ -966,9 +967,10 @@ const updateDatasetList = (bfaccount) => {
 
     initializeBootstrapSelect("#curatebfdatasetlist", "show");
 
-    if (document.getElementById("div-permission-list-2")) {
-      document.getElementById("div-permission-list-2").style.display = "block";
-    }
+    // !!!!
+    // if (document.getElementById("div-permission-list-2")) {
+    //   document.getElementById("div-permission-list-2").style.display = "block";
+    // }
 
     $("#div-filter-datasets-progress-2").css("display", "none");
     //$("#bf-dataset-select-header").css("display", "block")

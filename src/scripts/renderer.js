@@ -3239,7 +3239,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
 
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
-  var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].text;
+  var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].value;
   var selectedRole = "owner";
 
   if (index === 0) {
@@ -3283,7 +3283,7 @@ bfAddPermissionBtn.addEventListener("click", () => {
 
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
-  var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text;
+  var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].value;
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text;
 
   if (selectedRole === "owner") {
@@ -3302,7 +3302,7 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
 
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
-  var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text;
+  var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].value;
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text;
 
   datasetPermissionStatus.innerHTML = "";
@@ -3694,10 +3694,12 @@ function refreshBfUsersList() {
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
         for (var myItem in res) {
-          var myUser = res[myItem];
+          // returns like [..,''fname lname email !!**!! blackfynn_id',',..]
+          let sep_pos = res[myItem].lastIndexOf('!|**|!');
+          var myUser = res[myItem].substring(0,sep_pos);
           var optionUser = document.createElement("option");
           optionUser.textContent = myUser;
-          optionUser.value = myUser;
+          optionUser.value = res[myItem].substring(sep_pos + 6);
           bfListUsers.appendChild(optionUser);
           var optionUser2 = optionUser.cloneNode(true);
           bfListUsersPI.appendChild(optionUser2);
