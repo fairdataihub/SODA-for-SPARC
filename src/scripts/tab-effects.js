@@ -2380,12 +2380,12 @@ const updateOverallJSONStructure = (id) => {
 //////////////////////////////// END OF Functions to update JSON object //////////////////////////////////////////
 
 var generateExitButtonBool = false;
-function raiseWarningExit() {
+function raiseWarningExit(message) {
   // function associated with the Exit button (Step 6: Generate dataset -> Generate div)
   return new Promise((resolve) => {
     bootbox.confirm({
       message:
-        "This will reset your progress so far. We recommend saving your progress before exiting. Are you sure you want to continue?",
+        message,
       buttons: {
         confirm: {
           label: "Yes",
@@ -2414,7 +2414,15 @@ const exitCurate = async (resetProgressTabs, start_over = false) => {
   $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
-    var res = await raiseWarningExit();
+    var message;
+
+    if ($("#save-progress-btn").css("display") === "block") {
+      message = "This will reset your progress so far. We recommend saving your progress before exiting. Are you sure you want to continue?"
+    } else {
+      message = "Are you sure you want to start over?"
+    }
+
+    var res = await raiseWarningExit(message);
 
     if (res) {
       $(".vertical-progress-bar-step").removeClass("is-current");
