@@ -1550,6 +1550,15 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     $("#submission-milestones-span").text(milestoneValues.join(", \n"));
   }
 
+  if (ev.getAttribute("data-next") == "div_make_pi_owner_permissions") {
+    let nodeStorage = new JSONStorage(app.getPath("userData"));
+    let previous_choice = nodeStorage.getItem("previously_selected_PI");
+    if ($(`#bf_list_users_pi option[value='${previous_choice}']`).length > 0) {
+      $("#bf_list_users_pi").val(previous_choice);
+      $("#bf_list_users_pi").selectpicker("refresh");
+    }
+  }
+
   if (ev.getAttribute("data-next") == "div-rename-bf-dataset") {
     let dataset_name = $("#rename_dataset_name").text();
     $("#bf-rename-dataset-name").val(dataset_name);

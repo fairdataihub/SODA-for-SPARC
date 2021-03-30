@@ -25,7 +25,9 @@ const DragSelect = require("dragselect");
 const excelToJson = require("convert-excel-to-json");
 const csvToJson = require("convert-csv-to-json");
 const Jimp = require("jimp");
+const { JSONStorage } = require("node-localstorage"); 
 
+const electron_app = electron.app;
 const app = remote.app;
 var noAirtable = false;
 
@@ -3260,6 +3262,10 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
           bfCurrentPermissionProgress.style.display = "none";
           bfAddEditCurrentPermissionProgress.style.display = "none";
         } else {
+          let nodeStorage = new JSONStorage(
+            app.getPath("userData")
+          );
+          nodeStorage.setItem("previously_selected_PI", selectedUser);
           $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
           datasetPermissionStatusPI.innerHTML = res;
           showCurrentPermission();
@@ -3270,6 +3276,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
   } else {
     bfCurrentPermissionProgress.style.display = "none";
     bfAddEditCurrentPermissionProgress.style.display = "none";
+    $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
   }
 });
 
@@ -3682,6 +3689,8 @@ function refreshBfUsersList() {
   optionUserPI.textContent = "Select PI";
   bfListUsersPI.appendChild(optionUserPI);
 
+  console.log(accountSelected);
+
   if (accountSelected !== "Select") {
     client.invoke("api_bf_get_users", accountSelected, (error, res) => {
       if (error) {
@@ -4032,6 +4041,7 @@ function updateBfAccountList() {
       console.error(error);
       var emessage = userError(error);
     } else {
+      console.log(res);
       for (myitem in res) {
         var myitemselect = res[myitem];
         var option = document.createElement("option");
@@ -4424,6 +4434,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
       $("#bootbox-api-key").val("");
       $("#bootbox-api-secret").val("");
       bfAccountOptions[name] = name;
+      defaultBfAccount = name;
       updateBfAccountList();
       client.invoke("api_bf_account_details", name, (error, res) => {
         if (error) {

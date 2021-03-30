@@ -227,9 +227,10 @@ def bf_add_account(keyname, key, secret):
 
         with open(configpath, 'w') as configfile:
             config.write(configfile)
-        return 'Successfully added account ' + str(bf)
-
+        
         bf_keep_only_account(keyname)
+
+        return 'Successfully added account ' + str(bf)
 
     except Exception as e:
         bf_delete_account(keyname)
@@ -311,7 +312,7 @@ def bf_remove_additional_accounts():
                         config.add_section("global")
 
                     default_acc = config["global"]
-                    default_acc["default_profile"] = keyname
+                    default_acc["default_profile"] = consortium_keyname
 
                     with open(configpath, 'w+') as configfile:
                         config.write(configfile)
@@ -360,6 +361,7 @@ def bf_default_account_load():
     try:
         accountlist = []
         if exists(configpath):
+            bf_remove_additional_accounts() # remove non consortium accounts
             config = ConfigParser()
             config.read(configpath)
             keys = config.sections()
