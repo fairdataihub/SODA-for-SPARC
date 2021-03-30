@@ -4168,7 +4168,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
   } else {
     bootbox.alert({
       message:
-        "New folders cannot be added at this level. Please go back to add another high-level SPARC folder.",
+        "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
       centerVertical: true,
     });
   }
@@ -4757,7 +4757,7 @@ function addFoldersfunction(folderArray, currentLocation) {
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount === 1) {
     bootbox.alert({
-      message: "Other non-SPARC folders cannot be added to this dataset level!",
+      message: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
       centerVertical: true,
     });
   } else {
@@ -4826,7 +4826,7 @@ function allowDrop(ev) {
 
 async function drop(ev) {
   // get global path
-  
+
   var currentPath = organizeDSglobalPath.value;
   var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.slice(1).filter(function (el) {
@@ -4867,7 +4867,7 @@ async function drop(ev) {
       if (slashCount === 1) {
         bootbox.alert({
           message:
-            "<p>SPARC metadata files can be imported in the next step!</p>",
+            "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
           centerVertical: true,
         });
         break;
@@ -4916,7 +4916,7 @@ async function drop(ev) {
       if (slashCount === 1) {
         bootbox.alert({
           message:
-            "Other non-SPARC folders cannot be added to this dataset level!",
+            "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
           centerVertical: true,
         });
       } else {

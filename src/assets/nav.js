@@ -28,6 +28,11 @@ function handleSectionTrigger(event) {
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
   document.getElementById(sectionId).classList.add("is-shown");
+  if (nextBtnDisabledVariable) {
+    $("#nextBtn").prop("disabled", true)
+  } else {
+    $("#nextBtn").prop("disabled", false)
+  }
 
   // Save currently active button in localStorage
   const buttonId = event.target.getAttribute("id");
