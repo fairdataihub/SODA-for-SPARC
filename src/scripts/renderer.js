@@ -1556,7 +1556,7 @@ function grabDSInfoEntries() {
     name = "N/A";
   } else {
     name = rawName.value;
-    if (name === "Select") {
+    if (name === "Select" || name === "Select dataset") {
       name = "N/A";
     }
   }

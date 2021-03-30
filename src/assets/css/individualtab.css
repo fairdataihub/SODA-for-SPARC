@@ -1467,3 +1467,16 @@
   font-size:15px;
   width: 70%;
 }
+
+.start-over {
+  cursor: pointer;
+  border-radius: 8px;
+  margin: 10px;
+  width: 120px;
+  height: 35px;
+  background-color: #fff;
+  color: var(--color-bg-plum);
+  font-weight: 600;
+  border: 1px solid var(--color-bg-plum);
+  font-size: 13px;
+}

@@ -28,20 +28,22 @@ function handleSectionTrigger(event) {
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
   document.getElementById(sectionId).classList.add("is-shown");
-  if (nextBtnDisabledVariable) {
-    $("#nextBtn").prop("disabled", true)
-  } else {
-    $("#nextBtn").prop("disabled", false)
-  }
+
+  considerNextBtn()
 
   // Save currently active button in localStorage
   const buttonId = event.target.getAttribute("id");
   settings.set("activeSectionButtonId", buttonId);
 }
-//
-// function activateDefaultSection () {
-//   document.getElementById('button-windows').click()
-// }
+
+function considerNextBtn() {
+  if (nextBtnDisabledVariable && nextBtnDisabledVariable === true) {
+    $("#nextBtn").prop("disabled", true)
+  } else if (nextBtnDisabledVariable === false){
+    $("#nextBtn").prop("disabled", false)
+  }
+}
+
 
 function showMainContent() {
   document.querySelector(".js-nav").classList.add("is-shown");
