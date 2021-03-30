@@ -37,10 +37,12 @@ function handleSectionTrigger(event) {
 }
 
 function considerNextBtn() {
-  if (nextBtnDisabledVariable && nextBtnDisabledVariable === true) {
-    $("#nextBtn").prop("disabled", true)
-  } else if (nextBtnDisabledVariable === false){
-    $("#nextBtn").prop("disabled", false)
+  if (nextBtnDisabledVariable !== undefined) {
+    if (nextBtnDisabledVariable === true) {
+      $("#nextBtn").prop("disabled", true)
+    } else {
+      $("#nextBtn").prop("disabled", false)
+    }
   }
 }
 

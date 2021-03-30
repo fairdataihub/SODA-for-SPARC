@@ -1352,6 +1352,14 @@ function resetDD() {
     },
     callback: function (r) {
       if (r !== null && r === true) {
+
+        // 1. remove Prev and Show from all individual-question except for the first one
+        // 2. empty all input, textarea, select, para-elements
+        $("#Question-prepare-dd-1").removeClass("prev");
+        $("#Question-prepare-dd-1").nextAll().removeClass("show");
+        $("#Question-prepare-dd-1").nextAll().removeClass("prev");
+        checkAirtableStatus();
+
         // 1. empty all input, textarea, select, para-elements
         // 2. delete all rows from table Contributor
         // 3. delete all rows from table Links
