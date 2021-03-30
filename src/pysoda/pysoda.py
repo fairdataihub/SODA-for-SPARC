@@ -126,6 +126,22 @@ def time_format(elapsed_time):
     hours, mins = divmod(mins, 60)
     return "%dh:%02dmin:%02ds" % (hours, mins, secs)
 
+def bf_keep_only_account(keyname):
+    """
+    Args:
+        keyname: name of local Blackfynn account key (string)
+    Action:
+        Deletes account information from the Blackfynn config file
+    """
+    config = ConfigParser()
+    config.read(configpath)
+    config_sections = config.sections()
+    
+    for section in config_sections:
+        if (section != 'agent' and section != 'global' and section != keyname):
+            config.remove_section(section)
+        with open(configpath, 'w+') as configfile:
+            config.write(configfile)
 
 ### Manage datasets (Blackfynn interface)
 def bf_add_account(keyname, key, secret):
@@ -192,9 +208,20 @@ def bf_add_account(keyname, key, secret):
     try:
         bf = Blackfynn(keyname)
 
+    except:
+        bf_delete_account(keyname)
+        raise Exception('Authentication Error: please check that key name, key, and secret are entered properly')
+    
+    # Check that the blackfynn account is in the SPARC Consortium organization
+    try:
+        acc_details = bf.context.name
+        
+        if acc_details.find('SPARC Consortium') == -1:
+            raise Exception('Error: Please check that your account is within the SPARC Consortium Organization')
+        
         if not config.has_section("global"):
             config.add_section("global")
-
+        
         default_acc = config["global"]
         default_acc["default_profile"] = keyname
 
@@ -202,9 +229,11 @@ def bf_add_account(keyname, key, secret):
             config.write(configfile)
         return 'Successfully added account ' + str(bf)
 
-    except:
+        bf_keep_only_account(keyname)
+
+    except Exception as e:
         bf_delete_account(keyname)
-        raise Exception('Authentication Error: please check that key name, key, and secret are entered properly')
+        raise e
 
 def check_forbidden_characters(my_string):
     """
@@ -253,6 +282,47 @@ def bf_delete_account(keyname):
         config.write(configfile)
 
 
+def bf_remove_additional_accounts():
+    """
+    Args:
+        none
+    Action:
+        Removes any non consortium accounts from the config file
+    """
+    first_consortium_found = False
+    consortium_keyname = "agent"
+    
+    config = ConfigParser()
+    config.read(configpath)
+    config_sections = config.sections()
+    
+    for section in config_sections:
+        print(section)
+        if (section != 'agent' and section != 'global'):
+            try: 
+                bf = Blackfynn(section)
+                acc_details = bf.context.name
+        
+                if acc_details.find('SPARC Consortium') != -1:
+                    first_consortium_found = True
+                    consortium_keyname = section
+
+                    if not config.has_section("global"):
+                        config.add_section("global")
+
+                    default_acc = config["global"]
+                    default_acc["default_profile"] = keyname
+
+                    with open(configpath, 'w+') as configfile:
+                        config.write(configfile)
+            except Exception as e:
+                pass
+        if first_consortium_found == True:
+            break
+
+    bf_keep_only_account(consortium_keyname)
+
+
 def bf_account_list():
     """
     Action:
@@ -261,6 +331,7 @@ def bf_account_list():
     try:
         accountlist = ['Select']
         if exists(configpath):
+            bf_remove_additional_accounts() # remove non consortium accounts
             config = ConfigParser()
             config.read(configpath)
             accountname = config.sections()
@@ -739,7 +810,7 @@ def bf_get_users(selected_bfaccount):
         list_users_first_last = []
         for i in range(len(list_users)):
                 #first_last = list_users[i]['firstName'] + ' ' + list_users[i]['lastName']
-                first_last = list_users[i]['firstName'] + " " + list_users[i]['lastName'] + " <" + list_users[i]['email'] + "> !|**|!" + list_users[i]['id']
+                first_last = list_users[i]['firstName'].capitalize() + " " + list_users[i]['lastName'].capitalize() + " (" + list_users[i]['email'] + ") !|**|!" + list_users[i]['id']
                 list_users_first_last.append(first_last)
         list_users_first_last.sort() # Returning the list of users in alphabetical order
         return list_users_first_last
