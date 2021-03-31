@@ -1,0 +1,4 @@
+{
+    "show-warning-message": true,
+    "warning-message": "<p>As you may know Blackfynn will be transitioning to Pennsieve. During this period, any features of SODA that use Blackfynn could be affected.</p>"
+}
