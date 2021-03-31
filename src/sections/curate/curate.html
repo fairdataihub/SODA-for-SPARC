@@ -1139,9 +1139,10 @@
                           style="
                             float: right;
                             margin-right: 10px;
-                            background: var(--tagify-dd-color-primary);
-                            color: #fff;
-                            border: none;
+                            color: var(--tagify-dd-color-primary);
+                            background: #fff;
+                            border: 1px solid var(--tagify-dd-color-primary);
+                            font-weight: 600;
                           "
                         >
                           <i class="fas fa-folder-plus"></i> New folder
@@ -4157,7 +4158,7 @@
             </button> -->
             <button
               type="button"
-              class="content-button"
+              class="transition-btn"
               data-content="Save your progress to continue with your dataset later"
               rel="popover"
               data-placement="top"
@@ -4174,6 +4175,7 @@
                 font-size: 14px;
                 font-weight: 600;
                 margin-right: 10px;
+                border-radius: 5px;
               "
             >
               <i class="far fa-save" style="margin-right: 10px"></i>Save
