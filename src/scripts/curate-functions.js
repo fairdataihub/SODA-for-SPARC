@@ -583,41 +583,42 @@ async function openDropdownPrompt(dropdown) {
       footerMessage = bfAccountOptionsStatus;
     }
     var bfacct;
-    const { value: bfAccountSwal } = await Swal.fire({
-      title: "Select your Blackfynn account",
-      input: "select",
-      showCloseButton: true,
-      inputOptions: bfAccountOptions,
-      confirmButtonText: "Confirm",
-      denyButtonText: "Add new account",
-      showDenyButton: true,
-      showCancelButton: false,
-      inputValue: defaultBfAccount,
-      reverseButtons: true,
-      footer: footerMessage,
-      didOpen: (ele) => {
-        $(ele).find(".swal2-select").attr("id", "bfaccountdropdown");
-        $("#bfaccountdropdown").removeClass("swal2-select");
-        $("#bfaccountdropdown").addClass("w-100");
-        $("#bfaccountdropdown").attr("data-live-search", "true");
-        $("#bfaccountdropdown").wrap("<div class='search-select-box'></div>");
-        $("#bfaccountdropdown").selectpicker();
-        $("#bfaccountdropdown").attr("disabled", false);
-        $(".swal2-deny.swal2-styled").click();
-      },
-      inputValidator: (value) => {
-        value = $("#bfaccountdropdown").val();
-        return new Promise((resolve) => {
-          if (value && value !== "Select") {
-            bfacct = $("#bfaccountdropdown").val();
-            resolve();
-          } else {
-            bfacct = undefined;
-            resolve("You need to select an account!");
-          }
-        });
-      },
-    });
+    let bfAccountSwal = false
+    // const { value: bfAccountSwal } = await Swal.fire({
+    //   title: "Select your Blackfynn account",
+    //   input: "select",
+    //   showCloseButton: true,
+    //   inputOptions: bfAccountOptions,
+    //   confirmButtonText: "Confirm",
+    //   denyButtonText: "Add new account",
+    //   showDenyButton: true,
+    //   showCancelButton: false,
+    //   inputValue: defaultBfAccount,
+    //   reverseButtons: true,
+    //   footer: footerMessage,
+    //   didOpen: (ele) => {
+    //     $(ele).find(".swal2-select").attr("id", "bfaccountdropdown");
+    //     $("#bfaccountdropdown").removeClass("swal2-select");
+    //     $("#bfaccountdropdown").addClass("w-100");
+    //     $("#bfaccountdropdown").attr("data-live-search", "true");
+    //     $("#bfaccountdropdown").wrap("<div class='search-select-box'></div>");
+    //     $("#bfaccountdropdown").selectpicker();
+    //     $("#bfaccountdropdown").attr("disabled", false);
+    //     $(".swal2-deny.swal2-styled").click();
+    //   },
+    //   inputValidator: (value) => {
+    //     value = $("#bfaccountdropdown").val();
+    //     return new Promise((resolve) => {
+    //       if (value && value !== "Select") {
+    //         bfacct = $("#bfaccountdropdown").val();
+    //         resolve();
+    //       } else {
+    //         bfacct = undefined;
+    //         resolve("You need to select an account!");
+    //       }
+    //     });
+    //   },
+    // });
     if (bfAccountSwal === null) {
       if (bfacct !== "Select") {
         Swal.fire({
