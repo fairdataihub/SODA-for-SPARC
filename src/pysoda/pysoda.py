@@ -1556,3 +1556,22 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
         return "Success: Changed dataset status to '"+ selected_status +"'"
     except Exception as e:
         raise e
+
+def get_number_of_files_and_folders_locally(filepath):
+    """
+    Function to get number of files and folders in a local dataset
+
+    Args:
+        filepath: local dataset location
+    Return:
+        Number of files and folders
+    """
+    totalDir = 0
+    totalFiles = 0
+    for base, dirs, files in os.walk(filepath):
+        for directories in dirs:
+            totalDir += 1
+        for Files in files:
+            totalFiles += 1
+
+    return (totalFiles, totalDir)
