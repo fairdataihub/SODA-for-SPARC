@@ -227,7 +227,7 @@ def bf_add_account(keyname, key, secret):
 
         with open(configpath, 'w') as configfile:
             config.write(configfile)
-
+        
         bf_keep_only_account(keyname)
 
         return 'Successfully added account ' + str(bf)
@@ -361,6 +361,7 @@ def bf_default_account_load():
     try:
         accountlist = []
         if exists(configpath):
+            bf_remove_additional_accounts() # remove non consortium accounts
             config = ConfigParser()
             config.read(configpath)
             keys = config.sections()
