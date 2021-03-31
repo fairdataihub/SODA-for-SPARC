@@ -25,8 +25,9 @@ const DragSelect = require("dragselect");
 const excelToJson = require("convert-excel-to-json");
 const csvToJson = require("convert-csv-to-json");
 const Jimp = require("jimp");
-const { JSONStorage } = require("node-localstorage"); 
+const { JSONStorage } = require("node-localstorage");
 
+const prevent_sleep_id = "" 
 const electron_app = electron.app;
 const app = remote.app;
 var noAirtable = false;
@@ -580,8 +581,13 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       fs.createWriteStream(destinationPath)
     );
     var emessage =
-      "Successfully saved file " + templateItem + " to " + destinationFolder;
-    ipcRenderer.send("open-info-metadata-file-donwloaded", emessage);
+      "Successfully saved '" + templateItem + "' to " + destinationFolder;
+    Swal.fire(
+      'Download successful',
+      `${emessage}`,
+      'success'
+    )
+    //ipcRenderer.send("open-info-metadata-file-donwloaded", emessage);
   }
 };
 
@@ -2541,6 +2547,8 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
   var selectedbfaccount = defaultBfAccount;
   var selectedbfdataset = defaultBfDataset;
 
+  prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
+
   client.invoke(
     "api_bf_submit_dataset",
     selectedbfaccount,
@@ -2571,6 +2579,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
         });
         bfSubmitDatasetBtn.disabled = false;
         pathSubmitDataset.disabled = false;
+        electron.powerSaveBlocker.stop(prevent_sleep_id)
       } else {
         $("#upload_local_dataset_progress_div")[0].scrollIntoView({
           behavior: "smooth",
@@ -2592,6 +2601,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           `Upload Local Dataset - ${selectedbfdataset}`,
           totalFileSize
         );
+        electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
     }
   );
@@ -2610,6 +2620,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           "<span style='color: red;'> " + emessage + sadCan + "</span>";
         log.error(error);
         console.error(error);
+        prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
       } else {
         completionStatus = res[1];
         var submitprintstatus = res[2];
@@ -2624,6 +2635,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
             ).innerHTML = "";
             document.getElementById("para-progress-bar-status").innerHTML =
               res[0] + smileyCan;
+            electron.powerSaveBlocker.stop(prevent_sleep_id)
           } else {
             var value = (uploadedFileSize / totalFileSize) * 100;
             progressBarUploadBf.value = value;
@@ -2673,6 +2685,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
         clearInterval(timerProgress);
         bfSubmitDatasetBtn.disabled = false;
         pathSubmitDataset.disabled = false;
+        electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
     }
   }
@@ -6374,6 +6387,7 @@ function initiate_generate() {
         // then show the sidebar again
         forceActionSidebar("show");
         clearInterval(timerProgress);
+        electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
     }
   }

@@ -2710,6 +2710,7 @@ $("#edit_banner_image_button").click(async () => {
         } else if (imageExtension.toLowerCase() == "jpg") {
           $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
         } else {
+          log.error(`An error happened: ${img_src}`);
           console.log(`An error happened: ${img_src}`);
           bootbox.alert(
             `An error occured when importing the image. Please try again later.`
@@ -2723,6 +2724,7 @@ $("#edit_banner_image_button").click(async () => {
           return;
         }
       } else {
+        log.error(`An error happened: ${img_src}`);
         console.log(`An error happened: ${img_src}`);
         bootbox.alert(
           `An error occured when importing the image. Please try again later.`
@@ -2736,6 +2738,7 @@ $("#edit_banner_image_button").click(async () => {
         return;
       }
     } else {
+      log.error(`An error happened: ${img_src}`);
       console.log(`An error happened: ${img_src}`);
       bootbox.alert(
         `An error occured when importing the image. Please try again later.`
