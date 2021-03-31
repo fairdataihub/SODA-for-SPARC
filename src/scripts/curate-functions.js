@@ -1292,6 +1292,7 @@ async function moveItems(ev, category) {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedOrginalLocation = filtered[filtered.length - 1];
+  var selectedItem = ev.parentElement.innerText
   /*
   Reset previously selected items first, create jsTreeData again with updated dataset structure JSON object.
   Always remember to exclude/delete:
@@ -1358,6 +1359,11 @@ async function moveItems(ev, category) {
         if (selectedNode === "My_dataset_folder") {
           Swal.showValidationMessage(
             "Items cannot be moved to this level of the dataset!"
+          );
+          return undefined;
+        } else if (selectedNode === selectedItem) {
+          Swal.showValidationMessage(
+            "Items cannot be moved into themselves!"
           );
           return undefined;
         } else {

@@ -1,6 +1,4 @@
 const { relative } = require("path");
-// this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
-var nextBtnDisabledVariable;
 
 // JSON object of all the tabs
 var allParentStepsJSON = {
@@ -2472,6 +2470,8 @@ const wipeOutCurateProgress = () => {
   // set back local destination for folders to empty
   $("#input-destination-generate-dataset-locally").val("");
   $("#input-destination-getting-started-locally").val("");
+  $("#input-destination-getting-started-locally").prop("placeholder", "Browse here");
+  $("#input-destination-generate-dataset-locally").prop("placeholder", "Browse here");
 
   // set metadata file paths to empty
   $(".para-metadata-file-status").text("");
