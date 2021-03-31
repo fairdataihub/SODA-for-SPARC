@@ -6,7 +6,7 @@ from pysoda import submit_dataset_progress,  \
     bf_submit_dataset, bf_new_dataset_folder, bf_rename_dataset, bf_add_permission, bf_get_users, bf_get_permission, \
     bf_get_teams, bf_add_permission_team, bf_add_subtitle, bf_get_subtitle, bf_get_description, \
     bf_add_description, bf_get_banner_image, bf_add_banner_image, bf_get_license, bf_add_license, \
-    bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load, get_username
+    bf_get_dataset_status, bf_change_dataset_status, bf_default_account_load, get_username, get_number_of_files_and_folders_locally
 
 from disseminate import bf_get_doi, bf_reserve_doi, bf_get_publishing_status, bf_publish_dataset, bf_submit_review_dataset, bf_withdraw_review_dataset
 
@@ -315,6 +315,12 @@ class SodaApi(object):
     def api_generate_manifest_file_locally(self, soda_json_structure):
         try:
             return generate_manifest_file_locally(soda_json_structure)
+        except Exception as e:
+            raise e
+
+    def api_get_number_of_files_and_folders_locally(self, filepath):
+        try:
+            return get_number_of_files_and_folders_locally(filepath)
         except Exception as e:
             raise e
 
