@@ -1556,7 +1556,7 @@ function grabDSInfoEntries() {
     name = "N/A";
   } else {
     name = rawName.value;
-    if (name === "Select") {
+    if (name === "Select" || name === "Select dataset") {
       name = "N/A";
     }
   }
@@ -3239,7 +3239,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
 
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
-  var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].text;
+  var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].value;
   var selectedRole = "owner";
 
   if (index === 0) {
@@ -3283,7 +3283,7 @@ bfAddPermissionBtn.addEventListener("click", () => {
 
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
-  var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text;
+  var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].value;
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text;
 
   if (selectedRole === "owner") {
@@ -3302,7 +3302,7 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
 
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
-  var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text;
+  var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].value;
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text;
 
   datasetPermissionStatus.innerHTML = "";
@@ -3694,10 +3694,12 @@ function refreshBfUsersList() {
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
         for (var myItem in res) {
-          var myUser = res[myItem];
+          // returns like [..,''fname lname email !!**!! blackfynn_id',',..]
+          let sep_pos = res[myItem].lastIndexOf('!|**|!');
+          var myUser = res[myItem].substring(0,sep_pos);
           var optionUser = document.createElement("option");
           optionUser.textContent = myUser;
-          optionUser.value = myUser;
+          optionUser.value = res[myItem].substring(sep_pos + 6);
           bfListUsers.appendChild(optionUser);
           var optionUser2 = optionUser.cloneNode(true);
           bfListUsersPI.appendChild(optionUser2);
@@ -3919,28 +3921,6 @@ function selectOptionColor(mylist) {
 
 ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
-
-// function getDatasetList() {
-//   client.invoke("api_bf_account_details", defaultBfAccount, (error, res) => {
-//     if (error) {
-//       log.error(error);
-//       console.error(error);
-//     } else {
-//       datasetList = [];
-//       datasetList = res["datasets"];
-//       refreshDatasetList()
-//     }
-//   });
-// }
-
-// rename datasets in place without calling Python
-// function renameDatasetInList(oldName, newName) {
-//   for (var i = 0; i < datasetList.length; i++) {
-//     if (datasetList[i].name === oldName) {
-//       datasetList[i].name = newName;
-//     }
-//   }
-// }
 
 /// add new datasets to dataset List without calling Python to retrieve new list from Blackfynn
 function addNewDatasetToList(newDataset) {
@@ -4312,7 +4292,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
   } else {
     bootbox.alert({
       message:
-        "New folders cannot be added at this level. Please go back to add another high-level SPARC folder.",
+        "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
       centerVertical: true,
     });
   }
@@ -4446,7 +4426,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
           $("#para-account-detail-curate-generate").html(res);
           $("#para_create_empty_dataset_BF_account").html(res);
           $(".bf-account-details-span").html(res);
-
+          $("#para-continue-bf-dataset-getting-started").text("");
           showHideDropdownButtons("account", "show");
         }
       });
@@ -4901,7 +4881,7 @@ function addFoldersfunction(folderArray, currentLocation) {
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount === 1) {
     bootbox.alert({
-      message: "Other non-SPARC folders cannot be added to this dataset level!",
+      message: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
       centerVertical: true,
     });
   } else {
@@ -4970,7 +4950,7 @@ function allowDrop(ev) {
 
 async function drop(ev) {
   // get global path
-  
+
   var currentPath = organizeDSglobalPath.value;
   var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.slice(1).filter(function (el) {
@@ -5011,7 +4991,7 @@ async function drop(ev) {
       if (slashCount === 1) {
         bootbox.alert({
           message:
-            "<p>SPARC metadata files can be imported in the next step!</p>",
+            "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
           centerVertical: true,
         });
         break;
@@ -5060,7 +5040,7 @@ async function drop(ev) {
       if (slashCount === 1) {
         bootbox.alert({
           message:
-            "Other non-SPARC folders cannot be added to this dataset level!",
+            "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
           centerVertical: true,
         });
       } else {
@@ -5886,8 +5866,7 @@ $("#inputNewNameDataset").keyup(function () {
       $("#nextBtn").prop("disabled", true);
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
     } else {
-      document.getElementById("div-confirm-inputNewNameDataset").style.display =
-        "flex";
+      $("#div-confirm-inputNewNameDataset").css("display", "flex");
       $("#btn-confirm-new-dataset-name").show();
       $("#Question-generate-dataset-generate-div").show();
       $("#Question-generate-dataset-generate-div").children().show();

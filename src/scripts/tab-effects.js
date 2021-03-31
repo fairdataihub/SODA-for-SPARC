@@ -1,4 +1,6 @@
 const { relative } = require("path");
+// this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
+var nextBtnDisabledVariable;
 
 // JSON object of all the tabs
 var allParentStepsJSON = {
@@ -489,6 +491,11 @@ const nextPrev = (n) => {
     });
     $("#sidebarCollapse").click();
     document.body.dispatchEvent(event);
+    if ($("#nextBtn").prop("disabled") === true) {
+      nextBtnDisabledVariable = true;
+    } else {
+      nextBtnDisabledVariable = false
+    }
     return;
   }
 
@@ -668,7 +675,6 @@ const nextPrev = (n) => {
     }
     // Display the correct tab:
     showParentTab(currentTab, n);
-    //console.log(JSON.stringify(sodaJSONObj["dataset-structure"]))
   }
 };
 
