@@ -1554,6 +1554,15 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     $("#submission-milestones-span").text(milestoneValues.join(", \n"));
   }
 
+  if (ev.getAttribute("data-next") == "div_make_pi_owner_permissions") {
+    let nodeStorage = new JSONStorage(app.getPath("userData"));
+    let previous_choice = nodeStorage.getItem("previously_selected_PI");
+    if ($(`#bf_list_users_pi option[value='${previous_choice}']`).length > 0) {
+      $("#bf_list_users_pi").val(previous_choice);
+      $("#bf_list_users_pi").selectpicker("refresh");
+    }
+  }
+
   if (ev.getAttribute("data-next") == "div-rename-bf-dataset") {
     let dataset_name = $("#rename_dataset_name").text();
     $("#bf-rename-dataset-name").val(dataset_name);
@@ -2647,6 +2656,22 @@ $(document).ready(() => {
     $("#sidebarCollapse").removeClass("active");
     $(".section").removeClass("fullShown");
   });
+
+  // Blackfynn transition warning message
+  const url =
+    "https://raw.githubusercontent.com/bvhpatel/SODA/master/src/assets/blackfynn-warning-message.txt";
+  fetch(url).then(function (response) {
+    response.text().then(function (text) {
+      let warning_obj = JSON.parse(text);
+
+      if (warning_obj["show-warning-message"]) {
+        Swal.fire({
+          icon: "info",
+          html: `${warning_obj["warning-message"]}`,
+        });
+      }
+    });
+  });
 });
 
 $("#manage_dataset_tab").click();
@@ -2709,6 +2734,7 @@ $("#edit_banner_image_button").click(async () => {
         } else if (imageExtension.toLowerCase() == "jpg") {
           $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
         } else {
+          log.error(`An error happened: ${img_src}`);
           console.log(`An error happened: ${img_src}`);
           bootbox.alert(
             `An error occured when importing the image. Please try again later.`
@@ -2722,6 +2748,7 @@ $("#edit_banner_image_button").click(async () => {
           return;
         }
       } else {
+        log.error(`An error happened: ${img_src}`);
         console.log(`An error happened: ${img_src}`);
         bootbox.alert(
           `An error occured when importing the image. Please try again later.`
@@ -2735,6 +2762,7 @@ $("#edit_banner_image_button").click(async () => {
         return;
       }
     } else {
+      log.error(`An error happened: ${img_src}`);
       console.log(`An error happened: ${img_src}`);
       bootbox.alert(
         `An error occured when importing the image. Please try again later.`

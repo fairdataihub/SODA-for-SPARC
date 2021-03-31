@@ -25,7 +25,10 @@ const DragSelect = require("dragselect");
 const excelToJson = require("convert-excel-to-json");
 const csvToJson = require("convert-csv-to-json");
 const Jimp = require("jimp");
+const { JSONStorage } = require("node-localstorage");
 
+const prevent_sleep_id = "" 
+const electron_app = electron.app;
 const app = remote.app;
 var noAirtable = false;
 
@@ -88,6 +91,8 @@ require("dns").resolve("www.google.com", (err) => {
     updateBfAccountList();
   }
 });
+
+// Blackfynn to Pennseive transition
 
 const notification = document.getElementById("notification");
 const message = document.getElementById("message");
@@ -578,8 +583,13 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       fs.createWriteStream(destinationPath)
     );
     var emessage =
-      "Successfully saved file " + templateItem + " to " + destinationFolder;
-    ipcRenderer.send("open-info-metadata-file-donwloaded", emessage);
+      "Successfully saved '" + templateItem + "' to " + destinationFolder;
+    Swal.fire(
+      'Download successful',
+      `${emessage}`,
+      'success'
+    )
+    //ipcRenderer.send("open-info-metadata-file-donwloaded", emessage);
   }
 };
 
@@ -2539,6 +2549,8 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
   var selectedbfaccount = defaultBfAccount;
   var selectedbfdataset = defaultBfDataset;
 
+  prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
+
   client.invoke(
     "api_bf_submit_dataset",
     selectedbfaccount,
@@ -2569,6 +2581,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
         });
         bfSubmitDatasetBtn.disabled = false;
         pathSubmitDataset.disabled = false;
+        electron.powerSaveBlocker.stop(prevent_sleep_id)
       } else {
         $("#upload_local_dataset_progress_div")[0].scrollIntoView({
           behavior: "smooth",
@@ -2590,6 +2603,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           `Upload Local Dataset - ${selectedbfdataset}`,
           totalFileSize
         );
+        electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
     }
   );
@@ -2608,6 +2622,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           "<span style='color: red;'> " + emessage + sadCan + "</span>";
         log.error(error);
         console.error(error);
+        prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
       } else {
         completionStatus = res[1];
         var submitprintstatus = res[2];
@@ -2622,6 +2637,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
             ).innerHTML = "";
             document.getElementById("para-progress-bar-status").innerHTML =
               res[0] + smileyCan;
+            electron.powerSaveBlocker.stop(prevent_sleep_id)
           } else {
             var value = (uploadedFileSize / totalFileSize) * 100;
             progressBarUploadBf.value = value;
@@ -2671,6 +2687,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
         clearInterval(timerProgress);
         bfSubmitDatasetBtn.disabled = false;
         pathSubmitDataset.disabled = false;
+        electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
     }
   }
@@ -3260,6 +3277,10 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
           bfCurrentPermissionProgress.style.display = "none";
           bfAddEditCurrentPermissionProgress.style.display = "none";
         } else {
+          let nodeStorage = new JSONStorage(
+            app.getPath("userData")
+          );
+          nodeStorage.setItem("previously_selected_PI", selectedUser);
           $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
           datasetPermissionStatusPI.innerHTML = res;
           showCurrentPermission();
@@ -3270,6 +3291,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
   } else {
     bfCurrentPermissionProgress.style.display = "none";
     bfAddEditCurrentPermissionProgress.style.display = "none";
+    $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
   }
 });
 
@@ -3682,6 +3704,8 @@ function refreshBfUsersList() {
   optionUserPI.textContent = "Select PI";
   bfListUsersPI.appendChild(optionUserPI);
 
+  console.log(accountSelected);
+
   if (accountSelected !== "Select") {
     client.invoke("api_bf_get_users", accountSelected, (error, res) => {
       if (error) {
@@ -4010,6 +4034,7 @@ function updateBfAccountList() {
       console.error(error);
       var emessage = userError(error);
     } else {
+      console.log(res);
       for (myitem in res) {
         var myitemselect = res[myitem];
         var option = document.createElement("option");
@@ -4379,7 +4404,7 @@ function showDetailsFile() {
 
 var bfAddAccountBootboxMessage =
   "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='text' /></div></div></form>";
-var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Blackfynn API key and secret below:<i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Blackfynn-account-with-SODA'> help page </a>for generating API key and secret and setting up your Blackfynn account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Blackfynn API key and secret below:<i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Blackfynn-account-with-SODA'> help page </a>for generating API key and secret and setting up your Blackfynn account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Blackfynn accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
 function addBFAccountInsideBootbox(myBootboxDialog) {
   var name = $("#bootbox-key-name").val();
@@ -4402,6 +4427,8 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
       $("#bootbox-api-key").val("");
       $("#bootbox-api-secret").val("");
       bfAccountOptions[name] = name;
+      defaultBfAccount = name;
+      defaultBfDataset = "Select dataset"
       updateBfAccountList();
       client.invoke("api_bf_account_details", name, (error, res) => {
         if (error) {
@@ -5866,8 +5893,7 @@ $("#inputNewNameDataset").keyup(function () {
       $("#nextBtn").prop("disabled", true);
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
     } else {
-      document.getElementById("div-confirm-inputNewNameDataset").style.display =
-        "flex";
+      $("#div-confirm-inputNewNameDataset").css("display", "flex");
       $("#btn-confirm-new-dataset-name").show();
       $("#Question-generate-dataset-generate-div").show();
       $("#Question-generate-dataset-generate-div").children().show();
@@ -6364,6 +6390,7 @@ function initiate_generate() {
         // then show the sidebar again
         forceActionSidebar("show");
         clearInterval(timerProgress);
+        electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
     }
   }
