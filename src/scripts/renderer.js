@@ -2603,6 +2603,49 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           `Upload Local Dataset - ${selectedbfdataset}`,
           totalFileSize
         );
+        
+        client.invoke(
+          "api_get_number_of_files_and_folders_locally",
+          pathSubmitDataset.placeholder,
+          (error, res) => {
+            if (error) { 
+              log.error(error);
+              console.error(error);
+            }
+            else { 
+              let num_of_files = res[0];
+              let num_of_folders = res[1];
+
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                `Upload Local Dataset - ${defaultBfDataset} - Number of Folders`,
+                num_of_folders
+              );
+        
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                `Upload Local Dataset - Number of Folders`,
+                num_of_folders
+              );
+        
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                `Upload Local Dataset - ${defaultBfDataset} - Number of Files`,
+                num_of_files
+              );
+        
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                `Upload Local Dataset - Number of Files`,
+                num_of_files
+              );
+            }
+          });
+
         electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
     }
@@ -5897,6 +5940,32 @@ $("#inputNewNameDataset").keyup(function () {
 
       $("#Question-generate-dataset-generate-div-old").addClass("show");
       document.getElementById("para-new-name-dataset-message").innerHTML = "";
+      $("#nextBtn").prop("disabled", false);
+    }
+  } else {
+    $("#nextBtn").prop("disabled", true);
+  }
+});
+
+$("#inputNewNameDataset").click(function () {
+  var newName = $("#inputNewNameDataset").val().trim();
+
+  if (newName !== "") {
+    if (check_forbidden_characters_bf(newName)) {
+      document.getElementById("div-confirm-inputNewNameDataset").style.display =
+        "none";
+      $("#btn-confirm-new-dataset-name").hide();
+      $("#nextBtn").prop("disabled", true);
+      $("#Question-generate-dataset-generate-div-old").removeClass("show");
+    } else {
+      $("#div-confirm-inputNewNameDataset").css("display", "flex");
+      $("#btn-confirm-new-dataset-name").show();
+      $("#Question-generate-dataset-generate-div").show();
+      $("#Question-generate-dataset-generate-div").children().show();
+
+      $("#Question-generate-dataset-generate-div-old").addClass("show");
+      document.getElementById("para-new-name-dataset-message").innerHTML = "";
+      $("#nextBtn").prop("disabled", false);
     }
   } else {
     $("#nextBtn").prop("disabled", true);
@@ -5923,7 +5992,7 @@ document
     document.getElementById("nextBtn").disabled = true;
     ipcRenderer.send("open-file-dialog-local-destination-curate");
   });
-
+  
 ipcRenderer.on(
   "selected-local-destination-datasetCurate",
   (event, filepath) => {
@@ -6212,10 +6281,14 @@ const divGenerateProgressBar = document.getElementById(
 );
 const generateProgressBar = document.getElementById("progress-bar-new-curate");
 
+let file_counter = 0;
+let folder_counter = 0;
+
 function initiate_generate() {
   // Initiate curation by calling Python funtion
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
+  var main_total_generate_dataset_size;
 
   document.getElementById("para-new-curate-progress-bar-status").innerHTML =
     "Preparing files ...";
@@ -6231,6 +6304,8 @@ function initiate_generate() {
     }
   }
 
+  prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
+
   client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
     if (error) {
       var emessage = userError(error);
@@ -6244,6 +6319,15 @@ function initiate_generate() {
       log.error(error);
       console.error(error);
       // forceActionSidebar('show');
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Generate Dataset",
+        defaultBfDataset
+      );
+
+      electron.powerSaveBlocker.stop(prevent_sleep_id)
+
       client.invoke(
         "api_bf_dataset_account",
         defaultBfAccount,
@@ -6269,6 +6353,53 @@ function initiate_generate() {
           defaultBfDataset
         );
       }
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        "Generate Dataset",
+        defaultBfDataset,
+        main_total_generate_dataset_size
+      );
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset - ${defaultBfDataset}`,
+        main_total_generate_dataset_size
+      );
+      
+      file_counter = 0; folder_counter = 0;
+      get_num_files_and_folders(sodaJSONObj["dataset-structure"])
+      
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset - ${defaultBfDataset} - Number of Folders`,
+        folder_counter
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset - Number of Folders`,
+        folder_counter
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset - ${defaultBfDataset} - Number of Files`,
+        file_counter
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset - Number of Files`,
+        file_counter
+      );
+
+      electron.powerSaveBlocker.stop(prevent_sleep_id)
+
       client.invoke(
         "api_bf_dataset_account",
         defaultBfAccount,
@@ -6303,7 +6434,7 @@ function initiate_generate() {
         main_curate_status = res[0];
         var start_generate = res[1];
         var main_curate_progress_message = res[2];
-        var main_total_generate_dataset_size = res[3];
+        main_total_generate_dataset_size = res[3];
         var main_generated_dataset_size = res[4];
         var elapsed_time_formatted = res[5];
 
@@ -6392,6 +6523,21 @@ function initiate_generate() {
     }
   }
 }
+
+const get_num_files_and_folders = (dataset_folders) => {
+  if ("files" in dataset_folders) {
+    for (let file in dataset_folders["files"]) {
+      file_counter += 1
+    }
+  }
+  if ("folders" in dataset_folders) {
+    for (let folder in dataset_folders["folders"]) {
+      folder_counter += 1
+      get_num_files_and_folders(dataset_folders["folders"][folder]);
+    }
+  }
+  return;
+};
 
 function backend_to_frontend_warning_message(error_array) {
   if (error_array.length > 1) {
