@@ -738,13 +738,13 @@ async function openDropdownPrompt(dropdown) {
         .val("Select dataset")
         .trigger("change");
 
-      //initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
+      initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
-      $("#curatebfdatasetlist").selectpicker("hide");
-      $("#curatebfdatasetlist").selectpicker("refresh");
-      $(".selectpicker").selectpicker("hide");
-      $(".selectpicker").selectpicker("refresh");
-      $("#bf-dataset-select-div").hide();
+      // $("#curatebfdatasetlist").selectpicker("hide");
+      // $("#curatebfdatasetlist").selectpicker("refresh");
+      // $(".selectpicker").selectpicker("hide");
+      // $(".selectpicker").selectpicker("refresh");
+      // $("#bf-dataset-select-div").hide();
 
       const { value: bfDS } = await Swal.fire({
         title:
@@ -796,6 +796,20 @@ async function openDropdownPrompt(dropdown) {
 
               return undefined;
             } else {
+              // setTimeout(
+              //   Swal.fire({
+              //     title: "Loading your account details...",
+              //     timer: 2000,
+              //     timerProgressBar: true,
+              //     allowEscapeKey: false,
+              //     showConfirmButton: false,
+              //   }),
+              //   20
+              // );
+              $(".bf-dataset-span").html(bfDataset);
+
+              confirm_click_function();
+              
               return bfDataset;
             }
           }
@@ -804,6 +818,15 @@ async function openDropdownPrompt(dropdown) {
 
       // check return value
       if (bfDS) {
+
+        Swal.fire({
+          title: "Loading your dataset details...",
+          timer: 2000,
+          timerProgressBar: true,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+        });
+        
         $("#current-bf-dataset").text(bfDataset);
         $("#current-bf-dataset-generate").text(bfDataset);
         $(".bf-dataset-span").html(bfDataset);
@@ -833,7 +856,7 @@ async function openDropdownPrompt(dropdown) {
       $("body").removeClass("waiting");
       $(".svg-change-current-account.dataset").css("display", "block");
       $(".ui.active.green.inline.loader.small").css("display", "none");
-    }, 0);
+    }, 10);
 
   }
 }
@@ -1667,7 +1690,38 @@ function showTreeViewPreview(new_dataset_name) {
 }
 
 // per change event of current dataset span text
-$(".bf-dataset-span").on("DOMSubtreeModified", function () {
+// $(".bf-dataset-span").on("DOMSubtreeModified", function () {
+//   let temp = $(".bf-dataset-span").html();
+//   if (
+//     $(".bf-dataset-span").html() == "None" ||
+//     $(".bf-dataset-span").html() == ""
+//   ) {
+//     $($(this).parents().find(".field").find(".div-confirm-button")).css(
+//       "display",
+//       "none"
+//     );
+//     $("#para-review-dataset-info-disseminate").text("None");
+//   } else {
+//     $($(this).parents().find(".field").find(".div-confirm-button")).css(
+//       "display",
+//       "flex"
+//     );
+//     if ($($(this).parents().find(".field").find(".synced-progress")).length) {
+//       if (
+//         $($(this).parents().find(".field").find(".synced-progress")).css(
+//           "display"
+//         ) === "none"
+//       ) {
+//         $(".confirm-button").click();
+//       }
+//     } else {
+//       $(".confirm-button").click();
+//     }
+//   }
+// });
+
+// per change event of current dataset span text
+const confirm_click_function = () => {
   let temp = $(".bf-dataset-span").html();
   if (
     $(".bf-dataset-span").html() == "None" ||
@@ -1695,4 +1749,4 @@ $(".bf-dataset-span").on("DOMSubtreeModified", function () {
       $(".confirm-button").click();
     }
   }
-});
+};
