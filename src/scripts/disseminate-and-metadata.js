@@ -92,7 +92,12 @@ $(document).ready(function () {
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
         var emessage = "File " + filename + " already exists in " + dirpath[0];
-        ipcRenderer.send("open-error-metadata-file-exits", emessage);
+        // ipcRenderer.send("open-error-metadata-file-exits", emessage);
+        Swal.fire(
+          'Metadata file already exists',
+          `${emessage}`,
+          'error'
+        )
       } else {
         var awardRes = $("#submission-SPARC-award-span").text();
         var dateRes = $("#submission-completion-date-span").text();
