@@ -3747,8 +3747,6 @@ function refreshBfUsersList() {
   optionUserPI.textContent = "Select PI";
   bfListUsersPI.appendChild(optionUserPI);
 
-  console.log(accountSelected);
-
   if (accountSelected !== "Select") {
     client.invoke("api_bf_get_users", accountSelected, (error, res) => {
       if (error) {
@@ -4077,7 +4075,6 @@ function updateBfAccountList() {
       console.error(error);
       var emessage = userError(error);
     } else {
-      console.log(res);
       for (myitem in res) {
         var myitemselect = res[myitem];
         var option = document.createElement("option");
@@ -5943,6 +5940,32 @@ $("#inputNewNameDataset").keyup(function () {
 
       $("#Question-generate-dataset-generate-div-old").addClass("show");
       document.getElementById("para-new-name-dataset-message").innerHTML = "";
+      $("#nextBtn").prop("disabled", false);
+    }
+  } else {
+    $("#nextBtn").prop("disabled", true);
+  }
+});
+
+$("#inputNewNameDataset").click(function () {
+  var newName = $("#inputNewNameDataset").val().trim();
+
+  if (newName !== "") {
+    if (check_forbidden_characters_bf(newName)) {
+      document.getElementById("div-confirm-inputNewNameDataset").style.display =
+        "none";
+      $("#btn-confirm-new-dataset-name").hide();
+      $("#nextBtn").prop("disabled", true);
+      $("#Question-generate-dataset-generate-div-old").removeClass("show");
+    } else {
+      $("#div-confirm-inputNewNameDataset").css("display", "flex");
+      $("#btn-confirm-new-dataset-name").show();
+      $("#Question-generate-dataset-generate-div").show();
+      $("#Question-generate-dataset-generate-div").children().show();
+
+      $("#Question-generate-dataset-generate-div-old").addClass("show");
+      document.getElementById("para-new-name-dataset-message").innerHTML = "";
+      $("#nextBtn").prop("disabled", false);
     }
   } else {
     $("#nextBtn").prop("disabled", true);
@@ -5969,7 +5992,7 @@ document
     document.getElementById("nextBtn").disabled = true;
     ipcRenderer.send("open-file-dialog-local-destination-curate");
   });
-
+  
 ipcRenderer.on(
   "selected-local-destination-datasetCurate",
   (event, filepath) => {

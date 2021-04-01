@@ -898,6 +898,12 @@ async function transitionSubQuestions(
     document.getElementById(parentDiv).appendChild(target);
   }
 
+  if (currentDiv == 'Question-generate-dataset')
+  {
+    $("#inputNewNameDataset").val("");
+    $("#inputNewNameDataset").click();
+  }
+
   // if buttons: Confirm account were hidden, show them again here
   // under Step 6
   if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-account") {
