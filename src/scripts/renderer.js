@@ -2987,7 +2987,7 @@ var cropOptions = {
 
     formBannerHeight.value = image_height;
 
-    if (image_height < 512) {
+    if (image_height < 512 || image_height > 2048) {
       $("#save-banner-image").prop("disabled", true);
       $("#form-banner-height").css("color", "red");
       $("#form-banner-height").css("border", "1px solid red");
@@ -6940,7 +6940,6 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
         console.error(error);
         $("body").removeClass("waiting")
       } else {
-        console.log(res);
         $("body").removeClass("waiting")
       }
     });
