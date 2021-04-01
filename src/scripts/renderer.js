@@ -2988,7 +2988,7 @@ var cropOptions = {
 
     formBannerHeight.value = image_height;
 
-    if (image_height < 512) {
+    if (image_height < 512 || image_height > 2048) {
       $("#save-banner-image").prop("disabled", true);
       $("#form-banner-height").css("color", "red");
       $("#form-banner-height").css("border", "1px solid red");
@@ -6305,6 +6305,28 @@ function initiate_generate() {
     }
   }
 
+  let dataset_name = "";
+
+  if ("bf-dataset-selected" in sodaJSONObj)
+  {
+    dataset_name = sodaJSONObj["bf-dataset-selected"]
+  }
+  else if("generate-dataset" in sodaJSONObj)
+  {
+    if ("destination" in sodaJSONObj["generate-dataset"])
+    {
+      let destination = sodaJSONObj["generate-dataset"]["destination"]
+      if (destination == "local")
+      {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"]
+      }
+      if (destination == "bf")
+      {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"]
+      }
+    }
+  }
+
   // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
 
   client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
@@ -6324,7 +6346,7 @@ function initiate_generate() {
         "track-event",
         "Error",
         "Generate Dataset",
-        defaultBfDataset
+        dataset_name
       );
 
       // electron.powerSaveBlocker.stop(prevent_sleep_id)
@@ -6351,20 +6373,20 @@ function initiate_generate() {
           "track-event",
           "Success",
           "Manifest Files Created",
-          defaultBfDataset
+          dataset_name
         );
       }
       ipcRenderer.send(
         "track-event",
         "Success",
         "Generate Dataset",
-        defaultBfDataset,
+        dataset_name,
         main_total_generate_dataset_size
       );
       ipcRenderer.send(
         "track-event",
         "Success",
-        `Generate Dataset - ${defaultBfDataset}`,
+        `Generate Dataset - ${dataset_name}`,
         main_total_generate_dataset_size
       );
 
@@ -6374,7 +6396,7 @@ function initiate_generate() {
       ipcRenderer.send(
         "track-event",
         "Success",
-        `Generate Dataset - ${defaultBfDataset} - Number of Folders`,
+        `Generate Dataset - ${dataset_name} - Number of Folders`,
         folder_counter
       );
 
@@ -6388,7 +6410,7 @@ function initiate_generate() {
       ipcRenderer.send(
         "track-event",
         "Success",
-        `Generate Dataset - ${defaultBfDataset} - Number of Files`,
+        `Generate Dataset - ${dataset_name} - Number of Files`,
         file_counter
       );
 
@@ -6941,7 +6963,6 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
         console.error(error);
         $("body").removeClass("waiting")
       } else {
-        console.log(res);
         $("body").removeClass("waiting")
       }
     });
