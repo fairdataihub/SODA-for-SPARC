@@ -796,6 +796,14 @@ async function openDropdownPrompt(dropdown) {
 
               return undefined;
             } else {
+              // setTimeout(, 10)
+              // Swal.fire({
+              //   title: "Loading your account details...",
+              //   timer: 2000,
+              //   timerProgressBar: true,
+              //   allowEscapeKey: false,
+              //   showConfirmButton: false,
+              // });
               return bfDataset;
             }
           }
@@ -804,6 +812,7 @@ async function openDropdownPrompt(dropdown) {
 
       // check return value
       if (bfDS) {
+        
         $("#current-bf-dataset").text(bfDataset);
         $("#current-bf-dataset-generate").text(bfDataset);
         $(".bf-dataset-span").html(bfDataset);

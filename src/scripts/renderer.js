@@ -2549,7 +2549,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
   var selectedbfaccount = defaultBfAccount;
   var selectedbfdataset = defaultBfDataset;
 
-  prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
+  // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
 
   client.invoke(
     "api_bf_submit_dataset",
@@ -2581,7 +2581,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
         });
         bfSubmitDatasetBtn.disabled = false;
         pathSubmitDataset.disabled = false;
-        electron.powerSaveBlocker.stop(prevent_sleep_id)
+        // electron.powerSaveBlocker.stop(prevent_sleep_id)
       } else {
         $("#upload_local_dataset_progress_div")[0].scrollIntoView({
           behavior: "smooth",
@@ -2646,7 +2646,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
             }
           });
 
-        electron.powerSaveBlocker.stop(prevent_sleep_id)
+        // electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
     }
   );
@@ -2665,7 +2665,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           "<span style='color: red;'> " + emessage + sadCan + "</span>";
         log.error(error);
         console.error(error);
-        prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
+        // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
       } else {
         completionStatus = res[1];
         var submitprintstatus = res[2];
@@ -2680,7 +2680,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
             ).innerHTML = "";
             document.getElementById("para-progress-bar-status").innerHTML =
               res[0] + smileyCan;
-            electron.powerSaveBlocker.stop(prevent_sleep_id)
+            // electron.powerSaveBlocker.stop(prevent_sleep_id)
           } else {
             var value = (uploadedFileSize / totalFileSize) * 100;
             progressBarUploadBf.value = value;
@@ -2730,7 +2730,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
         clearInterval(timerProgress);
         bfSubmitDatasetBtn.disabled = false;
         pathSubmitDataset.disabled = false;
-        electron.powerSaveBlocker.stop(prevent_sleep_id)
+        // electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
     }
   }
@@ -6304,7 +6304,7 @@ function initiate_generate() {
     }
   }
 
-  prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
+  // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
 
   client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
     if (error) {
@@ -6326,7 +6326,7 @@ function initiate_generate() {
         defaultBfDataset
       );
 
-      electron.powerSaveBlocker.stop(prevent_sleep_id)
+      // electron.powerSaveBlocker.stop(prevent_sleep_id)
 
       client.invoke(
         "api_bf_dataset_account",
@@ -6398,7 +6398,7 @@ function initiate_generate() {
         file_counter
       );
 
-      electron.powerSaveBlocker.stop(prevent_sleep_id)
+      // electron.powerSaveBlocker.stop(prevent_sleep_id)
 
       client.invoke(
         "api_bf_dataset_account",
@@ -6518,7 +6518,7 @@ function initiate_generate() {
         // then show the sidebar again
         forceActionSidebar("show");
         clearInterval(timerProgress);
-        electron.powerSaveBlocker.stop(prevent_sleep_id)
+        // electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
     }
   }
