@@ -738,13 +738,13 @@ async function openDropdownPrompt(dropdown) {
         .val("Select dataset")
         .trigger("change");
 
-      //initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
+      initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
-      $("#curatebfdatasetlist").selectpicker("hide");
-      $("#curatebfdatasetlist").selectpicker("refresh");
-      $(".selectpicker").selectpicker("hide");
-      $(".selectpicker").selectpicker("refresh");
-      $("#bf-dataset-select-div").hide();
+      // $("#curatebfdatasetlist").selectpicker("hide");
+      // $("#curatebfdatasetlist").selectpicker("refresh");
+      // $(".selectpicker").selectpicker("hide");
+      // $(".selectpicker").selectpicker("refresh");
+      // $("#bf-dataset-select-div").hide();
 
       const { value: bfDS } = await Swal.fire({
         title:
@@ -796,6 +796,7 @@ async function openDropdownPrompt(dropdown) {
 
               return undefined;
             } else {
+              
               return bfDataset;
             }
           }
@@ -804,9 +805,20 @@ async function openDropdownPrompt(dropdown) {
 
       // check return value
       if (bfDS) {
+
+        Swal.fire({
+          title: "Loading your dataset details...",
+          timer: 2000,
+          timerProgressBar: true,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+        });
+        
         $("#current-bf-dataset").text(bfDataset);
         $("#current-bf-dataset-generate").text(bfDataset);
         $(".bf-dataset-span").html(bfDataset);
+
+        confirm_click_function();
 
         defaultBfDataset = bfDataset;
         document.getElementById("ds-description").innerHTML = "";
@@ -833,7 +845,7 @@ async function openDropdownPrompt(dropdown) {
       $("body").removeClass("waiting");
       $(".svg-change-current-account.dataset").css("display", "block");
       $(".ui.active.green.inline.loader.small").css("display", "none");
-    }, 0);
+    }, 10);
 
   }
 }
@@ -1155,31 +1167,41 @@ function create_child_node(
       }
     }
     if ("files" in oldFormatNode) {
-      for (const [key, value] of Object.entries(oldFormatNode["files"])) {
-        if (
-          [
-            ".png",
-            ".PNG",
-            ".xls",
-            ".xlsx",
-            ".pdf",
-            ".txt",
-            ".jpeg",
-            ".JPEG",
-            ".csv",
-            ".CSV",
-            ".DOC",
-            ".DOCX",
-            ".doc",
-            ".docx",
-          ].includes(path.parse(key).ext)
-        ) {
-          nodeType = "file " + path.parse(key).ext.slice(1);
-        } else {
-          nodeType = "file other";
-        }
-        if ("action" in oldFormatNode["files"][key]) {
-          if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
+      for (var [key, value] of Object.entries(oldFormatNode["files"])) {
+        if (key !== undefined || value !== undefined) {
+          if (
+            [
+              ".png",
+              ".PNG",
+              ".xls",
+              ".xlsx",
+              ".pdf",
+              ".txt",
+              ".jpeg",
+              ".JPEG",
+              ".csv",
+              ".CSV",
+              ".DOC",
+              ".DOCX",
+              ".doc",
+              ".docx",
+            ].includes(path.parse(key).ext)
+          ) {
+            nodeType = "file " + path.parse(key).ext.slice(1);
+          } else {
+            nodeType = "file other";
+          }
+          if ("action" in oldFormatNode["files"][key]) {
+            if (!oldFormatNode["files"][key]["action"].includes("deleted")) {
+              var new_node = {
+                text: key,
+                state: { disabled: true },
+                type: nodeType,
+              };
+              newFormatNode["children"].push(new_node);
+              newFormatNode["children"].sort((a, b) => (a.text > b.text) ? 1 : -1)
+            }
+          } else {
             var new_node = {
               text: key,
               state: { disabled: true },
@@ -1188,15 +1210,7 @@ function create_child_node(
             newFormatNode["children"].push(new_node);
             newFormatNode["children"].sort((a, b) => (a.text > b.text) ? 1 : -1)
           }
-        } else {
-          var new_node = {
-            text: key,
-            state: { disabled: true },
-            type: nodeType,
-          };
-          newFormatNode["children"].push(new_node);
-          newFormatNode["children"].sort((a, b) => (a.text > b.text) ? 1 : -1)
-        }
+        }    
       }
     }
   }
@@ -1665,7 +1679,38 @@ function showTreeViewPreview(new_dataset_name) {
 }
 
 // per change event of current dataset span text
-$(".bf-dataset-span").on("DOMSubtreeModified", function () {
+// $(".bf-dataset-span").on("DOMSubtreeModified", function () {
+//   let temp = $(".bf-dataset-span").html();
+//   if (
+//     $(".bf-dataset-span").html() == "None" ||
+//     $(".bf-dataset-span").html() == ""
+//   ) {
+//     $($(this).parents().find(".field").find(".div-confirm-button")).css(
+//       "display",
+//       "none"
+//     );
+//     $("#para-review-dataset-info-disseminate").text("None");
+//   } else {
+//     $($(this).parents().find(".field").find(".div-confirm-button")).css(
+//       "display",
+//       "flex"
+//     );
+//     if ($($(this).parents().find(".field").find(".synced-progress")).length) {
+//       if (
+//         $($(this).parents().find(".field").find(".synced-progress")).css(
+//           "display"
+//         ) === "none"
+//       ) {
+//         $(".confirm-button").click();
+//       }
+//     } else {
+//       $(".confirm-button").click();
+//     }
+//   }
+// });
+
+// per change event of current dataset span text
+const confirm_click_function = () => {
   let temp = $(".bf-dataset-span").html();
   if (
     $(".bf-dataset-span").html() == "None" ||
@@ -1693,4 +1738,4 @@ $(".bf-dataset-span").on("DOMSubtreeModified", function () {
       $(".confirm-button").click();
     }
   }
-});
+};

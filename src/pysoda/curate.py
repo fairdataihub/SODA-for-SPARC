@@ -2359,6 +2359,10 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
 
             #upload
             main_curate_progress_message = "Uploading files in " + str(relative_path)
+            
+            ## check if agent is running in the background
+            agent_running()
+
             bf_folder.upload(*list_upload)
             bf_folder.update()
 
@@ -2770,7 +2774,7 @@ def generate_manifest_file_locally(soda_json_structure):
     """
     Function to generate manifest files locally
     """
-    
+
     def recursive_item_path_create(folder, path):
         if "files" in folder.keys():
             for item in list(folder["files"]):
@@ -2785,7 +2789,7 @@ def generate_manifest_file_locally(soda_json_structure):
                 recursive_item_path_create(folder["folders"][item], folder["folders"][item]['folderpath'][:])
 
         return
-    
+
     def copytree(src, dst, symlinks=False, ignore=None):
         for item in os.listdir(src):
             s = os.path.join(src, item)
