@@ -27,7 +27,7 @@ const csvToJson = require("convert-csv-to-json");
 const Jimp = require("jimp");
 const { JSONStorage } = require("node-localstorage");
 
-const prevent_sleep_id = "" 
+const prevent_sleep_id = ""
 const electron_app = electron.app;
 const app = remote.app;
 var noAirtable = false;
