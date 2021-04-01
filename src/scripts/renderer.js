@@ -27,7 +27,7 @@ const csvToJson = require("convert-csv-to-json");
 const Jimp = require("jimp");
 const { JSONStorage } = require("node-localstorage");
 
-const prevent_sleep_id = "" 
+const prevent_sleep_id = ""
 const electron_app = electron.app;
 const app = remote.app;
 var noAirtable = false;
@@ -3704,8 +3704,6 @@ function refreshBfUsersList() {
   optionUserPI.textContent = "Select PI";
   bfListUsersPI.appendChild(optionUserPI);
 
-  console.log(accountSelected);
-
   if (accountSelected !== "Select") {
     client.invoke("api_bf_get_users", accountSelected, (error, res) => {
       if (error) {
@@ -4034,7 +4032,6 @@ function updateBfAccountList() {
       console.error(error);
       var emessage = userError(error);
     } else {
-      console.log(res);
       for (myitem in res) {
         var myitemselect = res[myitem];
         var option = document.createElement("option");
