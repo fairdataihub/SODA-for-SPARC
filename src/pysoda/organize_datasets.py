@@ -535,7 +535,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
     high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
     manifest_sparc = ["manifest.xlsx", "manifest.csv"]
     high_level_metadata_sparc = ['submission.xlsx', 'submission.csv', 'submission.json', 'dataset_description.xlsx', 'dataset_description.csv', 'dataset_description.json', 'subjects.xlsx', 'subjects.csv', 'subjects.json', 'samples.xlsx', 'samples.csv', 'samples.json', 'README.txt', 'CHANGES.txt']
-    f = open("demofile2.txt", "a")
+    f = open("dataset_contents.soda", "a")
 
     def verify_file_name(item_name, file_name):
         from curate import bf_recognized_file_extensions
@@ -595,10 +595,9 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 if "files" not in dataset_folder:
                     dataset_folder["files"] = {}
                 package_id = item.id
-                file_details = bf._api._get(
-                    '/packages/' + str(package_id) + '/view')
-                file_name = file_details[0]["content"]["name"]
-                result = str(file_details[0]["content"]) 
+                package_details = bf._api._get('/packages/' + str(package_id))
+                file_name = package_details["content"]["name"]
+                result = str(package_details["content"]) 
                 f.write(result)
                 f.write("\n")
 
@@ -609,13 +608,14 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 else:
                     file_count += 1
                     if my_level == 1 and file_name in manifest_sparc:
+                        file_details = bf._api._get('/packages/' + str(package_id) + '/view')
                         file_id = file_details[0]["content"]["id"]
                         manifest_url = bf._api._get(
                             '/packages/' + str(package_id) + '/files/' + str(file_id))
                         df = pd.read_excel(manifest_url['url'])
                         manifest_dict[my_folder_name] = df
                     else:
-                        timestamp = file_details[0]["content"]["updatedAt"]
+                        timestamp = package_details["content"]["updatedAt"]
                         dataset_folder["files"][file_name] = {
                             "type": "bf","action": ["existing"], "path": item.id, "timestamp": timestamp}
 

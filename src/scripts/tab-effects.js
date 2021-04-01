@@ -18,15 +18,17 @@ const showParentTab = (tabNow, nextOrPrev) => {
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
     // check if users are Continuing with an existing BF ds. If so, hide Save progress btn
-    if ($('input[name="getting-started-1"]:checked').prop("id") === "existing-bf") {
+    if (
+      $('input[name="getting-started-1"]:checked').prop("id") === "existing-bf"
+    ) {
       $("#save-progress-btn").css("display", "none");
     } else {
       $("#save-progress-btn").css("display", "block");
     }
     $("#start-over-btn").css("display", "inline-block");
   } else {
-      $("#save-progress-btn").css("display", "none");
-      $("#start-over-btn").css("display", "none");
+    $("#save-progress-btn").css("display", "none");
+    $("#start-over-btn").css("display", "none");
   }
 
   // This function will display the specified tab of the form ...
@@ -1456,7 +1458,6 @@ async function transitionSubQuestionsButton(
     setTimeout(() => target.classList.add("test2"), 100);
   }
 
-
   document.getElementById(currentDiv).classList.add("prev");
 
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
@@ -1569,7 +1570,7 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     }
     $(ev).hide();
   } else {
-    if ($("bf-dataset-span").html() !== "None") {
+    if ($(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') !== "None") {
       $(target).children().find(".div-confirm-button button").show();
     }
   }
@@ -1578,30 +1579,30 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
   document.getElementById(currentDiv).classList.add("prev");
 
   if (ev.getAttribute("data-next") == "Question-prepare-submission-DDD") {
-    $("#button-skip-DDD").show()
+    $("#button-skip-DDD").show();
   }
 
   if (ev.getAttribute("data-next") == "Post-curation-question-2") {
     //checkDatasetDisseminate()
-    setTimeout(function() {
+    setTimeout(function () {
       $(target).addClass("test2");
-    }, 300)
+    }, 300);
   }
 
   if (ev.getAttribute("data-next") == "Question-prepare-dd-4-sections") {
-    setTimeout(function() {
+    setTimeout(function () {
       $(target).addClass("test2");
-    }, 300)
+    }, 300);
   }
 
   if (ev.id == "dataset-description-no-airtable-mode") {
     $("#div-airtable-award-button-dd").show();
-    $("#dd-connect-Airtable").css("display", "block")
+    $("#dd-connect-Airtable").css("display", "block");
     ddNoAirtableMode("On");
   }
   if (ev.id == "submission-no-airtable-mode") {
     $("#div-airtable-award-button").show();
-    $("#submission-connect-Airtable").css("display", "block")
+    $("#submission-connect-Airtable").css("display", "block");
   }
 
   if (ev.id == "button-skip-DDD") {
@@ -1865,11 +1866,11 @@ const hidePrevDivs = (currentDiv, category) => {
           ) {
             if (child.id === "bf-rename-dataset-name") {
               if (
-                $(".bf-dataset-span").html() == "None" ||
-                $(".bf-dataset-span").html() == ""
+                $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') == "None" ||
+                $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') == ""
               ) {
                 $("#bf-rename-dataset-name").val(
-                  `${$(".bf-dataset-span").html()}`
+                  `${$(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '')}`
                 );
               }
             } else {
@@ -2403,7 +2404,7 @@ function raiseWarningExit() {
   });
 }
 
-const exitCurate = async (resetProgressTabs, start_over = false ) => {
+const exitCurate = async (resetProgressTabs, start_over = false) => {
   $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
@@ -2496,8 +2497,8 @@ document
     $(".vertical-progress-bar").css("display", "flex");
     document.getElementById("generate-dataset-progress-tab").style.display =
       "none";
-      $("#save-progress-btn").css("display", "none");
-      $("#start-over-btn").css("display", "none");
+    $("#save-progress-btn").css("display", "none");
+    $("#start-over-btn").css("display", "none");
     showParentTab(currentTab, 1);
   });
 
@@ -2596,16 +2597,16 @@ const description_text = {
   prepare_dataset_section:
     "This interface will help you in organizing your datasets according to the SPARC Data Structure",
   disseminate_dataset_section:
-    "This interface will assist you in completing steps required once your datasets have been fully prepared"
+    "This interface will assist you in completing steps required once your datasets have been fully prepared",
 };
 
 $("input:radio[name=main_tabs]").click(function () {
   let option = $(this).val();
   $("#tab_info_text").text(description_text[option]);
-  $(".main-tabs-section").removeClass('show');
-  $(".main-tabs-section").addClass('hide');
-  document.getElementById(option).classList.remove('hide');
-  document.getElementById(option).classList.add('show');
+  $(".main-tabs-section").removeClass("show");
+  $(".main-tabs-section").addClass("hide");
+  document.getElementById(option).classList.remove("hide");
+  document.getElementById(option).classList.add("show");
 });
 
 $(document).ready(() => {
@@ -2616,8 +2617,7 @@ $(document).ready(() => {
       let rename_dataset_name = $("#rename_dataset_name").html();
       if (rename_dataset_name != "None" && rename_dataset_name != "") {
         $("#bf-rename-dataset-name").val(rename_dataset_name);
-      }
-      else {
+      } else {
         $("#bf-rename-dataset-name").val("");
       }
     }
@@ -2638,9 +2638,8 @@ $(document).ready(() => {
 $("#manage_dataset_tab").click();
 
 $("body").on("click", ".check", function () {
-  $(this).siblings( "input[name=dataset_status_radio]:radio").click();
+  $(this).siblings("input[name=dataset_status_radio]:radio").click();
 });
-
 
 $("body").on(
   "change",
@@ -2744,20 +2743,20 @@ $("#edit_banner_image_button").click(async () => {
 });
 
 // Enable the popover content for the main-tab buttons
-$('.content-button').popover();
-$('.option-card-disseminate-dataset').each(function () {
+$(".content-button").popover();
+$(".option-card-disseminate-dataset").each(function () {
   var $this = $(this);
   $this.popover({
-      trigger: 'hover',
-      container: $this
-  })
+    trigger: "hover",
+    container: $this,
+  });
 });
-$('.coming-soon-div').popover();
-$('#button-submit-dataset').popover();
-$('.popover-tooltip').each(function () {
+$(".coming-soon-div").popover();
+$("#button-submit-dataset").popover();
+$(".popover-tooltip").each(function () {
   var $this = $(this);
   $this.popover({
-      trigger: 'hover',
-      container: $this
-  })
+    trigger: "hover",
+    container: $this,
+  });
 });

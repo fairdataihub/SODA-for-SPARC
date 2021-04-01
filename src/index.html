@@ -68,14 +68,17 @@
       rel="stylesheet"
       href="node_modules/jstree/dist/themes/default/style.min.css"
     />
+    <link
+      rel="stylesheet"
+      href="node_modules/bootstrap-select/dist/css/bootstrap-select.min.css"
+    />
 
     <link rel="import" href="sections/welcome/welcome.html" />
     <link rel="import" href="sections/getting_started/getting_started.html" />
-    <link rel="import" href="sections/curate/curate.html" />
-    <link rel="import" href="sections/curate/prepare_dataset.html" />
-    <link rel="import" href="sections/manage_submit/manage_submit.html" />
+    <link rel="import" href="sections/manage_datasets/manage_datasets.html" />
     <link rel="import" href="sections/post_curation/post_curation.html" />
     <link rel="import" href="sections/prepare_metadata/prepare_metadata.html" />
+    <link rel="import" href="sections/curate/curate.html" />
     <link rel="import" href="sections/main_tabs/main_tabs.html" />
     <link rel="import" href="sections/help/help.html" />
 
@@ -141,90 +144,6 @@
               Overview
             </a>
           </li>
-          <!-- <li>
-            <a href="#" data-section="manage_submit">
-              <svg
-                style="margin-right: 30px; margin-bottom: -5px"
-                width="20px"
-                height="20px"
-                viewBox="0 0 16 16"
-                class="bi bi-server"
-                fill="white"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  href="#"
-                  data-section="manage_submit"
-                  fill-rule="evenodd"
-                  d="M1.333 2.667C1.333 1.194 4.318 0 8 0s6.667 1.194 6.667 2.667V4C14.665 5.474 11.68 6.667 8 6.667 4.318 6.667 1.333 5.473 1.333 4V2.667zm0 3.667v3C1.333 10.805 4.318 12 8 12c3.68 0 6.665-1.193 6.667-2.665V6.334c-.43.32-.931.58-1.458.79C11.81 7.684 9.967 8 8 8c-1.967 0-3.81-.317-5.21-.876a6.508 6.508 0 0 1-1.457-.79zm13.334 5.334c-.43.319-.931.578-1.458.789-1.4.56-3.242.876-5.209.876-1.967 0-3.81-.316-5.21-.876a6.51 6.51 0 0 1-1.457-.79v1.666C1.333 14.806 4.318 16 8 16s6.667-1.194 6.667-2.667v-1.665z"
-                />
-              </svg>
-              Manage Datasets
-            </a>
-          </li> -->
-          <!-- <li>
-            <a href="#" data-section="prepare_metadata">
-              <svg
-                style="margin-right: 30px; margin-bottom: -5px"
-                width="20px"
-                height="20px"
-                viewBox="0 0 16 16"
-                class="bi bi-file-text-fill"
-                fill="white"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  href="#"
-                  data-section="prepare_metadata"
-                  fill-rule="evenodd"
-                  d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"
-                />
-              </svg>
-              Prepare Metadata
-            </a>
-          </li> -->
-          <!-- <li>
-            <a href="#" data-section="curate" id="prepare-dataset-a">
-              <svg
-                style="margin-right: 30px; margin-bottom: -5px"
-                width="20px"
-                height="20px"
-                viewBox="0 0 16 16"
-                class="bi bi-folder-plus"
-                fill="white"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  href="#"
-                  data-section="curate"
-                  fill-rule="evenodd"
-                  d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3zm-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139z"
-                />
-              </svg>
-              Prepare Dataset
-            </a>
-          </li> -->
-          <!-- <li>
-            <a href="#" data-section="post_curation">
-              <svg
-                style="margin-right: 30px; margin-bottom: -5px"
-                width="20px"
-                height="20px"
-                viewBox="0 0 16 16"
-                class="bi bi-share-fill"
-                fill="white"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  href="#"
-                  data-section="post_curation"
-                  fill-rule="evenodd"
-                  d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"
-                />
-              </svg>
-              Disseminate Dataset
-            </a>
-          </li> -->
           <li>
             <a href="#" data-section="main_tabs" id="main_tabs_view">
               <svg
@@ -251,7 +170,7 @@
               Guided Mode
             </a>
           </li>
-          
+
           <li>
             <a href="#" data-section="help" id="help_view">
               <svg
@@ -282,16 +201,6 @@
               justify-content: center;
             "
           >
-            <!-- <li style="padding-right: 5px">
-              <a href="https://github.com/bvhpatel/SODA"
-                ><i class="fab fa-github"></i
-              ></a>
-            </li>
-            <li style="padding-left: 5px">
-              <a href="#"
-                ><i data-section="help" class="fas fa-question-circle fa-fw"></i
-              ></a>
-            </li> -->
           </ul>
         </div>
       </div>
@@ -339,8 +248,6 @@
     <script src="scripts/popper.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="node_modules/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
     <script src="node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
-    <script src="node_modules/jstree/dist/jstree.min.js"></script>
   </body>
 </html>
