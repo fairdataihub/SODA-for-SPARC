@@ -227,7 +227,7 @@ def bf_add_account(keyname, key, secret):
 
         with open(configpath, 'w') as configfile:
             config.write(configfile)
-        
+
         bf_keep_only_account(keyname)
 
         return 'Successfully added account ' + str(bf)
@@ -622,7 +622,7 @@ def agent_running():
         else:
             raise
     else:
-        raise AgentError("The Blackfynn agent is already running. Please go to your Task Manager/Activity Monitor to stop any running blackfynn_agent processes and try again")
+        raise AgentError("The Blackfynn agent is already running. Learn more about how to solve the issue <a href='https://github.com/bvhpatel/SODA/wiki/The-Blackfynn-agent-is-already-running' target='_blank'>here</a>.")
 
 
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
