@@ -91,7 +91,7 @@ $(document).ready(function () {
       $("#generate-submission-spinner").show();
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
-        var emessage = "File " + filename + " already exists in " + dirpath[0];
+        var emessage = "File '" + filename + "' already exists in " + dirpath[0];
         // ipcRenderer.send("open-error-metadata-file-exits", emessage);
         Swal.fire(
           'Metadata file already exists',
