@@ -2450,7 +2450,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
           }
         );
         $(".bf-dataset-span").html(bfNewDatasetName.value);
-        // refreshDatasetList()
+        refreshDatasetList()
         updateDatasetList();
         datasetDescriptionFileDataset.value = bfNewDatasetName.value
         $(".confirm-button").click();
@@ -2962,6 +2962,7 @@ bfAddDescriptionBtn.addEventListener("click", () => {
         bfCurrentMetadataProgress.style.display = "none";
         $(".synced-progress").css("display", "none");
         showDatasetDescription();
+        changeDatasetUnderDD();
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -6002,7 +6003,7 @@ document
     document.getElementById("nextBtn").disabled = true;
     ipcRenderer.send("open-file-dialog-local-destination-curate");
   });
-  
+
 ipcRenderer.on(
   "selected-local-destination-datasetCurate",
   (event, filepath) => {
@@ -6398,10 +6399,10 @@ function initiate_generate() {
         `Generate Dataset - ${dataset_name}`,
         main_total_generate_dataset_size
       );
-      
+
       file_counter = 0; folder_counter = 0;
       get_num_files_and_folders(sodaJSONObj["dataset-structure"])
-      
+
       ipcRenderer.send(
         "track-event",
         "Success",
