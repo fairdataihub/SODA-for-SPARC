@@ -927,13 +927,13 @@
       </div>
 
       <div class="footer-div">
-        <div style="display: flex; flex-direction: row; width: 110px">
+        <div style="display: flex; flex-direction: row; width: 120px">
           <button
             type="button"
             class="transition-btn prev"
             data-section="main_tabs"
           >
-            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
           </button>
         </div>
       </div>
@@ -945,45 +945,49 @@
     class="section js-section u-category-windows"
     style="padding-left: 15px; overflow-y: hidden"
   >
+
+    <header class="section-header">
+      <div
+        style="
+          display: inline-flex;
+          align-items: center;
+          flex-direction: row;
+          width: 94.5%;
+          padding-right: 20px;
+          margin-bottom: 50px;
+        "
+      >
+        <div
+          style="
+            width: 100%;
+            border-bottom: 3px solid #b80d49;
+            margin-bottom: -5px;
+          "
+        >
+          <div class="need-help-div">
+            <h2>Prepare Metadata - Create submission.xlsx</h2>
+            <a
+              target="_blank"
+              href="https://github.com/bvhpatel/SODA/wiki/Create-submission.xlsx"
+              >Need help?</a
+            >
+          </div>
+        </div>
+      </div>
+    </header>
+
     <div
       class="main-tabs show"
       id="create_submission-tab"
       style="
-        height: calc(100% - 60px);
+        height: calc(100% - 143px);
         overflow-y: auto;
         display: flex;
         flex-direction: column;
+        margin-left: -70px;
       "
     >
-      <header class="section-header">
-        <div
-          style="
-            display: inline-flex;
-            align-items: center;
-            flex-direction: row;
-            width: 94.5%;
-            padding-right: 20px;
-            margin-bottom: 50px;
-          "
-        >
-          <div
-            style="
-              width: 100%;
-              border-bottom: 3px solid #b80d49;
-              margin-bottom: -5px;
-            "
-          >
-            <div class="need-help-div">
-              <h2>Prepare Metadata - Create submission.xlsx</h2>
-              <a
-                target="_blank"
-                href="https://github.com/bvhpatel/SODA/wiki/Create-submission.xlsx"
-                >Need help?</a
-              >
-            </div>
-          </div>
-        </div>
-      </header>
+
 
       <div
         class="individual-question prepare-submission show"
@@ -2011,18 +2015,7 @@
             >
               <button
                 onclick="resetSubmission()"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 10px;
-                  width: 120px;
-                  height: 35px;
-                  background-color: #fcae3f;
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 13px;
-                "
+                class= "start-over"
               >
                 <i class="fas fa-sync-alt" style="margin-right: 10px"></i>
                 Start over
@@ -2066,13 +2059,13 @@
     </div>
 
     <div class="footer-div">
-      <div style="display: flex; flex-direction: row; width: 110px">
+      <div style="display: flex; flex-direction: row; width: 120px">
         <button
           type="button"
           class="transition-btn prev"
           data-section="main_tabs"
         >
-          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
         </button>
       </div>
     </div>
@@ -2084,46 +2077,49 @@
     class="section js-section u-category-windows"
     style="padding-left: 15px; overflow-y: hidden"
   >
+
+    <header class="section-header">
+      <div
+        style="
+          display: inline-flex;
+          align-items: center;
+          flex-direction: row;
+          width: 94.5%;
+          padding-right: 20px;
+          margin-bottom: 50px;
+        "
+      >
+        <div
+          style="
+            width: 100%;
+            border-bottom: 3px solid #b80d49;
+            margin-bottom: -5px;
+          "
+        >
+          <div class="need-help-div">
+            <h2>Prepare Metadata - Create dataset_description.xlsx</h2>
+            <a
+              target="_blank"
+              href="https://github.com/bvhpatel/SODA/wiki/Create-dataset_description.xlsx"
+              >Need help?</a
+            >
+          </div>
+        </div>
+      </div>
+    </header>
+
     <div
       class="main-tabs show"
       id="create_dataset_description-tab"
       style="
-        height: calc(100% - 60px);
+        height: calc(100% - 143px);
         overflow-y: auto;
         display: flex;
         flex-direction: column;
         margin-bottom: 0;
+        margin-left: -40px;
       "
     >
-      <header class="section-header">
-        <div
-          style="
-            display: inline-flex;
-            align-items: center;
-            flex-direction: row;
-            width: 94.5%;
-            padding-right: 20px;
-            margin-bottom: 50px;
-          "
-        >
-          <div
-            style="
-              width: 100%;
-              border-bottom: 3px solid #b80d49;
-              margin-bottom: -5px;
-            "
-          >
-            <div class="need-help-div">
-              <h2>Prepare Metadata - Create dataset_description.xlsx</h2>
-              <a
-                target="_blank"
-                href="https://github.com/bvhpatel/SODA/wiki/Create-dataset_description.xlsx"
-                >Need help?</a
-              >
-            </div>
-          </div>
-        </div>
-      </header>
 
       <div
         class="individual-question prepare-dd show"
@@ -2545,7 +2541,7 @@
                       <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                       <span class="tooltiptext">
                         Number of unique subjects in this dataset, should match
-                        subjects metadata file. Must be greater or equal to 1.
+                        subjects metadata file. Must be greater or equal to 1. <br>Note: Further information about SPARC metadata files can be found <a href='https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT' target='_blank'>here</a>.
                       </span>
                     </div>
                   </div>
@@ -2567,7 +2563,7 @@
                       <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                       <span class="tooltiptext">
                         Number of unique samples in this dataset, should match
-                        samples metadata file. Set to 0 if there are no samples.
+                        samples metadata file. Set to 0 if there are no samples. <br>Note: Further information about SPARC metadata files can be found <a href='https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT' target='_blank'>here</a>.
                       </span>
                     </div>
                   </div>
@@ -3365,18 +3361,7 @@
             >
               <button
                 onclick="resetDD()"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 10px;
-                  width: 120px;
-                  height: 35px;
-                  background-color: #fcae3f;
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 13px;
-                "
+                class= "start-over"
               >
                 <i class="fas fa-sync-alt" style="margin-right: 10px"></i>
                 Start over
@@ -3416,13 +3401,13 @@
     </div>
     <!-- back button -->
     <div class="footer-div">
-      <div style="display: flex; flex-direction: row; width: 110px">
+      <div style="display: flex; flex-direction: row; width: 120px">
         <button
           type="button"
           class="transition-btn prev"
           data-section="main_tabs"
         >
-          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
         </button>
       </div>
     </div>

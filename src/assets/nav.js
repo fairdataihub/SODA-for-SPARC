@@ -1,4 +1,6 @@
 const settings = require("electron-settings");
+// this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
+var nextBtnDisabledVariable = true;
 
 document.body.addEventListener("click", (event) => {
   if (event.target.dataset.section) {
@@ -29,14 +31,23 @@ function handleSectionTrigger(event) {
   const sectionId = `${event.target.dataset.section}-section`;
   document.getElementById(sectionId).classList.add("is-shown");
 
+  considerNextBtn()
+
   // Save currently active button in localStorage
   const buttonId = event.target.getAttribute("id");
   settings.set("activeSectionButtonId", buttonId);
 }
-//
-// function activateDefaultSection () {
-//   document.getElementById('button-windows').click()
-// }
+
+function considerNextBtn() {
+  if (nextBtnDisabledVariable !== undefined) {
+    if (nextBtnDisabledVariable === true) {
+      $("#nextBtn").prop("disabled", true)
+    } else {
+      $("#nextBtn").prop("disabled", false)
+    }
+  }
+}
+
 
 function showMainContent() {
   document.querySelector(".js-nav").classList.add("is-shown");

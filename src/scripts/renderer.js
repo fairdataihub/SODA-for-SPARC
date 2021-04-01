@@ -24,7 +24,11 @@ const bootbox = require("bootbox");
 const DragSelect = require("dragselect");
 const excelToJson = require("convert-excel-to-json");
 const csvToJson = require("convert-csv-to-json");
+const Jimp = require("jimp");
+const { JSONStorage } = require("node-localstorage");
 
+const prevent_sleep_id = ""
+const electron_app = electron.app;
 const app = remote.app;
 var noAirtable = false;
 
@@ -87,6 +91,8 @@ require("dns").resolve("www.google.com", (err) => {
     updateBfAccountList();
   }
 });
+
+// Blackfynn to Pennseive transition
 
 const notification = document.getElementById("notification");
 const message = document.getElementById("message");
@@ -577,8 +583,13 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       fs.createWriteStream(destinationPath)
     );
     var emessage =
-      "Successfully saved file " + templateItem + " to " + destinationFolder;
-    ipcRenderer.send("open-info-metadata-file-donwloaded", emessage);
+      "Successfully saved '" + templateItem + "' to " + destinationFolder;
+    Swal.fire(
+      'Download successful',
+      `${emessage}`,
+      'success'
+    )
+    //ipcRenderer.send("open-info-metadata-file-donwloaded", emessage);
   }
 };
 
@@ -1555,7 +1566,7 @@ function grabDSInfoEntries() {
     name = "N/A";
   } else {
     name = rawName.value;
-    if (name === "Select") {
+    if (name === "Select" || name === "Select dataset") {
       name = "N/A";
     }
   }
@@ -1955,6 +1966,8 @@ const tuiInstance = new Editor({
   initialEditType: "wysiwyg",
   previewStyle: "vertical",
   height: "400px",
+  hideModeSwitch: true,
+  placeholder: "Add your description here",
   toolbarItems: [
     "heading",
     "bold",
@@ -1972,6 +1985,7 @@ function countCharacters(textelement, pelement) {
   var textEntered = textelement.value;
   var counter = 256 - textEntered.length;
   pelement.innerHTML = counter + " characters remaining";
+  return textEntered.length;
 }
 
 bfDatasetSubtitle.addEventListener("keyup", function () {
@@ -2535,6 +2549,8 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
   var selectedbfaccount = defaultBfAccount;
   var selectedbfdataset = defaultBfDataset;
 
+  // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
+
   client.invoke(
     "api_bf_submit_dataset",
     selectedbfaccount,
@@ -2565,6 +2581,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
         });
         bfSubmitDatasetBtn.disabled = false;
         pathSubmitDataset.disabled = false;
+        // electron.powerSaveBlocker.stop(prevent_sleep_id)
       } else {
         $("#upload_local_dataset_progress_div")[0].scrollIntoView({
           behavior: "smooth",
@@ -2586,6 +2603,50 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           `Upload Local Dataset - ${selectedbfdataset}`,
           totalFileSize
         );
+        
+        client.invoke(
+          "api_get_number_of_files_and_folders_locally",
+          pathSubmitDataset.placeholder,
+          (error, res) => {
+            if (error) { 
+              log.error(error);
+              console.error(error);
+            }
+            else { 
+              let num_of_files = res[0];
+              let num_of_folders = res[1];
+
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                `Upload Local Dataset - ${defaultBfDataset} - Number of Folders`,
+                num_of_folders
+              );
+        
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                `Upload Local Dataset - Number of Folders`,
+                num_of_folders
+              );
+        
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                `Upload Local Dataset - ${defaultBfDataset} - Number of Files`,
+                num_of_files
+              );
+        
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                `Upload Local Dataset - Number of Files`,
+                num_of_files
+              );
+            }
+          });
+
+        // electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
     }
   );
@@ -2604,6 +2665,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           "<span style='color: red;'> " + emessage + sadCan + "</span>";
         log.error(error);
         console.error(error);
+        // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
       } else {
         completionStatus = res[1];
         var submitprintstatus = res[2];
@@ -2618,6 +2680,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
             ).innerHTML = "";
             document.getElementById("para-progress-bar-status").innerHTML =
               res[0] + smileyCan;
+            // electron.powerSaveBlocker.stop(prevent_sleep_id)
           } else {
             var value = (uploadedFileSize / totalFileSize) * 100;
             progressBarUploadBf.value = value;
@@ -2667,6 +2730,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
         clearInterval(timerProgress);
         bfSubmitDatasetBtn.disabled = false;
         pathSubmitDataset.disabled = false;
+        // electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
     }
   }
@@ -2917,12 +2981,28 @@ var cropOptions = {
   // preview: '.preview',
   viewMode: 1,
   responsive: true,
-  crop: function (e) {
-    var data = e.detail;
-    formBannerHeight.value = Math.round(data.height);
+  crop: function (event) {
+    var data = event.detail;
+    let image_height = Math.round(data.height);
+
+    formBannerHeight.value = image_height;
+
+    if (image_height < 512 || image_height > 2048) {
+      $("#save-banner-image").prop("disabled", true);
+      $("#form-banner-height").css("color", "red");
+      $("#form-banner-height").css("border", "1px solid red");
+      $(".crop-image-text").css("color", "red");
+    } else {
+      $("#save-banner-image").prop("disabled", false);
+      $("#form-banner-height").css("color", "black");
+      $("#form-banner-height").css("border", "1px solid black");
+      $(".crop-image-text").css("color", "black");
+    }
+
     // formBannerWidth.value = Math.round(data.width)
   },
 };
+
 var imageExtension;
 var myCropper = new Cropper(bfViewImportedImage, cropOptions);
 // Action when user click on "Import image" button for banner image
@@ -2931,16 +3011,127 @@ bfImportBannerImageBtn.addEventListener("click", (event) => {
   ipcRenderer.send("open-file-dialog-import-banner-image");
 });
 
-ipcRenderer.on("selected-banner-image", (event, path) => {
+ipcRenderer.on("selected-banner-image", async (event, path) => {
   if (path.length > 0) {
-    document.getElementById("div-img-container-holder").style.display = "none";
-    document.getElementById("div-img-container").style.display = "block";
-    datasetBannerImagePath.innerHTML = path;
+    let original_image_path = path[0];
+    let image_path = original_image_path;
+    let destination_image_path = require("path").join(
+      homeDirectory,
+      "SODA",
+      "banner-image-conversion"
+    );
+    let converted_image_file = require("path").join(
+      destination_image_path,
+      "converted-tiff.jpg"
+    );
+    let conversion_success = true;
     imageExtension = path[0].split(".").pop();
-    bfViewImportedImage.src = path[0];
-    myCropper.destroy();
-    myCropper = new Cropper(bfViewImportedImage, cropOptions);
-    $("#save-banner-image").css("visibility", "visible");
+
+    if (imageExtension.toLowerCase() == "tiff") {
+      $("body").addClass("waiting");
+      Swal.fire({
+        title: "Image conversion in progress!",
+        html:
+          "Blackfynn does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
+        timer: 4000,
+        timerProgressBar: true,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      }).then((result) => {
+        /* Read more about handling dismissals below */
+        if (result.dismiss === Swal.DismissReason.timer) {
+          console.log("I was closed by the timer");
+        }
+      });
+
+      await Jimp.read(original_image_path)
+        .then(async (file) => {
+          if (!fs.existsSync(destination_image_path)) {
+            fs.mkdirSync(destination_image_path);
+          }
+
+          try {
+            if (fs.existsSync(converted_image_file)) {
+              fs.unlinkSync(converted_image_file);
+            }
+          } catch (err) {
+            conversion_success = false;
+            console.error(err);
+          }
+
+          return file.write(converted_image_file, async () => {
+            if (fs.existsSync(converted_image_file)) {
+              let stats = fs.statSync(converted_image_file);
+              let fileSizeInBytes = stats.size;
+              let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+              if (fileSizeInMegabytes > 5) {
+                fs.unlinkSync(converted_image_file);
+
+                await Jimp.read(original_image_path)
+                  .then((file) => {
+                    return file
+                      .resize(1024, 1024)
+                      .write(converted_image_file, () => {
+                        document.getElementById(
+                          "div-img-container-holder"
+                        ).style.display = "none";
+                        document.getElementById(
+                          "div-img-container"
+                        ).style.display = "block";
+
+                        datasetBannerImagePath.innerHTML = image_path;
+                        bfViewImportedImage.src = converted_image_file;
+                        myCropper.destroy();
+                        myCropper = new Cropper(
+                          bfViewImportedImage,
+                          cropOptions
+                        );
+                        $("#save-banner-image").css("visibility", "visible");
+                        $("body").removeClass("waiting");
+                      });
+                  })
+                  .catch((err) => {
+                    conversion_success = false;
+                    console.error(err);
+                  });
+                if (fs.existsSync(converted_image_file)) {
+                  let stats = fs.statSync(converted_image_file);
+                  let fileSizeInBytes = stats.size;
+                  let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+                  if (fileSizeInMegabytes > 5) {
+                    console.log("File size is too big", fileSizeInMegabytes);
+                    conversion_success = false;
+                    // SHOW ERROR
+                  }
+                }
+              }
+              image_path = converted_image_file;
+              imageExtension = "jpg";
+            }
+          });
+        })
+        .catch((err) => {
+          conversion_success = false;
+          console.error(err);
+        });
+      if (conversion_success == false) {
+        $("body").removeClass("waiting");
+        return;
+      }
+    } else {
+      document.getElementById("div-img-container-holder").style.display =
+        "none";
+      document.getElementById("div-img-container").style.display = "block";
+
+      datasetBannerImagePath.innerHTML = image_path;
+      bfViewImportedImage.src = image_path;
+      myCropper.destroy();
+      myCropper = new Cropper(bfViewImportedImage, cropOptions);
+      $("#save-banner-image").css("visibility", "visible");
+    }
   } else {
     if ($("#para-current-banner-img").text() === "None") {
       $("#save-banner-image").css("visibility", "hidden");
@@ -3108,7 +3299,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
 
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
-  var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].text;
+  var selectedUser = bfListUsersPI.options[bfListUsersPI.selectedIndex].value;
   var selectedRole = "owner";
 
   if (index === 0) {
@@ -3129,6 +3320,10 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
           bfCurrentPermissionProgress.style.display = "none";
           bfAddEditCurrentPermissionProgress.style.display = "none";
         } else {
+          let nodeStorage = new JSONStorage(
+            app.getPath("userData")
+          );
+          nodeStorage.setItem("previously_selected_PI", selectedUser);
           $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
           datasetPermissionStatusPI.innerHTML = res;
           showCurrentPermission();
@@ -3139,6 +3334,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
   } else {
     bfCurrentPermissionProgress.style.display = "none";
     bfAddEditCurrentPermissionProgress.style.display = "none";
+    $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
   }
 });
 
@@ -3152,7 +3348,7 @@ bfAddPermissionBtn.addEventListener("click", () => {
 
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
-  var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text;
+  var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].value;
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text;
 
   if (selectedRole === "owner") {
@@ -3171,7 +3367,7 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
 
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
-  var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].text;
+  var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].value;
   var selectedRole = bfListRoles.options[bfListRoles.selectedIndex].text;
 
   datasetPermissionStatus.innerHTML = "";
@@ -3398,7 +3594,15 @@ function showCurrentSubtitle() {
           console.error(error);
         } else {
           bfDatasetSubtitle.value = res;
-          countCharacters(bfDatasetSubtitle, bfDatasetSubtitleCharCount);
+          let result = countCharacters(
+            bfDatasetSubtitle,
+            bfDatasetSubtitleCharCount
+          );
+          if (result === 0) {
+            $("#button-add-subtitle").html("Add subtitle");
+          } else {
+            $("#button-add-subtitle").html("Edit subtitle");
+          }
         }
       }
     );
@@ -3424,6 +3628,11 @@ function showCurrentDescription() {
           console.error(error);
         } else {
           tuiInstance.setMarkdown(res);
+          if ((res = "")) {
+            $("#button-add-description").html("Add description");
+          } else {
+            $("#button-add-description").html("Edit description");
+          }
         }
       }
     );
@@ -3550,10 +3759,12 @@ function refreshBfUsersList() {
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
         for (var myItem in res) {
-          var myUser = res[myItem];
+          // returns like [..,''fname lname email !!**!! blackfynn_id',',..]
+          let sep_pos = res[myItem].lastIndexOf('!|**|!');
+          var myUser = res[myItem].substring(0,sep_pos);
           var optionUser = document.createElement("option");
           optionUser.textContent = myUser;
-          optionUser.value = myUser;
+          optionUser.value = res[myItem].substring(sep_pos + 6);
           bfListUsers.appendChild(optionUser);
           var optionUser2 = optionUser.cloneNode(true);
           bfListUsersPI.appendChild(optionUser2);
@@ -3775,28 +3986,6 @@ function selectOptionColor(mylist) {
 
 ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
-
-// function getDatasetList() {
-//   client.invoke("api_bf_account_details", defaultBfAccount, (error, res) => {
-//     if (error) {
-//       log.error(error);
-//       console.error(error);
-//     } else {
-//       datasetList = [];
-//       datasetList = res["datasets"];
-//       refreshDatasetList()
-//     }
-//   });
-// }
-
-// rename datasets in place without calling Python
-// function renameDatasetInList(oldName, newName) {
-//   for (var i = 0; i < datasetList.length; i++) {
-//     if (datasetList[i].name === oldName) {
-//       datasetList[i].name = newName;
-//     }
-//   }
-// }
 
 /// add new datasets to dataset List without calling Python to retrieve new list from Blackfynn
 function addNewDatasetToList(newDataset) {
@@ -4168,7 +4357,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
   } else {
     bootbox.alert({
       message:
-        "New folders cannot be added at this level. Please go back to add another high-level SPARC folder.",
+        "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
       centerVertical: true,
     });
   }
@@ -4255,7 +4444,7 @@ function showDetailsFile() {
 
 var bfAddAccountBootboxMessage =
   "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='text' /></div></div></form>";
-var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Blackfynn API key and secret below:<i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Blackfynn-account-with-SODA'> help page </a>for generating API key and secret and setting up your Blackfynn account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Blackfynn API key and secret below:<i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Blackfynn-account-with-SODA'> help page </a>for generating API key and secret and setting up your Blackfynn account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Blackfynn accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
 function addBFAccountInsideBootbox(myBootboxDialog) {
   var name = $("#bootbox-key-name").val();
@@ -4278,6 +4467,8 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
       $("#bootbox-api-key").val("");
       $("#bootbox-api-secret").val("");
       bfAccountOptions[name] = name;
+      defaultBfAccount = name;
+      defaultBfDataset = "Select dataset"
       updateBfAccountList();
       client.invoke("api_bf_account_details", name, (error, res) => {
         if (error) {
@@ -4302,7 +4493,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
           $("#para-account-detail-curate-generate").html(res);
           $("#para_create_empty_dataset_BF_account").html(res);
           $(".bf-account-details-span").html(res);
-
+          $("#para-continue-bf-dataset-getting-started").text("");
           showHideDropdownButtons("account", "show");
         }
       });
@@ -4757,7 +4948,7 @@ function addFoldersfunction(folderArray, currentLocation) {
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount === 1) {
     bootbox.alert({
-      message: "Other non-SPARC folders cannot be added to this dataset level!",
+      message: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
       centerVertical: true,
     });
   } else {
@@ -4826,7 +5017,7 @@ function allowDrop(ev) {
 
 async function drop(ev) {
   // get global path
-  
+
   var currentPath = organizeDSglobalPath.value;
   var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.slice(1).filter(function (el) {
@@ -4867,7 +5058,7 @@ async function drop(ev) {
       if (slashCount === 1) {
         bootbox.alert({
           message:
-            "<p>SPARC metadata files can be imported in the next step!</p>",
+            "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
           centerVertical: true,
         });
         break;
@@ -4916,7 +5107,7 @@ async function drop(ev) {
       if (slashCount === 1) {
         bootbox.alert({
           message:
-            "Other non-SPARC folders cannot be added to this dataset level!",
+            "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
           centerVertical: true,
         });
       } else {
@@ -5742,14 +5933,39 @@ $("#inputNewNameDataset").keyup(function () {
       $("#nextBtn").prop("disabled", true);
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
     } else {
-      document.getElementById("div-confirm-inputNewNameDataset").style.display =
-        "flex";
+      $("#div-confirm-inputNewNameDataset").css("display", "flex");
       $("#btn-confirm-new-dataset-name").show();
       $("#Question-generate-dataset-generate-div").show();
       $("#Question-generate-dataset-generate-div").children().show();
 
       $("#Question-generate-dataset-generate-div-old").addClass("show");
       document.getElementById("para-new-name-dataset-message").innerHTML = "";
+      $("#nextBtn").prop("disabled", false);
+    }
+  } else {
+    $("#nextBtn").prop("disabled", true);
+  }
+});
+
+$("#inputNewNameDataset").click(function () {
+  var newName = $("#inputNewNameDataset").val().trim();
+
+  if (newName !== "") {
+    if (check_forbidden_characters_bf(newName)) {
+      document.getElementById("div-confirm-inputNewNameDataset").style.display =
+        "none";
+      $("#btn-confirm-new-dataset-name").hide();
+      $("#nextBtn").prop("disabled", true);
+      $("#Question-generate-dataset-generate-div-old").removeClass("show");
+    } else {
+      $("#div-confirm-inputNewNameDataset").css("display", "flex");
+      $("#btn-confirm-new-dataset-name").show();
+      $("#Question-generate-dataset-generate-div").show();
+      $("#Question-generate-dataset-generate-div").children().show();
+
+      $("#Question-generate-dataset-generate-div-old").addClass("show");
+      document.getElementById("para-new-name-dataset-message").innerHTML = "";
+      $("#nextBtn").prop("disabled", false);
     }
   } else {
     $("#nextBtn").prop("disabled", true);
@@ -5776,7 +5992,7 @@ document
     document.getElementById("nextBtn").disabled = true;
     ipcRenderer.send("open-file-dialog-local-destination-curate");
   });
-
+  
 ipcRenderer.on(
   "selected-local-destination-datasetCurate",
   (event, filepath) => {
@@ -6065,10 +6281,14 @@ const divGenerateProgressBar = document.getElementById(
 );
 const generateProgressBar = document.getElementById("progress-bar-new-curate");
 
+let file_counter = 0;
+let folder_counter = 0;
+
 function initiate_generate() {
   // Initiate curation by calling Python funtion
   let manifest_files_requested = false;
   var main_curate_status = "Solving";
+  var main_total_generate_dataset_size;
 
   document.getElementById("para-new-curate-progress-bar-status").innerHTML =
     "Preparing files ...";
@@ -6084,6 +6304,30 @@ function initiate_generate() {
     }
   }
 
+  let dataset_name = "";
+
+  if ("bf-dataset-selected" in sodaJSONObj)
+  {
+    dataset_name = sodaJSONObj["bf-dataset-selected"]
+  }
+  else if("generate-dataset" in sodaJSONObj)
+  {
+    if ("destination" in sodaJSONObj["generate-dataset"])
+    {
+      let destination = sodaJSONObj["generate-dataset"]["destination"]
+      if (destination == "local")
+      {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"]
+      }
+      if (destination == "bf")
+      {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"]
+      }
+    }
+  }
+
+  // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
+
   client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
     if (error) {
       var emessage = userError(error);
@@ -6097,6 +6341,15 @@ function initiate_generate() {
       log.error(error);
       console.error(error);
       // forceActionSidebar('show');
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Generate Dataset",
+        dataset_name
+      );
+
+      // electron.powerSaveBlocker.stop(prevent_sleep_id)
+
       client.invoke(
         "api_bf_dataset_account",
         defaultBfAccount,
@@ -6119,9 +6372,56 @@ function initiate_generate() {
           "track-event",
           "Success",
           "Manifest Files Created",
-          defaultBfDataset
+          dataset_name
         );
       }
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        "Generate Dataset",
+        dataset_name,
+        main_total_generate_dataset_size
+      );
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset - ${dataset_name}`,
+        main_total_generate_dataset_size
+      );
+      
+      file_counter = 0; folder_counter = 0;
+      get_num_files_and_folders(sodaJSONObj["dataset-structure"])
+      
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset - ${dataset_name} - Number of Folders`,
+        folder_counter
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset - Number of Folders`,
+        folder_counter
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset - ${dataset_name} - Number of Files`,
+        file_counter
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset - Number of Files`,
+        file_counter
+      );
+
+      // electron.powerSaveBlocker.stop(prevent_sleep_id)
+
       client.invoke(
         "api_bf_dataset_account",
         defaultBfAccount,
@@ -6156,7 +6456,7 @@ function initiate_generate() {
         main_curate_status = res[0];
         var start_generate = res[1];
         var main_curate_progress_message = res[2];
-        var main_total_generate_dataset_size = res[3];
+        main_total_generate_dataset_size = res[3];
         var main_generated_dataset_size = res[4];
         var elapsed_time_formatted = res[5];
 
@@ -6240,10 +6540,26 @@ function initiate_generate() {
         // then show the sidebar again
         forceActionSidebar("show");
         clearInterval(timerProgress);
+        // electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
     }
   }
 }
+
+const get_num_files_and_folders = (dataset_folders) => {
+  if ("files" in dataset_folders) {
+    for (let file in dataset_folders["files"]) {
+      file_counter += 1
+    }
+  }
+  if ("folders" in dataset_folders) {
+    for (let folder in dataset_folders["folders"]) {
+      folder_counter += 1
+      get_num_files_and_folders(dataset_folders["folders"][folder]);
+    }
+  }
+  return;
+};
 
 function backend_to_frontend_warning_message(error_array) {
   if (error_array.length > 1) {
@@ -6646,7 +6962,6 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
         console.error(error);
         $("body").removeClass("waiting")
       } else {
-        console.log(res);
         $("body").removeClass("waiting")
       }
     });

@@ -65,6 +65,7 @@ button[disabled] {
 button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id="bf_list_teams"], button[data-id="bf_list_roles_team"]{
   border: 1px solid rgba(34,36,38,.15);
   border-radius: 7px;
+  width: 90% !important;
 }
 
 .sidebar {
@@ -390,9 +391,9 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
 }
 
 .button-back {
-  color: var(--tagify-dd-color-primary);
+  color: #666666;
   background-color: #fff;
-  border: 1px solid var(--tagify-dd-color-primary);
+  border: 1px solid #666666;
   border-radius: 5px;
   height: 35px;
   width: 40px;
@@ -402,7 +403,7 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
 }
 
 .button-back:hover {
-  box-shadow: 0 0 3px 0px #585858;
+  box-shadow: 0 0 3px 0px #666666;
 }
 .button-back:active {
   transform: translateY(-4px);
@@ -563,7 +564,15 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
   box-shadow: 0px 0px 10px #d5d5d5;
 }
 
-.button-generate-dataset:hover,
+.button-generate-dataset:hover {
+  outline: none;
+  /* border: 1px solid var(--color-light-green); */
+  box-shadow: 0px 0px 10px 0px var(--color-light-green);
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+
+}
+
 .button-generate-dataset:active,
 .button-generate-dataset:focus {
   outline: none;

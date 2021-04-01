@@ -1881,8 +1881,8 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     global main_total_generate_dataset_size
     global start_generate
     global main_initial_bfdataset_size
-    global progress_percentage
-    global progress_percentage_array
+    # global progress_percentage
+    # global progress_percentage_array
     bfsd = ""
 
     # Delete any files on blackfynn that have been marked as deleted
@@ -2085,8 +2085,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
     global main_total_generate_dataset_size
     global start_generate
     global main_initial_bfdataset_size
-    global progress_percentage
-    global progress_percentage_array
+    # global progress_percentage
+    # global progress_percentage_array
 
     try:
 
@@ -2345,20 +2345,24 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             relative_path = item[6]
 
             # track block upload size for a more reactive progress bar
-            progress_percentage = io.StringIO()
-            total_size = 0
-            progress_percentage_array.append({});
-            progress_percentage_array[-1]["files"] = {}
-            for file in list_upload:
-                file_size = os.path.getsize(file)
+            # progress_percentage = io.StringIO()
+            # total_size = 0
+            # progress_percentage_array.append({});
+            # progress_percentage_array[-1]["files"] = {}
+            # for file in list_upload:
+                # file_size = os.path.getsize(file)
                 #file_name = os.path.basename(file)
-                progress_percentage_array[-1]["files"][file] = file_size
-                total_size += file_size
-            progress_percentage_array[-1]["output-stream"] = progress_percentage
-            progress_percentage_array[-1].pop('completed-size', None)
+                # progress_percentage_array[-1]["files"][file] = file_size
+                # total_size += file_size
+            # progress_percentage_array[-1]["output-stream"] = progress_percentage
+            # progress_percentage_array[-1].pop('completed-size', None)
 
             #upload
             main_curate_progress_message = "Uploading files in " + str(relative_path)
+            
+            ## check if agent is running in the background
+            agent_running()
+
             bf_folder.upload(*list_upload)
             bf_folder.update()
 
@@ -2397,8 +2401,8 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
 main_curate_status = ""
 main_curate_print_status = ""
 main_curate_progress_message = ""
-progress_percentage = "0.0%"
-progress_percentage_array = []
+# progress_percentage = "0.0%"
+# progress_percentage_array = []
 main_total_generate_dataset_size = 1
 main_generated_dataset_size = 0
 start_generate = 0
@@ -2505,8 +2509,8 @@ def main_curate_function(soda_json_structure):
     global generate_start_time
     global main_generate_destination
     global main_initial_bfdataset_size
-    global progress_percentage
-    global progress_percentage_array
+    # global progress_percentage
+    # global progress_percentage_array
 
     global bf
     global myds
@@ -2521,8 +2525,8 @@ def main_curate_function(soda_json_structure):
 
     main_curate_status = "Curating"
     main_curate_progress_message = "Starting dataset curation"
-    progress_percentage = "000.0%"
-    progress_percentage_array = []
+    # progress_percentage = "000.0%"
+    # progress_percentage_array = []
     main_generate_destination = ""
     main_initial_bfdataset_size = 0
     bf = ""
@@ -2678,8 +2682,8 @@ def main_curate_function_progress():
     global generate_start_time
     global main_generate_destination
     global main_initial_bfdataset_size
-    global progress_percentage
-    global progress_percentage_array
+    # global progress_percentage
+    # global progress_percentage_array
 
     elapsed_time = time.time() - generate_start_time
     elapsed_time_formatted = time_format(elapsed_time)
@@ -2770,7 +2774,7 @@ def generate_manifest_file_locally(soda_json_structure):
     """
     Function to generate manifest files locally
     """
-    
+
     def recursive_item_path_create(folder, path):
         if "files" in folder.keys():
             for item in list(folder["files"]):
@@ -2785,7 +2789,7 @@ def generate_manifest_file_locally(soda_json_structure):
                 recursive_item_path_create(folder["folders"][item], folder["folders"][item]['folderpath'][:])
 
         return
-    
+
     def copytree(src, dst, symlinks=False, ignore=None):
         for item in os.listdir(src):
             s = os.path.join(src, item)

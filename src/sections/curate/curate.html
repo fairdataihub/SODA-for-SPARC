@@ -140,29 +140,16 @@
                 color: #222;
                 font-weight: 600;
                 border: 1px solid transparent;
+                margin-bottom: 5px;
               "
             >
               Organize dataset
             </h2>
-            <button
-              id="start-over-btn"
-              type="button"
-              class="transition-btn"
-              style="
-                background-color: #fff;
-                color: #b80d49;
-                border: 1px solid #b80d49;
-                font-weight: 600;
-                padding: 5px;
-                width: 130px;
-                margin-right: 10px;
-                right: 10px;
-                margin-bottom: 10px;
-              "
-            >
-              <i class="fas fa-sync-alt" style="margin-right: 10px"></i>Start
-              over
-            </button>
+              <a class="anchorPrepareDataset"
+                target="_blank"
+                href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset"
+               
+                >Need help?</a>
           </div>
         </div>
       </header>
@@ -328,10 +315,10 @@
                   class="github-wiki-link"
                   href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset-Step-1:-Getting-started"
                 >
-                  <img
+                  <!-- <img
                     class="nav-video"
                     src="assets/img/documentation-icon.png"
-                  />
+                  /> -->
                 </a>
               </h3>
 
@@ -911,10 +898,10 @@
                   class="github-wiki-link"
                   href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset-Step-2:-Specify-high-level-folders"
                 >
-                  <img
+                  <!-- <img
                     class="nav-video"
                     src="assets/img/documentation-icon.png"
-                  />
+                  /> -->
                 </a>
               </h3>
               <div class="container-body condensed" style="min-height: 450px">
@@ -928,6 +915,10 @@
                 >
                   Which SPARC high-level folders<br />
                   would you like to add to your dataset?<br />
+                  <span style="font-size: 14px"
+                    >Note: You will be able to delete undesired folders in step 3.
+                  </span>
+                  <br/>
                   <span style="color: #696969; font-size: 13px"
                     >Please select at least one:
                   </span>
@@ -1079,10 +1070,10 @@
                   class="github-wiki-link"
                   href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset-Step-3:-Structure-dataset-files"
                 >
-                  <img
+                  <!-- <img
                     class="nav-video"
                     src="assets/img/documentation-icon.png"
-                  />
+                  /> -->
                 </a>
                 <br /><br />
                 <span
@@ -1095,7 +1086,7 @@
                 >
                   Virtually structure your dataset in the interface below <br />
                   by importing files, creating folders, renaming, and adding
-                  metadata to your files.</span
+                  metadata to your files. <br/>Note: You will be able to add metadata files in step 4.</span
                 >
               </h3>
 
@@ -1152,9 +1143,10 @@
                           style="
                             float: right;
                             margin-right: 10px;
-                            background: var(--tagify-dd-color-primary);
-                            color: #fff;
-                            border: none;
+                            color: var(--tagify-dd-color-primary);
+                            background: #fff;
+                            border: 1px solid var(--tagify-dd-color-primary);
+                            font-weight: 600;
                           "
                         >
                           <i class="fas fa-folder-plus"></i> New folder
@@ -1334,10 +1326,10 @@
                   class="github-wiki-link"
                   href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset--Step-4:-Specify-high-level-metadata-files"
                 >
-                  <img
+                  <!-- <img
                     class="nav-video"
                     src="assets/img/documentation-icon.png"
-                  />
+                  /> -->
                 </a>
                 <br />
               </h3>
@@ -2646,10 +2638,10 @@
                   class="github-wiki-link"
                   href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset-Step-5:-Request-manifest-files"
                 >
-                  <img
+                  <!-- <img
                     class="nav-video"
                     src="assets/img/documentation-icon.png"
-                  />
+                  /> -->
                 </a>
                 <br /><br />
               </h3>
@@ -2755,10 +2747,10 @@
                   class="github-wiki-link"
                   href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset-Step-6:-Generate-dataset"
                 >
-                  <img
+                  <!-- <img
                     class="nav-video"
                     src="assets/img/documentation-icon.png"
-                  />
+                  /> -->
                 </a>
                 <br /><br />
               </h3>
@@ -3848,10 +3840,10 @@
                   class="github-wiki-link"
                   href="https://github.com/bvhpatel/SODA/wiki/Organize-dataset-Step-7:-Preview-dataset"
                 >
-                  <img
+                  <!-- <img
                     class="nav-video"
                     src="assets/img/documentation-icon.png"
-                  />
+                  /> -->
                 </a>
                 <br /><br />
               </h3>
@@ -4117,20 +4109,60 @@
             justify-content: space-between;
           "
         >
-          <div style="display: flex; flex-direction: row; width: 110px">
+          <div style="display: flex; flex-direction: row; ">
             <button
               type="button"
               onclick="nextPrev(-1)"
               id="prevBtn"
-              class="transition-btn prev"
+              class="transition-btn back"
+              
             >
               <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
             </button>
+            <button
+              id="start-over-btn"
+              type="button"
+              class="transition-btn"
+              style="
+                background-color: #fff;
+                color: #b80d49;
+                border: 1px solid #b80d49;
+                font-weight: 600;
+                padding: 5px;
+                
+                margin-left: 10px;
+                right: 10px;
+                margin-bottom: 10px;
+                width: 135px;
+              "
+            >
+              <i class="fas fa-sync-alt" style="margin-right: 10px"></i>Start
+              over
+            </button>
           </div>
           <div style="display: flex; flex-direction: row">
+            <!-- <button
+              id="start-over-btn"
+              type="button"
+              class="transition-btn"
+              style="
+                background-color: #fff;
+                color: #b80d49;
+                border: 1px solid #b80d49;
+                font-weight: 600;
+                padding: 5px;
+                width: 130px;
+                
+                right: 10px;
+                margin-bottom: 10px;
+              "
+            >
+              <i class="fas fa-sync-alt" style="margin-right: 10px"></i>Start
+              over
+            </button> -->
             <button
               type="button"
-              class="content-button"
+              class="transition-btn"
               data-content="Save your progress to continue with your dataset later"
               rel="popover"
               data-placement="top"
@@ -4147,13 +4179,14 @@
                 font-size: 14px;
                 font-weight: 600;
                 margin-right: 10px;
+                border-radius: 5px;
               "
             >
               <i class="far fa-save" style="margin-right: 10px"></i>Save
               progress
             </button>
             <button
-              style="float: right"
+              style="float: right; width: 135px;"
               onclick="nextPrev(1)"
               id="nextBtn"
               type="button"

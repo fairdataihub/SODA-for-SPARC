@@ -137,8 +137,26 @@ function delFolder(
           /// get current location of folders or files
           let itemToRestore = itemToDelete;
           var filtered = getGlobalPath(organizeCurrentLocation);
+
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
 
+          if (filtered.length == 1) {
+            let itemToRestore_new_key = itemToRestore.substring(
+              0,
+              itemToRestore.lastIndexOf("-")
+            );
+            if (itemToRestore_new_key in myPath[type]) {
+              bootbox.alert({
+                title: "Unable to restore " + promptVar,
+                message:
+                  "There already exists a high level folder with the same name. Please remove that folder before you restore this one.",
+                onEscape: true,
+                centerVertical: true,
+              });
+              return;
+            }
+          }
+          
           if (type === "folders") {
             recursive_mark_sub_files_deleted(
               myPath[type][itemToDelete],
@@ -599,7 +617,7 @@ function addFilesfunction(
     if (slashCount === 1) {
       bootbox.alert({
         message:
-          "<p>SPARC metadata files can be imported in the next step!</p>",
+          "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
         centerVertical: true,
       });
       break;

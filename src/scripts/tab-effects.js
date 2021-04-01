@@ -489,6 +489,11 @@ const nextPrev = (n) => {
     });
     $("#sidebarCollapse").click();
     document.body.dispatchEvent(event);
+    if ($("#nextBtn").prop("disabled") === true) {
+      nextBtnDisabledVariable = true;
+    } else {
+      nextBtnDisabledVariable = false
+    }
     return;
   }
 
@@ -668,7 +673,6 @@ const nextPrev = (n) => {
     }
     // Display the correct tab:
     showParentTab(currentTab, n);
-    //console.log(JSON.stringify(sodaJSONObj["dataset-structure"]))
   }
 };
 
@@ -890,6 +894,12 @@ async function transitionSubQuestions(
   ) {
     // append to parentDiv
     document.getElementById(parentDiv).appendChild(target);
+  }
+
+  if (currentDiv == 'Question-generate-dataset')
+  {
+    $("#inputNewNameDataset").val("");
+    $("#inputNewNameDataset").click();
   }
 
   // if buttons: Confirm account were hidden, show them again here
@@ -1548,6 +1558,15 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
       milestoneValues.push(milestonesRes[i].value);
     });
     $("#submission-milestones-span").text(milestoneValues.join(", \n"));
+  }
+
+  if (ev.getAttribute("data-next") == "div_make_pi_owner_permissions") {
+    let nodeStorage = new JSONStorage(app.getPath("userData"));
+    let previous_choice = nodeStorage.getItem("previously_selected_PI");
+    if ($(`#bf_list_users_pi option[value='${previous_choice}']`).length > 0) {
+      $("#bf_list_users_pi").val(previous_choice);
+      $("#bf_list_users_pi").selectpicker("refresh");
+    }
   }
 
   if (ev.getAttribute("data-next") == "div-rename-bf-dataset") {
@@ -2374,12 +2393,12 @@ const updateOverallJSONStructure = (id) => {
 //////////////////////////////// END OF Functions to update JSON object //////////////////////////////////////////
 
 var generateExitButtonBool = false;
-function raiseWarningExit() {
+function raiseWarningExit(message) {
   // function associated with the Exit button (Step 6: Generate dataset -> Generate div)
   return new Promise((resolve) => {
     bootbox.confirm({
       message:
-        "This will reset your progress so far. We recommend saving your progress before exiting. Are you sure you want to continue?",
+        message,
       buttons: {
         confirm: {
           label: "Yes",
@@ -2408,7 +2427,15 @@ const exitCurate = async (resetProgressTabs, start_over = false) => {
   $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate
   if (resetProgressTabs) {
-    var res = await raiseWarningExit();
+    var message;
+
+    if ($("#save-progress-btn").css("display") === "block") {
+      message = "This will reset your progress so far. We recommend saving your progress before exiting. Are you sure you want to continue?"
+    } else {
+      message = "Are you sure you want to start over?"
+    }
+
+    var res = await raiseWarningExit(message);
 
     if (res) {
       $(".vertical-progress-bar-step").removeClass("is-current");
@@ -2458,6 +2485,8 @@ const wipeOutCurateProgress = () => {
   // set back local destination for folders to empty
   $("#input-destination-generate-dataset-locally").val("");
   $("#input-destination-getting-started-locally").val("");
+  $("#input-destination-getting-started-locally").prop("placeholder", "Browse here");
+  $("#input-destination-generate-dataset-locally").prop("placeholder", "Browse here");
 
   // set metadata file paths to empty
   $(".para-metadata-file-status").text("");
@@ -2633,6 +2662,22 @@ $(document).ready(() => {
     $("#sidebarCollapse").removeClass("active");
     $(".section").removeClass("fullShown");
   });
+
+  // Blackfynn transition warning message
+  const url =
+    "https://raw.githubusercontent.com/bvhpatel/SODA/master/src/assets/blackfynn-warning-message.txt";
+  fetch(url).then(function (response) {
+    response.text().then(function (text) {
+      let warning_obj = JSON.parse(text);
+
+      if (warning_obj["show-warning-message"]) {
+        Swal.fire({
+          icon: "info",
+          html: `${warning_obj["warning-message"]}`,
+        });
+      }
+    });
+  });
 });
 
 $("#manage_dataset_tab").click();
@@ -2685,16 +2730,17 @@ $("#edit_banner_image_button").click(async () => {
 
       if (new_position != -1) {
         imageExtension = new_img_src.substring(new_position + 1);
-        if (imageExtension == "png") {
+        if (imageExtension.toLowerCase() == "png") {
           $("#image-banner").attr("src", "data:image/png;base64," + img_base64);
-        } else if (imageExtension == "jpeg") {
+        } else if (imageExtension.toLowerCase() == "jpeg") {
           $("#image-banner").attr(
             "src",
-            "data:image/jpeg;base64," + img_base64
+            "data:image/jpg;base64," + img_base64
           );
-        } else if (imageExtension == "jpg") {
+        } else if (imageExtension.toLowerCase() == "jpg") {
           $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
         } else {
+          log.error(`An error happened: ${img_src}`);
           console.log(`An error happened: ${img_src}`);
           bootbox.alert(
             `An error occured when importing the image. Please try again later.`
@@ -2708,6 +2754,7 @@ $("#edit_banner_image_button").click(async () => {
           return;
         }
       } else {
+        log.error(`An error happened: ${img_src}`);
         console.log(`An error happened: ${img_src}`);
         bootbox.alert(
           `An error occured when importing the image. Please try again later.`
@@ -2721,6 +2768,7 @@ $("#edit_banner_image_button").click(async () => {
         return;
       }
     } else {
+      log.error(`An error happened: ${img_src}`);
       console.log(`An error happened: ${img_src}`);
       bootbox.alert(
         `An error occured when importing the image. Please try again later.`
