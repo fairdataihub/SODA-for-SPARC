@@ -796,19 +796,6 @@ async function openDropdownPrompt(dropdown) {
 
               return undefined;
             } else {
-              // setTimeout(
-              //   Swal.fire({
-              //     title: "Loading your account details...",
-              //     timer: 2000,
-              //     timerProgressBar: true,
-              //     allowEscapeKey: false,
-              //     showConfirmButton: false,
-              //   }),
-              //   20
-              // );
-              $(".bf-dataset-span").html(bfDataset);
-
-              confirm_click_function();
               
               return bfDataset;
             }
@@ -830,6 +817,8 @@ async function openDropdownPrompt(dropdown) {
         $("#current-bf-dataset").text(bfDataset);
         $("#current-bf-dataset-generate").text(bfDataset);
         $(".bf-dataset-span").html(bfDataset);
+
+        confirm_click_function();
 
         defaultBfDataset = bfDataset;
         document.getElementById("ds-description").innerHTML = "";
