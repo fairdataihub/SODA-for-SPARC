@@ -1359,7 +1359,7 @@ async function moveItems(ev, category) {
         datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
       datasetStructureJSONObj["folders"][highLevelFol]["files"][
         "manifest.xlsx"
-      ]["forTreeview"]
+      ]["forTreeview"] === true
     ) {
       delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
         "manifest.xlsx"
@@ -1683,18 +1683,11 @@ $(jstreePreview).on("close_node.jstree", function (event, data) {
 function showTreeViewPreview(new_dataset_name) {
   datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
   if (manifestFileCheck.checked) {
-    for (var key in datasetStructureJSONObj["folders"]) {
-      if (highLevelFolders.includes(key)) {
-        if (
-          !("manifest.xlsx" in datasetStructureJSONObj["folders"][key]["files"])
-        ) {
-          datasetStructureJSONObj["folders"][key]["files"]["manifest.xlsx"] = {
-            forTreeview: true,
-          };
-        }
-      }
-    }
+    addManifestFilesForTreeView()
+  } else {
+    revertManifestForTreeView()
   }
+
   var jsTreePreviewData = create_child_node(
     datasetStructureJSONObj,
     new_dataset_name,
@@ -1710,33 +1703,32 @@ function showTreeViewPreview(new_dataset_name) {
   $(jstreePreview).jstree(true).refresh();
 }
 
-// per change event of current dataset span text
-// $(".bf-dataset-span").on("DOMSubtreeModified", function () {
-//   let temp = $(".bf-dataset-span").html();
-//   if (
-//     $(".bf-dataset-span").html() == "None" ||
-//     $(".bf-dataset-span").html() == ""
-//   ) {
-//     $($(this).parents().find(".field").find(".div-confirm-button")).css(
-//       "display",
-//       "none"
-//     );
-//     $("#para-review-dataset-info-disseminate").text("None");
-//   } else {
-//     $($(this).parents().find(".field").find(".div-confirm-button")).css(
-//       "display",
-//       "flex"
-//     );
-//     if ($($(this).parents().find(".field").find(".synced-progress")).length) {
-//       if (
-//         $($(this).parents().find(".field").find(".synced-progress")).css(
-//           "display"
-//         ) === "none"
-//       ) {
-//         $(".confirm-button").click();
-//       }
-//     } else {
-//       $(".confirm-button").click();
-//     }
-//   }
-// });
+// if checked
+function addManifestFilesForTreeView() {
+  for (var key in datasetStructureJSONObj["folders"]) {
+    if (highLevelFolders.includes(key)) {
+      var fileKey = datasetStructureJSONObj["folders"][key]["files"]
+      if (
+        !("manifest.xlsx" in fileKey)
+      ) {
+        fileKey["manifest.xlsx"] = {
+          forTreeview: true
+        };
+      }
+    }
+  }
+}
+
+// if unchecked
+function revertManifestForTreeView() {
+  for (var key in datasetStructureJSONObj["folders"]) {
+    if (highLevelFolders.includes(key)) {
+      var fileKey = datasetStructureJSONObj["folders"][key]["files"]
+      if (
+        ("manifest.xlsx" in fileKey && fileKey["manifest.xlsx"]["forTreeview"] === true)
+      ) {
+        delete fileKey["manifest.xlsx"]
+      }
+    }
+  }
+}

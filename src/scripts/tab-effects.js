@@ -517,7 +517,7 @@ const nextPrev = (n) => {
           datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
         datasetStructureJSONObj["folders"][highLevelFol]["files"][
           "manifest.xlsx"
-        ]["forTreeview"]
+        ]["forTreeview"] === true
       ) {
         delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
           "manifest.xlsx"
@@ -2571,7 +2571,7 @@ const saveSODAJSONProgress = (progressFileName) => {
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
       sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
         "manifest.xlsx"
-      ]["forTreeview"]
+      ]["forTreeview"] === true
     ) {
       delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
         "manifest.xlsx"
