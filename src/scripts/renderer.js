@@ -576,8 +576,13 @@ const downloadTemplates = (templateItem, destinationFolder) => {
   var destinationPath = path.join(destinationFolder, templateItem);
   if (fs.existsSync(destinationPath)) {
     var emessage =
-      "File " + templateItem + " already exists in " + destinationFolder;
-    ipcRenderer.send("open-error-metadata-file-exits", emessage);
+      "File '" + templateItem + "' already exists in " + destinationFolder;
+    //ipcRenderer.send("open-error-metadata-file-exits", emessage);
+    Swal.fire(
+      'Metadata file already exists',
+      `${emessage}`,
+      'error'
+    )
   } else {
     fs.createReadStream(templatePath).pipe(
       fs.createWriteStream(destinationPath)
@@ -1872,8 +1877,13 @@ ipcRenderer.on(
       $("#generate-dd-spinner").show();
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
-        var emessage = "File " + filename + " already exists in " + dirpath[0];
-        ipcRenderer.send("open-error-metadata-file-exits", emessage);
+        var emessage = "File '" + filename + "' already exists in " + dirpath[0];
+        // ipcRenderer.send("open-error-metadata-file-exits", emessage);
+        Swal.fire(
+          'Metadata file already exists',
+          `${emessage}`,
+          'error'
+        )
       } else {
         var datasetInfoValueArray = grabDSInfoEntries();
 
