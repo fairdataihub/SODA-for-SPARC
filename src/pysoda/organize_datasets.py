@@ -541,7 +541,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         from curate import bf_recognized_file_extensions
         filename, file_extension = os.path.splitext(file_name)
         if file_extension in bf_recognized_file_extensions:
-            return item_name 
+            return item_name
         else:
             return file_name
 
@@ -597,7 +597,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 package_id = item.id
                 package_details = bf._api._get('/packages/' + str(package_id))
                 file_name = package_details["content"]["name"]
-                #result = str(package_details["content"]) 
+                #result = str(package_details["content"])
                 #f.write(result)
                 #f.write("\n")
 
@@ -694,8 +694,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         folder_name = ""
         recursive_dataset_import(myds, dataset_folder, metadata_files, folder_name, level, manifest_dict)
 
-        
-        f.close()
+        # f.close()
 
         #remove metadata files keys if empty
         metadata_files = soda_json_structure["metadata-files"]
