@@ -2613,16 +2613,16 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           `Upload Local Dataset - ${selectedbfdataset}`,
           totalFileSize
         );
-        
+
         client.invoke(
           "api_get_number_of_files_and_folders_locally",
           pathSubmitDataset.placeholder,
           (error, res) => {
-            if (error) { 
+            if (error) {
               log.error(error);
               console.error(error);
             }
-            else { 
+            else {
               let num_of_files = res[0];
               let num_of_folders = res[1];
 
@@ -2632,21 +2632,21 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
                 `Upload Local Dataset - ${defaultBfDataset} - Number of Folders`,
                 num_of_folders
               );
-        
+
               ipcRenderer.send(
                 "track-event",
                 "Success",
                 `Upload Local Dataset - Number of Folders`,
                 num_of_folders
               );
-        
+
               ipcRenderer.send(
                 "track-event",
                 "Success",
                 `Upload Local Dataset - ${defaultBfDataset} - Number of Files`,
                 num_of_files
               );
-        
+
               ipcRenderer.send(
                 "track-event",
                 "Success",
@@ -6124,6 +6124,7 @@ document
     document.getElementById("div-vertical-progress-bar").style.display = "flex";
     document.getElementById("prevBtn").style.display = "inline";
     document.getElementById("nextBtn").style.display = "inline";
+    document.getElementById("start-over-btn").style.display = "inline-block";
     showParentTab(currentTab, 1);
     if (
       sodaJSONObj["starting-point"]["type"] == "new" &&
@@ -6156,6 +6157,7 @@ document
   .addEventListener("click", function () {
     $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
     document.getElementById("prevBtn").style.display = "none";
+    document.getElementById("start-over-btn").style.display = "none";
     document.getElementById("div-vertical-progress-bar").style.display = "none";
     document.getElementById("div-generate-comeback").style.display = "none";
     document.getElementById("generate-dataset-progress-tab").style.display =
