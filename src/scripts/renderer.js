@@ -3052,7 +3052,7 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
       }).then((result) => {
         /* Read more about handling dismissals below */
         if (result.dismiss === Swal.DismissReason.timer) {
-          console.log("I was closed by the timer");
+          //console.log("I was closed by the timer");
         }
       });
 
@@ -6471,7 +6471,7 @@ function initiate_generate() {
         var main_generated_dataset_size = res[4];
         var elapsed_time_formatted = res[5];
 
-        console.log(`Data transferred (bytes): ${main_generated_dataset_size}`);
+        //console.log(`Data transferred (bytes): ${main_generated_dataset_size}`);
 
         if (start_generate === 1) {
           divGenerateProgressBar.style.display = "block";

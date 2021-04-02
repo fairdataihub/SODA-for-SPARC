@@ -535,7 +535,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
     high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
     manifest_sparc = ["manifest.xlsx", "manifest.csv"]
     high_level_metadata_sparc = ['submission.xlsx', 'submission.csv', 'submission.json', 'dataset_description.xlsx', 'dataset_description.csv', 'dataset_description.json', 'subjects.xlsx', 'subjects.csv', 'subjects.json', 'samples.xlsx', 'samples.csv', 'samples.json', 'README.txt', 'CHANGES.txt']
-    f = open("dataset_contents.soda", "a")
+    #f = open("dataset_contents.soda", "a")
 
     def verify_file_name(item_name, file_name):
         from curate import bf_recognized_file_extensions
@@ -597,9 +597,9 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 package_id = item.id
                 package_details = bf._api._get('/packages/' + str(package_id))
                 file_name = package_details["content"]["name"]
-                result = str(package_details["content"]) 
-                f.write(result)
-                f.write("\n")
+                #result = str(package_details["content"]) 
+                #f.write(result)
+                #f.write("\n")
 
                 if my_level == 0 and file_name in high_level_metadata_sparc:
                     metadata_files[file_name] = {
