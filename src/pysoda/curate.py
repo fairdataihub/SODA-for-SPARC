@@ -2191,8 +2191,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                     if file["type"] == "local":
                         file_path = file["path"]
                         if isfile(file_path):
-
-                             initial_name = splitext(basename(file_path))[0]
+                            initial_name = splitext(basename(file_path))[0]
                             initial_extension = splitext(basename(file_path))[1]
                             initial_name_with_extention = basename(file_path)
                             desired_name = splitext(file_key)[0]
