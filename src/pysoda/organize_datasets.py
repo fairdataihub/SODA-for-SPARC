@@ -537,13 +537,14 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
     high_level_metadata_sparc = ['submission.xlsx', 'submission.csv', 'submission.json', 'dataset_description.xlsx', 'dataset_description.csv', 'dataset_description.json', 'subjects.xlsx', 'subjects.csv', 'subjects.json', 'samples.xlsx', 'samples.csv', 'samples.json', 'README.txt', 'CHANGES.txt']
     #f = open("dataset_contents.soda", "a")
 
-    def verify_file_name(item_name, file_name):
-        from curate import bf_recognized_file_extensions
-        filename, file_extension = os.path.splitext(file_name)
-        if file_extension in bf_recognized_file_extensions:
-            return item_name
-        else:
+    def verify_file_name(file_name, extension):
+        if extension == "":
             return file_name
+        extension_from_name = os.path.splitext(file_name)[1]
+        if extension_from_name == ('.' + extension):
+            return file_name
+        else:
+            return file_name + ('.' + extension)
 
     # Add a new key containing the path to all the files and folders on the
     # local data structure..
@@ -595,11 +596,9 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 if "files" not in dataset_folder:
                     dataset_folder["files"] = {}
                 package_id = item.id
-                package_details = bf._api._get('/packages/' + str(package_id))
-                file_name = package_details["content"]["name"]
-                #result = str(package_details["content"])
-                #f.write(result)
-                #f.write("\n")
+                file_details = bf._api._get(
+                    '/packages/' + str(package_id))
+                file_name = verify_file_name(file_details["content"]["name"], file_details["extension"])
 
                 if my_level == 0 and file_name in high_level_metadata_sparc:
                     metadata_files[file_name] = {
@@ -693,8 +692,6 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         manifest_dict = {}
         folder_name = ""
         recursive_dataset_import(myds, dataset_folder, metadata_files, folder_name, level, manifest_dict)
-
-        # f.close()
 
         #remove metadata files keys if empty
         metadata_files = soda_json_structure["metadata-files"]

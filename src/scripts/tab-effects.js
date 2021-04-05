@@ -1315,7 +1315,7 @@ const recursive_structure_create = (
 };
 
 // Function to verify if a local folder is a SPARC folder
-// Is no high level folders or any possible metadata files
+// If no high level folders or any possible metadata files
 // are found the folder is marked as invalid
 const verify_sparc_folder = (root_folder_path) => {
   possible_metadata_files = [
