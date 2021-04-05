@@ -5044,7 +5044,7 @@ async function drop(ev) {
   $("body").addClass("waiting");
 
   for (var file in myPath["files"]) {
-    uiFiles[path.parse(file).name] = 1;
+    uiFiles[path.parse(file).base] = 1;
   }
   for (var folder in myPath["folders"]) {
     uiFolders[path.parse(folder).name] = 1;
@@ -5053,7 +5053,7 @@ async function drop(ev) {
   for (var i = 0; i < ev.dataTransfer.files.length; i++) {
     /// Get all the file information
     var itemPath = ev.dataTransfer.files[i].path;
-    var itemName = ev.dataTransfer.files[i].name;
+    var itemName = path.parse(itemPath).base;
     var duplicate = false;
     var statsObj = fs.statSync(itemPath);
     // check for duplicate or files with the same name
@@ -5078,7 +5078,7 @@ async function drop(ev) {
           JSON.stringify(myPath["files"]) === "{}" &&
           JSON.stringify(importedFiles) === "{}"
         ) {
-          importedFiles[path.parse(itemPath).name] = {
+          importedFiles[path.parse(itemPath).base] = {
             path: itemPath,
             basename: path.parse(itemPath).base,
           };
@@ -5096,18 +5096,19 @@ async function drop(ev) {
           if (!nonAllowedDuplicate) {
             var j = 1;
             var fileBaseName = itemName;
-            var originalFileNameWithoutExt = path.parse(itemName).name;
+            var originalFileNameWithoutExt = path.parse(fileBaseName).name;
             var fileNameWithoutExt = originalFileNameWithoutExt;
             while (
-              fileNameWithoutExt in uiFiles ||
-              fileNameWithoutExt in importedFiles
+              fileBaseName in uiFiles ||
+              fileBaseName in importedFiles
             ) {
               fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
+              fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext
               j++;
             }
-            importedFiles[fileNameWithoutExt] = {
+            importedFiles[fileBaseName] = {
               path: itemPath,
-              basename: fileNameWithoutExt + path.parse(itemName).ext,
+              basename: fileBaseName,
             };
           }
         }
@@ -5162,7 +5163,7 @@ async function drop(ev) {
       // append "renamed" to "action" key if file is auto-renamed by UI
       var originalName = path.parse(
         myPath["files"][importedFiles[element]["basename"]]["path"]
-      ).name;
+      ).base;
       if (element !== originalName) {
         myPath["files"][importedFiles[element]["basename"]]["action"].push(
           "renamed"
