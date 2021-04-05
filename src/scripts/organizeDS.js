@@ -341,7 +341,7 @@ function checkValidRenameInput(
     for (var i = 0; i < itemElement.length; i++) {
       if (!itemElement[i].innerText.includes("-DELETED")) {
         if (
-          path.parse(newName).name === path.parse(itemElement[i].innerText).name
+          newName === path.parse(itemElement[i].innerText).base
         ) {
           duplicate = true;
           break;
