@@ -576,8 +576,13 @@ const downloadTemplates = (templateItem, destinationFolder) => {
   var destinationPath = path.join(destinationFolder, templateItem);
   if (fs.existsSync(destinationPath)) {
     var emessage =
-      "File " + templateItem + " already exists in " + destinationFolder;
-    ipcRenderer.send("open-error-metadata-file-exits", emessage);
+      "File '" + templateItem + "' already exists in " + destinationFolder;
+    //ipcRenderer.send("open-error-metadata-file-exits", emessage);
+    Swal.fire(
+      'Metadata file already exists',
+      `${emessage}`,
+      'error'
+    )
   } else {
     fs.createReadStream(templatePath).pipe(
       fs.createWriteStream(destinationPath)
@@ -1872,8 +1877,13 @@ ipcRenderer.on(
       $("#generate-dd-spinner").show();
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
-        var emessage = "File " + filename + " already exists in " + dirpath[0];
-        ipcRenderer.send("open-error-metadata-file-exits", emessage);
+        var emessage = "File '" + filename + "' already exists in " + dirpath[0];
+        // ipcRenderer.send("open-error-metadata-file-exits", emessage);
+        Swal.fire(
+          'Metadata file already exists',
+          `${emessage}`,
+          'error'
+        )
       } else {
         var datasetInfoValueArray = grabDSInfoEntries();
 
@@ -2440,7 +2450,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
           }
         );
         $(".bf-dataset-span").html(bfNewDatasetName.value);
-        // refreshDatasetList()
+        refreshDatasetList()
         updateDatasetList();
         datasetDescriptionFileDataset.value = bfNewDatasetName.value
         $(".confirm-button").click();
@@ -2603,16 +2613,16 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           `Upload Local Dataset - ${selectedbfdataset}`,
           totalFileSize
         );
-        
+
         client.invoke(
           "api_get_number_of_files_and_folders_locally",
           pathSubmitDataset.placeholder,
           (error, res) => {
-            if (error) { 
+            if (error) {
               log.error(error);
               console.error(error);
             }
-            else { 
+            else {
               let num_of_files = res[0];
               let num_of_folders = res[1];
 
@@ -2622,21 +2632,21 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
                 `Upload Local Dataset - ${defaultBfDataset} - Number of Folders`,
                 num_of_folders
               );
-        
+
               ipcRenderer.send(
                 "track-event",
                 "Success",
                 `Upload Local Dataset - Number of Folders`,
                 num_of_folders
               );
-        
+
               ipcRenderer.send(
                 "track-event",
                 "Success",
                 `Upload Local Dataset - ${defaultBfDataset} - Number of Files`,
                 num_of_files
               );
-        
+
               ipcRenderer.send(
                 "track-event",
                 "Success",
@@ -2952,6 +2962,7 @@ bfAddDescriptionBtn.addEventListener("click", () => {
         bfCurrentMetadataProgress.style.display = "none";
         $(".synced-progress").css("display", "none");
         showDatasetDescription();
+        changeDatasetUnderDD();
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -2987,7 +2998,7 @@ var cropOptions = {
 
     formBannerHeight.value = image_height;
 
-    if (image_height < 512) {
+    if (image_height < 512 || image_height > 2048) {
       $("#save-banner-image").prop("disabled", true);
       $("#form-banner-height").css("color", "red");
       $("#form-banner-height").css("border", "1px solid red");
@@ -3041,7 +3052,7 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
       }).then((result) => {
         /* Read more about handling dismissals below */
         if (result.dismiss === Swal.DismissReason.timer) {
-          console.log("I was closed by the timer");
+          //console.log("I was closed by the timer");
         }
       });
 
@@ -5992,7 +6003,7 @@ document
     document.getElementById("nextBtn").disabled = true;
     ipcRenderer.send("open-file-dialog-local-destination-curate");
   });
-  
+
 ipcRenderer.on(
   "selected-local-destination-datasetCurate",
   (event, filepath) => {
@@ -6113,6 +6124,7 @@ document
     document.getElementById("div-vertical-progress-bar").style.display = "flex";
     document.getElementById("prevBtn").style.display = "inline";
     document.getElementById("nextBtn").style.display = "inline";
+    document.getElementById("start-over-btn").style.display = "inline-block";
     showParentTab(currentTab, 1);
     if (
       sodaJSONObj["starting-point"]["type"] == "new" &&
@@ -6145,6 +6157,7 @@ document
   .addEventListener("click", function () {
     $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
     document.getElementById("prevBtn").style.display = "none";
+    document.getElementById("start-over-btn").style.display = "none";
     document.getElementById("div-vertical-progress-bar").style.display = "none";
     document.getElementById("div-generate-comeback").style.display = "none";
     document.getElementById("generate-dataset-progress-tab").style.display =
@@ -6304,6 +6317,28 @@ function initiate_generate() {
     }
   }
 
+  let dataset_name = "";
+
+  if ("bf-dataset-selected" in sodaJSONObj)
+  {
+    dataset_name = sodaJSONObj["bf-dataset-selected"]
+  }
+  else if("generate-dataset" in sodaJSONObj)
+  {
+    if ("destination" in sodaJSONObj["generate-dataset"])
+    {
+      let destination = sodaJSONObj["generate-dataset"]["destination"]
+      if (destination == "local")
+      {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"]
+      }
+      if (destination == "bf")
+      {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"]
+      }
+    }
+  }
+
   // prevent_sleep_id = electron.powerSaveBlocker.start('prevent-display-sleep')
 
   client.invoke("api_main_curate_function", sodaJSONObj, (error, res) => {
@@ -6323,7 +6358,7 @@ function initiate_generate() {
         "track-event",
         "Error",
         "Generate Dataset",
-        defaultBfDataset
+        dataset_name
       );
 
       // electron.powerSaveBlocker.stop(prevent_sleep_id)
@@ -6350,30 +6385,30 @@ function initiate_generate() {
           "track-event",
           "Success",
           "Manifest Files Created",
-          defaultBfDataset
+          dataset_name
         );
       }
       ipcRenderer.send(
         "track-event",
         "Success",
         "Generate Dataset",
-        defaultBfDataset,
+        dataset_name,
         main_total_generate_dataset_size
       );
       ipcRenderer.send(
         "track-event",
         "Success",
-        `Generate Dataset - ${defaultBfDataset}`,
+        `Generate Dataset - ${dataset_name}`,
         main_total_generate_dataset_size
       );
-      
+
       file_counter = 0; folder_counter = 0;
       get_num_files_and_folders(sodaJSONObj["dataset-structure"])
-      
+
       ipcRenderer.send(
         "track-event",
         "Success",
-        `Generate Dataset - ${defaultBfDataset} - Number of Folders`,
+        `Generate Dataset - ${dataset_name} - Number of Folders`,
         folder_counter
       );
 
@@ -6387,7 +6422,7 @@ function initiate_generate() {
       ipcRenderer.send(
         "track-event",
         "Success",
-        `Generate Dataset - ${defaultBfDataset} - Number of Files`,
+        `Generate Dataset - ${dataset_name} - Number of Files`,
         file_counter
       );
 
@@ -6438,7 +6473,7 @@ function initiate_generate() {
         var main_generated_dataset_size = res[4];
         var elapsed_time_formatted = res[5];
 
-        console.log(`Data transferred (bytes): ${main_generated_dataset_size}`);
+        //console.log(`Data transferred (bytes): ${main_generated_dataset_size}`);
 
         if (start_generate === 1) {
           divGenerateProgressBar.style.display = "block";
@@ -6940,7 +6975,6 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
         console.error(error);
         $("body").removeClass("waiting")
       } else {
-        console.log(res);
         $("body").removeClass("waiting")
       }
     });

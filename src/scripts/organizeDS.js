@@ -156,7 +156,7 @@ function delFolder(
               return;
             }
           }
-          
+
           if (type === "folders") {
             recursive_mark_sub_files_deleted(
               myPath[type][itemToDelete],

@@ -517,7 +517,7 @@ const nextPrev = (n) => {
           datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
         datasetStructureJSONObj["folders"][highLevelFol]["files"][
           "manifest.xlsx"
-        ]["forTreeview"]
+        ]["forTreeview"] === true
       ) {
         delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
           "manifest.xlsx"
@@ -884,17 +884,6 @@ async function transitionSubQuestions(
   if (!$(target).hasClass("show")) {
     $(target).addClass("show");
   }
-  // here, handling existing folders and files tabs are independent of each other
-  if (
-    !(
-      ev.getAttribute("data-next") ===
-        "Question-generate-dataset-existing-files-options" &&
-      target.classList.contains("prev")
-    )
-  ) {
-    // append to parentDiv
-    document.getElementById(parentDiv).appendChild(target);
-  }
 
   if (currentDiv == 'Question-generate-dataset')
   {
@@ -948,6 +937,21 @@ async function transitionSubQuestions(
     setTimeout(() => target.classList.add("test2"), 100);
   }
 
+  // here, handling existing folders and files tabs are independent of each other
+  if (
+    !(
+      ev.getAttribute("data-next") ===
+        "Question-generate-dataset-existing-files-options" &&
+      target.classList.contains("prev")
+    )
+  ) {
+    // append to parentDiv
+    document.getElementById(parentDiv).appendChild(target);
+    $("#para-continue-existing-files-generate").text("");
+  } else {
+    $("#nextBtn").prop("disabled", false)
+  }
+
   document.getElementById(currentDiv).classList.add("prev");
 
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
@@ -962,6 +966,7 @@ async function transitionSubQuestions(
   document.getElementById(parentDiv).scrollTop = document.getElementById(
     parentDiv
   ).scrollHeight;
+
   // when we hit the last question under Step 1, hide and disable Next button
   if (ev.getAttribute("data-next") === "Question-getting-started-final") {
     $("#progress-files-dropdown").val("Select");
@@ -1000,9 +1005,10 @@ async function transitionSubQuestions(
         $("#nextBtn").prop("disabled", false);
       }
     }
-  } else {
-    $("#nextBtn").prop("disabled", true);
   }
+  // else {
+  //   $("#nextBtn").prop("disabled", true);
+  // }
 
   if (
     ev.getAttribute("data-next") ===
@@ -1034,7 +1040,7 @@ async function transitionSubQuestions(
   } else {
     $("#para-continue-replace-local-generate").hide();
     $("#para-continue-replace-local-generate").text("");
-    $("#nextBtn").prop("disabled", true);
+    // $("#nextBtn").prop("disabled", true);
   }
 
   if (
@@ -2571,7 +2577,7 @@ const saveSODAJSONProgress = (progressFileName) => {
         sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
       sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
         "manifest.xlsx"
-      ]["forTreeview"]
+      ]["forTreeview"] === true
     ) {
       delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
         "manifest.xlsx"

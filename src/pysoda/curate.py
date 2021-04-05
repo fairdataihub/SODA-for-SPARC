@@ -1510,14 +1510,17 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
                 file_extension = os.path.splitext(item)[1]
                 dict_folder_manifest["file type"].append(file_extension)
 
-                if folder["files"][item]["type"] == "bf":
-                    dict_folder_manifest["timestamp"].append(folder["files"][item]["timestamp"])
-                elif folder["files"][item]["type"] == "local":
-                    file_path = folder["files"][item]["path"]
-                    filepath = pathlib.Path(file_path)
-                    mtime = filepath.stat().st_mtime
-                    lastmodtime = datetime.fromtimestamp(mtime).astimezone(local_timezone)
-                    dict_folder_manifest["timestamp"].append(lastmodtime.isoformat().replace('.', ',').replace('+00:00', 'Z'))
+                if "type" in folder["files"][item].keys():
+                    if folder["files"][item]["type"] == "bf":
+                        dict_folder_manifest["timestamp"].append(folder["files"][item]["timestamp"])
+                    elif folder["files"][item]["type"] == "local":
+                        file_path = folder["files"][item]["path"]
+                        filepath = pathlib.Path(file_path)
+                        mtime = filepath.stat().st_mtime
+                        lastmodtime = datetime.fromtimestamp(mtime).astimezone(local_timezone)
+                        dict_folder_manifest["timestamp"].append(lastmodtime.isoformat().replace('.', ',').replace('+00:00', 'Z'))
+                else:
+                    dict_folder_manifest["timestamp"].append("")
 
                 if "description" in folder["files"][item].keys():
                     dict_folder_manifest["description"].append(folder["files"][item]["description"])

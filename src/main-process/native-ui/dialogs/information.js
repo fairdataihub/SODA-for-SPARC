@@ -134,38 +134,38 @@ ipcMain.on(
   }
 );
 
-ipcMain.on("open-error-wrong-file", (event, emessage) => {
-  const options = {
-    type: "error",
-    title: "Non-SPARC metadata file selected",
-    message: emessage,
-  };
-  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
-    event.sender.send("error-folder-selected-shown");
-  });
-});
+// ipcMain.on("open-error-wrong-file", (event, emessage) => {
+//   const options = {
+//     type: "error",
+//     title: "Non-SPARC metadata file selected",
+//     message: emessage,
+//   };
+//   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+//     event.sender.send("error-folder-selected-shown");
+//   });
+// });
 
-ipcMain.on("open-error-metadata-file-exits", (event, emessage) => {
-  const options = {
-    type: "error",
-    title: "Metadata file already exists",
-    message: emessage,
-  };
-  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
-    event.sender.send("error-metadata-file-exists-shown");
-  });
-});
+// ipcMain.on("open-error-metadata-file-exits", (event, emessage) => {
+//   const options = {
+//     type: "error",
+//     title: "Metadata file already exists",
+//     message: emessage,
+//   };
+//   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+//     event.sender.send("error-metadata-file-exists-shown");
+//   });
+// });
 
-ipcMain.on("open-info-metadata-file-donwloaded", (event, emessage) => {
-  const options = {
-    type: "info",
-    title: "Download successful",
-    message: emessage,
-  };
-  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
-    event.sender.send("info-metadata-downloaded-showed");
-  });
-});
+// ipcMain.on("open-info-metadata-file-donwloaded", (event, emessage) => {
+//   const options = {
+//     type: "info",
+//     title: "Download successful",
+//     message: emessage,
+//   };
+//   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+//     event.sender.send("info-metadata-downloaded-showed");
+//   });
+// });
 
 ipcMain.on("warning-banner-image-below-1024", (event, currentSize) => {
   const options = {
@@ -182,17 +182,17 @@ ipcMain.on("warning-banner-image-below-1024", (event, currentSize) => {
   });
 });
 
-ipcMain.on("open-info-upload-limitations", (event) => {
-  const options = {
-    type: "info",
-    title: "Potential upload issues",
-    message:
-      "We have encountered issues with the Blackfynn agent to upload certain datasets and are working with the Blackfynn Team to solve them. If you encounter any issues, please report to us using our feedback form (provide information such as operating system, dataset size, screenshot of error, etc.) and it will help us greatly in fixing the issues.",
-  };
-  dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
-    event.sender.send("info-upload-limitations-shown");
-  });
-});
+// ipcMain.on("open-info-upload-limitations", (event) => {
+//   const options = {
+//     type: "info",
+//     title: "Potential upload issues",
+//     message:
+//       "We have encountered issues with the Blackfynn agent to upload certain datasets and are working with the Blackfynn Team to solve them. If you encounter any issues, please report to us using our feedback form (provide information such as operating system, dataset size, screenshot of error, etc.) and it will help us greatly in fixing the issues.",
+//   };
+//   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
+//     event.sender.send("info-upload-limitations-shown");
+//   });
+// });
 
 ipcMain.on("warning-share-with-curation-team", (event) => {
   const options = {
