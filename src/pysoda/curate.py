@@ -1836,15 +1836,25 @@ def bf_get_existing_folders_details(bf_folder):
     return bf_existing_folders, bf_existing_folders_name
 
 def bf_get_existing_files_details(bf_folder):
+
+    def verify_file_name(file_name, extension):
+        if extension == "":
+            return file_name
+        extension_from_name = os.path.splitext(file_name)[1]
+        if extension_from_name == ('.' + extension):
+            return file_name
+        else:
+            return file_name + ('.' + extension)
+
     bf_existing_files = [x for x in bf_folder.items if x.type != "Collection"]
     bf_existing_files_name = [splitext(x.name)[0] for x in bf_existing_files]
     bf_existing_files_name_with_extension = []
     for file in bf_existing_files:
         file_id = file.id
-        file_details = bf._api._get('/packages/' + str(file_id) + '/view')
-        file_name_with_extension = file_details[0]["content"]["name"]
-        file_extension = splitext(file_name_with_extension)[1]
-        file_name_with_extension = splitext(file.name)[0] + file_extension
+        file_details = bf._api._get('/packages/' + str(file_id))
+        file_name_with_extension = verify_file_name(file_details["content"]["name"], file_details["extension"])
+        #file_extension = splitext(file_name_with_extension)[1]
+        #file_name_with_extension = splitext(file.name)[0] + file_extension
         bf_existing_files_name_with_extension.append(file_name_with_extension)
 
     return bf_existing_files, bf_existing_files_name, bf_existing_files_name_with_extension
@@ -2182,14 +2192,50 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                         file_path = file["path"]
                         if isfile(file_path):
 
-                            initial_name = splitext(basename(file_path))[0]
+                             initial_name = splitext(basename(file_path))[0]
                             initial_extension = splitext(basename(file_path))[1]
                             initial_name_with_extention = basename(file_path)
                             desired_name = splitext(file_key)[0]
+                            desired_name_extension = splitext(file_key)[1]
+                            desired_name_with_extension = file_key
+                            #desired_name = file_key
 
                             if existing_file_option == "skip":
                                 if file_key in my_bf_existing_files_name_with_extension:
                                     continue
+
+                            # check if initial filename exists on Blackfynn dataset and get the projected name of the file after upload
+                            count_done = 0
+                            count_exist = 0
+                            projected_name = initial_name_with_extention
+                            while count_done == 0:
+                                if projected_name in my_bf_existing_files_name_with_extension:
+                                    count_exist += 1
+                                    projected_name = initial_name + " (" + str(count_exist) + ")" + initial_extension
+                                else:
+                                    count_done = 1
+
+                            # expected final name
+                            count_done = 0
+                            final_name = desired_name_with_extension
+                            output = get_base_file_name(desired_name)
+                            if output:
+                                base_name = output[0]
+                                count_exist = output[1]
+                                while count_done == 0:
+                                    if final_name in my_bf_existing_files_name:
+                                        count_exist += 1
+                                        final_name = base_name + "(" + str(count_exist) + ")" + desired_name_extension
+                                    else:
+                                        count_done = 1
+                            else:
+                                count_exist = 0
+                                while count_done == 0:
+                                    if final_name in my_bf_existing_files_name:
+                                        count_exist += 1
+                                        final_name = desired_name + " (" + str(count_exist) + ")" + desired_name_extension
+                                    else:
+                                        count_done = 1
 
                             # check if initial filename exists on Blackfynn dataset and get the projected name of the file after upload
                             count_done = 0
@@ -2241,7 +2287,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                             else:
                                 list_local_files.append(file_path)
                                 list_projected_names.append(projected_name)
-                                list_desired_names.append(desired_name)
+                                list_desired_names.append(desired_name_with_extension)
                                 list_final_names.append(final_name)
                                 list_initial_names.append(initial_name)
 
@@ -2360,12 +2406,12 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
             # progress_percentage_array[-1]["output-stream"] = progress_percentage
             # progress_percentage_array[-1].pop('completed-size', None)
 
+            ## check if agent is running in the background
+            agent_running()
+            
             #upload
             main_curate_progress_message = "Uploading files in " + str(relative_path)
             
-            ## check if agent is running in the background
-            agent_running()
-
             bf_folder.upload(*list_upload)
             bf_folder.update()
 
