@@ -1149,22 +1149,29 @@ const create_json_object = (sodaJSONObj) => {
 
 // replace any duplicate file names
 // Modify for consistency with blackfynn naming when the update their system
-const check_file_name_for_blackfynn_duplicate = (dataset_folder, file) => {
-  file_name = path.parse(file).name;
-  file_extension = path.parse(file).ext;
-  let i = 1;
-  let projected_number = "";
-  for (item in dataset_folder) {
-    if (item != file) {
-      item_name = path.parse(item).name;
-      item_extension = path.parse(item).ext;
-      if (file_name + projected_number == item_name) {
-        projected_number = ` (${i})`;
-        i += 1;
-      }
+const check_file_name_for_blackfynn_duplicate = (dataset_folder, filepath) => {
+  file_name = path.parse(filepath).base;
+  file_extension = path.parse(filepath).ext;
+  var duplicateFileArray = [];
+
+  for (var item in dataset_folder) {
+    if (dataset_folder[item]["path"] !== filepath) {
+      duplicateFileArray.push(item)
     }
   }
-  return file_name + projected_number + file_extension;
+
+  var j = 1;
+  var fileBaseName = file_name;
+  var originalFileNameWithoutExt = path.parse(fileBaseName).name;
+  var fileNameWithoutExt = originalFileNameWithoutExt;
+  while (
+    fileBaseName in duplicateFileArray
+  ) {
+    fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
+    fileBaseName = fileNameWithoutExt + file_extension
+    j++;
+  }
+  return fileBaseName;
 };
 
 // Create the dataset structure for each high level folder.
@@ -1276,6 +1283,7 @@ const recursive_structure_create = (
           }
         }
       }
+
       dataset_folder["files"][file] = {
         path: current_file_path,
         type: "local",
@@ -1285,9 +1293,9 @@ const recursive_structure_create = (
       };
       projected_file_name = check_file_name_for_blackfynn_duplicate(
         dataset_folder["files"],
-        file
+        current_file_path
       );
-      if (file != projected_file_name) {
+      if (file !== projected_file_name) {
         dataset_folder["files"][projected_file_name] =
           dataset_folder["files"][file];
         dataset_folder["files"][projected_file_name]["action"].push("renamed");
