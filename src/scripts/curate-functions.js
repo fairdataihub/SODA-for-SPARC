@@ -600,7 +600,7 @@ $(document).ready(function () {
   });
 });
 
-async function openDropdownPrompt(dropdown) {
+async function openDropdownPrompt(dropdown, show_timer = true) {
   // if users edit current account
   if (dropdown === "bf") {
     var resolveMessage = "";
@@ -837,14 +837,16 @@ async function openDropdownPrompt(dropdown) {
 
       // check return value
       if (bfDS) {
-
-        Swal.fire({
+        if (show_timer)
+        {
+          Swal.fire({
           title: "Loading your dataset details...",
           timer: 2000,
           timerProgressBar: true,
           allowEscapeKey: false,
-          showConfirmButton: false,
-        });
+            showConfirmButton: false,
+          });
+        }
 
         $("#current-bf-dataset").text(bfDataset);
         $("#current-bf-dataset-generate").text(bfDataset);

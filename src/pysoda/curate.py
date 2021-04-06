@@ -2236,50 +2236,6 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                                     else:
                                         count_done = 1
 
-                            # check if initial filename exists on Blackfynn dataset and get the projected name of the file after upload
-                            count_done = 0
-                            count_exist = 0
-                            if initial_extension in bf_recognized_file_extensions:
-                                projected_name = initial_name
-                                while count_done == 0:
-                                    if projected_name in my_bf_existing_files_name:
-                                        count_exist += 1
-                                        projected_name = initial_name + " (" + str(count_exist) + ")"
-                                    else:
-                                        count_done = 1
-                            else:
-                                count_done = 0
-                                count_exist = 0
-                                projected_name = initial_name_with_extention
-                                while count_done == 0:
-                                    if projected_name in my_bf_existing_files_name_with_extension:
-                                        count_exist += 1
-                                        projected_name = initial_name + " (" + str(count_exist) + ")" + initial_extension
-                                    else:
-                                        count_done = 1
-
-                            # expected final name
-                            count_done = 0
-                            final_name = desired_name
-                            output = get_base_file_name(desired_name)
-                            if output:
-                                base_name = output[0]
-                                count_exist = output[1]
-                                while count_done == 0:
-                                    if final_name in my_bf_existing_files_name:
-                                        count_exist += 1
-                                        final_name = base_name + "(" + str(count_exist) + ")"
-                                    else:
-                                        count_done = 1
-                            else:
-                                count_exist = 0
-                                while count_done == 0:
-                                    if final_name in my_bf_existing_files_name:
-                                        count_exist += 1
-                                        final_name = desired_name + " (" + str(count_exist) + ")"
-                                    else:
-                                        count_done = 1
-
                             # save in list accordingly
                             if initial_name in list_initial_names or initial_name in list_final_names or projected_name in list_final_names or final_name in list_projected_names:
                                 additional_upload_lists.append([[file_path], my_bf_folder, [projected_name], [desired_name], [final_name], my_tracking_folder, my_relative_path])
