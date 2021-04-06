@@ -1850,13 +1850,14 @@ def bf_get_existing_files_details(bf_folder):
     bf_existing_files_name = [splitext(x.name)[0] for x in bf_existing_files]
     bf_existing_files_name_with_extension = []
     for file in bf_existing_files:
+        file_name_with_extension = ""
         file_id = file.id
         file_details = bf._api._get('/packages/' + str(file_id))
         # file_name_with_extension = verify_file_name(file_details["content"]["name"], file_details["extension"])
         if ("extension" not in file_details):
-            file_name = verify_file_name(file_details["content"]["name"], "")
+            file_name_with_extension = verify_file_name(file_details["content"]["name"], "")
         else:
-            file_name = verify_file_name(file_details["content"]["name"], file_details["extension"])
+            file_name_with_extension = verify_file_name(file_details["content"]["name"], file_details["extension"])
 
         #file_extension = splitext(file_name_with_extension)[1]
         #file_name_with_extension = splitext(file.name)[0] + file_extension
