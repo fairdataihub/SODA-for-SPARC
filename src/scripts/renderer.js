@@ -2406,7 +2406,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         var emessage = userError(error);
         $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
         bfCreateNewDatasetStatus.innerHTML =
-          "<span style='color: red; font-size: 17px;'> " + emessage + ". </span>" + sadCan;
+          "<span style='color: red; font-size: 15px;'> " + emessage + ". </span>" + sadCan;
         bfCreateNewDatasetBtn.disabled = false;
         ipcRenderer.send(
           "track-event",
@@ -2420,7 +2420,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         defaultBfDataset = bfNewDatasetName.value;
         refreshDatasetList()
         bfCreateNewDatasetStatus.innerHTML =
-          "<span style='font-size: 17px; color: #13716D;'>Success: Created dataset" +
+          "<span style='font-size: 15px; color: #13716D;'>Success: Created dataset" +
           " '" +
           bfNewDatasetName.value +
           "'. </span>" +
