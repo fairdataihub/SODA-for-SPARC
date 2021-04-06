@@ -341,7 +341,7 @@ function checkValidRenameInput(
     for (var i = 0; i < itemElement.length; i++) {
       if (!itemElement[i].innerText.includes("-DELETED")) {
         if (
-          path.parse(newName).name === path.parse(itemElement[i].innerText).name
+          newName === path.parse(itemElement[i].innerText).base
         ) {
           duplicate = true;
           break;
@@ -607,7 +607,7 @@ function addFilesfunction(
   var uiFilesWithoutExtension = {};
 
   for (var file in currentLocation["files"]) {
-    uiFilesWithoutExtension[path.parse(file).name] = 1;
+    uiFilesWithoutExtension[path.parse(file).base] = 1;
   }
 
   for (var i = 0; i < fileArray.length; i++) {
@@ -626,7 +626,7 @@ function addFilesfunction(
         JSON.stringify(currentLocation["files"]) === "{}" &&
         JSON.stringify(regularFiles) === "{}"
       ) {
-        regularFiles[path.parse(fileName).name] = {
+        regularFiles[path.parse(fileName).base] = {
           path: fileName,
           basename: path.parse(fileName).base,
         };
@@ -647,15 +647,16 @@ function addFilesfunction(
           var originalFileNameWithoutExt = path.parse(fileBaseName).name;
           var fileNameWithoutExt = originalFileNameWithoutExt;
           while (
-            fileNameWithoutExt in uiFilesWithoutExtension ||
-            fileNameWithoutExt in regularFiles
+            fileBaseName in uiFilesWithoutExtension ||
+            fileBaseName in regularFiles
           ) {
             fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
+            fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext
             j++;
           }
-          regularFiles[fileNameWithoutExt] = {
+          regularFiles[fileBaseName] = {
             path: fileName,
-            basename: fileNameWithoutExt + path.parse(fileName).ext,
+            basename: fileBaseName,
           };
         }
       }
@@ -676,7 +677,7 @@ function addFilesfunction(
       // append "renamed" to "action" key if file is auto-renamed by UI
       var originalName = path.parse(
         currentLocation["files"][regularFiles[element]["basename"]]["path"]
-      ).name;
+      ).base;
       if (element !== originalName) {
         currentLocation["files"][regularFiles[element]["basename"]][
           "action"

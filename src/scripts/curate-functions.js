@@ -1483,35 +1483,37 @@ function moveItemsHelper(item, destination, category) {
 
   // handle duplicates in destination folder
   if (category === "files") {
-    var uiFilesWithoutExtension = {};
+    var uiFiles = {};
     if (JSON.stringify(destinationPath["files"]) !== "{}") {
       for (var file in destinationPath["files"]) {
-        uiFilesWithoutExtension[path.parse(file).name] = 1;
+        uiFiles[path.parse(file).base] = 1;
       }
     }
     var fileBaseName = path.basename(item);
     var originalFileNameWithoutExt = path.parse(fileBaseName).name;
     var fileNameWithoutExt = originalFileNameWithoutExt;
     var j = 1;
-    while (fileNameWithoutExt in uiFilesWithoutExtension) {
+
+    while (fileBaseName in uiFiles) {
       fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
+      fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext
       j++;
     }
     if ("action" in myPath[category][item]) {
       if (!myPath[category][item]["action"].includes("moved")) {
         myPath[category][item]["action"].push("moved");
       }
-      if (fileNameWithoutExt !== originalFileNameWithoutExt) {
+      if (fileBaseName !== path.basename(item)) {
         myPath[category][item]["action"].push("renamed");
       }
     } else {
       myPath[category][item]["action"] = ["moved"];
-      if (fileNameWithoutExt !== originalFileNameWithoutExt) {
+      if (fileBaseName !== path.basename(item)) {
         myPath[category][item]["action"].push("renamed");
       }
     }
     destinationPath[category][
-      fileNameWithoutExt + path.parse(fileBaseName).ext
+      fileBaseName
     ] = myPath[category][item];
   } else if (category === "folders") {
     var uiFolders = {};
