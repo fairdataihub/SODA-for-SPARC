@@ -32,6 +32,8 @@ const electron_app = electron.app;
 const app = remote.app;
 var noAirtable = false;
 
+var nextBtnDisabledVariable = true;
+
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
