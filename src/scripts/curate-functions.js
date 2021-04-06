@@ -245,6 +245,9 @@ const importGenerateDatasetStep = (object) => {
       ) {
         var bfAccountSelected =
           sodaJSONObj["bf-account-selected"]["account-name"];
+        if (bfAccountSelected != defaultBfAccount) {
+          return;
+        }
         $("#current-bf-account-generate").text(bfAccountSelected);
         $("#para-account-detail-curate").html("");
         client.invoke(
@@ -274,6 +277,16 @@ const importGenerateDatasetStep = (object) => {
           var bfDatasetSelected =
             sodaJSONObj["bf-dataset-selected"]["dataset-name"];
           setTimeout(() => {
+            let valid_dataset = false;
+            for (index in datasetList) {
+              let x = datasetList[index]["name"];
+              if (bfDatasetSelected == datasetList[index]["name"]) {
+                valid_dataset = true;
+              }
+            }
+            if (valid_dataset == false) {
+              return;
+            }
             $("#current-bf-dataset-generate").text(bfDatasetSelected);
             $("#button-confirm-bf-dataset").click();
             // Step 4: Handle existing files and folders
@@ -1736,3 +1749,11 @@ function revertManifestForTreeView() {
     }
   }
 }
+
+$("#generate-manifest-curate").change(function () {
+  if (this.checked) {
+    $("#button-generate-manifest-locally").show();
+  } else {
+    $("#button-generate-manifest-locally").hide();
+  }
+});

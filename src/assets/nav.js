@@ -1,6 +1,5 @@
 const settings = require("electron-settings");
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
-var nextBtnDisabledVariable = true;
 
 document.body.addEventListener("click", (event) => {
   if (event.target.dataset.section) {
