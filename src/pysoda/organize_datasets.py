@@ -598,7 +598,10 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                 package_id = item.id
                 package_details = bf._api._get(
                     '/packages/' + str(package_id))
-                file_name = verify_file_name(package_details["content"]["name"], package_details["extension"])
+                if ("extension" not in package_details):
+                    file_name = verify_file_name(package_details["content"]["name"], "")
+                else:
+                    file_name = verify_file_name(package_details["content"]["name"], package_details["extension"])
 
                 if my_level == 0 and file_name in high_level_metadata_sparc:
                     metadata_files[file_name] = {
