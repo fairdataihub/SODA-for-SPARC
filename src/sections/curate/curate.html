@@ -632,20 +632,21 @@
                             margin-bottom: 15px;
                           "
                         >
-                          <div>
-                            <h5 style="color: #808080; font-size: 15px">
-                              Current account:
-                              <span
+                          <div class="card-container manage-dataset">
+                            <h5 class="card-left" style="color: #808080; font-size: 15px">
+                              Current account:</h5>
+                              <span class="card-right"
                                 style="
                                   color: #000;
                                   font-weight: 600;
                                   margin-left: 8px;
                                   font-size: 15px;
+                                  margin-left: -15px;
                                 "
                                 id="current-bf-account"
                                 >None</span
                               >
-                            </h5>
+                            
                           </div>
                           <svg
                             class="svg-change-current-account"
@@ -662,22 +663,24 @@
                             />
                           </svg>
                         </div>
-                        <div
+                        <div class="card-container manage-dataset"
                           style="
                             display: flex;
                             flex-direction: row;
                             margin-bottom: 15px;
+                            margin-top: -20px;
                           "
                         >
-                          <h5 style="color: #808080; font-size: 15px">
+                          <h5 class="card-left" style="color: #808080; font-size: 15px">
                             Account details:
                           </h5>
-                          <p
+                          <p class="card-right"
                             style="
                               color: #000;
                               font-weight: 600;
                               margin-left: 15px;
                               font-size: 15px;
+                              margin-left: -15px;
                             "
                             id="para-account-detail-curate"
                           >
@@ -750,21 +753,21 @@
                             margin-bottom: 15px;
                           "
                         >
-                          <div>
-                            <h5 style="color: #808080; font-size: 15px">
-                              Current dataset:
-                              <span
+                        <div class="card-container manage-dataset">
+                            <h5 class="card-left" style="color: #808080; font-size: 15px">
+                              Current dataset:</h5>
+                              <span class="card-right"
                                 style="
                                   color: #000;
                                   font-weight: 600;
-                                  margin-left: 8px;
                                   font-size: 15px;
+                                  margin-left: -15px;
                                 "
                                 id="current-bf-dataset"
                                 >None</span
                               >
-                            </h5>
-                          </div>
+                            
+                        </div>
                           <svg
                             class="svg-change-current-account dataset"
                             onclick="openDropdownPrompt('dataset', false)"
