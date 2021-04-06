@@ -1736,3 +1736,11 @@ function revertManifestForTreeView() {
     }
   }
 }
+
+$("#generate-manifest-curate").change(function () {
+  if (this.checked) {
+    $("#button-generate-manifest-locally").show();
+  } else {
+    $("#button-generate-manifest-locally").hide();
+  }
+});

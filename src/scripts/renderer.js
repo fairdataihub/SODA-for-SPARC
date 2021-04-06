@@ -6290,6 +6290,19 @@ document
 //   }
 // })
 
+const delete_imported_manifest = () => {
+  for (let highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+    if (
+      "manifest.xlsx" in
+      sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]
+    ) {
+      delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
+        "manifest.xlsx"
+      ];
+    }
+  }
+};
+
 const divGenerateProgressBar = document.getElementById(
   "div-new-curate-meter-progress"
 );
@@ -6314,6 +6327,7 @@ function initiate_generate() {
     if ("destination" in sodaJSONObj["manifest-files"]) {
       if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
         manifest_files_requested = true;
+        delete_imported_manifest();
       }
     }
   }
@@ -6968,6 +6982,8 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
       sodaJSONObj["manifest-files"] = {}
       sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination
     }
+
+    delete_imported_manifest();
 
     client.invoke("api_generate_manifest_file_locally", sodaJSONObj, (error, res) => {
       if (error) {
