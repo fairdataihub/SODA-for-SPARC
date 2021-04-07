@@ -149,34 +149,35 @@
                     </div>
                   </div>
                 </div>
-              </div>
-              <div
-                id="div-create_empty_dataset-account-btns"
-                style="
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="create_empty_dataset"
-                  onclick="transitionFreeFormMode(this, 'create_empty_dataset_BF_account_tab', 'create_new_bf_dataset-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div-create-new-empty-dataset"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 0 10px;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
+                <div
+                  id="div-create_empty_dataset-account-btns"
+                  class="div-confirm-button"
+                  style="display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 10px auto;
                   "
                 >
-                  Confirm
-                </button>
+                  <button
+                    id="create_empty_dataset"
+                    onclick="transitionFreeFormMode(this, 'create_empty_dataset_BF_account_tab', 'create_new_bf_dataset-tab', 'delete', 'individual-question manage-dataset')"
+                    data-next="div-create-new-empty-dataset"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      margin: 10px auto;
+                      width: 100px;
+                      height: 30px;
+                      background: var(--color-light-green);
+                      color: #fff;
+                      font-weight: 600;
+                      border: none;
+                      font-size: 13px;
+                    "
+                  >
+                    Confirm
+                  </button>
+                </div>
               </div>
             </div>
           </div>
