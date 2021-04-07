@@ -32,6 +32,8 @@ const electron_app = electron.app;
 const app = remote.app;
 var noAirtable = false;
 
+var nextBtnDisabledVariable = true;
+
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
@@ -2406,7 +2408,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         var emessage = userError(error);
         $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
         bfCreateNewDatasetStatus.innerHTML =
-          "<span style='color: red; font-size: 17px;'> " + emessage + ". </span>" + sadCan;
+          "<span style='color: red; font-size: 15px;'> " + emessage + ". </span>" + sadCan;
         bfCreateNewDatasetBtn.disabled = false;
         ipcRenderer.send(
           "track-event",
@@ -2420,7 +2422,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         defaultBfDataset = bfNewDatasetName.value;
         refreshDatasetList()
         bfCreateNewDatasetStatus.innerHTML =
-          "<span style='font-size: 17px; color: #13716D;'>Success: Created dataset" +
+          "<span style='font-size: 15px; color: #13716D;'>Success: Created dataset" +
           " '" +
           bfNewDatasetName.value +
           "'. </span>" +
@@ -6290,6 +6292,19 @@ document
 //   }
 // })
 
+const delete_imported_manifest = () => {
+  for (let highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+    if (
+      "manifest.xlsx" in
+      sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]
+    ) {
+      delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"][
+        "manifest.xlsx"
+      ];
+    }
+  }
+};
+
 const divGenerateProgressBar = document.getElementById(
   "div-new-curate-meter-progress"
 );
@@ -6314,6 +6329,7 @@ function initiate_generate() {
     if ("destination" in sodaJSONObj["manifest-files"]) {
       if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
         manifest_files_requested = true;
+        delete_imported_manifest();
       }
     }
   }
@@ -6968,6 +6984,8 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
       sodaJSONObj["manifest-files"] = {}
       sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination
     }
+
+    delete_imported_manifest();
 
     client.invoke("api_generate_manifest_file_locally", sodaJSONObj, (error, res) => {
       if (error) {

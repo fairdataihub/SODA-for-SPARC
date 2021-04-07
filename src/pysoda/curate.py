@@ -988,9 +988,14 @@ def check_empty_files_folders(soda_json_structure):
 
             if not my_folder["folders"]:
                 if not my_folder["files"]:
-                    error_message = my_relative_path
-                    error_folders.append(error_message)
-                    del my_folders_content[my_folder_key]
+                    ignore = False
+                    if "type" in my_folder:
+                        if my_folder["type"] == "bf":
+                            ignore = True
+                    if ignore == False:
+                        error_message = my_relative_path
+                        error_folders.append(error_message)
+                        del my_folders_content[my_folder_key]
             return error_folders
 
         error_files = []
@@ -1837,9 +1842,15 @@ def bf_get_existing_files_details(bf_folder):
     bf_existing_files_name = [splitext(x.name)[0] for x in bf_existing_files]
     bf_existing_files_name_with_extension = []
     for file in bf_existing_files:
+        file_name_with_extension = ""
         file_id = file.id
         file_details = bf._api._get('/packages/' + str(file_id))
-        file_name_with_extension = verify_file_name(file_details["content"]["name"], file_details["extension"])
+        # file_name_with_extension = verify_file_name(file_details["content"]["name"], file_details["extension"])
+        if ("extension" not in file_details):
+            file_name_with_extension = verify_file_name(file_details["content"]["name"], "")
+        else:
+            file_name_with_extension = verify_file_name(file_details["content"]["name"], file_details["extension"])
+
         #file_extension = splitext(file_name_with_extension)[1]
         #file_name_with_extension = splitext(file.name)[0] + file_extension
         bf_existing_files_name_with_extension.append(file_name_with_extension)
@@ -2014,19 +2025,19 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
         return
 
     # 1. Remove all existing files on Blackfynn, that the user deleted.
-    main_curate_progress_message = "Deleting files on Blackfynn"
+    main_curate_progress_message = "Checking Blackfynn for deleted files"
     dataset_structure = soda_json_structure["dataset-structure"]
     recursive_file_delete(dataset_structure)
     main_curate_progress_message = "Files on Blackfynn marked for deletion have been deleted"
 
     # 2. Rename any deleted folders on Blackfynn to allow for replacements.
-    main_curate_progress_message = "Setting up folders on Blackfynn for deletion"
+    main_curate_progress_message = "Checking Blackfynn for deleted folders"
     dataset_structure = soda_json_structure["dataset-structure"]
     recursive_folder_rename(dataset_structure, "deleted")
     main_curate_progress_message = "Folders on Blackfynn have been marked for deletion"
 
     # 2.5 Rename folders that need to be in the final destination.
-    main_curate_progress_message = "Renaming all folders requested by the user"
+    main_curate_progress_message = "Renaming any folders requested by the user"
     recursive_folder_rename(dataset_structure, "renamed")
     main_curate_progress_message = "Renamed all folders requested by the user"
 
@@ -2042,12 +2053,12 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
 
     # 4. Move any files that are marked as moved on Blackfynn.
     # Create any additional folders if required
-    main_curate_progress_message = "Moving all files requested by the user"
+    main_curate_progress_message = "Moving any files requested by the user"
     recursive_check_moved_files(dataset_structure)
     main_curate_progress_message = "Moved all files requested by the user"
 
     # 5. Rename any Blackfynn files that are marked as renamed.
-    main_curate_progress_message = "Renaming all files requested by the user"
+    main_curate_progress_message = "Renaming any files requested by the user"
     recursive_file_rename(dataset_structure)
     main_curate_progress_message = "Renamed all files requested by the user"
 
@@ -2057,12 +2068,12 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     main_curate_progress_message = "Deletion of additional folders complete"
 
     # 7. Rename any Blackfynn folders that are marked as renamed.
-    main_curate_progress_message = "Renaming all folders requested by the user"
+    main_curate_progress_message = "Renaming any folders requested by the user"
     recursive_folder_rename(dataset_structure, "renamed")
     main_curate_progress_message = "Renamed all folders requested by the user"
 
     # 8. Delete any metadata files that are marked as deleted.
-    main_curate_progress_message = "Removing metadata files marked for deletion"
+    main_curate_progress_message = "Removing any metadata files marked for deletion"
     metadata_file_delete(soda_json_structure)
     main_curate_progress_message = "Removed metadata files marked for deletion"
 
