@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
-import logging
-
 from gevent import monkey; monkey.patch_all()
 import platform
 import os
@@ -86,17 +84,6 @@ DEV_TEMPLATE_PATH = join(dirname(__file__), "..", "file_templates")
 # it becomes nested into the pysodadist/api directory
 PROD_TEMPLATE_PATH = join(dirname(__file__), "..", "..", "file_templates")
 TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLATE_PATH
-
-
-# makedirs(join(userpath, 'SODA', 'python-log'), exist_ok=True)
-logpath = join(userpath, 'SODA', 'python-log', f"{__name__}.log")
-
-logging.basicConfig(level=logging.DEBUG, filename=logpath)
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler(logpath)
-handler.setLevel(logging.DEBUG)
-logger.addHandler(handler)
 
 ### Internal functions
 def TZLOCAL():
@@ -2363,10 +2350,10 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
 
             ## check if agent is running in the background
             agent_running()
-            
+
             #upload
             main_curate_progress_message = "Uploading files in " + str(relative_path)
-            
+
             bf_folder.upload(*list_upload)
             bf_folder.update()
 

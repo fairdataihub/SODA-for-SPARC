@@ -1,6 +1,4 @@
 ### Import required python modules
-import logging
-
 from gevent import monkey; monkey.patch_all()
 import platform
 import os
@@ -58,15 +56,6 @@ uploaded_file_size = 0
 start_time_bf_upload = 0
 start_submit = 0
 metadatapath = join(userpath, 'SODA', 'SODA_metadata')
-
-logpath = join(userpath, 'SODA', 'python-log', f"{__name__}.log")
-
-logging.basicConfig(level=logging.DEBUG, filename=logpath)
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler(logpath)
-handler.setLevel(logging.DEBUG)
-logger.addHandler(handler)
 
 bf = ""
 myds = ""

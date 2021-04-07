@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
-import logging
 
 from gevent import monkey; monkey.patch_all()
 import platform

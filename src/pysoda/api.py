@@ -286,7 +286,7 @@ class SodaApi(object):
             return check_empty_files_folders(soda_json_structure)
         except Exception as e:
             raise e
-            
+
     def api_main_curate_function(self, soda_json_structure):
 
         try:
@@ -305,13 +305,13 @@ class SodaApi(object):
     #         return preview_dataset(soda_json_structure)
     #     except Exception as e:
     #         raise e
-    
+
     def api_bf_get_dataset_files_folders(self, soda_json_structure, requested_sparc_only = True):
         try:
             return bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only)
         except Exception as e:
             raise e
-    
+
     def api_generate_manifest_file_locally(self, soda_json_structure):
         try:
             return generate_manifest_file_locally(soda_json_structure)
@@ -324,7 +324,7 @@ class SodaApi(object):
         except Exception as e:
             raise e
 
-    ### Check Login to Python Server 
+    ### Check Login to Python Server
     def echo(self, text):
         """echo any text"""
         return text
