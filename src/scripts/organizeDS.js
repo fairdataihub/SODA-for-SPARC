@@ -780,3 +780,18 @@ function triggerManageDetailsPrompts(
   }
   // $(this).html("Done <i class='fas fa-check'></i>");
 }
+
+// on change event (in this case: NextBtn click from Step 2 - Step 3)
+// 1. Check path: if path === "My_dataset_folder", then hideOrganizeButtons(), otherwise, showOrganizeButtons()
+// 2. How to show/hide Organize buttons:
+//    a. Hide: display: none (New folder, Import, Back button, and path)
+//    b. Show: display: flex (New folder, Import, Back button, and path) + Center the items
+function organizeLandingUIEffect() {
+  if ($("#input-global-path").val() === "My_dataset_folder/") {
+    $(".div-organize-dataset-menu").css("display", "none");
+    $("#organize-path-and-back-button-div").css("display", "none");
+  } else {
+    $("#organize-path-and-back-button-div").css("display", "block");
+    $(".div-organize-dataset-menu").css("display", "flex");
+  }
+}

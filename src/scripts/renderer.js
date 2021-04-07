@@ -4285,6 +4285,7 @@ organizeDSbackButton.addEventListener("click", function () {
     $("#items").empty();
     $("#items").html(appendString);
 
+    organizeLandingUIEffect()
     // reconstruct div with new elements
     listItems(myPath, "#items");
     getInFolder(
@@ -5791,6 +5792,7 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
 
       $(uiItem).empty();
       $(uiItem).html(appendString);
+      organizeLandingUIEffect()
 
       // reconstruct folders and files (child elements after emptying the Div)
       listItems(myPath, uiItem);

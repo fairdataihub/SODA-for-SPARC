@@ -506,6 +506,7 @@ const nextPrev = (n) => {
     x[currentTab].id === "high-level-folders-tab" ||
     x[currentTab].id === "metadata-files-tab"
   ) {
+    organizeLandingUIEffect()
     // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
     if ("files" in datasetStructureJSONObj) {
       datasetStructureJSONObj["files"] = {};
