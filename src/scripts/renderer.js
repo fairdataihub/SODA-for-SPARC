@@ -3801,6 +3801,7 @@ function refreshBfTeamsList(teamList) {
       if (error) {
         log.error(error);
         console.error(error);
+        confirm_click_account_function();
       } else {
         // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
         $("#bf_list_teams").selectpicker("refresh");
@@ -3812,6 +3813,7 @@ function refreshBfTeamsList(teamList) {
           optionTeam.value = myTeam;
           teamList.appendChild(optionTeam);
         }
+        confirm_click_account_function();
       }
     });
   }
@@ -4065,6 +4067,7 @@ function loadDefaultAccount() {
     if (error) {
       log.error(error);
       console.error(error);
+      confirm_click_account_function();
     } else {
       if (res.length > 0) {
         var myitemselect = res[0];
@@ -4087,6 +4090,7 @@ function updateBfAccountList() {
       log.error(error);
       console.error(error);
       var emessage = userError(error);
+      confirm_click_account_function();
     } else {
       for (myitem in res) {
         var myitemselect = res[myitem];
@@ -4481,7 +4485,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
       $("#bootbox-api-secret").val("");
       bfAccountOptions[name] = name;
       defaultBfAccount = name;
-      defaultBfDataset = "Select dataset"
+      defaultBfDataset = "Select dataset";
       updateBfAccountList();
       client.invoke("api_bf_account_details", name, (error, res) => {
         if (error) {
@@ -4494,6 +4498,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
               '<a target="_blank" href="https://help.blackfynn.com/en/articles/1488536-creating-an-api-key-for-the-blackfynn-clients">Why do I have this issue?</a>',
           });
           showHideDropdownButtons("account", "hide");
+          confirm_click_account_function();
         } else {
           $("#para-account-detail-curate").html(res);
           $("#current-bf-account").text(name);
@@ -4508,13 +4513,21 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
           $(".bf-account-details-span").html(res);
           $("#para-continue-bf-dataset-getting-started").text("");
           showHideDropdownButtons("account", "show");
+          confirm_click_account_function();
         }
       });
       myBootboxDialog.modal("hide");
-      bootbox.alert({
-        message: "Successfully added!",
-        centerVertical: true,
+      Swal.fire({
+        title: "Successfully added! <br/>Loading your account details...",
+        timer: 3000,
+        timerProgressBar: true,
+        allowEscapeKey: false,
+        showConfirmButton: false,
       });
+      // bootbox.alert({
+      //   message: "Successfully added!",
+      //   centerVertical: true,
+      // });
     }
   });
 }

@@ -894,12 +894,30 @@ async function transitionSubQuestions(
   // if buttons: Confirm account were hidden, show them again here
   // under Step 6
   if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-account") {
-    $("#" + ev.getAttribute("data-next") + " button").show();
+    let temp = $(".bf-account-span")
+      .html()
+      .replace(/^\s+|\s+$/g, "");
+    if (temp == "None" || temp == "") {
+      $("#div-bf-account-btns").css("display", "none");
+      $("#btn-bf-account").hide();
+    } else {
+      $("#div-bf-account-btns").css("display", "flex");
+      $("#btn-bf-account").show();
+      $("#" + ev.getAttribute("data-next") + " button").show();
+    }
   }
   // under Step 1
   if (ev.getAttribute("data-next") === "Question-getting-started-BF-account") {
-    $("#div-bf-account-btns-getting-started").css("display", "flex");
-    $("#div-bf-account-btns-getting-started button").show();
+    let temp = $(".bf-account-span")
+      .html()
+      .replace(/^\s+|\s+$/g, "");
+    if (temp == "None" || temp == "") {
+      $("#div-bf-account-btns-getting-started").css("display", "none");
+      $("#div-bf-account-btns-getting-started button").hide();
+    } else {
+      $("#div-bf-account-btns-getting-started").css("display", "flex");
+      $("#div-bf-account-btns-getting-started button").show();
+    }
   }
 
   // If Confirm dataset btn was hidden, show it again here
