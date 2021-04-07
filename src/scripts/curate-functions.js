@@ -1,7 +1,7 @@
 var metadataFile = "";
 
 // per change event of current dataset span text
-const confirm_click_function = () => {
+function confirm_click_function() {
   let temp = $(".bf-dataset-span").html();
   if (
     $(".bf-dataset-span").html() == "None" ||

@@ -2605,14 +2605,14 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
         ipcRenderer.send(
           "track-event",
           "Success",
-          "Manage Dataset - Upload Local Dataset",
+          "Manage Dataset - Upload Local Dataset - name - size",
           defaultBfDataset,
           totalFileSize
         );
         ipcRenderer.send(
           "track-event",
           "Success",
-          `Upload Local Dataset - ${selectedbfdataset}`,
+          `Upload Local Dataset - ${selectedbfdataset} - size`,
           totalFileSize
         );
 
@@ -6378,6 +6378,31 @@ function initiate_generate() {
         dataset_name
       );
 
+      file_counter = 0; folder_counter = 0;
+      get_num_files_and_folders(sodaJSONObj["dataset-structure"])
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Generate Dataset - name - size",
+        dataset_name,
+        main_total_generate_dataset_size
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Generate Dataset - ${dataset_name} - Number of Folders`,
+        folder_counter
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Generate Dataset - ${dataset_name} - Number of Files`,
+        file_counter
+      );
+
       // electron.powerSaveBlocker.stop(prevent_sleep_id)
 
       client.invoke(
@@ -6408,14 +6433,14 @@ function initiate_generate() {
       ipcRenderer.send(
         "track-event",
         "Success",
-        "Generate Dataset",
+        "Generate Dataset - name - size",
         dataset_name,
         main_total_generate_dataset_size
       );
       ipcRenderer.send(
         "track-event",
         "Success",
-        `Generate Dataset - ${dataset_name}`,
+        `Generate Dataset - ${dataset_name} - size`,
         main_total_generate_dataset_size
       );
 
@@ -6432,7 +6457,7 @@ function initiate_generate() {
       ipcRenderer.send(
         "track-event",
         "Success",
-        `Generate Dataset - Number of Folders`,
+        "Generate Dataset - Number of Folders",
         folder_counter
       );
 
@@ -6446,7 +6471,7 @@ function initiate_generate() {
       ipcRenderer.send(
         "track-event",
         "Success",
-        `Generate Dataset - Number of Files`,
+        "Generate Dataset - Number of Files",
         file_counter
       );
 
