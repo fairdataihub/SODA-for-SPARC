@@ -411,7 +411,7 @@
                           <div class="card-body">
                             <i class="far fa-save" style="color: #13716d"></i>
                             <h2>
-                              Continue with a previously initiated dataset in
+                              Continue with a previously saved progress in
                               SODA
                             </h2>
                           </div>
@@ -645,7 +645,7 @@
                                 id="current-bf-account"
                                 >None</span
                               >
-                            
+
                           </div>
                           <svg
                             class="svg-change-current-account"
@@ -764,7 +764,7 @@
                                 id="current-bf-dataset"
                                 >None</span
                               >
-                            
+
                         </div>
                           <svg
                             class="svg-change-current-account dataset"
@@ -1104,7 +1104,7 @@
                     class="container-fluid"
                     style="margin-top: 40px; height: auto; border-radius: 3px"
                   >
-                    <div>
+                    <div id="organize-path-and-back-button-div">
                       <!-- <div> -->
                       <!-- <h5 style="cursor: pointer;float:left;font-size:15px;color:var(--tagify-dd-color-primary)">
           <a style="text-decoration:underline" id="globa-path-folder-1">My dataset </a><i class="fas fa-chevron-right" style="margin-left:5px;margin-right:5px;font-size:12px;"></i>
@@ -4120,7 +4120,11 @@
             <button
               id="start-over-btn"
               type="button"
-              class="transition-btn"
+              class="transition-btn popover-tooltip"
+              rel="popover"
+              data-placement="top"
+              data-trigger="hover"
+              data-content="Reset your progress and go back to Step 1"
               style="
                 background-color: #fff;
                 color: #b80d49;
@@ -4160,8 +4164,8 @@
             </button> -->
             <button
               type="button"
-              class="transition-btn"
-              data-content="Save your progress to continue with your dataset later"
+              class="transition-btn popover-tooltip"
+              data-content="Save your progress and pick up from here through Step 1 - Option 2: Continue with a previously saved progress in SODA."
               rel="popover"
               data-placement="top"
               data-trigger="hover"

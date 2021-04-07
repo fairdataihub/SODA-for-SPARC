@@ -1,7 +1,7 @@
 var metadataFile = "";
 
 // per change event of current dataset span text
-const confirm_click_function = () => {
+function confirm_click_function() {
   let temp = $(".bf-dataset-span").html();
   if (
     $(".bf-dataset-span").html() == "None" ||
@@ -572,6 +572,8 @@ const importOrganizeProgressPrompt = () => {
 };
 
 $(document).ready(function () {
+  // confirm_click_function()
+
   importOrganizeProgressPrompt();
   $("#bf_list_users_pi").selectpicker();
   $("#bf_list_users_pi").selectpicker("refresh");
