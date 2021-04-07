@@ -858,6 +858,12 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
       // used to communicate value to button-import-milestone click event-listener
       document.getElementById("input-milestone-select").placeholder =
         filepath[0];
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Add DDD",
+          defaultBfAccount
+        );
     }
   }
   if (
@@ -4666,6 +4672,12 @@ function addAirtableAccountInsideBootbox(myBootboxD) {
                 allowEscapeKey: false,
                 showConfirmButton: false,
               });
+              ipcRenderer.send(
+                "track-event",
+                "Success",
+                "Prepare Metadata - Add Airtable account",
+                defaultBfAccount
+              );
             } else if (res.statusCode === 403) {
               $(myBootboxD).find(".modal-footer span").remove();
               myBootboxD
@@ -4676,6 +4688,12 @@ function addAirtableAccountInsideBootbox(myBootboxD) {
             } else {
               log.error(res);
               console.error(res);
+              ipcRenderer.send(
+                "track-event",
+                "Error",
+                "Prepare Metadata - Add Airtable account",
+                defaultBfAccount
+              );
               $(myBootboxD).find(".modal-footer span").remove();
               myBootboxD
                 .find(".modal-footer")
@@ -4686,6 +4704,12 @@ function addAirtableAccountInsideBootbox(myBootboxD) {
             res.on("error", (error) => {
               log.error(error);
               console.error(error);
+              ipcRenderer.send(
+                "track-event",
+                "Error",
+                "Prepare Metadata - Add Airtable account",
+                defaultBfAccount
+              );
               $(myBootboxD).find(".modal-footer span").remove();
               myBootboxD
                 .find(".modal-footer")

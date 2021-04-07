@@ -169,6 +169,12 @@ $(document).ready(function () {
         filepath[0];
         $("#div-confirm-select-SPARC-awards").show();
         $("#div-cancel-reupload-DDD").hide();
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Add DDD",
+          defaultBfAccount
+        );
       }
     }
   });
