@@ -417,6 +417,7 @@ function loadProgressFile(ev) {
 
   // create loading effect
   $("#div-progress-file-loader").css("display", "block");
+  $("body").addClass("waiting");
 
   if (JSON.stringify(jsonContent) !== "{}") {
     sodaJSONObj = jsonContent;
@@ -431,6 +432,7 @@ function loadProgressFile(ev) {
       } else {
         document.getElementById("div-progress-file-loader").style.display =
           "none";
+        $("body").removeClass("waiting");
         document.getElementById("nextBtn").disabled = false;
         document.getElementById("para-progress-file-status").innerHTML =
           "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
@@ -449,6 +451,7 @@ function loadProgressFile(ev) {
       } else {
         document.getElementById("div-progress-file-loader").style.display =
           "none";
+        $("body").removeClass("waiting");
         document.getElementById("para-progress-file-status").innerHTML = "";
       }
     }, 500);
@@ -486,17 +489,20 @@ const verify_missing_files = (mode) => {
         if (mode === "pre-existing") {
           document.getElementById("div-progress-file-loader").style.display =
             "none";
+          $("body").removeClass("waiting");
           document.getElementById("nextBtn").disabled = false;
           document.getElementById("para-progress-file-status").innerHTML =
             "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
         } else if (mode === "new") {
           document.getElementById("div-progress-file-loader").style.display =
             "none";
+          $("body").removeClass("waiting");
           document.getElementById("para-progress-file-status").innerHTML = "";
         }
       } else {
         document.getElementById("div-progress-file-loader").style.display =
           "none";
+        $("body").removeClass("waiting");
         document.getElementById("para-progress-file-status").innerHTML = "";
       }
     },

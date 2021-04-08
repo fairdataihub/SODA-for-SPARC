@@ -297,7 +297,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
           "track-event",
           "Error",
           "Disseminate Dataset - Share with Consortium",
-          defaultBfDataset
+          bfDS
         );
       } else {
         disseminateShowCurrentPermission(bfAcct, bfDS);
@@ -306,6 +306,12 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
           selectedStatusOption =
             "10. Curated & Awaiting PI Approval (Curators)";
         }
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Disseminate Dataset - Share with Consortium",
+          bfDS
+        );
         client.invoke(
           "api_bf_change_dataset_status",
           bfAcct,

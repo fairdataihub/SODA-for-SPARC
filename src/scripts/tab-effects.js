@@ -857,6 +857,7 @@ async function transitionSubQuestions(
     if (globalGettingStarted1stQuestionBool) {
       $("#progress-files-dropdown").val("Select");
       $("#para-progress-file-status").text("");
+      $("#nextBtn").prop("disabled", true);
       exitCurate(false);
       globalGettingStarted1stQuestionBool = false;
     } else {
