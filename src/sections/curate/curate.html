@@ -1083,9 +1083,9 @@
                   "
                 >
                   Virtually structure your dataset in the interface below. <br />
-                  Double click on any high-level SPARC folder (they could be added here from Step 2) 
+                  Double click on any high-level SPARC folder (they could be added here from Step 2)
                   <br />
-                  and organize your dataset  by importing files, creating folders, and renaming them.                
+                  and organize your dataset  by importing files, creating folders, and renaming them.
                   <br/>Note: You will be able to add metadata files in Step 4.</span
                 >
               </h3>
@@ -1263,7 +1263,16 @@
                         <p style="margin: 10px 0" id="para-local-path-file"></p>
                       </div>
                       <div>
-                        <label><b>Description: </b></label>
+                        <label><b>Description: </b>
+                          <i
+                            class="fas fa-info-circle popover-tooltip"
+                            data-content="This information will be included in the corresponding manifest file if request from SODA in Step 5."
+                            rel="popover"
+                            data-placement="top"
+                            data-html="true"
+                            data-trigger="hover"
+                          ></i>
+                        </label>
                         <textarea id="textarea-file-description"></textarea>
                         <input
                           id="input-add-file-description"
@@ -1274,7 +1283,16 @@
                         >
                       </div>
                       <div>
-                        <label><b>Additional metadata:</b></label>
+                        <label><b>Additional metadata:</b>
+                          <i
+                            class="fas fa-info-circle popover-tooltip"
+                            data-content="This information will be included in the corresponding manifest file if request from SODA in Step 5."
+                            rel="popover"
+                            data-placement="top"
+                            data-html="true"
+                            data-trigger="hover"
+                          ></i>
+                        </label>
                         <textarea id="textarea-file-metadata"></textarea>
                         <input
                           id="input-add-file-metadata"
