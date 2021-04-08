@@ -1000,7 +1000,7 @@
               >Let's check your Airtable connection status:
               <i
                 class="fas fa-info-circle popover-tooltip"
-                data-content="SODA make use of the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' target='_blank' class='airtable-sheet'> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
+                data-content="SODA makes use of the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' target='_blank' class='airtable-sheet'> SPARC Airtable sheet</a> to automatically get award numbers and contributors information such that you don't have to enter them manually in your metadata files. To enable this, you have to connect your Airtable account with SODA (only necessary one time).
                 <br/><br/>
                 To achieve that, create an Airtable account and request access to the <a href='https://airtable.com/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide' target='_blank' class='airtable-sheet' >SPARC Airtable sheet</a> if you have not already (contact Dr. Charles Horn at <a href='mailto:chorn@pitt.edu'> chorn@pitt.edu</a>)
                 <br/><br/>
@@ -2372,8 +2372,22 @@
                 color: var(--color-bg-plum);
                 margin-bottom: 20px;
               "
-              >Fill out five sections below and generate your
+              >Fill out the five sections below and generate your
               dataset_description file
+              <i
+                class="fas fa-info-circle popover-tooltip"
+                data-content="After you complete all steps, click on 'Generate' to
+                        generate your dataset description file. A warning
+                        message may show up if any mandatory fields are missing.
+                        You may decide to go back and address the issues or
+                        generate the file anyway. 
+                        <br/><br/>
+                        Click on 'Start over' to refresh the form."
+                rel="popover"
+                data-placement="right"
+                data-html="true"
+                data-trigger="hover"
+              ></i>
             </label>
             <div
               style="
@@ -2469,7 +2483,7 @@
                         Select the Blackfynn dataset where the dataset
                         description file will be uploaded. You can create a new
                         dataset from the "Manage Datasets" section under the
-                        "Handle datasets" feature.
+                        "Create a new dataset" feature.
                       </span>
                     </div>
                   </div>
@@ -2538,7 +2552,7 @@
                       <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                       <span class="tooltiptext">
                         Number of unique subjects in this dataset, should match
-                        subjects metadata file. Must be greater or equal to 1. <br>Note: Further information about SPARC metadata files can be found <a href='https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT' target='_blank'>here</a>.
+                        subjects metadata file. Must be greater or equal to 1.
                       </span>
                     </div>
                   </div>
@@ -2560,7 +2574,7 @@
                       <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                       <span class="tooltiptext">
                         Number of unique samples in this dataset, should match
-                        samples metadata file. Set to 0 if there are no samples. <br>Note: Further information about SPARC metadata files can be found <a href='https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT' target='_blank'>here</a>.
+                        samples metadata file. Set to 0 if there are no samples.
                       </span>
                     </div>
                   </div>
@@ -3301,12 +3315,6 @@
                       <span class="tooltiptext">
                         Please give us a provisional title for the entire data
                         set. Leave empty if not applicable.
-                        <br /><br />
-                        After you complete all steps, click on "Generate" to
-                        generate your dataset description file. A warning
-                        message may show up if any mandatory fields are missing.
-                        You may decide to go back and address the issues or
-                        generate the file anyway (and address the issues later).
                       </span>
                     </div>
                   </div>
