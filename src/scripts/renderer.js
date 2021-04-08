@@ -3466,7 +3466,7 @@ bfAddPermissionTeamBtn.addEventListener("click", () => {
         var emessage = userError(error);
         $("#bf-add-permission-team-spinner").hide();
         datasetPermissionStatusTeam.innerHTML =
-          "<span style='color: red;'> " + emessage + ". </span>" + sadCan;
+          "<span style='color: red;'> " + emessage + "</span>";
         bfCurrentPermissionProgress.style.display = "none";
         bfAddEditCurrentPermissionProgress.style.display = "none";
       } else {
