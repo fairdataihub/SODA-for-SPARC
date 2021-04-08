@@ -3194,7 +3194,8 @@ function uploadBannerImage() {
   var imagePath = path.join(imageFolder, "banner-image-SODA." + imageExtension);
   var croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {
-    if (fs.statSync(imagePath)["size"] < 5 * 1024 * 1024) {
+    let image_file_size = fs.statSync(imagePath)["size"]
+    if (image_file_size < 5 * 1024 * 1024) {
       var selectedBfAccount = defaultBfAccount;
       var selectedBfDataset = defaultBfDataset;
 
@@ -3216,7 +3217,8 @@ function uploadBannerImage() {
               "track-event",
               "Error",
               "Manage Dataset - Upload Banner Image",
-              selectedBfDataset
+              selectedBfDataset,
+              image_file_size
             );
           } else {
             datasetBannerImageStatus.innerHTML = res;
@@ -3228,7 +3230,8 @@ function uploadBannerImage() {
               "track-event",
               "Success",
               "Manage Dataset - Upload Banner Image",
-              selectedBfDataset
+              selectedBfDataset,
+              image_file_size
             );
           }
         }
