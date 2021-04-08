@@ -1829,10 +1829,25 @@ def bf_get_existing_folders_details(bf_folder):
 
 def bf_get_existing_files_details(bf_folder):
 
+    double_extensions = ['.ome.tiff','.ome.tif','.ome.tf2,','.ome.tf8','.ome.btf','.ome.xml','.brukertiff.gz','.mefd.gz','.moberg.gz','.nii.gz','.mgh.gz','.tar.gz','.bcl.gz']
+
+    #f = open("dataset_contents.soda", "a")
+
     def verify_file_name(file_name, extension):
         if extension == "":
             return file_name
-        extension_from_name = os.path.splitext(file_name)[1]
+        
+        double_ext = False
+        for ext in double_extensions:
+            if file_name.find(ext) != -1:
+                double_ext = True
+                break
+                
+        if double_ext == False:
+            extension_from_name = os.path.splitext(file_name)[1]
+        else:
+            extension_from_name = os.path.splitext(os.path.splitext(file_name)[0])[1] + os.path.splitext(file_name)[1]
+        
         if extension_from_name == ('.' + extension):
             return file_name
         else:

@@ -6421,7 +6421,7 @@ function initiate_generate() {
   }
 
   let dataset_name = "";
-  let datset_destination = "";
+  let dataset_destination = "";
 
   if ("bf-dataset-selected" in sodaJSONObj)
   {
@@ -6435,7 +6435,7 @@ function initiate_generate() {
       if (destination == "local")
       {
         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"]
-        datset_destination = "Local"
+        dataset_destination = "Local"
       }
       if (destination == "bf")
       {
