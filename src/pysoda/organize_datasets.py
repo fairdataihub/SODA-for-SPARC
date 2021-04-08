@@ -538,7 +538,9 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
             if file_name.find(ext) != -1:
                 double_ext = True
                 break
-                
+            
+        extension_from_name = ""
+
         if double_ext == False:
             extension_from_name = os.path.splitext(file_name)[1]
         else:

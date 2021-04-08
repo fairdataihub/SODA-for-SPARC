@@ -1842,6 +1842,8 @@ def bf_get_existing_files_details(bf_folder):
             if file_name.find(ext) != -1:
                 double_ext = True
                 break
+
+        extension_from_name = ""
                 
         if double_ext == False:
             extension_from_name = os.path.splitext(file_name)[1]
