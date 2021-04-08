@@ -596,6 +596,11 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       `${emessage}`,
       'success'
     )
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      `Download Template - ${templateItem}`
+    );
     //ipcRenderer.send("open-info-metadata-file-donwloaded", emessage);
   }
 };
@@ -2868,6 +2873,12 @@ $(bfListDatasetStatus).on("change", () => {
     selectedStatusOption,
     (error, res) => {
       if (error) {
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Manage Dataset - Change Dataset Status",
+          selectedBfDataset
+        );
         log.error(error);
         console.error(error);
         var emessage = userError(error);
@@ -2879,6 +2890,12 @@ $(bfListDatasetStatus).on("change", () => {
         }
         showCurrentDatasetStatus(showErrorDatasetStatus);
       } else {
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Manage Dataset - Change Dataset Status",
+          selectedBfDataset
+        );
         $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
         $("#bf-dataset-status-spinner").css("display", "none");
         datasetStatusStatus.innerHTML = res;
@@ -3505,12 +3522,24 @@ function submitReviewDataset() {
     selectedBfDataset,
     (error, res) => {
       if (error) {
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Disseminate Dataset - Pre-publishing Review",
+          selectedBfDataset
+          ); 
         log.error(error);
         console.error(error);
         var emessage = userError(error);
         $("#para-submit_prepublishing_review-status").css("color", "red");
         $("#para-submit_prepublishing_review-status").text(emessage);
       } else {
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Disseminate Dataset - Pre-publishing Review",
+          selectedBfDataset
+          );  
         $("#para-submit_prepublishing_review-status").css(
           "color",
           "var(--color-light-green)"
@@ -6392,6 +6421,7 @@ function initiate_generate() {
   }
 
   let dataset_name = "";
+  let datset_destination = "";
 
   if ("bf-dataset-selected" in sodaJSONObj)
   {
@@ -6405,10 +6435,12 @@ function initiate_generate() {
       if (destination == "local")
       {
         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"]
+        datset_destination = "Local"
       }
       if (destination == "bf")
       {
         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"]
+        dataset_destination = "Blackfynn"
       }
     }
   }
@@ -6431,7 +6463,14 @@ function initiate_generate() {
       ipcRenderer.send(
         "track-event",
         "Error",
-        "Generate Dataset",
+        `Generate Dataset`,
+        dataset_name
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Generate Dataset - ${dataset_destination}`,
         dataset_name
       );
 
@@ -6441,7 +6480,7 @@ function initiate_generate() {
       ipcRenderer.send(
         "track-event",
         "Error",
-        "Generate Dataset - name - size",
+        "Generate Dataset - Size",
         dataset_name,
         main_total_generate_dataset_size
       );
@@ -6449,14 +6488,32 @@ function initiate_generate() {
       ipcRenderer.send(
         "track-event",
         "Error",
-        `Generate Dataset - ${dataset_name} - Number of Folders`,
-        folder_counter
+        `Generate Dataset - ${dataset_destination} - Size`,
+        dataset_name,
+        main_total_generate_dataset_size
+      );
+
+
+      // ipcRenderer.send(
+      //   "track-event",
+      //   "Error",
+      //   `Generate Dataset - ${dataset_name} - Number of Folders`,
+      //   folder_counter
+      // );
+
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        `Generate Dataset - Number of Files`,
+        dataset_name,
+        file_counter
       );
 
       ipcRenderer.send(
         "track-event",
         "Error",
-        `Generate Dataset - ${dataset_name} - Number of Files`,
+        `Generate Dataset - ${dataset_destination} - Number of Files`,
+        dataset_name,
         file_counter
       );
 
@@ -6480,55 +6537,90 @@ function initiate_generate() {
       log.info("Completed curate function");
       console.log("Completed curate function");
       if (manifest_files_requested) {
+        let high_level_folder_num = 0;
+        if ("dataset-structure" in sodaJSONObj) {
+          if ("folders" in sodaJSONObj["dataset-structure"]) {
+            for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
+              high_level_folder_num += 1;
+            }
+          }
+        }
         ipcRenderer.send(
           "track-event",
           "Success",
           "Manifest Files Created",
-          dataset_name
+          dataset_name,
+          high_level_folder_num
+        );
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          `Manifest Files Created - ${dataset_destination}`,
+          dataset_name,
+          high_level_folder_num
         );
       }
+
       ipcRenderer.send(
         "track-event",
         "Success",
-        "Generate Dataset - name - size",
+        `Generate Dataset`,
+        dataset_name
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        `Generate Dataset - ${dataset_destination}`,
+        dataset_name
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        "Generate Dataset - Size",
         dataset_name,
         main_total_generate_dataset_size
       );
+
       ipcRenderer.send(
         "track-event",
         "Success",
-        `Generate Dataset - ${dataset_name} - size`,
+        `Generate Dataset - ${dataset_destination} - Size`,
+        dataset_name,
         main_total_generate_dataset_size
       );
 
       file_counter = 0; folder_counter = 0;
       get_num_files_and_folders(sodaJSONObj["dataset-structure"])
 
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Generate Dataset - ${dataset_name} - Number of Folders`,
-        folder_counter
-      );
+      // ipcRenderer.send(
+      //   "track-event",
+      //   "Success",
+      //   `Generate Dataset - ${dataset_name} - Number of Folders`,
+      //   folder_counter
+      // );
+
+      // ipcRenderer.send(
+      //   "track-event",
+      //   "Success",
+      //   "Generate Dataset - Number of Folders",
+      //   folder_counter
+      // );
 
       ipcRenderer.send(
         "track-event",
         "Success",
-        "Generate Dataset - Number of Folders",
-        folder_counter
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Generate Dataset - ${dataset_name} - Number of Files`,
+        `Generate Dataset - Number of Files`,
+        dataset_name,
         file_counter
       );
 
       ipcRenderer.send(
         "track-event",
         "Success",
-        "Generate Dataset - Number of Files",
+        `Generate Dataset - ${dataset_destination} - Number of Files`,
+        dataset_name,
         file_counter
       );
 
