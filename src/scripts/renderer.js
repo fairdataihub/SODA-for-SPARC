@@ -3330,6 +3330,12 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
       selectedRole,
       (error, res) => {
         if (error) {
+          ipcRenderer.send(
+            "track-event",
+            "Error",
+            "Manage Dataset - Change PI Owner",
+            selectedBfDataset
+          );  
           $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
           log.error(error);
           console.error(error);
@@ -3339,6 +3345,12 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
           bfCurrentPermissionProgress.style.display = "none";
           bfAddEditCurrentPermissionProgress.style.display = "none";
         } else {
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            "Manage Dataset - Change PI Owner",
+            selectedBfDataset
+          );  
           let nodeStorage = new JSONStorage(
             app.getPath("userData")
           );
@@ -3398,6 +3410,12 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
       selectedUser,
       selectedRole
     );
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Manage Dataset - Add User Permission",
+      selectedBfDataset
+      );  
     $("#bf-add-permission-user-spinner").hide();
   } else {
     $("#bf-add-permission-user-spinner").hide();
