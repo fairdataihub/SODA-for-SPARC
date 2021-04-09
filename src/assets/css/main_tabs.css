@@ -347,3 +347,64 @@ input[name="dataset_status_radio"]:checked ~ .check::before{
 input[name="dataset_status_radio"]:checked ~ label{
   color: var(--color-teal);
 }
+
+.btn_animated.md .btn_animated-inside{
+  padding-top: 10px;
+}
+.btn_animated.lg .btn_animated-inside{
+  padding: 6px;
+}
+
+.btn_animated-inside{
+  -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
+  overflow:hidden;
+  border-radius:8px;
+  transition:all 0.25s;
+  color:white;
+  user-select:none;
+  cursor:pointer;
+  background:var(--color-light-green);
+  width: inherit;
+  height: inherit;
+  margin-left: -8px;
+  padding-top: 8px;
+}
+.btn_animated:active{
+  box-shadow:0px 0.5px 1px rgba(0, 0, 0, 0.5);;
+}
+
+.btn_animated .ripple{
+  width:0px;
+  height:0px;
+  position:absolute;
+  transition:all 0.75s;
+  display:inline-block;
+  opacity:1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.btn_animated .ripple.effect{
+  width:400px;
+  height:400px;
+  color:#000;
+  opacity:0;
+  background:black;
+  border-radius:100%;
+}
+
+.btn_animated {
+  cursor: pointer;
+  border-radius: 8px;
+  margin: 0 10px;
+  height: 35px;
+  background: var(--color-light-green);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  font-size: 14px;
+  box-shadow:0px 2px 4px rgba(0, 0, 0, 0.5);
+  transition:all 0.2s;
+  overflow:hidden;
+  position:relative;
+}
