@@ -619,7 +619,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                         file_id = file_details[0]["content"]["id"]
                         manifest_url = bf._api._get(
                             '/packages/' + str(package_id) + '/files/' + str(file_id))
-                        df = pd.read_excel(manifest_url['url'])
+                        df = pd.read_excel(manifest_url['url'], engine='openpyxl')
                         manifest_dict[my_folder_name] = df
                     else:
                         timestamp = package_details["content"]["updatedAt"]

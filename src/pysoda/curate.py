@@ -1781,7 +1781,7 @@ def create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds, my
                                 file_id_2 = file_details[0]["content"]["id"]
                                 file_url_info = bf._api._get('/packages/' + str(file_id) + '/files/' + str(file_id_2))
                                 file_url = file_url_info['url']
-                                manifest_df = pd.read_excel(file_url)
+                                manifest_df = pd.read_excel(file_url,engine='openpyxl')
                                 manifest_df = manifest_df.fillna('')
                                 if "filename" not in manifest_df.columns or "description" not in manifest_df.columns or "Additional Metadata" not in manifest_df.columns:
                                     manifest_df = pd.DataFrame()
