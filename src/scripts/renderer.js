@@ -33,6 +33,7 @@ const app = remote.app;
 var noAirtable = false;
 
 var nextBtnDisabledVariable = true;
+var jstreePreview = document.getElementById("div-dataset-tree-preview");
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -3355,7 +3356,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
             "Error",
             "Manage Dataset - Change PI Owner",
             selectedBfDataset
-          );  
+          );
           $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
           log.error(error);
           console.error(error);
@@ -3370,7 +3371,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
             "Success",
             "Manage Dataset - Change PI Owner",
             selectedBfDataset
-          );  
+          );
           let nodeStorage = new JSONStorage(
             app.getPath("userData")
           );
@@ -3435,7 +3436,7 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
       "Success",
       "Manage Dataset - Add User Permission",
       selectedBfDataset
-      );  
+      );
     $("#bf-add-permission-user-spinner").hide();
   } else {
     $("#bf-add-permission-user-spinner").hide();
@@ -3530,7 +3531,7 @@ function submitReviewDataset() {
           "Error",
           "Disseminate Dataset - Pre-publishing Review",
           selectedBfDataset
-          ); 
+          );
         log.error(error);
         console.error(error);
         var emessage = userError(error);
@@ -3542,7 +3543,7 @@ function submitReviewDataset() {
           "Success",
           "Disseminate Dataset - Pre-publishing Review",
           selectedBfDataset
-          );  
+          );
         $("#para-submit_prepublishing_review-status").css(
           "color",
           "var(--color-light-green)"

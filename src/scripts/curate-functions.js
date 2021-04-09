@@ -1645,7 +1645,6 @@ $(jstreeInstance).on("close_node.jstree", function (event, data) {
   data.instance.set_type(data.node, "folder closed");
 });
 
-var jstreePreview = document.getElementById("div-dataset-tree-preview");
 $(document).ready(function () {
   $(jstreePreview).jstree({
     core: {

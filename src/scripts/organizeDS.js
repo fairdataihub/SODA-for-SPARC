@@ -788,10 +788,10 @@ function triggerManageDetailsPrompts(
 //    b. Show: display: flex (New folder, Import, Back button, and path) + Center the items
 function organizeLandingUIEffect() {
   if ($("#input-global-path").val() === "My_dataset_folder/") {
-    $(".div-organize-dataset-menu").css("display", "none");
-    $("#organize-path-and-back-button-div").css("display", "none");
+    $(".div-organize-dataset-menu").css("visibility", "hidden");
+    $("#organize-path-and-back-button-div").css("visibility", "hidden");
   } else {
-    $("#organize-path-and-back-button-div").css("display", "block");
-    $(".div-organize-dataset-menu").css("display", "flex");
+    $("#organize-path-and-back-button-div").css("visibility", "visible");
+    $(".div-organize-dataset-menu").css("visibility", "visible");
   }
 }
