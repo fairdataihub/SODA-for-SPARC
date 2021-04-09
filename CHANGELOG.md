@@ -1,6 +1,33 @@
 # Change Log
 All notable changes to SODA will be documented in this file.
 
+## v4.1.0 - 2020-04-09
+
+### Feature additions:
+- Complete UI overhaul for the Manage Datasets, Prepare Metadata and Disseminate Dataset features to bring the SODA's visuals to be consistent across all features
+- all 3 organize dataset
+- startover button
+- prepare metadata - ui change
+  - dfsdf
+- disseminate dataset - unshare button
+- searchable dropdowns
+- updated account details
+- local manifest files
+- tiff banner images
+- move options 
+- multiselect
+- preview tree
+
+
+#### Further notes:
+- 
+
+### Bug fixes:
+- When uploading a local dataset to an existing Blackfynn folder, the 'skip' folders option now correctly uploads files that were not meant to be skipped.
+- Creating a new local folder as your dataset destination now renames the generated folder correctly if a duplicate folder has to be created.
+- Squashed a bug where files uploaded to Blackfynn were sometimes not renamed.
+
+
 ## v3.0.1 - 2020-12-15
 
 ### Feature additions:
@@ -14,10 +41,3 @@ All notable changes to SODA will be documented in this file.
 
 ### Major bug fixes:
 - Updated Airtable SPARC's table name to reflect the change initiated by SPARC. Prior to the fix, SODA could not connect to SPARC award data sheet, thus raising an error when users utilize the Prepare metadata feature.
-
-## v3.0.2 - To be released
-
-### Bug fixes:
-- When uploading a local dataset to an existing Blackfynn folder, the 'skip' folders option now correctly uploads files that were not meant to be skipped.
-- Creating a new local folder as your dataset destination now renames the generated folder correctly if a duplicate folder has to be created.
-- Squashed a bug where files uploaded to Blackfynn were sometimes not renamed.
