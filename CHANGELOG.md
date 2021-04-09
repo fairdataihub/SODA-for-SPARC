@@ -35,7 +35,7 @@ All notable changes to SODA will be documented in this file.
 - Adding Permissions for users
     - Within the dropdowns for selecting users within the SPARC organization, you will now see their email for better clarity.
 - Added support for TIFF banner images
-    - If you wanted your Tiff image to be the banner image of your dataset, you can now use SODA to automatically convert and set your banner image.
+    - If you wanted your TIFF image to be the banner image of your dataset, you can now use SODA to automatically convert and set your banner image.
 
 
 ### Bug fixes:
@@ -43,6 +43,8 @@ All notable changes to SODA will be documented in this file.
 - Creating a new local folder as your dataset destination now renames the generated folder correctly if a duplicate folder has to be created.
 - Squashed a bug where files uploaded to Blackfynn were sometimes not renamed.
 - Create dataset_description.xlsx file: Fixed bug where a contributor's affliation has a comma.
+- Fixed a bug where when you would upload files to Blackfynn, it would create a duplicate and not replace your old files.
+- Added support for files with more than one extension. This fixes a bug where the manifest file was providing the incorrect filetype.
 
 
 ## v3.0.1 - 2020-12-15
