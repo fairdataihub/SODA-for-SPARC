@@ -5,22 +5,40 @@ All notable changes to SODA will be documented in this file.
 
 ### Feature additions:
 - Complete UI overhaul for the Manage Datasets, Prepare Metadata and Disseminate Dataset features to bring the SODA's visuals to be consistent across all features
-- all 3 organize dataset
-- startover button
-- prepare metadata - ui change
-  - dfsdf
-- disseminate dataset - unshare button
-- searchable dropdowns
-- updated account details
+- Organize a local dataset
+    - You are now able to import and organize dataset folders and files directly from your local file system.
+    - After organizing the dataset and including your metadata files, you can push your dataset directly to Blackfynn for storage and publishing or save it on your computer for future use.
+- Organize a Blackfynn dataset
+    - You are now able to import a dataset, directly from Blaackfynn and rename, move and delete files directly from SODA. 
+    - Support for importing pre-existing manifest files and metadata files has been included.
+    - You will be able to import new files from your computer and deposit it within your Blackfynn dataset as well.
+- Save your progress
+    - If you are in the middle of organizing a dataset and have to leave the process at any time, you can now save all your current progress and restart from the exact same point at a later time.
+- Organize dataset: 
+    - You can now start over the dataset organization process at any point from step 3 onward by clicking the Start over button (located next to the Back button).
+    - You can now move files and folders to another folder by right-clicking on the items and select Move to. 
+    - SODA now allows multiple-selection of files and folders for manipulation. This can be achieved by dragging your mouse pointers over several items or pressing and holding the Ctrl button and select the items.
+    - Blackfynn had updated how their backend systems handle file names when you upload to Blackfynn. 
+    
+- Unshare with the Curation team
+    - If you have already shared your dataset with the Curation team, you can now remove it from this state with a click of just one button
+- Unshare with the SPARC Consoritum
+    - If you have already shared your dataset with the SPARC consortium, you can now remove it from this state with a click of just one button
+
+- Search dropdowns: 
+    - Multiple dropdowns throughout SODA are now searchable. These dropdowns include the dataset list, PI owner/user/team list, and SPARC award list. 
+    
+- Updated account management
+    - SODA now restricts you to have only one valid account at a time. This account has to be within the SPARC Consortium organization. If you have any Blackfynn API keys from an unsupported organization they will be removed and SODA will prompt you to regenerate a new key set that is within the SPARC Consortium organization.
+- pi owner email
 - local manifest files
 - tiff banner images
-- move options 
-- multiselect
 - preview tree
 
 
 #### Further notes:
 - 
+-
 
 ### Bug fixes:
 - When uploading a local dataset to an existing Blackfynn folder, the 'skip' folders option now correctly uploads files that were not meant to be skipped.
