@@ -1488,6 +1488,26 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
     manifest_files_structure = {}
     local_timezone = TZLOCAL()
 
+    double_extensions = ['.ome.tiff','.ome.tif','.ome.tf2,','.ome.tf8','.ome.btf','.ome.xml','.brukertiff.gz','.mefd.gz','.moberg.gz','.nii.gz','.mgh.gz','.tar.gz','.bcl.gz']
+
+    def get_name_extension(file_name):
+        double_ext = False
+        for ext in double_extensions:
+            if file_name.find(ext) != -1:
+                double_ext = True
+                break
+        
+        ext = ""
+        name = ""
+        
+        if double_ext == False:
+            name = os.path.splitext(file_name)[0]
+            ext = os.path.splitext(file_name)[1]
+        else:
+            ext = os.path.splitext(os.path.splitext(file_name)[0])[1] + os.path.splitext(file_name)[1]
+            name = os.path.splitext(os.path.splitext(file_name)[0])[0]
+        return name, ext
+
     def recursive_folder_traversal(folder, dict_folder_manifest):
         if "files" in folder.keys():
             for item in list(folder["files"]):
@@ -1499,7 +1519,7 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
                 relative_file_name += item
                 relative_file_name.replace("\\","/")
                 dict_folder_manifest["filename"].append(relative_file_name)
-                file_extension = os.path.splitext(item)[1]
+                unused_file_name, file_extension = get_name_extension(item)
                 dict_folder_manifest["file type"].append(file_extension)
 
                 if "type" in folder["files"][item].keys():
