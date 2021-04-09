@@ -369,9 +369,6 @@ input[name="dataset_status_radio"]:checked ~ label{
   margin-left: -8px;
   padding-top: 8px;
 }
-/* .btn_animated:active{
-  box-shadow:0px 0.5px 1px rgba(0, 0, 0, 0.5);;
-} */
 
 .btn_animated .ripple{
   width:0px;
@@ -403,7 +400,6 @@ input[name="dataset_status_radio"]:checked ~ label{
   font-weight: 600;
   border: none;
   font-size: 14px;
-  
   transition:all 0.2s;
   overflow:hidden;
   position:relative;
@@ -411,4 +407,18 @@ input[name="dataset_status_radio"]:checked ~ label{
 
 .btn_animated:hover {
   box-shadow:0px 0px 6px rgba(0, 0, 0, 0.5);
+}
+
+.btn_animated.generate-btn {
+  background: var(--color-bg-plum);
+}
+
+.btn_animated.generate-btn .btn_animated-inside{
+  padding-top: 10px;
+  background: var(--color-bg-plum);
+}
+
+.btn_animated.return-btn .btn_animated-inside{
+  padding-top: 10px;
+  margin: 0px -8px;
 }
