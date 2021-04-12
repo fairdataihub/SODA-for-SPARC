@@ -1179,6 +1179,7 @@
             >
               <button
                 id="submission-no-airtable-mode"
+                class="btn_animated skip"
                 onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
                 data-next="Question-prepare-submission-no-skip-1"
                 style="
@@ -1190,7 +1191,6 @@
                   color: red;
                   font-weight: 600;
                   border: 1px solid red;
-                  font-size: 15px;
                   margin-right: 20px;
                 "
               >
@@ -1361,6 +1361,7 @@
             >
               <button
                 id="button-skip-DDD"
+                class="btn_animated skip"
                 onclick="transitionFreeFormMode(this, 'Question-prepare-submission-DDD', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
                 data-next="Question-prepare-submission-no-skip-2"
                 style="
@@ -1959,7 +1960,16 @@
             >
               <button
                 onclick="resetSubmission()"
-                class= "start-over"
+                class= "btn_animated start_over"
+                style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px;
+                width: 120px;
+                background-color: #fff;
+                color: var(--color-bg-plum);
+                font-weight: 600;
+                border: 1px solid var(--color-bg-plum);"
               >
                 <i class="fas fa-sync-alt" style="margin-right: 10px"></i>
                 Start over
@@ -2253,18 +2263,17 @@
                 <button
                   onclick="transitionFreeFormMode(this, 'Question-prepare-dd-1', 'create_dataset_description-tab', 'delete', 'individual-question prepare-dd')"
                   id="dataset-description-no-airtable-mode"
+                  class="btn_animated skip"
                   data-next="Question-prepare-dd-4-sections"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
                     margin: 10px auto;
                     width: 140px;
-                    height: 35px;
                     background: #fff;
                     color: red;
                     font-weight: 600;
                     border: 1px solid red;
-                    font-size: 15px;
                     margin-right: 20px;
                   "
                 >
@@ -2272,18 +2281,12 @@
                 </button>
                 <button
                   onclick="showAddAirtableAccountBootbox()"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 140px;
-                    height: 35px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 15px;
-                  "
+                  class="btn_animated"
+                style="
+                  margin: 10px auto;
+                  width: 140px;
+                  border: none !important;
+                "
                   id="dd-connect-Airtable"
                 >
                   Yes, let's connect
@@ -3301,7 +3304,16 @@
             >
               <button
                 onclick="resetDD()"
-                class= "start-over"
+                class= "btn_animated start_over"
+                style="
+                cursor: pointer;
+                border-radius: 8px;
+                margin: 10px;
+                width: 120px;
+                background-color: #fff;
+                color: var(--color-bg-plum);
+                font-weight: 600;
+                border: 1px solid var(--color-bg-plum);"
               >
                 <i class="fas fa-sync-alt" style="margin-right: 10px"></i>
                 Start over

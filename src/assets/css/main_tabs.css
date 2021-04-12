@@ -355,6 +355,28 @@ input[name="dataset_status_radio"]:checked ~ label{
   padding: 6px;
 }
 
+.btn_animated.skip .btn_animated-inside{
+  background:white;
+  color: red;
+  margin-top: -1px;
+}
+
+.btn_animated.skip .ripple.effect{
+  opacity:0;
+  background:red;
+}
+
+.btn_animated.start_over .btn_animated-inside{
+  background:white;
+  color: #b80d49;
+  margin-top: -1px;
+}
+
+.btn_animated.start_over .ripple.effect{
+  opacity:0;
+  background:#b80d49;
+}
+
 .btn_animated-inside{
   -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
   overflow:hidden;
