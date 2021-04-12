@@ -1139,26 +1139,7 @@ def create_high_level_manifest_files(soda_json_structure):
     Action:
         manifest_files_structure: dict including the local path of the manifest files
     """
-    double_extensions = ['.ome.tiff', '.ome.tif', '.ome.tf2,', '.ome.tf8', '.ome.btf', '.ome.xml', '.brukertiff.gz', '.mefd.gz', '.moberg.gz', '.nii.gz', '.mgh.gz', '.tar.gz', '.bcl.gz']
-    
     try:
-        def get_name_extension(file_name):
-            double_ext = False
-            for ext in double_extensions:
-                if file_name.find(ext) != -1:
-                    double_ext = True
-                    break
-            
-            ext = ""
-            name = ""
-            
-            if double_ext == False:
-                name = os.path.splitext(file_name)[0]
-                ext = os.path.splitext(file_name)[1]
-            else:
-                ext = os.path.splitext(os.path.splitext(file_name)[0])[1] + os.path.splitext(file_name)[1]
-                name = os.path.splitext(os.path.splitext(file_name)[0])[0]
-            return name, ext
 
         def recursive_manifest_builder(my_folder, my_relative_path, dict_folder_manifest):
             if "files" in my_folder.keys():
@@ -1199,13 +1180,11 @@ def create_high_level_manifest_files(soda_json_structure):
             else:
                 dict_folder_manifest["description"].append("")
             #file type
-            fileextension = ""
             name_split = splitext(file_key)
             if name_split[1] == "":
                 fileextension = "None"
             else:
-                unused_file_name, fileextension = get_name_extension(file_key)
-                # fileextension = name_split[1]
+                fileextension = name_split[1]
             dict_folder_manifest["file type"].append(fileextension)
             #addtional metadata
             if "additional-metadata" in file.keys():
@@ -1509,26 +1488,6 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
     manifest_files_structure = {}
     local_timezone = TZLOCAL()
 
-    double_extensions = ['.ome.tiff','.ome.tif','.ome.tf2,','.ome.tf8','.ome.btf','.ome.xml','.brukertiff.gz','.mefd.gz','.moberg.gz','.nii.gz','.mgh.gz','.tar.gz','.bcl.gz']
-
-    def get_name_extension(file_name):
-        double_ext = False
-        for ext in double_extensions:
-            if file_name.find(ext) != -1:
-                double_ext = True
-                break
-        
-        ext = ""
-        name = ""
-        
-        if double_ext == False:
-            name = os.path.splitext(file_name)[0]
-            ext = os.path.splitext(file_name)[1]
-        else:
-            ext = os.path.splitext(os.path.splitext(file_name)[0])[1] + os.path.splitext(file_name)[1]
-            name = os.path.splitext(os.path.splitext(file_name)[0])[0]
-        return name, ext
-
     def recursive_folder_traversal(folder, dict_folder_manifest):
         if "files" in folder.keys():
             for item in list(folder["files"]):
@@ -1540,9 +1499,7 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
                 relative_file_name += item
                 relative_file_name.replace("\\","/")
                 dict_folder_manifest["filename"].append(relative_file_name)
-                unused_file_name, file_extension = get_name_extension(item)
-                if file_extension == "":
-                    file_extension = "None"
+                file_extension = os.path.splitext(item)[1]
                 dict_folder_manifest["file type"].append(file_extension)
 
                 if "type" in folder["files"][item].keys():
@@ -1611,26 +1568,7 @@ def create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds, my
     Action:
         manifest_files_structure: dict including the local path of the manifest files
     """
-    double_extensions = ['.ome.tiff', '.ome.tif', '.ome.tf2,', '.ome.tf8', '.ome.btf', '.ome.xml', '.brukertiff.gz', '.mefd.gz', '.moberg.gz', '.nii.gz', '.mgh.gz', '.tar.gz', '.bcl.gz']
-    
     try:
-        def get_name_extension(file_name):
-            double_ext = False
-            for ext in double_extensions:
-                if file_name.find(ext) != -1:
-                    double_ext = True
-                    break
-            
-            ext = ""
-            name = ""
-            
-            if double_ext == False:
-                name = os.path.splitext(file_name)[0]
-                ext = os.path.splitext(file_name)[1]
-            else:
-                ext = os.path.splitext(os.path.splitext(file_name)[0])[1] + os.path.splitext(file_name)[1]
-                name = os.path.splitext(os.path.splitext(file_name)[0])[0]
-            return name, ext
 
         def recursive_manifest_info_import_bf(my_item, my_relative_path, dict_folder_manifest, manifest_df):
 
@@ -1650,10 +1588,7 @@ def create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds, my
                         dict_folder_manifest["filename"].append(relative_path)
 
                         #file type
-                        unused_file_name, file_extension = get_name_extension(file_name)
-                        if file_extension == "":
-                            file_extension = "None"
-                        # file_extension = splitext(file_name)[1]
+                        file_extension = splitext(file_name)[1]
                         dict_folder_manifest["file type"].append(file_extension)
 
                         #timestamp, description, Additional Metadata
@@ -1826,7 +1761,7 @@ def create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds, my
                                 file_id_2 = file_details[0]["content"]["id"]
                                 file_url_info = bf._api._get('/packages/' + str(file_id) + '/files/' + str(file_id_2))
                                 file_url = file_url_info['url']
-                                manifest_df = pd.read_excel(file_url,engine='openpyxl')
+                                manifest_df = pd.read_excel(file_url)
                                 manifest_df = manifest_df.fillna('')
                                 if "filename" not in manifest_df.columns or "description" not in manifest_df.columns or "Additional Metadata" not in manifest_df.columns:
                                     manifest_df = pd.DataFrame()
@@ -1894,27 +1829,10 @@ def bf_get_existing_folders_details(bf_folder):
 
 def bf_get_existing_files_details(bf_folder):
 
-    double_extensions = ['.ome.tiff','.ome.tif','.ome.tf2,','.ome.tf8','.ome.btf','.ome.xml','.brukertiff.gz','.mefd.gz','.moberg.gz','.nii.gz','.mgh.gz','.tar.gz','.bcl.gz']
-
-    #f = open("dataset_contents.soda", "a")
-
     def verify_file_name(file_name, extension):
         if extension == "":
             return file_name
-        
-        double_ext = False
-        for ext in double_extensions:
-            if file_name.find(ext) != -1:
-                double_ext = True
-                break
-
-        extension_from_name = ""
-                
-        if double_ext == False:
-            extension_from_name = os.path.splitext(file_name)[1]
-        else:
-            extension_from_name = os.path.splitext(os.path.splitext(file_name)[0])[1] + os.path.splitext(file_name)[1]
-        
+        extension_from_name = os.path.splitext(file_name)[1]
         if extension_from_name == ('.' + extension):
             return file_name
         else:
@@ -2409,7 +2327,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                 #delete existing manifest files
                 for subitem in item:
                     file_name_no_ext = os.path.splitext(subitem.name)[0]
-                    if file_name_no_ext.lower() == "manifest":
+                    if file_name_no_ext == "manifest":
                         subitem.delete()
                         item.update()
                 #upload new manifest files

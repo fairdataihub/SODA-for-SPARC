@@ -1157,10 +1157,17 @@
               <button
                 onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
                 data-next="Question-prepare-submission-3"
-                class="btn_animated"
                 style="
+                  cursor: pointer;
+                  border-radius: 8px;
                   margin: 10px auto;
                   width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
                 "
               >
                 Confirm
@@ -1199,11 +1206,17 @@
               <button
                 id="submission-connect-Airtable"
                 onclick="showAddAirtableAccountBootbox()"
-                class="btn_animated"
                 style="
+                  cursor: pointer;
+                  border-radius: 8px;
                   margin: 10px auto;
                   width: 140px;
-                  border: none !important;
+                  height: 35px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 15px;
                 "
               >
                 Yes, let's connect
@@ -1313,10 +1326,17 @@
               <button
                 onclick="transitionFreeFormMode(this, 'Question-prepare-submission-3', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
                 data-next="Question-prepare-submission-DDD"
-                class="btn_animated"
                 style="
+                  cursor: pointer;
+                  border-radius: 8px;
                   margin: 10px auto;
                   width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
                 "
                 id="btn-confirm-select-SPARC-awards"
               >
@@ -1382,10 +1402,17 @@
               </button>
               <button
                 onclick="showDDDUploadDiv()"
-                class="btn_animated"
                 style="
+                  cursor: pointer;
+                  border-radius: 8px;
                   margin: 10px auto;
                   width: 100px;
+                  height: 35px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 14px;
                 "
               >
                 Yes, import
@@ -1744,11 +1771,17 @@
             <button
               onclick="transitionFreeFormMode(this, 'Question-prepare-submission-no-skip-2', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
               data-next="Question-prepare-submission-no-skip-3"
-              class="btn_animated"
               style="
+                cursor: pointer;
+                border-radius: 8px;
                 margin: 10px auto;
                 width: 100px;
-                border: none !important;
+                height: 30px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 13px;
               "
             >
               Confirm
@@ -1823,11 +1856,17 @@
             <button
               onclick="transitionFreeFormMode(this, 'Question-prepare-submission-6', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
               data-next="Question-prepare-submission-7"
-              class="btn_animated"
               style="
+                cursor: pointer;
+                border-radius: 8px;
                 margin: 10px auto;
                 width: 100px;
-                border: none !important;
+                height: 30px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-weight: 600;
+                border: none;
+                font-size: 13px;
               "
             >
               Confirm
@@ -1869,11 +1908,17 @@
             <button
               onclick="transitionFreeFormMode(this, 'Question-prepare-submission-no-skip-3', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
               data-next="Question-prepare-submission-7"
-              class="btn_animated"
               style="
+                cursor: pointer;
+                border-radius: 8px;
                 margin-right: 10px;
                 width: 100px;
-                border: none !important;
+                height: 30px;
+                color: #fff;
+                background: var(--color-light-green);
+                font-weight: 600;
+                border: none;
+                font-size: 14px;
               "
             >
               Confirm
@@ -1976,11 +2021,17 @@
               </button>
               <button
                 onclick="generateSubmissionFile()"
-                class="btn_animated"
                 style="
+                  cursor: pointer;
+                  border-radius: 8px;
                   margin: 10px;
                   width: 120px;
-                  border: none !important;
+                  height: 35px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
                 "
               >
                 Generate
@@ -2007,7 +2058,7 @@
     </div>
 
     <div class="footer-div">
-      <div style="display: flex; flex-direction: row; width: 120px">
+      <!-- <div style="display: flex; flex-direction: row; width: 120px"> -->
         <button
           type="button"
           class="transition-btn prev"
@@ -2015,7 +2066,14 @@
         >
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
         </button>
-      </div>
+        <button
+          onclick="resetSubmission()"
+          class= "start-over"
+        >
+          <i class="fas fa-sync-alt" style="margin-right: 10px;font-size: inherit"></i>
+          Start over
+        </button>
+      <!-- </div> -->
     </div>
   </section>
 
@@ -2239,11 +2297,17 @@
                 <button
                   onclick="transitionFreeFormMode(this, 'Question-prepare-dd-1', 'create_dataset_description-tab', 'delete', 'individual-question prepare-dd')"
                   data-next="Question-prepare-dd-4-sections"
-                  class="btn_animated"
                   style="
+                    cursor: pointer;
+                    border-radius: 8px;
                     margin: 10px auto;
                     width: 100px;
-                    border: none !important;
+                    height: 30px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    font-size: 13px;
                   "
                 >
                   Confirm
@@ -2318,7 +2382,7 @@
                         generate your dataset description file. A warning
                         message may show up if any mandatory fields are missing.
                         You may decide to go back and address the issues or
-                        generate the file anyway. 
+                        generate the file anyway.
                         <br/><br/>
                         Click on 'Start over' to refresh the form."
                 rel="popover"
@@ -3320,11 +3384,17 @@
               </button>
               <button
                 id="button-generate-ds-description"
-                class="btn_animated"
                 style="
+                  cursor: pointer;
+                  border-radius: 8px;
                   margin: 10px;
                   width: 120px;
-                  border: none !important;
+                  height: 35px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
                 "
               >
                 Generate
@@ -3347,7 +3417,7 @@
     </div>
     <!-- back button -->
     <div class="footer-div">
-      <div style="display: flex; flex-direction: row; width: 120px">
+      <!-- <div style="display: flex; flex-direction: row; width: 120px"> -->
         <button
           type="button"
           class="transition-btn prev"
@@ -3355,7 +3425,14 @@
         >
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
         </button>
-      </div>
+        <button
+          onclick="resetDD()"
+          class= "start-over"
+        >
+          <i class="fas fa-sync-alt" style="margin-right: 10px;font-size: inherit"></i>
+          Start over
+        </button>
+      <!-- </div> -->
     </div>
   </section>
   <script>window.$ = window.jQuery = require('jquery');</script>

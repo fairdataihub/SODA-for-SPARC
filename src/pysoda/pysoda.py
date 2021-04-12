@@ -599,13 +599,11 @@ def agent_running():
     listen_port = 11235
 
     try:
-        logger.debug("Checking port %s", listen_port)
         create_connection(socket_address(listen_port)).close()
 
     except socket.error as e:
 
         if e.errno == errno.ECONNREFUSED:  # ConnectionRefusedError for Python 3
-            logger.debug("No agent found, port %s OK", listen_port)
             return True
         else:
             raise
