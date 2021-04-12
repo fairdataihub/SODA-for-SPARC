@@ -1444,20 +1444,67 @@ async function transitionSubQuestionsButton(
       $("body").removeClass("waiting");
       return;
     } else {
-      sodaJSONObj = result[1][0];
-      if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
-        datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+      if (result[1][2].length > 0) {
+        // if any manifest files could not be read
+        let missing_files = result[1][2];
+        let message_text = "";
+        message_text =
+          "The manifest files in the following folders could not be read due to formatting issues. Would you like SODA to ignore these manifest files and continue? <br><ul>";
+
+        for (let item in missing_files) {
+          message_text += `<li>${missing_files[item]}</li>`;
+        }
+        message_text += "</ul>";
+
+        bootbox.confirm({
+          message: message_text,
+          buttons: {
+            confirm: {
+              label: "Continue",
+              className: "btn-success",
+            },
+            cancel: {
+              label: "No",
+              className: "btn-danger",
+            },
+          },
+          centerVertical: true,
+          callback: (response) => {
+            if (response !== null && response === true) {
+              sodaJSONObj = result[1][0];
+              if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
+                datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+              } else {
+                datasetStructureJSONObj = { folders: {}, files: {} };
+              }
+              populate_existing_folders(datasetStructureJSONObj);
+              populate_existing_metadata(sodaJSONObj);
+              $("#nextBtn").prop("disabled", false);
+              $("#para-continue-bf-dataset-getting-started").text(
+                "Please continue below."
+              );
+              showHideDropdownButtons("dataset", "show");
+            } else {
+              exitCurate();
+            }
+          },
+        });
       } else {
-        datasetStructureJSONObj = { folders: {}, files: {} };
+        sodaJSONObj = result[1][0];
+        if (JSON.stringify(sodaJSONObj["dataset-structure"]) !== "{}") {
+          datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+        } else {
+          datasetStructureJSONObj = { folders: {}, files: {} };
+        }
+        populate_existing_folders(datasetStructureJSONObj);
+        populate_existing_metadata(sodaJSONObj);
+        $("#nextBtn").prop("disabled", false);
+        $("#para-continue-bf-dataset-getting-started").text(
+          "Please continue below."
+        );
+        showHideDropdownButtons("dataset", "show");
+        // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
       }
-      populate_existing_folders(datasetStructureJSONObj);
-      populate_existing_metadata(sodaJSONObj);
-      $("#nextBtn").prop("disabled", false);
-      $("#para-continue-bf-dataset-getting-started").text(
-        "Please continue below."
-      );
-      showHideDropdownButtons("dataset", "show");
-      // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
     }
     $("body").removeClass("waiting");
     $("#bf-dataset-spinner").css("visibility", "hidden");

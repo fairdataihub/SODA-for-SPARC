@@ -524,7 +524,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
     high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
     manifest_sparc = ["manifest.xlsx", "manifest.csv"]
     high_level_metadata_sparc = ['submission.xlsx', 'submission.csv', 'submission.json', 'dataset_description.xlsx', 'dataset_description.csv', 'dataset_description.json', 'subjects.xlsx', 'subjects.csv', 'subjects.json', 'samples.xlsx', 'samples.csv', 'samples.json', 'README.txt', 'CHANGES.txt']
-
+    manifest_error_message = []
     double_extensions = ['.ome.tiff','.ome.tif','.ome.tf2,','.ome.tf8','.ome.btf','.ome.xml','.brukertiff.gz','.mefd.gz','.moberg.gz','.nii.gz','.mgh.gz','.tar.gz','.bcl.gz']
 
     #f = open("dataset_contents.soda", "a")
@@ -619,8 +619,16 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
                         file_id = file_details[0]["content"]["id"]
                         manifest_url = bf._api._get(
                             '/packages/' + str(package_id) + '/files/' + str(file_id))
-                        df = pd.read_excel(manifest_url['url'], engine='openpyxl')
-                        manifest_dict[my_folder_name] = df
+                        df = ""
+                        try:
+                            if (file_name.lower() == 'manifest.xlsx'):
+                                df = pd.read_excel(manifest_url['url'], engine='openpyxl')
+                            else:
+                                df = pd.read_csv(manifest_url['url'])
+                            manifest_dict[my_folder_name] = df
+                        except Exception as e:
+                            manifest_error_message.append(package_details["parent"]["content"]["name"])
+                            pass
                     else:
                         timestamp = package_details["content"]["updatedAt"]
                         dataset_folder["files"][file_name] = {
@@ -721,7 +729,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
 
         recursive_item_path_create(soda_json_structure["dataset-structure"], [])
         success_message = "Data files under a valid high-level SPARC folders have been imported"
-        return [soda_json_structure, success_message]
+        return [soda_json_structure, success_message, manifest_error_message]
 
     except Exception as e:
         raise e

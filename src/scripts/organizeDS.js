@@ -333,16 +333,43 @@ function checkValidRenameInput(
   itemElement,
   myBootboxDialog
 ) {
+  double_extensions = [
+    ".ome.tiff",
+    ".ome.tif",
+    ".ome.tf2,",
+    ".ome.tf8",
+    ".ome.btf",
+    ".ome.xml",
+    ".brukertiff.gz",
+    ".mefd.gz",
+    ".moberg.gz",
+    ".nii.gz",
+    ".mgh.gz",
+    ".tar.gz",
+    ".bcl.gz",
+  ];
+
   var duplicate = false;
   // if renaming a file
   if (type === "files") {
-    newName = input.trim() + path.parse(oldName).ext;
+    let double_ext_present = false;
+    for (let index in double_extensions) {
+      if (oldName.search(double_extensions[index]) != -1) {
+        newName =
+          input.trim() +
+          path.parse(path.parse(oldName).name).ext +
+          path.parse(oldName).ext;
+        double_ext_present = true;
+        break;
+      }
+    }
+    if (double_ext_present == false) {
+      newName = input.trim() + path.parse(oldName).ext;
+    }
     // check for duplicate or files with the same name
     for (var i = 0; i < itemElement.length; i++) {
       if (!itemElement[i].innerText.includes("-DELETED")) {
-        if (
-          newName === path.parse(itemElement[i].innerText).base
-        ) {
+        if (newName === path.parse(itemElement[i].innerText).base) {
           duplicate = true;
           break;
         }
@@ -400,6 +427,22 @@ function renameFolder(
   var nameWithoutExtension;
   var highLevelFolderBool;
 
+  double_extensions = [
+    ".ome.tiff",
+    ".ome.tif",
+    ".ome.tf2,",
+    ".ome.tf8",
+    ".ome.btf",
+    ".ome.xml",
+    ".brukertiff.gz",
+    ".mefd.gz",
+    ".moberg.gz",
+    ".nii.gz",
+    ".mgh.gz",
+    ".tar.gz",
+    ".bcl.gz",
+  ];
+
   if (highLevelFolders.includes(currentName)) {
     highLevelFolderBool = true;
   } else {
@@ -414,7 +457,17 @@ function renameFolder(
     type = "folders";
   }
   if (type === "files") {
-    nameWithoutExtension = path.parse(currentName).name;
+    let double_ext_present = false;
+    for (let index in double_extensions) {
+      if (currentName.search(double_extensions[index]) != -1) {
+        nameWithoutExtension = path.parse(path.parse(currentName).name).name;
+        double_ext_present = true;
+        break;
+      }
+    }
+    if (double_ext_present == false) {
+      nameWithoutExtension = path.parse(currentName).name;
+    }
   } else {
     nameWithoutExtension = currentName;
   }
