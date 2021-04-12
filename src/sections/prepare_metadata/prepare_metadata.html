@@ -2010,13 +2010,7 @@
                 margin: 10px auto;
               "
             >
-              <button
-                onclick="resetSubmission()"
-                class= "start-over"
-              >
-                <i class="fas fa-sync-alt" style="margin-right: 10px"></i>
-                Start over
-              </button>
+
               <button
                 onclick="generateSubmissionFile()"
                 style="
@@ -2056,7 +2050,7 @@
     </div>
 
     <div class="footer-div">
-      <div style="display: flex; flex-direction: row; width: 120px">
+      <!-- <div style="display: flex; flex-direction: row; width: 120px"> -->
         <button
           type="button"
           class="transition-btn prev"
@@ -2064,7 +2058,14 @@
         >
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
         </button>
-      </div>
+        <button
+          onclick="resetSubmission()"
+          class= "start-over"
+        >
+          <i class="fas fa-sync-alt" style="margin-right: 10px;font-size: inherit"></i>
+          Start over
+        </button>
+      <!-- </div> -->
     </div>
   </section>
 
@@ -2380,7 +2381,7 @@
                         generate your dataset description file. A warning
                         message may show up if any mandatory fields are missing.
                         You may decide to go back and address the issues or
-                        generate the file anyway. 
+                        generate the file anyway.
                         <br/><br/>
                         Click on 'Start over' to refresh the form."
                 rel="popover"
