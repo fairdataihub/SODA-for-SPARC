@@ -2748,7 +2748,7 @@ $("#bf_list_teams").on("change", () => {
   let team_val = $("#bf_list_teams").val();
   let team_role = $("#bf_list_roles_teams").val();
 
-  if (team_val == "Select user" || team_role == "Select role") {
+  if (team_val == "Select team" || team_role == "Select role") {
     $("#button-add-permission-team").hide();
   } else {
     $("#button-add-permission-team").show();
@@ -2759,7 +2759,7 @@ $("#bf_list_roles_teams").on("change", () => {
   let team_val = $("#bf_list_teams").val();
   let team_role = $("#bf_list_roles_teams").val();
 
-  if (team_val == "Select user" || team_role == "Select role") {
+  if (team_val == "Select team" || team_role == "Select role") {
     $("#button-add-permission-team").hide();
   } else {
     $("#button-add-permission-team").show();

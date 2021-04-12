@@ -1549,14 +1549,15 @@ function emptyLinkInfo() {
   return fieldSatisfied;
 }
 
-function emptyInfoEntries(element) {
+const emptyInfoEntries = (element) => {
   var fieldSatisfied = true;
   if (element === "Select") {
     fieldSatisfied = false;
   }
   return fieldSatisfied;
-}
-function contactPersonCheck() {
+};
+
+const contactPersonCheck = () => {
   var contactPersonExists = false;
   var rowcount = currentConTable.rows.length;
 
