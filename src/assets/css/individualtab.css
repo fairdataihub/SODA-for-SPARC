@@ -1495,3 +1495,7 @@
   border: 1px solid var(--color-bg-plum);
   font-size: 13px;
 }
+
+.jstree-default>.jstree-container-ul>.jstree-node {
+  overflow: auto !important
+}

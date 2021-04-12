@@ -262,6 +262,13 @@ const validateSODAProgressBar = document.getElementById(
 );
 
 // Generate dataset //
+
+var datasetStructureJSONObj = {
+  folders: {},
+  files: {},
+  type: "",
+};
+
 const newDatasetName = document.querySelector("#new-dataset-name");
 const manifestStatus = document.querySelector("#generate-manifest");
 
@@ -4306,12 +4313,6 @@ var highLevelFolderToolTip = {
     "primary: This folder contains all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines 'raw' (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders.",
   protocol:
     "protocol: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
-};
-
-var datasetStructureJSONObj = {
-  folders: {},
-  files: {},
-  type: "",
 };
 
 listItems(datasetStructureJSONObj, "#items");
