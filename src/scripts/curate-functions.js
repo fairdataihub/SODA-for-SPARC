@@ -1,6 +1,7 @@
 var metadataFile = "";
 
-function confirm_click_account_function() {
+// Function to clear the confirm options in the curate feature
+const confirm_click_account_function = () => {
   let temp = $(".bf-account-span")
     .html()
     .replace(/^\s+|\s+$/g, "");

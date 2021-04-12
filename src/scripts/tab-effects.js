@@ -2722,6 +2722,50 @@ $(document).ready(() => {
 
 $("#manage_dataset_tab").click();
 
+$("#bf_list_users").on("change", () => {
+  let user_val = $("#bf_list_users").val();
+  let user_role = $("#bf_list_roles").val();
+
+  if (user_val == "Select user" || user_role == "Select role") {
+    $("#button-add-permission").hide();
+  } else {
+    $("#button-add-permission").show();
+  }
+});
+
+$("#bf_list_roles").on("change", () => {
+  let user_val = $("#bf_list_users").val();
+  let user_role = $("#bf_list_roles").val();
+
+  if (user_val == "Select user" || user_role == "Select role") {
+    $("#button-add-permission").hide();
+  } else {
+    $("#button-add-permission").show();
+  }
+});
+
+$("#bf_list_teams").on("change", () => {
+  let team_val = $("#bf_list_teams").val();
+  let team_role = $("#bf_list_roles_teams").val();
+
+  if (team_val == "Select user" || team_role == "Select role") {
+    $("#button-add-permission-team").hide();
+  } else {
+    $("#button-add-permission-team").show();
+  }
+});
+
+$("#bf_list_roles_teams").on("change", () => {
+  let team_val = $("#bf_list_teams").val();
+  let team_role = $("#bf_list_roles_teams").val();
+
+  if (team_val == "Select user" || team_role == "Select role") {
+    $("#button-add-permission-team").hide();
+  } else {
+    $("#button-add-permission-team").show();
+  }
+});
+
 $("body").on("click", ".check", function () {
   $(this).siblings("input[name=dataset_status_radio]:radio").click();
 });

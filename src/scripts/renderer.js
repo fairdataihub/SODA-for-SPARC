@@ -3825,6 +3825,7 @@ function refreshBfUsersList() {
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
         $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
+        $("#button-add-permission").hide()
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
         for (var myItem in res) {
@@ -3862,6 +3863,7 @@ function refreshBfTeamsList(teamList) {
         // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
         $("#bf_list_teams").selectpicker("refresh");
         $("#bf_list_teams").find("option:not(:first)").remove();
+        $("#button-add-permission-team").hide();
         for (var myItem in res) {
           var myTeam = res[myItem];
           var optionTeam = document.createElement("option");
