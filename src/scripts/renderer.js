@@ -7148,6 +7148,25 @@ $("#button-generate-manifest-locally").click(() => {
   ipcRenderer.send("open-folder-dialog-save-manifest-local");
 });
 
+const recursive_remove_deleted_files = (dataset_folder) => {
+  if ("files" in dataset_folder) {
+    for (let item in dataset_folder["files"]) {
+      if (dataset_folder["files"][item]["action"].includes("deleted")) {
+        delete dataset_folder["files"][item];
+      }
+    }
+  }
+
+  if ("folders" in dataset_folder) {
+    for (let item in dataset_folder["folders"]) {
+      recursive_remove_deleted_files(dataset_folder["folders"][item])
+      if (dataset_folder["folders"][item]["action"].includes("deleted")) {
+        delete dataset_folder["folders"][item];
+      }
+    }
+  }
+};
+
 ipcRenderer.on("selected-manifest-folder", (event, result) => {
   if (!result["canceled"])
   {
@@ -7169,7 +7188,11 @@ ipcRenderer.on("selected-manifest-folder", (event, result) => {
 
     delete_imported_manifest();
 
-    client.invoke("api_generate_manifest_file_locally", sodaJSONObj, (error, res) => {
+    let temp_sodaJSONObj = JSON.parse(JSON.stringify(sodaJSONObj));
+
+    recursive_remove_deleted_files(temp_sodaJSONObj["dataset-structure"])
+
+    client.invoke("api_generate_manifest_file_locally", temp_sodaJSONObj, (error, res) => {
       if (error) {
         var emessage = userError(error);
         log.error(error);
