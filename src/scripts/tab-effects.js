@@ -2933,3 +2933,34 @@ $(".popover-tooltip").each(function () {
     container: $this,
   });
 });
+
+initRipple = function(buttonEle){
+  var inside = document.createElement('div');
+  inside.classList.add('btn_animated-inside');
+  inside.innerHTML = buttonEle.innerHTML;
+  buttonEle.innerHTML = '';
+  buttonEle.appendChild(inside);
+  inside.addEventListener('mousedown', function(){
+     ripple(event, this);
+  });
+}
+ripple = function(event, buttonEle){
+  var rippleEle = document.createElement('span');
+  rippleEle.setAttribute('class', 'ripple');
+  rippleEle.style.top = event.offsetY + 'px';
+  rippleEle.style.left = event.offsetX + 'px';
+  buttonEle.appendChild(rippleEle);
+  setTimeout(function(){
+     rippleEle.classList.add('effect');    
+  }, 0, rippleEle);
+  
+  setTimeout(function(){
+     rippleEle.remove();
+  }, 1000, rippleEle);
+}
+
+var buttons = document.getElementsByClassName('btn_animated');
+for(var i = 0; i < buttons.length; i++){
+  button = buttons[i];
+  initRipple(button);
+}
