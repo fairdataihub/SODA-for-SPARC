@@ -1220,6 +1220,8 @@ input::-webkit-calendar-picker-indicator {
   content: "";
   background-color: currentColor;
   z-index: 1;
+  color: var;
+  color: inherit;
 }
 .multisteps-form__progress-btn:first-child:after {
   display: none;

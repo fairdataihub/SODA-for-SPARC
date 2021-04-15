@@ -3707,36 +3707,9 @@
               >
 
               </div>
-              <div
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  onclick="showForm()"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 140px;
-                    height: 35px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 15px;
-                  "
-                >
-                  Add a subject
-                </button>
-              </div>
-
               <table
                 class="ui celled table"
-                style="text-align: center"
+                style="text-align: center;display:none"
                 id="table-subjects"
               >
                 <style>
@@ -3770,7 +3743,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr contenteditable="false">
+                  <!-- <tr contenteditable="false">
                     <td
                       class="contributor-table-row"
                     >
@@ -3811,10 +3784,35 @@
                         </button>
                       </div>
                     </th>
-                  </tr>
+                  </tr> -->
                 </tbody>
               </table>
-
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: center;
+                  margin: 10px auto;
+                "
+              >
+                <button
+                  onclick="showForm()"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 10px auto;
+                    width: 140px;
+                    height: 35px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    font-size: 15px;
+                  "
+                >
+                  Add a subject
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -3823,12 +3821,8 @@
           style="
             width: 100%;
             position: relative;
-            /* padding: 2em; */
             margin-top: 1em;
             margin-bottom: 2em;
-            /* border-radius: 6px; */
-            /* box-shadow: 0px 0px 10px #d5d5d5; */
-            /* background-color: #fff; */
             display: none;
           "
           id="form-add-a-subject"
@@ -3881,16 +3875,15 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf"
+                    id="bootbox-subject-id"
+                    name="subject_id"
                   >
                   </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext">
-                    Select the Blackfynn dataset where the dataset
-                    description file will be uploaded. You can create a new
-                    dataset from the "Manage Datasets" section under the
-                    "Create a new dataset" feature.
+                  Lab-based schema for identifying each subject, should match folder names
                   </span>
                 </div>
               </div>
@@ -3904,14 +3897,15 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf"
+                    id="bootbox-subject-pool-id"
+                    name="pool_id"
                   >
                   </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext">
-                    The description will be automatically pulled from the
-                    subtitle associated with the selected Blackfynn dataset.
+                    If data is collected on multiple subjects at the same time include the identifier of the pool where the data file will be found. If this is included it should be the name of the top level folder inside primary.
                   </span>
                 </div>
               </div>
@@ -3925,15 +3919,15 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf"
+                    id="bootbox-subject-exp-group"
+                    name="experimental group"
                   >
                   </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext" style="z-index: 2">
-                    A set of 3-5 keywords other than the above that will aid
-                    in search. Hit "Enter" on your keyboard after each entry
-                    to register it.
+                    Experimental group subject is assigned to in research project
                   </span>
                 </div>
               </div>
@@ -3955,13 +3949,15 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf"
+                    id="bootbox-subject-age"
+                    name="Age"
                   >
                   </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext">
-                    SPARC award associated with the dataset.
+                    Age of the subject  (e.g., hours, days, weeks, years old) or if unknown fill in with “unknown”
                   </span>
                 </div>
               </div>
@@ -3976,18 +3972,19 @@
                   <select
                     class="form-container-input-bf"
                     style="font-size: 13px; line-height: 2"
+                    id="bootbox-subject-sex"
+                    name="Sex"
                   >
                     <option value="Select">Select an option</option>
-                    <option value="Select">Female</option>
-                    <option value="Select">Male</option>
-                    <option value="Select">Unknown</option>
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                    <option value="Unknown">Unknown</option>
                   </select>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext">
-                    Other funding sources, if any. Hit 'Enter' on your
-                    keyboard after typing each. Leave empty if none.
+                    Sex of the subject, or if unknown fill in with “Unknown”
                   </span>
                 </div>
               </div>
@@ -4001,14 +3998,15 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf"
+                    id="bootbox-subject-species"
+                    name="Species"
                   >
                   </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext">
-                    Acknowledgments beyond funding and contributors, if any.
-                    Leave empty if none.
+                  Subject species
                   </span>
                 </div>
               </div>
@@ -4022,14 +4020,15 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf"
+                    id="bootbox-subject-strain"
+                    name="Strain"
                   >
                   </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext">
-                    Acknowledgments beyond funding and contributors, if any.
-                    Leave empty if none.
+                    Organism strain of the subject
                   </span>
                 </div>
               </div>
@@ -4047,19 +4046,21 @@
               <div class="div-dd-info">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
-                  <font color="black"> Additional Fields (e.g. MINDS): </font>
+                  <font color="black"> Additional Fields: </font>
                 </div>
                 </div>
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf"
+                    id="bootbox-subject-additional-fields"
+                    name="Additional Fields"
                   >
                   </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext">
-                    SPARC award associated with the dataset.
+                    For example: MINDS.
                   </span>
                 </div>
               </div>
@@ -4067,21 +4068,21 @@
               <div class="div-dd-info">
                 <div class="demo-controls-head">
                   <div style="width: 100%;">
-                  <font color="black"> Age category
-        : </font>
+                  <font color="black"> Age category: </font>
                 </div>
                 </div>
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf"
+                    id="bootbox-subject-age-category"
+                    name="Age category"
                   >
                   </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext">
-                    Other funding sources, if any. Hit 'Enter' on your
-                    keyboard after typing each. Leave empty if none.
+                    Description of age category from derived from UBERON life cycle stage
                   </span>
                 </div>
               </div>
@@ -4095,14 +4096,15 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf"
+                    id="bootbox-subject-age-range-min"
+                    name="Age range (min)"
                   >
                   </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext">
-                    Acknowledgments beyond funding and contributors, if any.
-                    Leave empty if none.
+                    The minimal age (youngest) of the research subjects. The format for this field: numerical value + space + unit (spelled out)
                   </span>
                 </div>
               </div>
@@ -4116,14 +4118,15 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf"
+                    id="bootbox-subject-age-range-max"
+                    name="Age range (max)"
                   >
                   </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext">
-                    Acknowledgments beyond funding and contributors, if any.
-                    Leave empty if none.
+                  The maximal age (oldest) of the research subjects. The format for this field: numerical value + space + unit (spelled out)
                   </span>
                 </div>
               </div>
@@ -4137,14 +4140,15 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf"
+                    id="bootbox-subject-handedness"
+                    name="Handedness"
                   >
                   </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext">
-                    Acknowledgments beyond funding and contributors, if any.
-                    Leave empty if none.
+                    Preference of the subject to use the right or left hand, if applicable
                   </span>
                 </div>
               </div>
@@ -4158,14 +4162,15 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf"
+                    id="bootbox-subject-genotype"
+                    name="Genotype"
                   >
                   </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext">
-                    Acknowledgments beyond funding and contributors, if any.
-                    Leave empty if none.
+                    Ignore if RRID is filled in, Genetic makeup of genetically modified alleles in transgenic animals belonging to the same subject group
                   </span>
                 </div>
               </div>
@@ -4179,14 +4184,15 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf"
+                    id="bootbox-subject-reference-atlas"
+                    name="Reference atlas"
                   >
                   </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext">
-                    Acknowledgments beyond funding and contributors, if any.
-                    Leave empty if none.
+                  The reference atlas and organ
                   </span>
                 </div>
               </div>
@@ -4200,14 +4206,15 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf"
+                    id="bootbox-subject-protocol-title"
+                    name="Protocol title"
                   >
                   </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext">
-                    Acknowledgments beyond funding and contributors, if any.
-                    Leave empty if none.
+                  Once the research protocol is uploaded to Protocols.io, the title of the protocol within Protocols.io must be noted in this field.
                   </span>
                 </div>
               </div>
@@ -4221,14 +4228,15 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf"
+                    id="bootbox-subject-experimental-log-file-name"
+                    name="Experimental log file name"
                   >
                   </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
                   <span class="tooltiptext">
-                    Acknowledgments beyond funding and contributors, if any.
-                    Leave empty if none.
+                    A file containing experimental records for each sample.
                   </span>
                 </div>
               </div>
