@@ -2427,7 +2427,7 @@
                   class="multisteps-form__progress-btn"
                   style="font-size: 15px"
                   type="button"
-                  title="Con Info"
+                  title="Contributor Info"
                 >
                   <b>Contributor Info</b>
                 </button>
@@ -2756,11 +2756,6 @@
                     </span>
                   </div>
                 </div>
-
-                <!-- <div align="right">
-                      <button id="button-ds-add-contributor" class="demo-button-prev-next" style="float:right">Add</button>
-                    </div> -->
-
                 <div
                   id="div-current-contributors"
                   style="
@@ -3721,7 +3716,7 @@
                 "
               >
                 <button
-                  onclick=""
+                  onclick="showForm()"
                   style="
                     cursor: pointer;
                     border-radius: 8px;
@@ -3738,9 +3733,510 @@
                   Add a subject
                 </button>
               </div>
+
+              <table
+                class="ui celled table"
+                style="text-align: center"
+                id="table-subjects"
+              >
+                <style>
+                  /* style for grabbed contributor row for moving contributors */
+                  .grab {
+                    cursor: grab;
+                  }
+                  .grabbed {
+                    box-shadow: 0 0 6px #000;
+                  }
+                  .grabCursor,
+                  .grabCursor * {
+                    cursor: grabbing !important;
+                  }
+                </style>
+                <thead class="full-width">
+                  <tr>
+                    <th style="width: 10%">Index</th>
+                    <th style="width: 80%">subject_id</th>
+                    <th style="width: 10%">
+                      <div class="tooltipnew contributor">
+                        <img class="info" src="assets/img/info.png" />
+                        <span class="tooltiptext contributor">
+                          Click "Add" to add contributors to SODA's
+                          contributor table. Each contributor added to the
+                          table will be added to the dataset description
+                          file when it is generated.
+                        </span>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr contenteditable="false">
+                    <td
+                      class="contributor-table-row"
+                    >
+                    1
+                    </td>
+                    <td
+                      class="contributor-table-row"
+                    >
+                    sub_1
+                    </td>
+                    <th>
+                      <div
+                        class="ui small basic icon buttons contributor-helper-buttons"
+                        style="display: flex"
+                      >
+                      <button
+                        class="ui button"
+                        onclick="delete_current_con(1)"
+                      >
+                      <i class="eye outline icon"   style="color: blue"></i>
+                      </button>
+                        <button
+                          class="ui button"
+                        >
+                          <i
+                            class="pen icon"
+                            style="color: black"
+                          ></i>
+                        </button>
+                        <button
+                          class="ui button"
+                          onclick="delete_current_con(1)"
+                        >
+                        <i
+                          class="trash alternate outline icon"
+                          style="color: red"
+                        ></i>
+                        </button>
+                      </div>
+                    </th>
+                  </tr>
+                </tbody>
+              </table>
+
             </div>
           </div>
         </div>
+
+        <div
+          style="
+            width: 100%;
+            position: relative;
+            /* padding: 2em; */
+            margin-top: 1em;
+            margin-bottom: 2em;
+            /* border-radius: 6px; */
+            /* box-shadow: 0px 0px 10px #d5d5d5; */
+            /* background-color: #fff; */
+            display: none;
+          "
+          id="form-add-a-subject"
+        >
+          <div class="multisteps-form__progress" style="margin: 40px 20px">
+            <button
+              id="subjects-mandatory-fields"
+              class="multisteps-form__progress-btn subjects js-active1"
+              style="font-size: 15px"
+              type="button"
+            >
+              <b>Mandatory fields</b>
+            </button>
+            <button
+              id="subjects-recommended-fields"
+              class="multisteps-form__progress-btn subjects"
+              style="font-size: 15px"
+              type="button"
+            >
+              <b>Recommended fields</b>
+            </button>
+            <button
+              id="subjects-optional-fields"
+              class="multisteps-form__progress-btn subjects"
+              style="font-size: 15px"
+              type="button"
+            >
+              <b>Optional fields</b>
+            </button>
+          </div>
+
+          <!-- Mandatory -->
+          <div
+            style="
+              display: block;
+              width: 90%;
+              margin: 0 auto;
+              font-size: 13px;
+            "
+            id="div-subjects-mandatory-fields"
+            class="datasetsaveoption"
+          >
+            <div>
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> subject_id*: </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <input
+                    class="form-container-input-bf"
+                  >
+                  </input>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    Select the Blackfynn dataset where the dataset
+                    description file will be uploaded. You can create a new
+                    dataset from the "Manage Datasets" section under the
+                    "Create a new dataset" feature.
+                  </span>
+                </div>
+              </div>
+
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> pool_id*: </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <input
+                    class="form-container-input-bf"
+                  >
+                  </input>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    The description will be automatically pulled from the
+                    subtitle associated with the selected Blackfynn dataset.
+                  </span>
+                </div>
+              </div>
+
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> experimental group*: </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <input
+                    class="form-container-input-bf"
+                  >
+                  </input>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext" style="z-index: 2">
+                    A set of 3-5 keywords other than the above that will aid
+                    in search. Hit "Enter" on your keyboard after each entry
+                    to register it.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="div-subjects-recommended-fields"
+            style="width: 90%; margin: 0 auto; font-size: 13px;"
+            class="datasetsaveoption"
+          >
+            <div>
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> Age: </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <input
+                    class="form-container-input-bf"
+                  >
+                  </input>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    SPARC award associated with the dataset.
+                  </span>
+                </div>
+              </div>
+
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> Sex: </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <select
+                    class="form-container-input-bf"
+                    style="font-size: 13px; line-height: 2"
+                  >
+                    <option value="Select">Select an option</option>
+                    <option value="Select">Female</option>
+                    <option value="Select">Male</option>
+                    <option value="Select">Unknown</option>
+                  </select>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    Other funding sources, if any. Hit 'Enter' on your
+                    keyboard after typing each. Leave empty if none.
+                  </span>
+                </div>
+              </div>
+
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> Species: </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <input
+                    class="form-container-input-bf"
+                  >
+                  </input>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    Acknowledgments beyond funding and contributors, if any.
+                    Leave empty if none.
+                  </span>
+                </div>
+              </div>
+
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> Strain: </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <input
+                    class="form-container-input-bf"
+                  >
+                  </input>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    Acknowledgments beyond funding and contributors, if any.
+                    Leave empty if none.
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Optional fields -->
+          <div
+            id="div-subjects-optional-fields"
+            style="width: 90%; margin: 0 auto; font-size: 13px;"
+            class="datasetsaveoption"
+          >
+            <div>
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> Additional Fields (e.g. MINDS): </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <input
+                    class="form-container-input-bf"
+                  >
+                  </input>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    SPARC award associated with the dataset.
+                  </span>
+                </div>
+              </div>
+
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> Age category
+        : </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <input
+                    class="form-container-input-bf"
+                  >
+                  </input>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    Other funding sources, if any. Hit 'Enter' on your
+                    keyboard after typing each. Leave empty if none.
+                  </span>
+                </div>
+              </div>
+
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> Age range (min): </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <input
+                    class="form-container-input-bf"
+                  >
+                  </input>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    Acknowledgments beyond funding and contributors, if any.
+                    Leave empty if none.
+                  </span>
+                </div>
+              </div>
+
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> Age range (max): </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <input
+                    class="form-container-input-bf"
+                  >
+                  </input>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    Acknowledgments beyond funding and contributors, if any.
+                    Leave empty if none.
+                  </span>
+                </div>
+              </div>
+
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> Handedness: </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <input
+                    class="form-container-input-bf"
+                  >
+                  </input>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    Acknowledgments beyond funding and contributors, if any.
+                    Leave empty if none.
+                  </span>
+                </div>
+              </div>
+
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> Genotype: </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <input
+                    class="form-container-input-bf"
+                  >
+                  </input>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    Acknowledgments beyond funding and contributors, if any.
+                    Leave empty if none.
+                  </span>
+                </div>
+              </div>
+
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> Reference atlas: </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <input
+                    class="form-container-input-bf"
+                  >
+                  </input>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    Acknowledgments beyond funding and contributors, if any.
+                    Leave empty if none.
+                  </span>
+                </div>
+              </div>
+
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> Protocol title: </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <input
+                    class="form-container-input-bf"
+                  >
+                  </input>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    Acknowledgments beyond funding and contributors, if any.
+                    Leave empty if none.
+                  </span>
+                </div>
+              </div>
+
+              <div class="div-dd-info">
+                <div class="demo-controls-head">
+                  <div style="width: 100%;">
+                  <font color="black"> Experimental log file name: </font>
+                </div>
+                </div>
+                <div class="demo-controls-body">
+                  <input
+                    class="form-container-input-bf"
+                  >
+                  </input>
+                </div>
+                <div class="tooltipnew demo-controls-end">
+                  <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                  <span class="tooltiptext">
+                    Acknowledgments beyond funding and contributors, if any.
+                    Leave empty if none.
+                  </span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          </div>
 
         <!-- Question 4: Ask for existing primary folder -->
         <div
@@ -3781,6 +4277,10 @@
   <script src="node_modules/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
   <script
   src="./scripts/disseminate-and-metadata.js"
+  type="text/javascript">
+  </script>
+  <script
+  src="./scripts/subjects-samples.js"
   type="text/javascript">
   </script>
   <script type="text/javascript">

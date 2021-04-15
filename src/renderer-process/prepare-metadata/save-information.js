@@ -192,4 +192,37 @@ $(document).ready(function() {
     document.getElementById("ds-optional-info").click();
     checkOtherInfoFields();
   });
+
+  // subjects file
+  document.getElementById("subjects-mandatory-fields").addEventListener("click", () => {
+    showMandatoryFields();
+    $('.multisteps-form__progress-btn.subjects').removeClass("js-active1");
+    document.getElementById("subjects-mandatory-fields").classList.add("js-active1");
+  });
+  document.getElementById("subjects-recommended-fields").addEventListener("click", () => {
+    showReccFields();
+    $('.multisteps-form__progress-btn.subjects').removeClass("js-active1");
+    document.getElementById("subjects-recommended-fields").classList.add("js-active1");
+  });
+  document.getElementById("subjects-optional-fields").addEventListener("click", () => {
+    showOptionalFields();
+    $('.multisteps-form__progress-btn.subjects').removeClass("js-active1");
+    document.getElementById("subjects-optional-fields").classList.add("js-active1");
+  });
 })
+
+function showMandatoryFields() {
+  document.getElementById("div-subjects-mandatory-fields").style.display = "block";
+  document.getElementById("div-subjects-recommended-fields").style.display = "none";
+  document.getElementById("div-subjects-optional-fields").style.display = "none";
+}
+function showReccFields() {
+  document.getElementById("div-subjects-recommended-fields").style.display = "block";
+  document.getElementById("div-subjects-mandatory-fields").style.display = "none";
+  document.getElementById("div-subjects-optional-fields").style.display = "none";
+}
+function showOptionalFields() {
+  document.getElementById("div-subjects-optional-fields").style.display = "block";
+  document.getElementById("div-subjects-mandatory-fields").style.display = "none";
+  document.getElementById("div-subjects-recommended-fields").style.display = "none";
+}
