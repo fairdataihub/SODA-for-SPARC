@@ -141,13 +141,16 @@ function loadSubjectInformation(ev, subjectID, type) {
     }
     if (type === "view") {
       $(field).prop("disabled", true);
-      $("#bootbox-subject-sex").prop("disabled", "disabled");
-      var label = "Done"
     } else if (type === "edit") {
       $(field).prop("disabled", false);
-      var label = "Edit"
-      $("#bootbox-subject-sex").prop("disabled", false);
     }
+  }
+  if (type === "view") {
+    $(subjectsFormDiv).find("#bootbox-subject-sex").prop("disabled", true);
+    var label = "Done"
+  } else {
+    $(subjectsFormDiv).find("#bootbox-subject-sex").prop("disabled", false);
+    var label = "Edit"
   }
   var bootb = bootbox.dialog({
     title: "<p style='text-align=center'>"+label+"ing a subject</p>",
@@ -182,27 +185,48 @@ function loadSubjectInformation(ev, subjectID, type) {
  }
 
  function editSubject(ev, bootbox, subjectID) {
-   if ($("#form-add-a-subject").length > 0) {
-     for (var field of $("#form-add-a-subject").children().find("input")) {
-       if (field.value !== "" && field.value !== undefined) {
-         subjectsFileData[field.name] = field.value
-       }
+   for (var field of $("#form-add-a-subject").children().find("input")) {
+     if (field.value !== "" && field.value !== undefined) {
+       subjectsFileData[field.name] = field.value
      }
-     if ($("#bootbox-subject-sex").val() !== "Select") {
-       subjectsFileData["Sex"] = $("#bootbox-subject-sex").val()
-     }
+   }
+   if ($("#bootbox-subject-sex").val() !== "Select") {
+     subjectsFileData["Sex"] = $("#bootbox-subject-sex").val()
    }
    var currentRow = $(ev).parents()[2];
    if ($("#bootbox-subject-id").val() === subjectID) {
     subjectsTableData[subjectID] = subjectsFileData
+    bootbox.modal("hide");
    } else {
       var newID = $("#bootbox-subject-id").val();
-      subjectsTableData[newID] = subjectsFileData
-      delete subjectsTableData[subjectID]
-      $(currentRow)[0].cells[1].innerText = newID;
-   }
-   subjectsFileData = {}
-   bootbox.modal("hide");
+      var table = document.getElementById("table-subjects");
+      var duplicate = false;
+      var error = "";
+      var rowcount = table.rows.length;
+      for (var i=1;i<rowcount;i++) {
+        if (newID === table.rows[i].cells[1].innerText) {
+          duplicate = true
+          break
+        }
+      }
+      if (duplicate) {
+        error = "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id!"
+        $(bootbox).find(".modal-footer span").remove();
+        bootbox
+          .find(".modal-footer")
+          .prepend(
+            "<span style='color:red;padding-right:10px;display:inline-block;'>" +
+              error +
+              "</span>"
+          );
+      } else {
+        subjectsTableData[newID] = subjectsFileData
+        delete subjectsTableData[subjectID]
+        $(currentRow)[0].cells[1].innerText = newID;
+        subjectsFileData = {}
+        bootbox.modal("hide");
+      }
+    }
  }
 
  function delete_current_subject_id(ev) {
