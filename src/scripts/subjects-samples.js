@@ -3,6 +3,7 @@ var subjectsTableData = {};
 var subjectsFileData = {};
 
 function showForm() {
+  clearAllSubjectFormFields(subjectsFormDiv);
   subjectsFormDiv.style.display = "block"
   var bootb = bootbox.dialog({
     title: "<p style='text-align=center'>Adding a subject</p>",
@@ -49,23 +50,49 @@ function addSubjectIDtoTable(newSubject) {
 
 function addSubjectIDtoDataBase(bootb) {
   var subjectID = $("#bootbox-subject-id").val();
+  var table = document.getElementById("table-subjects");
+  var duplicate = false;
+  var error = "";
+  var rowcount = table.rows.length;
+  for (var i=1;i<rowcount;i++) {
+    if (subjectID === table.rows[i].cells[1].innerText) {
+      duplicate = true
+      break
+    }
+  }
   if (subjectID !== "") {
-    addSubjectIDtoTable(subjectID)
-    addSubjectIDToJSON(subjectID);
-    bootb.modal("hide");
-    $("#table-subjects").css("display", "block")
-    clearAllSubjectFormFields("form-add-a-subject")
+    if (!duplicate) {
+      addSubjectIDtoTable(subjectID)
+      addSubjectIDToJSON(subjectID);
+      bootb.modal("hide");
+      $("#table-subjects").css("display", "block")
+      clearAllSubjectFormFields(subjectsFormDiv)
+    } else {
+      error = "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id!"
+    }
+  } else {
+    error = "Please provide a subject_id!"
+    }
+  if (error !== "") {
+    $(bootb).find(".modal-footer span").remove();
+    bootb
+      .find(".modal-footer")
+      .prepend(
+        "<span style='color:red;padding-right:10px;display:inline-block;'>" +
+          error +
+          "</span>"
+      );
   }
 }
 
-function clearAllSubjectFormFields(formID) {
-  if ($("#"+formID).length > 0) {
-    for (var field of $("#"+formID).children().find("input")) {
-      $(field).val("");
-    }
-    for (var field of $("#"+formID).children().find("select")) {
-      $(field).val("Select");
-    }
+function clearAllSubjectFormFields(form) {
+  for (var field of $(form).children().find("input")) {
+    $(field).val("");
+    $(field).prop("disabled", false)
+  }
+  for (var field of $(form).children().find("select")) {
+    $(field).val("Select");
+    $(field).prop("disabled", false)
   }
 }
 
@@ -81,24 +108,25 @@ function addSubjectIDToJSON(subjectID) {
       subjectsFileData["Sex"] = $("#bootbox-subject-sex").val()
     }
     subjectsTableData[subjectID] = subjectsFileData
+    subjectsFileData = {}
   }
 }
 
 // associated with the view icon (view a subject)
 function view_current_subject_id(ev) {
-  var currentRow = $(ev).parents().find(".row-subjects")
-  subjectID = $(currentRow)[0].cells[1].innerText;
-  loadSubjectInformation(subjectID, "view")
+  var currentRow = $(ev).parents()[2];
+  var subjectID = $(currentRow)[0].cells[1].innerText;
+  loadSubjectInformation(ev, subjectID, "view")
 }
 
 // associated with the edit icon (edit a subject)
 function edit_current_subject_id(ev) {
-  var currentRow = $(ev).parents().find(".row-subjects")
-  subjectID = $(currentRow)[0].cells[1].innerText;
-  loadSubjectInformation(subjectID, "edit")
+  var currentRow = $(ev).parents()[2];
+  var subjectID = $(currentRow)[0].cells[1].innerText;
+  loadSubjectInformation(ev, subjectID, "edit")
 }
 
-function loadSubjectInformation(subjectID, type) {
+function loadSubjectInformation(ev, subjectID, type) {
   // 1. load fields for form
   // 2. For type===view: make all fields contenteditable=false
   // 3. For type===edit: make all fields contenteditable=true
@@ -113,12 +141,12 @@ function loadSubjectInformation(subjectID, type) {
     }
     if (type === "view") {
       $(field).prop("disabled", true);
-      $("#bootbox-subject-sex").prop("disabled", true);
+      $("#bootbox-subject-sex").prop("disabled", "disabled");
       var label = "Done"
     } else if (type === "edit") {
       $(field).prop("disabled", false);
-      $("#bootbox-subject-sex").prop("disabled", false);
       var label = "Edit"
+      $("#bootbox-subject-sex").prop("disabled", false);
     }
   }
   var bootb = bootbox.dialog({
@@ -133,7 +161,7 @@ function loadSubjectInformation(subjectID, type) {
         className: "btn btn-primary bootbox-add-bf-class",
         callback: function () {
           if (type === "edit") {
-            addSubjectIDtoDataBase(bootb);
+            editSubject(ev, bootb, subjectID);
             return false;
           }
         },
@@ -153,11 +181,39 @@ function loadSubjectInformation(subjectID, type) {
   });
  }
 
+ function editSubject(ev, bootbox, subjectID) {
+   if ($("#form-add-a-subject").length > 0) {
+     for (var field of $("#form-add-a-subject").children().find("input")) {
+       if (field.value !== "" && field.value !== undefined) {
+         subjectsFileData[field.name] = field.value
+       }
+     }
+     if ($("#bootbox-subject-sex").val() !== "Select") {
+       subjectsFileData["Sex"] = $("#bootbox-subject-sex").val()
+     }
+   }
+   var currentRow = $(ev).parents()[2];
+   if ($("#bootbox-subject-id").val() === subjectID) {
+    subjectsTableData[subjectID] = subjectsFileData
+   } else {
+      var newID = $("#bootbox-subject-id").val();
+      subjectsTableData[newID] = subjectsFileData
+      delete subjectsTableData[subjectID]
+      $(currentRow)[0].cells[1].innerText = newID;
+   }
+   subjectsFileData = {}
+   bootbox.modal("hide");
+ }
+
  function delete_current_subject_id(ev) {
-   var currentRow = $(ev).parents().find(".row-subjects");
+   // 1. Delete from table
+   var currentRow = $(ev).parents()[2];
    var currentRowid = $(currentRow).prop("id");
    document.getElementById(currentRowid).outerHTML = "";
    updateIndexForTable()
+   // 2. Delete from JSON
+   var subjectID = $(currentRow)[0].cells[1].innerText;
+   delete subjectsTableData[subjectID]
  }
 
  function updateIndexForTable() {
