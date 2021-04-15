@@ -101,7 +101,7 @@
     "zerorpc": "megasanjay/zerorpc-node#master"
   },
   "devDependencies": {
-    "electron": "6.0.0",
+    "electron": "6.1.9",
     "electron-builder": "^22.10.5",
     "electron-packager": "^14.0.6",
     "electron-rebuild": "^1.11.0",
