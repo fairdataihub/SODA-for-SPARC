@@ -27,7 +27,7 @@ const csvToJson = require("convert-csv-to-json");
 const Jimp = require("jimp");
 const { JSONStorage } = require("node-localstorage");
 
-const prevent_sleep_id = ""
+const prevent_sleep_id = "";
 const electron_app = electron.app;
 const app = remote.app;
 var noAirtable = false;
@@ -586,22 +586,14 @@ const downloadTemplates = (templateItem, destinationFolder) => {
     var emessage =
       "File '" + templateItem + "' already exists in " + destinationFolder;
     //ipcRenderer.send("open-error-metadata-file-exits", emessage);
-    Swal.fire(
-      'Metadata file already exists',
-      `${emessage}`,
-      'error'
-    )
+    Swal.fire("Metadata file already exists", `${emessage}`, "error");
   } else {
     fs.createReadStream(templatePath).pipe(
       fs.createWriteStream(destinationPath)
     );
     var emessage =
       "Successfully saved '" + templateItem + "' to " + destinationFolder;
-    Swal.fire(
-      'Download successful',
-      `${emessage}`,
-      'success'
-    )
+    Swal.fire("Download successful", `${emessage}`, "success");
     ipcRenderer.send(
       "track-event",
       "Success",
@@ -869,12 +861,12 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
       // used to communicate value to button-import-milestone click event-listener
       document.getElementById("input-milestone-select").placeholder =
         filepath[0];
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Metadata - Add DDD",
-          defaultBfAccount
-        );
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        "Prepare Metadata - Add DDD",
+        defaultBfAccount
+      );
     }
   }
   if (
@@ -1392,13 +1384,9 @@ function loadContributorInfo(no, lastName, firstName) {
     };
 }
 
-
 //// De-populate dataset dropdowns to clear options
 const clearDatasetDropdowns = () => {
-  for (let list of [
-    datasetDescriptionFileDataset,
-    curateDatasetDropdown,
-  ]) {
+  for (let list of [datasetDescriptionFileDataset, curateDatasetDropdown]) {
     removeOptions(list);
     addOption(list, "Select dataset", "Select dataset");
     list.options[0].disabled = true;
@@ -1579,7 +1567,7 @@ const contactPersonCheck = () => {
     }
   }
   return contactPersonExists;
-}
+};
 
 function grabDSInfoEntries() {
   var rawName =
@@ -1798,12 +1786,12 @@ function grabCompletenessInfo() {
 datasetDescriptionFileDataset.addEventListener("change", function () {
   document.getElementById("ds-description").disabled = true;
   document.getElementById("ds-description").innerHTML = "Loading...";
-  defaultBfDataset = datasetDescriptionFileDataset.value
+  defaultBfDataset = datasetDescriptionFileDataset.value;
   showDatasetDescription();
   $("#current-bf-dataset").text(defaultBfDataset);
   $("#current-bf-dataset-generate").text(defaultBfDataset);
   $(".bf-dataset-span").html(defaultBfDataset);
-  refreshDatasetList()
+  refreshDatasetList();
 });
 
 /// detect empty required fields and raise a warning
@@ -1897,13 +1885,10 @@ ipcRenderer.on(
       $("#generate-dd-spinner").show();
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
-        var emessage = "File '" + filename + "' already exists in " + dirpath[0];
+        var emessage =
+          "File '" + filename + "' already exists in " + dirpath[0];
         // ipcRenderer.send("open-error-metadata-file-exits", emessage);
-        Swal.fire(
-          'Metadata file already exists',
-          `${emessage}`,
-          'error'
-        )
+        Swal.fire("Metadata file already exists", `${emessage}`, "error");
       } else {
         var datasetInfoValueArray = grabDSInfoEntries();
 
@@ -2426,7 +2411,10 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         var emessage = userError(error);
         $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
         bfCreateNewDatasetStatus.innerHTML =
-          "<span style='color: red; font-size: 15px;'> " + emessage + ". </span>" + sadCan;
+          "<span style='color: red; font-size: 15px;'> " +
+          emessage +
+          ". </span>" +
+          sadCan;
         bfCreateNewDatasetBtn.disabled = false;
         ipcRenderer.send(
           "track-event",
@@ -2438,7 +2426,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
         $(bfCreateNewDatasetBtn).hide();
         defaultBfDataset = bfNewDatasetName.value;
-        refreshDatasetList()
+        refreshDatasetList();
         bfCreateNewDatasetStatus.innerHTML =
           "<span style='font-size: 15px; color: #13716D;'>Success: Created dataset" +
           " '" +
@@ -2470,9 +2458,9 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
           }
         );
         $(".bf-dataset-span").html(bfNewDatasetName.value);
-        refreshDatasetList()
+        refreshDatasetList();
         updateDatasetList();
-        datasetDescriptionFileDataset.value = bfNewDatasetName.value
+        datasetDescriptionFileDataset.value = bfNewDatasetName.value;
         $(".confirm-button").click();
         bfNewDatasetName.value = "";
       }
@@ -2549,7 +2537,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
               } else {
                 datasetList = [];
                 datasetList = result;
-                refreshDatasetList()
+                refreshDatasetList();
               }
             }
           );
@@ -2641,8 +2629,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
             if (error) {
               log.error(error);
               console.error(error);
-            }
-            else {
+            } else {
               let num_of_files = res[0];
               let num_of_folders = res[1];
 
@@ -2674,7 +2661,8 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
                 num_of_files
               );
             }
-          });
+          }
+        );
 
         // electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
@@ -3201,7 +3189,7 @@ function uploadBannerImage() {
   var imagePath = path.join(imageFolder, "banner-image-SODA." + imageExtension);
   var croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {
-    let image_file_size = fs.statSync(imagePath)["size"]
+    let image_file_size = fs.statSync(imagePath)["size"];
     if (image_file_size < 5 * 1024 * 1024) {
       var selectedBfAccount = defaultBfAccount;
       var selectedBfDataset = defaultBfDataset;
@@ -3378,9 +3366,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
             "Manage Dataset - Change PI Owner",
             selectedBfDataset
           );
-          let nodeStorage = new JSONStorage(
-            app.getPath("userData")
-          );
+          let nodeStorage = new JSONStorage(app.getPath("userData"));
           nodeStorage.setItem("previously_selected_PI", selectedUser);
           $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
           datasetPermissionStatusPI.innerHTML = res;
@@ -3422,7 +3408,6 @@ bfAddPermissionBtn.addEventListener("click", () => {
 });
 
 ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
-
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].value;
@@ -3442,7 +3427,7 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
       "Success",
       "Manage Dataset - Add User Permission",
       selectedBfDataset
-      );
+    );
     $("#bf-add-permission-user-spinner").hide();
   } else {
     $("#bf-add-permission-user-spinner").hide();
@@ -3537,7 +3522,7 @@ function submitReviewDataset() {
           "Error",
           "Disseminate Dataset - Pre-publishing Review",
           selectedBfDataset
-          );
+        );
         log.error(error);
         console.error(error);
         var emessage = userError(error);
@@ -3549,7 +3534,7 @@ function submitReviewDataset() {
           "Success",
           "Disseminate Dataset - Pre-publishing Review",
           selectedBfDataset
-          );
+        );
         $("#para-submit_prepublishing_review-status").css(
           "color",
           "var(--color-light-green)"
@@ -3594,7 +3579,9 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
 function withdrawReviewDataset() {
   bfWithdrawReviewDatasetBtn.disabled = true;
   var selectedBfAccount = $("#current-bf-dataset").text();
-  var selectedBfDataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
+  var selectedBfDataset = $(".bf-dataset-span")
+    .html()
+    .replace(/^\s+|\s+$/g, "");
   client.invoke(
     "api_bf_withdraw_review_dataset",
     selectedBfAccount,
@@ -3832,13 +3819,13 @@ function refreshBfUsersList() {
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
         $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
-        $("#button-add-permission").hide()
+        $("#button-add-permission").hide();
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
         for (var myItem in res) {
           // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
-          let sep_pos = res[myItem].lastIndexOf('!|**|!');
-          var myUser = res[myItem].substring(0,sep_pos);
+          let sep_pos = res[myItem].lastIndexOf("!|**|!");
+          var myUser = res[myItem].substring(0, sep_pos);
           var optionUser = document.createElement("option");
           optionUser.textContent = myUser;
           optionUser.value = res[myItem].substring(sep_pos + 6);
@@ -4083,7 +4070,7 @@ function changeDatasetRolePI(selectedDataset) {
 // this function now is only used to load all datasets ("All" permission)
 // onto the dataset_description file ds-name select
 function refreshDatasetList() {
-  var datasetPermission = "All"
+  var datasetPermission = "All";
 
   var filteredDatasets = [];
   if (datasetPermission.toLowerCase() === "all") {
@@ -4216,7 +4203,9 @@ function showPublishingStatus(callback) {
     $("#para-share-with-sparc-consortium-status").text("");
   }
   var selectedBfAccount = $("#current-bf-account").text();
-  var selectedBfDataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
+  var selectedBfDataset = $(".bf-dataset-span")
+    .html()
+    .replace(/^\s+|\s+$/g, "");
   if (selectedBfDataset === "None") {
   } else {
     client.invoke(
@@ -4348,7 +4337,7 @@ organizeDSbackButton.addEventListener("click", function () {
     $("#items").empty();
     $("#items").html(appendString);
 
-    organizeLandingUIEffect()
+    organizeLandingUIEffect();
     // reconstruct div with new elements
     listItems(myPath, "#items");
     getInFolder(
@@ -5052,7 +5041,8 @@ function addFoldersfunction(folderArray, currentLocation) {
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount === 1) {
     bootbox.alert({
-      message: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
+      message:
+        "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
       centerVertical: true,
     });
   } else {
@@ -5191,12 +5181,9 @@ async function drop(ev) {
             var fileBaseName = itemName;
             var originalFileNameWithoutExt = path.parse(fileBaseName).name;
             var fileNameWithoutExt = originalFileNameWithoutExt;
-            while (
-              fileBaseName in uiFiles ||
-              fileBaseName in importedFiles
-            ) {
+            while (fileBaseName in uiFiles || fileBaseName in importedFiles) {
               fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
-              fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext
+              fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext;
               j++;
             }
             importedFiles[fileBaseName] = {
@@ -5320,7 +5307,6 @@ async function drop(ev) {
     }
   }
   $("body").removeClass("waiting");
-
 }
 
 // SAVE FILE ORG
@@ -5882,7 +5868,7 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
 
       $(uiItem).empty();
       $(uiItem).html(appendString);
-      organizeLandingUIEffect()
+      organizeLandingUIEffect();
 
       // reconstruct folders and files (child elements after emptying the Div)
       listItems(myPath, uiItem);
@@ -6429,24 +6415,18 @@ function initiate_generate() {
   let dataset_name = "";
   let dataset_destination = "";
 
-  if ("bf-dataset-selected" in sodaJSONObj)
-  {
-    dataset_name = sodaJSONObj["bf-dataset-selected"]
-  }
-  else if("generate-dataset" in sodaJSONObj)
-  {
-    if ("destination" in sodaJSONObj["generate-dataset"])
-    {
-      let destination = sodaJSONObj["generate-dataset"]["destination"]
-      if (destination == "local")
-      {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"]
-        dataset_destination = "Local"
+  if ("bf-dataset-selected" in sodaJSONObj) {
+    dataset_name = sodaJSONObj["bf-dataset-selected"];
+  } else if ("generate-dataset" in sodaJSONObj) {
+    if ("destination" in sodaJSONObj["generate-dataset"]) {
+      let destination = sodaJSONObj["generate-dataset"]["destination"];
+      if (destination == "local") {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+        dataset_destination = "Local";
       }
-      if (destination == "bf")
-      {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"]
-        dataset_destination = "Pennsieve"
+      if (destination == "bf") {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+        dataset_destination = "Pennsieve";
       }
     }
   }
@@ -6480,8 +6460,9 @@ function initiate_generate() {
         dataset_name
       );
 
-      file_counter = 0; folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["dataset-structure"])
+      file_counter = 0;
+      folder_counter = 0;
+      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
       ipcRenderer.send(
         "track-event",
@@ -6498,7 +6479,6 @@ function initiate_generate() {
         dataset_name,
         main_total_generate_dataset_size
       );
-
 
       // ipcRenderer.send(
       //   "track-event",
@@ -6597,8 +6577,9 @@ function initiate_generate() {
         main_total_generate_dataset_size
       );
 
-      file_counter = 0; folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["dataset-structure"])
+      file_counter = 0;
+      folder_counter = 0;
+      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
       // ipcRenderer.send(
       //   "track-event",
@@ -6759,12 +6740,12 @@ function initiate_generate() {
 const get_num_files_and_folders = (dataset_folders) => {
   if ("files" in dataset_folders) {
     for (let file in dataset_folders["files"]) {
-      file_counter += 1
+      file_counter += 1;
     }
   }
   if ("folders" in dataset_folders) {
     for (let folder in dataset_folders["folders"]) {
-      folder_counter += 1
+      folder_counter += 1;
       get_num_files_and_folders(dataset_folders["folders"][folder]);
     }
   }
@@ -7157,7 +7138,7 @@ const recursive_remove_deleted_files = (dataset_folder) => {
 
   if ("folders" in dataset_folder) {
     for (let item in dataset_folder["folders"]) {
-      recursive_remove_deleted_files(dataset_folder["folders"][item])
+      recursive_remove_deleted_files(dataset_folder["folders"][item]);
       if (dataset_folder["folders"][item]["action"].includes("deleted")) {
         delete dataset_folder["folders"][item];
       }
@@ -7166,39 +7147,39 @@ const recursive_remove_deleted_files = (dataset_folder) => {
 };
 
 ipcRenderer.on("selected-manifest-folder", (event, result) => {
-  if (!result["canceled"])
-  {
-    $("body").addClass("waiting")
+  if (!result["canceled"]) {
+    $("body").addClass("waiting");
     let manifest_destination = result["filePaths"][0];
-    let manifest_state = {}
+    let manifest_state = {};
 
-    if ("manifest-files" in sodaJSONObj)
-    {
+    if ("manifest-files" in sodaJSONObj) {
       manifest_state = sodaJSONObj["manifest-files"];
-      sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination
-    }
-    else
-    {
-      manifest_state = {}
-      sodaJSONObj["manifest-files"] = {}
-      sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination
+      sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination;
+    } else {
+      manifest_state = {};
+      sodaJSONObj["manifest-files"] = {};
+      sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination;
     }
 
     delete_imported_manifest();
 
     let temp_sodaJSONObj = JSON.parse(JSON.stringify(sodaJSONObj));
 
-    recursive_remove_deleted_files(temp_sodaJSONObj["dataset-structure"])
+    recursive_remove_deleted_files(temp_sodaJSONObj["dataset-structure"]);
 
-    client.invoke("api_generate_manifest_file_locally", temp_sodaJSONObj, (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        $("body").removeClass("waiting")
-      } else {
-        $("body").removeClass("waiting")
+    client.invoke(
+      "api_generate_manifest_file_locally",
+      temp_sodaJSONObj,
+      (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          log.error(error);
+          console.error(error);
+          $("body").removeClass("waiting");
+        } else {
+          $("body").removeClass("waiting");
+        }
       }
-    });
+    );
   }
 });
