@@ -120,7 +120,7 @@ const fill_info_details = () => {
   $(".card-container.generate-preview").remove();
   if (sodaJSONObj["starting-point"]["type"] === "bf") {
     add_card_detail(
-      "Blackfynn account",
+      "Pennsieve account",
       sodaJSONObj["bf-account-selected"]["account-name"]
     );
     add_card_detail(
@@ -234,13 +234,13 @@ const fill_info_details = () => {
 
       add_card_detail(
         "New dataset location",
-        "Blackfynn",
+        "Pennsieve",
         1,
         "Question-generate-dataset",
         true
       );
       add_card_detail(
-        "Blackfynn account",
+        "Pennsieve account",
         $("#current-bf-account-generate").text(),
         1,
         "Question-generate-dataset-BF-account",
@@ -1168,8 +1168,8 @@ const create_json_object = (sodaJSONObj) => {
 };
 
 // replace any duplicate file names
-// Modify for consistency with blackfynn naming when the update their system
-const check_file_name_for_blackfynn_duplicate = (dataset_folder, filepath) => {
+// Modify for consistency with Pennsieve naming when the update their system
+const check_file_name_for_pennsieve_duplicate = (dataset_folder, filepath) => {
   file_name = path.parse(filepath).base;
   file_extension = path.parse(filepath).ext;
   var duplicateFileArray = [];
@@ -1311,7 +1311,7 @@ const recursive_structure_create = (
         description: manifest_object["description"],
         "additional-metadata": manifest_object["additional-metadata"],
       };
-      projected_file_name = check_file_name_for_blackfynn_duplicate(
+      projected_file_name = check_file_name_for_pennsieve_duplicate(
         dataset_folder["files"],
         current_file_path
       );
@@ -1730,12 +1730,12 @@ const reset_ui = () => {
     $(obj).click();
   });
 
-  $("#metadata-submission-blackfynn").css("display", "none");
-  $("#metadata-ds-description-blackfynn").css("display", "none");
-  $("#metadata-CHANGES-blackfynn").css("display", "none");
-  $("#metadata-samples-blackfynn").css("display", "none");
-  $("#metadata-README-blackfynn").css("display", "none");
-  $("#metadata-subjects-blackfynn").css("display", "none");
+  $("#metadata-submission-pennsieve").css("display", "none");
+  $("#metadata-ds-description-pennsieve").css("display", "none");
+  $("#metadata-CHANGES-pennsieve").css("display", "none");
+  $("#metadata-samples-pennsieve").css("display", "none");
+  $("#metadata-README-pennsieve").css("display", "none");
+  $("#metadata-subjects-pennsieve").css("display", "none");
 
   $("#Question-getting-started-existing-BF-account").hide();
   $("#Question-getting-started-existing-BF-account").children().hide();
@@ -1785,9 +1785,9 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           .css("display", "none");
         if (metadataobject[key]["type"] == "bf") {
           $("#para-submission-file-path").html(
-            "Using file present on Blackfynn. <br> File name: " + key
+            "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-submission-blackfynn").css("display", "inline-block");
+          $("#metadata-submission-pennsieve").css("display", "inline-block");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -1807,9 +1807,9 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           .css("display", "none");
         if (metadataobject[key]["type"] == "bf") {
           $("#para-ds-description-file-path").html(
-            "Using file present on Blackfynn. <br> File name: " + key
+            "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-ds-description-blackfynn").css(
+          $("#metadata-ds-description-pennsieve").css(
             "display",
             "inline-block"
           );
@@ -1831,9 +1831,9 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           .css("display", "none");
         if (metadataobject[key]["type"] == "bf") {
           $("#para-subjects-file-path").html(
-            "Using file present on Blackfynn. <br> File name: " + key
+            "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-subjects-blackfynn").css("display", "inline-block");
+          $("#metadata-subjects-pennsieve").css("display", "inline-block");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -1851,9 +1851,9 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           .css("display", "none");
         if (metadataobject[key]["type"] == "bf") {
           $("#para-samples-file-path").html(
-            "Using file present on Blackfynn. <br> File name: " + key
+            "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-samples-blackfynn").css("display", "inline-block");
+          $("#metadata-samples-pennsieve").css("display", "inline-block");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -1871,9 +1871,9 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           .css("display", "none");
         if (metadataobject[key]["type"] == "bf") {
           $("#para-readme-file-path").html(
-            "Using file present on Blackfynn. <br> File name: " + key
+            "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-README-blackfynn").css("display", "inline-block");
+          $("#metadata-README-pennsieve").css("display", "inline-block");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -1891,9 +1891,9 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           .css("display", "none");
         if (metadataobject[key]["type"] == "bf") {
           $("#para-changes-file-path").html(
-            "Using file present on Blackfynn. <br> File name: " + key
+            "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-CHANGES-blackfynn").css("display", "inline-block");
+          $("#metadata-CHANGES-pennsieve").css("display", "inline-block");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -2011,7 +2011,7 @@ const populateMetadataObject = (
     ) {
       if (
         metadataFilePath == "" ||
-        metadataFilePath.indexOf("Using file present on Blackfynn") == -1
+        metadataFilePath.indexOf("Using file present on Pennsieve") == -1
       ) {
         if (!object["metadata-files"][item]["action"].includes("deleted")) {
           object["metadata-files"][item]["action"].push("deleted");
@@ -2023,7 +2023,7 @@ const populateMetadataObject = (
       }
     }
   }
-  if (metadataFilePath.indexOf("Using file present on Blackfynn") != -1) {
+  if (metadataFilePath.indexOf("Using file present on Pennsieve") != -1) {
     return;
   }
   if (!optionList.includes(metadataFilePath)) {
@@ -2701,7 +2701,7 @@ $("#start-over-btn").click(() => {
 
 const description_text = {
   manage_dataset_section:
-    "This interface provides a convenient window to accomplish all required curation steps on your Blackfynn datasets",
+    "This interface provides a convenient window to accomplish all required curation steps on your Pennsieve datasets",
   prepare_metadata_section:
     "This interface will help you in preparing the SPARC metadata files for your datasets",
   prepare_dataset_section:
@@ -2873,7 +2873,7 @@ $("#edit_banner_image_button").click(async () => {
           ipcRenderer.send(
             "track-event",
             "Error",
-            "Importing Blackfynn Image",
+            "Importing Pennsieve Image",
             img_src
           );
           return;
@@ -2887,7 +2887,7 @@ $("#edit_banner_image_button").click(async () => {
         ipcRenderer.send(
           "track-event",
           "Error",
-          "Importing Blackfynn Image",
+          "Importing Pennsieve Image",
           img_src
         );
         return;
@@ -2901,7 +2901,7 @@ $("#edit_banner_image_button").click(async () => {
       ipcRenderer.send(
         "track-event",
         "Error",
-        "Importing Blackfynn Image",
+        "Importing Pennsieve Image",
         img_src
       );
       return;

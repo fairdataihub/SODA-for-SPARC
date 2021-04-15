@@ -787,7 +787,7 @@ function loadDetailsContextMenu(
     "#organize-dataset-tab > div > div > div > div.div-display-details.file > div:nth-child(2) > label"
   );
   if (filePath["files"][fileName]["type"] === "bf") {
-    path_label.innerHTML = "<b>Blackfynn path:<br></b>";
+    path_label.innerHTML = "<b>Pennsieve path:<br></b>";
     bf_path = "";
     filePath["files"][fileName]["bfpath"].forEach(
       (item) => (bf_path += item + "/")

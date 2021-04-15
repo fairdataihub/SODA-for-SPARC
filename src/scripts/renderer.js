@@ -2,7 +2,7 @@
 // Import required modules
 //////////////////////////////////
 
-const zerorpc = require("zerorpc-rotkehlchen");
+const zerorpc = require("zerorpc");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
@@ -79,7 +79,7 @@ const appVersion = window.require("electron").remote.app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
-//check user's internet connection and connect to default Blackfynn account //
+//check user's internet connection and connect to default Pennsieve account //
 require("dns").resolve("www.google.com", (err) => {
   if (err) {
     console.error("No internet connection");
@@ -90,12 +90,10 @@ require("dns").resolve("www.google.com", (err) => {
     log.info("Connected to the internet");
     //Check new app version
     checkNewAppVersion(); // changed this function definition
-    //Load Default/global blackfynn account if available
+    //Load Default/global Pennsieve account if available
     updateBfAccountList();
   }
 });
-
-// Blackfynn to Pennseive transition
 
 const notification = document.getElementById("notification");
 const message = document.getElementById("message");
@@ -301,7 +299,7 @@ const bfRenameDatasetStatus = document.getElementById(
 );
 const datasetPermissionDiv = document.getElementById("div-permission-list-2");
 
-// Blackfynn dataset metadata //
+// Pennsieve dataset metadata //
 const bfCurrentMetadataProgress = document.querySelector(
   "#div-bf-current-metadata-progress"
 );
@@ -337,8 +335,8 @@ const datasetLicenseStatus = document.querySelector(
   "#para-dataset-license-status"
 );
 
-// Blackfynn dataset permission //
-//const bfPermissionForm = document.querySelector("#blackfynn-permission-form");
+// Pennsieve dataset permission //
+//const bfPermissionForm = document.querySelector("#pennsieve-permission-form");
 //const bfDatasetListPermission = document.querySelector("#bfdatasetlist_permission");
 const currentDatasetPermission = document.querySelector(
   "#para-dataset-permission-current"
@@ -380,7 +378,7 @@ const datasetPermissionStatusTeam = document.querySelector(
   "#para-dataset-permission-status-team"
 );
 
-//Blackfynn dataset status
+//Pennsieve dataset status
 const bfCurrentDatasetStatusProgress = document.querySelector(
   "#div-bf-current-dataset-status-progress"
 );
@@ -389,7 +387,7 @@ const datasetStatusStatus = document.querySelector(
   "#para-dataset-status-status"
 );
 
-//Blackfynn post curation
+//Pennsieve post curation
 const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
   "#button-refresh-publishing-status"
 );
@@ -1937,7 +1935,7 @@ ipcRenderer.on(
         json_str_completeness = JSON.stringify(completenessSectionObj);
         json_str_con = JSON.stringify(contributorObj);
 
-        /// get current, selected Blackfynn account
+        /// get current, selected Pennsieve account
         var bfaccountname = $("#current-bf-account").text();
 
         /// call python function to save file
@@ -3077,7 +3075,7 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
       Swal.fire({
         title: "Image conversion in progress!",
         html:
-          "Blackfynn does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
+          "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
         timer: 4000,
         timerProgressBar: true,
         didOpen: () => {
@@ -3838,7 +3836,7 @@ function refreshBfUsersList() {
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
         for (var myItem in res) {
-          // returns like [..,''fname lname email !!**!! blackfynn_id',',..]
+          // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
           let sep_pos = res[myItem].lastIndexOf('!|**|!');
           var myUser = res[myItem].substring(0,sep_pos);
           var optionUser = document.createElement("option");
@@ -4069,7 +4067,7 @@ function selectOptionColor(mylist) {
 ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-/// add new datasets to dataset List without calling Python to retrieve new list from Blackfynn
+/// add new datasets to dataset List without calling Python to retrieve new list from Pennsieve
 function addNewDatasetToList(newDataset) {
   datasetList.push({ name: newDataset, role: "owner" });
 }
@@ -4523,7 +4521,7 @@ function showDetailsFile() {
 
 var bfAddAccountBootboxMessage =
   "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='text' /></div></div></form>";
-var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Blackfynn API key and secret below:<i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Blackfynn-account-with-SODA'> help page </a>for generating API key and secret and setting up your Blackfynn account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Blackfynn accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below:<i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Blackfynn-account-with-SODA'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
 function addBFAccountInsideBootbox(myBootboxDialog) {
   var name = $("#bootbox-key-name").val();
@@ -5739,9 +5737,9 @@ function listItems(jsonObj, uiItem) {
     }
 
     if (sortedObj["folders"][item]["type"] == "bf") {
-      cloud_item = " blackfynn_folder";
+      cloud_item = " pennsieve_folder";
       if (deleted_folder) {
-        cloud_item = " blackfynn_folder_deleted";
+        cloud_item = " pennsieve_folder_deleted";
       }
     }
 
@@ -5819,9 +5817,9 @@ function listItems(jsonObj, uiItem) {
     }
 
     if (sortedObj["files"][item]["type"] == "bf") {
-      cloud_item = " blackfynn_file";
+      cloud_item = " pennsieve_file";
       if (deleted_file) {
-        cloud_item = " blackfynn_file_deleted";
+        cloud_item = " pennsieve_file_deleted";
       }
     }
 
@@ -5987,7 +5985,7 @@ $("#bf-rename-dataset-name").keyup(function () {
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
       $("#para-rename-dataset-message").html(
-        "Error: A Blackfynn dataset name cannot contain any of the following characters: /:*?'<>."
+        "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>."
       );
       $("#button-rename-dataset").hide();
     } else {
@@ -6008,7 +6006,7 @@ $("#bf-new-dataset-name").keyup(function () {
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
       $("#para-new-name-dataset-message").html(
-        "Error: A Blackfynn dataset name cannot contain any of the following characters: /:*?'<>."
+        "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>."
       );
       $("#button-create-bf-new-dataset").hide();
     } else {
@@ -6037,7 +6035,7 @@ $("#inputNewNameDataset").keyup(function () {
         "none";
       $("#btn-confirm-new-dataset-name").hide();
       document.getElementById("para-new-name-dataset-message").innerHTML =
-        "Error: A Blackfynn dataset name cannot contain any of the following characters: /:*?'<>.";
+        "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.";
       $("#nextBtn").prop("disabled", true);
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
     } else {
@@ -6448,7 +6446,7 @@ function initiate_generate() {
       if (destination == "bf")
       {
         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"]
-        dataset_destination = "Blackfynn"
+        dataset_destination = "Pennsieve"
       }
     }
   }
@@ -6817,7 +6815,7 @@ function importMetadataFiles(ev, metadataFile, extentionList, paraEle) {
   ipcRenderer.send("open-file-dialog-metadata-curate");
 }
 
-function importBlackfynnMetadataFiles(
+function importPennsieveMetadataFiles(
   ev,
   metadataFile,
   extensionList,
