@@ -1118,7 +1118,7 @@ const create_json_object = (sodaJSONObj) => {
     full_current_path = path.join(root_folder_path, file);
     stats = fs.statSync(full_current_path);
     if (stats.isDirectory()) {
-      if (highLevelFolders.includes(file)) {
+      if (highLevelFolders.includes(file) && !(/(^|\/)\.[^\/\.]/g).test(file)) {
         sodaJSONObj["dataset-structure"]["folders"][file] = {
           folders: {},
           files: {},
@@ -1129,7 +1129,8 @@ const create_json_object = (sodaJSONObj) => {
       }
     }
     if (stats.isFile()) {
-      if (high_level_metadata_sparc.includes(file)) {
+      if (high_level_metadata_sparc.includes(file) && !(/(^|\/)\.[^\/\.]/g).test(file)) {
+        //ignore hidden files
         sodaJSONObj["metadata-files"][file] = {
           path: full_current_path,
           type: "local",
@@ -1215,6 +1216,7 @@ const recursive_structure_create = (
     if (
       stats.isFile() &&
       path.parse(current_file_path).name != "manifest" &&
+      !(/(^|\/)\.[^\/\.]/g).test(file) && //not a hidden file
       high_level_folder != dataset_folder
     ) {
       if (sodaJSONObj["starting-point"][high_level_folder]["path"] !== "") {
@@ -1322,7 +1324,7 @@ const recursive_structure_create = (
         delete dataset_folder["files"][file];
       }
     }
-    if (stats.isDirectory()) {
+    if (stats.isDirectory() && !(/(^|\/)\.[^\/\.]/g).test(file)) {
       dataset_folder["folders"][file] = {
         folders: {},
         files: {},
@@ -2754,7 +2756,7 @@ $(document).ready(() => {
       if (warning_obj["show-warning-message"]) {
         Swal.fire({
           icon: "info",
-          html: `${warning_obj["warning-message"]}`,
+          html: `${warning_obj["warning-message"]}`
         });
       }
     });

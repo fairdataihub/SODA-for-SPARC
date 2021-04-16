@@ -4,8 +4,6 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-Documentation at 'coming soon'
-
 ## v4.2.0 - TBD
 
 ### Feature additions:
@@ -18,6 +16,7 @@ Documentation at 'coming soon'
 - When you rename a file with more than one extension, SODA will correctly identify the name portion of the file and allow you to rename your file accordingly.
 - For long file names or files with long paths, the user interface will break the text to control text clipping boundaries.
 - Fixed a bug where manifest files with the 'strict Open XML' format and .xlsx extensions were being read incorrectly. SODA will now ignore manifest files that are not saved in the right format and warn you about this issue when you pull a dataset from Pennsieve.
+- When uploading on macOS, hidden files like .DS_STORE will currently break the Pennsieve agent upload. To combat this if your folder has these hidden files, SODA will block the upload when you use the 'Manage Datasets - Upload a local folder' feature. If you import a folder, that has these files, within the 'Organize Dataset' process, SODA will filter out these files automatically.
 
 ## v4.1.0 - 2020-04-09
 

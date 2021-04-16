@@ -2996,6 +2996,7 @@ bfAddDescriptionBtn.addEventListener("click", () => {
 
 // upload banner image //
 const Cropper = require("cropperjs");
+const { default: Swal } = require("sweetalert2");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -4436,7 +4437,7 @@ function populateJSONObjFolder(jsonObject, folderPath) {
   myitems.forEach((element) => {
     var statsObj = fs.statSync(path.join(folderPath, element));
     var addedElement = path.join(folderPath, element);
-    if (statsObj.isDirectory()) {
+    if (statsObj.isDirectory() && !(/(^|\/)\.[^\/\.]/g).test(element)) {
       jsonObject["folders"][element] = {
         type: "local",
         folders: {},
@@ -4444,7 +4445,7 @@ function populateJSONObjFolder(jsonObject, folderPath) {
         action: ["new"],
       };
       populateJSONObjFolder(jsonObject["folders"][element], addedElement);
-    } else if (statsObj.isFile()) {
+    } else if (statsObj.isFile() && !(/(^|\/)\.[^\/\.]/g).test(element)) {
       jsonObject["files"][element] = {
         path: addedElement,
         description: "",
@@ -5007,7 +5008,24 @@ organizeDSaddFiles.addEventListener("click", function () {
 ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  path = path.filter((file_path) => fs.statSync(file_path).isFile());
+  let hidden_files_present = false;
+  path.forEach((file_path) => {
+    if (/(^|\/)\.[^\/\.]/g.test(file_path)) {
+      hidden_files_present = true;
+    }
+  });
+  if ((hidden_files_present = true)) {
+    bootbox.alert({
+      message:
+        "We found some hidden files. These will be ignored when importing.",
+      backdrop: true,
+      centerVertical: true,
+    });
+  }
+  path = path.filter(
+    (file_path) =>
+      fs.statSync(file_path).isFile() && !/(^|\/)\.[^\/\.]/g.test(file_path)
+  );
   addFilesfunction(
     path,
     myPath,

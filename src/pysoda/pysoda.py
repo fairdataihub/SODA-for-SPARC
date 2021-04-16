@@ -682,6 +682,9 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                 if mypathsize == 0:
                     c += 1
                     error = error + fp + ' is 0 KB <br>'
+                elif f[0:1] == ".":
+                    c += 1
+                    error = error + fp + ' is a hidden file not currently allowed during Pennsieve upload. <br>'
                 else:
                     total_file_size += mypathsize
             for d in dirs:
