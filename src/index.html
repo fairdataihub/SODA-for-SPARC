@@ -5,39 +5,17 @@
 
     <title>SODA - Keep Calm and Curate</title>
 
-    <link
-      rel="stylesheet"
-      href="assets/css/variables.css" />
-    <link
-      rel="stylesheet"
-      href="assets/css/nativize.css" />
-    <link
-      rel="stylesheet"
-      href="assets/css/global.css" />
-    <link
-      rel="stylesheet"
-      href="assets/css/nav.css" />
-    <link
-      rel="stylesheet"
-      href="assets/css/section.css" />
-    <link
-      rel="stylesheet"
-      href="assets/css/demo.css" />
-    <link
-      rel="stylesheet"
-      href="assets/css/individualtab.css" />
-    <link
-      rel="stylesheet"
-      href="assets/css/main_tabs.css" />
-    <link
-      rel="stylesheet"
-      href="node_modules/cropperjs/dist/cropper.css" />
-    <link
-      rel="stylesheet"
-      href="assets/css/spur.css" />
-    <link
-      rel="stylesheet"
-      href="assets/css/main.css" />
+    <link rel="stylesheet" href="assets/css/variables.css" />
+    <link rel="stylesheet" href="assets/css/nativize.css" />
+    <link rel="stylesheet" href="assets/css/global.css" />
+    <link rel="stylesheet" href="assets/css/nav.css" />
+    <link rel="stylesheet" href="assets/css/section.css" />
+    <link rel="stylesheet" href="assets/css/demo.css" />
+    <link rel="stylesheet" href="assets/css/individualtab.css" />
+    <link rel="stylesheet" href="assets/css/main_tabs.css" />
+    <link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css" />
+    <link rel="stylesheet" href="assets/css/spur.css" />
+    <link rel="stylesheet" href="assets/css/main.css" />
     <link
       rel="stylesheet"
       href="node_modules/@fortawesome/fontawesome-free/css/all.css"
@@ -46,12 +24,8 @@
       rel="stylesheet"
       href="node_modules/@toast-ui/editor/dist/toastui-editor.css"
     />
-    <link
-      rel="stylesheet"
-      href="node_modules/codemirror/lib/codemirror.css" />
-    <link
-      rel="stylesheet"
-      href="node_modules/@yaireo/tagify/dist/tagify.css" />
+    <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css" />
+    <link rel="stylesheet" href="node_modules/@yaireo/tagify/dist/tagify.css" />
     <link
       rel="stylesheet"
       href="node_modules/fomantic-ui/dist/semantic.min.css"
@@ -68,10 +42,6 @@
       rel="stylesheet"
       href="node_modules/jstree/dist/themes/default/style.min.css"
     />
-    <link
-      rel="stylesheet"
-      href="node_modules/bootstrap-select/dist/css/bootstrap-select.min.css"
-    />
 
     <link rel="import" href="sections/welcome/welcome.html" />
     <link rel="import" href="sections/getting_started/getting_started.html" />
@@ -87,7 +57,7 @@
         position: fixed;
         bottom: 20px;
         right: 20px;
-        width: 210px;
+        width: 288px;
         padding: 20px;
         z-index: 10000000;
         border-radius: 5px;
@@ -105,103 +75,145 @@
     </style>
   </head>
 
-<body>
-  <button type="button" id="sidebarCollapse" class="navbar-btn">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
-  <nav id="main-nav" class="nav js-nav">
-    <div class="nav-item u-category-windows">
-      <!-- Sidebar Header -->
-      <div class="sidebar-header">
-        <div style="display:block" id="SODA-logo">
-          <img id="button-soda-big-icon" class="nav-center-logo-image" src="assets/img/logo-new-green.png" />
-          <h3 style="color: var(--color-light-green); width: auto;text-align:center">SODA for SPARC <br> <span id="version"
-              style="font-size:12px"></span></h3>
-        </div>
-        <!-- Sidebar Links -->
-        <ul class="list-unstyled components">
-          <li>
-            <a href="#" data-section="getting_started">
-              <svg
-                data-section="getting_started"
-                style="margin-right: 30px; margin-bottom: -5px"
-                width="20px"
-                height="20px"
-                viewBox="0 0 16 16"
-                class="bi bi-caret-right-square-fill"
-                fill="white"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  href="#"
+  <body>
+    <button type="button" id="sidebarCollapse" class="navbar-btn">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav id="main-nav" class="nav js-nav">
+      <div class="nav-item u-category-windows">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header">
+          <div style="display: block" id="SODA-logo">
+            <img
+              id="button-soda-big-icon"
+              class="nav-center-logo-image"
+              src="assets/img/logo-new-green.png"
+            />
+            <h3
+              style="
+                color: var(--color-light-green);
+                width: auto;
+                text-align: center;
+              "
+            >
+              SODA for SPARC <br />
+              <span id="version" style="font-size: 12px"></span>
+            </h3>
+          </div>
+          <!-- Sidebar Links -->
+          <ul class="list-unstyled components">
+            <li>
+              <a href="#" data-section="getting_started">
+                <svg
                   data-section="getting_started"
-                  fill-rule="evenodd"
-                  d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm5.5 10a.5.5 0 0 0 .832.374l4.5-4a.5.5 0 0 0 0-.748l-4.5-4A.5.5 0 0 0 5.5 4v8z"
-                />
-              </svg>
-              Overview
-            </a>
-          </li>
-          <li>
-            <a href="#" data-section="main_tabs" id="main_tabs_view">
-              <svg
-                style="margin-right: 30px; margin-bottom: -5px"
-                width="20px"
-                height="20px"
-                viewBox="0 0 16 16"
-                class="bi bi-kanban-fill"
-                fill="white"
-                xmlns="http://www.w3.org/2000/svg"
+                  style="margin-right: 30px; margin-bottom: -5px"
+                  width="20px"
+                  height="20px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-caret-right-square-fill"
+                  fill="white"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    data-section="getting_started"
+                    fill-rule="evenodd"
+                    d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm5.5 10a.5.5 0 0 0 .832.374l4.5-4a.5.5 0 0 0 0-.748l-4.5-4A.5.5 0 0 0 5.5 4v8z"
+                  />
+                </svg>
+                Overview
+              </a>
+            </li>
+
+            <li>
+              <a href="#" data-section="main_tabs" id="main_tabs_view">
+                <svg
+                  style="margin-right: 30px; margin-bottom: -5px"
+                  width="20px"
+                  height="20px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-kanban-fill"
+                  fill="white"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2h-11zm5 2h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm-5 1a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3zm9-1h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"
+                  />
+                </svg>
+                Free Form Mode
+              </a>
+            </li>
+
+            <li
+              class="coming-soon-div"
+              data-content="Coming soon..."
+              rel="popover"
+              data-placement="right"
+              data-trigger="hover"
+            >
+              <a
+                href="#"
+                data-section="guided_mode"
+                class="coming-soon-div"
+                data-content="Coming soon..."
+                rel="popover"
+                data-placement="right"
+                data-trigger="hover"
               >
-              <path d="M2.5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2h-11zm5 2h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm-5 1a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3zm9-1h1a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/>
-              </svg>
-              Free Form Mode
-            </a>
-          </li>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20px"
+                  height="20px"
+                  fill="white"
+                  class="bi bi-compass-fill"
+                  viewBox="0 0 16 16"
+                  style="margin-right: 30px; margin-bottom: -5px"
+                >
+                  <path
+                    d="M8 16.016a7.5 7.5 0 0 0 1.962-14.74A1 1 0 0 0 9 0H7a1 1 0 0 0-.962 1.276A7.5 7.5 0 0 0 8 16.016zm6.5-7.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"
+                  />
+                  <path
+                    d="M6.94 7.44l4.95-2.83-2.83 4.95-4.949 2.83 2.828-4.95z"
+                  />
+                </svg>
+                Guided Mode
+              </a>
+            </li>
 
-          <li class="coming-soon-div" data-content="Coming soon..." rel="popover" data-placement="right" data-trigger="hover">
-            <a href="#" data-section="guided_mode" class="coming-soon-div" data-content="Coming soon..." rel="popover" data-placement="right" data-trigger="hover">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="white" class="bi bi-compass-fill" viewBox="0 0 16 16" style="margin-right: 30px; margin-bottom: -5px">
-                <path d="M8 16.016a7.5 7.5 0 0 0 1.962-14.74A1 1 0 0 0 9 0H7a1 1 0 0 0-.962 1.276A7.5 7.5 0 0 0 8 16.016zm6.5-7.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"/>
-                <path d="M6.94 7.44l4.95-2.83-2.83 4.95-4.949 2.83 2.828-4.95z"/>
-              </svg>
-              Guided Mode
-            </a>
-          </li>
-
-          <li>
-            <a href="#" data-section="help" id="help_view">
-              <svg
-                style="margin-right: 30px; margin-bottom: -5px"
-                width="20px"
-                height="20px"
-                viewBox="0 0 16 16"
-                class="bi bi-share-fill"
-                fill="white"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247zm2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z"/>
-              </svg>
-              Help
-            </a>
-          </li>
-        </ul>
-
-        <div class="help-section">
-          <ul
-            class="list-unstyled components"
-            style="
-              height: 50px;
-              margin-bottom: 0;
-              margin-left: 35px;
-              display: flex;
-              flex-direction: row;
-              justify-content: center;
-            "
-          >
+            <li>
+              <a href="#" data-section="help" id="help_view">
+                <svg
+                  style="margin-right: 30px; margin-bottom: -5px"
+                  width="20px"
+                  height="20px"
+                  viewBox="0 0 16 16"
+                  class="bi bi-share-fill"
+                  fill="white"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247zm2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z"
+                  />
+                </svg>
+                Help
+              </a>
+            </li>
           </ul>
+
+          <div class="help-section">
+            <ul
+              class="list-unstyled components"
+              style="
+                height: 50px;
+                margin-bottom: 0;
+                margin-left: 35px;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+              "
+            ></ul>
+          </div>
         </div>
       </div>
     </nav>
@@ -215,9 +227,27 @@
 
     <div id="notification" class="hidden">
       <p id="message"></p>
-      <button id="close-button" onClick="closeNotification()">Dismiss</button>
-      <button id="restart-button" onClick="restartApp()" class="hidden">
+      <button
+        class="ui negative basic button"
+        id="close-button"
+        onClick="closeNotification()"
+        style="height: 35px"
+      >
+        Dismiss
+      </button>
+      <button
+        class="ui blue button"
+        id="restart-button"
+        onClick="restartApp()"
+        class="hidden"
+        style="height: 35px"
+      >
         Restart SODA
+        <div
+          id="restart_loader"
+          class="ui active red inline loader tiny inverted"
+          style="display: none"
+        ></div>
       </button>
     </div>
 
@@ -246,7 +276,7 @@
     </script>
 
     <script src="scripts/popper.min.js"></script>
-    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script> -->
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
   </body>

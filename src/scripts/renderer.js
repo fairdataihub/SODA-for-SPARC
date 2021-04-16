@@ -113,6 +113,12 @@ ipcRenderer.on("app_version", (event, arg) => {
 // Check for update and show the pop up box
 ipcRenderer.on("update_available", () => {
   ipcRenderer.removeAllListeners("update_available");
+  ipcRenderer.send(
+    "track-event",
+    "App Update",
+    "Update Requested",
+    `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
+  );
   message.innerText = "A new update is available. Downloading now...";
   notification.classList.remove("hidden");
 });
@@ -120,6 +126,12 @@ ipcRenderer.on("update_available", () => {
 // When the update is downloaded, show the restart message
 ipcRenderer.on("update_downloaded", () => {
   ipcRenderer.removeAllListeners("update_downloaded");
+  ipcRenderer.send(
+    "track-event",
+    "App Update",
+    "Update Downloaded",
+    `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
+  );
   if (process.platform == "darwin") {
     message.innerText =
       "Update downloaded. It will be installed when you close and relaunch the app. Close the app now?";
@@ -139,6 +151,13 @@ const closeNotification = () => {
 
 // Restart the app for update. Does not restart on macos
 const restartApp = () => {
+  ipcRenderer.send(
+    "track-event",
+    "App Update",
+    "App Restarted",
+    `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
+  );
+  document.getElementById("restart_loader").style.display = "inline-block";
   ipcRenderer.send("restart_app");
 };
 
