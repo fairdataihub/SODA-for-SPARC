@@ -492,7 +492,7 @@ const nextPrev = (n) => {
     if ($("#nextBtn").prop("disabled") === true) {
       nextBtnDisabledVariable = true;
     } else {
-      nextBtnDisabledVariable = false
+      nextBtnDisabledVariable = false;
     }
     return;
   }
@@ -506,7 +506,7 @@ const nextPrev = (n) => {
     x[currentTab].id === "high-level-folders-tab" ||
     x[currentTab].id === "metadata-files-tab"
   ) {
-    organizeLandingUIEffect()
+    organizeLandingUIEffect();
     // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
     if ("files" in datasetStructureJSONObj) {
       datasetStructureJSONObj["files"] = {};
@@ -887,8 +887,7 @@ async function transitionSubQuestions(
     $(target).addClass("show");
   }
 
-  if (currentDiv == 'Question-generate-dataset')
-  {
+  if (currentDiv == "Question-generate-dataset") {
     $("#inputNewNameDataset").val("");
     $("#inputNewNameDataset").click();
   }
@@ -969,7 +968,7 @@ async function transitionSubQuestions(
     document.getElementById(parentDiv).appendChild(target);
     $("#para-continue-existing-files-generate").text("");
   } else {
-    $("#nextBtn").prop("disabled", false)
+    $("#nextBtn").prop("disabled", false);
   }
 
   document.getElementById(currentDiv).classList.add("prev");
@@ -1118,7 +1117,7 @@ const create_json_object = (sodaJSONObj) => {
     full_current_path = path.join(root_folder_path, file);
     stats = fs.statSync(full_current_path);
     if (stats.isDirectory()) {
-      if (highLevelFolders.includes(file) && !(/(^|\/)\.[^\/\.]/g).test(file)) {
+      if (highLevelFolders.includes(file) && !/(^|\/)\.[^\/\.]/g.test(file)) {
         sodaJSONObj["dataset-structure"]["folders"][file] = {
           folders: {},
           files: {},
@@ -1129,7 +1128,10 @@ const create_json_object = (sodaJSONObj) => {
       }
     }
     if (stats.isFile()) {
-      if (high_level_metadata_sparc.includes(file) && !(/(^|\/)\.[^\/\.]/g).test(file)) {
+      if (
+        high_level_metadata_sparc.includes(file) &&
+        !/(^|\/)\.[^\/\.]/g.test(file)
+      ) {
         //ignore hidden files
         sodaJSONObj["metadata-files"][file] = {
           path: full_current_path,
@@ -1177,7 +1179,7 @@ const check_file_name_for_pennsieve_duplicate = (dataset_folder, filepath) => {
 
   for (var item in dataset_folder) {
     if (dataset_folder[item]["path"] !== filepath) {
-      duplicateFileArray.push(item)
+      duplicateFileArray.push(item);
     }
   }
 
@@ -1185,11 +1187,9 @@ const check_file_name_for_pennsieve_duplicate = (dataset_folder, filepath) => {
   var fileBaseName = file_name;
   var originalFileNameWithoutExt = path.parse(fileBaseName).name;
   var fileNameWithoutExt = originalFileNameWithoutExt;
-  while (
-    fileBaseName in duplicateFileArray
-  ) {
+  while (fileBaseName in duplicateFileArray) {
     fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
-    fileBaseName = fileNameWithoutExt + file_extension
+    fileBaseName = fileNameWithoutExt + file_extension;
     j++;
   }
   return fileBaseName;
@@ -1216,7 +1216,7 @@ const recursive_structure_create = (
     if (
       stats.isFile() &&
       path.parse(current_file_path).name != "manifest" &&
-      !(/(^|\/)\.[^\/\.]/g).test(file) && //not a hidden file
+      !/(^|\/)\.[^\/\.]/g.test(file) && //not a hidden file
       high_level_folder != dataset_folder
     ) {
       if (sodaJSONObj["starting-point"][high_level_folder]["path"] !== "") {
@@ -1324,7 +1324,7 @@ const recursive_structure_create = (
         delete dataset_folder["files"][file];
       }
     }
-    if (stats.isDirectory() && !(/(^|\/)\.[^\/\.]/g).test(file)) {
+    if (stats.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(file)) {
       dataset_folder["folders"][file] = {
         folders: {},
         files: {},
@@ -1672,7 +1672,11 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     }
     $(ev).hide();
   } else {
-    if ($(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') !== "None") {
+    if (
+      $(".bf-dataset-span")
+        .html()
+        .replace(/^\s+|\s+$/g, "") !== "None"
+    ) {
       $(target).children().find(".div-confirm-button button").show();
     }
   }
@@ -1968,11 +1972,17 @@ const hidePrevDivs = (currentDiv, category) => {
           ) {
             if (child.id === "bf-rename-dataset-name") {
               if (
-                $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') == "None" ||
-                $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') == ""
+                $(".bf-dataset-span")
+                  .html()
+                  .replace(/^\s+|\s+$/g, "") == "None" ||
+                $(".bf-dataset-span")
+                  .html()
+                  .replace(/^\s+|\s+$/g, "") == ""
               ) {
                 $("#bf-rename-dataset-name").val(
-                  `${$(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '')}`
+                  `${$(".bf-dataset-span")
+                    .html()
+                    .replace(/^\s+|\s+$/g, "")}`
                 );
               }
             } else {
@@ -2480,8 +2490,7 @@ function raiseWarningExit(message) {
   // function associated with the Exit button (Step 6: Generate dataset -> Generate div)
   return new Promise((resolve) => {
     bootbox.confirm({
-      message:
-        message,
+      message: message,
       buttons: {
         confirm: {
           label: "Yes",
@@ -2513,9 +2522,10 @@ const exitCurate = async (resetProgressTabs, start_over = false) => {
     var message;
 
     if ($("#save-progress-btn").css("display") === "block") {
-      message = "This will reset your progress so far. We recommend saving your progress before exiting. Are you sure you want to continue?"
+      message =
+        "This will reset your progress so far. We recommend saving your progress before exiting. Are you sure you want to continue?";
     } else {
-      message = "Are you sure you want to start over?"
+      message = "Are you sure you want to start over?";
     }
 
     var res = await raiseWarningExit(message);
@@ -2568,8 +2578,14 @@ const wipeOutCurateProgress = () => {
   // set back local destination for folders to empty
   $("#input-destination-generate-dataset-locally").val("");
   $("#input-destination-getting-started-locally").val("");
-  $("#input-destination-getting-started-locally").prop("placeholder", "Browse here");
-  $("#input-destination-generate-dataset-locally").prop("placeholder", "Browse here");
+  $("#input-destination-getting-started-locally").prop(
+    "placeholder",
+    "Browse here"
+  );
+  $("#input-destination-generate-dataset-locally").prop(
+    "placeholder",
+    "Browse here"
+  );
 
   // set metadata file paths to empty
   $(".para-metadata-file-status").text("");
@@ -2756,7 +2772,7 @@ $(document).ready(() => {
       if (warning_obj["show-warning-message"]) {
         Swal.fire({
           icon: "info",
-          html: `${warning_obj["warning-message"]}`
+          html: `${warning_obj["warning-message"]}`,
         });
       }
     });
@@ -2860,10 +2876,7 @@ $("#edit_banner_image_button").click(async () => {
         if (imageExtension.toLowerCase() == "png") {
           $("#image-banner").attr("src", "data:image/png;base64," + img_base64);
         } else if (imageExtension.toLowerCase() == "jpeg") {
-          $("#image-banner").attr(
-            "src",
-            "data:image/jpg;base64," + img_base64
-          );
+          $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
         } else if (imageExtension.toLowerCase() == "jpg") {
           $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
         } else {

@@ -4437,7 +4437,7 @@ function populateJSONObjFolder(jsonObject, folderPath) {
   myitems.forEach((element) => {
     var statsObj = fs.statSync(path.join(folderPath, element));
     var addedElement = path.join(folderPath, element);
-    if (statsObj.isDirectory() && !(/(^|\/)\.[^\/\.]/g).test(element)) {
+    if (statsObj.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(element)) {
       jsonObject["folders"][element] = {
         type: "local",
         folders: {},
@@ -4445,7 +4445,7 @@ function populateJSONObjFolder(jsonObject, folderPath) {
         action: ["new"],
       };
       populateJSONObjFolder(jsonObject["folders"][element], addedElement);
-    } else if (statsObj.isFile() && !(/(^|\/)\.[^\/\.]/g).test(element)) {
+    } else if (statsObj.isFile() && !/(^|\/)\.[^\/\.]/g.test(element)) {
       jsonObject["files"][element] = {
         path: addedElement,
         description: "",
