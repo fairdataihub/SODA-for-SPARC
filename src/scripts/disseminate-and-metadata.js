@@ -1358,8 +1358,7 @@ function resetSubmission() {
 
 function resetDD() {
   Swal.fire({
-    title: "Are you sure?",
-    text: "Are you sure you want to start over and reset your progress!",
+    text: "Are you sure you want to start over and reset your progress?",
     icon: "warning",
     showCancelButton: true,
     confirmButtonText: "I want to start over!",
