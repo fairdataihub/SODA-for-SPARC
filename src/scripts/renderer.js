@@ -2,7 +2,7 @@
 // Import required modules
 //////////////////////////////////
 
-const zerorpc = require("zerorpc-rotkehlchen");
+const zerorpc = require("zerorpc");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
@@ -27,7 +27,7 @@ const csvToJson = require("convert-csv-to-json");
 const Jimp = require("jimp");
 const { JSONStorage } = require("node-localstorage");
 
-const prevent_sleep_id = ""
+const prevent_sleep_id = "";
 const electron_app = electron.app;
 const app = remote.app;
 var noAirtable = false;
@@ -79,7 +79,7 @@ const appVersion = window.require("electron").remote.app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
-//check user's internet connection and connect to default Blackfynn account //
+//check user's internet connection and connect to default Pennsieve account //
 require("dns").resolve("www.google.com", (err) => {
   if (err) {
     console.error("No internet connection");
@@ -90,12 +90,10 @@ require("dns").resolve("www.google.com", (err) => {
     log.info("Connected to the internet");
     //Check new app version
     checkNewAppVersion(); // changed this function definition
-    //Load Default/global blackfynn account if available
+    //Load Default/global Pennsieve account if available
     updateBfAccountList();
   }
 });
-
-// Blackfynn to Pennseive transition
 
 const notification = document.getElementById("notification");
 const message = document.getElementById("message");
@@ -115,6 +113,12 @@ ipcRenderer.on("app_version", (event, arg) => {
 // Check for update and show the pop up box
 ipcRenderer.on("update_available", () => {
   ipcRenderer.removeAllListeners("update_available");
+  ipcRenderer.send(
+    "track-event",
+    "App Update",
+    "Update Requested",
+    `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
+  );
   message.innerText = "A new update is available. Downloading now...";
   notification.classList.remove("hidden");
 });
@@ -122,6 +126,12 @@ ipcRenderer.on("update_available", () => {
 // When the update is downloaded, show the restart message
 ipcRenderer.on("update_downloaded", () => {
   ipcRenderer.removeAllListeners("update_downloaded");
+  ipcRenderer.send(
+    "track-event",
+    "App Update",
+    "Update Downloaded",
+    `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
+  );
   if (process.platform == "darwin") {
     message.innerText =
       "Update downloaded. It will be installed when you close and relaunch the app. Close the app now?";
@@ -141,6 +151,13 @@ const closeNotification = () => {
 
 // Restart the app for update. Does not restart on macos
 const restartApp = () => {
+  ipcRenderer.send(
+    "track-event",
+    "App Update",
+    "App Restarted",
+    `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
+  );
+  document.getElementById("restart_loader").style.display = "inline-block";
   ipcRenderer.send("restart_app");
 };
 
@@ -301,7 +318,7 @@ const bfRenameDatasetStatus = document.getElementById(
 );
 const datasetPermissionDiv = document.getElementById("div-permission-list-2");
 
-// Blackfynn dataset metadata //
+// Pennsieve dataset metadata //
 const bfCurrentMetadataProgress = document.querySelector(
   "#div-bf-current-metadata-progress"
 );
@@ -337,8 +354,8 @@ const datasetLicenseStatus = document.querySelector(
   "#para-dataset-license-status"
 );
 
-// Blackfynn dataset permission //
-//const bfPermissionForm = document.querySelector("#blackfynn-permission-form");
+// Pennsieve dataset permission //
+//const bfPermissionForm = document.querySelector("#pennsieve-permission-form");
 //const bfDatasetListPermission = document.querySelector("#bfdatasetlist_permission");
 const currentDatasetPermission = document.querySelector(
   "#para-dataset-permission-current"
@@ -380,7 +397,7 @@ const datasetPermissionStatusTeam = document.querySelector(
   "#para-dataset-permission-status-team"
 );
 
-//Blackfynn dataset status
+//Pennsieve dataset status
 const bfCurrentDatasetStatusProgress = document.querySelector(
   "#div-bf-current-dataset-status-progress"
 );
@@ -389,7 +406,7 @@ const datasetStatusStatus = document.querySelector(
   "#para-dataset-status-status"
 );
 
-//Blackfynn post curation
+//Pennsieve post curation
 const bfRefreshPublishingDatasetStatusBtn = document.querySelector(
   "#button-refresh-publishing-status"
 );
@@ -589,22 +606,14 @@ const downloadTemplates = (templateItem, destinationFolder) => {
     var emessage =
       "File '" + templateItem + "' already exists in " + destinationFolder;
     //ipcRenderer.send("open-error-metadata-file-exits", emessage);
-    Swal.fire(
-      'Metadata file already exists',
-      `${emessage}`,
-      'error'
-    )
+    Swal.fire("Metadata file already exists", `${emessage}`, "error");
   } else {
     fs.createReadStream(templatePath).pipe(
       fs.createWriteStream(destinationPath)
     );
     var emessage =
       "Successfully saved '" + templateItem + "' to " + destinationFolder;
-    Swal.fire(
-      'Download successful',
-      `${emessage}`,
-      'success'
-    )
+    Swal.fire("Download successful", `${emessage}`, "success");
     ipcRenderer.send(
       "track-event",
       "Success",
@@ -872,12 +881,12 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
       // used to communicate value to button-import-milestone click event-listener
       document.getElementById("input-milestone-select").placeholder =
         filepath[0];
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          "Prepare Metadata - Add DDD",
-          defaultBfAccount
-        );
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        "Prepare Metadata - Add DDD",
+        defaultBfAccount
+      );
     }
   }
   if (
@@ -1395,13 +1404,9 @@ function loadContributorInfo(no, lastName, firstName) {
     };
 }
 
-
 //// De-populate dataset dropdowns to clear options
 const clearDatasetDropdowns = () => {
-  for (let list of [
-    datasetDescriptionFileDataset,
-    curateDatasetDropdown,
-  ]) {
+  for (let list of [datasetDescriptionFileDataset, curateDatasetDropdown]) {
     removeOptions(list);
     addOption(list, "Select dataset", "Select dataset");
     list.options[0].disabled = true;
@@ -1582,7 +1587,7 @@ const contactPersonCheck = () => {
     }
   }
   return contactPersonExists;
-}
+};
 
 function grabDSInfoEntries() {
   var rawName =
@@ -1801,12 +1806,12 @@ function grabCompletenessInfo() {
 datasetDescriptionFileDataset.addEventListener("change", function () {
   document.getElementById("ds-description").disabled = true;
   document.getElementById("ds-description").innerHTML = "Loading...";
-  defaultBfDataset = datasetDescriptionFileDataset.value
+  defaultBfDataset = datasetDescriptionFileDataset.value;
   showDatasetDescription();
   $("#current-bf-dataset").text(defaultBfDataset);
   $("#current-bf-dataset-generate").text(defaultBfDataset);
   $(".bf-dataset-span").html(defaultBfDataset);
-  refreshDatasetList()
+  refreshDatasetList();
 });
 
 /// detect empty required fields and raise a warning
@@ -1900,13 +1905,10 @@ ipcRenderer.on(
       $("#generate-dd-spinner").show();
       var destinationPath = path.join(dirpath[0], filename);
       if (fs.existsSync(destinationPath)) {
-        var emessage = "File '" + filename + "' already exists in " + dirpath[0];
+        var emessage =
+          "File '" + filename + "' already exists in " + dirpath[0];
         // ipcRenderer.send("open-error-metadata-file-exits", emessage);
-        Swal.fire(
-          'Metadata file already exists',
-          `${emessage}`,
-          'error'
-        )
+        Swal.fire("Metadata file already exists", `${emessage}`, "error");
       } else {
         var datasetInfoValueArray = grabDSInfoEntries();
 
@@ -1938,7 +1940,7 @@ ipcRenderer.on(
         json_str_completeness = JSON.stringify(completenessSectionObj);
         json_str_con = JSON.stringify(contributorObj);
 
-        /// get current, selected Blackfynn account
+        /// get current, selected Pennsieve account
         var bfaccountname = $("#current-bf-account").text();
 
         /// call python function to save file
@@ -2430,7 +2432,10 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         var emessage = userError(error);
         $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
         bfCreateNewDatasetStatus.innerHTML =
-          "<span style='color: red; font-size: 15px;'> " + emessage + ". </span>" + sadCan;
+          "<span style='color: red; font-size: 15px;'> " +
+          emessage +
+          ". </span>" +
+          sadCan;
         bfCreateNewDatasetBtn.disabled = false;
         ipcRenderer.send(
           "track-event",
@@ -2442,7 +2447,7 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
         $("#bf-create-new-dataset-spinner").css("visibility", "hidden");
         $(bfCreateNewDatasetBtn).hide();
         defaultBfDataset = bfNewDatasetName.value;
-        refreshDatasetList()
+        refreshDatasetList();
         bfCreateNewDatasetStatus.innerHTML =
           "<span style='font-size: 15px; color: #13716D;'>Success: Created dataset" +
           " '" +
@@ -2474,9 +2479,9 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
           }
         );
         $(".bf-dataset-span").html(bfNewDatasetName.value);
-        refreshDatasetList()
+        refreshDatasetList();
         updateDatasetList();
-        datasetDescriptionFileDataset.value = bfNewDatasetName.value
+        datasetDescriptionFileDataset.value = bfNewDatasetName.value;
         $(".confirm-button").click();
         bfNewDatasetName.value = "";
       }
@@ -2555,7 +2560,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
               } else {
                 datasetList = [];
                 datasetList = result;
-                refreshDatasetList()
+                refreshDatasetList();
               }
             }
           );
@@ -2648,8 +2653,7 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
             if (error) {
               log.error(error);
               console.error(error);
-            }
-            else {
+            } else {
               let num_of_files = res[0];
               let num_of_folders = res[1];
 
@@ -2681,7 +2685,8 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
                 num_of_files
               );
             }
-          });
+          }
+        );
 
         // electron.powerSaveBlocker.stop(prevent_sleep_id)
       }
@@ -3019,6 +3024,7 @@ bfAddDescriptionBtn.addEventListener("click", () => {
 
 // upload banner image //
 const Cropper = require("cropperjs");
+const { default: Swal } = require("sweetalert2");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,
@@ -3086,7 +3092,7 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
       Swal.fire({
         title: "Image conversion in progress!",
         html:
-          "Blackfynn does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
+          "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
         timer: 4000,
         timerProgressBar: true,
         didOpen: () => {
@@ -3212,7 +3218,7 @@ function uploadBannerImage() {
   var imagePath = path.join(imageFolder, "banner-image-SODA." + imageExtension);
   var croppedImageDataURI = myCropper.getCroppedCanvas().toDataURL(imageType);
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(() => {
-    let image_file_size = fs.statSync(imagePath)["size"]
+    let image_file_size = fs.statSync(imagePath)["size"];
     if (image_file_size < 5 * 1024 * 1024) {
       var selectedBfAccount = defaultBfAccount;
       var selectedBfDataset = defaultBfDataset;
@@ -3391,9 +3397,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
             "Manage Dataset - Change PI Owner",
             selectedBfDataset
           );
-          let nodeStorage = new JSONStorage(
-            app.getPath("userData")
-          );
+          let nodeStorage = new JSONStorage(app.getPath("userData"));
           nodeStorage.setItem("previously_selected_PI", selectedUser);
           $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
           datasetPermissionStatusPI.innerHTML = res;
@@ -3437,7 +3441,6 @@ bfAddPermissionBtn.addEventListener("click", () => {
 });
 
 ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
-
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
   var selectedUser = bfListUsers.options[bfListUsers.selectedIndex].value;
@@ -3457,7 +3460,7 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
       "Success",
       "Manage Dataset - Add User Permission",
       selectedBfDataset
-      );
+    );
     $("#bf-add-permission-user-spinner").hide();
   } else {
     $("#bf-add-permission-user-spinner").hide();
@@ -3554,7 +3557,7 @@ function submitReviewDataset() {
           "Error",
           "Disseminate Dataset - Pre-publishing Review",
           selectedBfDataset
-          );
+        );
         log.error(error);
         console.error(error);
         var emessage = userError(error);
@@ -3566,7 +3569,7 @@ function submitReviewDataset() {
           "Success",
           "Disseminate Dataset - Pre-publishing Review",
           selectedBfDataset
-          );
+        );
         $("#para-submit_prepublishing_review-status").css(
           "color",
           "var(--color-light-green)"
@@ -3611,7 +3614,9 @@ ipcRenderer.on("warning-withdraw-dataset-selection", (event, index) => {
 function withdrawReviewDataset() {
   bfWithdrawReviewDatasetBtn.disabled = true;
   var selectedBfAccount = $("#current-bf-dataset").text();
-  var selectedBfDataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
+  var selectedBfDataset = $(".bf-dataset-span")
+    .html()
+    .replace(/^\s+|\s+$/g, "");
   client.invoke(
     "api_bf_withdraw_review_dataset",
     selectedBfAccount,
@@ -3849,13 +3854,13 @@ function refreshBfUsersList() {
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
         $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
-        $("#button-add-permission").hide()
+        $("#button-add-permission").hide();
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
         for (var myItem in res) {
-          // returns like [..,''fname lname email !!**!! blackfynn_id',',..]
-          let sep_pos = res[myItem].lastIndexOf('!|**|!');
-          var myUser = res[myItem].substring(0,sep_pos);
+          // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
+          let sep_pos = res[myItem].lastIndexOf("!|**|!");
+          var myUser = res[myItem].substring(0, sep_pos);
           var optionUser = document.createElement("option");
           optionUser.textContent = myUser;
           optionUser.value = res[myItem].substring(sep_pos + 6);
@@ -4084,7 +4089,7 @@ function selectOptionColor(mylist) {
 ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-/// add new datasets to dataset List without calling Python to retrieve new list from Blackfynn
+/// add new datasets to dataset List without calling Python to retrieve new list from Pennsieve
 function addNewDatasetToList(newDataset) {
   datasetList.push({ name: newDataset, role: "owner" });
 }
@@ -4100,7 +4105,7 @@ function changeDatasetRolePI(selectedDataset) {
 // this function now is only used to load all datasets ("All" permission)
 // onto the dataset_description file ds-name select
 function refreshDatasetList() {
-  var datasetPermission = "All"
+  var datasetPermission = "All";
 
   var filteredDatasets = [];
   if (datasetPermission.toLowerCase() === "all") {
@@ -4233,7 +4238,9 @@ function showPublishingStatus(callback) {
     $("#para-share-with-sparc-consortium-status").text("");
   }
   var selectedBfAccount = $("#current-bf-account").text();
-  var selectedBfDataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '');
+  var selectedBfDataset = $(".bf-dataset-span")
+    .html()
+    .replace(/^\s+|\s+$/g, "");
   if (selectedBfDataset === "None") {
   } else {
     client.invoke(
@@ -4365,7 +4372,7 @@ organizeDSbackButton.addEventListener("click", function () {
     $("#items").empty();
     $("#items").html(appendString);
 
-    organizeLandingUIEffect()
+    organizeLandingUIEffect();
     // reconstruct div with new elements
     listItems(myPath, "#items");
     getInFolder(
@@ -4464,7 +4471,7 @@ function populateJSONObjFolder(jsonObject, folderPath) {
   myitems.forEach((element) => {
     var statsObj = fs.statSync(path.join(folderPath, element));
     var addedElement = path.join(folderPath, element);
-    if (statsObj.isDirectory()) {
+    if (statsObj.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(element)) {
       jsonObject["folders"][element] = {
         type: "local",
         folders: {},
@@ -4472,7 +4479,7 @@ function populateJSONObjFolder(jsonObject, folderPath) {
         action: ["new"],
       };
       populateJSONObjFolder(jsonObject["folders"][element], addedElement);
-    } else if (statsObj.isFile()) {
+    } else if (statsObj.isFile() && !/(^|\/)\.[^\/\.]/g.test(element)) {
       jsonObject["files"][element] = {
         path: addedElement,
         description: "",
@@ -4538,7 +4545,7 @@ function showDetailsFile() {
 
 var bfAddAccountBootboxMessage =
   "<form><div class='form-group row'><label for='bootbox-key-name' class='col-sm-3 col-form-label'> Key name:</label><div class='col-sm-9'><input type='text' id='bootbox-key-name' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-api-key' type='text' class='form-control'/></div></div><div class='form-group row'><label for='bootbox-api-secret' class='col-sm-3 col-form-label'> API Secret:</label><div class='col-sm-9'><input id='bootbox-api-secret'  class='form-control' type='text' /></div></div></form>";
-var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Blackfynn API key and secret below:<i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Blackfynn-account-with-SODA'> help page </a>for generating API key and secret and setting up your Blackfynn account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Blackfynn accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
+var bfaddaccountTitle = `<h3 style="text-align:center">Please specify a key name and enter your Pennsieve API key and secret below:<i class="fas fa-info-circle popover-tooltip" data-content="See our dedicated <a target='_blank' href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Pennsieve-account-with-SODA'> help page </a>for generating API key and secret and setting up your Pennsieve account in SODA during your first use.<br><br>The account will then be remembered by SODA for all subsequent uses and be accessible under the 'Select existing account' tab. You can only use Pennsieve accounts under the SPARC Consortium organization with SODA." rel="popover" data-placement="right" data-html="true" data-trigger="hover" ></i></h3>`;
 
 function addBFAccountInsideBootbox(myBootboxDialog) {
   var name = $("#bootbox-key-name").val();
@@ -4572,7 +4579,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
             icon: "error",
             text: "Something went wrong!",
             footer:
-              '<a target="_blank" href="https://help.blackfynn.com/en/articles/1488536-creating-an-api-key-for-the-blackfynn-clients">Why do I have this issue?</a>',
+              '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
           });
           showHideDropdownButtons("account", "hide");
           confirm_click_account_function();
@@ -5035,7 +5042,24 @@ organizeDSaddFiles.addEventListener("click", function () {
 ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  path = path.filter((file_path) => fs.statSync(file_path).isFile());
+  let hidden_files_present = false;
+  path.forEach((file_path) => {
+    if (/(^|\/)\.[^\/\.]/g.test(file_path)) {
+      hidden_files_present = true;
+    }
+  });
+  if ((hidden_files_present = true)) {
+    bootbox.alert({
+      message:
+        "We found some hidden files. These will be ignored when importing.",
+      backdrop: true,
+      centerVertical: true,
+    });
+  }
+  path = path.filter(
+    (file_path) =>
+      fs.statSync(file_path).isFile() && !/(^|\/)\.[^\/\.]/g.test(file_path)
+  );
   addFilesfunction(
     path,
     myPath,
@@ -5069,7 +5093,8 @@ function addFoldersfunction(folderArray, currentLocation) {
   var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount === 1) {
     bootbox.alert({
-      message: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
+      message:
+        "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
       centerVertical: true,
     });
   } else {
@@ -5208,12 +5233,9 @@ async function drop(ev) {
             var fileBaseName = itemName;
             var originalFileNameWithoutExt = path.parse(fileBaseName).name;
             var fileNameWithoutExt = originalFileNameWithoutExt;
-            while (
-              fileBaseName in uiFiles ||
-              fileBaseName in importedFiles
-            ) {
+            while (fileBaseName in uiFiles || fileBaseName in importedFiles) {
               fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
-              fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext
+              fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext;
               j++;
             }
             importedFiles[fileBaseName] = {
@@ -5337,7 +5359,6 @@ async function drop(ev) {
     }
   }
   $("body").removeClass("waiting");
-
 }
 
 // SAVE FILE ORG
@@ -5754,9 +5775,9 @@ function listItems(jsonObj, uiItem) {
     }
 
     if (sortedObj["folders"][item]["type"] == "bf") {
-      cloud_item = " blackfynn_folder";
+      cloud_item = " pennsieve_folder";
       if (deleted_folder) {
-        cloud_item = " blackfynn_folder_deleted";
+        cloud_item = " pennsieve_folder_deleted";
       }
     }
 
@@ -5834,9 +5855,9 @@ function listItems(jsonObj, uiItem) {
     }
 
     if (sortedObj["files"][item]["type"] == "bf") {
-      cloud_item = " blackfynn_file";
+      cloud_item = " pennsieve_file";
       if (deleted_file) {
-        cloud_item = " blackfynn_file_deleted";
+        cloud_item = " pennsieve_file_deleted";
       }
     }
 
@@ -5899,7 +5920,7 @@ function getInFolder(singleUIItem, uiItem, currentLocation, globalObj) {
 
       $(uiItem).empty();
       $(uiItem).html(appendString);
-      organizeLandingUIEffect()
+      organizeLandingUIEffect();
 
       // reconstruct folders and files (child elements after emptying the Div)
       listItems(myPath, uiItem);
@@ -6002,7 +6023,7 @@ $("#bf-rename-dataset-name").keyup(function () {
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
       $("#para-rename-dataset-message").html(
-        "Error: A Blackfynn dataset name cannot contain any of the following characters: /:*?'<>."
+        "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>."
       );
       $("#button-rename-dataset").hide();
     } else {
@@ -6023,7 +6044,7 @@ $("#bf-new-dataset-name").keyup(function () {
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {
       $("#para-new-name-dataset-message").html(
-        "Error: A Blackfynn dataset name cannot contain any of the following characters: /:*?'<>."
+        "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>."
       );
       $("#button-create-bf-new-dataset").hide();
     } else {
@@ -6052,7 +6073,7 @@ $("#inputNewNameDataset").keyup(function () {
         "none";
       $("#btn-confirm-new-dataset-name").hide();
       document.getElementById("para-new-name-dataset-message").innerHTML =
-        "Error: A Blackfynn dataset name cannot contain any of the following characters: /:*?'<>.";
+        "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.";
       $("#nextBtn").prop("disabled", true);
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
     } else {
@@ -6446,24 +6467,18 @@ function initiate_generate() {
   let dataset_name = "";
   let dataset_destination = "";
 
-  if ("bf-dataset-selected" in sodaJSONObj)
-  {
-    dataset_name = sodaJSONObj["bf-dataset-selected"]
-  }
-  else if("generate-dataset" in sodaJSONObj)
-  {
-    if ("destination" in sodaJSONObj["generate-dataset"])
-    {
-      let destination = sodaJSONObj["generate-dataset"]["destination"]
-      if (destination == "local")
-      {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"]
-        dataset_destination = "Local"
+  if ("bf-dataset-selected" in sodaJSONObj) {
+    dataset_name = sodaJSONObj["bf-dataset-selected"];
+  } else if ("generate-dataset" in sodaJSONObj) {
+    if ("destination" in sodaJSONObj["generate-dataset"]) {
+      let destination = sodaJSONObj["generate-dataset"]["destination"];
+      if (destination == "local") {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+        dataset_destination = "Local";
       }
-      if (destination == "bf")
-      {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"]
-        dataset_destination = "Blackfynn"
+      if (destination == "bf") {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+        dataset_destination = "Pennsieve";
       }
     }
   }
@@ -6497,8 +6512,9 @@ function initiate_generate() {
         dataset_name
       );
 
-      file_counter = 0; folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["dataset-structure"])
+      file_counter = 0;
+      folder_counter = 0;
+      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
       ipcRenderer.send(
         "track-event",
@@ -6515,7 +6531,6 @@ function initiate_generate() {
         dataset_name,
         main_total_generate_dataset_size
       );
-
 
       // ipcRenderer.send(
       //   "track-event",
@@ -6614,8 +6629,9 @@ function initiate_generate() {
         main_total_generate_dataset_size
       );
 
-      file_counter = 0; folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["dataset-structure"])
+      file_counter = 0;
+      folder_counter = 0;
+      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
       // ipcRenderer.send(
       //   "track-event",
@@ -6776,12 +6792,12 @@ function initiate_generate() {
 const get_num_files_and_folders = (dataset_folders) => {
   if ("files" in dataset_folders) {
     for (let file in dataset_folders["files"]) {
-      file_counter += 1
+      file_counter += 1;
     }
   }
   if ("folders" in dataset_folders) {
     for (let folder in dataset_folders["folders"]) {
-      folder_counter += 1
+      folder_counter += 1;
       get_num_files_and_folders(dataset_folders["folders"][folder]);
     }
   }
@@ -6832,7 +6848,7 @@ function importMetadataFiles(ev, metadataFile, extentionList, paraEle) {
   ipcRenderer.send("open-file-dialog-metadata-curate");
 }
 
-function importBlackfynnMetadataFiles(
+function importPennsieveMetadataFiles(
   ev,
   metadataFile,
   extensionList,
@@ -7163,36 +7179,59 @@ $("#button-generate-manifest-locally").click(() => {
   ipcRenderer.send("open-folder-dialog-save-manifest-local");
 });
 
-ipcRenderer.on("selected-manifest-folder", (event, result) => {
-  if (!result["canceled"])
-  {
-    $("body").addClass("waiting")
-    let manifest_destination = result["filePaths"][0];
-    let manifest_state = {}
-
-    if ("manifest-files" in sodaJSONObj)
-    {
-      manifest_state = sodaJSONObj["manifest-files"];
-      sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination
+const recursive_remove_deleted_files = (dataset_folder) => {
+  if ("files" in dataset_folder) {
+    for (let item in dataset_folder["files"]) {
+      if (dataset_folder["files"][item]["action"].includes("deleted")) {
+        delete dataset_folder["files"][item];
+      }
     }
-    else
-    {
-      manifest_state = {}
-      sodaJSONObj["manifest-files"] = {}
-      sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination
+  }
+
+  if ("folders" in dataset_folder) {
+    for (let item in dataset_folder["folders"]) {
+      recursive_remove_deleted_files(dataset_folder["folders"][item]);
+      if (dataset_folder["folders"][item]["action"].includes("deleted")) {
+        delete dataset_folder["folders"][item];
+      }
+    }
+  }
+};
+
+ipcRenderer.on("selected-manifest-folder", (event, result) => {
+  if (!result["canceled"]) {
+    $("body").addClass("waiting");
+    let manifest_destination = result["filePaths"][0];
+    let manifest_state = {};
+
+    if ("manifest-files" in sodaJSONObj) {
+      manifest_state = sodaJSONObj["manifest-files"];
+      sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination;
+    } else {
+      manifest_state = {};
+      sodaJSONObj["manifest-files"] = {};
+      sodaJSONObj["manifest-files"]["local-destination"] = manifest_destination;
     }
 
     delete_imported_manifest();
 
-    client.invoke("api_generate_manifest_file_locally", sodaJSONObj, (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        log.error(error);
-        console.error(error);
-        $("body").removeClass("waiting")
-      } else {
-        $("body").removeClass("waiting")
+    let temp_sodaJSONObj = JSON.parse(JSON.stringify(sodaJSONObj));
+
+    recursive_remove_deleted_files(temp_sodaJSONObj["dataset-structure"]);
+
+    client.invoke(
+      "api_generate_manifest_file_locally",
+      temp_sodaJSONObj,
+      (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          log.error(error);
+          console.error(error);
+          $("body").removeClass("waiting");
+        } else {
+          $("body").removeClass("waiting");
+        }
       }
-    });
+    );
   }
 });

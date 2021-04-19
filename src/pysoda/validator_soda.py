@@ -1308,7 +1308,7 @@ class DictValidator:
 
         check_parentID = "'Parent dataset ID' is only provided in the 'Value' column and is in the correct format or left empty"
         check_parentID_f1 = "'Parent dataset ID' must be only provided in the 'Value' column. Delete values in the following column: "
-        check_parentID_f2 = "'Parent dataset ID' must be of the format 'N:dataset:xxxx' (Blackfynn dataset ID). Correct the following ID or delete it: "
+        check_parentID_f2 = "'Parent dataset ID' must be of the format 'N:dataset:xxxx' (Pennsieve dataset ID). Correct the following ID or delete it: "
 
         check_metadatav = "The 'Value' for 'Metadata Version DO NOT CHANGE' is '1.2.3'"
         check_metadatav_f = "The 'Value' for 'Metadata Version DO NOT CHANGE' must be '1.2.3'. Correct it."

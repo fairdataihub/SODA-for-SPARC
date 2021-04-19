@@ -21,10 +21,10 @@ import socket
 import errno
 import re
 import gevent
-from blackfynn import Blackfynn
-from blackfynn.log import get_logger
-from blackfynn.api.agent import agent_cmd
-from blackfynn.api.agent import AgentError, check_port, socket_address
+from pennsieve import Pennsieve
+from pennsieve.log import get_logger
+from pennsieve.api.agent import agent_cmd
+from pennsieve.api.agent import AgentError, check_port, socket_address
 from urllib.request import urlopen
 import json
 import collections
@@ -213,7 +213,7 @@ def populate_completeness_info(workbook, val_array, bfaccountname):
     ## parent Datasets
     parentds_id_array = []
     try:
-        bf = Blackfynn(bfaccountname)
+        bf = Pennsieve(bfaccountname)
 
         for dataset in val_array["parentDS"]:
 
@@ -224,9 +224,9 @@ def populate_completeness_info(workbook, val_array, bfaccountname):
             workbook["D19"] = ", ".join(parentds_id_array)
 
     except Exception as err:
-        # NOTE: blackfynn package 3.2.0 misspells 'invalid'
+        # NOTE: Pennsieve package 3.2.0 misspells 'invalid'
         if 'Invalid profile name' in str(err) or "Invaid profile name" in str(err):
-            raise Exception("Please connect SODA with Blackfynn to use this feature!")
+            raise Exception("Please connect SODA with Pennsieve to use this feature!")
         raise
 
 ### generate the file

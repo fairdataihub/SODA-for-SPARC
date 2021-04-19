@@ -80,7 +80,7 @@ ipcMain.on("warning-no-internet-connection", (event) => {
     type: "warning",
     title: "No internect connection",
     message:
-      "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Blackfynn and especially none of the features located under the 'Manage Datasets' section.",
+      "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
   };
   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
     event.sender.send("warning-no-internet-connection-showed");
@@ -187,7 +187,7 @@ ipcMain.on("warning-banner-image-below-1024", (event, currentSize) => {
 //     type: "info",
 //     title: "Potential upload issues",
 //     message:
-//       "We have encountered issues with the Blackfynn agent to upload certain datasets and are working with the Blackfynn Team to solve them. If you encounter any issues, please report to us using our feedback form (provide information such as operating system, dataset size, screenshot of error, etc.) and it will help us greatly in fixing the issues.",
+//       "We have encountered issues with the Pennsieve agent to upload certain datasets and are working with the Pennsieve Team to solve them. If you encounter any issues, please report to us using our feedback form (provide information such as operating system, dataset size, screenshot of error, etc.) and it will help us greatly in fixing the issues.",
 //   };
 //   dialog.showMessageBox(BrowserWindow.getFocusedWindow(), options, (index) => {
 //     event.sender.send("info-upload-limitations-shown");

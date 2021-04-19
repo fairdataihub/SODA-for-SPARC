@@ -645,7 +645,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
       if (Object.keys(bfAccountOptions).length === 1) {
         footerMessage = "No existing accounts to load. Please add an account.";
       } else {
-        // footerMessage = "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Blackfynn-account'>Need help?</a>";
+        // footerMessage = "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Pennsieve-account'>Need help?</a>";
         footerMessage = "";
       }
     } else {
@@ -654,7 +654,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
     var bfacct;
     let bfAccountSwal = false
     // const { value: bfAccountSwal } = await Swal.fire({
-    //   title: "Select your Blackfynn account",
+    //   title: "Select your Pennsieve account",
     //   input: "select",
     //   showCloseButton: true,
     //   inputOptions: bfAccountOptions,
@@ -735,7 +735,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
               icon: "error",
               text: error,
               footer:
-                "<a href='https://help.blackfynn.com/en/articles/1488536-creating-an-api-key-for-the-blackfynn-clients'>Why do I have this issue?</a>",
+                "<a href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
             });
             showHideDropdownButtons("account", "hide");
           } else {
@@ -937,7 +937,7 @@ $("#select-permission-list-2").change((e) => {
 
   if (bfacct === "None") {
     $("#para-filter-datasets-status-2").html(
-      "<span style='color:red'>Please select a Blackfynn account first!</span>"
+      "<span style='color:red'>Please select a Pennsieve account first!</span>"
     );
     $(datasetPermissionDiv)
       .find("#div-filter-datasets-progress-2")

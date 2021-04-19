@@ -399,7 +399,7 @@ ipcMain.on("open-file-dialog-submit-dataset", (event) => {
   );
 });
 
-// Blackfynn metadata
+// Pennsieve metadata
 ipcMain.on("open-file-dialog-import-banner-image", (event) => {
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),

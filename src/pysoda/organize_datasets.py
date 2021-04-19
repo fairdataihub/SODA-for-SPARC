@@ -18,10 +18,10 @@ import socket
 import errno
 import re
 import gevent
-from blackfynn import Blackfynn
-from blackfynn.log import get_logger
-from blackfynn.api.agent import agent_cmd
-from blackfynn.api.agent import AgentError, check_port, socket_address
+from pennsieve import Pennsieve
+from pennsieve.log import get_logger
+from pennsieve.api.agent import agent_cmd
+from pennsieve.api.agent import AgentError, check_port, socket_address
 from urllib.request import urlopen
 import json
 import collections
@@ -47,7 +47,7 @@ curated_dataset_size = 0
 start_time = 0
 
 userpath = expanduser("~")
-configpath = join(userpath, '.blackfynn', 'config.ini')
+configpath = join(userpath, '.pennsieve', 'config.ini')
 submitdataprogress = ' '
 submitdatastatus = ' '
 submitprintstatus = ' '
@@ -151,9 +151,9 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
     as requested along with progress status
 
     Args:
-        destinationdataset: type of destination dataset ('modify existing', 'create new', or 'upload to blackfynn')
-        pathdataset: destination path of new dataset if created locally or name of blackfynn account (string)
-        newdatasetname: name of the local dataset or name of the dataset on blackfynn (string)
+        destinationdataset: type of destination dataset ('modify existing', 'create new', or 'upload to Pennsieve')
+        pathdataset: destination path of new dataset if created locally or name of Pennsieve account (string)
+        newdatasetname: name of the local dataset or name of the dataset on Pennsieve (string)
         manifeststatus: boolean to check if user request manifest files
         jsonpath: path of the files to be included in the dataset (dictionary)
     """
@@ -161,7 +161,7 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
     global curateprogress #GUI messages shown to user to provide update on progress
     global curateprintstatus # If = "Curating" Progress messages are shown to user
     global total_dataset_size # total size of the dataset to be generated
-    global curated_dataset_size # total size of the dataset generated (locally or on blackfynn) at a given time
+    global curated_dataset_size # total size of the dataset generated (locally or on Pennsieve) at a given time
     global start_time
     global bf
     global myds
@@ -387,7 +387,7 @@ def open_file(file_path):
 
 def bf_dataset_size():
     """
-    Function to get storage size of a dataset on Blackfynn
+    Function to get storage size of a dataset on Pennsieve
     """
     global bf
     global myds
@@ -511,14 +511,14 @@ def create_dataset(recursivePath, jsonStructure, listallfiles):
 
 def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = True):
     """
-    Function for importing blackfynn data files info into the "dataset-structure" key of the soda json structure,
+    Function for importing Pennsieve data files info into the "dataset-structure" key of the soda json structure,
     including metadata from any existing manifest files in the high-level folders
     (name, id, timestamp, description, additional metadata)
 
     Args:
         soda_json_structure: soda structure with bf account and dataset info available
     Output:
-        same soda structure with blackfyn data file info included under the "dataset-structure" key
+        same soda structure with Pennsieve data file info included under the "dataset-structure" key
     """
 
     high_level_sparc_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
@@ -666,19 +666,19 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
 
     error = []
 
-    # check that the blackfynn account is valid
+    # check that the Pennsieve account is valid
     try:
         bf_account_name = soda_json_structure["bf-account-selected"]["account-name"]
     except Exception as e:
         raise e
 
     try:
-        bf = Blackfynn(bf_account_name)
+        bf = Pennsieve(bf_account_name)
     except Exception as e:
-        error.append('Error: Please select a valid Blackfynn account')
+        error.append('Error: Please select a valid Pennsieve account')
         raise Exception(error)
 
-    # check that the blackfynn dataset is valid
+    # check that the Pennsieve dataset is valid
     try:
         bf_dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
     except Exception as e:
@@ -686,7 +686,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
     try:
         myds = bf.get_dataset(bf_dataset_name)
     except Exception as e:
-        error.append('Error: Please select a valid Blackfynn dataset')
+        error.append('Error: Please select a valid Pennsieve dataset')
         raise Exception(error)
 
     # check that the user has permission to edit this dataset
@@ -694,7 +694,7 @@ def bf_get_dataset_files_folders(soda_json_structure, requested_sparc_only = Tru
         role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager', 'editor']:
             curatestatus = 'Done'
-            error.append("Error: You don't have permissions for uploading to this Blackfynn dataset")
+            error.append("Error: You don't have permissions for uploading to this Pennsieve dataset")
             raise Exception(error)
     except Exception as e:
         raise e

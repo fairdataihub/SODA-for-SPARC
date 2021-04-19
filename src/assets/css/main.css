@@ -803,7 +803,7 @@ button[data-id="bf_list_roles_team"] {
   pointer-events: none;
 }
 
-.folder_desc.blackfynn_folder:after {
+.folder_desc.pennsieve_folder:after {
   content: "\f0c2";
   position: absolute;
   bottom: 34px;
@@ -817,7 +817,7 @@ button[data-id="bf_list_roles_team"] {
   pointer-events: none;
 }
 
-.blackfynn_folder_deleted {
+.pennsieve_folder_deleted {
   color: rgba(0, 0, 0, 0.5);
 }
 
@@ -839,7 +839,7 @@ button[data-id="bf_list_roles_team"] {
   color: rgba(0, 0, 0, 0.5);
 }
 
-.folder_desc.blackfynn_folder_deleted:after {
+.folder_desc.pennsieve_folder_deleted:after {
   content: "\f0c2";
   position: absolute;
   bottom: 34px;
@@ -867,7 +867,7 @@ button[data-id="bf_list_roles_team"] {
   pointer-events: none;
 }
 
-.folder_desc.blackfynn_file:after {
+.folder_desc.pennsieve_file:after {
   content: "\f0c2";
   position: absolute;
   bottom: 27px;
@@ -895,7 +895,7 @@ button[data-id="bf_list_roles_team"] {
   pointer-events: none;
 }
 
-.blackfynn_file_deleted {
+.pennsieve_file_deleted {
   color: rgba(0, 0, 0, 0.5);
 }
 
@@ -903,7 +903,7 @@ button[data-id="bf_list_roles_team"] {
   color: rgba(0, 0, 0, 0.5);
 }
 
-.folder_desc.blackfynn_file_deleted:after {
+.folder_desc.pennsieve_file_deleted:after {
   content: "\f0c2";
   position: absolute;
   bottom: 27px;
