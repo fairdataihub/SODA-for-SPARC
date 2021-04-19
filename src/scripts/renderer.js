@@ -4822,10 +4822,11 @@ function addAirtableAccountInsideBootbox(myBootboxD) {
   }
 }
 
+var editSPARCAwardsTitle =
+"<h3 style='text-align:center'> Add/Remove your SPARC Award(s) below: <i class='fas fa-info-circle popover-tooltip' data-content='The list of active SPARC awards in this dropdown list is generated automatically from the SPARC Airtable sheet once SODA is connected with your Airtable account. Select your award(s) and click on Add to save it/them in SODA. You will only have to do this once. SODA will automatically load these awards next time you launch SODA.' rel='popover' data-placement='right' data-html='true' data-trigger='hover'></i></h3>";
+
 function editSPARCAwardsBootbox() {
   $(sparcAwardEditMessage).css("display", "block");
-  var editSPARCAwardsTitle =
-    '<h3 style="float:left"> Add/Remove your SPARC Award(s) below: </h3><div style="padding-top:5px" class="tooltipnew"><img class="info" src="assets/img/info.png"><span class="tooltiptext">The list of active SPARC awards in this dropdown list is generated automatically from the SPARC Airtable sheet once SODA is connected with your Airtable account. Select your award(s) and click on "Add" to save it/them in SODA. You will only have to do this once. SODA will automatically load these awards next time you launch SODA.</span></div>';
   var bootb = bootbox.dialog({
     title: editSPARCAwardsTitle,
     message: sparcAwardEditMessage,
