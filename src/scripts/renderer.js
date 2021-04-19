@@ -4611,7 +4611,7 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
         timerProgressBar: true,
         allowEscapeKey: false,
         heightAuto: false,
-        backdrop:"rgba(0,0,0, 0.4)",
+        backdrop:"rgba(0,0,0, 0.9)",
         showConfirmButton: false,
       });
       // bootbox.alert({

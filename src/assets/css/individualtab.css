@@ -1266,8 +1266,13 @@
   background: #fff !important;
 }
 
-.swal2-cancel {
+/* .swal2-cancel {
   width: 120px !important;
+} */
+
+body.swal2-shown > [aria-hidden="true"] {
+  filter: blur(1px);
+  transition: 0.1s filter linear;
 }
 
 .swal2-deny:hover {
