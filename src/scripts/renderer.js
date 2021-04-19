@@ -4683,7 +4683,7 @@ function showAddAirtableAccountBootbox() {
           container: $this,
         });
       });
-    },
+    }
   });
 }
 
@@ -4854,6 +4854,15 @@ function editSPARCAwardsBootbox() {
     },
     size: "medium",
     centerVertical: true,
+    onShown: function (e) {
+      $(".popover-tooltip").each(function () {
+        var $this = $(this);
+        $this.popover({
+          trigger: "hover",
+          container: $this,
+        });
+      });
+    }
   });
 }
 
