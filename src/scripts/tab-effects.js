@@ -889,6 +889,12 @@ async function transitionSubQuestions(
   if (!$(target).hasClass("show")) {
     setTimeout(function () {
       $(target).addClass("show");
+      // auto-scroll to bottom of div
+      if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+        document.getElementById(parentDiv).scrollTop = document.getElementById(
+          parentDiv
+        ).scrollHeight;
+      }
     }, delay);
   }
 
@@ -983,10 +989,22 @@ async function transitionSubQuestions(
     if ($(ev).siblings().length > 0) {
       setTimeout(function () {
         $(ev).siblings().hide();
+        // auto-scroll to bottom of div
+        if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+          document.getElementById(parentDiv).scrollTop = document.getElementById(
+            parentDiv
+          ).scrollHeight;
+        }
       }, delay);
     }
     setTimeout(function () {
       $(ev).hide();
+      // auto-scroll to bottom of div
+      if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+        document.getElementById(parentDiv).scrollTop = document.getElementById(
+          parentDiv
+        ).scrollHeight;
+      }
     }, delay);
   }
 
@@ -1673,6 +1691,12 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
   if (!$(target).hasClass("show")) {
     setTimeout(function () {
       $(target).addClass("show");
+      // auto-scroll to bottom of div
+      if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+        document.getElementById(parentDiv).scrollTop = document.getElementById(
+          parentDiv
+        ).scrollHeight;
+      }
     }, delay);
   }
 
@@ -1681,10 +1705,22 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
     if ($(ev).siblings().length > 0) {
       setTimeout(function () {
         $(ev).siblings().hide();
+        // auto-scroll to bottom of div
+        if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+          document.getElementById(parentDiv).scrollTop = document.getElementById(
+            parentDiv
+          ).scrollHeight;
+        }
       }, delay);
     }
     setTimeout(function () {
       $(ev).hide();
+      // auto-scroll to bottom of div
+      if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+        document.getElementById(parentDiv).scrollTop = document.getElementById(
+          parentDiv
+        ).scrollHeight;
+      }
     }, delay);
   } else {
     if (
@@ -2982,9 +3018,9 @@ ripple = function(event, buttonEle){
   rippleEle.style.left = event.offsetX + 'px';
   buttonEle.appendChild(rippleEle);
   setTimeout(function(){
-     rippleEle.classList.add('effect');    
+     rippleEle.classList.add('effect');
   }, 0, rippleEle);
-  
+
   setTimeout(function(){
      rippleEle.remove();
   }, 1000, rippleEle);
