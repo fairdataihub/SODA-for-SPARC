@@ -1,4 +1,4 @@
-name: ps-test
+name: env-electron-python
 channels:
 - defaults
 - conda-forge

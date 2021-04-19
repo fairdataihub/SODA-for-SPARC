@@ -1,3 +1,4 @@
+const { rgba } = require("jimp");
 const { relative } = require("path");
 
 // JSON object of all the tabs
@@ -2786,6 +2787,7 @@ $(document).ready(() => {
       if (warning_obj["show-warning-message"]) {
         Swal.fire({
           icon: "info",
+          heightAuto: false,
           html: `${warning_obj["warning-message"]}`,
         });
       }
