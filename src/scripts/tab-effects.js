@@ -886,7 +886,9 @@ async function transitionSubQuestions(
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!$(target).hasClass("show")) {
-    $(target).addClass("show");
+    setTimeout(function () {
+      $(target).addClass("show");
+    }, delay);
   }
 
   if (currentDiv == 'Question-generate-dataset')
@@ -979,9 +981,13 @@ async function transitionSubQuestions(
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
   if (button === "delete") {
     if ($(ev).siblings().length > 0) {
-      $(ev).siblings().hide();
+      setTimeout(function () {
+        $(ev).siblings().hide();
+      }, delay);
     }
-    $(ev).hide();
+    setTimeout(function () {
+      $(ev).hide();
+    }, delay);
   }
 
   // auto-scroll to bottom of div
