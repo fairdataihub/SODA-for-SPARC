@@ -1,3 +1,4 @@
+const { rgba } = require("jimp");
 const { relative } = require("path");
 
 // JSON object of all the tabs
@@ -1456,6 +1457,8 @@ async function transitionSubQuestionsButton(
           "<p style='color:red'>" +
           result[1] +
           ".<br>Please choose another dataset!</p>",
+          heightAuto: false,
+          backdrop:"rgba(0,0,0, 0.4)"
       });
       $("#nextBtn").prop("disabled", true);
       $("#para-continue-bf-dataset-getting-started").text("");
@@ -2822,6 +2825,8 @@ $(document).ready(() => {
       if (warning_obj["show-warning-message"]) {
         Swal.fire({
           icon: "info",
+          heightAuto: false,
+          backdrop:"rgba(0,0,0, 0.4)",
           html: `${warning_obj["warning-message"]}`,
         });
       }

@@ -205,8 +205,8 @@ def bf_add_account(keyname, key, secret):
         acc_details = bf.context.name
 
         # CHANGE BACK
-        # if acc_details.find('SPARC Consortium') == -1:
-        #     raise Exception('Error: Please check that your account is within the SPARC Consortium Organization')
+        if acc_details.find('SPARC Consortium') == -1:
+            raise Exception('Error: Please check that your account is within the SPARC Consortium Organization')
 
         if not config.has_section("global"):
             config.add_section("global")
@@ -218,7 +218,7 @@ def bf_add_account(keyname, key, secret):
             config.write(configfile)
 
         # CHANGE BACK
-        # bf_keep_only_account(keyname)
+        bf_keep_only_account(keyname)
 
         return 'Successfully added account ' + str(bf)
 
@@ -323,7 +323,7 @@ def bf_account_list():
         accountlist = ['Select']
         if exists(configpath):
             # CHANGE BACK
-            # bf_remove_additional_accounts() # remove non consortium accounts
+            bf_remove_additional_accounts() # remove non consortium accounts
             config = ConfigParser()
             config.read(configpath)
             accountname = config.sections()
@@ -353,7 +353,7 @@ def bf_default_account_load():
         accountlist = []
         if exists(configpath):
             # CHANGE BACK
-            # bf_remove_additional_accounts() # remove non consortium accounts
+            bf_remove_additional_accounts() # remove non consortium accounts
             config = ConfigParser()
             config.read(configpath)
             keys = config.sections()
