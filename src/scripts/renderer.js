@@ -412,6 +412,7 @@ const sparcFolderNames = [
 ];
 const smileyCan = '<img class="message-icon" src="assets/img/can-smiley.png">';
 const sadCan = '<img class="message-icon" src="assets/img/can-sad.png">';
+const delayAnimation = 250;
 
 //////////////////////////////////
 // Operations on JavaScript end only
@@ -2411,6 +2412,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 
 // Add new dataset folder (empty) on bf //
 bfCreateNewDatasetBtn.addEventListener("click", () => {
+  setTimeout(function () {
   bfCreateNewDatasetBtn.disabled = true;
   //bfCreateNewDatasetStatus.innerHTML = "Adding...";
   $("#para-new-name-dataset-message").html("");
@@ -2480,10 +2482,12 @@ bfCreateNewDatasetBtn.addEventListener("click", () => {
       }
     }
   );
+  }, delayAnimation);
 });
 
 // Rename dataset on bf //
 bfRenameDatasetBtn.addEventListener("click", () => {
+  setTimeout(function () {
   var selectedbfaccount = defaultBfAccount;
   var currentDatasetName = defaultBfDataset;
   var renamedDatasetName = renameDatasetName.value;
@@ -2559,6 +2563,7 @@ bfRenameDatasetBtn.addEventListener("click", () => {
       }
     );
   }
+  }, delayAnimation);
 });
 
 // Submit dataset to bf //
@@ -2915,6 +2920,7 @@ $(bfListDatasetStatus).on("change", () => {
 
 // Add subtitle //
 bfAddSubtitleBtn.addEventListener("click", () => {
+  setTimeout(function () {
   bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
   $("#bf-add-subtitle-dataset-spinner").show();
@@ -2957,10 +2963,12 @@ bfAddSubtitleBtn.addEventListener("click", () => {
       }
     }
   );
+  }, delayAnimation);
 });
 
 // Add description //
 bfAddDescriptionBtn.addEventListener("click", () => {
+  setTimeout(() => {
   bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
   $("#bf-add-description-dataset-spinner").show();
@@ -3006,6 +3014,7 @@ bfAddDescriptionBtn.addEventListener("click", () => {
       }
     }
   );
+  }, delayAnimation);
 });
 
 // upload banner image //
@@ -3288,6 +3297,7 @@ ipcRenderer.on("show-banner-image-below-1024", (event, index) => {
 
 // Add license //
 bfAddLicenseBtn.addEventListener("click", () => {
+  setTimeout(function () {
   bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
   $("#bf-add-license-dataset-spinner").show();
@@ -3331,6 +3341,7 @@ bfAddLicenseBtn.addEventListener("click", () => {
       }
     }
   );
+  }, delayAnimation);
 });
 
 // Make PI owner //
@@ -3400,6 +3411,7 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
 
 // Add permission for user //
 bfAddPermissionBtn.addEventListener("click", () => {
+  setTimeout(function () {
   $("#bf-add-permission-user-spinner").show();
   datasetPermissionStatus.innerHTML = "";
   bfCurrentPermissionProgress.style.display = "block";
@@ -3421,6 +3433,7 @@ bfAddPermissionBtn.addEventListener("click", () => {
       selectedRole
     );
   }
+  }, delayAnimation);
 });
 
 ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
@@ -3455,6 +3468,7 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
 
 // Add permission for team
 bfAddPermissionTeamBtn.addEventListener("click", () => {
+  setTimeout(function () {
   $("#bf-add-permission-team-spinner").show();
   datasetPermissionStatusTeam.innerHTML = "";
   bfCurrentPermissionProgress.style.display = "block";
@@ -3488,6 +3502,7 @@ bfAddPermissionTeamBtn.addEventListener("click", () => {
       }
     }
   );
+  }, delayAnimation);
 });
 
 function submitReviewDatasetCheck(res) {

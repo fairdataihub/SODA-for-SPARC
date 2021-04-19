@@ -13,6 +13,8 @@ var allParentStepsJSON = {
 var currentTab = 0; // Current tab is set to be the first tab (0)
 // showParentTab(0, 1);
 
+const delay = 250;
+
 const showParentTab = (tabNow, nextOrPrev) => {
   $("#nextBtn").prop("disabled", true);
   // check to show Save progress btn (only after step 2)
@@ -1660,15 +1662,21 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!$(target).hasClass("show")) {
-    $(target).addClass("show");
+    setTimeout(function () {
+      $(target).addClass("show");
+    }, delay);
   }
 
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
   if (button === "delete") {
     if ($(ev).siblings().length > 0) {
-      $(ev).siblings().hide();
+      setTimeout(function () {
+        $(ev).siblings().hide();
+      }, delay);
     }
-    $(ev).hide();
+    setTimeout(function () {
+      $(ev).hide();
+    }, delay);
   } else {
     if ($(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') !== "None") {
       $(target).children().find(".div-confirm-button button").show();
