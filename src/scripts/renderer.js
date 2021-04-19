@@ -5048,7 +5048,7 @@ ipcRenderer.on("selected-files-organize-datasets", (event, path) => {
       hidden_files_present = true;
     }
   });
-  if ((hidden_files_present = true)) {
+  if (hidden_files_present == true) {
     bootbox.alert({
       message:
         "We found some hidden files. These will be ignored when importing.",

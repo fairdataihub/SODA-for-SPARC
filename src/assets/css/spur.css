@@ -8639,8 +8639,8 @@ body {
   -webkit-box-flex: 2;
   -webkit-flex-grow: 2;
       -ms-flex-positive: 2;
-          flex-grow: 2; */
-  margin-top: 200px;
+          flex-grow: 2;
+  /* margin-top: 200px; */
 }
   /* @media (min-width: 800px) {
     .dash-app {
