@@ -1958,22 +1958,7 @@
                 margin: 10px auto;
               "
             >
-              <button
-                onclick="resetSubmission()"
-                class= "btn_animated start_over"
-                style="
-                cursor: pointer;
-                border-radius: 8px;
-                margin: 10px;
-                width: 120px;
-                background-color: #fff;
-                color: var(--color-bg-plum);
-                font-weight: 600;
-                border: 1px solid var(--color-bg-plum);"
-              >
-                <i class="fas fa-sync-alt" style="margin-right: 10px"></i>
-                Start over
-              </button>
+
               <button
                 onclick="generateSubmissionFile()"
                 class="btn_animated"
@@ -2017,7 +2002,15 @@
         </button>
         <button
           onclick="resetSubmission()"
-          class= "start-over"
+          class= "btn_animated start-over"
+          style="cursor: pointer;
+          border-radius: 8px;
+          margin: 10px;
+          width: 120px;
+          background-color: #fff;
+          color: var(--color-bg-plum);
+          font-weight: 600;
+          border: 1px solid var(--color-bg-plum);"
         >
           <i class="fas fa-sync-alt" style="margin-right: 10px;font-size: inherit"></i>
           Start over
@@ -3310,22 +3303,6 @@
               "
             >
               <button
-                onclick="resetDD()"
-                class= "btn_animated start_over"
-                style="
-                cursor: pointer;
-                border-radius: 8px;
-                margin: 10px;
-                width: 120px;
-                background-color: #fff;
-                color: var(--color-bg-plum);
-                font-weight: 600;
-                border: 1px solid var(--color-bg-plum);"
-              >
-                <i class="fas fa-sync-alt" style="margin-right: 10px"></i>
-                Start over
-              </button>
-              <button
                 id="button-generate-ds-description"
                 class="btn_animated"
                 style="
@@ -3364,14 +3341,22 @@
         </button>
         <button
           onclick="resetDD()"
-          class= "start-over"
+          class= "btn_animated start-over"
+          style="cursor: pointer;
+          border-radius: 8px;
+          margin: 10px;
+          width: 120px;
+          background-color: #fff;
+          color: var(--color-bg-plum);
+          font-weight: 600;
+          border: 1px solid var(--color-bg-plum);"
         >
           <i class="fas fa-sync-alt" style="margin-right: 10px;font-size: inherit"></i>
           Start over
         </button>
-      <!-- </div> -->
     </div>
   </section>
+
   <script>window.$ = window.jQuery = require('jquery');</script>
   <script src="node_modules/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
   <script
