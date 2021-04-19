@@ -3094,6 +3094,8 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
         html:
           "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
         timer: 4000,
+        heightAuto: false,
+        backdrop:"rgba(0,0,0, 0.4)",
         timerProgressBar: true,
         didOpen: () => {
           Swal.showLoading();
@@ -4578,6 +4580,8 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
           Swal.fire({
             icon: "error",
             text: "Something went wrong!",
+            heightAuto: false,
+            backdrop:"rgba(0,0,0, 0.4)",
             footer:
               '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
           });
@@ -4606,6 +4610,8 @@ function addBFAccountInsideBootbox(myBootboxDialog) {
         timer: 3000,
         timerProgressBar: true,
         allowEscapeKey: false,
+        heightAuto: false,
+        backdrop:"rgba(0,0,0, 0.4)",
         showConfirmButton: false,
       });
       // bootbox.alert({
@@ -4759,6 +4765,8 @@ function addAirtableAccountInsideBootbox(myBootboxD) {
                   "Successfully connected. Loading your Airtable account...",
                 timer: 2500,
                 timerProgressBar: true,
+                heightAuto: false,
+                backdrop:"rgba(0,0,0, 0.4)",
                 allowEscapeKey: false,
                 showConfirmButton: false,
               });

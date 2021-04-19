@@ -693,7 +693,9 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         Swal.fire({
           title: "Loading your account details...",
           timer: 2000,
+          heightAuto: false,
           timerProgressBar: true,
+          backdrop:"rgba(0,0,0, 0.4)",
           allowEscapeKey: false,
           showConfirmButton: false,
         });
@@ -734,6 +736,8 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
             Swal.fire({
               icon: "error",
               text: error,
+              heightAuto: false,
+              backdrop:"rgba(0,0,0, 0.4)",
               footer:
                 "<a href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
             });
@@ -822,8 +826,11 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         showCloseButton: true,
         showCancelButton: true,
         focusConfirm: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
         confirmButtonText: "Confirm",
         cancelButtonText: "Cancel",
+        focusCancel: true,
         willOpen: () => {
           $("#curatebfdatasetlist").selectpicker("hide");
           $("#curatebfdatasetlist").selectpicker("refresh");
@@ -865,7 +872,6 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
 
               return undefined;
             } else {
-
               return bfDataset;
             }
           }
@@ -880,6 +886,8 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
           title: "Loading your dataset details...",
           timer: 2000,
           timerProgressBar: true,
+          heightAuto: false,
+          backdrop:"rgba(0,0,0, 0.4)",
           allowEscapeKey: false,
             showConfirmButton: false,
           });
@@ -1469,6 +1477,8 @@ async function moveItems(ev, category) {
         selectedPath +
         "?",
       showCancelButton: true,
+      heightAuto: false,
+      backdrop:"rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
     }).then((result) => {
       if (result.isConfirmed) {
@@ -1477,6 +1487,8 @@ async function moveItems(ev, category) {
           title: "Moving items...",
           timer: 1500,
           timerProgressBar: true,
+          heightAuto: false,
+          backdrop:"rgba(0,0,0, 0.4)",
           allowEscapeKey: false,
           showConfirmButton: false,
         });

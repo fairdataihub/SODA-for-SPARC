@@ -1361,6 +1361,8 @@ function resetDD() {
     text: "Are you sure you want to start over and reset your progress?",
     icon: "warning",
     showCancelButton: true,
+    heightAuto: false,
+    backdrop:"rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over!",
   }).then((result) => {
     if (result.isConfirmed) {
