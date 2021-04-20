@@ -933,9 +933,9 @@ function addNewRow(table) {
         newRowIndex +
         "' class='form-container-input-bf' type='text'></input></td><td class='grab'><input id='ds-description-raw-contributor-list-first-" +
         newRowIndex +
-        "' type='text' class='form-container-input-bf'></input></td><td class='grab'><input type='text' id='input-con-ID-" +
+        "' type='text' class='form-container-input-bf'></input></td><td class='grab'><input name='id' type='text' id='input-con-ID-" +
         newRowIndex +
-        "' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-" +
+        "' contenteditable='true'></input></td><td class='grab'><input name='affiliation' id='input-con-affiliation-" +
         newRowIndex +
         "' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-" +
         newRowIndex +

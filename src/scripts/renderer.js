@@ -1643,37 +1643,17 @@ function grabConInfoEntries() {
   var cellRowCount = currentConTable.rows[1].cells.length;
   var res;
 
-  // there are 2 cases: when cells.length = 7 (normal) OR cell.length = 9 (abnormal)
-  if (cellRowCount == 7) {
-    res = grabCellConInfo("normal", rowcountCon);
-  } else if (cellRowCount == 9) {
-    res = grabCellConInfo("abnormal", rowcountCon);
-  }
+  res = grabCellConInfo(rowcountCon);
 
   contributorObj["funding"] = fundingArray;
   contributorObj["acknowledgment"] = acknowledgment;
   contributorObj["contributors"] = res;
+  console.log(contributorObj["contributors"])
   return contributorObj;
 }
 
-function grabCellConInfo(type, rowcountCon) {
+function grabCellConInfo(rowcountCon) {
   var currentConInfo = [];
-  var idCell;
-  var roleCell;
-  var affCel;
-  var contactCell;
-
-  if (type == "normal") {
-    idCell = 2;
-    affCel = 3;
-    roleCell = 4;
-    contactCell = 5;
-  } else if (type == "abnormal") {
-    idCell = 4;
-    affCel = 5;
-    roleCell = 6;
-    contactCell = 7;
-  }
 
   for (i = 1; i < rowcountCon - 1; i++) {
     var conLastName;
@@ -1696,37 +1676,48 @@ function grabCellConInfo(type, rowcountCon) {
         .trim();
     }
 
-    var conRoleTagify = $(currentConTable.rows[i].cells[roleCell])
-      .find("tag")
-      .toArray();
-    var conRoleInfo = [];
-    if (conRoleTagify.length > 0) {
-      conRoleTagify.forEach((item, i) => {
-        conRoleInfo.push($(conRoleTagify)[i].innerText);
-      });
-    }
-    var conAffliationTagify = $(currentConTable.rows[i].cells[affCel])
-      .find("tag")
-      .toArray();
     var conAffliationInfo = [];
-    if (conAffliationTagify.length > 0) {
-      conAffliationTagify.forEach((item, i) => {
-        conAffliationInfo.push($(conAffliationTagify)[i].innerText);
-      });
-    }
-
-    var contactLabel = $(currentConTable.rows[i].cells[contactCell])
-      .find("label")
-      .find("input")[0];
+    var conRoleInfo = [];
     var contactCheck = "No";
-    if (contactLabel && contactLabel.checked) {
-      contactCheck = "Yes";
+    var conID = "";
+    
+    for (var j=1; j<currentConTable.rows[i].cells.length; j++) {
+      var inputField = $(currentConTable.rows[i].cells[j]).find("input");
+      if (inputField.length > 0) {
+        if (inputField.prop("id").includes("input-con-role")) {
+          var conRoleTagify = $(currentConTable.rows[i].cells[j])
+          .find("tag")
+          .toArray();
+          if (conRoleTagify.length > 0) {
+            conRoleTagify.forEach((item, k) => {
+              conRoleInfo.push($(conRoleTagify)[k].innerText);
+            });
+          }
+        } else if (inputField.prop("id").includes("input-con-affiliation")) {
+          var conAffliationTagify = $(currentConTable.rows[i].cells[j])
+          .find("tag")
+          .toArray();
+          if (conAffliationTagify.length > 0) {
+            conAffliationTagify.forEach((item, k) => {
+              conAffliationInfo.push($(conAffliationTagify)[k].innerText);
+            });
+          }
+        } else if (inputField.prop("name") === "contact-person") {
+          var contactLabel = $(currentConTable.rows[i].cells[j])
+          .find("label")
+          .find("input")[0];
+          if (contactLabel && contactLabel.checked) {
+            contactCheck = "Yes";
+          }
+        } else  if (inputField.prop("id").includes("input-con-ID")) {
+          conID = $($(currentConTable.rows[i].cells[j])[0])
+          .find("input")
+          .val()
+          .trim();
+        }
+      }
     }
 
-    var conID = $($(currentConTable.rows[i].cells[idCell])[0])
-      .find("input")
-      .val()
-      .trim();
     var myCurrentCon = {
       conName: conLastName + ", " + conFirstName,
       conID: conID,
@@ -1736,6 +1727,7 @@ function grabCellConInfo(type, rowcountCon) {
     };
     currentConInfo.push(myCurrentCon);
   }
+
   return currentConInfo;
 }
 
