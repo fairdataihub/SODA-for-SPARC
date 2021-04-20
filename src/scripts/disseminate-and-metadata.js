@@ -1306,54 +1306,67 @@ function onChangeContactLabel(no) {
 }
 
 function resetSubmission() {
-  bootbox.confirm({
-    message:
-      "<h4>Are you sure you want to start over and reset your propress?</h4>",
-    centerVertical: true,
-    button: {
-      ok: {
-        label: "Yes",
-        className: "btn-primary",
-      },
-    },
-    callback: function (r) {
-      if (r !== null && r === true) {
-        // 1. remove Prev and Show from all individual-question except for the first one
-        // 2. empty all input, textarea, select, para-elements
-        $("#Question-prepare-submission-1").removeClass("prev");
-        $("#Question-prepare-submission-1").nextAll().removeClass("show");
-        $("#Question-prepare-submission-1").nextAll().removeClass("prev");
+  Swal.fire({
+    text: "Are you sure you want to start over and reset your progress?",
+    icon: "warning",
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "I want to start over!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 1. remove Prev and Show from all individual-question except for the first one
+      // 2. empty all input, textarea, select, para-elements
+      $("#Question-prepare-submission-1").removeClass("prev");
+      $("#Question-prepare-submission-1").nextAll().removeClass("show");
+      $("#Question-prepare-submission-1").nextAll().removeClass("prev");
 
-        var inputFields = $("#Question-prepare-submission-1")
-          .nextAll()
-          .find("input");
-        var textAreaFields = $("#Question-prepare-submission-1")
-          .nextAll()
-          .find("textarea");
-        var selectFields = $("#Question-prepare-submission-1")
-          .nextAll()
-          .find("select");
+      var inputFields = $("#Question-prepare-submission-1")
+        .nextAll()
+        .find("input");
+      var textAreaFields = $("#Question-prepare-submission-1")
+        .nextAll()
+        .find("textarea");
+      var selectFields = $("#Question-prepare-submission-1")
+        .nextAll()
+        .find("select");
 
-        for (var field of inputFields) {
-          $(field).val("");
-        }
-        for (var field of textAreaFields) {
-          $(field).val("");
-        }
-        milestoneTagify2.removeAllTags();
-        milestoneTagify1.removeAllTags();
-        for (var field of selectFields) {
-          $(field).val("Select");
-        }
-
-        document.getElementById("para-milestone-document-info").innerHTML = "";
-        document.getElementById("para-milestone-document-info-long").innerHTML =
-          "";
-        document.getElementById("para-save-submission-status").innerHTML = "";
-        checkAirtableStatus();
+      for (var field of inputFields) {
+        $(field).val("");
       }
-    },
+      for (var field of textAreaFields) {
+        $(field).val("");
+      }
+      milestoneTagify2.removeAllTags();
+      milestoneTagify1.removeAllTags();
+      for (var field of selectFields) {
+        $(field).val("Select");
+      }
+
+      document.getElementById("para-milestone-document-info").innerHTML = "";
+      document.getElementById("para-milestone-document-info-long").innerHTML =
+        "";
+      document.getElementById("para-save-submission-status").innerHTML = "";
+      checkAirtableStatus();
+    }
   });
+
+  // bootbox.confirm({
+  //   message:
+  //     "<h4>Are you sure you want to start over and reset your propress?</h4>",
+  //   centerVertical: true,
+  //   button: {
+  //     ok: {
+  //       label: "Yes",
+  //       className: "btn-primary",
+  //     },
+  //   },
+  //   callback: function (r) {
+  //     if (r !== null && r === true) {
+
+  //     }
+  //   },
+  // });
 }
 
 function resetDD() {
