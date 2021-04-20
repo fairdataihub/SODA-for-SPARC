@@ -5414,30 +5414,30 @@ function showmenu(ev, category, deleted = false) {
   if (category === "folder") {
     if (deleted) {
       $(menuFolder)
-        .children("#folder-delete")
+        .children("#reg-folder-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
-      $(menuFolder).children("#folder-rename").hide();
+      $(menuFolder).children("#reg-folder-rename").hide();
       $(menuFolder).children("#folder-move").hide();
       $(menuFolder).children("#folder-description").hide();
     } else {
       if ($(".selected-item").length > 2) {
         $(menuFolder)
-          .children("#folder-delete")
+          .children("#reg-folder-delete")
           .html('<i class="fas fa-minus-circle"></i> Delete All');
         $(menuFolder)
           .children("#folder-move")
           .html('<i class="fas fa-external-link-alt"></i> Move All');
-        $(menuFolder).children("#folder-rename").hide();
+        $(menuFolder).children("#reg-folder-rename").hide();
         $(menuFolder).children("#folder-description").hide();
       } else {
         $(menuFolder)
-          .children("#folder-delete")
+          .children("#reg-folder-delete")
           .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
         $(menuFolder)
           .children("#folder-move")
           .html('<i class="fas fa-external-link-alt"></i> Move');
         $(menuFolder).children("#folder-move").show();
-        $(menuFolder).children("#folder-rename").show();
+        $(menuFolder).children("#reg-folder-rename").show();
         $(menuFolder).children("#folder-description").show();
       }
     }
@@ -5446,26 +5446,26 @@ function showmenu(ev, category, deleted = false) {
   } else if (category === "high-level-folder") {
     if (deleted) {
       $(menuHighLevelFolders)
-        .children("#folder-delete")
+        .children("#high-folder-delete")
         .html("<i class='fas fa-undo-alt'></i> Restore");
-      $(menuHighLevelFolders).children("#folder-rename").hide();
+      $(menuHighLevelFolders).children("#high-folder-rename").hide();
       $(menuHighLevelFolders).children("#folder-move").hide();
       $(menuHighLevelFolders).children("#tooltip-folders").show();
     } else {
       if ($(".selected-item").length > 2) {
         $(menuHighLevelFolders)
-          .children("#folder-delete")
+          .children("#high-folder-delete")
           .html('<i class="fas fa-minus-circle"></i> Delete All');
-        $(menuHighLevelFolders).children("#folder-delete").show();
-        $(menuHighLevelFolders).children("#folder-rename").hide();
+        $(menuHighLevelFolders).children("#high-folder-delete").show();
+        $(menuHighLevelFolders).children("#high-folder-rename").hide();
         $(menuHighLevelFolders).children("#folder-move").hide();
         $(menuHighLevelFolders).children("#tooltip-folders").show();
       } else {
         $(menuHighLevelFolders)
-          .children("#folder-delete")
+          .children("#high-folder-delete")
           .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
-        $(menuHighLevelFolders).children("#folder-delete").show();
-        $(menuHighLevelFolders).children("#folder-rename").hide();
+        $(menuHighLevelFolders).children("#high-folder-delete").show();
+        $(menuHighLevelFolders).children("#high-folder-rename").hide();
         $(menuHighLevelFolders).children("#folder-move").hide();
         $(menuHighLevelFolders).children("#tooltip-folders").show();
       }
@@ -5514,7 +5514,7 @@ function folderContextMenu(event) {
   $(".menu.reg-folder li")
     .unbind()
     .click(function () {
-      if ($(this).attr("id") === "folder-rename") {
+      if ($(this).attr("id") === "reg-folder-rename") {
         var itemDivElements = document.getElementById("items").children;
         renameFolder(
           event,
@@ -5524,7 +5524,7 @@ function folderContextMenu(event) {
           "#items",
           ".single-item"
         );
-      } else if ($(this).attr("id") === "folder-delete") {
+      } else if ($(this).attr("id") === "reg-folder-delete") {
         delFolder(
           event,
           organizeDSglobalPath,
@@ -5545,7 +5545,7 @@ function folderContextMenu(event) {
   $(".menu.high-level-folder li")
     .unbind()
     .click(function () {
-      if ($(this).attr("id") === "folder-rename") {
+      if ($(this).attr("id") === "high-folder-rename") {
         var itemDivElements = document.getElementById("items").children;
         renameFolder(
           event,
@@ -5555,7 +5555,7 @@ function folderContextMenu(event) {
           "#items",
           ".single-item"
         );
-      } else if ($(this).attr("id") === "folder-delete") {
+      } else if ($(this).attr("id") === "high-folder-delete") {
         delFolder(
           event,
           organizeDSglobalPath,
