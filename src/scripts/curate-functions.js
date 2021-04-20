@@ -836,6 +836,9 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
           $("#curatebfdatasetlist").selectpicker("refresh");
           $("#bf-dataset-select-div").hide();
         },
+        didOpen: () => {
+          $(".ui.active.green.inline.loader.small").css("display", "none");
+        },
         preConfirm: () => {
           $("body").addClass("waiting");
 
