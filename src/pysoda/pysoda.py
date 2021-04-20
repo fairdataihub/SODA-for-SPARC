@@ -698,7 +698,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     if c>0:
         submitdatastatus = 'Done'
-        error = error + '<br>Please remove invalid files/folders from your dataset before uploading'
+        error = error + "<br>Please remove invalid files/folders from your dataset before uploading. If you have hidden files present please remove them before upload. You can find more details <a href='https://github.com/bvhpatel/SODA/wiki/Issues-regarding-hidden-files-or-folders' target='_blank'>here </a> on how to fix this issue."
         raise Exception(error)
 
     total_file_size = total_file_size - 1
@@ -713,7 +713,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     try:
         validate_agent_installation(Settings())
     except AgentError:
-        raise AgentInstallationError('The Pennsieve agent is not installed on your computer. Visit the Pennsieve Agent website at "https://developer.pennsieve.io/agent" for installation instructions.')
+        raise AgentError("The Pennsieve agent is not installed on your computer. Click <a href='https://github.com/bvhpatel/SODA/wiki/Installing-the-Pennsieve-agent' target='_blank'>here</a> for installation instructions.")
 
     clear_queue()
     try:
