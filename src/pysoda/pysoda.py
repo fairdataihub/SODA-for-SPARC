@@ -713,7 +713,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     try:
         validate_agent_installation(Settings())
     except AgentError:
-        raise AgentInstallationError('The Pennsieve agent is not installed on your computer. Visit the Pennsieve Agent website at "https://developer.pennsieve.io/agent" for installation instructions.')
+        raise AgentError("The Pennsieve agent is not installed on your computer. Click <a href='https://github.com/bvhpatel/SODA/wiki/Installing-the-Pennsieve-agent' target='_blank'>here</a> for installation instructions.")
 
     clear_queue()
     try:
