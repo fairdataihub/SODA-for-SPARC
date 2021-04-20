@@ -122,7 +122,6 @@
                           Current dataset:
                         </h5>
                         <h5
-                          id="rename_dataset_name"
                           class="card-right bf-dataset-span"
                         >None</h5>
                       </div>
@@ -134,7 +133,6 @@
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -185,7 +183,6 @@
                   "
                 >
                   <button
-                    id="button-share-curation-team-confirm"
                     onclick="transitionFreeFormMode(this, 'share_curation_team-question-1', 'share_curation_team-tab', 'delete', 'individual-question post-curation')"
                     data-next="share_curation_team-question-2"
                     class="confirm-button"
@@ -392,7 +389,6 @@
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -444,7 +440,6 @@
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -496,7 +491,6 @@
                   "
                 >
                   <button
-                    id="button-share-curation-team-confirm"
                     onclick="transitionFreeFormMode(this, 'share_sparc_consortium-question-1', 'share_sparc_consortium-tab', 'delete', 'individual-question post-curation')"
                     data-next="share_sparc_consortium-question-2"
                     class="confirm-button"
@@ -703,7 +697,6 @@
                         width="18"
                         height="18"
                         fill="#000"
-                        class="bi bi-pencil-fill"
                         viewBox="0 0 16 16"
                       >
                         <path
@@ -746,7 +739,6 @@
                             Current dataset:
                           </h5>
                           <h5
-                            id="rename_dataset_name"
                             class="card-right bf-dataset-span"
                           >None</h5>
                         </div>
@@ -758,7 +750,6 @@
                         width="18"
                         height="18"
                         fill="#000"
-                        class="bi bi-pencil-fill"
                         viewBox="0 0 16 16"
                       >
                         <path
@@ -814,7 +805,6 @@
                     "
                   >
                     <button
-                      id="button-share-curation-team-confirm"
                       onclick="transitionFreeFormMode(this, 'submit_prepublishing_review-question-1', 'submit_prepublishing_review-tab', 'delete', 'individual-question post-curation')"
                       data-next="submit_prepublishing_review-question-2"
                       class="confirm-button"
@@ -854,6 +844,7 @@
                     text-align: center;
                   "
                 ></label>
+                <div style="display:flex; flex-direction:column;align-items:center;justify-content:center">
                 <div
                   id="div-confirm-submit-review"
                   style="
@@ -898,7 +889,8 @@
                     <i class="fas fa-sign-in-alt" style="padding-right: 5px"></i>
                     Submit
                   </button>
-                  <div
+                </div>
+                <div
                     id="submit_prepublishing_review-spinner"
                     class="spinner"
                     style="display: none"
@@ -909,11 +901,11 @@
                     <div class="rect4"></div>
                     <div class="rect5"></div>
                   </div>
-                </div>
                 <p
-                  id="para-submit_prepublishing_review-status"
-                  style="color: red; margin-top: 10px; text-align: center"
+                id="para-submit_prepublishing_review-status"
+                style="color: red; margin-top: 10px; text-align: center"
                 ></p>
+              </div>
               </div>
             </div>
           </div>
