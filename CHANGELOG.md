@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Feature additions:
 - SODA now supports Pennsieve.
   - With the transition from Blackfynn to Pennsieve complete, SODA now uses the Pennsieve platform as the backend of the app.
-  - For the user, the changes should be intergated in with no downtime. All pre-existing functionality of Blackfynn is now supported within SODA. You will only need new API keys for using SODA as well as the Pennsieve agent.
+  - For the user, the changes should be integrated in with no downtime. All pre-existing functionality of Blackfynn is now supported within SODA. You will only need new API keys for using SODA as well as the Pennsieve agent.
 
 ### Bug fixes:
 - When creating the manifest files for local review, SODA will now ignore deleted files and folders before creating the manifest file.
@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed a bug where manifest files with the 'strict Open XML' format and .xlsx extensions were being read incorrectly. SODA will now ignore manifest files that are not saved in the right format and warn you about this issue when you pull a dataset from Pennsieve.
 - When uploading on macOS, hidden files like .DS_STORE will currently break the Pennsieve agent upload. To combat this if your folder has these hidden files, SODA will block the upload when you use the 'Manage Datasets - Upload a local folder' feature. If you import a folder, that has these files, within the 'Organize Dataset' process, SODA will filter out these files automatically.
 - When showing popups for users, the messages now don't unintentionally move other content out of the way. This should make SODA to be more consistent to use.
+- Added a bug fix for the dataset subtitle character count
 
 ## v4.1.0 - 2020-04-09
 
@@ -35,14 +36,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Organize dataset: 
   - You can now start over the dataset organization process at any point from step 3 onward by clicking the Start over button (located next to the Back button).
   - You can now move files and folders to another folder by right-clicking on the items and select Move to. 
-  - SODA now allows multiple-selection of files and folders for manipulation. This can be achieved by dragging your mouse pointers over several items or pressing and holding the Ctrl button and select the items.
-  - Blackfynn has updated how their backend systems handle file names when you upload to their platform. SODA will take care of all the file names and the generate your manifest files accordingly.
-  - When you organize a dataset, you can now generate your manifest files locally to verify their accuracy before you upload to Blackfynn.
-  - A preview step is added to the dataset organzation process that gives users a preview of their dataset structure, generate options, and options to edit if applicable. The dataset structure at this step will be shown in a tree view for easy and convenient file track.
+  - SODA now allows multiple selections of files and folders for manipulation. This can be achieved by dragging your mouse pointers over several items or pressing and holding the Ctrl button and select the items.
+  - Blackfynn has updated how their backend systems handle file names when you upload to their platform. SODA will take care of all the file names and generate your manifest files accordingly.
+  - When you organize a dataset, you can now generate your manifest files locally to verify their accuracy before you upload them to Blackfynn.
+  - A preview step is added to the dataset organization process that gives users a preview of their dataset structure, generate options, and options to edit if applicable. The dataset structure at this step will be shown in a tree view for an easy and convenient file track.
      
 - Unshare with the Curation team
   - If you have already shared your dataset with the Curation team, you can now remove it from this state with a click of just one button
-- Unshare with the SPARC Consoritum
+- Unshare with the SPARC Consortium
   - If you have already shared your dataset with the SPARC consortium, you can now remove it from this state with a click of just one button
 
 - Search dropdowns: 
@@ -54,15 +55,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Within the dropdowns for selecting users within the SPARC organization, you will now see their email for better clarity.
 - Added support for TIFF banner images
   - If you wanted your TIFF image to be the banner image of your dataset, you can now use SODA to automatically convert and set your banner image.
-- Added support for in-app updating on MacOS
+- Added support for in-app updating on macOS
 
 ### Bug fixes:
 - When uploading a local dataset to an existing Blackfynn folder, the 'skip' folders option now correctly uploads files that were not meant to be skipped.
 - Creating a new local folder as your dataset destination now renames the generated folder correctly if a duplicate folder has to be created.
 - Squashed a bug where files uploaded to Blackfynn were sometimes not renamed.
-- Create dataset_description.xlsx file: Fixed bug where a contributor's affliation has a comma.
+- Create dataset_description.xlsx file: Fixed bug where a contributor's affiliations have a comma.
 - Fixed a bug where when you would upload files to Blackfynn, it would create a duplicate and not replace your old files.
-- Added support for files with more than one extension. This fixes a bug where the manifest file was providing the incorrect filetype.
+- Added support for files with more than one extension. This fixes a bug where the manifest file was providing the incorrect file type.
 
 
 ## v3.0.1 - 2020-12-15
@@ -73,8 +74,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added in-app updating for Windows and Linux (Ubuntu)
 
 #### Further notes:
-- Feature (1) further explained: Extended the previous interface such that user can create virtual subfolder structures within high-level SPARC folders and specify files to be included in each of them.
+- Feature (1) further explained: Extended the previous interface such that users can create virtual subfolder structures within high-level SPARC folders and specify files to be included in each of them.
 - Feature (2) further explained: Changed user interface for the Organize dataset feature such that there are fewer texts and more easy-to-follow steps. It now follows the question-by-question format that guides users through the curation steps. This change aims at creating better interactions between SODA and users, thus making the curation process quicker and easier.
 
 ### Major bug fixes:
-- Updated Airtable SPARC's table name to reflect the change initiated by SPARC. Prior to the fix, SODA could not connect to SPARC award data sheet, thus raising an error when users utilize the Prepare metadata feature.
+- Updated Airtable SPARC's table name to reflect the change initiated by SPARC. Prior to the fix, SODA could not connect to the SPARC award data sheet, thus raising an error when users utilize the Prepare metadata feature.
+- 
