@@ -3746,6 +3746,7 @@ const showCurrentBannerImage = () => {
   if (selectedBfDataset === "Select dataset") {
     // bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
+    $("#banner_image_loader").hide();
     bfCurrentBannerImg.src = "";
     document.getElementById("para-current-banner-img").innerHTML = "None";
     bfViewImportedImage.src = "";
@@ -3754,6 +3755,8 @@ const showCurrentBannerImage = () => {
     $("#save-banner-image").css("visibility", "hidden");
     myCropper.destroy();
   } else {
+    $("#banner_image_loader").show();
+    document.getElementById("para-current-banner-img").innerHTML = "";
     client.invoke(
       "api_bf_get_banner_image",
       selectedBfAccount,
@@ -3764,6 +3767,7 @@ const showCurrentBannerImage = () => {
           console.error(error);
           // bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");
+          $("#banner_image_loader").hide();
           bfCurrentBannerImg.src = "assets/img/no-banner-image.png";
           document.getElementById("para-current-banner-img").innerHTML = "None";
           bfViewImportedImage.src = "";
@@ -3787,6 +3791,7 @@ const showCurrentBannerImage = () => {
           }
           // bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");
+          $("#banner_image_loader").hide();
         }
       }
     );
@@ -3797,7 +3802,7 @@ function showCurrentLicense() {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  currentDatasetLicense.innerHTML = "Please wait...";
+  currentDatasetLicense.innerHTML = `Loading current license... <div id="restart_loader" class="ui active green inline loader tiny"></div>`;
 
   if (selectedBfDataset === "Select dataset") {
     currentDatasetLicense.innerHTML = "None";
