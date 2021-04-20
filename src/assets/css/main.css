@@ -63,6 +63,7 @@ button[disabled] {
 
 button[data-id="bf_list_users"],
 button[data-id="bf_list_roles"],
+button[data-id="bf_list_users_pi"],
 button[data-id="bf_list_teams"],
 button[data-id="bf_list_roles_team"] {
   border: 1px solid rgba(34, 36, 38, 0.15);

@@ -369,16 +369,16 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
 
 function disseminateShowCurrentPermission(bfAcct, bfDS) {
   $("#para-share-curation_team-status").css("color", "#000");
-  currentDatasetPermission.innerHTML = "Please wait...";
+  currentDatasetPermission.innerHTML = `Loading current permissions... <div id="restart_loader" class="ui active green inline loader tiny"></div>`;
   if (bfDS === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
-    bfCurrentPermissionProgress.style.display = "none";
+    // bfCurrentPermissionProgress.style.display = "none";
   } else {
     client.invoke("api_bf_get_permission", bfAcct, bfDS, (error, res) => {
       if (error) {
         log.error(error);
         console.error(error);
-        bfCurrentPermissionProgress.style.display = "none";
+        // bfCurrentPermissionProgress.style.display = "none";
       } else {
         var permissionList = "";
         let datasetOwner = "";
@@ -391,7 +391,7 @@ function disseminateShowCurrentPermission(bfAcct, bfDS) {
           }
         }
         currentDatasetPermission.innerHTML = datasetOwner;
-        bfCurrentPermissionProgress.style.display = "none";
+        // bfCurrentPermissionProgress.style.display = "none";
       }
     });
   }

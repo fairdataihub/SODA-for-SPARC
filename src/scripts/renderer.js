@@ -319,9 +319,9 @@ const bfRenameDatasetStatus = document.getElementById(
 const datasetPermissionDiv = document.getElementById("div-permission-list-2");
 
 // Pennsieve dataset metadata //
-const bfCurrentMetadataProgress = document.querySelector(
-  "#div-bf-current-metadata-progress"
-);
+// const bfCurrentMetadataProgress = document.querySelector(
+//   "#div-bf-current-metadata-progress"
+// );
 const bfDatasetSubtitle = document.querySelector("#bf-dataset-subtitle");
 const bfDatasetSubtitleCharCount = document.querySelector(
   "#para-char-count-metadata"
@@ -363,12 +363,12 @@ const currentDatasetPermission = document.querySelector(
 const currentAddEditDatasetPermission = document.querySelector(
   "#para-add-edit-dataset-permission-current"
 );
-const bfCurrentPermissionProgress = document.querySelector(
-  "#div-bf-current-permission-progress"
-);
-const bfAddEditCurrentPermissionProgress = document.querySelector(
-  "#div-bf-add-edit-current-permission-progress"
-);
+// const bfCurrentPermissionProgress = document.querySelector(
+//   "#div-bf-current-permission-progress"
+// );
+// const bfAddEditCurrentPermissionProgress = document.querySelector(
+//   "#div-bf-add-edit-current-permission-progress"
+// );
 const bfListUsersPI = document.querySelector("#bf_list_users_pi");
 const bfAddPermissionPIBtn = document.getElementById(
   "button-add-permission-pi"
@@ -1492,7 +1492,7 @@ const showDatasetDescription = () => {
   //var selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
-    bfCurrentMetadataProgress.style.display = "none";
+    // bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
     document.getElementById("ds-description").innerHTML = "";
     setTimeout(() => {
@@ -2840,7 +2840,7 @@ ipcRenderer.on("selected-submit-dataset", (event, filepath) => {
 });
 
 const metadataDatasetlistChange = () => {
-  bfCurrentMetadataProgress.style.display = "block";
+  // bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
   datasetSubtitleStatus.innerHTML = "";
   datasetLicenseStatus.innerHTML = "";
@@ -2857,8 +2857,8 @@ const metadataDatasetlistChange = () => {
 
 const permissionDatasetlistChange = () => {
   //console.log("permission")
-  bfCurrentPermissionProgress.style.display = "block";
-  bfAddEditCurrentPermissionProgress.style.display = "block";
+  // bfCurrentPermissionProgress.style.display = "block";
+  // bfAddEditCurrentPermissionProgress.style.display = "block";
   showCurrentPermission();
 };
 
@@ -2926,7 +2926,7 @@ $(bfListDatasetStatus).on("change", () => {
 // Add subtitle //
 bfAddSubtitleBtn.addEventListener("click", () => {
   setTimeout(function () {
-  bfCurrentMetadataProgress.style.display = "block";
+  // bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
   $("#bf-add-subtitle-dataset-spinner").show();
   var selectedBfAccount = defaultBfAccount;
@@ -2946,7 +2946,7 @@ bfAddSubtitleBtn.addEventListener("click", () => {
         $("#bf-add-subtitle-dataset-spinner").hide();
         datasetSubtitleStatus.innerHTML =
           "<span style='color: red;'> " + emessage + "</span>";
-        bfCurrentMetadataProgress.style.display = "none";
+        // bfCurrentMetadataProgress.style.display = "none";
         $(".synced-progress").css("display", "none");
         ipcRenderer.send(
           "track-event",
@@ -2957,7 +2957,7 @@ bfAddSubtitleBtn.addEventListener("click", () => {
       } else {
         $("#bf-add-subtitle-dataset-spinner").hide();
         datasetSubtitleStatus.innerHTML = res;
-        bfCurrentMetadataProgress.style.display = "none";
+        // bfCurrentMetadataProgress.style.display = "none";
         $(".synced-progress").css("display", "none");
         ipcRenderer.send(
           "track-event",
@@ -2974,7 +2974,7 @@ bfAddSubtitleBtn.addEventListener("click", () => {
 // Add description //
 bfAddDescriptionBtn.addEventListener("click", () => {
   setTimeout(() => {
-  bfCurrentMetadataProgress.style.display = "block";
+  // bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
   $("#bf-add-description-dataset-spinner").show();
 
@@ -2995,7 +2995,7 @@ bfAddDescriptionBtn.addEventListener("click", () => {
         $("#bf-add-description-dataset-spinner").hide();
         datasetDescriptionStatus.innerHTML =
           "<span style='color: red;'> " + emessage + "</span>";
-        bfCurrentMetadataProgress.style.display = "none";
+        // bfCurrentMetadataProgress.style.display = "none";
         $(".synced-progress").css("display", "none");
         ipcRenderer.send(
           "track-event",
@@ -3006,7 +3006,7 @@ bfAddDescriptionBtn.addEventListener("click", () => {
       } else {
         $("#bf-add-description-dataset-spinner").hide();
         datasetDescriptionStatus.innerHTML = res;
-        bfCurrentMetadataProgress.style.display = "none";
+        // bfCurrentMetadataProgress.style.display = "none";
         $(".synced-progress").css("display", "none");
         showDatasetDescription();
         changeDatasetUnderDD();
@@ -3204,7 +3204,7 @@ ipcRenderer.on("selected-banner-image", async (event, path) => {
 });
 
 function uploadBannerImage() {
-  bfCurrentMetadataProgress.style.display = "block";
+  // bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
   datasetBannerImageStatus.innerHTML = "Please wait...";
   //Save cropped image locally and check size
@@ -3237,7 +3237,7 @@ function uploadBannerImage() {
             var emessage = userError(error);
             datasetBannerImageStatus.innerHTML =
               "<span style='color: red;'> " + emessage + "</span>";
-            bfCurrentMetadataProgress.style.display = "none";
+            // bfCurrentMetadataProgress.style.display = "none";
             $(".synced-progress").css("display", "none");
             ipcRenderer.send(
               "track-event",
@@ -3249,7 +3249,7 @@ function uploadBannerImage() {
           } else {
             datasetBannerImageStatus.innerHTML = res;
             showCurrentBannerImage();
-            bfCurrentMetadataProgress.style.display = "none";
+            // bfCurrentMetadataProgress.style.display = "none";
             $(".synced-progress").css("display", "none");
             $("#edit_banner_image_modal").modal("hide");
             ipcRenderer.send(
@@ -3306,10 +3306,10 @@ ipcRenderer.on("show-banner-image-below-1024", (event, index) => {
 // Add license //
 bfAddLicenseBtn.addEventListener("click", () => {
   setTimeout(function () {
-  bfCurrentMetadataProgress.style.display = "block";
+  // bfCurrentMetadataProgress.style.display = "block";
   $(".synced-progress").css("display", "block");
   $("#bf-add-license-dataset-spinner").show();
-  datasetLicenseStatus.innerHTML = "Please wait...";
+  datasetLicenseStatus.innerHTML = "";
 
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
@@ -3328,7 +3328,7 @@ bfAddLicenseBtn.addEventListener("click", () => {
         $("#bf-add-license-dataset-spinner").hide();
         datasetLicenseStatus.innerHTML =
           "<span style='color: red;'> " + emessage + "</span>";
-        bfCurrentMetadataProgress.style.display = "none";
+        // bfCurrentMetadataProgress.style.display = "none";
         $(".synced-progress").css("display", "none");
         ipcRenderer.send(
           "track-event",
@@ -3355,8 +3355,8 @@ bfAddLicenseBtn.addEventListener("click", () => {
 // Make PI owner //
 bfAddPermissionPIBtn.addEventListener("click", () => {
   datasetPermissionStatusPI.innerHTML = "";
-  bfCurrentPermissionProgress.style.display = "block";
-  bfAddEditCurrentPermissionProgress.style.display = "block";
+  // bfCurrentPermissionProgress.style.display = "block";
+  // bfAddEditCurrentPermissionProgress.style.display = "block";
   ipcRenderer.send("warning-add-permission-owner-PI");
 });
 ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
@@ -3390,8 +3390,8 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
           var emessage = userError(error);
           datasetPermissionStatusPI.innerHTML =
             "<span style='color: red;'> " + emessage + "</span>";
-          bfCurrentPermissionProgress.style.display = "none";
-          bfAddEditCurrentPermissionProgress.style.display = "none";
+          // bfCurrentPermissionProgress.style.display = "none";
+          // bfAddEditCurrentPermissionProgress.style.display = "none";
         } else {
           ipcRenderer.send(
             "track-event",
@@ -3409,8 +3409,8 @@ ipcRenderer.on("warning-add-permission-owner-selection-PI", (event, index) => {
       }
     );
   } else {
-    bfCurrentPermissionProgress.style.display = "none";
-    bfAddEditCurrentPermissionProgress.style.display = "none";
+    // bfCurrentPermissionProgress.style.display = "none";
+    // bfAddEditCurrentPermissionProgress.style.display = "none";
     $("#bf-add-permission-pi-spinner").css("visibility", "hidden");
   }
 });
@@ -3420,8 +3420,8 @@ bfAddPermissionBtn.addEventListener("click", () => {
   setTimeout(function () {
   $("#bf-add-permission-user-spinner").show();
   datasetPermissionStatus.innerHTML = "";
-  bfCurrentPermissionProgress.style.display = "block";
-  bfAddEditCurrentPermissionProgress.style.display = "block";
+  // bfCurrentPermissionProgress.style.display = "block";
+  // bfAddEditCurrentPermissionProgress.style.display = "block";
   //disableform(bfPermissionForm);
 
   var selectedBfAccount = defaultBfAccount;
@@ -3466,8 +3466,8 @@ ipcRenderer.on("warning-add-permission-owner-selection", (event, index) => {
     $("#bf-add-permission-user-spinner").hide();
   } else {
     $("#bf-add-permission-user-spinner").hide();
-    bfCurrentPermissionProgress.style.display = "none";
-    bfAddEditCurrentPermissionProgress.style.display = "none";
+    // bfCurrentPermissionProgress.style.display = "none";
+    // bfAddEditCurrentPermissionProgress.style.display = "none";
   }
 });
 
@@ -3476,8 +3476,8 @@ bfAddPermissionTeamBtn.addEventListener("click", () => {
   setTimeout(function () {
   $("#bf-add-permission-team-spinner").show();
   datasetPermissionStatusTeam.innerHTML = "";
-  bfCurrentPermissionProgress.style.display = "block";
-  bfAddEditCurrentPermissionProgress.style.display = "block";
+  // bfCurrentPermissionProgress.style.display = "block";
+  // bfAddEditCurrentPermissionProgress.style.display = "block";
   //disableform(bfPermissionForm);
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
@@ -3498,8 +3498,8 @@ bfAddPermissionTeamBtn.addEventListener("click", () => {
         $("#bf-add-permission-team-spinner").hide();
         datasetPermissionStatusTeam.innerHTML =
           "<span style='color: red;'> " + emessage + "</span>";
-        bfCurrentPermissionProgress.style.display = "none";
-        bfAddEditCurrentPermissionProgress.style.display = "none";
+        // bfCurrentPermissionProgress.style.display = "none";
+        // bfAddEditCurrentPermissionProgress.style.display = "none";
       } else {
         $("#bf-add-permission-team-spinner").hide();
         datasetPermissionStatusTeam.innerHTML = res + ". " + smileyCan;
@@ -3680,7 +3680,7 @@ function showCurrentSubtitle() {
   var selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
-    bfCurrentMetadataProgress.style.display = "none";
+    // bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
     bfDatasetSubtitle.value = "";
   } else {
@@ -3714,7 +3714,7 @@ function showCurrentDescription() {
   var selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
-    bfCurrentMetadataProgress.style.display = "none";
+    // bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
     tuiInstance.setMarkdown("");
   } else {
@@ -3744,7 +3744,7 @@ const showCurrentBannerImage = () => {
   var selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
-    bfCurrentMetadataProgress.style.display = "none";
+    // bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
     bfCurrentBannerImg.src = "";
     document.getElementById("para-current-banner-img").innerHTML = "None";
@@ -3762,7 +3762,7 @@ const showCurrentBannerImage = () => {
         if (error) {
           log.error(error);
           console.error(error);
-          bfCurrentMetadataProgress.style.display = "none";
+          // bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");
           bfCurrentBannerImg.src = "assets/img/no-banner-image.png";
           document.getElementById("para-current-banner-img").innerHTML = "None";
@@ -3785,7 +3785,7 @@ const showCurrentBannerImage = () => {
             document.getElementById("para-current-banner-img").innerHTML = "";
             bfCurrentBannerImg.src = res;
           }
-          bfCurrentMetadataProgress.style.display = "none";
+          // bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");
         }
       }
@@ -3801,7 +3801,7 @@ function showCurrentLicense() {
 
   if (selectedBfDataset === "Select dataset") {
     currentDatasetLicense.innerHTML = "None";
-    bfCurrentMetadataProgress.style.display = "none";
+    // bfCurrentMetadataProgress.style.display = "none";
     $(".synced-progress").css("display", "none");
   } else {
     client.invoke(
@@ -3812,21 +3812,20 @@ function showCurrentLicense() {
         if (error) {
           log.error(error);
           console.error(error);
-          bfCurrentMetadataProgress.style.display = "none";
+          // bfCurrentMetadataProgress.style.display = "none";
           $(".synced-progress").css("display", "none");
         } else {
           currentDatasetLicense.innerHTML = res;
-          if (res === "No license is currently assigned to this dataset") {
-            $("#button-add-license").show();
-            $("#assign-a-license-header").show();
-          } else if (res === "Creative Commons Attribution") {
+          if (res === "Creative Commons Attribution") {
             $("#button-add-license").hide();
             $("#assign-a-license-header").hide();
             $("#para-dataset-license-status").html(
               "You are all set. This dataset already has the correct license assigned."
             );
+          } else {
+            $("#button-add-license").show();
+            $("#assign-a-license-header").show();
           }
-          $(bfCurrentMetadataProgress).css("display", "none");
           $(".synced-progress").css("display", "none");
         }
       }
@@ -3912,14 +3911,14 @@ function showCurrentPermission() {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  currentDatasetPermission.innerHTML = "Please wait...";
-  currentAddEditDatasetPermission.innerHTML = "Please wait...";
+  currentDatasetPermission.innerHTML = `Loading current permissions... <div id="restart_loader" class="ui active green inline loader tiny"></div>`;
+  currentAddEditDatasetPermission.innerHTML = `Loading current permissions... <div id="restart_loader" class="ui active green inline loader tiny"></div>`;
 
   if (selectedBfDataset === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
     currentAddEditDatasetPermission.innerHTML = "None";
-    bfCurrentPermissionProgress.style.display = "none";
-    bfAddEditCurrentPermissionProgress.style.display = "none";
+    // bfCurrentPermissionProgress.style.display = "none";
+    // bfAddEditCurrentPermissionProgress.style.display = "none";
   } else {
     client.invoke(
       "api_bf_get_permission",
@@ -3929,8 +3928,8 @@ function showCurrentPermission() {
         if (error) {
           log.error(error);
           console.error(error);
-          bfCurrentPermissionProgress.style.display = "none";
-          bfAddEditCurrentPermissionProgress.style.display = "none";
+          // bfCurrentPermissionProgress.style.display = "none";
+          // bfAddEditCurrentPermissionProgress.style.display = "none";
         } else {
           var permissionList = "";
           let datasetOwner = "";
@@ -3947,8 +3946,8 @@ function showCurrentPermission() {
           }
           currentDatasetPermission.innerHTML = datasetOwner;
           currentAddEditDatasetPermission.innerHTML = permissionList;
-          bfCurrentPermissionProgress.style.display = "none";
-          bfAddEditCurrentPermissionProgress.style.display = "none";
+          // bfCurrentPermissionProgress.style.display = "none";
+          // bfAddEditCurrentPermissionProgress.style.display = "none";
           curation_consortium_check();
         }
       }
@@ -3976,8 +3975,8 @@ function addPermissionUser(
         var emessage = userError(error);
         datasetPermissionStatus.innerHTML =
           "<span style='color: red;'> " + emessage + "</span>";
-        bfCurrentPermissionProgress.style.display = "none";
-        bfAddEditCurrentPermissionProgress.style.display = "none";
+        // bfCurrentPermissionProgress.style.display = "none";
+        // bfAddEditCurrentPermissionProgress.style.display = "none";
       } else {
         datasetPermissionStatus.innerHTML = res;
         showCurrentPermission();
