@@ -6270,6 +6270,7 @@ ipcRenderer.on(
 document
   .getElementById("button-generate-comeback")
   .addEventListener("click", function () {
+    setTimeout(function () {
     document.getElementById("generate-dataset-progress-tab").style.display =
       "none";
     document.getElementById("div-vertical-progress-bar").style.display = "flex";
@@ -6283,6 +6284,7 @@ document
     ) {
       sodaJSONObj["starting-point"]["type"] = "local";
     }
+  }, delayAnimation);
   });
 
 // function to hide the sidebar and disable the sidebar expand button
@@ -6306,6 +6308,7 @@ const progressBarNewCurate = document.getElementById("progress-bar-new-curate");
 document
   .getElementById("button-generate")
   .addEventListener("click", function () {
+    // setTimeout(function () {
     $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
     document.getElementById("prevBtn").style.display = "none";
     document.getElementById("start-over-btn").style.display = "none";
@@ -6425,6 +6428,7 @@ document
         }
       }
     );
+    // }, 250);
   });
 
 // ipcRenderer.on('warning-empty-files-folders-generate-selection', (event, index) => {
