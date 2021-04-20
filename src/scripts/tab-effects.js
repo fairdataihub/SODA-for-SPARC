@@ -2820,6 +2820,8 @@ $(document).ready(() => {
     "https://raw.githubusercontent.com/bvhpatel/SODA/master/src/assets/blackfynn-warning-message.txt";
   fetch(url).then(function (response) {
     response.text().then(function (text) {
+      console.log(response)
+      console.log(text)
       let warning_obj = JSON.parse(text);
 
       if (warning_obj["show-warning-message"]) {
