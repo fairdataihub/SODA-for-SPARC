@@ -102,6 +102,8 @@ function addSubjectIDToJSON(subjectID) {
     for (var field of $("#form-add-a-subject").children().find("input")) {
       if (field.value !== "" && field.value !== undefined) {
         subjectsFileData[field.name] = field.value
+      } else {
+        subjectsFileData[field.name] = null
       }
     }
     if ($("#bootbox-subject-sex").val() !== "Select") {
@@ -188,6 +190,8 @@ function loadSubjectInformation(ev, subjectID, type) {
    for (var field of $("#form-add-a-subject").children().find("input")) {
      if (field.value !== "" && field.value !== undefined) {
        subjectsFileData[field.name] = field.value
+     } else {
+       subjectsFileData[field.name] = null
      }
    }
    if ($("#bootbox-subject-sex").val() !== "Select") {
@@ -249,3 +253,17 @@ function loadSubjectInformation(ev, subjectID, type) {
      index = index + 1
    }
  }
+
+ // TODO:
+ /*
+1. make a header array: with all the headers (potentially custom headers)
+2. subsequent list items are subjects (the rows)
+3. openpyxl:
+for i, row in enumrate(data):
+  if i == 0:
+    it is the header
+    (ask BP about whether or not we have to delete empty columns/headers from the file
+      Also, ask BP if we can delete the example and description rows )
+  else:
+    ws.append(row)
+ */

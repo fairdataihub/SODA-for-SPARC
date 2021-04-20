@@ -21,10 +21,10 @@ import socket
 import errno
 import re
 import gevent
-from blackfynn import Blackfynn
-from blackfynn.log import get_logger
-from blackfynn.api.agent import agent_cmd
-from blackfynn.api.agent import AgentError, check_port, socket_address
+from pennsieve import Pennsieve
+from pennsieve.log import get_logger
+from pennsieve.api.agent import agent_cmd
+from pennsieve.api.agent import AgentError, check_port, socket_address
 from urllib.request import urlopen
 import json
 import collections
@@ -38,8 +38,8 @@ from pysoda import bf_get_current_user_permission
     Function to get current doi for a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         Current doi or "None"
     """
@@ -47,21 +47,21 @@ from pysoda import bf_get_current_user_permission
 def bf_get_doi(selected_bfaccount, selected_bfdataset):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
         role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager']:
-            error = "Error: You don't have permissions to view/edit DOI for this Blackfynn dataset"
+            error = "Error: You don't have permissions to view/edit DOI for this Pennsieve dataset"
             raise Exception(error)
     except Exception as e:
         raise e
@@ -80,29 +80,29 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
     Function to reserve doi for a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         Success or error message
 """
 def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
         role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager']:
-            error = "Error: You don't have permissions to view/edit DOI for this Blackfynn dataset"
+            error = "Error: You don't have permissions to view/edit DOI for this Pennsieve dataset"
             raise Exception(error)
     except Exception as e:
         raise e
@@ -136,23 +136,23 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
     Function to get the review request status and publishing status of a dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         Current reqpusblishing status
     """
 def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
@@ -172,8 +172,8 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     Function to publish for a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         Success or error message
 """
@@ -181,15 +181,15 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
 def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
@@ -210,15 +210,15 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset):
 def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
@@ -243,8 +243,8 @@ def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
     Function to publish for a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         Success or error message
 """
@@ -252,15 +252,15 @@ def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
 def bf_publish_dataset(selected_bfaccount, selected_bfdataset):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:

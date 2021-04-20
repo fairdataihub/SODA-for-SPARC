@@ -20,10 +20,10 @@ import socket
 import errno
 import re
 import gevent
-from blackfynn import Blackfynn
-from blackfynn.log import get_logger
-from blackfynn.api.agent import agent_cmd
-from blackfynn.api.agent import AgentError, check_port, socket_address
+from pennsieve import Pennsieve
+from pennsieve.log import get_logger
+from pennsieve.api.agent import agent_cmd
+from pennsieve.api.agent import AgentError, check_port, socket_address
 from urllib.request import urlopen
 import json
 import collections
@@ -50,7 +50,7 @@ curated_dataset_size = 0
 start_time = 0
 
 userpath = expanduser("~")
-configpath = join(userpath, '.blackfynn', 'config.ini')
+configpath = join(userpath, '.pennsieve', 'config.ini')
 submitdataprogress = ' '
 submitdatastatus = ' '
 submitprintstatus = ' '
@@ -567,8 +567,8 @@ def bf_get_current_user_permission(bf, myds):
     Function to get the permission of currently logged in user for a selected dataset
 
     Args:
-        bf: logged Blackfynn acccount (dict)
-        myds: selected Blackfynn dataset (dict)
+        bf: logged Pennsieve acccount (dict)
+        myds: selected Pennsieve dataset (dict)
     Output:
         permission of current user (string)
     """
@@ -592,9 +592,9 @@ def bf_get_current_user_permission(bf, myds):
 
 #     Args:
 #         sourcedataset: state of the source dataset ('already organized' or 'not organized')
-#         destinationdataset: type of destination dataset ('modify existing', 'create new', or 'upload to blackfynn')
-#         pathdataset: destination path of new dataset if created locally or name of blackfynn account (string)
-#         newdatasetname: name of the local dataset or name of the dataset on blackfynn (string)
+#         destinationdataset: type of destination dataset ('modify existing', 'create new', or 'upload to pennsieve')
+#         pathdataset: destination path of new dataset if created locally or name of pennsieve account (string)
+#         newdatasetname: name of the local dataset or name of the dataset on pennsieve (string)
 #         manifeststatus: boolean to check if user request manifest files
 #         jsonpath: path of the files to be included in the dataset (dictionary)
 #         jsondescription: associated description to be included in manifest file (dictionary)
@@ -603,7 +603,7 @@ def bf_get_current_user_permission(bf, myds):
 #     global curateprogress #GUI messages shown to user to provide update on progress
 #     global curateprintstatus # If = "Curating" Progress messages are shown to user
 #     global total_dataset_size # total size of the dataset to be generated
-#     global curated_dataset_size # total size of the dataset generated (locally or on blackfynn) at a given time
+#     global curated_dataset_size # total size of the dataset generated (locally or on pennsieve) at a given time
 #     global start_time
 #     global bf
 #     global myds
@@ -721,25 +721,25 @@ def bf_get_current_user_permission(bf, myds):
 #             shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
 #             raise e
 
-#     # UPLOAD TO BLACKFYNN
-#     elif destinationdataset == 'upload to blackfynn':
+#     # UPLOAD TO Pennsieve
+#     elif destinationdataset == 'upload to pennsieve':
 #         error, c = '', 0
 #         accountname = pathdataset
 #         bfdataset = newdatasetname
 #         upload_directly_to_bf = 1
 
 #         try:
-#             bf = Blackfynn(accountname)
+#             bf = Pennsieve(accountname)
 #         except Exception as e:
 #             curatestatus = 'Done'
-#             error = error + 'Error: Please select a valid Blackfynn account<br>'
+#             error = error + 'Error: Please select a valid Pennsieve account<br>'
 #             c += 1
 
 #         try:
 #             myds = bf.get_dataset(bfdataset)
 #         except Exception as e:
 #             curatestatus = 'Done'
-#             error = error + 'Error: Please select a valid Blackfynn dataset<br>'
+#             error = error + 'Error: Please select a valid Pennsieve dataset<br>'
 #             c += 1
 
 #         if c>0:
@@ -750,7 +750,7 @@ def bf_get_current_user_permission(bf, myds):
 #             role = bf_get_current_user_permission(bf, myds)
 #             if role not in ['owner', 'manager', 'editor']:
 #                 curatestatus = 'Done'
-#                 error = "Error: You don't have permissions for uploading to this Blackfynn dataset"
+#                 error = "Error: You don't have permissions for uploading to this Pennsieve dataset"
 #                 raise Exception(error)
 #         except Exception as e:
 #             raise e
@@ -936,7 +936,7 @@ FUNCTIONS
 
 def bf_dataset_size():
     """
-    Function to get storage size of a dataset on Blackfynn
+    Function to get storage size of a dataset on Pennsieve
     """
     global bf
     global myds
@@ -1289,7 +1289,7 @@ def create_high_level_manifest_files(soda_json_structure):
 
 # def get_generate_dataset_size(soda_json_structure):
 #     """
-#     Function to get the size of the data to be generated (not existing at the local or Blackfynn destination)
+#     Function to get the size of the data to be generated (not existing at the local or Pennsieve destination)
 
 #     Args:
 #         soda_json_structure: soda dict with information about all specified files and folders
@@ -1461,7 +1461,7 @@ def bf_create_new_dataset(datasetname, bf):
 
     Args:
         datasetname: name of the dataset to be created (string)
-        bf: Blackfynn account object
+        bf: Pennsieve account object
     Action:
         Creates dataset for the account specified
     """
@@ -1470,7 +1470,7 @@ def bf_create_new_dataset(datasetname, bf):
         datasetname = datasetname.strip()
 
         if check_forbidden_characters_bf(datasetname):
-            error = error + 'Error: A Blackfynn dataset name cannot contain any of the following characters: ' + forbidden_characters_bf + "<br>"
+            error = error + 'Error: A Pennsieve dataset name cannot contain any of the following characters: ' + forbidden_characters_bf + "<br>"
             c += 1
 
         if (not datasetname):
@@ -1499,7 +1499,7 @@ def bf_create_new_dataset(datasetname, bf):
 
 def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure):
     """
-    Function to create manifest files for each high-level SPARC folder for an existing blackfynn dataset.
+    Function to create manifest files for each high-level SPARC folder for an existing Pennsieve dataset.
     Args:
         soda_json_structure: soda dict with information about the dataset to be generated/modified
     Action:
@@ -1978,7 +1978,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     # global progress_percentage_array
     bfsd = ""
 
-    # Delete any files on blackfynn that have been marked as deleted
+    # Delete any files on Pennsieve that have been marked as deleted
     def recursive_file_delete(folder):
         if "files" in folder.keys():
             for item in list(folder["files"]):
@@ -1991,7 +1991,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
             recursive_file_delete(folder["folders"][item])
         return
 
-    # Delete any files on blackfynn that have been marked as deleted
+    # Delete any files on Pennsieve that have been marked as deleted
     def metadata_file_delete(soda_json_structure):
         if "metadata-files" in soda_json_structure.keys():
             folder = soda_json_structure["metadata-files"]
@@ -2006,7 +2006,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
     # Add a new key containing the path to all the files and folders on the
     # local data structure.
     # Allows us to see if the folder path of a specfic file already
-    # exists on blackfynn.
+    # exists on Pennsieve.
     def recursive_item_path_create(folder, path):
         if "files" in folder.keys():
             for item in list(folder["files"]):
@@ -2056,7 +2056,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
 
         return
 
-    # Rename any files that exist on blackfynn
+    # Rename any files that exist on Pennsieve
     def recursive_file_rename(folder):
         if "files" in folder.keys():
             for item in list(folder["files"]):
@@ -2071,7 +2071,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
 
         return
 
-    # Delete any stray folders that exist on blackfynn
+    # Delete any stray folders that exist on Pennsieve
     # Only top level files are deleted since the api deletes any
     # files and folders that exist inside.
     def recursive_folder_delete(folder):
@@ -2106,50 +2106,50 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
 
         return
 
-    # 1. Remove all existing files on Blackfynn, that the user deleted.
-    main_curate_progress_message = "Checking Blackfynn for deleted files"
+    # 1. Remove all existing files on Pennsieve, that the user deleted.
+    main_curate_progress_message = "Checking Pennsieve for deleted files"
     dataset_structure = soda_json_structure["dataset-structure"]
     recursive_file_delete(dataset_structure)
-    main_curate_progress_message = "Files on Blackfynn marked for deletion have been deleted"
+    main_curate_progress_message = "Files on Pennsieve marked for deletion have been deleted"
 
-    # 2. Rename any deleted folders on Blackfynn to allow for replacements.
-    main_curate_progress_message = "Checking Blackfynn for deleted folders"
+    # 2. Rename any deleted folders on Pennsieve to allow for replacements.
+    main_curate_progress_message = "Checking Pennsieve for deleted folders"
     dataset_structure = soda_json_structure["dataset-structure"]
     recursive_folder_rename(dataset_structure, "deleted")
-    main_curate_progress_message = "Folders on Blackfynn have been marked for deletion"
+    main_curate_progress_message = "Folders on Pennsieve have been marked for deletion"
 
     # 2.5 Rename folders that need to be in the final destination.
     main_curate_progress_message = "Renaming any folders requested by the user"
     recursive_folder_rename(dataset_structure, "renamed")
     main_curate_progress_message = "Renamed all folders requested by the user"
 
-    # 3. Get the status of all files currently on Blackfynn and create
+    # 3. Get the status of all files currently on Pennsieve and create
     # the folderpath for all items in both dataset structures.
-    main_curate_progress_message = "Fetching files and folders from Blackfynn"
+    main_curate_progress_message = "Fetching files and folders from Pennsieve"
     current_bf_dataset_files_folders = bf_get_dataset_files_folders (soda_json_structure.copy())[0]
     bfsd = current_bf_dataset_files_folders["dataset-structure"]
-    main_curate_progress_message = "Creating file paths for all files on Blackfynn"
+    main_curate_progress_message = "Creating file paths for all files on Pennsieve"
     recursive_item_path_create(dataset_structure, [])
     recursive_item_path_create(bfsd, [])
     main_curate_progress_message = "File paths created"
 
-    # 4. Move any files that are marked as moved on Blackfynn.
+    # 4. Move any files that are marked as moved on Pennsieve.
     # Create any additional folders if required
     main_curate_progress_message = "Moving any files requested by the user"
     recursive_check_moved_files(dataset_structure)
     main_curate_progress_message = "Moved all files requested by the user"
 
-    # 5. Rename any Blackfynn files that are marked as renamed.
+    # 5. Rename any Pennsieve files that are marked as renamed.
     main_curate_progress_message = "Renaming any files requested by the user"
     recursive_file_rename(dataset_structure)
     main_curate_progress_message = "Renamed all files requested by the user"
 
-    # 6. Delete any Blackfynn folders that are marked as deleted.
-    main_curate_progress_message = "Deleting any additional folders present on Blackfynn"
+    # 6. Delete any Pennsieve folders that are marked as deleted.
+    main_curate_progress_message = "Deleting any additional folders present on Pennsieve"
     recursive_folder_delete(dataset_structure)
     main_curate_progress_message = "Deletion of additional folders complete"
 
-    # 7. Rename any Blackfynn folders that are marked as renamed.
+    # 7. Rename any Pennsieve folders that are marked as renamed.
     main_curate_progress_message = "Renaming any folders requested by the user"
     recursive_folder_rename(dataset_structure, "renamed")
     main_curate_progress_message = "Renamed all folders requested by the user"
@@ -2283,7 +2283,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
                                 if file_key in my_bf_existing_files_name_with_extension:
                                     continue
 
-                            # check if initial filename exists on Blackfynn dataset and get the projected name of the file after upload
+                            # check if initial filename exists on Pennsieve dataset and get the projected name of the file after upload
                             count_done = 0
                             count_exist = 0
                             projected_name = initial_name_with_extention
@@ -2345,7 +2345,7 @@ def bf_generate_new_dataset(soda_json_structure, bf, ds):
 
 
         # 1. Scan the dataset structure to create all non-existent folders
-        # create a tracking dict which would track the generation of the dataset on Blackfynn
+        # create a tracking dict which would track the generation of the dataset on Pennsieve
         main_curate_progress_message = "Creating folder structure"
         dataset_structure = soda_json_structure["dataset-structure"]
         tracking_json_structure = {"value": ds}
@@ -2578,7 +2578,7 @@ def bf_check_dataset_files_validity(soda_json_structure, bf):
                     pass
 
     if len(error)>0:
-        error_message = ["Error: The following Blackfynn files/folders are invalid. Specify them again or remove them."]
+        error_message = ["Error: The following Pennsieve files/folders are invalid. Specify them again or remove them."]
         error = error_message + error
 
     return error
@@ -2639,26 +2639,26 @@ def main_curate_function(soda_json_structure):
 
     # 1.2. Check that the bf destination is valid if generate on bf, or any other bf actions are requested
     if "bf-account-selected" in soda_json_structure:
-        # check that the blackfynn account is valid
+        # check that the Pennsieve account is valid
         try:
-            main_curate_progress_message = "Checking that the selected Blackfynn account is valid"
+            main_curate_progress_message = "Checking that the selected Pennsieve account is valid"
             accountname = soda_json_structure["bf-account-selected"]["account-name"]
-            bf = Blackfynn(accountname)
+            bf = Pennsieve(accountname)
         except Exception as e:
             main_curate_status = 'Done'
-            error = 'Error: Please select a valid Blackfynn account'
+            error = 'Error: Please select a valid Pennsieve account'
             raise Exception(error)
 
     # if uploading on an existing bf dataset
     if "bf-dataset-selected" in soda_json_structure:
-        # check that the blackfynn dataset is valid
+        # check that the Pennsieve dataset is valid
         try:
-            main_curate_progress_message = "Checking that the selected Blackfynn dataset is valid"
+            main_curate_progress_message = "Checking that the selected Pennsieve dataset is valid"
             bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
             myds = bf.get_dataset(bfdataset)
         except Exception as e:
             main_curate_status = 'Done'
-            error = 'Error: Please select a valid Blackfynn dataset'
+            error = 'Error: Please select a valid Pennsieve dataset'
             raise Exception(error)
 
         # check that the user has permissions for uploading and modifying the dataset
@@ -2667,7 +2667,7 @@ def main_curate_function(soda_json_structure):
             role = bf_get_current_user_permission(bf, myds)
             if role not in ['owner', 'manager', 'editor']:
                 main_curate_status = 'Done'
-                error = "Error: You don't have permissions for uploading to this Blackfynn dataset"
+                error = "Error: You don't have permissions for uploading to this Pennsieve dataset"
                 raise Exception(error)
         except Exception as e:
             raise e
@@ -2709,7 +2709,7 @@ def main_curate_function(soda_json_structure):
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
         if generate_option == "existing-bf":
             try:
-                main_curate_progress_message = "Checking that the Blackfynn files and folders are valid"
+                main_curate_progress_message = "Checking that the Pennsieve files and folders are valid"
                 if soda_json_structure["generate-dataset"]["destination"] == "bf":
                     error = bf_check_dataset_files_validity(soda_json_structure,bf)
                     if error:

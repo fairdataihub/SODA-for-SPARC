@@ -1,3 +1,4 @@
+const { rgba } = require("jimp");
 const { relative } = require("path");
 
 // JSON object of all the tabs
@@ -12,6 +13,8 @@ var allParentStepsJSON = {
 
 var currentTab = 0; // Current tab is set to be the first tab (0)
 // showParentTab(0, 1);
+
+const delay = 250;
 
 const showParentTab = (tabNow, nextOrPrev) => {
   $("#nextBtn").prop("disabled", true);
@@ -120,7 +123,7 @@ const fill_info_details = () => {
   $(".card-container.generate-preview").remove();
   if (sodaJSONObj["starting-point"]["type"] === "bf") {
     add_card_detail(
-      "Blackfynn account",
+      "Pennsieve account",
       sodaJSONObj["bf-account-selected"]["account-name"]
     );
     add_card_detail(
@@ -234,13 +237,13 @@ const fill_info_details = () => {
 
       add_card_detail(
         "New dataset location",
-        "Blackfynn",
+        "Pennsieve",
         1,
         "Question-generate-dataset",
         true
       );
       add_card_detail(
-        "Blackfynn account",
+        "Pennsieve account",
         $("#current-bf-account-generate").text(),
         1,
         "Question-generate-dataset-BF-account",
@@ -492,7 +495,7 @@ const nextPrev = (n) => {
     if ($("#nextBtn").prop("disabled") === true) {
       nextBtnDisabledVariable = true;
     } else {
-      nextBtnDisabledVariable = false
+      nextBtnDisabledVariable = false;
     }
     return;
   }
@@ -506,7 +509,7 @@ const nextPrev = (n) => {
     x[currentTab].id === "high-level-folders-tab" ||
     x[currentTab].id === "metadata-files-tab"
   ) {
-    organizeLandingUIEffect()
+    organizeLandingUIEffect();
     // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
     if ("files" in datasetStructureJSONObj) {
       datasetStructureJSONObj["files"] = {};
@@ -884,11 +887,18 @@ async function transitionSubQuestions(
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!$(target).hasClass("show")) {
-    $(target).addClass("show");
+    setTimeout(function () {
+      $(target).addClass("show");
+      // auto-scroll to bottom of div
+      if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+        document.getElementById(parentDiv).scrollTop = document.getElementById(
+          parentDiv
+        ).scrollHeight;
+      }
+    }, delay);
   }
 
-  if (currentDiv == 'Question-generate-dataset')
-  {
+  if (currentDiv == "Question-generate-dataset") {
     $("#inputNewNameDataset").val("");
     $("#inputNewNameDataset").click();
   }
@@ -969,7 +979,7 @@ async function transitionSubQuestions(
     document.getElementById(parentDiv).appendChild(target);
     $("#para-continue-existing-files-generate").text("");
   } else {
-    $("#nextBtn").prop("disabled", false)
+    $("#nextBtn").prop("disabled", false);
   }
 
   document.getElementById(currentDiv).classList.add("prev");
@@ -977,9 +987,25 @@ async function transitionSubQuestions(
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
   if (button === "delete") {
     if ($(ev).siblings().length > 0) {
-      $(ev).siblings().hide();
+      setTimeout(function () {
+        $(ev).siblings().hide();
+        // auto-scroll to bottom of div
+        if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+          document.getElementById(parentDiv).scrollTop = document.getElementById(
+            parentDiv
+          ).scrollHeight;
+        }
+      }, delay);
     }
-    $(ev).hide();
+    setTimeout(function () {
+      $(ev).hide();
+      // auto-scroll to bottom of div
+      if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+        document.getElementById(parentDiv).scrollTop = document.getElementById(
+          parentDiv
+        ).scrollHeight;
+      }
+    }, delay);
   }
 
   // auto-scroll to bottom of div
@@ -1118,7 +1144,7 @@ const create_json_object = (sodaJSONObj) => {
     full_current_path = path.join(root_folder_path, file);
     stats = fs.statSync(full_current_path);
     if (stats.isDirectory()) {
-      if (highLevelFolders.includes(file)) {
+      if (highLevelFolders.includes(file) && !/(^|\/)\.[^\/\.]/g.test(file)) {
         sodaJSONObj["dataset-structure"]["folders"][file] = {
           folders: {},
           files: {},
@@ -1129,7 +1155,11 @@ const create_json_object = (sodaJSONObj) => {
       }
     }
     if (stats.isFile()) {
-      if (high_level_metadata_sparc.includes(file)) {
+      if (
+        high_level_metadata_sparc.includes(file) &&
+        !/(^|\/)\.[^\/\.]/g.test(file)
+      ) {
+        //ignore hidden files
         sodaJSONObj["metadata-files"][file] = {
           path: full_current_path,
           type: "local",
@@ -1168,15 +1198,15 @@ const create_json_object = (sodaJSONObj) => {
 };
 
 // replace any duplicate file names
-// Modify for consistency with blackfynn naming when the update their system
-const check_file_name_for_blackfynn_duplicate = (dataset_folder, filepath) => {
+// Modify for consistency with Pennsieve naming when the update their system
+const check_file_name_for_pennsieve_duplicate = (dataset_folder, filepath) => {
   file_name = path.parse(filepath).base;
   file_extension = path.parse(filepath).ext;
   var duplicateFileArray = [];
 
   for (var item in dataset_folder) {
     if (dataset_folder[item]["path"] !== filepath) {
-      duplicateFileArray.push(item)
+      duplicateFileArray.push(item);
     }
   }
 
@@ -1184,11 +1214,9 @@ const check_file_name_for_blackfynn_duplicate = (dataset_folder, filepath) => {
   var fileBaseName = file_name;
   var originalFileNameWithoutExt = path.parse(fileBaseName).name;
   var fileNameWithoutExt = originalFileNameWithoutExt;
-  while (
-    fileBaseName in duplicateFileArray
-  ) {
+  while (fileBaseName in duplicateFileArray) {
     fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
-    fileBaseName = fileNameWithoutExt + file_extension
+    fileBaseName = fileNameWithoutExt + file_extension;
     j++;
   }
   return fileBaseName;
@@ -1215,6 +1243,7 @@ const recursive_structure_create = (
     if (
       stats.isFile() &&
       path.parse(current_file_path).name != "manifest" &&
+      !/(^|\/)\.[^\/\.]/g.test(file) && //not a hidden file
       high_level_folder != dataset_folder
     ) {
       if (sodaJSONObj["starting-point"][high_level_folder]["path"] !== "") {
@@ -1311,7 +1340,7 @@ const recursive_structure_create = (
         description: manifest_object["description"],
         "additional-metadata": manifest_object["additional-metadata"],
       };
-      projected_file_name = check_file_name_for_blackfynn_duplicate(
+      projected_file_name = check_file_name_for_pennsieve_duplicate(
         dataset_folder["files"],
         current_file_path
       );
@@ -1322,7 +1351,7 @@ const recursive_structure_create = (
         delete dataset_folder["files"][file];
       }
     }
-    if (stats.isDirectory()) {
+    if (stats.isDirectory() && !/(^|\/)\.[^\/\.]/g.test(file)) {
       dataset_folder["folders"][file] = {
         folders: {},
         files: {},
@@ -1428,6 +1457,8 @@ async function transitionSubQuestionsButton(
           "<p style='color:red'>" +
           result[1] +
           ".<br>Please choose another dataset!</p>",
+          heightAuto: false,
+          backdrop:"rgba(0,0,0, 0.4)"
       });
       $("#nextBtn").prop("disabled", true);
       $("#para-continue-bf-dataset-getting-started").text("");
@@ -1660,17 +1691,45 @@ function transitionFreeFormMode(ev, currentDiv, parentDiv, button, category) {
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!$(target).hasClass("show")) {
-    $(target).addClass("show");
+    setTimeout(function () {
+      $(target).addClass("show");
+      // auto-scroll to bottom of div
+      if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+        document.getElementById(parentDiv).scrollTop = document.getElementById(
+          parentDiv
+        ).scrollHeight;
+      }
+    }, delay);
   }
 
   // handle buttons (if buttons are confirm buttons -> delete after users confirm)
   if (button === "delete") {
     if ($(ev).siblings().length > 0) {
-      $(ev).siblings().hide();
+      setTimeout(function () {
+        $(ev).siblings().hide();
+        // auto-scroll to bottom of div
+        if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+          document.getElementById(parentDiv).scrollTop = document.getElementById(
+            parentDiv
+          ).scrollHeight;
+        }
+      }, delay);
     }
-    $(ev).hide();
+    setTimeout(function () {
+      $(ev).hide();
+      // auto-scroll to bottom of div
+      if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
+        document.getElementById(parentDiv).scrollTop = document.getElementById(
+          parentDiv
+        ).scrollHeight;
+      }
+    }, delay);
   } else {
-    if ($(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') !== "None") {
+    if (
+      $(".bf-dataset-span")
+        .html()
+        .replace(/^\s+|\s+$/g, "") !== "None"
+    ) {
       $(target).children().find(".div-confirm-button button").show();
     }
   }
@@ -1730,12 +1789,12 @@ const reset_ui = () => {
     $(obj).click();
   });
 
-  $("#metadata-submission-blackfynn").css("display", "none");
-  $("#metadata-ds-description-blackfynn").css("display", "none");
-  $("#metadata-CHANGES-blackfynn").css("display", "none");
-  $("#metadata-samples-blackfynn").css("display", "none");
-  $("#metadata-README-blackfynn").css("display", "none");
-  $("#metadata-subjects-blackfynn").css("display", "none");
+  $("#metadata-submission-pennsieve").css("display", "none");
+  $("#metadata-ds-description-pennsieve").css("display", "none");
+  $("#metadata-CHANGES-pennsieve").css("display", "none");
+  $("#metadata-samples-pennsieve").css("display", "none");
+  $("#metadata-README-pennsieve").css("display", "none");
+  $("#metadata-subjects-pennsieve").css("display", "none");
 
   $("#Question-getting-started-existing-BF-account").hide();
   $("#Question-getting-started-existing-BF-account").children().hide();
@@ -1785,9 +1844,9 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           .css("display", "none");
         if (metadataobject[key]["type"] == "bf") {
           $("#para-submission-file-path").html(
-            "Using file present on Blackfynn. <br> File name: " + key
+            "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-submission-blackfynn").css("display", "inline-block");
+          $("#metadata-submission-pennsieve").css("display", "inline-block");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -1807,9 +1866,9 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           .css("display", "none");
         if (metadataobject[key]["type"] == "bf") {
           $("#para-ds-description-file-path").html(
-            "Using file present on Blackfynn. <br> File name: " + key
+            "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-ds-description-blackfynn").css(
+          $("#metadata-ds-description-pennsieve").css(
             "display",
             "inline-block"
           );
@@ -1831,9 +1890,9 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           .css("display", "none");
         if (metadataobject[key]["type"] == "bf") {
           $("#para-subjects-file-path").html(
-            "Using file present on Blackfynn. <br> File name: " + key
+            "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-subjects-blackfynn").css("display", "inline-block");
+          $("#metadata-subjects-pennsieve").css("display", "inline-block");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -1851,9 +1910,9 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           .css("display", "none");
         if (metadataobject[key]["type"] == "bf") {
           $("#para-samples-file-path").html(
-            "Using file present on Blackfynn. <br> File name: " + key
+            "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-samples-blackfynn").css("display", "inline-block");
+          $("#metadata-samples-pennsieve").css("display", "inline-block");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -1871,9 +1930,9 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           .css("display", "none");
         if (metadataobject[key]["type"] == "bf") {
           $("#para-readme-file-path").html(
-            "Using file present on Blackfynn. <br> File name: " + key
+            "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-README-blackfynn").css("display", "inline-block");
+          $("#metadata-README-pennsieve").css("display", "inline-block");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -1891,9 +1950,9 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           .css("display", "none");
         if (metadataobject[key]["type"] == "bf") {
           $("#para-changes-file-path").html(
-            "Using file present on Blackfynn. <br> File name: " + key
+            "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-CHANGES-blackfynn").css("display", "inline-block");
+          $("#metadata-CHANGES-pennsieve").css("display", "inline-block");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -1966,11 +2025,17 @@ const hidePrevDivs = (currentDiv, category) => {
           ) {
             if (child.id === "bf-rename-dataset-name") {
               if (
-                $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') == "None" ||
-                $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '') == ""
+                $(".bf-dataset-span")
+                  .html()
+                  .replace(/^\s+|\s+$/g, "") == "None" ||
+                $(".bf-dataset-span")
+                  .html()
+                  .replace(/^\s+|\s+$/g, "") == ""
               ) {
                 $("#bf-rename-dataset-name").val(
-                  `${$(".bf-dataset-span").html().replace(/^\s+|\s+$/g, '')}`
+                  `${$(".bf-dataset-span")
+                    .html()
+                    .replace(/^\s+|\s+$/g, "")}`
                 );
               }
             } else {
@@ -2011,7 +2076,7 @@ const populateMetadataObject = (
     ) {
       if (
         metadataFilePath == "" ||
-        metadataFilePath.indexOf("Using file present on Blackfynn") == -1
+        metadataFilePath.indexOf("Using file present on Pennsieve") == -1
       ) {
         if (!object["metadata-files"][item]["action"].includes("deleted")) {
           object["metadata-files"][item]["action"].push("deleted");
@@ -2023,7 +2088,7 @@ const populateMetadataObject = (
       }
     }
   }
-  if (metadataFilePath.indexOf("Using file present on Blackfynn") != -1) {
+  if (metadataFilePath.indexOf("Using file present on Pennsieve") != -1) {
     return;
   }
   if (!optionList.includes(metadataFilePath)) {
@@ -2478,8 +2543,7 @@ function raiseWarningExit(message) {
   // function associated with the Exit button (Step 6: Generate dataset -> Generate div)
   return new Promise((resolve) => {
     bootbox.confirm({
-      message:
-        message,
+      message: message,
       buttons: {
         confirm: {
           label: "Yes",
@@ -2511,9 +2575,10 @@ const exitCurate = async (resetProgressTabs, start_over = false) => {
     var message;
 
     if ($("#save-progress-btn").css("display") === "block") {
-      message = "This will reset your progress so far. We recommend saving your progress before exiting. Are you sure you want to continue?"
+      message =
+        "This will reset your progress so far. We recommend saving your progress before exiting. Are you sure you want to continue?";
     } else {
-      message = "Are you sure you want to start over?"
+      message = "Are you sure you want to start over?";
     }
 
     var res = await raiseWarningExit(message);
@@ -2566,8 +2631,14 @@ const wipeOutCurateProgress = () => {
   // set back local destination for folders to empty
   $("#input-destination-generate-dataset-locally").val("");
   $("#input-destination-getting-started-locally").val("");
-  $("#input-destination-getting-started-locally").prop("placeholder", "Browse here");
-  $("#input-destination-generate-dataset-locally").prop("placeholder", "Browse here");
+  $("#input-destination-getting-started-locally").prop(
+    "placeholder",
+    "Browse here"
+  );
+  $("#input-destination-generate-dataset-locally").prop(
+    "placeholder",
+    "Browse here"
+  );
 
   // set metadata file paths to empty
   $(".para-metadata-file-status").text("");
@@ -2701,7 +2772,7 @@ $("#start-over-btn").click(() => {
 
 const description_text = {
   manage_dataset_section:
-    "This interface provides a convenient window to accomplish all required curation steps on your Blackfynn datasets",
+    "This interface provides a convenient window to accomplish all required curation steps on your Pennsieve datasets",
   prepare_metadata_section:
     "This interface will help you in preparing the SPARC metadata files for your datasets",
   prepare_dataset_section:
@@ -2754,6 +2825,8 @@ $(document).ready(() => {
       if (warning_obj["show-warning-message"]) {
         Swal.fire({
           icon: "info",
+          heightAuto: false,
+          backdrop:"rgba(0,0,0, 0.4)",
           html: `${warning_obj["warning-message"]}`,
         });
       }
@@ -2762,6 +2835,50 @@ $(document).ready(() => {
 });
 
 $("#manage_dataset_tab").click();
+
+$("#bf_list_users").on("change", () => {
+  let user_val = $("#bf_list_users").val();
+  let user_role = $("#bf_list_roles").val();
+
+  if (user_val == "Select user" || user_role == "Select role") {
+    $("#button-add-permission").hide();
+  } else {
+    $("#button-add-permission").show();
+  }
+});
+
+$("#bf_list_roles").on("change", () => {
+  let user_val = $("#bf_list_users").val();
+  let user_role = $("#bf_list_roles").val();
+
+  if (user_val == "Select user" || user_role == "Select role") {
+    $("#button-add-permission").hide();
+  } else {
+    $("#button-add-permission").show();
+  }
+});
+
+$("#bf_list_teams").on("change", () => {
+  let team_val = $("#bf_list_teams").val();
+  let team_role = $("#bf_list_roles_teams").val();
+
+  if (team_val == "Select team" || team_role == "Select role") {
+    $("#button-add-permission-team").hide();
+  } else {
+    $("#button-add-permission-team").show();
+  }
+});
+
+$("#bf_list_roles_teams").on("change", () => {
+  let team_val = $("#bf_list_teams").val();
+  let team_role = $("#bf_list_roles_teams").val();
+
+  if (team_val == "Select team" || team_role == "Select role") {
+    $("#button-add-permission-team").hide();
+  } else {
+    $("#button-add-permission-team").show();
+  }
+});
 
 $("body").on("click", ".check", function () {
   $(this).siblings("input[name=dataset_status_radio]:radio").click();
@@ -2814,10 +2931,7 @@ $("#edit_banner_image_button").click(async () => {
         if (imageExtension.toLowerCase() == "png") {
           $("#image-banner").attr("src", "data:image/png;base64," + img_base64);
         } else if (imageExtension.toLowerCase() == "jpeg") {
-          $("#image-banner").attr(
-            "src",
-            "data:image/jpg;base64," + img_base64
-          );
+          $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
         } else if (imageExtension.toLowerCase() == "jpg") {
           $("#image-banner").attr("src", "data:image/jpg;base64," + img_base64);
         } else {
@@ -2829,7 +2943,7 @@ $("#edit_banner_image_button").click(async () => {
           ipcRenderer.send(
             "track-event",
             "Error",
-            "Importing Blackfynn Image",
+            "Importing Pennsieve Image",
             img_src
           );
           return;
@@ -2843,7 +2957,7 @@ $("#edit_banner_image_button").click(async () => {
         ipcRenderer.send(
           "track-event",
           "Error",
-          "Importing Blackfynn Image",
+          "Importing Pennsieve Image",
           img_src
         );
         return;
@@ -2857,7 +2971,7 @@ $("#edit_banner_image_button").click(async () => {
       ipcRenderer.send(
         "track-event",
         "Error",
-        "Importing Blackfynn Image",
+        "Importing Pennsieve Image",
         img_src
       );
       return;
@@ -2889,3 +3003,34 @@ $(".popover-tooltip").each(function () {
     container: $this,
   });
 });
+
+initRipple = function(buttonEle){
+  var inside = document.createElement('div');
+  inside.classList.add('btn_animated-inside');
+  inside.innerHTML = buttonEle.innerHTML;
+  buttonEle.innerHTML = '';
+  buttonEle.appendChild(inside);
+  inside.addEventListener('mousedown', function(){
+     ripple(event, this);
+  });
+}
+ripple = function(event, buttonEle){
+  var rippleEle = document.createElement('span');
+  rippleEle.setAttribute('class', 'ripple');
+  rippleEle.style.top = event.offsetY + 'px';
+  rippleEle.style.left = event.offsetX + 'px';
+  buttonEle.appendChild(rippleEle);
+  setTimeout(function(){
+     rippleEle.classList.add('effect');
+  }, 0, rippleEle);
+
+  setTimeout(function(){
+     rippleEle.remove();
+  }, 1000, rippleEle);
+}
+
+var buttons = document.getElementsByClassName('btn_animated');
+for(var i = 0; i < buttons.length; i++){
+  button = buttons[i];
+  initRipple(button);
+}

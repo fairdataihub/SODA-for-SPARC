@@ -21,11 +21,11 @@ import socket
 import errno
 import re
 import gevent
-from blackfynn import Blackfynn
-from blackfynn.log import get_logger
-from blackfynn.api.agent import agent_cmd, validate_agent_installation
-from blackfynn.api.agent import AgentError, check_port, socket_address
-from blackfynn import Settings
+from pennsieve import Pennsieve
+from pennsieve.log import get_logger
+from pennsieve.api.agent import agent_cmd, validate_agent_installation
+from pennsieve.api.agent import AgentError, check_port, socket_address
+from pennsieve import Settings
 from urllib.request import urlopen
 import json
 import collections
@@ -51,7 +51,7 @@ curated_dataset_size = 0
 start_time = 0
 
 userpath = expanduser("~")
-configpath = join(userpath, '.blackfynn', 'config.ini')
+configpath = join(userpath, '.pennsieve', 'config.ini')
 submitdataprogress = ' '
 submitdatastatus = ' '
 submitprintstatus = ' '
@@ -97,7 +97,7 @@ def folder_size(path):
 
 def bf_dataset_size():
     """
-    Function to get storage size of a dataset on Blackfynn
+    Function to get storage size of a dataset on Pennsieve
     """
     global bf
     global myds
@@ -117,9 +117,9 @@ def time_format(elapsed_time):
 def bf_keep_only_account(keyname):
     """
     Args:
-        keyname: name of local Blackfynn account key (string)
+        keyname: name of local Pennsieve account key (string)
     Action:
-        Deletes account information from the Blackfynn config file
+        Deletes account information from the Pennsieve config file
     """
     config = ConfigParser()
     config.read(configpath)
@@ -131,17 +131,17 @@ def bf_keep_only_account(keyname):
         with open(configpath, 'w+') as configfile:
             config.write(configfile)
 
-### Manage datasets (Blackfynn interface)
+### Manage datasets (Pennsieve interface)
 def bf_add_account(keyname, key, secret):
     """
-    Associated with 'Add account' button in 'Login to your Blackfynn account' section of SODA
+    Associated with 'Add account' button in 'Login to your Pennsieve account' section of SODA
 
     Args:
         keyname: Name of the account to be associated with the given credentials (string)
         key: API key (string)
         secret: API Secret (string)
     Action:
-        Adds account to the Blackfynn configuration file (local machine)
+        Adds account to the Pennsieve configuration file (local machine)
     """
     try:
         error, c = '', 0
@@ -152,7 +152,7 @@ def bf_add_account(keyname, key, secret):
         if (keyname.isspace()) or (key.isspace()) or (secret.isspace()):
             raise Exception('Error: Please enter valid keyname, key, and/or secret')
 
-        bfpath = join(userpath, '.blackfynn')
+        bfpath = join(userpath, '.pennsieve')
         # Load existing or create new config file
         config = ConfigParser()
         if exists(configpath):
@@ -194,16 +194,17 @@ def bf_add_account(keyname, key, secret):
 
     # Check key and secret are valid, if not delete account from config
     try:
-        bf = Blackfynn(keyname)
+        bf = Pennsieve(keyname)
 
     except:
         bf_delete_account(keyname)
         raise Exception('Authentication Error: please check that key name, key, and secret are entered properly')
 
-    # Check that the blackfynn account is in the SPARC Consortium organization
+    # Check that the Pennsieve account is in the SPARC Consortium organization
     try:
         acc_details = bf.context.name
 
+        # CHANGE BACK
         if acc_details.find('SPARC Consortium') == -1:
             raise Exception('Error: Please check that your account is within the SPARC Consortium Organization')
 
@@ -216,6 +217,7 @@ def bf_add_account(keyname, key, secret):
         with open(configpath, 'w') as configfile:
             config.write(configfile)
 
+        # CHANGE BACK
         bf_keep_only_account(keyname)
 
         return 'Successfully added account ' + str(bf)
@@ -242,7 +244,7 @@ def check_forbidden_characters(my_string):
 
 def check_forbidden_characters_bf(my_string):
     """
-    Check for forbidden characters in blackfynn file/folder name
+    Check for forbidden characters in Pennsieve file/folder name
 
     Args:
         my_string: string with characters (string)
@@ -260,9 +262,9 @@ def check_forbidden_characters_bf(my_string):
 def bf_delete_account(keyname):
     """
     Args:
-        keyname: name of local Blackfynn account key (string)
+        keyname: name of local Pennsieve account key (string)
     Action:
-        Deletes account information from the Blackfynn config file
+        Deletes account information from the Pennsieve config file
     """
     config = ConfigParser()
     config.read(configpath)
@@ -289,7 +291,7 @@ def bf_remove_additional_accounts():
         print(section)
         if (section != 'agent' and section != 'global'):
             try:
-                bf = Blackfynn(section)
+                bf = Pennsieve(section)
                 acc_details = bf.context.name
 
                 if acc_details.find('SPARC Consortium') != -1:
@@ -320,6 +322,7 @@ def bf_account_list():
     try:
         accountlist = ['Select']
         if exists(configpath):
+            # CHANGE BACK
             bf_remove_additional_accounts() # remove non consortium accounts
             config = ConfigParser()
             config.read(configpath)
@@ -328,7 +331,7 @@ def bf_account_list():
             # if accountnamenoglobal:
             for n in accountnamenoglobal:
                 try:
-                    bfn = Blackfynn(n)
+                    bfn = Pennsieve(n)
                     accountlist.append(n)
                 except Exception as e:
                     pass
@@ -349,6 +352,7 @@ def bf_default_account_load():
     try:
         accountlist = []
         if exists(configpath):
+            # CHANGE BACK
             bf_remove_additional_accounts() # remove non consortium accounts
             config = ConfigParser()
             config.read(configpath)
@@ -359,7 +363,7 @@ def bf_default_account_load():
                 if "default_profile" in default_acc:
                     n = default_acc["default_profile"]
                     try:
-                        bfn = Blackfynn(n)
+                        bfn = Pennsieve(n)
                         accountlist.append(n)
                     except Exception as e:
                         return accountlist
@@ -367,7 +371,7 @@ def bf_default_account_load():
             # if accountnamenoglobal:
             #     for n in accountnamenoglobal:
             #         try:
-            #             bfn = Blackfynn(n)
+            #             bfn = Pennsieve(n)
             #             accountlist.append(n)
             #             break
             #         except:
@@ -395,7 +399,7 @@ def bf_dataset_account(accountname):
     # dataset_list.insert(0, ['Select dataset'])
     # return dataset_list
 
-    bf = Blackfynn(accountname)
+    bf = Pennsieve(accountname)
     bfaccountname = bf.profile.id
     datasets_list = bf.datasets()
 
@@ -440,7 +444,7 @@ def get_username(accountname):
     Output: User's name
     """
 
-    bf = Blackfynn(accountname)
+    bf = Pennsieve(accountname)
     bfname = bf.profile.first_name + " " + bf.profile.last_name
 
     return bfname
@@ -449,14 +453,14 @@ def get_username(accountname):
 def bf_account_details(accountname):
     """
     Args:
-        accountname: name of local Blackfynn account key (string)
+        accountname: name of local Pennsieve account key (string)
     Return:
         acc_details: account user email and organization (string)
     Action:
         Returns: return details of user associated with the account
     """
     try:
-        bf = Blackfynn(accountname)
+        bf = Pennsieve(accountname)
         acc_details = "User email: " + bf.profile.email + "<br>"
         acc_details = acc_details + "Organization: " + bf.context.name
 
@@ -495,7 +499,7 @@ def bf_new_dataset_folder(datasetname, accountname):
         datasetname = datasetname.strip()
 
         if check_forbidden_characters_bf(datasetname):
-            error = error + 'Error: A Blackfynn dataset name cannot contain any of the following characters: ' + forbidden_characters_bf + "<br>"
+            error = error + 'Error: A Pennsieve dataset name cannot contain any of the following characters: ' + forbidden_characters_bf + "<br>"
             c += 1
 
         if (not datasetname):
@@ -507,9 +511,9 @@ def bf_new_dataset_folder(datasetname, accountname):
             c += 1
 
         try:
-            bf = Blackfynn(accountname)
+            bf = Pennsieve(accountname)
         except Exception as e:
-            error = error + 'Error: Please select a valid Blackfynn account' + "<br>"
+            error = error + 'Error: Please select a valid Pennsieve account' + "<br>"
             c += 1
 
         if c>0:
@@ -541,7 +545,7 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     datasetname = renamed_dataset_name.strip()
 
     if check_forbidden_characters_bf(datasetname):
-        error = error + 'Error: A Blackfynn dataset name cannot contain any of the following characters: ' + forbidden_characters_bf + "<br>"
+        error = error + 'Error: A Pennsieve dataset name cannot contain any of the following characters: ' + forbidden_characters_bf + "<br>"
         c += 1
 
     if (not datasetname):
@@ -553,9 +557,9 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         c += 1
 
     try:
-        bf = Blackfynn(accountname)
+        bf = Pennsieve(accountname)
     except Exception as e:
-        error = error + 'Error: Please select a valid Blackfynn account' + "<br>"
+        error = error + 'Error: Please select a valid Pennsieve account' + "<br>"
         c += 1
 
     if c>0:
@@ -564,13 +568,13 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     try:
         myds = bf.get_dataset(current_dataset_name)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
         role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager']:
-            error = "Error: You don't have permissions to change the name of this Blackfynn dataset"
+            error = "Error: You don't have permissions to change the name of this Pennsieve dataset"
             raise Exception(error)
     except Exception as e:
         raise e
@@ -599,6 +603,9 @@ def agent_running():
     listen_port = 11235
 
     try:
+        # x = "ws://127.0.0.1:11235"
+        # create_connection(x).close()
+        # CHANGE BACK
         create_connection(socket_address(listen_port)).close()
 
     except socket.error as e:
@@ -606,22 +613,22 @@ def agent_running():
         if e.errno == errno.ECONNREFUSED:  # ConnectionRefusedError for Python 3
             return True
         else:
-            raise
+            raise e
     else:
-        raise AgentError("The Blackfynn agent is already running. Learn more about how to solve the issue <a href='https://github.com/bvhpatel/SODA/wiki/The-Blackfynn-agent-is-already-running' target='_blank'>here</a>.")
+        raise AgentError("The Pennsieve agent is already running. Learn more about how to solve the issue <a href='https://github.com/bvhpatel/SODA/wiki/The-Pennsieve-agent-is-already-running' target='_blank'>here</a>.")
 
 
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
     """
     Associated with 'Submit dataset' button in 'Submit new dataset' section
-    Uploads the specified folder to the specified dataset on Blackfynn account
+    Uploads the specified folder to the specified dataset on Pennsieve account
 
     Input:
         accountname: account in which the dataset needs to be created (string)
-        bfdataset: name of the dataset on Blackfynn (string)
+        bfdataset: name of the dataset on Pennsieve (string)
         pathdataset: path of dataset on local machine (string)
     Action:
-        Uploads dataset on Blackfynn account
+        Uploads dataset on Pennsieve account
     """
     global submitdataprogress
     global submitdatastatus
@@ -643,10 +650,10 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     start_submit = 0
 
     try:
-        bf = Blackfynn(accountname)
+        bf = Pennsieve(accountname)
     except Exception as e:
         submitdatastatus = 'Done'
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     error, c = '', 0
@@ -654,7 +661,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         myds = bf.get_dataset(bfdataset)
     except Exception as e:
         submitdatastatus = 'Done'
-        error = error + 'Error: Please select a valid Blackfynn dataset' + '<br>'
+        error = error + 'Error: Please select a valid Pennsieve dataset' + '<br>'
         c += 1
 
     if not isdir(pathdataset):
@@ -675,6 +682,9 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                 if mypathsize == 0:
                     c += 1
                     error = error + fp + ' is 0 KB <br>'
+                elif f[0:1] == ".":
+                    c += 1
+                    error = error + fp + ' is a hidden file not currently allowed during Pennsieve upload. <br>'
                 else:
                     total_file_size += mypathsize
             for d in dirs:
@@ -696,14 +706,14 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     role = bf_get_current_user_permission(bf, myds)
     if role not in ['owner', 'manager', 'editor']:
         submitdatastatus = 'Done'
-        error = "Error: You don't have permissions for uploading to this Blackfynn dataset"
+        error = "Error: You don't have permissions for uploading to this Pennsieve dataset"
         raise Exception(error)
 
     ## check if agent is installed
     try:
         validate_agent_installation(Settings())
     except AgentError:
-        raise AgentInstallationError('The Blackfynn agent is not installed on your computer. Visit the Blackfynn Agent website at "https://developer.blackfynn.io/agent" for installation instructions.')
+        raise AgentInstallationError('The Pennsieve agent is not installed on your computer. Visit the Pennsieve Agent website at "https://developer.pennsieve.io/agent" for installation instructions.')
 
     clear_queue()
     try:
@@ -722,10 +732,14 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                     filepath = join(pathdataset, filename)
                     if isdir(filepath):
                         submitdataprogress = "Uploading folder '%s' to dataset '%s \n' " %(filepath, bfdataset)
-                        myds.upload(filepath, recursive=True, use_agent=True)
+                        # CHANGE BACK
+                        # myds.upload(filepath, recursive=True, use_agent=True)
+                        myds.upload(filepath, recursive=True)
                     else:
                         submitdataprogress = "Uploading file '%s' to dataset '%s \n' " %(filepath, bfdataset)
-                        myds.upload(filepath, use_agent=True)
+                        # CHANGE BACK
+                        # myds.upload(filepath, use_agent=True)
+                        myds.upload(filepath)
                 submitdataprogress = 'Success: COMPLETED!'
                 submitdatastatus = 'Done'
 
@@ -781,17 +795,17 @@ def submit_dataset_progress():
 def bf_get_users(selected_bfaccount):
     """
     Function to get list of users belonging to the organization of
-    the given Blackfynn account
+    the given Pennsieve account
 
     Args:
-      selected_bfaccount: name of selected Blackfynn acccount (string)
+      selected_bfaccount: name of selected Pennsieve acccount (string)
     Retun:
         list_users : list of users (first name -- last name) associated with the organization of the
-        selected Blackfynn account (list of string)
+        selected Pennsieve account (list of string)
     """
     try:
         # def get_users_list():
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
         organization_name = bf.context.name
         organization_id = bf.context.id
         list_users = bf._api._get('/organizations/' + str(organization_id) + '/members')
@@ -812,16 +826,16 @@ def bf_get_users(selected_bfaccount):
 def bf_get_teams(selected_bfaccount):
     """
     Args:
-      selected_bfaccount: name of selected Blackfynn acccount (string)
+      selected_bfaccount: name of selected Pennsieve acccount (string)
     Return:
         list_teams : list of teams (name) associated with the organization of the
-        selected Blackfynn account (list of string)
+        selected Pennsieve account (list of string)
     Action:
         Provides list of teams belonging to the organization of
-        the given Blackfynn account
+        the given Pennsieve account
     """
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
         organization_name = bf.context.name
         organization_id = bf.context.id
         list_teams = bf._api._get('/organizations/' + str(organization_id) + '/teams')
@@ -841,23 +855,23 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
     Function to get permission for a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
     Output:
         list_permission: list of permission (first name -- last name -- role) associated with the
         selected dataset (list of string)
     """
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset' + '<br>'
+        error = 'Error: Please select a valid Pennsieve dataset' + '<br>'
         raise Exception(error)
 
     try:
@@ -907,8 +921,8 @@ def bf_get_current_user_permission(bf, myds):
     Function to get the permission of currently logged in user for a selected dataset
 
     Args:
-        bf: logged Blackfynn acccount (dict)
-        myds: selected Blackfynn dataset (dict)
+        bf: logged Pennsieve acccount (dict)
+        myds: selected Pennsieve dataset (dict)
     Output:
         permission of current user (string)
     """
@@ -929,9 +943,9 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
     Function to add/remove permission for a suser to a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
-        selected_user: name (first name -- last name) of selected Blackfynn user (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
+        selected_user: name (first name -- last name) of selected Pennsieve user (string)
         selected_role: desired role ('manager', 'viewer', 'editor', 'remove current permissions') (string)
     Return:
         success or error message (string)
@@ -941,16 +955,16 @@ def bf_add_permission(selected_bfaccount, selected_bfdataset, selected_user, sel
     error = ''
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = error + 'Error: Please select a valid Blackfynn account'
+        error = error + 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     c = 0
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = error + 'Error: Please select a valid Blackfynn dataset' + '<br>'
+        error = error + 'Error: Please select a valid Pennsieve dataset' + '<br>'
         c += 1
 
     try:
@@ -1034,9 +1048,9 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
     Function to add/remove permission fo a team to a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
-        selected_team: name of selected Blackfynn team (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
+        selected_team: name of selected Pennsieve team (string)
         selected_role: desired role ('manager', 'viewer', 'editor', 'remove current permissions') (string)
     Return:
         success or error message (string)
@@ -1045,18 +1059,18 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
     error = ''
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         if (selected_team == 'SPARC Data Curation Team'):
             if bf.context.name != 'SPARC Consortium':
-                raise Exception('Error: Please login under the Blackfynn SPARC Consortium organization to share with the Curation Team')
+                raise Exception('Error: Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team')
         if (selected_team == 'SPARC Embargoed Data Sharing Group'):
             if bf.context.name != 'SPARC Consortium':
-                raise Exception('Error: Please login under the Blackfynn SPARC Consortium organization to share with the SPARC consortium group')
+                raise Exception('Error: Please login under the Pennsieve SPARC Consortium organization to share with the SPARC consortium group')
     except Exception as e:
         raise e
 
@@ -1065,7 +1079,7 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = error + 'Error: Please select a valid Blackfynn dataset' + '<br>'
+        error = error + 'Error: Please select a valid Pennsieve dataset' + '<br>'
         c += 1
 
     try:
@@ -1130,38 +1144,43 @@ def bf_add_permission_team(selected_bfaccount, selected_bfdataset, selected_team
     Function to get current subtitle associated with a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         License name, if any, or "No license" message
     """
 def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
         selected_dataset_id = myds.id
         dataset_info = bf._api._get('/datasets/' + str(selected_dataset_id))
-        res = dataset_info['content']['description']
+        
+        
+        res = ""
+        if "description" in dataset_info['content']:
+            res = dataset_info['content']['description']
         return res
+        return json.dumps(dataset_info)
     except Exception as e:
         raise Exception(e)
 
 
 """
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
         input_subtitle: subtitle limited to 256 characters (string)
     Action:
         Add/change subtitle for a selected dataset
@@ -1171,21 +1190,21 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
 def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
         role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager']:
-            error = "Error: You don't have permissions for editing metadata on this Blackfynn dataset"
+            error = "Error: You don't have permissions for editing metadata on this Pennsieve dataset"
             raise Exception(error)
     except Exception as e:
         raise e
@@ -1204,23 +1223,23 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
     Function to get current description associated with a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         Description (string with markdown code)
     """
 def bf_get_description(selected_bfaccount, selected_bfdataset):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
@@ -1234,8 +1253,8 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
 
 """
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
         markdown_input: description with markdown formatting (string)
     Action:
         Add/change desciption for a selected dataset
@@ -1245,21 +1264,21 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
 def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
         role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager']:
-            error = "Error: You don't have permissions for editing metadata on this Blackfynn dataset"
+            error = "Error: You don't have permissions for editing metadata on this Pennsieve dataset"
             raise Exception(error)
     except Exception as e:
         raise e
@@ -1278,23 +1297,23 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
     Function to get url of current banner image associated with a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         url of banner image (string)
     """
 def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
@@ -1314,30 +1333,30 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
     Function to add banner to a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
-        selected_banner_image: name of selected Blackfynn dataset (data-uri)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
+        selected_banner_image: name of selected Pennsieve dataset (data-uri)
     Return:
         Success or error message
     """
 def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_path):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
         role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager']:
-            error = "Error: You don't have permissions for editing metadata on this Blackfynn dataset"
+            error = "Error: You don't have permissions for editing metadata on this Pennsieve dataset"
             raise Exception(error)
     except Exception as e:
         raise Exception(error)
@@ -1361,23 +1380,23 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
     Function to get current license associated with a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         License name, if any, or "No license" message
     """
 def bf_get_license(selected_bfaccount, selected_bfdataset):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
@@ -1395,8 +1414,8 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
 
 """
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
         selected_license: name of selected license (string)
     Action:
         Add/change license for a selected dataset
@@ -1406,21 +1425,21 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
 def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
         role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager']:
-            error = "Error: You don't have permissions for editing metadata on this Blackfynn dataset"
+            error = "Error: You don't have permissions for editing metadata on this Pennsieve dataset"
             raise Exception(error)
     except Exception as e:
         raise e
@@ -1457,8 +1476,8 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
     Function to get current status for a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         List of available status options for the account (list of string).
         Current dataset status (string)
@@ -1466,15 +1485,15 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
 def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
@@ -1492,8 +1511,8 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
     Function to get current status for a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Blackfynn acccount (string)
-        selected_bfdataset: name of selected Blackfynn dataset (string)
+        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfdataset: name of selected Pennsieve dataset (string)
         selected_status: display name of selected status (string)
     Return:
         success message
@@ -1501,21 +1520,21 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
 def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status):
 
     try:
-        bf = Blackfynn(selected_bfaccount)
+        bf = Pennsieve(selected_bfaccount)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn account'
+        error = 'Error: Please select a valid Pennsieve account'
         raise Exception(error)
 
     try:
         myds = bf.get_dataset(selected_bfdataset)
     except Exception as e:
-        error = 'Error: Please select a valid Blackfynn dataset'
+        error = 'Error: Please select a valid Pennsieve dataset'
         raise Exception(error)
 
     try:
         role = bf_get_current_user_permission(bf, myds)
         if role not in ['owner', 'manager']:
-            error = "Error: You don't have permissions for changing the status of this Blackfynn dataset"
+            error = "Error: You don't have permissions for changing the status of this Pennsieve dataset"
             raise Exception(error)
     except Exception as e:
         raise e
@@ -1531,7 +1550,7 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
                 c += 1
                 break
         if c==0:
-            error = "Error: Selected status is not available for this blackfynn account"
+            error = "Error: Selected status is not available for this Pennsieve account"
             raise Exception(error)
 
         #gchange dataset status

@@ -1,6 +1,7 @@
 var metadataFile = "";
 
-function confirm_click_account_function() {
+// Function to clear the confirm options in the curate feature
+const confirm_click_account_function = () => {
   let temp = $(".bf-account-span")
     .html()
     .replace(/^\s+|\s+$/g, "");
@@ -644,7 +645,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
       if (Object.keys(bfAccountOptions).length === 1) {
         footerMessage = "No existing accounts to load. Please add an account.";
       } else {
-        // footerMessage = "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Blackfynn-account'>Need help?</a>";
+        // footerMessage = "<a href='https://github.com/bvhpatel/SODA/wiki/Connect-to-your-Pennsieve-account'>Need help?</a>";
         footerMessage = "";
       }
     } else {
@@ -653,7 +654,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
     var bfacct;
     let bfAccountSwal = false
     // const { value: bfAccountSwal } = await Swal.fire({
-    //   title: "Select your Blackfynn account",
+    //   title: "Select your Pennsieve account",
     //   input: "select",
     //   showCloseButton: true,
     //   inputOptions: bfAccountOptions,
@@ -692,7 +693,9 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         Swal.fire({
           title: "Loading your account details...",
           timer: 2000,
+          heightAuto: false,
           timerProgressBar: true,
+          backdrop:"rgba(0,0,0, 0.4)",
           allowEscapeKey: false,
           showConfirmButton: false,
         });
@@ -733,8 +736,10 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
             Swal.fire({
               icon: "error",
               text: error,
+              heightAuto: false,
+              backdrop:"rgba(0,0,0, 0.4)",
               footer:
-                "<a href='https://help.blackfynn.com/en/articles/1488536-creating-an-api-key-for-the-blackfynn-clients'>Why do I have this issue?</a>",
+                "<a href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
             });
             showHideDropdownButtons("account", "hide");
           } else {
@@ -821,8 +826,11 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         showCloseButton: true,
         showCancelButton: true,
         focusConfirm: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
         confirmButtonText: "Confirm",
         cancelButtonText: "Cancel",
+        focusCancel: true,
         willOpen: () => {
           $("#curatebfdatasetlist").selectpicker("hide");
           $("#curatebfdatasetlist").selectpicker("refresh");
@@ -864,7 +872,6 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
 
               return undefined;
             } else {
-
               return bfDataset;
             }
           }
@@ -879,6 +886,8 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
           title: "Loading your dataset details...",
           timer: 2000,
           timerProgressBar: true,
+          heightAuto: false,
+          backdrop:"rgba(0,0,0, 0.4)",
           allowEscapeKey: false,
             showConfirmButton: false,
           });
@@ -936,7 +945,7 @@ $("#select-permission-list-2").change((e) => {
 
   if (bfacct === "None") {
     $("#para-filter-datasets-status-2").html(
-      "<span style='color:red'>Please select a Blackfynn account first!</span>"
+      "<span style='color:red'>Please select a Pennsieve account first!</span>"
     );
     $(datasetPermissionDiv)
       .find("#div-filter-datasets-progress-2")
@@ -1468,6 +1477,8 @@ async function moveItems(ev, category) {
         selectedPath +
         "?",
       showCancelButton: true,
+      heightAuto: false,
+      backdrop:"rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
     }).then((result) => {
       if (result.isConfirmed) {
@@ -1476,6 +1487,8 @@ async function moveItems(ev, category) {
           title: "Moving items...",
           timer: 1500,
           timerProgressBar: true,
+          heightAuto: false,
+          backdrop:"rgba(0,0,0, 0.4)",
           allowEscapeKey: false,
           showConfirmButton: false,
         });

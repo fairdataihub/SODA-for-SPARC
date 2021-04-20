@@ -13,9 +13,9 @@ const { trackEvent } = require("./scripts/analytics");
 const { fstat } = require("fs");
 
 log.transports.console.level = false;
-log.transports.file.level = "debug"
+log.transports.file.level = "debug";
 autoUpdater.channel = "latest";
-autoUpdater.logger = log
+autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 
 const nodeStorage = new JSONStorage(app.getPath("userData"));
@@ -184,8 +184,8 @@ function initialize() {
       transparent: true,
     });
     splash.loadURL(path.join("file://", __dirname, "/splash-screen.html"));
-    //
-    // // if main window is ready to show, then destroy the splash window and show up the main window
+    
+    //  if main window is ready to show, then destroy the splash window and show up the main window
     mainWindow.once("ready-to-show", () => {
       setTimeout(function () {
         splash.close();
@@ -220,13 +220,11 @@ function initialize() {
     // }
   });
 
-
-  app.on('uncaughtException', function(err) {
+  app.on("uncaughtException", function (err) {
     //log the message and stack trace
-    console.log(err)
+    console.log(err);
   });
 }
-
 
 // Make this app a single instance app.
 const gotTheLock = app.requestSingleInstanceLock();
@@ -297,35 +295,17 @@ ipcMain.on("app_version", (event) => {
 });
 
 autoUpdater.on("update-available", () => {
-  trackEvent(
-    "App Update",
-    "Update Requested",
-    "User OS",
-    os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion()
-  );
   log.info("update_available");
   mainWindow.webContents.send("update_available");
 });
 
 autoUpdater.on("update-downloaded", () => {
-  trackEvent(
-    "App Update",
-    "Update Downloaded",
-    "User OS",
-    os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion()
-  );
   log.info("update_downloaded");
   mainWindow.webContents.send("update_downloaded");
 });
 
 ipcMain.on("restart_app", () => {
   user_restart_confirmed = true;
-  trackEvent(
-    "App Update",
-    "App Restarted",
-    "User OS",
-    os.platform() + "-" + "-" + os.release() + " - SODAv" + app.getVersion()
-  );
   log.info("quitAndInstall");
   autoUpdater.quitAndInstall();
 });

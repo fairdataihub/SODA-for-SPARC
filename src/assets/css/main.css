@@ -17,7 +17,6 @@ button:focus {
   margin-top: 5px;
 }
 
-
 .div-organize-items {
   min-height: 420px;
   padding-top: 0;
@@ -62,8 +61,11 @@ button[disabled] {
   color: white !important;
 }
 
-button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id="bf_list_teams"], button[data-id="bf_list_roles_team"]{
-  border: 1px solid rgba(34,36,38,.15);
+button[data-id="bf_list_users"],
+button[data-id="bf_list_roles"],
+button[data-id="bf_list_teams"],
+button[data-id="bf_list_roles_team"] {
+  border: 1px solid rgba(34, 36, 38, 0.15);
   border-radius: 7px;
   width: 90% !important;
 }
@@ -573,7 +575,6 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
   box-shadow: 0px 0px 10px 0px var(--color-light-green);
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
-
 }
 
 .button-generate-dataset:active,
@@ -583,7 +584,6 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
   box-shadow: 0px 0px 3px 0px var(--color-light-green);
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
-
 }
 
 .button-generate-dataset p {
@@ -613,7 +613,7 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
   font-size: 13px;
   font-weight: 600;
   border-radius: 5px;
-  padding-top: 0;
+  padding-top: 5px;
   padding-bottom: 5px;
   padding-right: 20px;
   padding-left: 20px;
@@ -622,26 +622,40 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
   opacity: 1;
   position: relative;
   box-shadow: 0px 0px 10px #d5d5d5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
-.file-templates-button svg{
+.file-templates-button svg {
   margin: 0 auto;
   fill: var(--tagify-dd-color-primary);
   width: 45px;
   height: 45px;
+  pointer-events: none;
 }
 
-.file-templates-button:hover,
-.file-templates-button:focus {
+.file-templates-button:hover {
   outline: none;
+  box-shadow: 0px 0px 10px 0px var(--color-light-green);
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+}
+
+.file-templates-button:active {
   border: 1px solid var(--color-light-green);
   box-shadow: 0px 0px 3px 0px var(--color-light-green);
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
 }
 
 .metadata-button.button-generate-dataset.done {
   border: 1px solid var(--color-light-green);
   transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear; 
+  -webkit-transition: all 0.25s linear;
 }
 
 .metadata-button.button-generate-dataset.done p {
@@ -792,7 +806,7 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
   pointer-events: none;
 }
 
-.folder_desc.blackfynn_folder:after {
+.folder_desc.pennsieve_folder:after {
   content: "\f0c2";
   position: absolute;
   bottom: 34px;
@@ -806,7 +820,7 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
   pointer-events: none;
 }
 
-.blackfynn_folder_deleted {
+.pennsieve_folder_deleted {
   color: rgba(0, 0, 0, 0.5);
 }
 
@@ -828,7 +842,7 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
   color: rgba(0, 0, 0, 0.5);
 }
 
-.folder_desc.blackfynn_folder_deleted:after {
+.folder_desc.pennsieve_folder_deleted:after {
   content: "\f0c2";
   position: absolute;
   bottom: 34px;
@@ -856,7 +870,7 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
   pointer-events: none;
 }
 
-.folder_desc.blackfynn_file:after {
+.folder_desc.pennsieve_file:after {
   content: "\f0c2";
   position: absolute;
   bottom: 27px;
@@ -884,7 +898,7 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
   pointer-events: none;
 }
 
-.blackfynn_file_deleted {
+.pennsieve_file_deleted {
   color: rgba(0, 0, 0, 0.5);
 }
 
@@ -892,7 +906,7 @@ button[data-id="bf_list_users"], button[data-id="bf_list_roles"], button[data-id
   color: rgba(0, 0, 0, 0.5);
 }
 
-.folder_desc.blackfynn_file_deleted:after {
+.folder_desc.pennsieve_file_deleted:after {
   content: "\f0c2";
   position: absolute;
   bottom: 27px;

@@ -1,10 +1,27 @@
 # Change Log
 All notable changes to SODA will be documented in this file.
 
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## v4.2.0 - TBD
+
+### Feature additions:
+- SODA now supports Pennsieve.
+  - With the transition from Blackfynn to Pennsieve complete, SODA now uses the Pennsieve platform as the backend of the app.
+  - For the user, the changes should be intergated in with no downtime. All pre-existing functionality of Blackfynn is now supported within SODA. You will only need new API keys for using SODA as well as the Pennsieve agent.
+
+### Bug fixes:
+- When creating the manifest files for local review, SODA will now ignore deleted files and folders before creating the manifest file.
+- When you rename a file with more than one extension, SODA will correctly identify the name portion of the file and allow you to rename your file accordingly.
+- For long file names or files with long paths, the user interface will break the text to control text clipping boundaries.
+- Fixed a bug where manifest files with the 'strict Open XML' format and .xlsx extensions were being read incorrectly. SODA will now ignore manifest files that are not saved in the right format and warn you about this issue when you pull a dataset from Pennsieve.
+- When uploading on macOS, hidden files like .DS_STORE will currently break the Pennsieve agent upload. To combat this if your folder has these hidden files, SODA will block the upload when you use the 'Manage Datasets - Upload a local folder' feature. If you import a folder, that has these files, within the 'Organize Dataset' process, SODA will filter out these files automatically.
+
 ## v4.1.0 - 2020-04-09
 
 ### Feature additions:
-- Complete UI overhaul for the Manage Datasets, Prepare Metadata and Disseminate Dataset features to bring the SODA's visuals to be consistent across all features
+- Complete UI overhaul for the Manage Datasets, Prepare Metadata and Disseminate Dataset features to bring the SODA's visuals to be consistent across all features.
 - Organize a local dataset
   - You are now able to import and organize dataset folders and files directly from your local file system.
   - After organizing the dataset and including your metadata files, you can push your dataset directly to Blackfynn for storage and publishing or save it on your computer for future use.
@@ -37,7 +54,6 @@ All notable changes to SODA will be documented in this file.
 - Added support for TIFF banner images
   - If you wanted your TIFF image to be the banner image of your dataset, you can now use SODA to automatically convert and set your banner image.
 - Added support for in-app updating on MacOS
-
 
 ### Bug fixes:
 - When uploading a local dataset to an existing Blackfynn folder, the 'skip' folders option now correctly uploads files that were not meant to be skipped.
