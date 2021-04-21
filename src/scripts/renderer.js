@@ -817,6 +817,7 @@ const existingSPARCAwardsTagify = new Tagify(existingSPARCAwards, {
 
 //// when users click on Import
 function importMilestoneDocument() {
+  $("#upload-DDD-spinner").show();
   if (event.currentTarget.id == "button-import-milestone") {
     document.getElementById("para-milestone-document-info-long").style.display =
       "none";
@@ -827,6 +828,7 @@ function importMilestoneDocument() {
       document.getElementById("para-milestone-document-info").innerHTML =
         "<span style='color: red ;'>" +
         "Please select a data deliverables document first!</span>";
+      $("#upload-DDD-spinner").hide();
     } else {
       var award =
         presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
@@ -841,6 +843,7 @@ function importMilestoneDocument() {
           document.getElementById(
             "para-milestone-document-info-long"
           ).innerHTML = "<span style='color: red;'> " + emessage + ".</span>";
+          $("#upload-DDD-spinner").hide();
         } else {
           milestoneObj = res;
           createMetadataDir();
@@ -859,6 +862,7 @@ function importMilestoneDocument() {
           changeAwardInput();
           $("#div-cancel-DDD-import").hide();
           $("#div-confirm-DDD-import button").click();
+          $("#upload-DDD-spinner").hide();
         }
       });
     }
@@ -1901,6 +1905,7 @@ ipcRenderer.on(
           "File '" + filename + "' already exists in " + dirpath[0];
         // ipcRenderer.send("open-error-metadata-file-exits", emessage);
         Swal.fire("Metadata file already exists", `${emessage}`, "error");
+        $("#generate-dd-spinner").hide();
       } else {
         var datasetInfoValueArray = grabDSInfoEntries();
 
@@ -1960,6 +1965,7 @@ ipcRenderer.on(
                   "Prepare Metadata - Create dataset_description",
                   defaultBfDataset
                 );
+                $("#generate-dd-spinner").hide();
               } else {
                 document.getElementById(
                   "para-generate-description-status"
@@ -1974,13 +1980,15 @@ ipcRenderer.on(
                   "Prepare Metadata - Create dataset_description",
                   defaultBfDataset
                 );
+                $("#generate-dd-spinner").hide();
               }
             }
           );
         }
       }
+    } else {
+      $("#generate-dd-spinner").hide();
     }
-    $("#generate-dd-spinner").hide();
   }
 );
 
@@ -4712,7 +4720,7 @@ function addAirtableAccountInsideBootbox(myBootboxD) {
       message:
         "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
       centerVertical: true,
-      size: "medium",
+      size: "large",
       button: {
         ok: {
           label: "Yes",
