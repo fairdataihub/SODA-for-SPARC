@@ -1298,6 +1298,10 @@ body.swal2-shown > [aria-hidden="true"] {
   color: var(--color-light-green) !important;
 }
 
+.swal-left-align{
+  text-align: left !important;
+}
+
 .search-select-box {
   width: 100% !important;
 }

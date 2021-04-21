@@ -97,25 +97,41 @@ function delFolder(
 
   if (ev.classList.value.includes("deleted")) {
     if (ev.classList.value.includes("selected-item") && type === "items") {
-      bootbox.alert({
-        title: "Restore " + type,
-        message:
+      Swal.fire({
+        title: `Restore ${type}`,
+        icon: "warning",
+        text:
           "You can only restore one file at a time. Please select a single file for restoration.",
-        onEscape: true,
-        centerVertical: true,
-        backdrop: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
       });
+      // bootbox.alert({
+      //   title: "Restore " + type,
+      //   message:
+      //     "You can only restore one file at a time. Please select a single file for restoration.",
+      //   onEscape: true,
+      //   centerVertical: true,
+      //   backdrop: true,
+      // });
       return;
     }
     if (ev.classList.value.includes("recursive_deleted_file")) {
-      bootbox.alert({
-        title: "Restore " + type,
-        message:
+      Swal.fire({
+        title: `Restore ${type}`,
+        icon: "warning",
+        text:
           "The parent folder for this item has been marked for deletion. Please restore that folder to recover this item.",
-        onEscape: true,
-        centerVertical: true,
-        backdrop: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
       });
+      // bootbox.alert({
+      //   title: "Restore " + type,
+      //   message:
+      //     "The parent folder for this item has been marked for deletion. Please restore that folder to recover this item.",
+      //   onEscape: true,
+      //   centerVertical: true,
+      //   backdrop: true,
+      // });
       return;
     }
 
@@ -146,13 +162,21 @@ function delFolder(
               itemToRestore.lastIndexOf("-")
             );
             if (itemToRestore_new_key in myPath[type]) {
-              bootbox.alert({
-                title: "Unable to restore " + promptVar,
-                message:
+              Swal.fire({
+                title: `Unable to restore ${type}`,
+                icon: "warning",
+                text:
                   "There already exists a high level folder with the same name. Please remove that folder before you restore this one.",
-                onEscape: true,
-                centerVertical: true,
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
               });
+              // bootbox.alert({
+              //   title: "Unable to restore " + promptVar,
+              //   message:
+              //     "There already exists a high level folder with the same name. Please remove that folder before you restore this one.",
+              //   onEscape: true,
+              //   centerVertical: true,
+              // });
               return;
             }
           }
@@ -473,10 +497,16 @@ function renameFolder(
   }
 
   if (highLevelFolderBool) {
-    bootbox.alert({
-      message: "High-level SPARC folders cannot be renamed!",
-      centerVertical: true,
+    Swal.fire({
+      icon: "warning",
+      text: "High-level SPARC folders cannot be renamed!",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
     });
+    // bootbox.alert({
+    //   message: "High-level SPARC folders cannot be renamed!",
+    //   centerVertical: true,
+    // });
   } else {
     // show prompt to enter a new name
     var myBootboxDialog = bootbox.dialog({
@@ -504,10 +534,16 @@ function renameFolder(
             );
             if (returnedName !== "") {
               myBootboxDialog.modal("hide");
-              bootbox.alert({
-                message: "Successfully renamed!",
-                centerVertical: true,
+              Swal.fire({
+                icon: "success",
+                text: "Successfully renamed!.",
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
               });
+              // bootbox.alert({
+              //   message: "Successfully renamed!",
+              //   centerVertical: true,
+              // });
 
               /// assign new name to folder or file in the UI
               event1.parentElement.parentElement.innerText = returnedName;
@@ -668,11 +704,18 @@ function addFilesfunction(
     // check if dataset structure level is at high level folder
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
     if (slashCount === 1) {
-      bootbox.alert({
-        message:
+      Swal.fire({
+        icon: "warning",
+        html:
           "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
-        centerVertical: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
       });
+      // bootbox.alert({
+      //   message:
+      //     "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
+      //   centerVertical: true,
+      // });
       break;
     } else {
       if (
@@ -704,7 +747,7 @@ function addFilesfunction(
             fileBaseName in regularFiles
           ) {
             fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
-            fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext
+            fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext;
             j++;
           }
           regularFiles[fileBaseName] = {
@@ -752,13 +795,22 @@ function addFilesfunction(
   }
   if (nonAllowedDuplicateFiles.length > 0) {
     var listElements = showItemsAsListBootbox(nonAllowedDuplicateFiles);
-    bootbox.alert({
-      message:
-        "The following files are already imported into the current location of your dataset: <p><ul>" +
-        listElements +
-        "</ul></p>",
-      centerVertical: true,
+    Swal.fire({
+      icon: "warning",
+      html: `The following files are already imported into the current location of your dataset: <p><ul>${listElements}</ul></p>`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      customClass: {
+        content: "swal-left-align"
+      }
     });
+    // bootbox.alert({
+    //   message:
+    //     "The following files are already imported into the current location of your dataset: <p><ul>" +
+    //     listElements +
+    //     "</ul></p>",
+    //   centerVertical: true,
+    // });
   }
 }
 
