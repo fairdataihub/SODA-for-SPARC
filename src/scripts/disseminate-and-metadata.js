@@ -590,11 +590,11 @@ function showDDDUploadDiv() {
   $("#input-milestone-select").prop("placeholder", "Browse here");
   $("#button-import-milestone").hide();
   $("#div-upload-DDD").show();
-  $("#div-cancel-DDD-import").show();
+  $("#div-cancel-DDD-import").css("display", "flex");
 }
 
 $("#btn-cancel-DDD-import").click(function () {
-  $("#div-cancel-DDD-import").hide();
+  $("#div-cancel-DDD-import").css("display", "none");
   $("#div-upload-DDD").hide();
   $("#div-buttons-show-DDD").show();
 });

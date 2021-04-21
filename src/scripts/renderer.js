@@ -817,6 +817,7 @@ const existingSPARCAwardsTagify = new Tagify(existingSPARCAwards, {
 
 //// when users click on Import
 function importMilestoneDocument() {
+  $("#upload-DDD-spinner").show();
   if (event.currentTarget.id == "button-import-milestone") {
     document.getElementById("para-milestone-document-info-long").style.display =
       "none";
@@ -827,6 +828,7 @@ function importMilestoneDocument() {
       document.getElementById("para-milestone-document-info").innerHTML =
         "<span style='color: red ;'>" +
         "Please select a data deliverables document first!</span>";
+      $("#upload-DDD-spinner").hide();
     } else {
       var award =
         presavedAwardArray1.options[presavedAwardArray1.selectedIndex].value;
@@ -841,6 +843,7 @@ function importMilestoneDocument() {
           document.getElementById(
             "para-milestone-document-info-long"
           ).innerHTML = "<span style='color: red;'> " + emessage + ".</span>";
+          $("#upload-DDD-spinner").hide();
         } else {
           milestoneObj = res;
           createMetadataDir();
@@ -859,6 +862,7 @@ function importMilestoneDocument() {
           changeAwardInput();
           $("#div-cancel-DDD-import").hide();
           $("#div-confirm-DDD-import button").click();
+          $("#upload-DDD-spinner").hide();
         }
       });
     }
