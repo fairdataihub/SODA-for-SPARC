@@ -4441,6 +4441,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               folders: {},
               files: {},
               type: "virtual",
+              action: ["new"]
             };
 
             listItems(myPath, "#items");
@@ -6062,6 +6063,7 @@ $("#bf-rename-dataset-name").keyup(function () {
 
 $("#bf-new-dataset-name").keyup(function () {
   let newName = $("#bf-new-dataset-name").val().trim();
+  $("#para-add-new-dataset-status").text("");
 
   if (newName !== "") {
     if (check_forbidden_characters_bf(newName)) {

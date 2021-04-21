@@ -1363,6 +1363,7 @@ body.swal2-shown > [aria-hidden="true"] {
   height: 40px;
   text-align: center;
   font-size: 10px;
+  margin: 15px;
 }
 
 .spinner > div {

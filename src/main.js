@@ -128,7 +128,7 @@ function initialize() {
               buttons: ["Yes", "No"],
               title: "Confirm",
               message:
-                "Any running proccess will be stopped. Are you sure you want to quit?",
+                "Any running process will be stopped. Are you sure you want to quit?",
             },
             function (response) {
               if (response === 0) {
