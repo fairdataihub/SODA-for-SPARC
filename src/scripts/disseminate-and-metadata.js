@@ -98,6 +98,7 @@ $(document).ready(function () {
           `${emessage}`,
           'error'
         )
+        $("#generate-submission-spinner").hide();
       } else {
         var awardRes = $("#submission-SPARC-award-span").text();
         var dateRes = $("#submission-completion-date-span").text();
@@ -139,6 +140,7 @@ $(document).ready(function () {
                   "Prepare Metadata - Create Submission",
                   defaultBfDataset
                 );
+                $("#generate-submission-spinner").hide();
               } else {
                 document.getElementById(
                   "para-save-submission-status"
@@ -153,13 +155,15 @@ $(document).ready(function () {
                   "Prepare Metadata - Create Submission",
                   defaultBfDataset
                 );
+                $("#generate-submission-spinner").hide();
               }
             }
           );
         }
       }
+    } else {
+      $("#generate-submission-spinner").hide();
     }
-    $("#generate-submission-spinner").hide();
   });
   ipcRenderer.on("selected-milestonedocreupload", (event, filepath) => {
     if (filepath.length > 0) {

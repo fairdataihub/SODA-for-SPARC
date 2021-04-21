@@ -1680,7 +1680,7 @@ function grabCellConInfo(rowcountCon) {
     var conRoleInfo = [];
     var contactCheck = "No";
     var conID = "";
-    
+
     for (var j=1; j<currentConTable.rows[i].cells.length; j++) {
       var inputField = $(currentConTable.rows[i].cells[j]).find("input");
       if (inputField.length > 0) {
@@ -1901,6 +1901,7 @@ ipcRenderer.on(
           "File '" + filename + "' already exists in " + dirpath[0];
         // ipcRenderer.send("open-error-metadata-file-exits", emessage);
         Swal.fire("Metadata file already exists", `${emessage}`, "error");
+        $("#generate-dd-spinner").hide();
       } else {
         var datasetInfoValueArray = grabDSInfoEntries();
 
@@ -1960,6 +1961,7 @@ ipcRenderer.on(
                   "Prepare Metadata - Create dataset_description",
                   defaultBfDataset
                 );
+                $("#generate-dd-spinner").hide();
               } else {
                 document.getElementById(
                   "para-generate-description-status"
@@ -1974,13 +1976,15 @@ ipcRenderer.on(
                   "Prepare Metadata - Create dataset_description",
                   defaultBfDataset
                 );
+                $("#generate-dd-spinner").hide();
               }
             }
           );
         }
       }
+    } else {
+      $("#generate-dd-spinner").hide();
     }
-    $("#generate-dd-spinner").hide();
   }
 );
 
