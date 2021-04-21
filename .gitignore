@@ -6,6 +6,7 @@ node_modules
 build/api
 pysodadist
 dist
+analytics
 
 *.pyc
 src/package-lock.json
