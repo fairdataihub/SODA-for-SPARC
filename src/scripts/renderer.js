@@ -4433,6 +4433,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               folders: {},
               files: {},
               type: "virtual",
+              action: ["new"]
             };
 
             listItems(myPath, "#items");

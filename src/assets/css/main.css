@@ -63,12 +63,20 @@ button[disabled] {
 
 button[data-id="bf_list_users"],
 button[data-id="bf_list_roles"],
-button[data-id="bf_list_users_pi"],
 button[data-id="bf_list_teams"],
 button[data-id="bf_list_roles_team"] {
   border: 1px solid rgba(34, 36, 38, 0.15);
   border-radius: 7px;
   width: 90% !important;
+}
+
+button[data-id="bf_list_users_pi"] {
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  border-radius: 7px;
+}
+
+#pi_bootstrap_select_div > .dropdown.bootstrap-select {
+  width: 430px;
 }
 
 .sidebar {
