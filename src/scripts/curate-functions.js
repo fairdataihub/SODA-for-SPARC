@@ -14,7 +14,7 @@ const confirm_click_account_function = () => {
     $("#div-bf-account-btns-getting-started").css("display", "flex");
     $("#div-bf-account-btns-getting-started button").show();
   }
-}
+};
 
 // per change event of current dataset span text
 function confirm_click_function() {
@@ -45,8 +45,7 @@ function confirm_click_function() {
       $(".confirm-button").click();
     }
   }
-};
-
+}
 
 $(".button-individual-metadata.remove").click(function () {
   var metadataFileStatus = $($(this).parents()[1]).find(
@@ -652,7 +651,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
       footerMessage = bfAccountOptionsStatus;
     }
     var bfacct;
-    let bfAccountSwal = false
+    let bfAccountSwal = false;
     // const { value: bfAccountSwal } = await Swal.fire({
     //   title: "Select your Pennsieve account",
     //   input: "select",
@@ -695,7 +694,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
           timer: 2000,
           heightAuto: false,
           timerProgressBar: true,
-          backdrop:"rgba(0,0,0, 0.4)",
+          backdrop: "rgba(0,0,0, 0.4)",
           allowEscapeKey: false,
           showConfirmButton: false,
         });
@@ -718,7 +717,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
         $(".bf-dataset-span").html("None");
         defaultBfDataset = "Select dataset";
         document.getElementById("ds-description").innerHTML = "";
-        refreshDatasetList()
+        refreshDatasetList();
         $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
           "display",
           "none"
@@ -737,7 +736,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
               icon: "error",
               text: error,
               heightAuto: false,
-              backdrop:"rgba(0,0,0, 0.4)",
+              backdrop: "rgba(0,0,0, 0.4)",
               footer:
                 "<a href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
             });
@@ -883,15 +882,14 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
 
       // check return value
       if (bfDS) {
-        if (show_timer)
-        {
+        if (show_timer) {
           Swal.fire({
-          title: "Loading your dataset details...",
-          timer: 2000,
-          timerProgressBar: true,
-          heightAuto: false,
-          backdrop:"rgba(0,0,0, 0.4)",
-          allowEscapeKey: false,
+            title: "Loading your dataset details...",
+            timer: 2000,
+            timerProgressBar: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            allowEscapeKey: false,
             showConfirmButton: false,
           });
         }
@@ -904,7 +902,7 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
 
         defaultBfDataset = bfDataset;
         document.getElementById("ds-description").innerHTML = "";
-        refreshDatasetList()
+        refreshDatasetList();
         $("#dataset-loaded-message").hide();
 
         showHideDropdownButtons("dataset", "show");
@@ -928,7 +926,6 @@ async function openDropdownPrompt(dropdown, show_timer = true) {
       $(".svg-change-current-account.dataset").css("display", "block");
       $(".ui.active.green.inline.loader.small").css("display", "none");
     }, 10);
-
   }
 }
 
@@ -961,7 +958,7 @@ $("#select-permission-list-2").change((e) => {
     $(".selectpicker").selectpicker("refresh");
     $("#bf-dataset-select-div").show();
   } else {
-    $("#curatebfdatasetlist").selectpicker('render');
+    $("#curatebfdatasetlist").selectpicker("render");
     updateDatasetList(bfacct);
   }
 });
@@ -1212,7 +1209,7 @@ function create_child_node(
             );
           }
           newFormatNode["children"].push(new_node);
-          newFormatNode["children"].sort((a, b) => (a.text > b.text) ? 1 : -1)
+          newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
         }
       } else {
         if (key === selectedOriginalLocation) {
@@ -1245,7 +1242,7 @@ function create_child_node(
           );
         }
         newFormatNode["children"].push(new_node);
-        newFormatNode["children"].sort((a, b) => (a.text > b.text) ? 1 : -1)
+        newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
       }
     }
     if ("files" in oldFormatNode) {
@@ -1281,7 +1278,9 @@ function create_child_node(
                 type: nodeType,
               };
               newFormatNode["children"].push(new_node);
-              newFormatNode["children"].sort((a, b) => (a.text > b.text) ? 1 : -1)
+              newFormatNode["children"].sort((a, b) =>
+                a.text > b.text ? 1 : -1
+              );
             }
           } else {
             var new_node = {
@@ -1290,7 +1289,9 @@ function create_child_node(
               type: nodeType,
             };
             newFormatNode["children"].push(new_node);
-            newFormatNode["children"].sort((a, b) => (a.text > b.text) ? 1 : -1)
+            newFormatNode["children"].sort((a, b) =>
+              a.text > b.text ? 1 : -1
+            );
           }
         }
       }
@@ -1393,7 +1394,7 @@ async function moveItems(ev, category) {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedOrginalLocation = filtered[filtered.length - 1];
-  var selectedItem = ev.parentElement.innerText
+  var selectedItem = ev.parentElement.innerText;
   /*
   Reset previously selected items first, create jsTreeData again with updated dataset structure JSON object.
   Always remember to exclude/delete:
@@ -1448,9 +1449,12 @@ async function moveItems(ev, category) {
     html: jstreeInstance,
     showCloseButton: true,
     showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
     focusConfirm: false,
     confirmButtonText: "Confirm",
     cancelButtonText: "Cancel",
+    customClass: { content: "swal-left-align" },
     preConfirm: () => {
       Swal.resetValidationMessage();
       if (!selectedPath) {
@@ -1463,9 +1467,7 @@ async function moveItems(ev, category) {
           );
           return undefined;
         } else if (selectedNode === selectedItem) {
-          Swal.showValidationMessage(
-            "Items cannot be moved into themselves!"
-          );
+          Swal.showValidationMessage("Items cannot be moved into themselves!");
           return undefined;
         } else {
           return selectedPath;
@@ -1481,7 +1483,7 @@ async function moveItems(ev, category) {
         "?",
       showCancelButton: true,
       heightAuto: false,
-      backdrop:"rgba(0,0,0, 0.4)",
+      backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Yes",
     }).then((result) => {
       if (result.isConfirmed) {
@@ -1491,7 +1493,7 @@ async function moveItems(ev, category) {
           timer: 1500,
           timerProgressBar: true,
           heightAuto: false,
-          backdrop:"rgba(0,0,0, 0.4)",
+          backdrop: "rgba(0,0,0, 0.4)",
           allowEscapeKey: false,
           showConfirmButton: false,
         });
@@ -1550,7 +1552,7 @@ function moveItemsHelper(item, destination, category) {
 
     while (fileBaseName in uiFiles) {
       fileNameWithoutExt = `${originalFileNameWithoutExt} (${j})`;
-      fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext
+      fileBaseName = fileNameWithoutExt + path.parse(fileBaseName).ext;
       j++;
     }
     if ("action" in myPath[category][item]) {
@@ -1566,9 +1568,7 @@ function moveItemsHelper(item, destination, category) {
         myPath[category][item]["action"].push("renamed");
       }
     }
-    destinationPath[category][
-      fileBaseName
-    ] = myPath[category][item];
+    destinationPath[category][fileBaseName] = myPath[category][item];
   } else if (category === "folders") {
     var uiFolders = {};
     if (JSON.stringify(destinationPath["folders"]) !== "{}") {
@@ -1738,9 +1738,9 @@ $(jstreePreview).on("close_node.jstree", function (event, data) {
 function showTreeViewPreview(new_dataset_name) {
   datasetStructureJSONObj["files"] = sodaJSONObj["metadata-files"];
   if (manifestFileCheck.checked) {
-    addManifestFilesForTreeView()
+    addManifestFilesForTreeView();
   } else {
-    revertManifestForTreeView()
+    revertManifestForTreeView();
   }
 
   var jsTreePreviewData = create_child_node(
@@ -1762,12 +1762,10 @@ function showTreeViewPreview(new_dataset_name) {
 function addManifestFilesForTreeView() {
   for (var key in datasetStructureJSONObj["folders"]) {
     if (highLevelFolders.includes(key)) {
-      var fileKey = datasetStructureJSONObj["folders"][key]["files"]
-      if (
-        !("manifest.xlsx" in fileKey)
-      ) {
+      var fileKey = datasetStructureJSONObj["folders"][key]["files"];
+      if (!("manifest.xlsx" in fileKey)) {
         fileKey["manifest.xlsx"] = {
-          forTreeview: true
+          forTreeview: true,
         };
       }
     }
@@ -1778,11 +1776,12 @@ function addManifestFilesForTreeView() {
 function revertManifestForTreeView() {
   for (var key in datasetStructureJSONObj["folders"]) {
     if (highLevelFolders.includes(key)) {
-      var fileKey = datasetStructureJSONObj["folders"][key]["files"]
+      var fileKey = datasetStructureJSONObj["folders"][key]["files"];
       if (
-        ("manifest.xlsx" in fileKey && fileKey["manifest.xlsx"]["forTreeview"] === true)
+        "manifest.xlsx" in fileKey &&
+        fileKey["manifest.xlsx"]["forTreeview"] === true
       ) {
-        delete fileKey["manifest.xlsx"]
+        delete fileKey["manifest.xlsx"];
       }
     }
   }
