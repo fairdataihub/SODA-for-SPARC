@@ -113,7 +113,7 @@ function initialize() {
 
     mainWindow.webContents.once("dom-ready", () => {
       if (updatechecked == false) {
-        // autoUpdater.checkForUpdatesAndNotify();
+        autoUpdater.checkForUpdatesAndNotify();
       }
     });
 
@@ -198,7 +198,7 @@ function initialize() {
           mainWindow.focus();
           nodeStorage.setItem("firstlaunch", false);
         }
-        // autoUpdater.checkForUpdatesAndNotify();
+        autoUpdater.checkForUpdatesAndNotify();
         updatechecked = true;
       }, 6000);
     });
