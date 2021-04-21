@@ -4707,7 +4707,7 @@ function addAirtableAccountInsideBootbox(myBootboxD) {
       message:
         "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue??",
       centerVertical: true,
-      size: "medium",
+      size: "large",
       button: {
         ok: {
           label: "Yes",
