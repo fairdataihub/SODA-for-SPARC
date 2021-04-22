@@ -6,7 +6,6 @@ node_modules
 build/api
 pysodadist
 dist
-analytics
 
 *.pyc
 src/package-lock.json
@@ -18,3 +17,4 @@ website/.eslintcache
 website/images-bhavesh/~$suggestions.pptx
 website/package-lock.json
 website/package-lock.json
+tools/analytics/clients_secret.json
