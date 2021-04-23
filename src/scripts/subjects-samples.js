@@ -24,6 +24,8 @@ function showForm() {
     size: "large",
     centerVertical: true,
     onShown: function (e) {
+      // auto-click first area (mandatory fields) when opening the form
+      $(subjectsFormDiv).find("#subjects-mandatory-fields").click();
       $(".popover-tooltip").each(function () {
         var $this = $(this);
         $this.popover({
