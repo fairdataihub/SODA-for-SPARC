@@ -292,12 +292,13 @@ def save_subjects_file(filepath, datastructure):
         if i == 0:
             continue
         for j in range(len(item)):
-            # + 2 because excel is indexed from 1
             cell = chr(65 + j) + str(i + 1)
             ws1[cell] = datastructure[i][j]
+            ws1[cell].font = Font(bold=False, size=11, name='Arial')
 
     # 4. delete empty columns
     # TODO: for row in range(datastructure): if row[cell].value !== None, break. If all None, delete entire column
+    
 
     # write to excel file
     ws1 = wb['Sheet1']
