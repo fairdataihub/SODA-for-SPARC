@@ -285,6 +285,7 @@ def save_subjects_file(filepath, datastructure):
     if headers_no > 18:
         # TODO: insert custom columns here
         # then color the headers yellow
+        pass
 
     # 3. populate matrices
     for i, item in enumerate(datastructure):

@@ -139,13 +139,20 @@ function loadSubjectInformation(ev, subjectID, type) {
   // 2. For type===view: make all fields contenteditable=false
   // 3. For type===edit: make all fields contenteditable=true
   subjectsFormDiv.style.display = "block"
-  var infoJson = subjectsTableData[subjectID];
-  for (var field of $(subjectsFormDiv).children().find("input")) {
-    for (var key of Object.keys(infoJson)) {
-      if (field.name === key) {
-        field.value = infoJson[key]
+  var infoJson = [];
+  if (subjectsTableData.length > 1) {
+    for (var i=1; i<subjectsTableData.length;i++) {
+      if (subjectsTableData[i][0] === subjectID) {
+        infoJson = subjectsTableData[i];
+        break
       }
-      $("#bootbox-subject-sex").val(infoJson["Sex"])
+    }
+  }
+  // populate form
+  for (var field of $(subjectsFormDiv).children().find("input")) {
+    for (var i=0; j<infoJson.length;i++) {
+
+    }
     }
     if (type === "view") {
       $(field).prop("disabled", true);
