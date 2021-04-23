@@ -945,7 +945,6 @@
     class="section js-section u-category-windows"
     style="padding-left: 15px; overflow-y: hidden"
   >
-
     <header class="section-header">
       <div
         style="
@@ -987,8 +986,6 @@
         margin-left: -70px;
       "
     >
-
-
       <div
         class="individual-question prepare-submission show"
         id="Question-prepare-submission-1"
@@ -1074,13 +1071,12 @@
                     </h5>
                   </div>
                   <svg
-                    class="svg-change-current-account"
+                    class="svg-change-current-account bi bi-pencil-fill"
                     onclick="showAddAirtableAccountBootbox()"
                     xmlns="http://www.w3.org/2000/svg"
                     width="18"
                     height="18"
                     fill="#000"
-                    class="bi bi-pencil-fill"
                     viewBox="0 0 16 16"
                   >
                     <path
@@ -1112,34 +1108,22 @@
                         class="card-right"
                         id="current-users-awards"
                         style="white-space: pre-line; width: 70%"
-                      >
-                        None
+                      >None
                       </h5>
                     </div>
                     <svg
-                      class="svg-change-current-account"
+                      class="svg-change-current-account bi bi-pencil-fill"
                       onclick="editSPARCAwardsBootbox()"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
                         d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
                       />
                     </svg>
-                  </div>
-                  <div style="display: none" id="div-SPARC-edit-awards">
-                    <!-- <label style="font-weight:600">Add/Remove your SPARC Award(s) below: </label>
-                      <br> -->
-                    <textarea
-                      id="input-existing-grants"
-                      class="form-control"
-                      style="max-width: 100%; padding: 6px 8px"
-                      contenteditable="false"
-                    ></textarea>
                   </div>
                 </div>
               </div>
@@ -1158,10 +1142,7 @@
                 onclick="transitionFreeFormMode(this, 'Question-prepare-submission-1', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
                 data-next="Question-prepare-submission-3"
                 class="btn_animated"
-                style="
-                  margin: 10px auto;
-                  width: 100px;
-                "
+                style="margin: 10px auto; width: 100px"
               >
                 Confirm
               </button>
@@ -1200,11 +1181,7 @@
                 id="submission-connect-Airtable"
                 onclick="showAddAirtableAccountBootbox()"
                 class="btn_animated"
-                style="
-                  margin: 10px auto;
-                  width: 140px;
-                  border: none !important;
-                "
+                style="margin: 10px auto; width: 140px; border: none !important"
               >
                 Yes, let's connect
               </button>
@@ -1220,10 +1197,10 @@
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
             <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >Enter your SPARC Award below:
+              >Enter your SPARC Award number below:
               <i
                 class="fas fa-info-circle popover-tooltip"
-                data-content="Enter your SPARC award to provide additional information about it."
+                data-content="Enter your SPARC award number as it appears on your Award notice."
                 rel="popover"
                 data-placement="right"
                 data-html="true"
@@ -1314,10 +1291,7 @@
                 onclick="transitionFreeFormMode(this, 'Question-prepare-submission-3', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
                 data-next="Question-prepare-submission-DDD"
                 class="btn_animated"
-                style="
-                  margin: 10px auto;
-                  width: 100px;
-                "
+                style="margin: 10px auto; width: 100px"
                 id="btn-confirm-select-SPARC-awards"
               >
                 Confirm
@@ -1383,10 +1357,7 @@
               <button
                 onclick="showDDDUploadDiv()"
                 class="btn_animated"
-                style="
-                  margin: 10px auto;
-                  width: 100px;
-                "
+                style="margin: 10px auto; width: 100px"
               >
                 Yes, import
               </button>
@@ -1416,6 +1387,12 @@
                     placeholder="Browse here"
                   />
                 </div>
+                <div
+                  id="upload-DDD-spinner"
+                  class="ui active green inline loader"
+                  style="display: none; margin: 10px auto; width: 100%"
+                ></div>
+                </div>
                 <p
                   id="para-milestone-document-info"
                   style="
@@ -1437,7 +1414,7 @@
               </div>
               <div
                 style="
-                  display: flex;
+                  display: none;
                   flex-direction: row;
                   justify-content: center;
                   margin: 30px 0 auto;
@@ -1449,11 +1426,7 @@
                   onclick="importMilestoneDocument(this)"
                   type="button"
                   class="btn_animated"
-                  style="
-                    display: none;
-                    margin: 10px;
-                    width: 100px;
-                  "
+                  style="display: none; margin: 10px; width: 100px"
                 >
                   <i class="fas fa-check" style="margin-right: 7px"></i>Confirm
                 </button>
@@ -1554,11 +1527,7 @@
               onclick="transitionFreeFormMode(this, 'Question-prepare-submission-4', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
               data-next="Question-prepare-submission-6"
               class="btn_animated"
-              style="
-                margin: 10px auto;
-                width: 100px;
-                border: none !important;
-              "
+              style="margin: 10px auto; width: 100px; border: none !important"
             >
               Confirm
             </button>
@@ -1745,11 +1714,7 @@
               onclick="transitionFreeFormMode(this, 'Question-prepare-submission-no-skip-2', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
               data-next="Question-prepare-submission-no-skip-3"
               class="btn_animated"
-              style="
-                margin: 10px auto;
-                width: 100px;
-                border: none !important;
-              "
+              style="margin: 10px auto; width: 100px; border: none !important"
             >
               Confirm
             </button>
@@ -1805,9 +1770,8 @@
             <input
               type="date"
               id="input-milestone-date"
-              style="text-align: center"
+              style="text-align: center; font-family: inherit"
               required
-              style="font-family: inherit"
               class="form-container-input-bf"
             />
           </div>
@@ -1824,11 +1788,7 @@
               onclick="transitionFreeFormMode(this, 'Question-prepare-submission-6', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
               data-next="Question-prepare-submission-7"
               class="btn_animated"
-              style="
-                margin: 10px auto;
-                width: 100px;
-                border: none !important;
-              "
+              style="margin: 10px auto; width: 100px; border: none !important"
             >
               Confirm
             </button>
@@ -1870,11 +1830,7 @@
               onclick="transitionFreeFormMode(this, 'Question-prepare-submission-no-skip-3', 'create_submission-tab', 'delete', 'individual-question prepare-submission')"
               data-next="Question-prepare-submission-7"
               class="btn_animated"
-              style="
-                margin-right: 10px;
-                width: 100px;
-                border: none !important;
-              "
+              style="margin-right: 10px; width: 100px; border: none !important"
             >
               Confirm
             </button>
@@ -1958,15 +1914,10 @@
                 margin: 10px auto;
               "
             >
-
               <button
                 onclick="generateSubmissionFile()"
                 class="btn_animated"
-                style="
-                  margin: 10px;
-                  width: 120px;
-                  border: none !important;
-                "
+                style="margin: 10px; width: 120px; border: none !important"
               >
                 Generate
               </button>
@@ -1993,31 +1944,29 @@
 
     <div class="footer-div">
       <!-- <div style="display: flex; flex-direction: row; width: 120px"> -->
-        <button
-          type="button"
-          class="transition-btn prev"
-          data-section="main_tabs"
-        >
-          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
-        </button>
-        <button
-          onclick="resetSubmission()"
-          class= "start-over"
-        >
-          <i class="fas fa-sync-alt" style="margin-right: 10px;font-size: inherit"></i>
-          Start over
-        </button>
+      <button
+        type="button"
+        class="transition-btn prev"
+        data-section="main_tabs"
+      >
+        <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+      </button>
+      <button onclick="resetSubmission()" class="start-over">
+        <i
+          class="fas fa-sync-alt"
+          style="margin-right: 10px; font-size: inherit"
+        ></i>
+        Start over
+      </button>
       <!-- </div> -->
     </div>
   </section>
-
 
   <section
     id="create_dataset_description-section"
     class="section js-section u-category-windows"
     style="padding-left: 15px; overflow-y: hidden"
   >
-
     <header class="section-header">
       <div
         style="
@@ -2060,7 +2009,6 @@
         margin-left: -40px;
       "
     >
-
       <div
         class="individual-question prepare-dd show"
         id="Question-prepare-dd-1"
@@ -2145,13 +2093,12 @@
                       </h5>
                     </div>
                     <svg
-                      class="svg-change-current-account"
+                      class="svg-change-current-account bi bi-pencil-fill"
                       onclick="showAddAirtableAccountBootbox()"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -2183,18 +2130,16 @@
                           class="card-right"
                           id="current-users-awards-dd"
                           style="white-space: pre-line; width: 70%"
-                        >
-                          None
+                        >None
                         </h5>
                       </div>
                       <svg
-                        class="svg-change-current-account"
+                        class="svg-change-current-account bi bi-pencil-fill"
                         onclick="editSPARCAwardsBootbox()"
                         xmlns="http://www.w3.org/2000/svg"
                         width="18"
                         height="18"
                         fill="#000"
-                        class="bi bi-pencil-fill"
                         viewBox="0 0 16 16"
                       >
                         <path
@@ -2274,11 +2219,11 @@
                 <button
                   onclick="showAddAirtableAccountBootbox()"
                   class="btn_animated"
-                style="
-                  margin: 10px auto;
-                  width: 140px;
-                  border: none !important;
-                "
+                  style="
+                    margin: 10px auto;
+                    width: 140px;
+                    border: none !important;
+                  "
                   id="dd-connect-Airtable"
                 >
                   Yes, let's connect
@@ -2394,9 +2339,9 @@
                 <div>
                   <div class="div-dd-info">
                     <div class="demo-controls-head">
-                      <div style="width: 100%;">
-                      <font color="black"> Name*: </font>
-                    </div>
+                      <div style="width: 100%">
+                        <font color="black"> Name*: </font>
+                      </div>
                     </div>
                     <div class="demo-controls-body">
                       <select
@@ -2408,7 +2353,11 @@
                       </select>
                     </div>
                     <div class="tooltipnew demo-controls-end">
-                      <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                      <img
+                        class="info"
+                        src="assets/img/info.png"
+                        style="margin-top: -2px"
+                      />
                       <span class="tooltiptext">
                         Select the Pennsieve dataset where the dataset
                         description file will be uploaded. You can create a new
@@ -2420,9 +2369,9 @@
 
                   <div class="div-dd-info">
                     <div class="demo-controls-head">
-                      <div style="width: 100%;">
-                      <font color="black"> Description*: </font>
-                    </div>
+                      <div style="width: 100%">
+                        <font color="black"> Description*: </font>
+                      </div>
                     </div>
                     <div class="demo-controls-body">
                       <textarea
@@ -2432,7 +2381,11 @@
                       ></textarea>
                     </div>
                     <div class="tooltipnew demo-controls-end">
-                      <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                      <img
+                        class="info"
+                        src="assets/img/info.png"
+                        style="margin-top: -2px"
+                      />
                       <span class="tooltiptext">
                         The description will be automatically pulled from the
                         subtitle associated with the selected Pennsieve dataset.
@@ -2442,9 +2395,9 @@
 
                   <div class="div-dd-info">
                     <div class="demo-controls-head">
-                      <div style="width: 100%;">
-                      <font color="black"> Keywords*: </font>
-                    </div>
+                      <div style="width: 100%">
+                        <font color="black"> Keywords*: </font>
+                      </div>
                     </div>
                     <div class="demo-controls-body">
                       <textarea
@@ -2455,7 +2408,11 @@
                       </textarea>
                     </div>
                     <div class="tooltipnew demo-controls-end">
-                      <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                      <img
+                        class="info"
+                        src="assets/img/info.png"
+                        style="margin-top: -2px"
+                      />
                       <span class="tooltiptext" style="z-index: 2">
                         A set of 3-5 keywords other than the above that will aid
                         in search. Hit "Enter" on your keyboard after each entry
@@ -2466,9 +2423,9 @@
 
                   <div class="div-dd-info">
                     <div class="demo-controls-head">
-                      <div style="width: 100%;">
-                      <font color="black"> Number of subjects*: </font>
-                    </div>
+                      <div style="width: 100%">
+                        <font color="black"> Number of subjects*: </font>
+                      </div>
                     </div>
                     <div class="demo-controls-body">
                       <input
@@ -2479,7 +2436,11 @@
                       />
                     </div>
                     <div class="tooltipnew demo-controls-end">
-                      <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                      <img
+                        class="info"
+                        src="assets/img/info.png"
+                        style="margin-top: -2px"
+                      />
                       <span class="tooltiptext">
                         Number of unique subjects in this dataset, should match
                         subjects metadata file. Must be greater or equal to 1.
@@ -2489,9 +2450,9 @@
 
                   <div class="div-dd-info">
                     <div class="demo-controls-head">
-                      <div style="width: 100%;">
-                      <font color="black"> Number of samples*: </font>
-                    </div>
+                      <div style="width: 100%">
+                        <font color="black"> Number of samples*: </font>
+                      </div>
                     </div>
                     <div class="demo-controls-body">
                       <input
@@ -2501,7 +2462,11 @@
                       />
                     </div>
                     <div class="tooltipnew demo-controls-end">
-                      <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                      <img
+                        class="info"
+                        src="assets/img/info.png"
+                        style="margin-top: -2px"
+                      />
                       <span class="tooltiptext">
                         Number of unique samples in this dataset, should match
                         samples metadata file. Set to 0 if there are no samples.
@@ -2529,9 +2494,9 @@
                 <div>
                   <div class="div-dd-info">
                     <div class="demo-controls-head">
-                      <div style="width: 100%;">
-                      <font color="black"> SPARC Award*: </font>
-                    </div>
+                      <div style="width: 100%">
+                        <font color="black"> SPARC Award*: </font>
+                      </div>
                     </div>
                     <div class="demo-controls-body">
                       <select
@@ -2544,7 +2509,11 @@
                       </select>
                     </div>
                     <div class="tooltipnew demo-controls-end">
-                      <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                      <img
+                        class="info"
+                        src="assets/img/info.png"
+                        style="margin-top: -2px"
+                      />
                       <span class="tooltiptext">
                         SPARC award associated with the dataset.
                       </span>
@@ -2557,9 +2526,9 @@
                     style="display: none"
                   >
                     <div class="demo-controls-head">
-                      <div style="width: 100%;">
-                      <font color="black"> SPARC Award*: </font>
-                    </div>
+                      <div style="width: 100%">
+                        <font color="black"> SPARC Award*: </font>
+                      </div>
                     </div>
                     <div class="demo-controls-body">
                       <input
@@ -2569,7 +2538,11 @@
                       />
                     </div>
                     <div class="tooltipnew demo-controls-end">
-                      <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                      <img
+                        class="info"
+                        src="assets/img/info.png"
+                        style="margin-top: -2px"
+                      />
                       <span class="tooltiptext">
                         SPARC award associated with the dataset.
                       </span>
@@ -2578,9 +2551,9 @@
 
                   <div class="div-dd-info">
                     <div class="demo-controls-head">
-                      <div style="width: 100%;">
-                      <font color="black"> Other funding source(s): </font>
-                    </div>
+                      <div style="width: 100%">
+                        <font color="black"> Other funding source(s): </font>
+                      </div>
                     </div>
                     <div class="demo-controls-body">
                       <textarea
@@ -2591,7 +2564,11 @@
                       </textarea>
                     </div>
                     <div class="tooltipnew demo-controls-end">
-                      <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                      <img
+                        class="info"
+                        src="assets/img/info.png"
+                        style="margin-top: -2px"
+                      />
                       <span class="tooltiptext">
                         Other funding sources, if any. Hit 'Enter' on your
                         keyboard after typing each. Leave empty if none.
@@ -2601,9 +2578,9 @@
 
                   <div class="div-dd-info">
                     <div class="demo-controls-head">
-                      <div style="width: 100%;">
-                      <font color="black"> Acknowledgments: </font>
-                    </div>
+                      <div style="width: 100%">
+                        <font color="black"> Acknowledgments: </font>
+                      </div>
                     </div>
                     <div class="demo-controls-body">
                       <textarea
@@ -2613,7 +2590,11 @@
                       </textarea>
                     </div>
                     <div class="tooltipnew demo-controls-end">
-                      <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                      <img
+                        class="info"
+                        src="assets/img/info.png"
+                        style="margin-top: -2px"
+                      />
                       <span class="tooltiptext">
                         Acknowledgments beyond funding and contributors, if any.
                         Leave empty if none.
@@ -3172,9 +3153,9 @@
                 <div>
                   <div class="div-dd-info">
                     <div class="demo-controls-head">
-                      <div style="width: 100%;">
-                      <font color="black">Completeness of dataset: </font>
-                    </div>
+                      <div style="width: 100%">
+                        <font color="black">Completeness of dataset: </font>
+                      </div>
                     </div>
                     <div class="demo-controls-body">
                       <input
@@ -3183,7 +3164,11 @@
                       />
                     </div>
                     <div class="tooltipnew demo-controls-end">
-                      <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                      <img
+                        class="info"
+                        src="assets/img/info.png"
+                        style="margin-top: -2px"
+                      />
                       <span class="tooltiptext">
                         Is the data set as uploaded complete or is it part of an
                         ongoing study? Select "hasNext" to indicate that you
@@ -3197,9 +3182,9 @@
 
                   <div class="div-dd-info">
                     <div class="demo-controls-head">
-                      <div style="width: 100%;">
-                      <font color="black">Parent dataset(s): </font>
-                    </div>
+                      <div style="width: 100%">
+                        <font color="black">Parent dataset(s): </font>
+                      </div>
                     </div>
                     <div class="demo-controls-body">
                       <input
@@ -3208,7 +3193,11 @@
                       />
                     </div>
                     <div class="tooltipnew demo-controls-end">
-                      <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                      <img
+                        class="info"
+                        src="assets/img/info.png"
+                        style="margin-top: -2px"
+                      />
                       <span class="tooltiptext">
                         If this is a part of a larger dataset, or references
                         subjects or samples from a parent dataset, select the
@@ -3225,9 +3214,9 @@
 
                   <div class="div-dd-info">
                     <div class="demo-controls-head">
-                      <div style="width: 100%;">
-                      <font color="black">Title for complete dataset: </font>
-                    </div>
+                      <div style="width: 100%">
+                        <font color="black">Title for complete dataset: </font>
+                      </div>
                     </div>
                     <div class="demo-controls-body">
                       <input
@@ -3236,7 +3225,11 @@
                       />
                     </div>
                     <div class="tooltipnew demo-controls-end">
-                      <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                      <img
+                        class="info"
+                        src="assets/img/info.png"
+                        style="margin-top: -2px"
+                      />
                       <span class="tooltiptext">
                         Please give us a provisional title for the entire data
                         set. Leave empty if not applicable.
@@ -3246,9 +3239,9 @@
 
                   <div class="div-dd-info">
                     <div class="demo-controls-head">
-                      <div style="width: 100%;">
-                      <font color="black">Metadata Version: </font>
-                    </div>
+                      <div style="width: 100%">
+                        <font color="black">Metadata Version: </font>
+                      </div>
                     </div>
                     <div class="demo-controls-body">
                       <input
@@ -3259,7 +3252,11 @@
                       />
                     </div>
                     <div class="tooltipnew demo-controls-end">
-                      <img class="info" src="assets/img/info.png" style="margin-top: -2px;"/>
+                      <img
+                        class="info"
+                        src="assets/img/info.png"
+                        style="margin-top: -2px"
+                      />
                       <span
                         class="tooltiptext"
                         style="width: 300px; font-weight: bold"
@@ -3292,11 +3289,7 @@
               <button
                 id="button-generate-ds-description"
                 class="btn_animated"
-                style="
-                  margin: 10px;
-                  width: 120px;
-                  border: none !important;
-                "
+                style="margin: 10px; width: 120px; border: none !important"
               >
                 Generate
               </button>
@@ -3319,20 +3312,20 @@
     <!-- back button -->
     <div class="footer-div">
       <!-- <div style="display: flex; flex-direction: row; width: 120px"> -->
-        <button
-          type="button"
-          class="transition-btn prev"
-          data-section="main_tabs"
-        >
-          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
-        </button>
-        <button
-          onclick="resetDD()"
-          class= "start-over"
-        >
-          <i class="fas fa-sync-alt" style="margin-right: 10px;font-size: inherit"></i>
-          Start over
-        </button>
+      <button
+        type="button"
+        class="transition-btn prev"
+        data-section="main_tabs"
+      >
+        <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+      </button>
+      <button onclick="resetDD()" class="start-over">
+        <i
+          class="fas fa-sync-alt"
+          style="margin-right: 10px; font-size: inherit"
+        ></i>
+        Start over
+      </button>
     </div>
   </section>
 
@@ -4192,6 +4185,6 @@
   type="text/javascript">
   </script>
   <script type="text/javascript">
-  require("./renderer-process/prepare-metadata/save-information.js");
+    require("./renderer-process/prepare-metadata/save-information.js");
   </script>
 </template>

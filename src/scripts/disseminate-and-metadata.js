@@ -98,6 +98,7 @@ $(document).ready(function () {
           `${emessage}`,
           'error'
         )
+        $("#generate-submission-spinner").hide();
       } else {
         var awardRes = $("#submission-SPARC-award-span").text();
         var dateRes = $("#submission-completion-date-span").text();
@@ -139,6 +140,7 @@ $(document).ready(function () {
                   "Prepare Metadata - Create Submission",
                   defaultBfDataset
                 );
+                $("#generate-submission-spinner").hide();
               } else {
                 document.getElementById(
                   "para-save-submission-status"
@@ -153,13 +155,15 @@ $(document).ready(function () {
                   "Prepare Metadata - Create Submission",
                   defaultBfDataset
                 );
+                $("#generate-submission-spinner").hide();
               }
             }
           );
         }
       }
+    } else {
+      $("#generate-submission-spinner").hide();
     }
-    $("#generate-submission-spinner").hide();
   });
   ipcRenderer.on("selected-milestonedocreupload", (event, filepath) => {
     if (filepath.length > 0) {
@@ -369,16 +373,16 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
 
 function disseminateShowCurrentPermission(bfAcct, bfDS) {
   $("#para-share-curation_team-status").css("color", "#000");
-  currentDatasetPermission.innerHTML = "Please wait...";
+  currentDatasetPermission.innerHTML = `Loading current permissions... <div id="restart_loader" class="ui active green inline loader tiny"></div>`;
   if (bfDS === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
-    bfCurrentPermissionProgress.style.display = "none";
+    // bfCurrentPermissionProgress.style.display = "none";
   } else {
     client.invoke("api_bf_get_permission", bfAcct, bfDS, (error, res) => {
       if (error) {
         log.error(error);
         console.error(error);
-        bfCurrentPermissionProgress.style.display = "none";
+        // bfCurrentPermissionProgress.style.display = "none";
       } else {
         var permissionList = "";
         let datasetOwner = "";
@@ -391,7 +395,7 @@ function disseminateShowCurrentPermission(bfAcct, bfDS) {
           }
         }
         currentDatasetPermission.innerHTML = datasetOwner;
-        bfCurrentPermissionProgress.style.display = "none";
+        // bfCurrentPermissionProgress.style.display = "none";
       }
     });
   }
@@ -586,11 +590,11 @@ function showDDDUploadDiv() {
   $("#input-milestone-select").prop("placeholder", "Browse here");
   $("#button-import-milestone").hide();
   $("#div-upload-DDD").show();
-  $("#div-cancel-DDD-import").show();
+  $("#div-cancel-DDD-import").css("display", "flex");
 }
 
 $("#btn-cancel-DDD-import").click(function () {
-  $("#div-cancel-DDD-import").hide();
+  $("#div-cancel-DDD-import").css("display", "none");
   $("#div-upload-DDD").hide();
   $("#div-buttons-show-DDD").show();
 });
@@ -899,7 +903,8 @@ function addNewRow(table) {
       return;
     }
     if ($(currentRow).find("label").find("input")[0].checked) {
-      var contactPersonBoolean = contactPersonCheck();
+      var currentContactPersonIDNumber = $($(currentRow).find("label").find("input")[0]).prop("id").slice(-1);
+      var contactPersonBoolean = contactPersonCheck(currentContactPersonIDNumber);
       if (contactPersonBoolean) {
         $("#para-save-contributor-status").text(
           "One contact person is already added above. Only one contact person is allowed for a dataset."
@@ -933,9 +938,9 @@ function addNewRow(table) {
         newRowIndex +
         "' class='form-container-input-bf' type='text'></input></td><td class='grab'><input id='ds-description-raw-contributor-list-first-" +
         newRowIndex +
-        "' type='text' class='form-container-input-bf'></input></td><td class='grab'><input type='text' id='input-con-ID-" +
+        "' type='text' class='form-container-input-bf'></input></td><td class='grab'><input name='id' type='text' id='input-con-ID-" +
         newRowIndex +
-        "' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-" +
+        "' contenteditable='true'></input></td><td class='grab'><input name='affiliation' id='input-con-affiliation-" +
         newRowIndex +
         "' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-" +
         newRowIndex +
@@ -1296,7 +1301,7 @@ function checkEmptyConRowInfo(table, row) {
 
 function onChangeContactLabel(no) {
   $("#para-save-contributor-status").text("");
-  var contactPersonBoolean = contactPersonCheck();
+  var contactPersonBoolean = contactPersonCheck(no);
   if (contactPersonBoolean) {
     $("#ds-contact-person-" + no).prop("checked", false);
     $("#para-save-contributor-status").text(
@@ -1306,54 +1311,67 @@ function onChangeContactLabel(no) {
 }
 
 function resetSubmission() {
-  bootbox.confirm({
-    message:
-      "<h4>Are you sure you want to start over and reset your propress?</h4>",
-    centerVertical: true,
-    button: {
-      ok: {
-        label: "Yes",
-        className: "btn-primary",
-      },
-    },
-    callback: function (r) {
-      if (r !== null && r === true) {
-        // 1. remove Prev and Show from all individual-question except for the first one
-        // 2. empty all input, textarea, select, para-elements
-        $("#Question-prepare-submission-1").removeClass("prev");
-        $("#Question-prepare-submission-1").nextAll().removeClass("show");
-        $("#Question-prepare-submission-1").nextAll().removeClass("prev");
+  Swal.fire({
+    text: "Are you sure you want to start over and reset your progress?",
+    icon: "warning",
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "I want to start over!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 1. remove Prev and Show from all individual-question except for the first one
+      // 2. empty all input, textarea, select, para-elements
+      $("#Question-prepare-submission-1").removeClass("prev");
+      $("#Question-prepare-submission-1").nextAll().removeClass("show");
+      $("#Question-prepare-submission-1").nextAll().removeClass("prev");
 
-        var inputFields = $("#Question-prepare-submission-1")
-          .nextAll()
-          .find("input");
-        var textAreaFields = $("#Question-prepare-submission-1")
-          .nextAll()
-          .find("textarea");
-        var selectFields = $("#Question-prepare-submission-1")
-          .nextAll()
-          .find("select");
+      var inputFields = $("#Question-prepare-submission-1")
+        .nextAll()
+        .find("input");
+      var textAreaFields = $("#Question-prepare-submission-1")
+        .nextAll()
+        .find("textarea");
+      var selectFields = $("#Question-prepare-submission-1")
+        .nextAll()
+        .find("select");
 
-        for (var field of inputFields) {
-          $(field).val("");
-        }
-        for (var field of textAreaFields) {
-          $(field).val("");
-        }
-        milestoneTagify2.removeAllTags();
-        milestoneTagify1.removeAllTags();
-        for (var field of selectFields) {
-          $(field).val("Select");
-        }
-
-        document.getElementById("para-milestone-document-info").innerHTML = "";
-        document.getElementById("para-milestone-document-info-long").innerHTML =
-          "";
-        document.getElementById("para-save-submission-status").innerHTML = "";
-        checkAirtableStatus();
+      for (var field of inputFields) {
+        $(field).val("");
       }
-    },
+      for (var field of textAreaFields) {
+        $(field).val("");
+      }
+      milestoneTagify2.removeAllTags();
+      milestoneTagify1.removeAllTags();
+      for (var field of selectFields) {
+        $(field).val("Select");
+      }
+
+      document.getElementById("para-milestone-document-info").innerHTML = "";
+      document.getElementById("para-milestone-document-info-long").innerHTML =
+        "";
+      document.getElementById("para-save-submission-status").innerHTML = "";
+      checkAirtableStatus();
+    }
   });
+
+  // bootbox.confirm({
+  //   message:
+  //     "<h4>Are you sure you want to start over and reset your propress?</h4>",
+  //   centerVertical: true,
+  //   button: {
+  //     ok: {
+  //       label: "Yes",
+  //       className: "btn-primary",
+  //     },
+  //   },
+  //   callback: function (r) {
+  //     if (r !== null && r === true) {
+
+  //     }
+  //   },
+  // });
 }
 
 function resetDD() {

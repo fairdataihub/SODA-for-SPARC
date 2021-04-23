@@ -2643,6 +2643,9 @@ const wipeOutCurateProgress = () => {
   // set metadata file paths to empty
   $(".para-metadata-file-status").text("");
 
+  // hide the generate manifest locally button
+  $("#button-generate-manifest-locally").hide();
+
   // set back Please continue para element
   $("#para-continue-prepare-new-getting-started").text("");
   $("#para-continue-bf-dataset-getting-started").text("");

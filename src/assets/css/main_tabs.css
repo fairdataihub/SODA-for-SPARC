@@ -418,7 +418,7 @@ input[name="dataset_status_radio"]:checked ~ label {
 .btn_animated {
   cursor: pointer;
   border-radius: 8px;
-  margin: 0 10px;
+  margin: 0px 10px;
   height: 35px;
   background: var(--color-light-green);
   color: #fff;
@@ -446,4 +446,12 @@ input[name="dataset_status_radio"]:checked ~ label {
 .btn_animated.return-btn .btn_animated-inside {
   padding-top: 10px;
   margin: 0px -8px;
+}
+
+.btn_animated.exit .btn_animated-inside {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-right: -10px;
+  padding-top: 10px;
 }

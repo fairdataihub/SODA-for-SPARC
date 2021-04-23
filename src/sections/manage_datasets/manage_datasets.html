@@ -99,13 +99,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account"
+                      class="svg-change-current-account bi bi-pencil-fill"
                       onclick="openDropdownPrompt('bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -152,10 +151,11 @@
                 <div
                   id="div-create_empty_dataset-account-btns"
                   class="div-confirm-button"
-                  style="display: flex;
+                  style="
+                    display: flex;
                     flex-direction: row;
                     justify-content: center;
-                    margin: 10px auto;
+                    margin: 30px auto;
                   "
                 >
                   <button
@@ -163,7 +163,7 @@
                     onclick="transitionFreeFormMode(this, 'create_empty_dataset_BF_account_tab', 'create_new_bf_dataset-tab', 'delete', 'individual-question manage-dataset')"
                     data-next="div-create-new-empty-dataset"
                     class="btn_animated"
-                    style="width: 120px;"
+                    style="width: 120px"
                   >
                     Confirm
                   </button>
@@ -176,7 +176,7 @@
         <div
           class="individual-question manage-dataset"
           id="div-create-new-empty-dataset"
-          style="height: auto"
+          style="height: auto; margin-top: -20px"
         >
           <div class="ui form" style="width: 450px">
             <div class="grouped fields">
@@ -210,27 +210,28 @@
                 />
               </div>
               <p
-                style="color: red; width: 440px; text-align: center; margin: auto;"
+                style="
+                  color: red;
+                  width: 440px;
+                  text-align: center;
+                  margin: auto;
+                "
                 id="para-new-name-dataset-message"
               ></p>
               <div
-                id="div-confirm-inputNewNameDataset"
                 style="
                   display: flex;
                   flex-direction: column;
                   justify-content: center;
                   align-items: center;
                   margin: 0 auto;
+                  margin-top: 20px;
                 "
               >
                 <button
                   id="button-create-bf-new-dataset"
                   class="btn_animated"
-                  style="
-                    width: 140px;
-                    display: none;
-                    border: none !important;
-                  "
+                  style="width: 140px; display: none; border: none !important"
                 >
                   Create dataset
                 </button>
@@ -359,13 +360,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account"
+                      class="svg-change-current-account bi bi-pencil-fill"
                       onclick="openDropdownPrompt('bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -410,17 +410,18 @@
                         <h5
                           id="rename_dataset_name"
                           class="card-right bf-dataset-span"
-                        >None</h5>
+                        >
+                          None
+                        </h5>
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset"
+                      class="svg-change-current-account dataset bi bi-pencil-fill"
                       onclick="openDropdownPrompt('dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -506,7 +507,6 @@
                 id="para-rename-dataset-message"
               ></p>
               <div
-                id="div-confirm-inputNewNameDataset"
                 style="
                   display: flex;
                   flex-direction: column;
@@ -518,10 +518,7 @@
                 <button
                   id="button-rename-dataset"
                   class="btn_animated"
-                  style="
-                    width: 140px;
-                    border: none !important;
-                  "
+                  style="width: 140px; border: none !important"
                 >
                   Rename dataset
                 </button>
@@ -667,7 +664,7 @@
                           style="
                             text-align: right;
                             padding-right: 5px;
-                            width: 165px;
+                            width: 140px;
                           "
                         >
                           Current account:
@@ -676,13 +673,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account"
+                      class="svg-change-current-account bi bi-pencil-fill"
                       onclick="openDropdownPrompt('bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -704,7 +700,7 @@
                           style="
                             text-align: right;
                             padding-right: 5px;
-                            width: 165px;
+                            width: 140px;
                           "
                         >
                           Account details:
@@ -727,7 +723,7 @@
                           style="
                             text-align: right;
                             padding-right: 5px;
-                            width: 165px;
+                            width: 140px;
                           "
                         >
                           Current dataset:
@@ -736,13 +732,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset"
+                      class="svg-change-current-account dataset bi bi-pencil-fill"
                       onclick="openDropdownPrompt('dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -755,14 +750,17 @@
                     ></div>
                   </div>
                   <div style="display: flex; flex-direction: row">
-                    <div class="card-container manage-dataset">
+                    <div
+                      class="card-container manage-dataset"
+                      style="overflow-x: hidden"
+                    >
                       <div>
                         <h5
                           class="card-left"
                           style="
                             text-align: right;
                             padding-right: 5px;
-                            width: 165px;
+                            width: 140px;
                           "
                         >
                           Current owner:
@@ -774,13 +772,6 @@
                           None
                         </h5>
                       </div>
-                    </div>
-
-                    <div
-                      id="div-bf-current-permission-progress"
-                      class="progressdiv"
-                    >
-                      <div class="indeterminatebar"></div>
                     </div>
                   </div>
                 </div>
@@ -857,42 +848,48 @@
                 "
               >
                 <div
+                  id="pi_bootstrap_select_div"
                   style="
                     display: flex;
                     flex-direction: row;
-                    justify-content: center;
+                    justify-content: space-around;
+                    width: 100%;
+                    margin-bottom: 20px;
                   "
                 >
                   <select
                     class="selectpicker"
                     data-live-search="true"
-                    style="width: 60%; padding: 8px 12px; height: 38px"
+                    style="
+                      padding: 8px 12px;
+                      margin-right: 30px;
+                      height: 38px;
+                      border-radius: 5px;
+                      border: 1px solid black;
+                    "
                     id="bf_list_users_pi"
                   >
                     <option>Select PI</option>
                   </select>
+                </div>
 
-                  <div
-                    id="div-button-add-permission-pi"
-                    style="flex-direction: row; justify-content: center"
+                <div
+                  id="div-button-add-permission-pi"
+                  style="flex-direction: row; justify-content: center"
+                >
+                  <button
+                    id="button-add-permission-pi"
+                    class="btn_animated"
+                    style="width: 140px; border: none !important"
                   >
-                    <button
-                      id="button-add-permission-pi"
-                      class="btn_animated"
-                      style="
-                        width: 140px;
-                        border: none !important;
-                      "
-                    >
-                      Make PI owner
-                    </button>
-                  </div>
+                    Make PI owner
+                  </button>
                 </div>
 
                 <div
                   id="bf-add-permission-pi-spinner"
                   class="spinner"
-                  style="visibility: hidden; margin-top: 10px"
+                  style="visibility: hidden"
                 >
                   <div class="rect1"></div>
                   <div class="rect2"></div>
@@ -1045,13 +1042,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account"
+                      class="svg-change-current-account bi bi-pencil-fill"
                       onclick="openDropdownPrompt('bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -1105,13 +1101,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset"
+                      class="svg-change-current-account dataset bi bi-pencil-fill"
                       onclick="openDropdownPrompt('dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -1124,7 +1119,10 @@
                     ></div>
                   </div>
                   <div style="display: flex; flex-direction: row">
-                    <div class="card-container manage-dataset">
+                    <div
+                      class="card-container manage-dataset"
+                      style="overflow-x: hidden"
+                    >
                       <div>
                         <h5
                           class="card-left"
@@ -1143,13 +1141,6 @@
                           None
                         </h5>
                       </div>
-                    </div>
-
-                    <div
-                      id="div-bf-add-edit-current-permission-progress"
-                      class="progressdiv"
-                    >
-                      <div class="indeterminatebar"></div>
                     </div>
                   </div>
                 </div>
@@ -1374,18 +1365,14 @@
                     <button
                       id="button-add-permission"
                       class="btn_animated md"
-                      style=" 
-                        width: 190px;
-                        height: 40px;
-                        font-size: 15px;
-                      "
+                      style="width: 190px; height: 40px; font-size: 15px"
                     >
                       Add permission for user
                     </button>
                     <div
                       id="bf-add-permission-user-spinner"
                       class="spinner"
-                      style="display: none; margin: 10px"
+                      style="display: none"
                     >
                       <div class="rect1"></div>
                       <div class="rect2"></div>
@@ -1486,18 +1473,14 @@
                     <button
                       id="button-add-permission-team"
                       class="btn_animated md"
-                      style=" 
-                        width: 190px;
-                        height: 40px;
-                        font-size: 15px;
-                      "
+                      style="width: 190px; height: 40px; font-size: 15px"
                     >
                       Add permission for team
                     </button>
                     <div
                       id="bf-add-permission-team-spinner"
                       class="spinner"
-                      style="display: none; margin: 10px"
+                      style="display: none"
                     >
                       <div class="rect1"></div>
                       <div class="rect2"></div>
@@ -1652,13 +1635,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account"
+                      class="svg-change-current-account bi bi-pencil-fill"
                       onclick="openDropdownPrompt('bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -1704,13 +1686,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset"
+                      class="svg-change-current-account dataset bi bi-pencil-fill"
                       onclick="openDropdownPrompt('dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -1721,12 +1702,6 @@
                       class="ui active green inline loader small"
                       style="display: none"
                     ></div>
-                  </div>
-                  <div
-                    id="div-bf-current-metadata-progress"
-                    class="progressdiv synced-progress"
-                  >
-                    <div class="indeterminatebar"></div>
                   </div>
                 </div>
                 <div
@@ -1839,18 +1814,14 @@
                     <button
                       id="button-add-subtitle"
                       class="btn_animated md"
-                      style=" 
-                        width: 190px;
-                        height: 40px;
-                        font-size: 15px;
-                      "
+                      style="width: 190px; height: 40px; font-size: 15px"
                     >
                       Add subtitle
                     </button>
                     <div
                       id="bf-add-subtitle-dataset-spinner"
                       class="spinner"
-                      style="display: none; margin: 10px"
+                      style="display: none"
                     >
                       <div class="rect1"></div>
                       <div class="rect2"></div>
@@ -1983,13 +1954,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account"
+                      class="svg-change-current-account bi bi-pencil-fill"
                       onclick="openDropdownPrompt('bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -2035,13 +2005,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset"
+                      class="svg-change-current-account dataset bi bi-pencil-fill"
                       onclick="openDropdownPrompt('dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -2052,12 +2021,6 @@
                       class="ui active green inline loader small"
                       style="display: none"
                     ></div>
-                  </div>
-                  <div
-                    id="div-bf-current-metadata-progress-2"
-                    class="progressdiv synced-progress"
-                  >
-                    <div class="indeterminatebar"></div>
                   </div>
                 </div>
                 <div
@@ -2147,18 +2110,14 @@
                 <button
                   id="button-add-description"
                   class="btn_animated md"
-                  style="
-                    width: 200px;
-                    height: 40px;
-                    font-size: 15px;
-                  "
+                  style="width: 200px; height: 40px; font-size: 15px"
                 >
                   Add description
                 </button>
                 <div
                   id="bf-add-description-dataset-spinner"
                   class="spinner"
-                  style="display: none; margin: 10px"
+                  style="display: none"
                 >
                   <div class="rect1"></div>
                   <div class="rect2"></div>
@@ -2260,6 +2219,7 @@
         </p>
       </div> -->
       </header>
+
       <div
         id="add_edit_banner_parent-tab"
         style="overflow-y: auto; height: calc(100% - 150px); margin-left: -70px"
@@ -2306,13 +2266,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account"
+                      class="svg-change-current-account bi bi-pencil-fill"
                       onclick="openDropdownPrompt('bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -2358,13 +2317,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset"
+                      class="svg-change-current-account dataset bi bi-pencil-fill"
                       onclick="openDropdownPrompt('dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -2377,122 +2335,121 @@
                     ></div>
                   </div>
                   <div
-                    id="div-bf-current-metadata-progress-3"
-                    class="progressdiv synced-progress"
-                  >
-                    <div class="indeterminatebar"></div>
-                  </div>
-                </div>
-                <div
-                  class="div-confirm-button"
-                  style="
-                    display: none;
-                    flex-direction: row;
-                    justify-content: center;
-                    margin: 10px auto;
-                  "
-                >
-                  <button
-                    id="button_add_edit_banner_confirm"
-                    onclick="transitionFreeFormMode(this, 'add_edit_banner_tab', 'add_edit_banner_parent-tab', 'delete', 'individual-question manage-dataset')"
-                    data-next="div_add_edit_banner"
-                    class="confirm-button"
+                    class="div-confirm-button"
                     style="
-                      cursor: pointer;
-                      border-radius: 8px;
+                      display: none;
+                      flex-direction: row;
+                      justify-content: center;
                       margin: 10px auto;
-                      width: 100px;
-                      height: 30px;
-                      background: var(--color-light-green);
-                      color: #fff;
-                      font-weight: 600;
-                      border: none;
-                      font-size: 13px;
                     "
                   >
-                    Confirm
-                  </button>
+                    <button
+                      id="button_add_edit_banner_confirm"
+                      onclick="transitionFreeFormMode(this, 'add_edit_banner_tab', 'add_edit_banner_parent-tab', 'delete', 'individual-question manage-dataset')"
+                      data-next="div_add_edit_banner"
+                      class="confirm-button"
+                      style="
+                        cursor: pointer;
+                        border-radius: 8px;
+                        margin: 10px auto;
+                        width: 100px;
+                        height: 30px;
+                        background: var(--color-light-green);
+                        color: #fff;
+                        font-weight: 600;
+                        border: none;
+                        font-size: 13px;
+                      "
+                    >
+                      Confirm
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div
-          class="individual-question manage-dataset"
-          id="div_add_edit_banner"
-          style="height: auto"
-        >
-          <div class="ui form" style="min-width: 450px">
-            <div
-              class="grouped fields"
-              style="display: flex; justify-content: center"
-            >
-              <label
-                id="add_edit_banner_label"
-                style="
-                  font-size: 17px;
-                  color: var(--color-bg-plum);
-                  width: 100%;
-                  text-align: center;
-                "
-                >Current banner image of selected dataset:
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="This image will be associated with the dataset and used as a thumbnail once the dataset is published.
+          <div
+            class="individual-question manage-dataset"
+            id="div_add_edit_banner"
+            style="height: auto"
+          >
+            <div class="ui form" style="min-width: 450px">
+              <div
+                class="grouped fields"
+                style="display: flex; justify-content: center"
+              >
+                <label
+                  id="add_edit_banner_label"
+                  style="
+                    font-size: 17px;
+                    color: var(--color-bg-plum);
+                    width: 100%;
+                    text-align: center;
+                  "
+                  >Current banner image of selected dataset:
+                  <i
+                    class="fas fa-info-circle popover-tooltip"
+                    data-content="This image will be associated with the dataset and used as a thumbnail once the dataset is published.
               <br/><br/>
               This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly recommended. The final image size must not exceed 5MB as per Pennsieve's restriction."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                ></i>
-              </label>
-              <div
-                class="field"
-                style="display: flex; justify-content: center; margin: auto"
-              >
+                    rel="popover"
+                    data-html="true"
+                    data-placement="right"
+                    data-trigger="hover"
+                  ></i>
+                </label>
                 <div
-                  style="
-                    margin-top: 15px;
-                    height: auto;
-                    box-shadow: 0px 0px 10px #d5d5d5;
-                    padding: 15px 25px;
-                    border-radius: 5px;
-                    min-width: 450px;
-                  "
+                  class="field"
+                  style="display: flex; justify-content: center; margin: auto"
                 >
-                  <div id="div-current-banner-img" style="color: black">
-                    <p
-                      style="text-align: center; height: 2m; margin: auto"
-                      id="para-current-banner-img"
-                    >
-                      None
-                    </p>
-                    <img id="current-banner-img" />
+                  <div
+                    style="
+                      margin-top: 15px;
+                      height: auto;
+                      box-shadow: 0px 0px 10px #d5d5d5;
+                      padding: 15px 25px;
+                      border-radius: 5px;
+                      min-width: 450px;
+                    "
+                  >
+                    <div id="div-current-banner-img" style="color: black">
+                      <p
+                        style="text-align: center; height: 2em; margin: auto"
+                        id="para-current-banner-img"
+                      >
+                        None
+                      </p>
+                      <div
+                        id="banner_image_loader"
+                        class="ui active green inline loader medium"
+                        style="display: none; margin-left: 46%"
+                      ></div>
+                      <img id="current-banner-img" />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div
-                id="div-button-edit-banner-image"
-                style="
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 0 auto;
-                "
-              >
-                <button
-                  id="edit_banner_image_button"
-                  class="btn_animated md"
+                <div
+                  id="div-button-edit-banner-image"
                   style="
-                    margin: 20px 10px 30px 0;
-                    width: 150px;
-                    height: 40px;
-                    font-size: 15px;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin: 0 auto;
                   "
                 >
-                  Edit banner image
-                </button>
+                  <button
+                    id="edit_banner_image_button"
+                    class="btn_animated md"
+                    style="
+                      margin: 20px 10px 30px 0;
+                      width: 150px;
+                      height: 40px;
+                      font-size: 15px;
+                    "
+                  >
+                    Edit banner image
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -2561,8 +2518,7 @@
                   class="img-container"
                   style="display: none; flex-direction: column"
                 >
-                  <img id="image-banner" class='banner-img' width="100%"
-                  height:'auto'>
+                  <img id="image-banner" class="banner-img" width="100%" />
                   <p
                     id="para-path-image"
                     style="margin-top: 0.5em; text-align: center; display: none"
@@ -2615,7 +2571,9 @@
                   class="banner-image-size"
                   style="width: 380px; text-align: center"
                 >
-                  <span class="crop-image-text">Cropped dimensions (must be betwee 512px and 2048px): </span>
+                  <span class="crop-image-text"
+                    >Cropped dimensions (must be betwee 512px and 2048px):
+                  </span>
                 </div>
                 <input
                   class="banner-image-size input"
@@ -2762,7 +2720,7 @@
                     margin-top: 15px;
                     height: auto;
                     box-shadow: 0px 0px 10px #d5d5d5;
-                    padding: 15px 15px 0px 0px;
+                    padding: 15px 25px;
                     border-radius: 5px;
                   "
                 >
@@ -2785,13 +2743,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account"
+                      class="svg-change-current-account bi bi-pencil-fill"
                       onclick="openDropdownPrompt('bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -2837,13 +2794,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset"
+                      class="svg-change-current-account dataset bi bi-pencil-fill"
                       onclick="openDropdownPrompt('dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -2862,7 +2818,10 @@
                       margin-bottom: 15px;
                     "
                   >
-                    <div class="card-container manage-dataset">
+                    <div
+                      class="card-container manage-dataset"
+                      style="overflow-x: hidden"
+                    >
                       <div>
                         <h5
                           class="card-left"
@@ -2872,7 +2831,8 @@
                         </h5>
                         <h5
                           id="para-dataset-license-current"
-                          class="card-right bf-account-details-span"
+                          class="card-right"
+                          style="margin-top: 0px"
                         >
                           None
                         </h5>
@@ -2975,7 +2935,7 @@
                   <div
                     id="bf-add-license-dataset-spinner"
                     class="spinner"
-                    style="display: none; margin: 10px"
+                    style="display: none"
                   >
                     <div class="rect1"></div>
                     <div class="rect2"></div>
@@ -3126,13 +3086,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account"
+                      class="svg-change-current-account bi bi-pencil-fill"
                       onclick="openDropdownPrompt('bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -3178,13 +3137,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset"
+                      class="svg-change-current-account dataset bi bi-pencil-fill"
                       onclick="openDropdownPrompt('dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -3518,13 +3476,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account"
+                      class="svg-change-current-account bi bi-pencil-fill"
                       onclick="openDropdownPrompt('bf')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
@@ -3560,13 +3517,12 @@
                       </div>
                     </div>
                     <svg
-                      class="svg-change-current-account dataset"
+                      class="svg-change-current-account dataset bi bi-pencil-fill"
                       onclick="openDropdownPrompt('dataset')"
                       xmlns="http://www.w3.org/2000/svg"
                       width="18"
                       height="18"
                       fill="#000"
-                      class="bi bi-pencil-fill"
                       viewBox="0 0 16 16"
                     >
                       <path
