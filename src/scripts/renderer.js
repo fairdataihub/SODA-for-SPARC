@@ -898,7 +898,30 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
     $("#button-import-milestone").hide();
   }
 });
-//
+
+// generate subjects file
+ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
+  var destinationPath = path.join(dirpath[0], filename);
+  if (fs.existsSync(destinationPath)) {
+    var emessage = "File '" + filename + "' already exists in " + dirpath[0];
+    // ipcRenderer.send("open-error-metadata-file-exits", emessage);
+    Swal.fire(
+      'Metadata file already exists',
+      `${emessage}`,
+      'error'
+    )
+  } else {
+     client.invoke("api_save_subjects_file", destinationPath, subjectsTableData, (error, res) => {
+       if (error) {
+         var emessage = userError(error);
+         log.error(error);
+         console.error(error);
+       } else {
+         console.log(subjectsTableData)
+       }
+     })
+   }
+})
 
 // load and parse json file
 function parseJson(path) {

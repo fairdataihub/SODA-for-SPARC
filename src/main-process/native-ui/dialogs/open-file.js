@@ -296,6 +296,7 @@ ipcMain.on("open-file-dialog-submission", (event) => {
   );
 });
 
+
 ipcMain.on("open-file-dialog-description", (event) => {
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),
@@ -470,6 +471,21 @@ ipcMain.on("open-folder-dialog-save-ds-description", (event, filename) => {
     (files) => {
       if (files) {
         event.sender.send("selected-metadata-ds-description", files, filename);
+      }
+    }
+  );
+});
+
+// Generate subjects file
+ipcMain.on("open-folder-dialog-save-subjects", (event, filename) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-generate-metadata-subjects", files, filename);
       }
     }
   );

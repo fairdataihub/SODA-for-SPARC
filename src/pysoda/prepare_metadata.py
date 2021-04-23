@@ -97,6 +97,7 @@ def save_submission_file(filepath, json_str):
     source = join(TEMPLATE_PATH, "submission.xlsx")
     destination = filepath
     shutil.copyfile(source, destination)
+
     # json array to python list
     val_arr = json.loads(json_str)
     # write to excel file
@@ -265,5 +266,39 @@ def save_ds_description_file(bfaccountname, filepath, dataset_str, misc_str, opt
     max_len = max(keyword_len, funding_len, link_len, no_contributors)
 
     rename_headers(ws1, max_len, 3)
+
+    wb.save(destination)
+
+def save_subjects_file(filepath, datastructure):
+    source = join(TEMPLATE_PATH, "subjects.xlsx")
+    destination = filepath
+    shutil.copyfile(source, destination)
+
+    wb = load_workbook(destination)
+    ws1 = wb['Sheet1']
+
+    # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
+    ws1.delete_rows(2, 2)
+
+    # 2. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
+    headers_no = len(datastructure[0])
+    if headers_no > 18:
+        # TODO: insert custom columns here
+        # then color the headers yellow
+
+    # 3. populate matrices
+    for i, item in enumerate(datastructure):
+        if i == 0:
+            continue
+        for j in range(len(item)):
+            # + 2 because excel is indexed from 1
+            cell = chr(65 + j) + str(i + 1)
+            ws1[cell] = datastructure[i][j]
+
+    # 4. delete empty columns
+    # TODO: for row in range(datastructure): if row[cell].value !== None, break. If all None, delete entire column
+
+    # write to excel file
+    ws1 = wb['Sheet1']
 
     wb.save(destination)

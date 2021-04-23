@@ -1,6 +1,6 @@
 var subjectsFormDiv = document.getElementById("form-add-a-subject");
-var subjectsTableData = {};
-var subjectsFileData = {};
+var subjectsTableData = [];
+var subjectsFileData = [];
 
 function showForm() {
   clearAllSubjectFormFields(subjectsFormDiv);
@@ -98,19 +98,25 @@ function clearAllSubjectFormFields(form) {
 
 // add new subject ID to JSON file (main file to be converted to excel)
 function addSubjectIDToJSON(subjectID) {
+  var dataLength = subjectsTableData.length;
   if ($("#form-add-a-subject").length > 0) {
-    for (var field of $("#form-add-a-subject").children().find("input")) {
-      if (field.value !== "" && field.value !== undefined) {
-        subjectsFileData[field.name] = field.value
+    var valuesArr = [];
+    var headersArr = [];
+    for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+      if (field.value === "" || field.value === undefined || field.value === "Select") {
+        field.value = null
+      }
+      headersArr.push(field.name);
+      valuesArr.push(field.value);
+    }
+    subjectsTableData[0] = headersArr
+    if (valuesArr !== undefined && valuesArr.length !== 0) {
+      if (subjectsTableData[dataLength] !== undefined) {
+        subjectsTableData[dataLength + 1] = valuesArr
       } else {
-        subjectsFileData[field.name] = null
+        subjectsTableData[dataLength] = valuesArr
       }
     }
-    if ($("#bootbox-subject-sex").val() !== "Select") {
-      subjectsFileData["Sex"] = $("#bootbox-subject-sex").val()
-    }
-    subjectsTableData[subjectID] = subjectsFileData
-    subjectsFileData = {}
   }
 }
 
@@ -187,15 +193,12 @@ function loadSubjectInformation(ev, subjectID, type) {
  }
 
  function editSubject(ev, bootbox, subjectID) {
-   for (var field of $("#form-add-a-subject").children().find("input")) {
+   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
      if (field.value !== "" && field.value !== undefined) {
        subjectsFileData[field.name] = field.value
      } else {
        subjectsFileData[field.name] = null
      }
-   }
-   if ($("#bootbox-subject-sex").val() !== "Select") {
-     subjectsFileData["Sex"] = $("#bootbox-subject-sex").val()
    }
    var currentRow = $(ev).parents()[2];
    if ($("#bootbox-subject-id").val() === subjectID) {
@@ -241,7 +244,12 @@ function loadSubjectInformation(ev, subjectID, type) {
    updateIndexForTable()
    // 2. Delete from JSON
    var subjectID = $(currentRow)[0].cells[1].innerText;
-   delete subjectsTableData[subjectID]
+   for (var i=1; i<subjectsTableData.length; i++) {
+     if (subjectsTableData[i][0] === subjectID) {
+       subjectsTableData.splice(i, 1);
+       break
+     }
+   }
  }
 
  function updateIndexForTable() {
@@ -254,16 +262,6 @@ function loadSubjectInformation(ev, subjectID, type) {
    }
  }
 
- // TODO:
- /*
-1. make a header array: with all the headers (potentially custom headers)
-2. subsequent list items are subjects (the rows)
-3. openpyxl:
-for i, row in enumrate(data):
-  if i == 0:
-    it is the header
-    (ask BP about whether or not we have to delete empty columns/headers from the file
-      Also, ask BP if we can delete the example and description rows )
-  else:
-    ws.append(row)
- */
+ function generateSubjects() {
+   ipcRenderer.send("open-folder-dialog-save-subjects", "subjects.xlsx");
+ }

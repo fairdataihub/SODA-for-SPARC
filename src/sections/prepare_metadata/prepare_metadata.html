@@ -3665,48 +3665,6 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <!-- <tr contenteditable="false">
-                    <td
-                      class="contributor-table-row"
-                    >
-                    1
-                    </td>
-                    <td
-                      class="contributor-table-row"
-                    >
-                    sub_1
-                    </td>
-                    <th>
-                      <div
-                        class="ui small basic icon buttons contributor-helper-buttons"
-                        style="display: flex"
-                      >
-                      <button
-                        class="ui button"
-                        onclick="delete_current_con(1)"
-                      >
-                      <i class="eye outline icon"   style="color: blue"></i>
-                      </button>
-                        <button
-                          class="ui button"
-                        >
-                          <i
-                            class="pen icon"
-                            style="color: black"
-                          ></i>
-                        </button>
-                        <button
-                          class="ui button"
-                          onclick="delete_current_con(1)"
-                        >
-                        <i
-                          class="trash alternate outline icon"
-                          style="color: red"
-                        ></i>
-                        </button>
-                      </div>
-                    </th>
-                  </tr> -->
                 </tbody>
               </table>
               <div
@@ -3722,7 +3680,27 @@
                   style="
                     cursor: pointer;
                     border-radius: 8px;
-                    margin: 10px auto;
+                    margin: 10px;
+                    width: 140px;
+                    height: 35px;
+                    background: #fff;
+                    color: var(--color-light-green);
+                    font-weight: 600;
+                    border: 1px solid var(--color-light-green);
+                    font-size: 14px;
+                  "
+                >
+                <svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="18" height="18" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                  <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                </svg>
+                  Add a subject
+                </button>
+                <button
+                  onclick="generateSubjects()"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin: 10px;
                     width: 140px;
                     height: 35px;
                     background: var(--color-light-green);
@@ -3732,7 +3710,7 @@
                     font-size: 15px;
                   "
                 >
-                  Add a subject
+                  Generate
                 </button>
               </div>
             </div>
@@ -3796,7 +3774,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-id"
                     name="subject_id"
                   >
@@ -3818,7 +3796,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-pool-id"
                     name="pool_id"
                   >
@@ -3840,7 +3818,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-exp-group"
                     name="experimental group"
                   >
@@ -3870,7 +3848,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-age"
                     name="Age"
                   >
@@ -3892,7 +3870,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <select
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     style="font-size: 13px; line-height: 2"
                     id="bootbox-subject-sex"
                     name="Sex"
@@ -3919,7 +3897,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-species"
                     name="Species"
                   >
@@ -3941,7 +3919,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-strain"
                     name="Strain"
                   >
@@ -3973,7 +3951,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-additional-fields"
                     name="Additional Fields"
                   >
@@ -3995,7 +3973,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-age-category"
                     name="Age category"
                   >
@@ -4017,7 +3995,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-age-range-min"
                     name="Age range (min)"
                   >
@@ -4039,7 +4017,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-age-range-max"
                     name="Age range (max)"
                   >
@@ -4061,7 +4039,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-handedness"
                     name="Handedness"
                   >
@@ -4083,7 +4061,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-genotype"
                     name="Genotype"
                   >
@@ -4105,7 +4083,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-reference-atlas"
                     name="Reference atlas"
                   >
@@ -4127,7 +4105,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-protocol-title"
                     name="Protocol title"
                   >
@@ -4149,7 +4127,7 @@
                 </div>
                 <div class="demo-controls-body">
                   <input
-                    class="form-container-input-bf"
+                    class="form-container-input-bf subjects-form-entry"
                     id="bootbox-subject-experimental-log-file-name"
                     name="Experimental log file name"
                   >
