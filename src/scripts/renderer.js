@@ -2639,6 +2639,14 @@ bfSubmitDatasetBtn.addEventListener("click", () => {
           defaultBfDataset,
           totalFileSize
         );
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Upload Local Dataset - size",
+          totalFileSize
+        );
+
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -6511,7 +6519,8 @@ function initiate_generate() {
   let dataset_destination = "";
 
   if ("bf-dataset-selected" in sodaJSONObj) {
-    dataset_name = sodaJSONObj["bf-dataset-selected"];
+    dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    dataset_destination = "Pennsieve";
   } else if ("generate-dataset" in sodaJSONObj) {
     if ("destination" in sodaJSONObj["generate-dataset"]) {
       let destination = sodaJSONObj["generate-dataset"]["destination"];
@@ -6544,7 +6553,7 @@ function initiate_generate() {
       ipcRenderer.send(
         "track-event",
         "Error",
-        `Generate Dataset`,
+        "Generate Dataset",
         dataset_name
       );
 
@@ -6563,7 +6572,6 @@ function initiate_generate() {
         "track-event",
         "Error",
         "Generate Dataset - Size",
-        dataset_name,
         main_total_generate_dataset_size
       );
 
