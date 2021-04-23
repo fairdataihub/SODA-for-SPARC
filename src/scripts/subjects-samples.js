@@ -309,10 +309,19 @@ function importPrimaryFolder() {
         j += 1
       }
     }
-    loadSubjectsDataToTable();
-    $("#table-subjects").show();
-    $("#div-confirm-primary-folder-import").hide();
-    $("#button-fake-confirm-primary-folder-load").click();
+    if (subjectsTableData.length > 1) {
+      loadSubjectsDataToTable();
+      $("#table-subjects").show();
+      $("#div-confirm-primary-folder-import").hide();
+      $("#button-fake-confirm-primary-folder-load").click();
+    } else {
+      // $("#div-confirm-primary-folder-import").hide();
+      // $("#button-fake-confirm-primary-folder-load").click();
+      Swal.fire(
+      'Could not load subject IDs from the imported primary folder!',
+      'Please check that you provided the correct path to a SPARC primary folder that has at least 1 subject folder.',
+      'error')
+    }
   }
 }
 
@@ -320,4 +329,8 @@ function loadSubjectsDataToTable() {
   for (var i=1; i<subjectsTableData.length; i++) {
     addSubjectIDtoTable(subjectsTableData[i][0])
   }
+  Swal.fire(
+  'Loaded successfully!',
+  'Please add or edit your subject_id(s) in the following subjects table.',
+  'success')
 }
