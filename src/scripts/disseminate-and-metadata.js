@@ -903,7 +903,8 @@ function addNewRow(table) {
       return;
     }
     if ($(currentRow).find("label").find("input")[0].checked) {
-      var contactPersonBoolean = contactPersonCheck();
+      var currentContactPersonIDNumber = $($(currentRow).find("label").find("input")[0]).prop("id").slice(-1);
+      var contactPersonBoolean = contactPersonCheck(currentContactPersonIDNumber);
       if (contactPersonBoolean) {
         $("#para-save-contributor-status").text(
           "One contact person is already added above. Only one contact person is allowed for a dataset."
@@ -1300,7 +1301,7 @@ function checkEmptyConRowInfo(table, row) {
 
 function onChangeContactLabel(no) {
   $("#para-save-contributor-status").text("");
-  var contactPersonBoolean = contactPersonCheck();
+  var contactPersonBoolean = contactPersonCheck(no);
   if (contactPersonBoolean) {
     $("#ds-contact-person-" + no).prop("checked", false);
     $("#para-save-contributor-status").text(
