@@ -1575,19 +1575,28 @@ const emptyInfoEntries = (element) => {
   return fieldSatisfied;
 };
 
-const contactPersonCheck = () => {
+const contactPersonCheck = (no) => {
   var contactPersonExists = false;
+  var currentContactPersonID = "";
   var rowcount = currentConTable.rows.length;
 
-  for (var i = 0; i < rowcount - 1; i++) {
+  if (no === 0) {
+    currentContactPersonID = ""
+  } else {
+    currentContactPersonID = "ds-contact-person-" + no;
+  }
+
+  for (var i = 1; i < rowcount; i++) {
     var contactLabel = $(
       currentConTable.rows[i].cells[currentConTable.rows[i].cells.length - 2]
     )
       .find("label")
       .find("input")[0];
-    if (contactLabel && contactLabel.checked) {
-      contactPersonExists = true;
-      break;
+    if ($(contactLabel).prop("id") && $(contactLabel).prop("id") !== currentContactPersonID) {
+      if (contactLabel.checked) {
+        contactPersonExists = true;
+        break;
+      }
     }
   }
   return contactPersonExists;
@@ -1824,7 +1833,7 @@ function detectEmptyRequiredFields(funding) {
   var conEmptyField = [];
   var conSatisfied = true;
   var fundingSatisfied = emptyInfoEntries(funding);
-  var contactPersonExists = contactPersonCheck();
+  var contactPersonExists = contactPersonCheck(0);
   var contributorNumber = currentConTable.rows.length;
   if (!fundingSatisfied) {
     conEmptyField.push("SPARC Award");
