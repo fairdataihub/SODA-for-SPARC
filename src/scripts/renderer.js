@@ -927,6 +927,17 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
    }
 })
 
+// import Primary folder
+ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
+  if (primaryFolderPath.length > 0) {
+    $("#primary-folder-destination-input").prop("placeholder", primaryFolderPath[0])
+    $("#div-confirm-primary-folder-import").show()
+  } else {
+    $("#primary-folder-destination-input").prop("placeholder", "Browse here")
+    $("#div-confirm-primary-folder-import").hide()
+  }
+});
+
 // load and parse json file
 function parseJson(path) {
   if (!fs.existsSync(path)) {

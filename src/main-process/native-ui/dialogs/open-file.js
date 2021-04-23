@@ -42,6 +42,7 @@ ipcMain.on("open-file-dialog-local-destination-curate", (event) => {
   );
 });
 
+
 ipcMain.on("open-file-dialog-local-destination-curate-generate", (event) => {
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),
@@ -486,6 +487,20 @@ ipcMain.on("open-folder-dialog-save-subjects", (event, filename) => {
     (files) => {
       if (files) {
         event.sender.send("selected-generate-metadata-subjects", files, filename);
+      }
+    }
+  );
+});
+
+ipcMain.on("open-file-dialog-local-primary-folder", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-local-primary-folder", files);
       }
     }
   );

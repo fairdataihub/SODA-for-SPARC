@@ -3550,19 +3550,13 @@
               <input
                 class="form-control"
                 style="width: 450px !important"
-                id=""
+                onclick="showPrimaryBrowseFolder()"
+                id="primary-folder-destination-input"
                 type="text"
                 readonly
                 placeholder="Browse here"
               />
             </div>
-            <p
-              style="
-                text-align: center;
-                font-weight: 600;
-                color: var(--color-light-green);
-              "
-            ></p>
             <div
               style="
                 display: none;
@@ -3573,8 +3567,7 @@
               id="div-confirm-primary-folder-import"
             >
               <button
-                onclick="transitionFreeFormMode(this, 'Question-prepare-primary-import', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
-                data-next="Question-prepare-subjects-3"
+                onclick="importPrimaryFolder()"
                 style="
                   cursor: pointer;
                   border-radius: 8px;
@@ -3589,6 +3582,26 @@
                 "
               >
                 Confirm
+              </button>
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-primary-import', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
+                data-next="Question-prepare-subjects-3"
+                id="button-fake-confirm-primary-folder-load"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                  display:none;
+                "
+              >
+                Fake Confirm
               </button>
             </div>
           </div>
@@ -3648,10 +3661,7 @@
                       <div class="tooltipnew contributor">
                         <img class="info" src="assets/img/info.png" />
                         <span class="tooltiptext contributor">
-                          Click "Add" to add contributors to SODA's
-                          contributor table. Each contributor added to the
-                          table will be added to the dataset description
-                          file when it is generated.
+                          Click on each symbol (View, Edit, Delete) to view/edit/delete a subject id.
                         </span>
                       </div>
                     </th>

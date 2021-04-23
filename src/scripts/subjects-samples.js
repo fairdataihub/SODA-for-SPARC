@@ -284,3 +284,40 @@ function updateIndexForTable() {
 function generateSubjects() {
  ipcRenderer.send("open-folder-dialog-save-subjects", "subjects.xlsx");
 }
+
+function showPrimaryBrowseFolder() {
+  ipcRenderer.send("open-file-dialog-local-primary-folder");
+}
+
+function importPrimaryFolder() {
+  var folderPath = $("#primary-folder-destination-input").prop("placeholder");
+  if (folderPath === "Browse here") {
+    Swal.fire("No folder chosen!", "Please select a path to your primary folder", "error");
+  } else {
+    var folders = fs.readdirSync(folderPath);
+    var j = 1;
+    subjectsTableData[0] = [];
+    for (var folder of folders) {
+      subjectsFileData = [];
+      var stats = fs.statSync(path.join(folderPath, folder));
+      if (stats.isDirectory()) {
+        subjectsFileData[0] = folder
+        for (var i=1; i<19; i++) {
+          subjectsFileData.push("")
+        }
+        subjectsTableData[j] = subjectsFileData
+        j += 1
+      }
+    }
+    loadSubjectsDataToTable();
+    $("#table-subjects").show();
+    $("#div-confirm-primary-folder-import").hide();
+    $("#button-fake-confirm-primary-folder-load").click();
+  }
+}
+
+function loadSubjectsDataToTable() {
+  for (var i=1; i<subjectsTableData.length; i++) {
+    addSubjectIDtoTable(subjectsTableData[i][0])
+  }
+}
