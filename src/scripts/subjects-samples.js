@@ -149,22 +149,22 @@ function loadSubjectInformation(ev, subjectID, type) {
     }
   }
   // populate form
-  for (var field of $(subjectsFormDiv).children().find("input")) {
-    for (var i=0; j<infoJson.length;i++) {
-
-    }
-    }
+  var fieldArr = $(subjectsFormDiv).children().find(".subjects-form-entry")
+  // for (var field of ) {
+  //   for (var i=0; i<infoJson.length;i++) {
+  //     field.value = infoJson[i]
+  //   }
+  var c = fieldArr.map(function(i, field) {
+    field.value = infoJson[i]
     if (type === "view") {
       $(field).prop("disabled", true);
     } else if (type === "edit") {
       $(field).prop("disabled", false);
     }
-  }
+  });
   if (type === "view") {
-    $(subjectsFormDiv).find("#bootbox-subject-sex").prop("disabled", true);
     var label = "Done"
   } else {
-    $(subjectsFormDiv).find("#bootbox-subject-sex").prop("disabled", false);
     var label = "Edit"
   }
   var bootb = bootbox.dialog({
@@ -199,76 +199,86 @@ function loadSubjectInformation(ev, subjectID, type) {
   });
  }
 
- function editSubject(ev, bootbox, subjectID) {
-   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
-     if (field.value !== "" && field.value !== undefined) {
-       subjectsFileData[field.name] = field.value
-     } else {
-       subjectsFileData[field.name] = null
-     }
-   }
-   var currentRow = $(ev).parents()[2];
-   if ($("#bootbox-subject-id").val() === subjectID) {
-    subjectsTableData[subjectID] = subjectsFileData
-    bootbox.modal("hide");
+function editSubject(ev, bootbox, subjectID) {
+ for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+   if (field.value !== "" && field.value !== undefined) {
+     subjectsFileData.push(field.value)
    } else {
-      var newID = $("#bootbox-subject-id").val();
-      var table = document.getElementById("table-subjects");
-      var duplicate = false;
-      var error = "";
-      var rowcount = table.rows.length;
-      for (var i=1;i<rowcount;i++) {
-        if (newID === table.rows[i].cells[1].innerText) {
-          duplicate = true
-          break
-        }
-      }
-      if (duplicate) {
-        error = "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id!"
-        $(bootbox).find(".modal-footer span").remove();
-        bootbox
-          .find(".modal-footer")
-          .prepend(
-            "<span style='color:red;padding-right:10px;display:inline-block;'>" +
-              error +
-              "</span>"
-          );
-      } else {
-        subjectsTableData[newID] = subjectsFileData
-        delete subjectsTableData[subjectID]
-        $(currentRow)[0].cells[1].innerText = newID;
-        subjectsFileData = {}
-        bootbox.modal("hide");
-      }
-    }
+     subjectsFileData.push("")
+   }
  }
-
- function delete_current_subject_id(ev) {
-   // 1. Delete from table
-   var currentRow = $(ev).parents()[2];
-   var currentRowid = $(currentRow).prop("id");
-   document.getElementById(currentRowid).outerHTML = "";
-   updateIndexForTable()
-   // 2. Delete from JSON
-   var subjectID = $(currentRow)[0].cells[1].innerText;
-   for (var i=1; i<subjectsTableData.length; i++) {
+ var currentRow = $(ev).parents()[2];
+ if ($("#bootbox-subject-id").val() === subjectID) {
+   for (var i=1; i<subjectsTableData.length;i++) {
      if (subjectsTableData[i][0] === subjectID) {
-       subjectsTableData.splice(i, 1);
+       subjectsTableData[i] = subjectsFileData
+       subjectsFileData = []
        break
      }
    }
- }
+  bootbox.modal("hide");
+ } else {
+    var newID = $("#bootbox-subject-id").val();
+    var table = document.getElementById("table-subjects");
+    var duplicate = false;
+    var error = "";
+    var rowcount = table.rows.length;
+    for (var i=1;i<rowcount;i++) {
+      if (newID === table.rows[i].cells[1].innerText) {
+        duplicate = true
+        break
+      }
+    }
+    if (duplicate) {
+      error = "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id!"
+      $(bootbox).find(".modal-footer span").remove();
+      bootbox
+        .find(".modal-footer")
+        .prepend(
+          "<span style='color:red;padding-right:10px;display:inline-block;'>" +
+            error +
+            "</span>"
+        );
+    } else {
+      for (var i=1; i<subjectsTableData.length;i++) {
+        if (subjectsTableData[i][0] === subjectID) {
+          subjectsTableData[i] = subjectsFileData
+          break
+        }
+      }
+      $(currentRow)[0].cells[1].innerText = newID;
+      subjectsFileData = []
+      bootbox.modal("hide");
+    }
+  }
+}
 
- function updateIndexForTable() {
-   table = document.getElementById("table-subjects");
-   var rowcount = table.rows.length;
-   var index = 1;
-   for (var i=1;i<rowcount;i++) {
-     table.rows[i].cells[0].innerText = index
-     index = index + 1
+function delete_current_subject_id(ev) {
+ // 1. Delete from table
+ var currentRow = $(ev).parents()[2];
+ var currentRowid = $(currentRow).prop("id");
+ document.getElementById(currentRowid).outerHTML = "";
+ updateIndexForTable()
+ // 2. Delete from JSON
+ var subjectID = $(currentRow)[0].cells[1].innerText;
+ for (var i=1; i<subjectsTableData.length; i++) {
+   if (subjectsTableData[i][0] === subjectID) {
+     subjectsTableData.splice(i, 1);
+     break
    }
  }
+}
 
- function generateSubjects() {
-   ipcRenderer.send("open-folder-dialog-save-subjects", "subjects.xlsx");
+function updateIndexForTable() {
+ table = document.getElementById("table-subjects");
+ var rowcount = table.rows.length;
+ var index = 1;
+ for (var i=1;i<rowcount;i++) {
+   table.rows[i].cells[0].innerText = index
+   index = index + 1
  }
+}
+
+function generateSubjects() {
+ ipcRenderer.send("open-folder-dialog-save-subjects", "subjects.xlsx");
+}
