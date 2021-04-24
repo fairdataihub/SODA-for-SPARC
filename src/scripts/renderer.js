@@ -3827,7 +3827,7 @@ function showCurrentLicense() {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  currentDatasetLicense.innerHTML = `Loading current license... <div id="restart_loader" class="ui active green inline loader tiny"></div>`;
+  currentDatasetLicense.innerHTML = `Loading current license... <div class="ui active green inline loader tiny"></div>`;
 
   if (selectedBfDataset === "Select dataset") {
     currentDatasetLicense.innerHTML = "None";
@@ -3941,8 +3941,8 @@ function showCurrentPermission() {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  currentDatasetPermission.innerHTML = `Loading current permissions... <div id="restart_loader" class="ui active green inline loader tiny"></div>`;
-  currentAddEditDatasetPermission.innerHTML = `Loading current permissions... <div id="restart_loader" class="ui active green inline loader tiny"></div>`;
+  currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
+  currentAddEditDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
 
   if (selectedBfDataset === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
