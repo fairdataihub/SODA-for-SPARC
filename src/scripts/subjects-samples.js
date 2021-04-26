@@ -1,10 +1,12 @@
 var subjectsFormDiv = document.getElementById("form-add-a-subject");
 var subjectsTableData = [];
 var subjectsFileData = [];
+var headersArr = [];
 
 function showForm() {
   clearAllSubjectFormFields(subjectsFormDiv);
   subjectsFormDiv.style.display = "block"
+  $("#btn-add-custom-field").show();
   var bootb = bootbox.dialog({
     title: "<p style='text-align=center'>Adding a subject</p>",
     message: subjectsFormDiv,
@@ -104,7 +106,7 @@ function addSubjectIDToJSON(subjectID) {
   var dataLength = subjectsTableData.length;
   if ($("#form-add-a-subject").length > 0) {
     var valuesArr = [];
-    var headersArr = [];
+    headersArr = [];
     for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
       if (field.value === "" || field.value === undefined || field.value === "Select") {
         field.value = null
@@ -153,12 +155,12 @@ function loadSubjectInformation(ev, subjectID, type) {
   }
   // populate form
   var fieldArr = $(subjectsFormDiv).children().find(".subjects-form-entry")
-  // for (var field of ) {
-  //   for (var i=0; i<infoJson.length;i++) {
-  //     field.value = infoJson[i]
-  //   }
   var c = fieldArr.map(function(i, field) {
-    field.value = infoJson[i]
+    if (infoJson[i] !== "" && infoJson[i]) {
+      field.value = infoJson[i];
+    } else {
+      field.value = "";
+    }
     if (type === "view") {
       $(field).prop("disabled", true);
     } else if (type === "edit") {
@@ -167,8 +169,10 @@ function loadSubjectInformation(ev, subjectID, type) {
   });
   if (type === "view") {
     var label = "Done"
+    $("#btn-add-custom-field").hide();
   } else {
     var label = "Edit"
+    $("#btn-add-custom-field").show();
   }
   var bootb = bootbox.dialog({
     title: "<p style='text-align=center'>"+label+"ing a subject</p>",
@@ -304,13 +308,13 @@ function importPrimaryFolder() {
     } else {
       var folders = fs.readdirSync(folderPath);
       var j = 1;
-      subjectsTableData[0] = [];
+      subjectsTableData[0] = headersArr;
       for (var folder of folders) {
         subjectsFileData = [];
         var stats = fs.statSync(path.join(folderPath, folder));
         if (stats.isDirectory()) {
           subjectsFileData[0] = folder
-          for (var i=1; i<19; i++) {
+          for (var i=1; i<18; i++) {
             subjectsFileData.push("")
           }
           subjectsTableData[j] = subjectsFileData
@@ -375,3 +379,52 @@ function resetSubjects() {
     }
   });
 }
+
+// functions below are to show/add/cancel a custom header
+function showEnterCustomHeaderDiv(ev, action) {
+  if (action === "show") {
+    $(ev).hide();
+    $("#div-new-custom-headers").hide()
+    $("#div-enter-custom-header-name").show();
+    $($("#div-enter-custom-header-name button")[0]).show()
+  } else if (action === "hide") {
+    $("#btn-add-custom-field").show()
+    $("#div-new-custom-headers").show()
+    $("#btn-add-custom-field").parents().show()
+    $("#new-custom-header-name").val("");
+    $(ev).hide();
+    $(ev).nextAll().hide();
+    $("#div-enter-custom-header-name").hide()
+  }
+}
+
+function addCustomHeader(ev) {
+  var customName = $("#new-custom-header-name").val();
+  var divElement = '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">'+customName+':</font></div></div><div class="demo-controls-body"><input class="form-container-input-bf subjects-form-entry" id="bootbox-subject-'+customName+'" name='+customName+'></input></div></div>'
+  showEnterCustomHeaderDiv(ev, "hide");
+  if (!headersArr.includes(customName)) {
+    $("#div-new-custom-headers").prepend(divElement);
+    headersArr.push(customName);
+  } else {
+    Swal.fire("Duplicate header name!", "You entered a name that is already listed under the current fields", "error");
+    $("#button-confirm-custom-header-name").hide();
+  }
+}
+
+$(document).ready(function() {
+  $("#new-custom-header-name").keyup(function () {
+    var customName = $(this).val();
+    if (customName !== "") {
+      $("#button-confirm-custom-header-name").show();
+    } else {
+      $("#button-confirm-custom-header-name").hide();
+    }
+  })
+
+  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+    if (field.value === "" || field.value === undefined || field.value === "Select") {
+      field.value = null
+    }
+    headersArr.push(field.name);
+  }
+})

@@ -209,20 +209,34 @@ $(document).ready(function() {
     $('.multisteps-form__progress-btn.subjects').removeClass("js-active1");
     document.getElementById("subjects-optional-fields").classList.add("js-active1");
   });
+  document.getElementById("subjects-custom-fields").addEventListener("click", () => {
+    showCustomFields();
+    $('.multisteps-form__progress-btn.subjects').removeClass("js-active1");
+    document.getElementById("subjects-custom-fields").classList.add("js-active1");
+  });
 })
 
 function showMandatoryFields() {
   document.getElementById("div-subjects-mandatory-fields").style.display = "block";
   document.getElementById("div-subjects-recommended-fields").style.display = "none";
   document.getElementById("div-subjects-optional-fields").style.display = "none";
+  document.getElementById("div-subjects-custom-fields").style.display = "none";
 }
 function showReccFields() {
   document.getElementById("div-subjects-recommended-fields").style.display = "block";
   document.getElementById("div-subjects-mandatory-fields").style.display = "none";
   document.getElementById("div-subjects-optional-fields").style.display = "none";
+  document.getElementById("div-subjects-custom-fields").style.display = "none";
 }
 function showOptionalFields() {
   document.getElementById("div-subjects-optional-fields").style.display = "block";
   document.getElementById("div-subjects-mandatory-fields").style.display = "none";
   document.getElementById("div-subjects-recommended-fields").style.display = "none";
+  document.getElementById("div-subjects-custom-fields").style.display = "none";
+}
+function showCustomFields() {
+  document.getElementById("div-subjects-optional-fields").style.display = "none";
+  document.getElementById("div-subjects-mandatory-fields").style.display = "none";
+  document.getElementById("div-subjects-recommended-fields").style.display = "none";
+  document.getElementById("div-subjects-custom-fields").style.display = "block";
 }

@@ -170,7 +170,7 @@ body.waiting * {
 
 .demo-controls-head {
   display: flex;
-  align-items: center;
+  align-items: left;
   margin: 10px;
   width: 18%;
   float: left;
@@ -178,7 +178,7 @@ body.waiting * {
   margin: 10px 0;
   /* padding-right: 10px; */
   padding: 4px 6px;
-  text-align: right;
+  text-align: left;
   vertical-align: middle;
   color: #a0a0a0;
   font: bold;
