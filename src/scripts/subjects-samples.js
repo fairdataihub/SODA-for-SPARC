@@ -294,33 +294,35 @@ function importPrimaryFolder() {
   if (folderPath === "Browse here") {
     Swal.fire("No folder chosen!", "Please select a path to your primary folder", "error");
   } else {
-    var folders = fs.readdirSync(folderPath);
-    var j = 1;
-    subjectsTableData[0] = [];
-    for (var folder of folders) {
-      subjectsFileData = [];
-      var stats = fs.statSync(path.join(folderPath, folder));
-      if (stats.isDirectory()) {
-        subjectsFileData[0] = folder
-        for (var i=1; i<19; i++) {
-          subjectsFileData.push("")
-        }
-        subjectsTableData[j] = subjectsFileData
-        j += 1
-      }
-    }
-    if (subjectsTableData.length > 1) {
-      loadSubjectsDataToTable();
-      $("#table-subjects").show();
-      $("#div-confirm-primary-folder-import").hide();
-      $("#button-fake-confirm-primary-folder-load").click();
+    if (path.parse(folderPath).base !== "primary") {
+      Swal.fire("Incorrect folder name!", "Your folder must be named 'primary' to be imported to SODA!", "error");
     } else {
-      // $("#div-confirm-primary-folder-import").hide();
-      // $("#button-fake-confirm-primary-folder-load").click();
-      Swal.fire(
-      'Could not load subject IDs from the imported primary folder!',
-      'Please check that you provided the correct path to a SPARC primary folder that has at least 1 subject folder.',
-      'error')
+      var folders = fs.readdirSync(folderPath);
+      var j = 1;
+      subjectsTableData[0] = [];
+      for (var folder of folders) {
+        subjectsFileData = [];
+        var stats = fs.statSync(path.join(folderPath, folder));
+        if (stats.isDirectory()) {
+          subjectsFileData[0] = folder
+          for (var i=1; i<19; i++) {
+            subjectsFileData.push("")
+          }
+          subjectsTableData[j] = subjectsFileData
+          j += 1
+        }
+      }
+      if (subjectsTableData.length > 1) {
+        loadSubjectsDataToTable();
+        $("#table-subjects").show();
+        $("#div-confirm-primary-folder-import").hide();
+        $("#button-fake-confirm-primary-folder-load").click();
+      } else {
+        Swal.fire(
+          'Could not load subject IDs from the imported primary folder!',
+          'Please check that you provided the correct path to a SPARC primary folder that has at least 1 subject folder.',
+          'error')
+        }
     }
   }
 }
