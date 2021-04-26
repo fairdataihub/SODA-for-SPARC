@@ -937,9 +937,10 @@ ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
   if (primaryFolderPath.length > 0) {
     $("#primary-folder-destination-input").prop("placeholder", primaryFolderPath[0])
     $("#div-confirm-primary-folder-import").show()
+    $($("#div-confirm-primary-folder-import").find("button")[0]).show();
   } else {
     $("#primary-folder-destination-input").prop("placeholder", "Browse here")
-    $("#div-confirm-primary-folder-import").hide()
+    $("#div-confirm-primary-folder-import").find("button").hide()
   }
 });
 

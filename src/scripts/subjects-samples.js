@@ -67,7 +67,8 @@ function addSubjectIDtoDataBase(bootb) {
       addSubjectIDtoTable(subjectID)
       addSubjectIDToJSON(subjectID);
       bootb.modal("hide");
-      $("#table-subjects").css("display", "block")
+      $("#table-subjects").css("display", "block");
+      $("#button-generate-subjects").css("display", "block");
       clearAllSubjectFormFields(subjectsFormDiv)
     } else {
       error = "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id!"
@@ -279,6 +280,10 @@ function updateIndexForTable() {
    table.rows[i].cells[0].innerText = index
    index = index + 1
  }
+ if (rowcount === 1) {
+   table.style.display = "none";
+   $("#button-generate-subjects").css("display", "none");
+ }
 }
 
 function generateSubjects() {
@@ -335,6 +340,7 @@ function loadSubjectsDataToTable() {
   'Loaded successfully!',
   'Please add or edit your subject_id(s) in the following subjects table.',
   'success')
+  $("#button-generate-subjects").css("display", "block");
 }
 
 function resetSubjects() {
@@ -352,20 +358,20 @@ function resetSubjects() {
       $("#Question-prepare-subjects-1").removeClass("prev");
       $("#Question-prepare-subjects-1").nextAll().removeClass("show");
       $("#Question-prepare-subjects-1").nextAll().removeClass("prev");
+      $("#Question-prepare-subjects-1 .option-card").removeClass("checked").removeClass("disabled").removeClass("non-selected");
+      $("#Question-prepare-subjects-1 .option-card .folder-input-check").prop("checked", false);
+      $("#Question-prepare-subjects-2").find("button").show()
+      $("#div-confirm-primary-folder-import").find("button").hide()
 
-      $("#Question-prepare-subjects-1").nextAll().find("button").show()
-
-      var inputFields = $("#Question-prepare-subjects-1")
-        .nextAll()
-        .find("input");
-
-      for (var field of inputFields) {
-        $(field).prop("placeholder", "Browse here");
-      }
+      $("#Question-prepare-subjects-primary-import").find("input").prop("placeholder", "Browse here")
       subjectsFileData = []
       subjectsTableData = []
 
-      // TODO: delete table rows except headers
+      // delete table rows except headers
+      $("#table-subjects tr:gt(0)").remove();
+      $("#table-subjects").css("display", "none")
+      // Hide Generate button
+      $("#button-generate-subjects").css("display", "none")
     }
   });
 }
