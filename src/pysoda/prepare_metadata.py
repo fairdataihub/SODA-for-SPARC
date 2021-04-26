@@ -37,6 +37,7 @@ import itertools
 from openpyxl import load_workbook
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font
+from openpyxl.styles.colors import Color
 from docx import Document
 
 from datetime import datetime, timezone
@@ -270,6 +271,7 @@ def save_ds_description_file(bfaccountname, filepath, dataset_str, misc_str, opt
     wb.save(destination)
 
 def save_subjects_file(filepath, datastructure):
+
     source = join(TEMPLATE_PATH, "subjects.xlsx")
     destination = filepath
     shutil.copyfile(source, destination)
@@ -282,10 +284,15 @@ def save_subjects_file(filepath, datastructure):
 
     # 2. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
     headers_no = len(datastructure[0])
+    orangeFill = PatternFill(start_color='00FF00',
+                       end_color='00FF00',
+                       fill_type='solid')
     if headers_no > 18:
-        # TODO: insert custom columns here
-        # then color the headers yellow
-        pass
+        for i, header in enumerate(datastructure[0][headers_no-1:]):
+            # if there are too many custom headers, we might have invalid columns
+            cell = chr(83 + i) + str(1)
+            ws1[cell] = header + "food"
+            ws1[cell].fill = orangeFill
 
     # 3. populate matrices
     for i, item in enumerate(datastructure):
