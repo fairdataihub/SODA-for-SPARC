@@ -3717,6 +3717,11 @@
                   Generate
                 </button>
               </div>
+              <div
+                id="generate-subjects-spinner"
+                class="ui active green inline loader"
+                style="display: none; margin: 10px auto; width: 100%"
+              ></div>
             </div>
           </div>
         </div>
@@ -4216,7 +4221,7 @@
         </div>
         <!-- back button -->
         <div class="footer-div">
-          <div style="display: flex; flex-direction: row; width: 110px">
+          <!-- <div style="display: flex; flex-direction: row; width: 110px"> -->
             <button
               type="button"
               class="transition-btn prev"
@@ -4224,7 +4229,14 @@
             >
               <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
             </button>
-          </div>
+            <button onclick="resetSubjects()" class="start-over">
+              <i
+                class="fas fa-sync-alt"
+                style="margin-right: 10px; font-size: inherit"
+              ></i>
+              Start over
+            </button>
+          <!-- </div> -->
         </div>
       </section>
 

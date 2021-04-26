@@ -334,3 +334,36 @@ function loadSubjectsDataToTable() {
   'Please add or edit your subject_id(s) in the following subjects table.',
   'success')
 }
+
+function resetSubjects() {
+  Swal.fire({
+    text: "Are you sure you want to start over and reset your progress?",
+    icon: "warning",
+    showCancelButton: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "I want to start over!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 1. remove Prev and Show from all individual-question except for the first one
+      // 2. empty all input, textarea, select, para-elements
+      $("#Question-prepare-subjects-1").removeClass("prev");
+      $("#Question-prepare-subjects-1").nextAll().removeClass("show");
+      $("#Question-prepare-subjects-1").nextAll().removeClass("prev");
+
+      $("#Question-prepare-subjects-1").nextAll().find("button").show()
+
+      var inputFields = $("#Question-prepare-subjects-1")
+        .nextAll()
+        .find("input");
+
+      for (var field of inputFields) {
+        $(field).prop("placeholder", "Browse here");
+      }
+      subjectsFileData = []
+      subjectsTableData = []
+
+      // TODO: delete table rows except headers
+    }
+  });
+}

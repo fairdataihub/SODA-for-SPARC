@@ -1355,23 +1355,6 @@ function resetSubmission() {
       checkAirtableStatus();
     }
   });
-
-  // bootbox.confirm({
-  //   message:
-  //     "<h4>Are you sure you want to start over and reset your propress?</h4>",
-  //   centerVertical: true,
-  //   button: {
-  //     ok: {
-  //       label: "Yes",
-  //       className: "btn-primary",
-  //     },
-  //   },
-  //   callback: function (r) {
-  //     if (r !== null && r === true) {
-
-  //     }
-  //   },
-  // });
 }
 
 function resetDD() {
@@ -1425,20 +1408,4 @@ function resetDD() {
       document.getElementById("para-save-link-status").innerHTML = "";
     }
   });
-  // bootbox.confirm({
-  //   message:
-  //     "<h4>Are you sure you want to start over and reset your propress?</h4>",
-  //   centerVertical: true,
-  //   button: {
-  //     ok: {
-  //       label: "Yes",
-  //       className: "btn-primary",
-  //     },
-  //   },
-  //   callback: function (r) {
-  //     if (r !== null && r === true) {
-
-  //     }
-  //   },
-  // });
 }
