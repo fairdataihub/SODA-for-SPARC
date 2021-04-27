@@ -373,7 +373,7 @@ function disseminateConsortium(bfAcct, bfDS, share_status = "") {
 
 function disseminateShowCurrentPermission(bfAcct, bfDS) {
   $("#para-share-curation_team-status").css("color", "#000");
-  currentDatasetPermission.innerHTML = `Loading current permissions... <div id="restart_loader" class="ui active green inline loader tiny"></div>`;
+  currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   if (bfDS === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
     // bfCurrentPermissionProgress.style.display = "none";
