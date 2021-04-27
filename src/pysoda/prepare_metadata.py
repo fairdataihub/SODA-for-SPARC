@@ -282,17 +282,19 @@ def save_subjects_file(filepath, datastructure):
     # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
     ws1.delete_rows(2, 2)
 
+
     # 2. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
     headers_no = len(datastructure[0])
-    orangeFill = PatternFill(start_color='00FF00',
-                       end_color='00FF00',
+    orangeFill = PatternFill(start_color='FFD965',
+                       end_color='FFD965',
                        fill_type='solid')
     if headers_no > 18:
-        for i, header in enumerate(datastructure[0][headers_no-1:]):
+        for i, header in enumerate(datastructure[0][18:]):
             # if there are too many custom headers, we might have invalid columns
             cell = chr(83 + i) + str(1)
-            ws1[cell] = header + "food"
+            ws1[cell] = header
             ws1[cell].fill = orangeFill
+            ws1[cell].font = Font(bold=True, size=12, name='Calibri')
 
     # 3. populate matrices
     for i, item in enumerate(datastructure):
@@ -304,10 +306,27 @@ def save_subjects_file(filepath, datastructure):
             ws1[cell].font = Font(bold=False, size=11, name='Arial')
 
     # 4. delete empty columns
-    # TODO: for row in range(datastructure): if row[cell].value !== None, break. If all None, delete entire column
-    
+    deletedCols = []
+    index = 4
+    # For row in range(datastructure): if row[cell].value !== None, break. If all None, delete entire column
+    for col_cells in ws1.iter_cols(min_col=index, max_col=len(datastructure[0])):
+        flag = False
+        for cell in col_cells[1:]:
+            if cell.value is not None:
+                flag = True
+                break
+        index += 1
+        if not flag:
+            deletedCols.append("here")
+            deletedCols.append(col_cells[0].col_idx)
 
-    # write to excel file
-    ws1 = wb['Sheet1']
+    deletedColumnNumber = 0
+    for ind, col in enumerate(deletedCols):
+        if ind == 0:
+            ws1.delete_cols(col)
+        else:
+            col = col - deletedColumnNumber
+            ws1.delete_cols(col)
+        deletedColumnNumber += 1
 
     wb.save(destination)

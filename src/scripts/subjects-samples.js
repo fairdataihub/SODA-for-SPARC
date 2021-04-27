@@ -49,7 +49,7 @@ function addSubjectIDtoTable(newSubject) {
   // check for unique row id in case users delete old rows and append new rows (same IDs!)
   var newRowIndex = checkForUniqueRowID("row-current-subject", rowIndex);
   var row = (table.insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-subject" + newRowIndex +"' class='row-subjects'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+newSubject+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='view_current_subject_id(this)'><i class='eye outline icon' style='color: blue'></i></button><button class='ui button' onclick='edit_current_subject_id(this)'><i class='pen icon' style='color: black'></i></button><button class='ui button' onclick='delete_current_subject_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    "<tr id='row-current-subject" + newRowIndex +"' class='row-subjects'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+newSubject+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='view_current_subject_id(this)'><i class='eye outline icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='edit_current_subject_id(this)'><i class='pen icon' style='color: black'></i></button><button class='ui button' onclick='delete_current_subject_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
 
 function addSubjectIDtoDataBase(bootb) {
@@ -168,21 +168,23 @@ function loadSubjectInformation(ev, subjectID, type) {
     }
   });
   if (type === "view") {
-    var label = "Done"
-    $("#btn-add-custom-field").hide();
+    var label1 = "View";
+    var label2 = "Done"
+    // $("#btn-add-custom-field").hide();
   } else {
-    var label = "Edit"
+    var label1 = "Edit"
+    var label2 = "Confirm"
     $("#btn-add-custom-field").show();
   }
   var bootb = bootbox.dialog({
-    title: "<p style='text-align=center'>"+label+"ing a subject</p>",
+    title: "<p style='text-align=center'>"+label1+"ing a subject</p>",
     message: subjectsFormDiv,
     buttons: {
       cancel: {
         label: "Cancel",
       },
       confirm: {
-        label: label,
+        label: label2,
         className: "btn btn-primary bootbox-add-bf-class",
         callback: function () {
           if (type === "edit") {
@@ -202,6 +204,14 @@ function loadSubjectInformation(ev, subjectID, type) {
           container: $this,
         });
       });
+      $("#new-custom-header-name").keyup(function () {
+        var customName = $(this).val();
+        if (customName !== "") {
+          $("#button-confirm-custom-header-name").show();
+        } else {
+          $("#button-confirm-custom-header-name").hide();
+        }
+      })
     },
   });
  }
@@ -219,7 +229,6 @@ function editSubject(ev, bootbox, subjectID) {
    for (var i=1; i<subjectsTableData.length;i++) {
      if (subjectsTableData[i][0] === subjectID) {
        subjectsTableData[i] = subjectsFileData
-       subjectsFileData = []
        break
      }
    }
@@ -254,10 +263,10 @@ function editSubject(ev, bootbox, subjectID) {
         }
       }
       $(currentRow)[0].cells[1].innerText = newID;
-      subjectsFileData = []
       bootbox.modal("hide");
     }
   }
+  subjectsFileData = []
 }
 
 function delete_current_subject_id(ev) {
@@ -310,7 +319,7 @@ function importPrimaryFolder() {
       var j = 1;
       subjectsTableData[0] = headersArr;
       for (var folder of folders) {
-        subjectsFileData = [];
+        subjectsFileData = []
         var stats = fs.statSync(path.join(folderPath, folder));
         if (stats.isDirectory()) {
           subjectsFileData[0] = folder
@@ -334,6 +343,7 @@ function importPrimaryFolder() {
         }
     }
   }
+  subjectsFileData = []
 }
 
 function loadSubjectsDataToTable() {
@@ -412,15 +422,6 @@ function addCustomHeader(ev) {
 }
 
 $(document).ready(function() {
-  $("#new-custom-header-name").keyup(function () {
-    var customName = $(this).val();
-    if (customName !== "") {
-      $("#button-confirm-custom-header-name").show();
-    } else {
-      $("#button-confirm-custom-header-name").hide();
-    }
-  })
-
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     if (field.value === "" || field.value === undefined || field.value === "Select") {
       field.value = null

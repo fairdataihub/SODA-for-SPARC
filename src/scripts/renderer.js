@@ -905,31 +905,33 @@ ipcRenderer.on("selected-milestonedoc", (event, filepath) => {
 
 // generate subjects file
 ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename) => {
-  $("#generate-subjects-spinner").show();
-  var destinationPath = path.join(dirpath[0], filename);
-  if (fs.existsSync(destinationPath)) {
-    var emessage = "File '" + filename + "' already exists in " + dirpath[0];
-    // ipcRenderer.send("open-error-metadata-file-exits", emessage);
-    Swal.fire(
-      'Metadata file already exists',
-      `${emessage}`,
-      'error'
-    )
-    $("#generate-subjects-spinner").hide();
-  } else {
-     client.invoke("api_save_subjects_file", destinationPath, subjectsTableData, (error, res) => {
-       if (error) {
-         var emessage = userError(error);
-         log.error(error);
-         console.error(error);
-         $("#generate-subjects-spinner").hide();
-         Swal.fire("Failed to generate the subjects.xlsx file.", `${emessage}`, "error")
-       } else {
-         $("#generate-subjects-spinner").hide();
-         Swal.fire("Successfully created!", "The subjects.xlsx file has been successfully generated at the specified location.", "success")
-       }
-     })
-   }
+  if (dirpath.length > 0) {
+    $("#generate-subjects-spinner").show();
+    var destinationPath = path.join(dirpath[0], filename);
+    if (fs.existsSync(destinationPath)) {
+      var emessage = "File '" + filename + "' already exists in " + dirpath[0];
+      // ipcRenderer.send("open-error-metadata-file-exits", emessage);
+      Swal.fire(
+        'Metadata file already exists',
+        `${emessage}`,
+        'error'
+      )
+      $("#generate-subjects-spinner").hide();
+    } else {
+      client.invoke("api_save_subjects_file", destinationPath, subjectsTableData, (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          log.error(error);
+          console.error(error);
+          $("#generate-subjects-spinner").hide();
+          Swal.fire("Failed to generate the subjects.xlsx file.", `${emessage}`, "error")
+        } else {
+          $("#generate-subjects-spinner").hide();
+          Swal.fire("Successfully created!", "The subjects.xlsx file has been successfully generated at the specified location.", "success")
+        }
+      })
+    }
+  } 
 })
 
 // import Primary folder

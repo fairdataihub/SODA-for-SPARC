@@ -1510,3 +1510,8 @@ body.swal2-shown > [aria-hidden="true"] {
 .jstree-default > .jstree-container-ul > .jstree-node {
   overflow: auto !important;
 }
+
+.popover-tooltip.subjects-form {
+    padding: 0;
+    font-size: 16px
+}
