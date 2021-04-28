@@ -8,19 +8,18 @@ const nodeStorage = new JSONStorage(app.getPath("userData"));
 
 // Retrieve the userid value, and if it's not there, assign it a new uuid.
 const userId = nodeStorage.getItem("userid") || uuid();
-//console.log(userId);
 
 // (re)save the userid, so it persists for the next app session.
 nodeStorage.setItem("userid", userId);
 
 let usr = ua("UA-171625608-1", userId);
-//console.log("Packaged App");
+let app_status = "packaged"
 
 // If app is in beta, send tracking events to the beta analytics branch
 let beta_app_version = app.getVersion();
 if (beta_app_version.includes("beta")) {
   usr = ua("UA-171625608-3", userId);
-  //console.log("Packaged App - Beta");
+  app_status = "beta"
 }
 
 // If in the dev environment, send tracking events to the dev branch
@@ -28,14 +27,14 @@ if (process.env.NODE_ENV === "development") {
   // do not track notice for development. This will persist to installed apps as well
   nodeStorage.setItem("dnt", true);
   usr = ua("UA-171625608-2", userId);
-  //console.log("Development App");
+  app_status = "dev"
 }
 
 // Tracking function for Google Analytics
 // call this from anywhere in the app
 const trackEvent = (category, action, label, value) => {
   let dnt = nodeStorage.getItem("dnt") || false;
-  if (dnt != true) {
+  if (!dnt && app_status == "packaged") {
     usr
       .event({
         ec: category,
