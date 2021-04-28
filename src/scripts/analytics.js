@@ -25,6 +25,8 @@ if (beta_app_version.includes("beta")) {
 
 // If in the dev environment, send tracking events to the dev branch
 if (process.env.NODE_ENV === "development") {
+  // do not track notice for development. This will persist to installed apps as well
+  nodeStorage.setItem("dnt", true);
   usr = ua("UA-171625608-2", userId);
   //console.log("Development App");
 }
@@ -32,14 +34,17 @@ if (process.env.NODE_ENV === "development") {
 // Tracking function for Google Analytics
 // call this from anywhere in the app
 const trackEvent = (category, action, label, value) => {
-  usr
-    .event({
-      ec: category,
-      ea: action,
-      el: label,
-      ev: value,
-    })
-    .send();
+  let dnt = nodeStorage.getItem("dnt") || false;
+  if (dnt != true) {
+    usr
+      .event({
+        ec: category,
+        ea: action,
+        el: label,
+        ev: value,
+      })
+      .send();
+  }
 };
 
 module.exports = { trackEvent };
