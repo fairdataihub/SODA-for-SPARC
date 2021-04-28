@@ -4,13 +4,14 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v4.2.1 - TBD
+## v4.2.1 - 2021
 
 ### Bug fixes:
+- Updated Pennsieve python packages to support minor bugfixes and performance improvements
 - Fixed a minor bug in how dataset statistics were being recorded.
 - Fixed a bug where the contact person could not be changed when creating the dataset_description metadata file.
 
-## v4.2.0 - 2020-04-21
+## v4.2.0 - 2021-04-21
 
 ### Feature additions:
 - SODA now supports Pennsieve.
@@ -26,7 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - When showing popups for users, the messages now don't unintentionally move other content out of the way. This should make SODA to be more consistent to use.
 - Added a bug fix for the dataset subtitle character count
 
-## v4.1.0 - 2020-04-09
+## v4.1.0 - 2021-04-09
 
 ### Feature additions:
 - Complete UI overhaul for the Manage Datasets, Prepare Metadata and Disseminate Dataset features to bring the SODA's visuals to be consistent across all features.
