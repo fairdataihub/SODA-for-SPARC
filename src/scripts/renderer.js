@@ -151,13 +151,16 @@ const closeNotification = () => {
 
 // Restart the app for update. Does not restart on macos
 const restartApp = () => {
+  setTimeout(() => {
+    document.getElementById("restart_loader").style.display = "inline-block";
+  }, 10);
+
   ipcRenderer.send(
     "track-event",
     "App Update",
     "App Restarted",
     `User OS-${os.platform()}-${os.release()}- SODAv${app.getVersion()}`
   );
-  document.getElementById("restart_loader").style.display = "inline-block";
   ipcRenderer.send("restart_app");
 };
 
@@ -1581,7 +1584,7 @@ const contactPersonCheck = (no) => {
   var rowcount = currentConTable.rows.length;
 
   if (no === 0) {
-    currentContactPersonID = ""
+    currentContactPersonID = "";
   } else {
     currentContactPersonID = "ds-contact-person-" + no;
   }
@@ -1592,7 +1595,10 @@ const contactPersonCheck = (no) => {
     )
       .find("label")
       .find("input")[0];
-    if ($(contactLabel).prop("id") && $(contactLabel).prop("id") !== currentContactPersonID) {
+    if (
+      $(contactLabel).prop("id") &&
+      $(contactLabel).prop("id") !== currentContactPersonID
+    ) {
       if (contactLabel.checked) {
         contactPersonExists = true;
         break;
