@@ -343,6 +343,22 @@ ipcMain.on("open-file-dialog-samples", (event) => {
   );
 });
 
+// import existing subjects.xlsx to continue working on
+ipcMain.on("open-file-dialog-existing-subjects", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openFile"],
+      filters: [{ name: "Excel", extensions: ["xlsx", "xls", "csv"] }],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-existing-subjects", files);
+      }
+    }
+  );
+});
+
 ////// milestone document
 ipcMain.on("open-file-dialog-milestone-doc", (event) => {
   dialog.showOpenDialog(

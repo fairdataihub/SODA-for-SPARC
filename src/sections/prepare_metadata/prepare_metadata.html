@@ -3398,7 +3398,7 @@
                 >
                   <div
                     class="option-card radio-button"
-                    data-next="Question-prepare-subjects-7"
+                    data-next="Question-prepare-subjects-5"
                     onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-1', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
                   >
                     <div class="card-head">
@@ -4354,13 +4354,89 @@
 
           </div>
 
-        <!-- Question 4: Ask for existing primary folder -->
+        <!-- Question 4: Ask for existing subjects.xlsx file -->
         <div
           class="individual-question prepare-subjects"
-          id="Question-prepare-subjects-4"
+          id="Question-prepare-subjects-5"
           style="width: 85%"
         >
-
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <label
+              style="
+                font-size: 17px;
+                color: var(--color-bg-plum);
+                text-align: center;
+              "
+              >Browse for your <i>subjects.xlsx</i> file below:
+            </label>
+            <div
+              class="field"
+              style="
+                margin: 15px auto;
+                display: flex;
+                justify-content: center;
+              "
+            >
+              <input
+                class="form-control"
+                style="width: 450px !important"
+                onclick="showExistingSubjectsFile()"
+                id="existing-subjects-file-destination"
+                type="text"
+                readonly
+                placeholder="Browse here"
+              />
+            </div>
+            <div
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
+              id="div-confirm-existing-subjects-import"
+            >
+              <button
+                onclick="importExistingSubjectsFile()"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                "
+              >
+                Confirm
+              </button>
+              <button
+                onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-5', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
+                data-next="Question-prepare-subjects-3"
+                id="button-fake-confirm-existing-subjects-file-load"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin: 10px auto;
+                  width: 100px;
+                  height: 30px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  font-size: 13px;
+                  display:none;
+                "
+              >
+                Fake Confirm
+              </button>
+            </div>
+          </div>
+        </div>
         </div>
 
           <!-- Question 4: Show table -->

@@ -428,4 +428,48 @@ $(document).ready(function() {
     }
     headersArr.push(field.name);
   }
+
+  ipcRenderer.on("selected-existing-subjects", (event, filepath) => {
+    if (filepath.length > 0) {
+      if (filepath != null) {
+        document.getElementById("existing-subjects-file-destination").placeholder =
+          filepath[0];
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Prepare Metadata - Continue with existing subjects.xlsx",
+          defaultBfAccount
+        );
+      } else {
+
+      }
+    }
+    if (
+      document.getElementById("existing-subjects-file-destination").placeholder !==
+      "Browse here"
+    ) {
+      $("#div-confirm-existing-subjects-import").show();
+      $($("#div-confirm-existing-subjects-import button")[0]).show();
+    } else {
+      $("#div-confirm-existing-subjects-import").hide();
+      $($("#div-confirm-existing-subjects-import button")[0]).hide();
+    }
+  });
 })
+
+function showExistingSubjectsFile() {
+  ipcRenderer.send("open-file-dialog-existing-subjects");
+}
+
+function importExistingSubjectsFile() {
+  var filePath = $("#existing-subjects-file-destination").prop("placeholder");
+  if (filePath === "Browse here") {
+    Swal.fire("No file chosen!", "Please select a path to your subjects.xlsx file!", "error");
+  } else {
+    if (path.parse(filePath).base !== "subjects.xlsx") {
+      Swal.fire("Incorrect file name!", "Your file must be named 'subjects.xlsx' to be imported to SODA!", "error");
+    } else {
+      loadSubjectsFileToDataframe(filePath);
+    }
+  }
+}

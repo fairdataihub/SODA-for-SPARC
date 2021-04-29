@@ -13,7 +13,7 @@ from disseminate import bf_get_doi, bf_reserve_doi, bf_get_publishing_status, bf
 from curate import validate_dataset, create_folder_level_manifest, \
     check_empty_files_folders, main_curate_function, main_curate_function_progress, generate_manifest_file_locally
 
-from prepare_metadata import save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone, save_subjects_file
+from prepare_metadata import save_submission_file, save_ds_description_file, extract_milestone_info, import_milestone, save_subjects_file, convert_subjects_file_to_df
 
 from organize_datasets import generate_dataset_locally, bf_get_dataset_files_folders
 
@@ -38,6 +38,9 @@ class SodaApi(object):
     ### Save subjects file
     def api_save_subjects_file(self, filepath, datastructure):
         return save_subjects_file(filepath, datastructure)
+
+    def api_convert_subjects_file_to_df(self, filepath):
+        return convert_subjects_file_to_df(filepath)
 
     ### Generate dataset locally
     def api_generate_dataset_locally(self, destinationdataset, pathdataset, newdatasetname, jsonpath):

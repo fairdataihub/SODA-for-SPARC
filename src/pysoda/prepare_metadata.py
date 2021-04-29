@@ -328,3 +328,9 @@ def save_subjects_file(filepath, datastructure):
     #     deletedColumnNumber += 1
     #
     wb.save(destination)
+
+def convert_subjects_file_to_df(filepath):
+    subjects_df = pd.read_excel(filepath, engine='openpyxl')
+    lists = subjects_df.values.tolist()
+    json_str = json.dumps(lists)
+    return json_str

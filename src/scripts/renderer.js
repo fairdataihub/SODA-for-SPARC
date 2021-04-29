@@ -926,12 +926,13 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
           $("#generate-subjects-spinner").hide();
           Swal.fire("Failed to generate the subjects.xlsx file.", `${emessage}`, "error")
         } else {
+          console.log(res);
           $("#generate-subjects-spinner").hide();
           Swal.fire("Successfully created!", "The subjects.xlsx file has been successfully generated at the specified location.", "success")
         }
       })
     }
-  } 
+  }
 })
 
 // import Primary folder
@@ -945,6 +946,23 @@ ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
     $("#div-confirm-primary-folder-import").find("button").hide()
   }
 });
+
+// import existing subjects.xlsx info (calling python to load info to a dataframe)
+function loadSubjectsFileToDataframe(filePath) {
+  client.invoke(
+    "api_convert_subjects_file_to_df",
+    filePath,
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+      } else {
+        // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
+        console.log(res);
+      }
+    }
+  );
+}
 
 // load and parse json file
 function parseJson(path) {
