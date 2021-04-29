@@ -306,27 +306,25 @@ def save_subjects_file(filepath, datastructure):
             ws1[cell].font = Font(bold=False, size=11, name='Arial')
 
     # 4. delete empty columns
-    deletedCols = []
-    index = 4
-    # For row in range(datastructure): if row[cell].value !== None, break. If all None, delete entire column
-    for col_cells in ws1.iter_cols(min_col=index, max_col=len(datastructure[0])):
-        flag = False
-        for cell in col_cells[1:]:
-            if cell.value is not None:
-                flag = True
-                break
-        index += 1
-        if not flag:
-            deletedCols.append("here")
-            deletedCols.append(col_cells[0].col_idx)
+    # deletedCols = []
+    # # For row in range(datastructure): if row[cell].value !== None, break. If all None, delete entire column
+    # for col_cells in ws1.iter_cols(min_col=4, max_col=len(datastructure[0]), min_row=2, max_row=len(datastructure)):
+    #     flag = False
+    #     for cell in col_cells:
+    #         if cell is None:
+    #             flag = True
+    #             continue
+    #         else:
+    #             break
+    #         deletedCols.append(cell.col_idx)
 
-    deletedColumnNumber = 0
-    for ind, col in enumerate(deletedCols):
-        if ind == 0:
-            ws1.delete_cols(col)
-        else:
-            col = col - deletedColumnNumber
-            ws1.delete_cols(col)
-        deletedColumnNumber += 1
-
+    # deletedColumnNumber = 0
+    # for ind, col in enumerate(deletedCols):
+    #     if ind == 0:
+    #         ws1.delete_cols(col)
+    #     else:
+    #         col = col - deletedColumnNumber
+    #         ws1.delete_cols(col)
+    #     deletedColumnNumber += 1
+    #
     wb.save(destination)
