@@ -329,8 +329,20 @@ def save_subjects_file(filepath, datastructure):
     #
     wb.save(destination)
 
+
+def column_check(x):
+    if 'unnamed' in x.lower():
+        return False
+    return True
+
 def convert_subjects_file_to_df(filepath):
-    subjects_df = pd.read_excel(filepath, engine='openpyxl')
-    lists = subjects_df.values.tolist()
-    json_str = json.dumps(lists)
-    return json_str
+    subjects_df = pd.read_excel(filepath, engine='openpyxl', usecols=column_check, header=0)
+    subjects_df = subjects_df.dropna(axis = 0, how = 'all')
+    headerList = list(subjects_df.columns.values)
+    n = len(headerList)
+    new_subjects_df = subjects_df.iloc[:, 0:n+1]
+    lists = new_subjects_df.values.tolist()
+
+    lists.insert(0, headerList)
+
+    return lists

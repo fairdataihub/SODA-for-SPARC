@@ -473,3 +473,12 @@ function importExistingSubjectsFile() {
     }
   }
 }
+
+function loadDataFrametoUI() {
+  const lowercasedHeaders = subjectsTableData[0].map(header => header.toLowerCase());
+  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+    if (!lowercasedHeaders.includes(field.name.toLowerCase())) {
+      console.log(field.name)
+    }
+  }
+}

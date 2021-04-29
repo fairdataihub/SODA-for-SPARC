@@ -958,7 +958,8 @@ function loadSubjectsFileToDataframe(filePath) {
         console.error(error);
       } else {
         // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
-        console.log(res);
+        subjectsTableData = res
+        loadDataFrametoUI()
       }
     }
   );
