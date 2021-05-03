@@ -6,7 +6,10 @@ const fs = require("fs");
 
 const app = electron.app;
 const nodeStorage = new JSONStorage(app.getPath("userData"));
-const config_folder_path = require("path").join(app.getPath("home"), ".soda-config"); // more config files will be placed here
+const config_folder_path = require("path").join(
+  app.getPath("home"),
+  ".soda-config"
+); // more config files will be placed here
 
 let dnt = false;
 
@@ -43,7 +46,7 @@ if (beta_app_version.includes("beta")) {
 if (process.env.NODE_ENV === "development") {
   usr = ua("UA-171625608-2", userId);
   app_status = "dev";
-  dnt = false
+  dnt = false;
 }
 
 if (dnt) {
