@@ -475,10 +475,16 @@ function importExistingSubjectsFile() {
 }
 
 function loadDataFrametoUI() {
+  const customHeaders = [];
   const lowercasedHeaders = subjectsTableData[0].map(header => header.toLowerCase());
+  // separate regular headers and custom headers
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     if (!lowercasedHeaders.includes(field.name.toLowerCase())) {
-      console.log(field.name)
+      customHeaders.push(field.name)
     }
   }
+  // load sub-ids to table
+  loadSubjectsDataToTable()
+  $("#table-subjects").show();
+  $("#button-fake-confirm-existing-subjects-file-load").click();
 }
