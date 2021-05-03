@@ -30,6 +30,7 @@ const { JSONStorage } = require("node-localstorage");
 const prevent_sleep_id = "";
 const electron_app = electron.app;
 const app = remote.app;
+const shell = electron.shell;
 var noAirtable = false;
 
 var nextBtnDisabledVariable = true;
@@ -58,6 +59,60 @@ client.invoke("echo", "server ready", (error, res) => {
       "Success",
       "Establishing Python Connection"
     );
+
+    client.invoke("api_check_agent_install", (error, res) => {
+      if (error) {
+        var emessage = userError(error);
+        Swal.fire({
+          icon: "error",
+          title: "Pennsieve Agent error!",
+          html: emessage,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+      } else {
+        let agent_version = res;
+        $.getJSON("https://api.github.com/repos/Pennsieve/agent/releases").done(
+          function (release_res) {
+            let release = release_res[0];
+            let latest_agent_version = release.tag_name;
+            let browser_download_url = "";
+            if (latest_agent_version != agent_version) {
+              if (process.platform == "darwin") {
+                release.assets.forEach((asset, index) => {
+                  let file_name = asset.name;
+                  if (path.extname(file_name) == ".pkg") {
+                    browser_download_url = asset.browser_download_url;
+                  }
+                });
+              }
+              if (process.platform == "win32") {
+                release.assets.forEach((asset, index) => {
+                  let file_name = asset.name;
+                  if (
+                    path.extname(file_name) == ".msi" ||
+                    path.extname(file_name) == ".exe"
+                  ) {
+                    browser_download_url = asset.browser_download_url;
+                  }
+                });
+              }
+              if (process.platform == "linux") {
+                release.assets.forEach((asset, index) => {
+                  let file_name = asset.name;
+                  if (path.extname(file_name) == ".deb") {
+                    browser_download_url = asset.browser_download_url;
+                  }
+                });
+              }
+              if (browser_download_url != "") {
+                shell.openExternal(browser_download_url);
+              }
+            }
+          }
+        );
+      }
+    });
   }
 });
 

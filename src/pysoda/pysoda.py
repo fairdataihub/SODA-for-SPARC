@@ -23,7 +23,8 @@ import re
 import gevent
 from pennsieve import Pennsieve
 from pennsieve.log import get_logger
-from pennsieve.api.agent import agent_cmd, validate_agent_installation
+from pennsieve.api.agent import agent_cmd, validate_agent_installation, agent_env
+import semver
 from pennsieve.api.agent import AgentError, check_port, socket_address
 from pennsieve import Settings
 from urllib.request import urlopen
@@ -617,6 +618,38 @@ def agent_running():
     else:
         raise AgentError("The Pennsieve agent is already running. Learn more about how to solve the issue <a href='https://github.com/bvhpatel/SODA/wiki/The-Pennsieve-agent-is-already-running' target='_blank'>here</a>.")
 
+def check_agent_install():
+    """
+    Associated with 'Submit dataset' button in 'Submit new dataset' section
+    Uploads the specified folder to the specified dataset on Pennsieve account
+
+    Input:
+        accountname: account in which the dataset needs to be created (string)
+        bfdataset: name of the dataset on Pennsieve (string)
+        pathdataset: path of dataset on local machine (string)
+    Action:
+        Uploads dataset on Pennsieve account
+    """
+    ## check if agent is installed
+    try:
+        validate_agent_installation(Settings())
+        return agent_version(Settings())
+    except AgentError:
+        raise AgentError("We highly recommend installing the Pennsieve agent and restarting SODA before you upload any files. Click <a href='https://github.com/bvhpatel/SODA/wiki/Installing-the-Pennsieve-agent' target='_blank'>here</a> for installation instructions.")
+
+def agent_version(settings):
+    """
+    Check whether the agent is installed and at least the minimum version.
+    """
+    try:
+        env = agent_env(settings)
+        env["PENNSIEVE_LOG_LEVEL"] = "ERROR"  # Avoid spurious output with the version
+        version = subprocess.check_output([agent_cmd(), "version"], env=env)
+        return version.decode().strip()
+    except (AgentError, subprocess.CalledProcessError, EnvironmentError) as e:
+        raise AgentError(
+            "Agent not installed. Visit https://developer.pennsieve.io/agent for installation directions."
+        )
 
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
     """
