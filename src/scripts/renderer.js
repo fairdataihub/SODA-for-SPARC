@@ -960,7 +960,6 @@ function loadSubjectsFileToDataframe(filePath) {
         // res is a dataframe, now we load it into our subjectsTableData in order to populate the UI
         if (res.length > 1) {
           subjectsTableData = res
-          console.log(res)
           loadDataFrametoUI()
         } else {
           Swal.fire("Couldn't load existing subjects.xlsx file!", "Please make sure there are at least a header row in the subjects file.", "error")

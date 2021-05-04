@@ -350,6 +350,9 @@ function importPrimaryFolder() {
 }
 
 function loadSubjectsDataToTable() {
+  // delete table rows except headers
+  $("#table-subjects tr:gt(0)").remove();
+
   for (var i=1; i<subjectsTableData.length; i++) {
     addSubjectIDtoTable(subjectsTableData[i][0])
   }
