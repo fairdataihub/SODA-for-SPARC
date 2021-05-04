@@ -9,6 +9,7 @@ const path = require("path");
 const { ipcRenderer } = require("electron");
 const Editor = require("@toast-ui/editor");
 const remote = require("electron").remote;
+const { Notyf } = require("notyf");
 const imageDataURI = require("image-data-uri");
 const log = require("electron-log");
 const Airtable = require("airtable");
@@ -114,6 +115,7 @@ client.invoke("echo", "server ready", (error, res) => {
       }
     });
   }
+  run_pre_flight_checks();
 });
 
 //////////////////////////////////
@@ -133,6 +135,64 @@ console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 const appVersion = window.require("electron").remote.app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
+
+let connected_to_internet = false;
+
+const run_pre_flight_checks = async () => {
+  await check_internet_connection();
+};
+
+const notyf = new Notyf({
+  position: { x: "right", y: "bottom" },
+  ripple: true,
+  dismissible: true,
+  types: [
+    {
+      type: "loading_internet",
+      background: "grey",
+      icon: {
+        className: "fas fa-wifi",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 5000,
+    },
+    {
+      type: "success",
+      background: "green",
+      icon: {
+        className: "fas fa-check-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 2000,
+    },
+  ],
+});
+
+const check_internet_connection = async () => {
+  let notification = notyf.open({
+    type: "loading_internet",
+    message: "Checking Internet status...",
+  });
+  setTimeout(() => {
+    require("dns").resolve("www.google.com", (err) => {
+      if (err) {
+        console.error("No internet connection");
+        log.error("No internet connection");
+        ipcRenderer.send("warning-no-internet-connection");
+      } else {
+        console.log("Connected to the internet");
+        log.info("Connected to the internet");
+        notyf.dismiss(notification);
+        notyf.success({
+          type: "success",
+          message: "Connected to the internet",
+        });
+      }
+    });
+  }, 800);
+};
 
 //check user's internet connection and connect to default Pennsieve account //
 require("dns").resolve("www.google.com", (err) => {
