@@ -282,7 +282,6 @@ def save_subjects_file(filepath, datastructure):
     # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
     ws1.delete_rows(2, 2)
 
-
     # 2. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
     headers_no = len(datastructure[0])
     orangeFill = PatternFill(start_color='FFD965',
@@ -361,12 +360,6 @@ def convert_subjects_file_to_df(filepath):
         except KeyError:
             column.extend([""]*len(subjects_df))
         transpose.append(column)
-    #
-    # n = len(headerList)
-    # new_subjects_df = subjects_df.iloc[:, 0:n+1]
-    # lists = new_subjects_df.values.tolist()
-    #
-    # lists.insert(0, headerList)
 
     return transposeMatrix(transpose)
 
