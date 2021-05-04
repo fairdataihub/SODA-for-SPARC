@@ -155,11 +155,14 @@ function loadSubjectInformation(ev, subjectID, type) {
   }
   // populate form
   var fieldArr = $(subjectsFormDiv).children().find(".subjects-form-entry")
+  var emptyEntries = ["nan", "nat"]
   var c = fieldArr.map(function(i, field) {
-    if (infoJson[i] !== "" && infoJson[i]) {
-      field.value = infoJson[i];
-    } else {
-      field.value = "";
+    if (infoJson[i]) {
+      if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
+        field.value = infoJson[i];
+      } else {
+        field.value = "";
+      }
     }
     if (type === "view") {
       $(field).prop("disabled", true);
@@ -413,12 +416,18 @@ function addCustomHeader(ev) {
   var divElement = '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">'+customName+':</font></div></div><div class="demo-controls-body"><input class="form-container-input-bf subjects-form-entry" id="bootbox-subject-'+customName+'" name='+customName+'></input></div></div>'
   showEnterCustomHeaderDiv(ev, "hide");
   if (!headersArr.includes(customName)) {
-    $("#div-new-custom-headers").prepend(divElement);
+    $("#div-new-custom-headers").append(divElement);
     headersArr.push(customName);
   } else {
     Swal.fire("Duplicate header name!", "You entered a name that is already listed under the current fields", "error");
     $("#button-confirm-custom-header-name").hide();
   }
+}
+
+
+function addExistingCustomHeader(customName) {
+  var divElement = '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">'+customName+':</font></div></div><div class="demo-controls-body"><input class="form-container-input-bf subjects-form-entry" id="bootbox-subject-'+customName+'" name='+customName+'></input></div></div>'
+  $("#div-new-custom-headers").append(divElement);
 }
 
 $(document).ready(function() {
@@ -475,16 +484,25 @@ function importExistingSubjectsFile() {
 }
 
 function loadDataFrametoUI() {
-  const customHeaders = [];
-  const lowercasedHeaders = subjectsTableData[0].map(header => header.toLowerCase());
   // separate regular headers and custom headers
+  const lowercasedHeaders = subjectsTableData[0].map(header => header.toLowerCase());
+  var fieldSubjectEntries = []
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
-    if (!lowercasedHeaders.includes(field.name.toLowerCase())) {
-      customHeaders.push(field.name)
+    fieldSubjectEntries.push(field.name.toLowerCase())
+  }
+  const customHeaders = [];
+  for (var field of lowercasedHeaders) {
+    if (!fieldSubjectEntries.includes(field)) {
+      customHeaders.push(field)
     }
+  }
+  headersArr = headersArr.concat(customHeaders);
+  for (var headerName of customHeaders) {
+    addExistingCustomHeader(headerName)
   }
   // load sub-ids to table
   loadSubjectsDataToTable()
   $("#table-subjects").show();
   $("#button-fake-confirm-existing-subjects-file-load").click();
+
 }

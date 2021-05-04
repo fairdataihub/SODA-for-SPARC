@@ -329,20 +329,46 @@ def save_subjects_file(filepath, datastructure):
     #
     wb.save(destination)
 
-
 def column_check(x):
     if 'unnamed' in x.lower():
         return False
     return True
 
 def convert_subjects_file_to_df(filepath):
+    templateHeaderList = ["subject_id", "pool_id", "experimental group", "age", "sex", "species", "strain", "rrid for strain", "additional fields (e.g. minds)", "age category", "age range (min)", "age range (max)", "handedness", "genotype", "reference atlas", "protocol title", "protocol.io location", "experimental log file name"]
+
     subjects_df = pd.read_excel(filepath, engine='openpyxl', usecols=column_check, header=0)
     subjects_df = subjects_df.dropna(axis = 0, how = 'all')
-    headerList = list(subjects_df.columns.values)
-    n = len(headerList)
-    new_subjects_df = subjects_df.iloc[:, 0:n+1]
-    lists = new_subjects_df.values.tolist()
+    subjects_df = subjects_df.applymap(str)
+    subjects_df.columns = map(str.lower, subjects_df.columns)
+    importedHeaderList = list(subjects_df.columns.values)
 
-    lists.insert(0, headerList)
+    transpose = []
+    for header in templateHeaderList:
+        column = [header]
+        try:
+            column.extend(subjects_df[header].values.tolist())
+        except KeyError:
+            column.extend([""]*len(subjects_df))
+        transpose.append(column)
 
-    return lists
+    for header in importedHeaderList:
+        if header.lower() in templateHeaderList:
+            continue
+        column = [header]
+        try:
+            column.extend(subjects_df[header].values.tolist())
+        except KeyError:
+            column.extend([""]*len(subjects_df))
+        transpose.append(column)
+    #
+    # n = len(headerList)
+    # new_subjects_df = subjects_df.iloc[:, 0:n+1]
+    # lists = new_subjects_df.values.tolist()
+    #
+    # lists.insert(0, headerList)
+
+    return transposeMatrix(transpose)
+
+def transposeMatrix(matrix):
+    return [[matrix[j][i] for j in range(len(matrix))] for i in range(len(matrix[0]))]
