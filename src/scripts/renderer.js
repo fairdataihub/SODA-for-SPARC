@@ -17,9 +17,9 @@ require("v8-compile-cache");
 const Tagify = require("@yaireo/tagify");
 const https = require("https");
 const $ = require("jquery");
-const PDFDocument = require("pdfkit");
-const html2canvas = require("html2canvas");
-const removeMd = require("remove-markdown");
+// const PDFDocument = require("pdfkit");
+// const html2canvas = require("html2canvas");
+// const removeMd = require("remove-markdown");
 const electron = require("electron");
 const bootbox = require("bootbox");
 const DragSelect = require("dragselect");
@@ -28,7 +28,7 @@ const csvToJson = require("convert-csv-to-json");
 const Jimp = require("jimp");
 const { JSONStorage } = require("node-localstorage");
 
-const prevent_sleep_id = "";
+// const prevent_sleep_id = "";
 const electron_app = electron.app;
 const app = remote.app;
 const shell = electron.shell;
@@ -60,67 +60,21 @@ client.invoke("echo", "server ready", (error, res) => {
       "Success",
       "Establishing Python Connection"
     );
-
-    client.invoke("api_check_agent_install", (error, res) => {
-      if (error) {
-        var emessage = userError(error);
-        Swal.fire({
-          icon: "error",
-          title: "Pennsieve Agent error!",
-          html: emessage,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-      } else {
-        let agent_version = res;
-        $.getJSON("https://api.github.com/repos/Pennsieve/agent/releases").done(
-          function (release_res) {
-            let release = release_res[0];
-            let latest_agent_version = release.tag_name;
-            let browser_download_url = "";
-            if (latest_agent_version != agent_version) {
-              if (process.platform == "darwin") {
-                release.assets.forEach((asset, index) => {
-                  let file_name = asset.name;
-                  if (path.extname(file_name) == ".pkg") {
-                    browser_download_url = asset.browser_download_url;
-                  }
-                });
-              }
-              if (process.platform == "win32") {
-                release.assets.forEach((asset, index) => {
-                  let file_name = asset.name;
-                  if (
-                    path.extname(file_name) == ".msi" ||
-                    path.extname(file_name) == ".exe"
-                  ) {
-                    browser_download_url = asset.browser_download_url;
-                  }
-                });
-              }
-              if (process.platform == "linux") {
-                release.assets.forEach((asset, index) => {
-                  let file_name = asset.name;
-                  if (path.extname(file_name) == ".deb") {
-                    browser_download_url = asset.browser_download_url;
-                  }
-                });
-              }
-              if (browser_download_url != "") {
-                shell.openExternal(browser_download_url);
-              }
-            }
-          }
-        );
-      }
-    });
   }
-  run_pre_flight_checks();
 });
 
 //////////////////////////////////
 // App launch actions
 //////////////////////////////////
+
+// $(window).load(function () {
+//   run_pre_flight_checks();
+// });
+
+// $(document).ready(function () {
+//   run_pre_flight_checks()d
+// });
+
 
 // Log file settings //
 log.transports.console.level = false;
@@ -136,16 +90,11 @@ const appVersion = window.require("electron").remote.app.getVersion();
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
-let connected_to_internet = false;
-
-const run_pre_flight_checks = async () => {
-  await check_internet_connection();
-};
-
 const notyf = new Notyf({
   position: { x: "right", y: "bottom" },
   ripple: true,
   dismissible: true,
+  ripple: false,
   types: [
     {
       type: "loading_internet",
@@ -155,7 +104,37 @@ const notyf = new Notyf({
         tagName: "i",
         color: "white",
       },
+      duration: 10000,
+    },
+    {
+      type: "ps_agent",
+      background: "grey",
+      icon: {
+        className: "fas fa-cogs",
+        tagName: "i",
+        color: "white",
+      },
       duration: 5000,
+    },
+    {
+      type: "app_update",
+      background: "grey",
+      icon: {
+        className: "fas fa-sync-alt",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 5000,
+    },
+    {
+      type: "api_key_search",
+      background: "grey",
+      icon: {
+        className: "fas fa-users-cog",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 0,
     },
     {
       type: "success",
@@ -165,50 +144,323 @@ const notyf = new Notyf({
         tagName: "i",
         color: "white",
       },
-      duration: 2000,
+      duration: 3000,
+    },
+    {
+      type: "warning",
+      background: "#ffcc00",
+      icon: {
+        className: "fas fa-exclamation-triangle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 3000,
+    },
+    {
+      type: "error",
+      background: "indianred",
+      icon: {
+        className: "fas fa-times-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 3000,
     },
   ],
 });
 
-const check_internet_connection = async () => {
-  let notification = notyf.open({
-    type: "loading_internet",
-    message: "Checking Internet status...",
-  });
-  setTimeout(() => {
-    require("dns").resolve("www.google.com", (err) => {
-      if (err) {
-        console.error("No internet connection");
-        log.error("No internet connection");
-        ipcRenderer.send("warning-no-internet-connection");
+let connected_to_internet = false;
+
+// Check app version on current app and display in the side bar
+ipcRenderer.on("run_pre_flight_checks", (event, arg) => {
+  run_pre_flight_checks()
+});
+
+const run_pre_flight_checks = async () => {
+  let connection_response = "";
+  let agent_installed_response = "";
+  let agent_version_response = "";
+  let account_present = false;
+
+  connection_response = await check_internet_connection();
+  if (!connection_response) {
+    Swal.fire({
+      icon: "error",
+      text:
+        "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "I understand",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+      }
+    });
+  } else {
+    await wait(500);
+    account_present = await check_api_key();
+    if (account_present) {
+      updateBfAccountList();
+      await wait(500);
+      [
+        agent_installed_response,
+        agent_version_response,
+      ] = await check_agent_installed();
+      console.log(agent_installed_response, agent_version_response);
+      if (!agent_installed_response) {
+        Swal.fire({
+          icon: "error",
+          title: "Pennsieve Agent error!",
+          html: agent_version_response,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
       } else {
-        console.log("Connected to the internet");
-        log.info("Connected to the internet");
+        await wait(500);
+        [
+          browser_download_url,
+          latest_agent_version,
+        ] = await check_agent_installed_version(agent_version_response);
+        if (browser_download_url != "") {
+          Swal.fire({
+            icon: "warning",
+            text:
+              "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            showCancelButton: true,
+            confirmButtonText: "Download now",
+            cancelButtonText: "Skip for now",
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              shell.openExternal(browser_download_url);
+              // quit app here after a timeout?
+            }
+            if (result.isDenied) {
+              // notyf.open({
+              //   type: "app_update",
+              //   message: "Checking for a newer version of SODA...",
+              // });
+              checkNewAppVersion();
+            }
+          });
+        } else {
+          // notyf.open({
+          //   type: "app_update",
+          //   message: "Checking for a newer version of SODA...",
+          // });
+          checkNewAppVersion();
+        }
+      }
+    } else {
+      Swal.fire({
+        icon: "warning",
+        text:
+          "We could not find a pre-existing API key or account. Would you like to enter your API key now? <add link for docs>",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Yes",
+        showCancelButton: true,
+        cancelButtonText: "I'll do it later",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          openDropdownPrompt("bf");
+        } else {
+        }
+      });
+    }
+  }
+};
+
+const wait = async (delay) => {
+  return new Promise((resolve) => setTimeout(resolve, delay));
+};
+
+const check_internet_connection = async (show_notification = true) => {
+  let notification = null;
+  if (show_notification) {
+    notification = notyf.open({
+      type: "loading_internet",
+      message: "Checking Internet status...",
+    });
+  }
+  await wait(800);
+  return require("dns").resolve("www.google.com", (err) => {
+    if (err) {
+      console.error("No internet connection");
+      log.error("No internet connection");
+      ipcRenderer.send("warning-no-internet-connection");
+      if (show_notification) {
         notyf.dismiss(notification);
-        notyf.success({
+        notyf.open({
+          type: "error",
+          message: "Not connected to internet",
+        });
+      }
+      connected_to_internet = false;
+      return false;
+    } else {
+      console.log("Connected to the internet");
+      log.info("Connected to the internet");
+      if (show_notification) {
+        notyf.dismiss(notification);
+        notyf.open({
           type: "success",
           message: "Connected to the internet",
         });
       }
-    });
-  }, 800);
+      connected_to_internet = true;
+      return true;
+    }
+  });
 };
 
-//check user's internet connection and connect to default Pennsieve account //
-require("dns").resolve("www.google.com", (err) => {
-  if (err) {
-    console.error("No internet connection");
-    log.error("No internet connection");
-    ipcRenderer.send("warning-no-internet-connection");
-  } else {
-    console.log("Connected to the internet");
-    log.info("Connected to the internet");
-    //Check new app version
-    checkNewAppVersion(); // changed this function definition
-    //Load Default/global Pennsieve account if available
-    updateBfAccountList();
-  }
-});
+const check_api_key = async () => {
+  let notification = null;
+  notification = notyf.open({
+    type: "api_key_search",
+    message: "Checking for pre-existing API keys...",
+  });
+  await wait(800);
+  return new Promise((resolve, reject) => {
+    client.invoke("api_bf_account_list", (error, res) => {
+      if (error) {
+        notyf.dismiss(notification);
+        notyf.open({
+          type: "error",
+          message: "No account wasa found",
+        });
+        log.error(error);
+        console.error(error);
+        resolve(false);
+      } else {
+        console.log(res);
+        if (res[0] === "Select" && res.length === 1) {
+          //no api key found
+          notyf.dismiss(notification);
+          notyf.open({
+            type: "error",
+            message: "No account was found",
+          });
+          resolve(false);
+        } else {
+          notyf.dismiss(notification);
+          notyf.open({
+            type: "success",
+            message: "API key found",
+          });
+          resolve(true);
+        }
+      }
+    });
+  });
+};
+
+const check_agent_installed = async () => {
+  let notification = null;
+  notification = notyf.open({
+    type: "ps_agent",
+    message: "Searching for Pennsieve Agent...",
+  });
+  await wait(800);
+  return new Promise((resolve, reject) => {
+    client.invoke("api_check_agent_install", (error, res) => {
+      if (error) {
+        notyf.dismiss(notification);
+        notyf.open({
+          type: "error",
+          message: "Pennsieve agent not found",
+        });
+        console.log(error);
+        var emessage = userError(error);
+        reject([false, emessage]);
+      } else {
+        notyf.dismiss(notification);
+        notyf.open({
+          type: "success",
+          message: "Pennsieve agent found",
+        });
+        resolve([true, res]);
+      }
+    });
+  });
+};
+
+const check_agent_installed_version = async (agent_version) => {
+  let notification = null;
+  notification = notyf.open({
+    type: "ps_agent",
+    message: "Checking Pennsieve Agent version...",
+  });
+  await wait(800);
+  return new Promise((resolve, reject) => {
+    $.getJSON("https://api.github.com/repos/Pennsieve/agent/releases").done(
+      (release_res) => {
+        let release = release_res[0];
+        let latest_agent_version = release.tag_name;
+        let browser_download_url = "";
+        if (latest_agent_version != agent_version) {
+          notyf.dismiss(notification);
+          notyf.open({
+            type: "warning",
+            message: "A newer Pennsieve agent was found!",
+          });
+          if (process.platform == "darwin") {
+            release.assets.forEach((asset, index) => {
+              let file_name = asset.name;
+              if (path.extname(file_name) == ".pkg") {
+                browser_download_url = asset.browser_download_url;
+              }
+            });
+          }
+          if (process.platform == "win32") {
+            release.assets.forEach((asset, index) => {
+              let file_name = asset.name;
+              if (
+                path.extname(file_name) == ".msi" ||
+                path.extname(file_name) == ".exe"
+              ) {
+                browser_download_url = asset.browser_download_url;
+              }
+            });
+          }
+          if (process.platform == "linux") {
+            release.assets.forEach((asset, index) => {
+              let file_name = asset.name;
+              if (path.extname(file_name) == ".deb") {
+                browser_download_url = asset.browser_download_url;
+              }
+            });
+          }
+          // return [browser_download_url, latest_agent_version];
+          // reject([browser_download_url, latest_agent_version]);
+        } else {
+          notyf.dismiss(notification);
+          notyf.open({
+            type: "success",
+            message: "The latest Pennsieve agent was found!",
+          });
+        }
+        resolve([browser_download_url, latest_agent_version]);
+      }
+    );
+  });
+};
+
+// //check user's internet connection and connect to default Pennsieve account //
+// require("dns").resolve("www.google.com", (err) => {
+//   if (err) {
+//     console.error("No internet connection");
+//     log.error("No internet connection");
+//     // ipcRenderer.send("warning-no-internet-connection");
+//   } else {
+//     console.log("Connected to the internet");
+//     log.info("Connected to the internet");
+//     //Check new app version
+//     checkNewAppVersion(); // changed this function definition
+//     //Load Default/global Pennsieve account if available
+//     updateBfAccountList();
+//   }
+// });
 
 const notification = document.getElementById("notification");
 const message = document.getElementById("message");
@@ -3163,6 +3415,7 @@ bfAddDescriptionBtn.addEventListener("click", () => {
 // upload banner image //
 const Cropper = require("cropperjs");
 const { default: Swal } = require("sweetalert2");
+const { waitForDebugger } = require("inspector");
 var cropOptions = {
   aspectRatio: 1,
   movable: false,

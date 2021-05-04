@@ -23,7 +23,7 @@ import re
 import gevent
 from pennsieve import Pennsieve
 from pennsieve.log import get_logger
-from pennsieve.api.agent import agent_cmd, validate_agent_installation, agent_env
+from pennsieve.api.agent import agent_cmd, validate_agent_installation, agent_env, agent_cmd
 import semver
 from pennsieve.api.agent import AgentError, check_port, socket_address
 from pennsieve import Settings
@@ -313,7 +313,6 @@ def bf_remove_additional_accounts():
             break
 
     bf_keep_only_account(consortium_keyname)
-
 
 def bf_account_list():
     """
