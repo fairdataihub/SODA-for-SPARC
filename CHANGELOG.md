@@ -4,9 +4,19 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v4.2.1 - TBD
+## v4.3.0 - TBD
+
+### Feature additions:
+- Added support for toast style notifications to better show relevant information. When you open the app, SODA will run through a checklist of items so that you can see if you are missing any components required for the workflow. This includes checking for Pennsieve agent updates and SODA application updates as well.
+- When you request a database from Blackfynn, SODA will now generate a timestamp that is inline with the curation team's requirements.
 
 ### Bug fixes:
+- Fixed a bug where SODA was unable to update on macOS through the built in buttons. The new update notification will be less intrusive and take up less space on your screen.
+
+## v4.2.1 - 2021-04-23
+
+### Bug fixes:
+- Updated Pennsieve python packages to support minor bugfixes and performance improvements.
 - Fixed a minor bug in how dataset statistics were being recorded.
 - Fixed a bug where the contact person could not be changed when creating the dataset_description metadata file.
 
