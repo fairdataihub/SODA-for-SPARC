@@ -144,7 +144,17 @@ const notyf = new Notyf({
         tagName: "i",
         color: "white",
       },
-      duration: 3000,
+      duration: 800,
+    },
+    {
+      type: "final",
+      background: "green",
+      icon: {
+        className: "fas fa-check-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration:3000,
     },
     {
       type: "warning",
@@ -241,6 +251,10 @@ const run_pre_flight_checks = async () => {
               //   message: "Checking for a newer version of SODA...",
               // });
               checkNewAppVersion();
+              notyf.open({
+                type: "final",
+                message: "You're all set!",
+              });
             }
           });
         } else {
@@ -249,6 +263,10 @@ const run_pre_flight_checks = async () => {
           //   message: "Checking for a newer version of SODA...",
           // });
           checkNewAppVersion();
+          notyf.open({
+            type: "final",
+            message: "You're all set!",
+          });
         }
       }
     } else {
