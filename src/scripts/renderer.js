@@ -62,7 +62,6 @@ client.invoke("echo", "server ready", (error, res) => {
     );
 
     updateBfAccountList();
-
   }
 });
 
@@ -342,7 +341,7 @@ const check_api_key = async () => {
     message: "Checking for pre-existing API keys...",
   });
   await wait(800);
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     client.invoke("api_bf_account_list", (error, res) => {
       if (error) {
         notyf.dismiss(notification);
@@ -382,7 +381,7 @@ const check_agent_installed = async () => {
     message: "Searching for Pennsieve Agent...",
   });
   await wait(800);
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     client.invoke("api_check_agent_install", (error, res) => {
       if (error) {
         notyf.dismiss(notification);
@@ -392,7 +391,7 @@ const check_agent_installed = async () => {
         });
         console.log(error);
         var emessage = userError(error);
-        reject([false, emessage]);
+        resolve([false, emessage]);
       } else {
         notyf.dismiss(notification);
         notyf.open({
@@ -412,7 +411,7 @@ const check_agent_installed_version = async (agent_version) => {
     message: "Checking Pennsieve Agent version...",
   });
   await wait(800);
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     $.getJSON("https://api.github.com/repos/Pennsieve/agent/releases").done(
       (release_res) => {
         let release = release_res[0];
