@@ -328,13 +328,52 @@ def save_subjects_file(filepath, datastructure):
     #
     wb.save(destination)
 
+def save_samples_file(filepath, datastructure):
+    source = join(TEMPLATE_PATH, "samples.xlsx")
+    destination = filepath
+    shutil.copyfile(source, destination)
+
+    wb = load_workbook(destination)
+    ws1 = wb['Sheet1']
+
+    # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
+    ws1.delete_rows(2, 2)
+
+    # 2. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
+    headers_no = len(datastructure[0])
+    orangeFill = PatternFill(start_color='FFD965',
+                       end_color='FFD965',
+                       fill_type='solid')
+    if headers_no > 22:
+        for i, header in enumerate(datastructure[0][22:]):
+            # if there are too many custom headers, we might have invalid columns
+            cell = chr(87 + i) + str(1)
+            ws1[cell] = header
+            ws1[cell].fill = orangeFill
+            ws1[cell].font = Font(bold=True, size=12, name='Calibri')
+
+    # 3. populate matrices
+    for i, item in enumerate(datastructure):
+        if i == 0:
+            continue
+        for j in range(len(item)):
+            cell = chr(65 + j) + str(i + 1)
+            ws1[cell] = datastructure[i][j]
+            ws1[cell].font = Font(bold=False, size=11, name='Arial')
+
 def column_check(x):
     if 'unnamed' in x.lower():
         return False
     return True
 
-def convert_subjects_file_to_df(filepath):
-    templateHeaderList = ["subject_id", "pool_id", "experimental group", "age", "sex", "species", "strain", "rrid for strain", "additional fields (e.g. minds)", "age category", "age range (min)", "age range (max)", "handedness", "genotype", "reference atlas", "protocol title", "protocol.io location", "experimental log file name"]
+subjectsTemplateHeaderList = ["subject_id", "pool_id", "experimental group", "age", "sex", "species", "strain", "rrid for strain", "additional fields (e.g. minds)", "age category", "age range (min)", "age range (max)", "handedness", "genotype", "reference atlas", "protocol title", "protocol.io location", "experimental log file name"]
+samplesTemplateHeaderList = ["subject_id", "sample_id", "wasDerivedFromSample", "pool_id", "experimental group", "specimen type", "specimen anatomical location", "additional fields (e.g. minds)", "species", "sex", "age", "age category", "age range (min)", "age range (max)", "handedness", "strain", "rrid for strain",  "genotype", "reference atlas", "protocol title", "protocol.io location", "experimental log file name"]
+
+def convert_subjects_samples_file_to_df(type, filepath):
+    if type == "subjects":
+        templateHeaderList = subjectsTemplateHeaderList
+    else:
+        templateHeaderList = samplesTemplateHeaderList
 
     subjects_df = pd.read_excel(filepath, engine='openpyxl', usecols=column_check, header=0)
     subjects_df = subjects_df.dropna(axis = 0, how = 'all')

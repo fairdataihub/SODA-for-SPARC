@@ -358,6 +358,21 @@ ipcMain.on("open-file-dialog-existing-subjects", (event) => {
     }
   );
 });
+// import existing samples
+ipcMain.on("open-file-dialog-existing-samples", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openFile"],
+      filters: [{ name: "Excel", extensions: ["xlsx", "xls", "csv"] }],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-existing-samples", files);
+      }
+    }
+  );
+});
 
 ////// milestone document
 ipcMain.on("open-file-dialog-milestone-doc", (event) => {
@@ -508,6 +523,22 @@ ipcMain.on("open-folder-dialog-save-subjects", (event, filename) => {
   );
 });
 
+// Generate samples file
+ipcMain.on("open-folder-dialog-save-samples", (event, filename) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-generate-metadata-samples", files, filename);
+      }
+    }
+  );
+});
+
+// open primary folder
 ipcMain.on("open-file-dialog-local-primary-folder", (event) => {
   dialog.showOpenDialog(
     BrowserWindow.getFocusedWindow(),
@@ -521,6 +552,20 @@ ipcMain.on("open-file-dialog-local-primary-folder", (event) => {
     }
   );
 });
+ipcMain.on("open-file-dialog-local-primary-folder-samples", (event) => {
+  dialog.showOpenDialog(
+    BrowserWindow.getFocusedWindow(),
+    {
+      properties: ["openDirectory"],
+    },
+    (files) => {
+      if (files) {
+        event.sender.send("selected-local-primary-folder-samples", files);
+      }
+    }
+  );
+});
+
 
 //// DDD download
 ipcMain.on("open-folder-dialog-save-DDD", (event, filename) => {

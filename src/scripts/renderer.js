@@ -935,6 +935,37 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
   }
 })
 
+// generate samples file
+ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
+  if (dirpath.length > 0) {
+    $("#generate-samples-spinner").show();
+    var destinationPath = path.join(dirpath[0], filename);
+    if (fs.existsSync(destinationPath)) {
+      var emessage = "File '" + filename + "' already exists in " + dirpath[0];
+      Swal.fire(
+        'Metadata file already exists',
+        `${emessage}`,
+        'error'
+      )
+      $("#generate-samples-spinner").hide();
+    } else {
+      client.invoke("api_save_samples_file", destinationPath, samplesTableData, (error, res) => {
+        if (error) {
+          var emessage = userError(error);
+          log.error(error);
+          console.error(error);
+          $("#generate-samples-spinner").hide();
+          Swal.fire("Failed to generate the samples.xlsx file.", `${emessage}`, "error")
+        } else {
+          console.log(res);
+          $("#generate-samples-spinner").hide();
+          Swal.fire("Successfully created!", "The samples.xlsx file has been successfully generated at the specified location.", "success")
+        }
+      })
+    }
+  }
+})
+
 // import Primary folder
 ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
   if (primaryFolderPath.length > 0) {
@@ -946,12 +977,23 @@ ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
     $("#div-confirm-primary-folder-import").find("button").hide()
   }
 });
+ipcRenderer.on("selected-local-primary-folder-samples", (event, primaryFolderPath) => {
+  if (primaryFolderPath.length > 0) {
+    $("#primary-folder-destination-input-samples").prop("placeholder", primaryFolderPath[0])
+    $("#div-confirm-primary-folder-import-samples").show()
+    $($("#div-confirm-primary-folder-import-samples").find("button")[0]).show();
+  } else {
+    $("#primary-folder-destination-input-samples").prop("placeholder", "Browse here")
+    $("#div-confirm-primary-folder-import-samples").find("button").hide()
+  }
+});
+
 
 // import existing subjects.xlsx info (calling python to load info to a dataframe)
 function loadSubjectsFileToDataframe(filePath) {
   client.invoke(
-    "api_convert_subjects_file_to_df",
-    filePath,
+    "api_convert_subjects_samples_file_to_df",
+    "subjects", filePath,
     (error, res) => {
       if (error) {
         log.error(error);
@@ -963,6 +1005,28 @@ function loadSubjectsFileToDataframe(filePath) {
           loadDataFrametoUI()
         } else {
           Swal.fire("Couldn't load existing subjects.xlsx file!", "Please make sure there are at least a header row in the subjects file.", "error")
+        }
+      }
+    }
+  );
+}
+
+// import existing subjects.xlsx info (calling python to load info to a dataframe)
+function loadSamplesFileToDataframe(filePath) {
+  client.invoke(
+    "api_convert_subjects_samples_file_to_df",
+    "samples", filePath,
+    (error, res) => {
+      if (error) {
+        log.error(error);
+        console.error(error);
+      } else {
+        // res is a dataframe, now we load it into our samplesTableData in order to populate the UI
+        if (res.length > 1) {
+          samplesTableData = res
+          loadDataFrametoUISamples()
+        } else {
+          Swal.fire("Couldn't load existing samples.xlsx file!", "Please make sure there are at least a header row in the samples file.", "error")
         }
       }
     }

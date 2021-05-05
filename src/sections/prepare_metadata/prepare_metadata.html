@@ -4779,7 +4779,7 @@
               <table
                 class="ui celled table"
                 style="text-align: center;display:none"
-                id="table-subjects"
+                id="table-samples"
               >
                 <style>
                   /* style for grabbed contributor row for moving contributors */
@@ -4802,8 +4802,7 @@
                       <div class="tooltipnew contributor">
                         <img class="info" src="assets/img/info.png" />
                         <span class="tooltiptext contributor">
-                          Click on each symbol (View, Edit, Delete) to view/edit/delete a subject id.
-
+                          Click on each symbol (View, Edit, Delete) to view/edit/delete a sample id.
                         </span>
                       </div>
                     </th>
@@ -4935,7 +4934,7 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf samples-form-entry"
-                    id="bootbox-subject-id"
+                    id="bootbox-sample-id-samples"
                     name="subject_id"
                   >
                   </input>
@@ -5074,7 +5073,7 @@
                   <input
                     class="form-container-input-bf samples-form-entry"
                     id="bootbox-sample-age"
-                    name="Age"
+                    name="specimen type"
                   >
                   </input>
                 </div>
@@ -5097,17 +5096,12 @@
                 </div>
                 </div>
                 <div class="demo-controls-body">
-                  <select
+                  <input
                     class="form-container-input-bf samples-form-entry"
-                    style="font-size: 13px; line-height: 2"
-                    id="bootbox-sample-sex"
-                    name="Sex"
+                    id="bootbox-sample-specimen-anatomical-location"
+                    name="specimen anatomical location"
                   >
-                    <option value="Select">Select an option</option>
-                    <option value="Female">Female</option>
-                    <option value="Male">Male</option>
-                    <option value="Unknown">Unknown</option>
-                  </select>
+                  </input>
                 </div>
                 <div class="tooltipnew demo-controls-end">
                   <i
@@ -5126,7 +5120,7 @@
 
           <!-- Optional fields -->
           <div
-            id="div-subjects-optional-fields"
+            id="div-samples-optional-fields"
             style="width: 90%; margin: 0 auto; font-size: 13px;"
             class="datasetsaveoption"
           >
@@ -5223,7 +5217,7 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf samples-form-entry"
-                    id="bootbox-sample-age-range-min"
+                    id="bootbox-sample-age"
                     name="Age"
                   >
                   </input>
@@ -5249,7 +5243,7 @@
                 <div class="demo-controls-body">
                   <input
                     class="form-container-input-bf samples-form-entry"
-                    id="bootbox-sample-age-range-min"
+                    id="bootbox-sample-age-category"
                     name="Age category"
                   >
                   </input>
@@ -5604,7 +5598,7 @@
 
           </div>
 
-        <!-- Question 4: Ask for existing subjects.xlsx file -->
+        <!-- Question 4: Ask for existing samples.xlsx file -->
         <div
           class="individual-question prepare-samples"
           id="Question-prepare-samples-5"

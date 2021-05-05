@@ -195,48 +195,69 @@ $(document).ready(function() {
 
   // subjects file
   document.getElementById("subjects-mandatory-fields").addEventListener("click", () => {
-    showMandatoryFields();
+    showMandatoryFields("subjects");
     $('.multisteps-form__progress-btn.subjects').removeClass("js-active1");
     document.getElementById("subjects-mandatory-fields").classList.add("js-active1");
   });
   document.getElementById("subjects-recommended-fields").addEventListener("click", () => {
-    showReccFields();
+    showReccFields("subjects");
     $('.multisteps-form__progress-btn.subjects').removeClass("js-active1");
     document.getElementById("subjects-recommended-fields").classList.add("js-active1");
   });
   document.getElementById("subjects-optional-fields").addEventListener("click", () => {
-    showOptionalFields();
+    showOptionalFields("subjects");
     $('.multisteps-form__progress-btn.subjects').removeClass("js-active1");
     document.getElementById("subjects-optional-fields").classList.add("js-active1");
   });
   document.getElementById("subjects-custom-fields").addEventListener("click", () => {
-    showCustomFields();
+    showCustomFields("subjects");
     $('.multisteps-form__progress-btn.subjects').removeClass("js-active1");
     document.getElementById("subjects-custom-fields").classList.add("js-active1");
   });
+  // samples file
+  document.getElementById("samples-mandatory-fields").addEventListener("click", () => {
+    showMandatoryFields("samples");
+    $('.multisteps-form__progress-btn.samples').removeClass("js-active1");
+    document.getElementById("samples-mandatory-fields").classList.add("js-active1");
+  });
+  document.getElementById("samples-recommended-fields").addEventListener("click", () => {
+    showReccFields("samples");
+    $('.multisteps-form__progress-btn.samples').removeClass("js-active1");
+    document.getElementById("samples-recommended-fields").classList.add("js-active1");
+  });
+  document.getElementById("samples-optional-fields").addEventListener("click", () => {
+    showOptionalFields("samples");
+    $('.multisteps-form__progress-btn.samples').removeClass("js-active1");
+    document.getElementById("samples-optional-fields").classList.add("js-active1");
+  });
+  document.getElementById("samples-custom-fields").addEventListener("click", () => {
+    showCustomFields("samples");
+    $('.multisteps-form__progress-btn.samples').removeClass("js-active1");
+    document.getElementById("samples-custom-fields").classList.add("js-active1");
+  });
 })
 
-function showMandatoryFields() {
-  document.getElementById("div-subjects-mandatory-fields").style.display = "block";
-  document.getElementById("div-subjects-recommended-fields").style.display = "none";
-  document.getElementById("div-subjects-optional-fields").style.display = "none";
-  document.getElementById("div-subjects-custom-fields").style.display = "none";
+function showMandatoryFields(type) {
+  document.getElementById("div-"+type+"-mandatory-fields").style.display = "block";
+  document.getElementById("div-"+type+"-recommended-fields").style.display = "none";
+  document.getElementById("div-"+type+"-optional-fields").style.display = "none";
+  document.getElementById("div-"+type+"-custom-fields").style.display = "none";
 }
-function showReccFields() {
-  document.getElementById("div-subjects-recommended-fields").style.display = "block";
-  document.getElementById("div-subjects-mandatory-fields").style.display = "none";
-  document.getElementById("div-subjects-optional-fields").style.display = "none";
-  document.getElementById("div-subjects-custom-fields").style.display = "none";
+function showReccFields(type) {
+  document.getElementById("div-"+type+"-recommended-fields").style.display = "block";
+  document.getElementById("div-"+type+"-mandatory-fields").style.display = "none";
+  document.getElementById("div-"+type+"-optional-fields").style.display = "none";
+  document.getElementById("div-"+type+"-custom-fields").style.display = "none";
 }
-function showOptionalFields() {
-  document.getElementById("div-subjects-optional-fields").style.display = "block";
-  document.getElementById("div-subjects-mandatory-fields").style.display = "none";
-  document.getElementById("div-subjects-recommended-fields").style.display = "none";
-  document.getElementById("div-subjects-custom-fields").style.display = "none";
+function showOptionalFields(type) {
+  document.getElementById("div-"+type+"-optional-fields").style.display = "block";
+  document.getElementById("div-"+type+"-mandatory-fields").style.display = "none";
+  document.getElementById("div-"+type+"-recommended-fields").style.display = "none";
+  document.getElementById("div-"+type+"-custom-fields").style.display = "none";
 }
-function showCustomFields() {
-  document.getElementById("div-subjects-optional-fields").style.display = "none";
-  document.getElementById("div-subjects-mandatory-fields").style.display = "none";
-  document.getElementById("div-subjects-recommended-fields").style.display = "none";
-  document.getElementById("div-subjects-custom-fields").style.display = "block";
+function showCustomFields(type) {
+  document.getElementById("div-"+type+"-optional-fields").style.display = "none";
+  document.getElementById("div-"+type+"-mandatory-fields").style.display = "none";
+  document.getElementById("div-"+type+"-recommended-fields").style.display = "none";
+  document.getElementById("div-"+type+"-custom-fields").style.display = "block";
 }
