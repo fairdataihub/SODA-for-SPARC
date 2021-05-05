@@ -60,6 +60,9 @@ client.invoke("echo", "server ready", (error, res) => {
       "Success",
       "Establishing Python Connection"
     );
+
+    updateBfAccountList();
+
   }
 });
 
@@ -74,7 +77,6 @@ client.invoke("echo", "server ready", (error, res) => {
 // $(document).ready(function () {
 //   run_pre_flight_checks()d
 // });
-
 
 // Log file settings //
 log.transports.console.level = false;
@@ -154,7 +156,7 @@ const notyf = new Notyf({
         tagName: "i",
         color: "white",
       },
-      duration:3000,
+      duration: 3000,
     },
     {
       type: "warning",
@@ -183,7 +185,7 @@ let connected_to_internet = false;
 
 // Check app version on current app and display in the side bar
 ipcRenderer.on("run_pre_flight_checks", (event, arg) => {
-  run_pre_flight_checks()
+  run_pre_flight_checks();
 });
 
 const run_pre_flight_checks = async () => {
@@ -209,13 +211,12 @@ const run_pre_flight_checks = async () => {
     await wait(500);
     account_present = await check_api_key();
     if (account_present) {
-      updateBfAccountList();
+      //Load Default/global Pennsieve account if available
       await wait(500);
       [
         agent_installed_response,
         agent_version_response,
       ] = await check_agent_installed();
-      console.log(agent_installed_response, agent_version_response);
       if (!agent_installed_response) {
         Swal.fire({
           icon: "error",
@@ -251,6 +252,7 @@ const run_pre_flight_checks = async () => {
               //   message: "Checking for a newer version of SODA...",
               // });
               checkNewAppVersion();
+              await wait(500);
               notyf.open({
                 type: "final",
                 message: "You're all set!",
@@ -263,6 +265,7 @@ const run_pre_flight_checks = async () => {
           //   message: "Checking for a newer version of SODA...",
           // });
           checkNewAppVersion();
+          await wait(500);
           notyf.open({
             type: "final",
             message: "You're all set!",
@@ -351,7 +354,6 @@ const check_api_key = async () => {
         console.error(error);
         resolve(false);
       } else {
-        console.log(res);
         if (res[0] === "Select" && res.length === 1) {
           //no api key found
           notyf.dismiss(notification);
