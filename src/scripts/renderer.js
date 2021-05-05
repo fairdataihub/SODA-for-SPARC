@@ -61,6 +61,7 @@ client.invoke("echo", "server ready", (error, res) => {
       "Establishing Python Connection"
     );
 
+    //Load Default/global Pennsieve account if available
     updateBfAccountList();
   }
 });
@@ -199,6 +200,7 @@ ipcRenderer.on("run_pre_flight_checks", (event, arg) => {
   run_pre_flight_checks();
 });
 
+// Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
   return new Promise(async (resolve) => {
     let connection_response = "";
@@ -206,6 +208,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     let agent_version_response = "";
     let account_present = false;
 
+    // Check the internet connection and if available check the rest.
     connection_response = await check_internet_connection();
     if (!connection_response) {
       Swal.fire({
@@ -217,19 +220,23 @@ const run_pre_flight_checks = async (check_update = true) => {
         confirmButtonText: "I understand",
       }).then(async (result) => {
         if (result.isConfirmed) {
+          // Do nothing
         }
       });
       resolve(false);
     } else {
       await wait(500);
+
+      // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
       account_present = await check_api_key();
       if (account_present) {
-        //Load Default/global Pennsieve account if available
+        // Check for an installed Pennsieve agent
         await wait(500);
         [
           agent_installed_response,
           agent_version_response,
         ] = await check_agent_installed();
+        // If no agent is installed, download the latest agent from Github and link to their docs for installation instrucations if needed.
         if (!agent_installed_response) {
           Swal.fire({
             icon: "error",
@@ -251,6 +258,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           resolve(false);
         } else {
           await wait(500);
+          // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
           [
             browser_download_url,
             latest_agent_version,
@@ -267,6 +275,7 @@ const run_pre_flight_checks = async (check_update = true) => {
               cancelButtonText: "Skip for now",
             }).then(async (result) => {
               if (result.isConfirmed) {
+                // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
                 [
                   browser_download_url,
                   latest_agent_version,
@@ -302,6 +311,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           }
         }
       } else {
+        // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable. 
         Swal.fire({
           icon: "warning",
           text:
@@ -351,7 +361,7 @@ const check_internet_connection = async (show_notification = true) => {
         });
       }
       connected_to_internet = false;
-      return false;
+      return connected_to_internet;
     } else {
       console.log("Connected to the internet");
       log.info("Connected to the internet");
@@ -363,7 +373,7 @@ const check_internet_connection = async (show_notification = true) => {
         });
       }
       connected_to_internet = true;
-      return true;
+      return connected_to_internet;
     }
   });
 };
@@ -375,13 +385,14 @@ const check_api_key = async () => {
     message: "Checking for pre-existing API keys...",
   });
   await wait(800);
+  // If no accounts are found, return false. 
   return new Promise((resolve) => {
     client.invoke("api_bf_account_list", (error, res) => {
       if (error) {
         notyf.dismiss(notification);
         notyf.open({
           type: "error",
-          message: "No account wasa found",
+          message: "No account was found",
         });
         log.error(error);
         console.error(error);
@@ -549,7 +560,7 @@ ipcRenderer.on("update_available", () => {
   });
 });
 
-// When the update is downloaded, show the restart message
+// When the update is downloaded, show the restart notification
 ipcRenderer.on("update_downloaded", () => {
   ipcRenderer.removeAllListeners("update_downloaded");
   ipcRenderer.send(
