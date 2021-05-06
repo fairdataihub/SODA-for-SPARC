@@ -100,13 +100,16 @@ function addSampleIDtoTable(newSample) {
   var indexNumber = rowIndex;
   var currentRow = table.rows[table.rows.length - 1];
   // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  var newRowIndex = checkForUniqueRowID("row-current-subject", rowIndex);
+  var newRowIndex = checkForUniqueRowID("row-current-sample", rowIndex);
   var row = (table.insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-subject" + newRowIndex +"' class='row-subjects'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+newSample+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='view_current_sample_id(this)'><i class='eye outline icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='edit_current_sample_id(this)'><i class='pen icon' style='color: black'></i></button><button class='ui button' onclick='delete_current_sample_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
+    "<tr id='row-current-sample" + newRowIndex +"' class='row-subjects'><td class='contributor-table-row'>"+indexNumber+"</td><td>"+newSample+"</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='view_current_sample_id(this)'><i class='eye outline icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='edit_current_sample_id(this)'><i class='pen icon' style='color: black'></i></button><button class='ui button' onclick='delete_current_sample_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
 
 function addSubjectIDtoDataBase(bootb) {
   var subjectID = $("#bootbox-subject-id").val();
+  var poolID = $("#bootbox-subject-pool-id").val();
+  var expGroup = $("#bootbox-subject-exp-group").val();
+
   var table = document.getElementById("table-subjects");
   var duplicate = false;
   var error = "";
@@ -117,7 +120,7 @@ function addSubjectIDtoDataBase(bootb) {
       break
     }
   }
-  if (subjectID !== "") {
+  if (subjectID !== "" && poolID !== "" && expGroup !== "") {
     if (!duplicate) {
       addSubjectIDtoTable(subjectID)
       addSubjectIDToJSON(subjectID);
@@ -129,7 +132,7 @@ function addSubjectIDtoDataBase(bootb) {
       error = "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id!"
     }
   } else {
-    error = "Please provide a subject_id!"
+    error = "Please fill in all of the required fields!"
     }
   if (error !== "") {
     $(bootb).find(".modal-footer span").remove();
@@ -144,7 +147,12 @@ function addSubjectIDtoDataBase(bootb) {
 }
 
 function addSampleIDtoDataBase(bootb) {
-  var sampleID = $("#bootbox-sample-id-samples").val();
+  var sampleID = $("#bootbox-sample-id").val();
+  var subjectID = $("#bootbox-subject-id-samples").val();
+  var wasDerivedFromSample = $("#bootbox-wasDerivedFromSample").val();
+  var poolID = $("#bootbox-sample-pool-id").val();
+  var expGroup = $("#bootbox-sample-exp-group").val();
+
   var table = document.getElementById("table-samples");
   var duplicate = false;
   var error = "";
@@ -155,19 +163,19 @@ function addSampleIDtoDataBase(bootb) {
       break
     }
   }
-  if (sampleID !== "") {
+  if (sampleID !== "" && subjectID !== "" && wasDerivedFromSample !== "" && poolID !== "" && expGroup !== "") {
     if (!duplicate) {
       addSampleIDtoTable(sampleID)
       addSampleIDtoJSON(sampleID);
       bootb.modal("hide");
-      $("#table-subjects").css("display", "block");
-      $("#button-generate-subjects").css("display", "block");
+      $("#table-samples").css("display", "block");
+      $("#button-generate-samples").css("display", "block");
       clearAllSubjectFormFields(samplesFormDiv)
     } else {
       error = "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id!"
     }
   } else {
-    error = "Please provide a subject_id and a sample_id!"
+    error = "Please fill in all of the required fields!"
     }
   if (error !== "") {
     $(bootb).find(".modal-footer span").remove();
@@ -352,7 +360,7 @@ function loadSubjectInformation(ev, subjectID, type) {
    var infoJson = [];
    if (samplesTableData.length > 1) {
      for (var i=1; i<samplesTableData.length;i++) {
-       if (samplesTableData[i][0] === sampleID) {
+       if (samplesTableData[i][1] === sampleID) {
          infoJson = samplesTableData[i];
          break
        }
@@ -594,7 +602,7 @@ function showPrimaryBrowseFolderSamples() {
   ipcRenderer.send("open-file-dialog-local-primary-folder-samples");
 }
 
-function importPrimaryFolder() {
+function importPrimaryFolderSubjects() {
   var folderPath = $("#primary-folder-destination-input").prop("placeholder");
   if (folderPath === "Browse here") {
     Swal.fire("No folder chosen!", "Please select a path to your primary folder", "error");
@@ -645,10 +653,17 @@ function importPrimaryFolderSamples() {
       samplesTableData[0] = headersArrSamples;
       for (var folder of folders) {
         samplesFileData = []
-        var stats = fs.statSync(path.join(folderPath, folder));
-        if (stats.isDirectory()) {
+        var statsSubjectID = fs.statSync(path.join(folderPath, folder));
+        if (statsSubjectID.isDirectory()) {
           samplesFileData[0] = folder
-          for (var i=1; i<18; i++) {
+          var subjectFolder = fs.readdirSync(path.join(folderPath, folder));
+          for (var subfolder of subjectFolder) {
+            var statsSampleID = fs.statSync(path.join(folderPath, folder, subfolder))
+            if (statsSampleID.isDirectory()) {
+              samplesFileData[1] = subfolder
+            }
+          }
+          for (var i=2; i<22; i++) {
             samplesFileData.push("")
           }
           samplesTableData[j] = samplesFileData
@@ -690,7 +705,7 @@ function loadSamplesDataToTable() {
   $("#table-samples tr:gt(0)").remove();
 
   for (var i=1; i<samplesTableData.length; i++) {
-    addSampleIDtoTable(samplesTableData[i][0])
+    addSampleIDtoTable(samplesTableData[i][1])
   }
   Swal.fire(
   'Loaded successfully!',
@@ -783,6 +798,24 @@ function showEnterCustomHeaderDiv(ev, action) {
   }
 }
 
+// functions below are to show/add/cancel a custom header
+function showEnterCustomHeaderDivSamples(ev, action) {
+  if (action === "show") {
+    $(ev).hide();
+    $("#div-new-custom-headers-samples").hide()
+    $("#div-enter-custom-header-name-samples").show();
+    $($("#div-enter-custom-header-name-samples button")[0]).show()
+  } else if (action === "hide") {
+    $("#btn-add-custom-field-samples").show()
+    $("#div-new-custom-headers-samples").show()
+    $("#btn-add-custom-field-samples").parents().show()
+    $("#new-custom-header-name-samples").val("");
+    $(ev).hide();
+    $(ev).nextAll().hide();
+    $("#div-enter-custom-header-name-samples").hide()
+  }
+}
+
 function addCustomHeader(ev) {
   var customName = $("#new-custom-header-name").val();
   var divElement = '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">'+customName+':</font></div></div><div class="demo-controls-body"><input class="form-container-input-bf subjects-form-entry" id="bootbox-subject-'+customName+'" name='+customName+'></input></div></div>'
@@ -793,6 +826,19 @@ function addCustomHeader(ev) {
   } else {
     Swal.fire("Duplicate header name!", "You entered a name that is already listed under the current fields", "error");
     $("#button-confirm-custom-header-name").hide();
+  }
+}
+
+function addCustomHeaderSamples(ev) {
+  var customName = $("#new-custom-header-name-samples").val();
+  var divElement = '<div class="div-dd-info"><div class="demo-controls-head"><div style="width: 100%;"><font color="black">'+customName+':</font></div></div><div class="demo-controls-body"><input class="form-container-input-bf samples-form-entry" id="bootbox-sample-'+customName+'" name='+customName+'></input></div></div>'
+  showEnterCustomHeaderDivSamples(ev, "hide");
+  if (!headersArrSamples.includes(customName)) {
+    $("#div-new-custom-headers-samples").append(divElement);
+    headersArrSamples.push(customName);
+  } else {
+    Swal.fire("Duplicate header name!", "You entered a name that is already listed under the current fields", "error");
+    $("#button-confirm-custom-header-name-samples").hide();
   }
 }
 
