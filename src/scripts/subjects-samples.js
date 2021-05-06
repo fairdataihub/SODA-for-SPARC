@@ -328,10 +328,17 @@ function loadSubjectInformation(ev, subjectID) {
    var c = fieldArr.map(function(i, field) {
      if (infoJson[i]) {
        if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
-         field.value = infoJson[i];
-       } else {
-         field.value = "";
-       }
+         if (field.name === "Age") {
+           var fullAge = infoJson[i].split(" ");
+           field.value = fullAge[0]
+           if (["day", "month", "year", "week"].includes(fullAge[1])) {
+             $("#bootbox-sample-age-info").val(fullAge[1])
+           } else {
+             $("#bootbox-sample-age-info").val("Select")
+           }
+         } else {
+           field.value = infoJson[i];
+         }
      }
    });
    $("#btn-edit-sample").unbind( "click" );
