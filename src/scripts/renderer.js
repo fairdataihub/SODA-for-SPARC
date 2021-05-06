@@ -926,7 +926,6 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
           $("#generate-subjects-spinner").hide();
           Swal.fire("Failed to generate the subjects.xlsx file.", `${emessage}`, "error")
         } else {
-          console.log(res);
           $("#generate-subjects-spinner").hide();
           Swal.fire("Successfully created!", "The subjects.xlsx file has been successfully generated at the specified location.", "success")
         }

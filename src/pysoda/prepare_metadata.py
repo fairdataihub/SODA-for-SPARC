@@ -304,7 +304,7 @@ def save_subjects_file(filepath, datastructure):
                 ws1[cell] = datastructure[i][j]
             else:
                 ws1[cell] = ""
-                
+
             ws1[cell].font = Font(bold=False, size=11, name='Arial')
 
     # 4. delete empty columns
@@ -360,7 +360,10 @@ def save_samples_file(filepath, datastructure):
             continue
         for column, j in zip(excel_columns(start_index=0), range(len(item))):
             cell = column + str(i + 1)
-            ws1[cell] = datastructure[i][j]
+            if datastructure[i][j]:
+                ws1[cell] = datastructure[i][j]
+            else:
+                ws1[cell] = ""
             ws1[cell].font = Font(bold=False, size=11, name='Arial')
 
     wb.save(destination)
